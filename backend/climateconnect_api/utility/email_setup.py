@@ -1,10 +1,13 @@
-from datetime import datetime, timedelta
-from climateconnect_api.models.notification import EmailNotification
 import logging
+from datetime import datetime, timedelta
+from typing import List
 
-from climateconnect_api.models.user import UserProfile
-from climateconnect_api.utility.translation import (get_user_lang_code,
-                                                    get_user_lang_url)
+from django.contrib.auth.models import User
+from climateconnect_api.models import UserNotification, UserProfile
+from climateconnect_api.models.notification import EmailNotification
+from climateconnect_api.utility.translation import (
+    get_user_lang_code, get_user_lang_url
+)
 from django.conf import settings
 from mailjet_rest import Client
 
@@ -94,6 +97,7 @@ def send_email(
             send_email.__name__, ex
         ))
 
+
 def get_user_verification_url(verification_key, lang_url):
     # TODO: Set expire time for user verification
     verification_key_str = str(verification_key).replace("-", "%2D")
@@ -103,6 +107,7 @@ def get_user_verification_url(verification_key, lang_url):
 
     return url
 
+
 def get_new_email_verification_url(verification_key, lang_url):
     #TODO: Set expire time for new email verification
     verification_key_str = str(verification_key).replace("-", "%2D")
@@ -111,6 +116,7 @@ def get_new_email_verification_url(verification_key, lang_url):
     ))
 
     return url
+
 
 def get_reset_password_url(verification_key, lang_url):
     #TODO: Set expire time for new email verification
@@ -144,6 +150,7 @@ def send_user_verification_email(user, verification_key):
         notification=None
     )
 
+
 def send_new_email_verification(user, new_email, verification_key):
     lang_url = get_user_lang_url(get_user_lang_code(user))
     url = get_new_email_verification_url(verification_key, lang_url)
@@ -167,6 +174,7 @@ def send_new_email_verification(user, new_email, verification_key):
         notification=None
     )
 
+
 def send_password_link(user, password_reset_key):
     lang_url = get_user_lang_url(get_user_lang_code(user))
     url = get_reset_password_url(password_reset_key, lang_url)
@@ -188,6 +196,7 @@ def send_password_link(user, password_reset_key):
         should_send_email_setting="",
         notification=None
     )
+
 
 def send_feedback_email(email, message, send_response):
     data = {
@@ -223,6 +232,7 @@ def send_feedback_email(email, message, send_response):
             send_user_verification_email.__name__, ex
         ))
 
+
 def register_newsletter_contact(email_address):
     old_contact = mailjet_api.contact.get(email_address)
     if old_contact.status_code == 404:
@@ -232,6 +242,7 @@ def register_newsletter_contact(email_address):
         contact_id = result['Data'][0]['ID']
     add_contact_to_list(contact_id, settings.MAILJET_NEWSLETTER_LIST_ID)
 
+
 def create_contact(email_address):
     data = {
         'IsExcludedFromCampaigns': "true",
@@ -240,6 +251,7 @@ def create_contact(email_address):
     new_contact = mailjet_api.contact.create(data=data)
     result = new_contact.json()
     return result['Data'][0]['ID']
+
 
 def add_contact_to_list(contact_id, list_id):
     data = {
@@ -251,6 +263,7 @@ def add_contact_to_list(contact_id, list_id):
         logger.error(result.status_code)
         logger.error("Could not add contact "+str(contact_id)+" to list "+str(list_id))
     return True
+
 
 def unregister_newsletter_contact(email_address):
     contact = mailjet_api.contact.get(email_address)
@@ -272,3 +285,45 @@ def remove_contact_from_list(contact_id, list_id):
         ]
     }
     mailjet_api.contact_managecontactslists.create(id=contact_id, data=data)
+
+
+def send_email_reminder_for_unread_notifications(
+    user: User,
+    user_notifications: List[UserNotification]
+):
+    total_notifications = user_notifications.count()
+    language_code = get_user_lang_code(user=user)
+    subject_by_language = {
+        "en": f"You have {total_notifications} unread notifications",
+        "de": f"Sie haben {total_notifications} ungelesene Benachrichtigungen"
+    }
+    subject = subject_by_language.get(language_code, 'en')
+    email_text = f""""
+Dear {user.first_name},
+    You have {total_notifications} in your inbox. See your messages here: 
+    https://climateconnect.earth/inbox
+    """
+    data = {
+        "Messages": [
+            {
+                "From": {
+                    "Email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
+                    "Name": "Climate Connect"
+                },
+                "To": [{
+                    "Email": user.email,
+                    "Name": f"{user.first_name} {user.last_name}"
+                }],
+                "Subject": subject,
+                "TextPart": email_text
+            }
+        ]
+    }
+
+    try:
+        mail = mailjet_send_api.send.create(data=data)
+    except Exception as ex:
+        logger.error(f"EmailFailure: Exception sending email -> {ex}")
+
+    if mail.status_code != 200:
+        logger.error(f"EmailFailure: Error sending email -> {mail.text}")

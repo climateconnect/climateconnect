@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import List
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -35,6 +36,7 @@ async def send_out_live_notification(user_id):
         }
     )
 
+
 def create_user_notification(user, notification):
     old_notification_object = UserNotification.objects.filter(
         user=user, 
@@ -49,6 +51,7 @@ def create_user_notification(user, notification):
             old_notification = old_notification_object[0]
             old_notification.read_at = None
             old_notification.save()
+
 
 def create_email_notification(receiver, chat, message_content, sender, notification):
     sender_name = sender.first_name + " " + sender.last_name

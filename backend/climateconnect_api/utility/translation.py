@@ -24,6 +24,7 @@ def get_locale(language_code):
        return "en"
     return LANGUAGE_CODE_MAP[language_code]
 
+
 def get_user_lang_code(user):
     try:
         user_profile = UserProfile.objects.get(user=user)    
@@ -32,11 +33,13 @@ def get_user_lang_code(user):
         #fall back to english
         return "en"
 
+
 def get_user_lang_url(lang_code):
     if lang_code == "en":
         return ""
     else:
         return "/" + lang_code
+
 
 def translate(text, target_lang):
     if len(text) == 0:
