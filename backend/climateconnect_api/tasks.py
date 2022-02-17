@@ -1,27 +1,26 @@
 import logging
+from datetime import timedelta
 from typing import List
 
 from climateconnect_main.celery import app
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 from climateconnect_api.models import UserNotification
 from climateconnect_api.utility.email_setup import \
-    send_email_reminder_for_unread_notifications 
+    send_email_reminder_for_unread_notifications
 
 logger = logging.getLogger(__name__)
 
 
 @app.task
-def add(a, b):
-    logger.info(f"testing.... {a+b}")
-
-
-@app.task
 def schedule_automated_reminder_for_user_notifications():
     # Get all user_ids for people who have not checked their notification
-    all_user_ids = list(UserNotification.objects.filter(
-        read_at__isnull=True
+    all_user_ids = list(
+        UserNotification.objects.filter(
+            read_at__isnull=True,
+            created_at__lte=(timezone.now() - timedelta(days=2))
         ).values_list('user_id', flat=True).distinct()
     )
     for i in range(0, len(all_user_ids), settings.USER_CHUNK_SIZE):
