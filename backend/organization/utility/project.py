@@ -75,7 +75,6 @@ def get_project_helpful_connections(project: Project, language_code: str) -> str
 
 
 def get_project_name(project: Project, language_code: str) -> str:
-    print(project)
     if project.language and language_code != project.language.language_code and \
             project.translation_project.filter(language__language_code=language_code).exists():
         return project.translation_project.get(
