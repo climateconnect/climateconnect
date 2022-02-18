@@ -164,4 +164,9 @@ urlpatterns = [
         'organizations/<str:url_slug>/set_shared_organization/',
         organization_views.SetOrganisationSharedView.as_view(), name="set-shared-organization-view"
     ),
+    path(
+        'projects/<str:url_slug>/similar/',
+        project_views.SimilarProjects.as_view(),
+        name='similar-projects'
+    ),
 ]
