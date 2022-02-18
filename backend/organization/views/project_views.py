@@ -57,7 +57,8 @@ from organization.utility.notification import (
     get_mentions)
 from organization.utility.organization import check_organization
 from organization.utility.project import (create_new_project,
-                                          get_project_translations)
+                                          get_project_translations,
+                                          get_similar_projects)
 from rest_framework import status
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.filters import SearchFilter
@@ -950,3 +951,13 @@ class SetProjectSharedView(APIView):
             raise NotFound(detail='Project not found.', code=status.HTTP_404_NOT_FOUND)
         save_content_shared(request, project)
         return Response(status=status.HTTP_201_CREATED)
+    
+    
+    
+    
+class SimilarProjects(ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = ProjectStubSerializer    
+    def get_queryset(self):
+        similar_projects_url_slugs = get_similar_projects(url_slug=self.kwargs['url_slug'])
+        return Project.objects.filter(url_slug__in=similar_projects_url_slugs)
