@@ -197,10 +197,12 @@ def get_similar_projects(url_slug:str,return_count=5):
 
     #calculate similarity score based on the above calculated features 
     
-    #join the dataframes from above on url_slug index
+    #join the dataframes from above on url_slug index and drop the source project
     df = pd.concat([df[['is_same_parent','is_same_city','is_same_language','is_same_country']]
                      ,skills_df[['skills_match']]
                      ,tags_df[['tags_match']]],axis=1)
+    
+    df = df.drop(url_slug)
     # weights given to each factor. Increase the integer value to strenghten the weight of a particular factor
     weights_mapping = {
     'is_same_parent':3,
