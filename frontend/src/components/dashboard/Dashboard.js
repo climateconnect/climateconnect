@@ -107,7 +107,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-// TODO(Piper): generalize this spacing unit to be used in other places,
+// TODO: generalize this spacing unit to be used in other places,
 // for consistency.
 const HorizontalSpacing = ({ children, size }) => {
   return (

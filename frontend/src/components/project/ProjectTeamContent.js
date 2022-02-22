@@ -87,14 +87,6 @@ export default function TeamContent({ project, leaveProject }) {
                 {texts.manage_members}
               </Button>
             )}
-            {/* TODO(piper): don't need two "leave" projects buttons */}
-            {/* <Button
-              className={classes.leaveProjectButton}
-              variant="contained"
-              onClick={leaveProject}
-            >
-              {texts.leave_project}
-            </Button> */}
           </>
         )}
         <ProfilePreviews
