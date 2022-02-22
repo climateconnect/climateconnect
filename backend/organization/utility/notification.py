@@ -127,9 +127,11 @@ def create_project_join_request_notification(requester,project_admins,project):
     notification = Notification.objects.create(
         notification_type=9,
         text=f"{requester_name} wants to join your project {project.name}!"
-            )
+    )
+
     for project_admin in project_admins:
         create_user_notification(project_admin, notification)
+
     return
 
 def create_project_join_request_approval_notification(requester,project):

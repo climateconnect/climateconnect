@@ -172,6 +172,7 @@ const MentionNotification = ({ notification, texts, locale }) => {
   const classes = useStyles();
   const entityType = notification.project_comment ? "project" : "idea";
   const commentProp = `${entityType}_comment`;
+
   const sender = notification[commentProp].author_user;
   const urlEnding =
     entityType === "project"
