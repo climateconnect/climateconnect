@@ -1,5 +1,4 @@
 import { Button, makeStyles } from "@material-ui/core";
-import NextCookies from "next-cookies";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
@@ -71,24 +70,6 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
 }));
-
-export async function getServerSideProps(ctx) {
-  const { token } = NextCookies(ctx);
-  console.log("id:")
-  console.log(ctx?.req?.headers["x-real-ip"] || ctx?.req?.connection?.remoteAddress)
-  if (ctx.resolvedUrl === "/" && token) {
-    console.log("redirecting!!!");
-    return {
-      redirect: {
-        permanent: false,
-        destination: `${getLocalePrefix(ctx.locale)}/browse`,
-      },
-    };
-  }
-  return {
-    props: {},
-  };
-}
 
 export default function Index() {
   const classes = useStyles();
