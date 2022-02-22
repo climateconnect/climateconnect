@@ -200,15 +200,14 @@ export default function ProjectOverview({
     const cookies = new Cookies();
     const token = cookies.get("token");
 
-    debugger;
-
     try {
       const response = await apiRequest({
         method: "post",
         url: `/api/projects/${strippedProjectName}/request_membership/${user.url_slug}/`,
         payload: {
           message: "Would like to join the project!",
-          // TODO: fix user_availability
+          // TODO: currently, we default user's availability to 4. In
+          // the future, we could consider customizing this option
           user_availability: "4",
         },
 
@@ -224,10 +223,6 @@ export default function ProjectOverview({
       }
     }
   };
-
-  // TODO(Piper): confirm this drop, and others that've moved into ProjectPageRoot
-  // are desired before landing
-  // const [followers, setFollowers] = useState([]);
 
   const [gotParams, setGotParams] = useState(false);
   useEffect(() => {
