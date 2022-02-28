@@ -128,7 +128,7 @@ function CommentInput({
               className={classes.commentButton}
               onClick={(event) => handleSendComment(event)}
             >
-              Post
+              {texts.send}
             </Button>
             {onCancel && (
               <Button variant="contained" className={classes.cancelButton} onClick={onCancel}>
