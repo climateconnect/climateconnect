@@ -122,7 +122,7 @@ def create_project_join_request_notification(requester,project_admins,project):
     """
     Creates a notification about a joining request from a requester to a project admin.
     :param requester: UserProfile object of the user who's sent the request
-    :type requester: UserProfile
+    :type requester: User
     :param project_admin: Iterable UserProfile object of the project administrators
     :type project_admin: List(UserProfile)
 
