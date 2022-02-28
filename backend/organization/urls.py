@@ -136,9 +136,6 @@ urlpatterns = [
         project_views.ListProjectRequestersView.as_view(), name='list-requesters-view'
     ),
     path(
-        'projecttags/', project_views.ListProjectTags.as_view(),
-    ),
-    path(
         'projects/<str:url_slug>/likes/',
         project_views.ListProjectLikesView.as_view(), name='list-likes-view'
     ),
