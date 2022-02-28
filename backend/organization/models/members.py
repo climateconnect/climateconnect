@@ -119,7 +119,7 @@ class MembershipRequests(models.Model):
 
     user = models.ForeignKey(
         User,
-        verbose_name="feedback_user",
+        verbose_name="Requesting user",
         help_text="Points to the user who sent the request",
         on_delete=models.CASCADE,
         null=False,
