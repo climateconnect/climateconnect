@@ -241,7 +241,7 @@ class ApproveDenyProjectMemberRequest(BasePermission):
 
         # Detect for AnonymousUser
         if not request.user.is_authenticated:
-            return True
+            return False
 
         project = Project.objects.filter(url_slug=str(view.kwargs.get('project_slug'))).first()
 
