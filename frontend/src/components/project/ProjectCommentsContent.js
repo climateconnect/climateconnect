@@ -84,7 +84,7 @@ export default function CommentsContent({ user, project, token, setCurComments }
   return (
     <div>
       <CommentInput user={user} onSendComment={onSendComment} hasComments={comments.length > 0} />
-      <Typography>{comments.length + " " + texts.comments.toLowerCase()}</Typography>
+      <Typography>{comments.length + " " + texts.comments}</Typography>
       <Divider className={classes.divider} />
       {comments && comments.length > 0 && (
         <Posts
