@@ -4,6 +4,7 @@ import AddIcon from "@material-ui/icons/Add";
 import React from "react";
 
 import ButtonIcon from "./ButtonIcon";
+import getTexts from "../public/texts/texts";
 
 const useStyles = makeStyles((theme) => ({
   largeScreenButtonContainer: {
@@ -60,11 +61,12 @@ const useStyles = makeStyles((theme) => ({
 export default function JoinButton({
   hasAdminPermissions,
   screenSize,
-  texts,
   handleSendProjectJoinRequest,
   requestedToJoin,
 }) {
   const classes = useStyles();
+
+  const texts = getTexts();
 
   if (screenSize?.belowSmall) {
     return (
@@ -101,8 +103,7 @@ export default function JoinButton({
         variant="contained"
       >
         <div className={classes.buttonLabel}>
-          {/* TODO: update german texts here */}
-          <div className={classes.buttonText}>{requestedToJoin ? "Requested" : "Join"}</div>
+          <div className={classes.buttonText}>{requestedToJoin ? texts.requested : texts.join}</div>
         </div>
       </Button>
     </span>
