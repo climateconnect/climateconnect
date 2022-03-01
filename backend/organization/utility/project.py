@@ -152,7 +152,7 @@ def get_project_admin_creators(project,limit_to_admins=False):
     :param project: target project
     :type project: Project
     :param limit_to_admins: limit output to admins only
-    :ype limit_to_amins: bool
+    :type limit_to_admins: bool
     """
     targets_roles = Role.objects.filter(Q(name="Creator") | Q(name="Administrator")).all()
     if targets_roles.count() < 1: raise Exception(f"Project does not have any Admins! {targets_roles}")
