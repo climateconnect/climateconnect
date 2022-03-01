@@ -127,7 +127,7 @@ def create_project_join_request_notification(requester,project_admins,project):
     :type project_admin: List(UserProfile)
 
     """
-    requester_name = UserProfile.objects.filter(user=requester).first().name
+    requester_name = requester.first_name + " " + requester.last_name
     notification = Notification.objects.create(
         notification_type=9,
         text=f"{requester_name} wants to join your project {project.name}!"
