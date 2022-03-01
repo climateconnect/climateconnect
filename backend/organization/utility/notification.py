@@ -148,10 +148,7 @@ def create_project_join_request_approval_notification(requester,project):
 
     """
 
-    notification = Notification.objects.create(
-        notification_type=10,
-        text=f"Your request to join the project {project.name} has been approved!"
-            )
+    notification = Notification.objects.create(notification_type=10)
     create_user_notification(requester, notification)
 
     return
