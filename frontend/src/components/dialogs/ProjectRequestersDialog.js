@@ -158,15 +158,7 @@ const ProjectRequesters = ({ locale, initialRequesters, project }) => {
  * Separate cohesive component that encapsulates
  * all the requester state and functionality together.
  */
-const Requester = ({
-  handleApproveRequest,
-  handleRejectRequest,
-  handleUpdateRequesters,
-  locale,
-  project,
-  requester,
-  requestId,
-}) => {
+const Requester = ({ handleUpdateRequesters, locale, project, requester, requestId }) => {
   const classes = useStyles();
 
   /**
