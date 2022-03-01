@@ -255,7 +255,6 @@ class ApproveDenyProjectMemberRequest(BasePermission):
         # or some other method.
 
         # TODO: request.user is Anonymous
-        permission_exists = False
         permission_exists = ProjectMember.objects.filter(
             project=project,
             user=request.user,
