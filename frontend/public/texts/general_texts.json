@@ -511,6 +511,10 @@
     "en": "Join now",
     "de": "Jetzt anmelden"
   },
+  "review_join_requests": {
+    "en": "Review join requests",
+    "de": "Anfragen ansehen"
+  },
   "collaborate_with": {
     "en": "Collaborate with",
     "de": "Mach mit bei"

@@ -258,7 +258,7 @@ export default function ProjectContent({
                         className={classes.editProjectButton}
                         onClick={viewOpenProjectRequests}
                       >
-                        Review join requests
+                        {texts.review_join_requests}
                       </Button>
                     </Badge>
                     <Button
