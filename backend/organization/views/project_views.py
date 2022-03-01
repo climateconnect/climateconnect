@@ -928,9 +928,6 @@ class ListProjectRequestersView(ListAPIView):
         except Project.DoesNotExist:
             return Response(data={'message': f'Project does not exist'}, status=status.HTTP_400_BAD_REQUEST)
 
-        all_requests = MembershipRequests.objects.all()
-        print(f"Total number of membership requests: {len(all_requests)}")
-
         # Only show requests that are currently open, as
         # in they haven't been approved nor rejected.
         open_membership_requests = MembershipRequests.objects.filter(
