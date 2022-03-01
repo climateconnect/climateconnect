@@ -199,7 +199,7 @@ const MentionNotification = ({ notification, texts, locale }) => {
             // TODO: should refactor to support richer notification requests; see
             // // https://github.com/climateconnect/climateconnect/issues/898
             notification.text.includes("wants to join your project")
-              ? "A user wants to join your project!"
+              ? texts.wants_to_join_your_project
               : sender.first_name +
                 " " +
                 sender.last_name +

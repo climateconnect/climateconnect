@@ -487,6 +487,10 @@
     "en": "Work on",
     "de": "Arbeite an"
   },
+  "wants_to_join_your_project": {
+    "en": "A user wants to join your project!",
+    "de": "Jemand möchte deinem Projekt beitreten!"
+  },
   "get_inspired_by": {
     "en": "Get inspired by",
     "de": "Lass dich inspirieren durch"
