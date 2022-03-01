@@ -155,7 +155,9 @@ def get_project_admin_creators(project,limit_to_admins=False):
     :type limit_to_admins: bool
     """
     targets_roles = Role.objects.filter(Q(name="Creator") | Q(name="Administrator")).all()
-    if targets_roles.count() < 1: raise Exception(f"Project does not have any Admins! {targets_roles}")
+    if targets_roles.count() < 1:
+        raise Exception(f"Role 'Creator' or role 'Administrator' doesn't exist: {targets_roles}")
+
     admin_role, creator_role = targets_roles.filter(name="Administrator").first(), targets_roles.filter(name="Creator").first()
 
     role_sub_query = Q(role=admin_role) if limit_to_admins else (Q(role=admin_role) | Q(role=creator_role))
