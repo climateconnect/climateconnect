@@ -4,7 +4,7 @@ import AddIcon from "@material-ui/icons/Add";
 import React from "react";
 
 import ButtonIcon from "./ButtonIcon";
-import getTexts from "../public/texts/texts";
+import getTexts from "../../../../public/texts/texts";
 
 const useStyles = makeStyles((theme) => ({
   largeScreenButtonContainer: {
