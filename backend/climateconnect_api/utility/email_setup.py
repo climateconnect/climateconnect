@@ -295,7 +295,7 @@ def send_email_reminder_for_unread_notifications(
     language_code = get_user_lang_code(user=user)
     subject_by_language = {
         "en": f"You have {total_notifications} unread notifications",
-        "de": f"Sie haben {total_notifications} ungelesene Benachrichtigungen"
+        "de": f"Du hast {total_notifications} ungelesene Nachrichten"
     }
     subject = subject_by_language.get(language_code, "en")
     website_link_by_language = {
