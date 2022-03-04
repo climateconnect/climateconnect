@@ -304,8 +304,8 @@ def send_email_reminder_for_unread_notifications(
     }
     website_link = website_link_by_language.get(language_code, "en")
     email_text_by_language = {
-        "en": f"<p>Dear {user.first_name},</p><p>You have {total_notifications} new notifications. Please <a href={website_link}>click here</a> to check your inbox.</p><p>See you soon,</p><p>The Climate Connect Team</p>",  #NOQA
-        "de": f"<p>Liebe {user.first_name},</p><p>Sie haben {total_notifications} neue Benachrichtigungen. Bitte <a href={website_link}>klicken Sie hier</a>, um Ihren Posteingang zu überprüfen.</p><p>Bis bald,</p><p>Deine Climate Connect Team</p>"  #NOQA
+        "en": f"<p>Dear {user.first_name},</p><p>You have {total_notifications} new messages. Please respond to the people who reached out because we can only limit climate change if we work together and exchange knowledge.</p> <p><a href={website_link}>Click here</a> to check your inbox.</p><p>See you soon,</p><p>The Climate Connect Team</p>",  #NOQA
+        "de": f"<p>Hallo {user.first_name},</p><p>Du hast {total_notifications} ungelesene Nachrichten von anderen Klimaschützer*innen. Bitte beantworte die Nachrichten, denn gemeinsam und durch Zusammenarbeit und Wissensaustausch können wir das 1,5 Grad Ziel erreichen.</p><p><a href={website_link}>Klicke hier</a>, um deinen Posteingang anzusehen.</p><p>Bis bald,</p><p>Deine Climate Connect Team</p>"  #NOQA
     }
     email_text = email_text_by_language.get(language_code, "en")
     data = {
