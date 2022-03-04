@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-from climateconnect_api.models import UserNotification
+from climateconnect_api.models import UserNotification, Notification
 from climateconnect_api.utility.email_setup import \
     send_email_reminder_for_unread_notifications
 
@@ -20,7 +20,8 @@ def schedule_automated_reminder_for_user_notifications():
     all_user_ids = list(
         UserNotification.objects.filter(
             read_at__isnull=True,
-            created_at__lte=(timezone.now() - timedelta(days=2))
+            created_at__lte=(timezone.now() - timedelta(days=2)),
+            notification__notification_type=Notification.PRIVATE_MESSAGE
         ).values_list('user_id', flat=True).distinct()
     )
     for i in range(0, len(all_user_ids), settings.USER_CHUNK_SIZE):
@@ -40,10 +41,13 @@ def send_email_notifications(self, user_ids: List):
             continue
 
         unread_user_notifications = UserNotification.objects.filter(
-            user_id=u_id, read_at__isnull=True
+            user_id=u_id,
+            read_at__isnull=True,
+            notification__notification_type=Notification.PRIVATE_MESSAGE
         )
 
-        if unread_user_notifications.exists():
+        if unread_user_notifications.exists() and user.user_profile \
+            and user.user_profile.email_on_private_chat_message is True:
             send_email_reminder_for_unread_notifications(
                 user=user,
                 user_notifications=unread_user_notifications

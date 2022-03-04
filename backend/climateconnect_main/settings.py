@@ -270,9 +270,9 @@ CHANNEL_LAYERS = {
 
 # For Celery we use Redis as a broker URL
 CELERY_BROKER_URL = env('CELERY_BROKER_URL')
-# CELERY_BROKER_USE_SSL = {
-#     'ssl_cert_reqs': ssl.CERT_REQUIRED
-# }
+CELERY_BROKER_USE_SSL = {
+    'ssl_cert_reqs': ssl.CERT_REQUIRED
+}
 CELERY_TIMEZONE = "UTC"
 LOCALES = ['en', 'de']
 
