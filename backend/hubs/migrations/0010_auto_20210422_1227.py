@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='hub',
             name='location',
-            field=models.ManyToManyField(blank=True, help_text='For city hubs: for which locations is the CityHub', related_name='hub_location', to='location.Location', verbose_name='Location'),
+            field=models.ManyToManyField(blank=True, help_text='For location hubs: for which locations is the ClimateHub', related_name='hub_location', to='location.Location', verbose_name='Location'),
         ),
     ]

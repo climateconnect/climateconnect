@@ -114,7 +114,7 @@ hub_translations = [
         'sub_headline_translation': 'Here, climate actors, interested citizens and activists can find climate solutions from Erlangen.',
         'segway_text_translation': ".",
         'image_attribution_translation': "",
-        'quick_info_translation': "This is where the CityHub Erlangen comes into being. We are in Early Access, which \
+        'quick_info_translation': "This is where the ClimateHub Erlangen comes into being. We are in Early Access, which \
             means that the page can only be accessed with the link. All content can already be created by you, so that \
             there is already a lot to discover at the official launch.",
         'stat_box_title_translation': "Erlangen 2020",
