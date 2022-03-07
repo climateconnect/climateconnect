@@ -1,4 +1,4 @@
-import { Avatar, Button, Chip, Container, Link, Tooltip, Typography } from "@material-ui/core";
+import { Avatar, Button, Chip, Container, Link, Tooltip, Typography, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PlaceIcon from "@material-ui/icons/Place";
 import React, { useContext } from "react";
@@ -94,11 +94,16 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
   },
   editButton: {
-    position: "absolute",
-    right: theme.spacing(1),
-    top: theme.spacing(12),
+    display: "flex",
+    justifyContent: "center",
+    margin: "auto",
+    marginBottom: theme.spacing(3),
+    marginTop: theme.spacing(1),
     [theme.breakpoints.up("sm")]: {
       top: theme.spacing(1),
+      position: "absolute",
+      right: theme.spacing(1),
+      top: theme.spacing(12),
     },
     [theme.breakpoints.down("xs")]: {
       width: theme.spacing(14),
@@ -303,16 +308,6 @@ export default function AccountPage({
         )}
       </div>
       <Container className={classes.infoContainer}>
-        {isOwnAccount && (
-          <Button
-            className={classes.editButton}
-            color="primary"
-            variant="contained"
-            href={editHref}
-          >
-            {editText ? editText : texts.edit_profile}
-          </Button>
-        )}
         <Container className={classes.avatarWithInfo}>
           <div className={classes.avatarContainer}>
             {account.badges?.length > 0 ? (
@@ -346,9 +341,20 @@ export default function AccountPage({
               ))}
             </Container>
           )}
+          {isOwnAccount && (
+            <Button
+              className={classes.editButton}
+              color="primary"
+              variant="contained"
+              href={editHref}
+            >
+              {editText ? editText : texts.edit_profile}
+            </Button>
+          )}
         </Container>
         <Container className={classes.accountInfo}>{displayAccountInfo(account.info)}</Container>
       </Container>
+      <Divider className={classes.marginTop}/>
       {detailledDescription?.value && (
         <Container>
           <DetailledDescription
