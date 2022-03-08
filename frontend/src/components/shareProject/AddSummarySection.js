@@ -68,6 +68,7 @@ export default function AddSummarySection({
           value={projectData.short_description}
         />
       </div>
+      <Typography> {projectData.short_description ? projectData.short_description.length: 0} / 280</Typography>
     </div>
   );
 }
