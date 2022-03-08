@@ -23,6 +23,7 @@ import {
   getResizedImage,
   whitenTransparentPixels,
 } from "../../../public/lib/imageOperations";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { parseLocation } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -242,6 +243,7 @@ export default function EditAccountPage({
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles(editedAccount);
+  const isOrganization = !splitName;
   //used for previewing images in UploadImageDialog
   const [tempImages, setTempImages] = React.useState({
     image: editedAccount.image ? editedAccount.image : DEFAULT_AVATAR_IMAGE,
@@ -839,6 +841,16 @@ export default function EditAccountPage({
                     />
                   )}
               </Container>
+            )}
+            {isOrganization && (
+              <Button
+                className={classes.editButton}
+                variant="contained"
+                color="primary"
+                href={getLocalePrefix(locale) + "/manageOrganizationMembers/" + account.url_slug}
+              >
+                {texts.manage_members}
+              </Button>
             )}
           </Container>
           <Container className={classes.accountInfo}>
