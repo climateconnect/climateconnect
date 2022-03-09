@@ -15,6 +15,7 @@ import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import ProfileBadge from "../profile/ProfileBadge";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import UserContext from "../context/UserContext";
+import EditSharpIcon from '@material-ui/icons/EditSharp';
 
 const useStyles = makeStyles((theme) => ({
   avatarContainer: {
@@ -94,20 +95,23 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
   },
   editButton: {
-    display: "flex",
-    justifyContent: "center",
-    margin: "auto",
-    marginBottom: theme.spacing(3),
-    marginTop: theme.spacing(1),
-    [theme.breakpoints.up("sm")]: {
-      top: theme.spacing(1),
-      position: "absolute",
-      right: theme.spacing(1),
-      top: theme.spacing(12),
+    position: "absolute",
+    cursor: "pointer",
+    color: theme.palette.primary.main,
+    width: "35px",
+    height: "35px",
+    backgroundColor: "white",
+    "&:hover": {
+      backgroundColor: "white",
     },
+    borderRadius: "50%",
+    padding: "5px",
+    right: "0%",
+    bottom: "0%",
+    marginRight: theme.spacing(7),
+    marginBottom: theme.spacing(2),
     [theme.breakpoints.down("xs")]: {
-      width: theme.spacing(14),
-      textAlign: "center",
+      marginBottom: theme.spacing(4),
     },
   },
   infoIcon: {
@@ -290,6 +294,21 @@ export default function AccountPage({
           position: "relative",
         }}
       >
+        {isOwnAccount && (
+          <Link
+            color="primary"
+            underline="never"
+            href={editHref}
+          >
+            <EditSharpIcon
+              className={classes.editButton}
+              color="primary"
+              variant="contained"
+            >
+              {editText ? editText : texts.edit_profile}
+            </EditSharpIcon>
+          </Link>
+        )}
         {isOrganization && (
           <SocialMediaShareButton
             containerClassName={classes.shareButtonContainer}
@@ -340,16 +359,6 @@ export default function AccountPage({
                 <Chip label={type.name} key={type.key} className={classes.chip} />
               ))}
             </Container>
-          )}
-          {isOwnAccount && (
-            <Button
-              className={classes.editButton}
-              color="primary"
-              variant="contained"
-              href={editHref}
-            >
-              {editText ? editText : texts.edit_profile}
-            </Button>
           )}
         </Container>
         <Container className={classes.accountInfo}>{displayAccountInfo(account.info)}</Container>
