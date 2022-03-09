@@ -186,7 +186,7 @@ class Hub(models.Model):
     location = models.ManyToManyField(
         Location,
         related_name="hub_location",
-        help_text="For city hubs: for which locations is the CityHub",
+        help_text="For city hubs: for which locations is the ClimateHub",
         verbose_name="Location",
         blank=True
     )
