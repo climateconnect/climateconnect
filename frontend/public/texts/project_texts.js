@@ -446,7 +446,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de:
         "Wenn du dein Projekt löscht, geht es verloren. Bist du dir sicher, dass du es löschen möchtest?",
     },
-    briefly_summarise_what_you_are_doing_up_to_240_characters: {
+    briefly_summarise_what_you_are_doing_please_only_use_english: {
       en: "Briefly summarise what you are doing (up to 280 characters)\n\nPlease only use English!",
       de: "Fass kurz zusammen, was ihr tun (bis zu 280 Zeichen)",
     },
@@ -632,6 +632,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     briefly_summarise_what_you_are_doing: {
       en: "Briefly summarise what you are doing (up to 280 characters)",
       de: "Fasse kurz zusammen, was du tust (bis zu 280 Zeichen)",
+    },
+    briefly_summarise_what_you_are_doing_part_one: {
+      en: "Briefly summarise what you are doing (",
+      de: "Fasse kurz zusammen, was du tust (",
+    },
+    briefly_summarise_what_you_are_doing_part_two:{
+      en: " / 280 characters)",
+      de: " / 280 Zeichen)",
     },
     search_for_your_team_members: {
       en: "Search for your team members",
