@@ -637,7 +637,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Briefly summarise what you are doing (",
       de: "Fasse kurz zusammen, was du tust (",
     },
-    briefly_summarise_what_you_are_doing_part_two:{
+    briefly_summarise_what_you_are_doing_part_two: {
       en: " / 280 characters)",
       de: " / 280 Zeichen)",
     },

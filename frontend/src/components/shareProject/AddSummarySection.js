@@ -53,7 +53,11 @@ export default function AddSummarySection({
           required
           fullWidth
           multiline
-          helperText={texts.briefly_summarise_what_you_are_doing_part_one + (projectData.short_description ? projectData.short_description.length: 0) + texts.briefly_summarise_what_you_are_doing_part_two}
+          helperText={
+            texts.briefly_summarise_what_you_are_doing_part_one +
+            (projectData.short_description ? projectData.short_description.length : 0) +
+            texts.briefly_summarise_what_you_are_doing_part_two
+          }
           ref={shortDescriptionRef}
           InputLabelProps={{
             shrink: true,
