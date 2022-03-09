@@ -15,6 +15,7 @@ import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import ControlPointIcon from "@material-ui/icons/ControlPoint";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
+import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import Alert from "@material-ui/lab/Alert";
 import React, { useContext } from "react";
 import {
@@ -210,8 +211,9 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     marginTop: theme.spacing(10),
   },
-  checkTranslationsButtonContainer: {
+  checkTranslationsAndManageMembersButtonContainer: {
     display: "flex",
+    justifyContent: "space-between",
     marginTop: theme.spacing(5),
   },
   detailledDescriptionContainer: {
@@ -842,21 +844,11 @@ export default function EditAccountPage({
                   )}
               </Container>
             )}
-            {isOrganization && (
-              <Button
-                className={classes.editButton}
-                variant="contained"
-                color="primary"
-                href={getLocalePrefix(locale) + "/manageOrganizationMembers/" + account.url_slug}
-              >
-                {texts.manage_members}
-              </Button>
-            )}
           </Container>
           <Container className={classes.accountInfo}>
             {displayAccountInfo(editedAccount.info)}
-            {onClickCheckTranslations && (
-              <div className={classes.checkTranslationsButtonContainer}>
+            <div className={classes.checkTranslationsAndManageMembersButtonContainer}>
+              {onClickCheckTranslations && (
                 <Button
                   variant="contained"
                   color="primary"
@@ -864,8 +856,32 @@ export default function EditAccountPage({
                 >
                   {texts.check_translations}
                 </Button>
-              </div>
-            )}
+              )}
+              {isOrganization &&
+                (isNarrowScreen ? (
+                  <Button
+                    className={classes.editButton}
+                    variant="contained"
+                    color="primary"
+                    href={
+                      getLocalePrefix(locale) + "/manageOrganizationMembers/" + account.url_slug
+                    }
+                  >
+                    <GroupAddIcon />
+                  </Button>
+                ) : (
+                  <Button
+                    className={classes.editButton}
+                    variant="contained"
+                    color="primary"
+                    href={
+                      getLocalePrefix(locale) + "/manageOrganizationMembers/" + account.url_slug
+                    }
+                  >
+                    {texts.manage_members}
+                  </Button>
+                ))}
+            </div>
           </Container>
         </Container>
         <Container className={classes.detailledDescriptionContainer}>
