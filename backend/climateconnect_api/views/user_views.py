@@ -68,7 +68,7 @@ class LoginView(KnoxLoginView):
             return super(LoginView, self).post(request, format=None)
         else:
             return Response({
-                'message': _('Invalid username or password.')
+                'message': _('Invalid email or password')
             }, status=status.HTTP_401_UNAUTHORIZED)
 
 

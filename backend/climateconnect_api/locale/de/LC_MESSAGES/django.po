@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-08 12:03+0100\n"
+"POT-Creation-Date: 2022-03-10 10:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -57,8 +57,8 @@ msgid "Your E-Mail address is now "
 msgstr "Deine E-Mail Adresse ist jetzt "
 
 #: climateconnect_api/views/user_views.py:71
-msgid "Invalid username or password."
-msgstr "Dein Nutzername und/oder Passwort stimmt leider nicht."
+msgid "Invalid email or password"
+msgstr "Ungültige E-Mail oder Passwort"
 
 #: climateconnect_api/views/user_views.py:395
 msgid ""
