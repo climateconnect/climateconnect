@@ -31,4 +31,3 @@ frontend/.vscode
 backend/.azure
 
 yarn.lock
-frontend/.eslintcache
