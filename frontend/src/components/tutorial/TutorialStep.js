@@ -27,12 +27,10 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 20,
     fontWeight: 700,
     marginBottom: theme.spacing(2),
-    color: "white",
   },
   text: {
     fontSize: 17.5,
     position: "absolute",
-    color: "white",
   },
   buttonsContainer: {
     marginTop: theme.spacing(2),
