@@ -101,7 +101,7 @@ const useStyles = makeStyles((theme) => {
       display: "flex",
       justifyContent: "space-around",
     },
-    cityHubOption: {
+    climateHubOption: {
       width: "100%",
     },
   };
@@ -117,8 +117,8 @@ const HorizontalSpacing = ({ children, size }) => {
   );
 };
 
-// TODO: we should generalize these components post launch
-// of CityHub so that they can be used across the platform.
+// TODO(Piper): we should generalize these components post launch
+// of ClimateHub so that they can be used across the platform.
 const HoverButton = ({ items, label, startIcon }) => {
   const classes = useStyles();
   const buttonRef = useRef(null);
@@ -182,7 +182,7 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
               href={item.url_slug}
               onClick={() => handleClick(item.onClick)}
             >
-              <MenuItem component="button" className={classes.cityHubOption}>
+              <MenuItem component="button" className={classes.climateHubOption}>
                 {item.name}
               </MenuItem>
             </Link>
