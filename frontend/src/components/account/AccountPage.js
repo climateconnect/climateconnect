@@ -16,6 +16,7 @@ import ProfileBadge from "../profile/ProfileBadge";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import UserContext from "../context/UserContext";
 import EditSharpIcon from '@material-ui/icons/EditSharp';
+import IconButton from '@material-ui/core/IconButton';
 
 const useStyles = makeStyles((theme) => ({
   avatarContainer: {
@@ -94,7 +95,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
     marginRight: theme.spacing(1),
   },
-  editButton: {
+  editButton: (props) => ({
     position: "absolute",
     cursor: "pointer",
     color: theme.palette.primary.main,
@@ -108,14 +109,23 @@ const useStyles = makeStyles((theme) => ({
     padding: "5px",
     right: "0%",
     bottom: "0%",
-    marginRight: theme.spacing(7),
+    marginRight: props.isOrganization ? theme.spacing(8) : theme.spacing(4),
     marginBottom: theme.spacing(2),
     [theme.breakpoints.down("xs")]: {
       marginBottom: theme.spacing(4),
     },
+  }),
+  desktopButton: {
+    marginTop: theme.spacing(2),
+    right: theme.spacing(2),
+    position: "absolute",
   },
   infoIcon: {
     marginBottom: -4,
+  },
+  innerIcon: {
+    marginRight: theme.spacing(0.5),
+    marginLeft: -theme.spacing(1)
   },
   detailledDescription: {
     marginTop: theme.spacing(3),
@@ -294,20 +304,13 @@ export default function AccountPage({
           position: "relative",
         }}
       >
-        {isOwnAccount && (
-          <Link
-            color="primary"
-            underline="never"
+        {isOwnAccount && isSmallScreen && (
+          <IconButton
             href={editHref}
+            className={classes.editButton}
           >
-            <EditSharpIcon
-              className={classes.editButton}
-              color="primary"
-              variant="contained"
-            >
-              {editText ? editText : texts.edit_profile}
-            </EditSharpIcon>
-          </Link>
+            <EditSharpIcon />
+          </IconButton>
         )}
         {isOrganization && (
           <SocialMediaShareButton
@@ -327,6 +330,14 @@ export default function AccountPage({
         )}
       </div>
       <Container className={classes.infoContainer}>
+        {isOwnAccount && !isSmallScreen && (
+          <Button variant="contained" color="primary" className={classes.desktopButton} href={editHref}>
+            <EditSharpIcon
+              className={classes.innerIcon}
+            />
+            {editText ? editText : texts.edit_profile}
+          </Button>
+        )}
         <Container className={classes.avatarWithInfo}>
           <div className={classes.avatarContainer}>
             {account.badges?.length > 0 ? (
