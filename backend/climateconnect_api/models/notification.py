@@ -6,7 +6,6 @@ from ideas.models.support import IdeaSupporter
 from organization.models.content import Post, PostComment, ProjectComment
 from organization.models.followers import ProjectFollower
 from organization.models.likes import ProjectLike
-from organization.models.project import Project
 
 
 class Notification(models.Model):

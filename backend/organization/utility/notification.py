@@ -138,20 +138,16 @@ def create_project_join_request_notification(requester,project_admins,project):
 
     return
 
-def create_project_join_request_approval_notification(requester,project):
+def create_project_join_request_approval_notification(requester, project):
     """
     Creates a notification about an approved request to join a project to the requester.
     :param requester: UserProfile object of the user who's sent the request
     :type requester: UserProfile
     :param project: Iterable UserProfile object of the project administrators
     :type project: List(UserProfile)
-
     """
-
     notification = Notification.objects.create(notification_type=10)
     create_user_notification(requester, notification)
-
-    return
 
 def create_project_like_notification(project_like):
     notification = Notification.objects.create(

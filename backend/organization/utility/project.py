@@ -131,19 +131,17 @@ def get_project_translations(data: Dict):
     except ValueError:
         raise ValueError
 
-def add_project_member(project,user,user_role,role_in_project,availability):
+def add_project_member(project, user, user_role, role_in_project, availability):
     """
     Adds a user to a project. Assumes valid data at input.
     """
-
     ProjectMember.objects.create(
-                        project=project,
-                        user=user,
-                        role=user_role,
-                        role_in_project=role_in_project,
-                        availability=availability
-                    )
-    return
+        availability=availability,
+        project=project,
+        role_in_project=role_in_project,
+        role=user_role,
+        user=user
+    )
 
 
 def get_project_admin_creators(project,limit_to_admins=False):

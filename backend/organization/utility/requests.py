@@ -1,9 +1,4 @@
-from typing import (Dict, Optional)
-from rest_framework import status
-from rest_framework.response import Response
-from enum import Enum
 from django.utils import timezone
-from django.db.models import Q
 
 from climateconnect_api.models import Role
 from organization.utility.project import add_project_member,is_part_of_project
@@ -15,7 +10,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class MembershipRequestsManager(object):
+class MembershipRequestsManager:
     """
     Manages the project/org membership requests.
 
@@ -110,20 +105,21 @@ class MembershipRequestsManager(object):
         return request_id
 
 
-    def approve_request(self, **kwargs):
+    def approve_request(self):
         self.membership_request.request_status = RequestStatus.APPROVED.value
         self.membership_request.approved_at = timezone.now()
 
-        #create a record in ProjectMember
+        # create a record in ProjectMember
         user_role = Role.objects.filter(name="Member").first()
+
         if self.membership_target == MembershipTarget.PROJECT:
             add_project_member(
-                        project=self.project
-                        ,user=self.user
-                        ,user_role=user_role
-                        ,role_in_project=None
-                        ,availability=self.user_availability
-                    )
+                availability=self.user_availability,
+                project=self.project,
+                role_in_project=None,
+                user_role=user_role,
+                user=self.user
+            )
         elif self.membership_target == MembershipTarget.ORGANIZATION:
             add_organization_member(
                 organization=self.organization
@@ -135,10 +131,7 @@ class MembershipRequestsManager(object):
         print(f'User {self.user} is approved for project: {self.project}')
         self.membership_request.save()
 
-        return 0
-
-    def reject_request(self, **kwargs):
+    def reject_request(self):
         self.membership_request.request_status = RequestStatus.REJECTED.value
         self.membership_request.rejected_at = timezone.now()
         self.membership_request.save()
-        return 0

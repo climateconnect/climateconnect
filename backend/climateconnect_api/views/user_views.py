@@ -50,30 +50,45 @@ logger = logging.getLogger(__name__)
 class LoginView(KnoxLoginView):
     permission_classes = [AllowAny]
 
+    # Tries to log the user in with the provided
+    # credentials (username and password).
     def post(self, request, format=None):
         if 'username' and 'password' not in request.data:
             message = "Must include 'username' and 'password'"
             return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
 
+        # First, authenticate the user
         user = authenticate(username=request.data['username'], password=request.data['password'])
+
         if user:
             user_profile = UserProfile.objects.filter(user = user)[0]
             if not user_profile.is_profile_verified:
                 message = "You first have to activate your account by clicking the link we sent to your E-Mail."
                 return Response({'message': message, 'type': 'not_verified'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+            if user.is_authenticated:
+                print("User is authenticated")
+
+            # Then, log in the user to attach them to the current Django session,
+            # and ensure we have a valid User object (instead of AnonymousUser).
+            # See more: https://docs.djangoproject.com/en/4.0/topics/auth/default/#how-to-log-a-user-in
             login(request, user)
-            if user_profile.has_logged_in<2:
-                user_profile.has_logged_in = user_profile.has_logged_in +1
+
+            if user_profile.has_logged_in < 2:
+                user_profile.has_logged_in = user_profile.has_logged_in + 1
                 user_profile.save()
+
             return super(LoginView, self).post(request, format=None)
-        else:
-            if not User.objects.filter(username=request.data['username']).exists():
-                return Response({
-                    'message': 'Username does not exist. Have you signed up yet?'
-                }, status=status.HTTP_401_UNAUTHORIZED)
+
+        if not User.objects.filter(username=request.data['username']).exists():
             return Response({
-                'message': 'Invalid password.'
+                'message': 'Username does not exist. Have you signed up yet?'
             }, status=status.HTTP_401_UNAUTHORIZED)
+
+        return Response({
+            'message': 'Invalid password.'
+        }, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class SignUpView(APIView):

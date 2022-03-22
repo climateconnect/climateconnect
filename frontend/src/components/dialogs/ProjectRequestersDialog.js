@@ -162,7 +162,7 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
   const classes = useStyles();
 
   /**
-   * This is to send a request to the backend, to approve
+   * Sends a POST to the backend to approve
    * the membership request into the organizations_membershiprequests
    * table. The API expects 2 dynamic parameters: the current project
    * URL slug, and the ID of the original request, which is generated

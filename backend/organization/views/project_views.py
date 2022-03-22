@@ -1,5 +1,4 @@
 import logging
-import re
 import traceback
 from organization.serializers.project import ProjectRequesterSerializer
 
@@ -75,6 +74,7 @@ from organization.utility.project import (create_new_project,
                                           get_project_translations,
                                           get_project_admin_creators)
 from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import (ListAPIView, RetrieveUpdateAPIView,
@@ -1054,11 +1054,28 @@ class RequestJoinProject(RetrieveUpdateAPIView):
             return Response({
                         'message': f'Internal Server Error {traceback.format_exc()}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-class ManageJoinProject(RetrieveUpdateAPIView):
+# class ManageJoinProjectView(RetrieveUpdateAPIView):
+class ManageJoinProjectView(RetrieveUpdateDestroyAPIView):
     """
-    A view that enables a user to request to join a project
+    A view that enables a user to request to join a project.
     """
-    permission_classes = [ApproveDenyProjectMemberRequest]
+
+    # This class attribute needed to be added for the project join
+    # feature.
+    #
+    # Note that authentication always runs at the very start of the view,
+    # before the permission and throttling checks occur, and before any other code is
+    # allowed to proceed. If the request to join the project isn't authenticated
+    # (HTTP 401), then the remainder of this View code will not execute. See
+    # https://www.django-rest-framework.org/api-guide/authentication/
+    #
+    # Keep in mind that when we redefine class attributes at the View level,
+    # we're overwriting the default permission and authentication classes
+    # that're defined within settings.py.
+    authentication_classes = [TokenAuthentication]
+
+    serializer_class = ProjectMemberSerializer
+
     lookup_field = 'project_slug'
 
     def post(self, request, project_slug, request_action, request_id):
@@ -1075,17 +1092,17 @@ class ManageJoinProject(RetrieveUpdateAPIView):
                 return Response({'message': 'Request Does Not Exist'}, status=status.HTTP_404_NOT_FOUND)
 
             if request_manager.validation_failed:
-                return Response({f"message': 'Operation Failed. Errors: {' | '.join(request_manager.errors)}"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({f"message': 'Operation failed. Errors: {' | '.join(request_manager.errors)}"}, status=status.HTTP_400_BAD_REQUEST)
 
             if request_action == 'approve':
                 request_manager.approve_request()
-                create_project_join_request_approval_notification(requester=request.user,project=project)
+                create_project_join_request_approval_notification(requester=request.user, project=project)
             elif request_action == 'reject':
                 request_manager.reject_request()
             else:
-                raise NotImplementedError(f"membership request action <{request_action}> is not implemented ")
+                raise NotImplementedError(f"membership request action <{request_action}> is not implemented")
 
-            return Response(data={'message':'Operation Succeeded'}, status=status.HTTP_200_OK)
+            return Response(data={'message':'Operation succeeded'}, status=status.HTTP_200_OK)
         except:
             return Response({
                             'message': f'Internal Server Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

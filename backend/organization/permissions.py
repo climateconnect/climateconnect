@@ -1,4 +1,5 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
+
 from organization.models import (Organization, OrganizationMember, Project, ProjectMember, ProjectParents)
 from climateconnect_api.models import Role
 
@@ -239,22 +240,15 @@ class ApproveDenyProjectMemberRequest(BasePermission):
         if request.method in SAFE_METHODS:
             return True
 
-        # Detect for AnonymousUser
         if not request.user.is_authenticated:
-            return True
+            print(f"{request.user} is not authenticated")
+            return False
 
         project = Project.objects.filter(url_slug=str(view.kwargs.get('project_slug'))).first()
 
-        # TODO: this seems to sporadically be throwing an error:
-        #
-        #  raise TypeError('Cannot cast AnonymousUser to int. Are you trying to use it in place of User?')
-        # TypeError: Cannot cast AnonymousUser to int. Are you trying to use it in place of User?
-        #
-        # When calling from the post() in ManageJoinProject. Verify
+        # When calling from the POST in ManageJoinProjectView, Verify
         # that we don't have duplicate requests causing the error to be thrown,
         # or some other method.
-
-        # TODO: request.user is Anonymous
         permission_exists = ProjectMember.objects.filter(
             project=project,
             user=request.user,
