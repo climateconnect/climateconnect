@@ -245,8 +245,12 @@ const InputShortDescription = ({ project, handleChangeProject, texts }) => {
         handleChangeProject(event.target.value.substring(0, 280), "short_description")
       }
       required
-      helperText={texts.briefly_summarise_what_you_are_doing_up_to_240_characters}
-      placeholder={texts.briefly_summarise_what_you_are_doing_up_to_240_characters}
+      helperText={
+        texts.briefly_summarise_what_you_are_doing_part_one +
+        (project.short_description ? project.short_description.length : 0) +
+        texts.briefly_summarise_what_you_are_doing_part_two
+      }
+      placeholder={texts.briefly_summarise_what_you_are_doing_please_only_use_english}
     />
   );
 };

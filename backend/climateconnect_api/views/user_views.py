@@ -80,10 +80,9 @@ class LoginView(KnoxLoginView):
                 user_profile.save()
 
             return super(LoginView, self).post(request, format=None)
-
-        if not User.objects.filter(username=request.data['username']).exists():
+        else:
             return Response({
-                'message': 'Username does not exist. Have you signed up yet?'
+                'message': _('Invalid email or password')
             }, status=status.HTTP_401_UNAUTHORIZED)
 
         return Response({
