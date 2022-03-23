@@ -36,7 +36,7 @@ def create_idea(data: dict, language: Optional[Language], creator: User) -> Idea
     
     url_slug = slugify(data['name'])
     if len(url_slug) == 0:
-        url_slug = idea.id
+        url_slug = str(idea.id)
     ideas_with_same_url_slug = Idea.objects.filter(url_slug=url_slug)
     if ideas_with_same_url_slug.exists():
         url_slug = url_slug + str(idea.id)
