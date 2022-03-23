@@ -2,10 +2,16 @@ from datetime import datetime, timedelta
 from climateconnect_api.models.notification import EmailNotification
 import logging
 
+from typing import List
+
+from django.contrib.auth.models import User
 from climateconnect_api.models.user import UserProfile
+from organization.models.project import Project
+from organization.models.organization import Organization
+from ideas.models.ideas import Idea 
 from climateconnect_api.utility.translation import (get_user_lang_code,
                                                     get_user_lang_url)
-from django.conf import settings
+from django.conf import Settings, settings
 from mailjet_rest import Client
 
 logger = logging.getLogger(__name__)
@@ -272,3 +278,163 @@ def remove_contact_from_list(contact_id, list_id):
         ]
     }
     mailjet_api.contact_managecontactslists.create(id=contact_id, data=data)
+
+
+def send_weekly_personalized_recommendations_email2(user: User, projects: Project, organization: Organization = None, idea: Idea = None): # user_notifications: List[UserNotification]
+
+    template_key = "WEEKLY_RECOMMENDATIONS_EMAIL"
+
+    lang_code = get_user_lang_code(user)
+    
+    subjects_by_language = {
+        "en": f"You have new recommendations",
+        "de": f"Du hast neue Empfehlungen"
+    }
+    subject = subjects_by_language.get(lang_code, "en")
+    
+    template_id = get_template_id(
+        template_key=template_key,
+        lang_code=lang_code
+    )
+
+    # make sure to set right path to the production backend storage server 
+    image_url = settings.ALLOWED_HOSTS[6] + projects.thumbnail_image.url 
+
+    # add language part
+    project_url = settings.FRONTEND_URL + "/projects/" + projects.url_slug
+ 
+    #mailjet_entities = create_mailjet_variables(entities)
+
+    variables =  {
+        "FirstName": user.first_name,
+        "project_name": projects.name,
+        "creator": "Niemand",
+        "location": "",
+        "imageUrl": image_url,
+        "projectUrl": project_url,
+        "numberOfEntities": 1,
+        "htmlpart": "<div style='padding:0px 25px;'><p> laksjdlfkajlskdfjlaksdf</p></div>",
+    }
+
+
+    data = {
+        'Messages': [
+            {
+                "From": {
+                    "Email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
+                    "Name": "Climate Connect"
+                },
+                "To": [
+                    {
+                        "Email": user.email,
+                        "Name": user.first_name + " " + user.last_name
+                    }
+                ],
+                "TemplateID": int(template_id),
+                "TemplateLanguage": True,
+                "Variables": variables,
+                "Subject": subject,
+                "TemplateErrorReporting": {
+                    "Email": "philipp.ernstberger@climateconnect.earth",
+                    "Name": "Philipp Ernstberger"
+                }
+            }
+        ]
+    }
+
+
+    try:
+        mail = mailjet_send_api.send.create(data=data)
+    except Exception as ex:
+        logger.error(f"EmailFailure: Exception sending email -> {ex}")
+
+    if mail.status_code != 200:
+        logger.error(f"EmailFailure: Error sending email -> {mail.text}")
+
+
+def create_mailjet_variables(entities):
+    pass
+
+
+def send_weekly_personalized_recommendations_email(user: User, projects: List[Project], organization: Organization = None, idea: Idea = None):
+
+    template_key = "WEEKLY_RECOMMENDATIONS_EMAIL"
+
+    lang_code = get_user_lang_code(user)
+    
+    # subjects_by_language = {
+    #     "en": f"You have new recommendations",
+    #     "de": f"Du hast neue Empfehlungen"
+    # }
+    # subject = subjects_by_language.get(lang_code, "en")
+    
+    template_id = get_template_id(
+        template_key=template_key,
+        lang_code=lang_code
+    )
+
+    # make sure to set right path to the production backend storage server 
+    image_url = settings.ALLOWED_HOSTS[6] + projects[0].thumbnail_image.url 
+
+    # add language part
+    project_url = settings.FRONTEND_URL + "/projects/" + projects[0].url_slug
+
+
+    image_url2 = settings.ALLOWED_HOSTS[6] + projects[1].thumbnail_image.url 
+    project_url2 = settings.FRONTEND_URL + "/projects/" + projects[1].url_slug
+ 
+    mailjet_entities = create_mailjet_variables(entities)
+
+    entities = [{
+        "name": projects[0].name,
+        "imageUrl": image_url,
+        "projectUrl": project_url,
+    },
+    {
+        "name": projects[1].name,
+        "imageUrl": image_url2,
+        "projectUrl": project_url2,
+    },]
+
+    variables =  {
+        "FirstName": user.first_name,
+        "creator": "Niemand",
+        "location": "",
+        "Entities": entities,
+    }
+
+
+    data = {
+        'Messages': [
+            {
+                "From": {
+                    "Email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
+                    "Name": "Climate Connect"
+                },
+                "To": [
+                    {
+                        "Email": user.email,
+                        "Name": user.first_name + " " + user.last_name
+                    }
+                ],
+                "TemplateID": int(template_id),
+                "TemplateLanguage": True,
+                "Variables": variables,
+                "TemplateErrorReporting": {
+                    "Email": "philipp.ernstberger@climateconnect.earth",
+                    "Name": "Philipp Ernstberger"
+                }
+            }
+        ]
+    }
+
+
+    try:
+        mail = mailjet_send_api.send.create(data=data)
+    except Exception as ex:
+        logger.error(f"EmailFailure: Exception sending email -> {ex}")
+
+    if mail.status_code != 200:
+        logger.error(f"EmailFailure: Error sending email -> {mail.text}")
+
+    return mail
