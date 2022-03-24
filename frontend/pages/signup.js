@@ -1,5 +1,7 @@
 import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import Card from '@material-ui/core/Card';
 import Cookies from "universal-cookie";
 import { apiRequest } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
@@ -17,9 +19,18 @@ import {
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import Layout from "../src/components/layouts/layout";
-import AddInterests from "../src/components/signup/AddInterests";
 import BasicInfo from "../src/components/signup/BasicInfo";
 import AddInfo from "./../src/components/signup/AddInfo";
+import AddInterests from "../src/components/signup/AddInterests";
+
+const useStyles = makeStyles({
+  card: {
+
+    shadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
+    transition: "0.3s",
+    width: 600,
+  },
+});
 
 export default function Signup() {
   const { ReactGA } = useContext(UserContext);
@@ -33,6 +44,7 @@ export default function Signup() {
     location: {},
     newsletter: "",
   });
+  const classes = useStyles();
   const cookies = new Cookies();
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
@@ -44,7 +56,7 @@ export default function Signup() {
     curTutorialStep === -1
       ? getLastStepBeforeSkip(cookies.get("lastStepBeforeSkipTutorial"))
       : curTutorialStep;
-  const steps = ["basicinfo", "personalinfo"];
+  const steps = ["basicinfo", "personalinfo", "interestsinfo"];
   const [curStep, setCurStep] = useState(steps[0]);
   const [errorMessage, setErrorMessage] = useState("");
   const locationInputRef = useRef(null);
@@ -95,13 +107,17 @@ export default function Signup() {
       location: location,
       sendNewsletter: values.sendNewsletter,
     });
+    setCurStep(steps[2]);
+  };
+
+  const handleSkipInterestsSubmit = (event, values) =>{
     const payload = {
       email: userInfo.email.trim().toLowerCase(),
       password: userInfo.password,
-      first_name: values.first_name.trim(),
-      last_name: values.last_name.trim(),
-      location: parseLocation(location),
-      send_newsletter: values.sendNewsletter,
+      first_name: userInfo.first_name.trim(),
+      last_name: userInfo.last_name.trim(),
+      location: parseLocation(userInfo.location),
+      send_newsletter: userInfo.sendNewsletter,
       from_tutorial: params?.from_tutorial === "true",
       is_activist: isClimateActorCookie?.isActivist,
       last_completed_tutorial_step: lastCompletedTutorialStep,
@@ -132,10 +148,14 @@ export default function Signup() {
         console.log(error);
         setIsLoading(false);
         if (error.response.data.message)
-          setErrorMessages({ ...errorMessages, [steps[1]]: error.response.data.message });
+          setErrorMessages({ ...errorMessages, [steps[2]]: error.response.data.message });
         else if (error.response.data.length > 0)
-          setErrorMessages({ ...errorMessages, [steps[1]]: error.response.data[0] });
+          setErrorMessages({ ...errorMessages, [steps[2]]: error.response.data[0] });
       });
+  };
+
+  const handleAddInterestsSubmit = (event, values) =>{
+    // add interests submit etc
   };
 
   const handleGoBackFromAddInfo = (event, values) => {
@@ -151,8 +171,11 @@ export default function Signup() {
   const handleGoBackFromInterestsInfo = (event, values) => {
     setUserInfo({
       ...userInfo,
+      // todo: figure out how to input the saved location properly
+      location: {}
+      // add interests
     });
-    setCurStep(steps[0]);
+    setCurStep(steps[1]);
   };
 
   return (
@@ -162,6 +185,7 @@ export default function Signup() {
       message={errorMessage}
       messageType={errorMessage && "error"}
     >
+          <Card className={classes.card}>
       {curStep === "basicinfo" && (
         <BasicInfo
           values={userInfo}
@@ -180,14 +204,17 @@ export default function Signup() {
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
         />
       )}
-      {curStep == "interetsinfo" && (
+      {curStep == "interestsinfo" && (
       <AddInterests
       values={userInfo}
-      handleSkip
-      handleSubmit={handleAddInfoSubmit}
+      errorMessage={errorMessages[steps[2]]}
+      handleSkip={handleSkipInterestsSubmit}
+      handleSubmit={handleAddInterestsSubmit}
       handleGoBack={handleGoBackFromInterestsInfo}
       />
       )}
+    </Card>
+
     </Layout>
   );
 }
