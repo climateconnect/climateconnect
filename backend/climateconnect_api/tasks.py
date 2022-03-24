@@ -73,19 +73,19 @@ def schedule_weekly_personalized_recommendations_email():
     max_entities = 3
 
     # users not in hubs
-    new_international_entities = Organization.objects.filter(created_at__gt=(timezone.now() - timedelta(days=7)),).values_list('id', flat = True)[:1:1]
-    max_international_projects = max_entities - len(new_international_entities)
-    new_international_entities = Project.objects.filter(created_at__gt=(timezone.now() - timedelta(days=7)),).annotate(count_likes=Count('project_liked')).order_by('-count_likes').values_list('id', flat = True)[:max_international_projects:1] + new_international_entities  
+    new_international_orga = Organization.objects.filter(created_at__gt=(timezone.now() - timedelta(days=7)),).values_list('id', flat = True)[:1:1]
+    max_international_projects = max_entities - len(new_international_orga)
+    new_international_projects = Project.objects.filter(created_at__gt=(timezone.now() - timedelta(days=7)),).annotate(count_likes=Count('project_liked')).order_by('-count_likes').values_list('id', flat = True)[:max_international_projects:1] + new_international_entities  
     
 
-    if (new_international_entities):
+    if (new_international_projects | new_international_orga):
         all_users_outside_of_hub = UserProfile.objects.filter(send_newsletter = True).exclude(location__isnull=False, location__hub_location__hub_type = 1)
 
         for i in range(0, len(all_users_outside_of_hub), settings.USER_CHUNK_SIZE):
             user_ids = [
                 u_ids for u_ids in all_users_outside_of_hub[i: i + settings.USER_CHUNK_SIZE]
             ]
-            dispatch_weekly_personalized_recommendations_email.apply_async((user_ids,))
+            dispatch_weekly_personalized_recommendations_email.apply_async(user_ids, new_international_projects, new_international_orga)
 
 
     # users in hubs
@@ -104,12 +104,19 @@ def schedule_weekly_personalized_recommendations_email():
                 user_ids = [
                     u_ids for u_ids in all_users_in_hub[i: i + settings.USER_CHUNK_SIZE]
                 ]
-                dispatch_weekly_personalized_recommendations_email.apply_async(user_ids, new_projects, new_orga[0], new_idea[0])
+                dispatch_weekly_personalized_recommendations_email.apply_async(user_ids, new_projects, new_orga, new_idea)
 
 
 
 @app.task(bind=True)
-def dispatch_weekly_personalized_recommendations_email(self, user_ids: List, projects: List, orga = None, idea = None):
+def dispatch_weekly_personalized_recommendations_email(self, user_ids: List, project_ids: List = [], organization_id = None, idea_id = None):
     for user_id in user_ids:
         user = User.objects.get(user_id)
-        send_weekly_personalized_recommendations_email(user, projects, orga, idea)
+        projects = []
+        for project_id in project_ids:
+            projects += Project.objects.get(id=project_id)
+        if organization_id:
+            organization = Organization.objects.get(id=organization_id)
+        if idea_id:
+            idea = Idea.objects.get(id=idea_id)
+        send_weekly_personalized_recommendations_email(user, projects, organization, idea)
