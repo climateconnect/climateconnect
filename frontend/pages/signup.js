@@ -17,6 +17,7 @@ import {
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import Layout from "../src/components/layouts/layout";
+import AddInterests from "../src/components/signup/AddInterests";
 import BasicInfo from "../src/components/signup/BasicInfo";
 import AddInfo from "./../src/components/signup/AddInfo";
 
@@ -147,6 +148,13 @@ export default function Signup() {
     setCurStep(steps[0]);
   };
 
+  const handleGoBackFromInterestsInfo = (event, values) => {
+    setUserInfo({
+      ...userInfo,
+    });
+    setCurStep(steps[0]);
+  };
+
   return (
     <Layout
       title={texts.sign_up}
@@ -154,24 +162,31 @@ export default function Signup() {
       message={errorMessage}
       messageType={errorMessage && "error"}
     >
-      {curStep === "basicinfo" ? (
+      {curStep === "basicinfo" && (
         <BasicInfo
           values={userInfo}
           handleSubmit={handleBasicInfoSubmit}
           errorMessage={errorMessages[steps[0]]}
         />
-      ) : (
-        curStep === "personalinfo" && (
-          <AddInfo
-            values={userInfo}
-            handleSubmit={handleAddInfoSubmit}
-            errorMessage={errorMessages[steps[1]]}
-            handleGoBack={handleGoBackFromAddInfo}
-            locationInputRef={locationInputRef}
-            locationOptionsOpen={locationOptionsOpen}
-            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-          />
-        )
+      )}
+      {curStep === "personalinfo" && (
+        <AddInfo
+          values={userInfo}
+          handleSubmit={handleAddInfoSubmit}
+          errorMessage={errorMessages[steps[1]]}
+          handleGoBack={handleGoBackFromAddInfo}
+          locationInputRef={locationInputRef}
+          locationOptionsOpen={locationOptionsOpen}
+          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+        />
+      )}
+      {curStep == "interetsinfo" && (
+      <AddInterests
+      values={userInfo}
+      handleSkip
+      handleSubmit={handleAddInfoSubmit}
+      handleGoBack={handleGoBackFromInterestsInfo}
+      />
       )}
     </Layout>
   );
