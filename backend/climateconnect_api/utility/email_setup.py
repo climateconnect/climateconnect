@@ -352,8 +352,18 @@ def send_weekly_personalized_recommendations_email2(user: User, projects: Projec
         logger.error(f"EmailFailure: Error sending email -> {mail.text}")
 
 
-def create_mailjet_variables(entities):
-    pass
+
+def create_variables_for_entities(projects, organization, idea):
+    entities_template = {
+        "name": '',
+        "imageUrl": '',
+        "projectUrl": '',
+        #"type": '',
+    }
+    #for project in projects:
+
+
+    return 0
 
 
 def send_weekly_personalized_recommendations_email(user: User, projects: List[Project], organization: Organization = None, idea: Idea = None):
