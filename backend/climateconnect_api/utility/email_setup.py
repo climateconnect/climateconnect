@@ -347,21 +347,60 @@ def send_email_reminder_for_unread_notifications(
         logger.error(f"EmailFailure: Error sending email -> {mail.text}")
 
 
+def create_variables_for_weekly_recommendations(project_ids: List = [], organization_ids: List = [], idea_ids: List = []):
+    # edit the image and url path for production
+    # todo idea has no url 
+    # entity_template = {
+    #     "type": '',
+    #     "name": '',
+    #     "imageUrl": '',
+    #     "url": '',
+    #     "creator": '',
+    #     "location": '',
+    #     "tags": '',
+    # }
+    main_page = 'https://climateconnect.earth/en/browse'
 
-def create_variables_for_entities(projects, organization, idea):
-    entities_template = {
-        "name": '',
-        "imageUrl": '',
-        "projectUrl": '',
-        #"type": '',
-    }
-    #for project in projects:
+    entities = []
+    for project_id in project_ids:
+        project = Project.objects.select_related('loc').get(id=project_id)
+        project_template = {}
+        project_template['type'] = "Project"
+        project_template['name'] = project.name
+        project_template['imageUrl'] = settings.ALLOWED_HOSTS[6] + project.thumbnail_image.url if project.thumbnail_image else ''
+        project_template['url'] = settings.FRONTEND_URL + "/projects/" + project.url_slug if project.url_slug else main_page
+        project_template['creator'] = ''
+        project_template['location'] = project.loc.name if project.loc else ''
+        project_template['tags'] = ''
+        entities.append(project_template)
+    for organization_id in organization_ids:
+        orga = Organization.objects.select_related('location').get(id=organization_id)
+        orga_template = {}
+        orga_template['type'] = "Organization"
+        orga_template['name'] = orga.name
+        orga_template['imageUrl'] = settings.ALLOWED_HOSTS[6] + orga.thumbnail_image.url if orga.thumbnail_image else ''
+        orga_template['url'] = settings.FRONTEND_URL + "/organizations/" + orga.url_slug if orga.url_slug else main_page
+        orga_template['creator'] = ''
+        orga_template['location'] = orga.location.name if orga.location else ''
+        orga_template['tags'] = ''
+        entities.append(orga_template)
+    for idea_id in idea_ids:
+        idea = Idea.objects.select_related('location', 'user').get(id=idea_id)
+        idea_template = {}
+        idea_template['type'] = "Idea"
+        idea_template['name'] = idea.name
+        idea_template['imageUrl'] = settings.ALLOWED_HOSTS[6] + idea.thumbnail_image.url if idea.thumbnail_image else ''
+        idea_template['url'] = ''#settings.FRONTEND_URL + "/idea/" + idea.url_slug if idea.url_slug else main_page
+        idea_template['creator'] = idea.user.first_name + " " + idea.user.last_name if idea.user else ''
+        idea_template['location'] = idea.location.name if idea.location else ''
+        idea_template['tags'] = ''
+        entities.append(idea_template)
+    return entities
 
 
-    return 0
+def send_weekly_personalized_recommendations_email(user: User, project_ids: List = [], organization_ids: List = [], idea_ids: List = []):
 
-
-def send_weekly_personalized_recommendations_email(user: User, projects: List[Project], organization: Organization = None, idea: Idea = None):
+    entities = create_variables_for_weekly_recommendations(project_ids, organization_ids, idea_ids) 
 
     template_key = "WEEKLY_RECOMMENDATIONS_EMAIL"
 
@@ -378,36 +417,10 @@ def send_weekly_personalized_recommendations_email(user: User, projects: List[Pr
         lang_code=lang_code
     )
 
-    # make sure to set right path to the production backend storage server 
-    image_url = settings.ALLOWED_HOSTS[6] + projects[0].thumbnail_image.url 
-
-    # add language part
-    project_url = settings.FRONTEND_URL + "/projects/" + projects[0].url_slug
-
-
-    image_url2 = settings.ALLOWED_HOSTS[6] + projects[1].thumbnail_image.url 
-    project_url2 = settings.FRONTEND_URL + "/projects/" + projects[1].url_slug
- 
-    mailjet_entities = create_mailjet_variables(entities)
-
-    entities = [{
-        "name": projects[0].name,
-        "imageUrl": image_url,
-        "projectUrl": project_url,
-    },
-    {
-        "name": projects[1].name,
-        "imageUrl": image_url2,
-        "projectUrl": project_url2,
-    },]
-
     variables =  {
         "FirstName": user.first_name,
-        "creator": "Niemand",
-        "location": "",
         "Entities": entities,
     }
-
 
     data = {
         'Messages': [
