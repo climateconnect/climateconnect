@@ -15,6 +15,7 @@ import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import ControlPointIcon from "@material-ui/icons/ControlPoint";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
+import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import Alert from "@material-ui/lab/Alert";
 import React, { useContext } from "react";
 import {
@@ -23,6 +24,7 @@ import {
   getResizedImage,
   whitenTransparentPixels,
 } from "../../../public/lib/imageOperations";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { parseLocation } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -209,8 +211,9 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     marginTop: theme.spacing(10),
   },
-  checkTranslationsButtonContainer: {
+  checkTranslationsButtonAndManageMembersButtonContainer: {
     display: "flex",
+    justifyContent: "space-between",
     marginTop: theme.spacing(5),
   },
   detailledDescriptionContainer: {
@@ -234,6 +237,7 @@ export default function EditAccountPage({
   loadingSubmit,
   onClickCheckTranslations,
   allHubs,
+  type,
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
@@ -242,6 +246,7 @@ export default function EditAccountPage({
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles(editedAccount);
+  const isOrganization = type === "organization";
   //used for previewing images in UploadImageDialog
   const [tempImages, setTempImages] = React.useState({
     image: editedAccount.image ? editedAccount.image : DEFAULT_AVATAR_IMAGE,
@@ -843,8 +848,8 @@ export default function EditAccountPage({
           </Container>
           <Container className={classes.accountInfo}>
             {displayAccountInfo(editedAccount.info)}
-            {onClickCheckTranslations && (
-              <div className={classes.checkTranslationsButtonContainer}>
+            <div className={classes.checkTranslationsButtonAndManageMembersButtonContainer}>
+              {onClickCheckTranslations && (
                 <Button
                   variant="contained"
                   color="primary"
@@ -852,8 +857,32 @@ export default function EditAccountPage({
                 >
                   {texts.check_translations}
                 </Button>
-              </div>
-            )}
+              )}
+              {isOrganization &&
+                (isNarrowScreen ? (
+                  <IconButton
+                    className={classes.editButton}
+                    variant="contained"
+                    color="primary"
+                    href={
+                      getLocalePrefix(locale) + "/manageOrganizationMembers/" + account.url_slug
+                    }
+                  >
+                    <GroupAddIcon />
+                  </IconButton>
+                ) : (
+                  <Button
+                    className={classes.editButton}
+                    variant="contained"
+                    color="primary"
+                    href={
+                      getLocalePrefix(locale) + "/manageOrganizationMembers/" + account.url_slug
+                    }
+                  >
+                    {texts.manage_members}
+                  </Button>
+                ))}
+            </div>
           </Container>
         </Container>
         <Container className={classes.detailledDescriptionContainer}>
