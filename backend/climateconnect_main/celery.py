@@ -16,8 +16,8 @@ app.autodiscover_tasks()
 
 # add weekly scheduling
 app.conf.beat_schedule = {
-    'schedule_weekly_international_recommendations_email': {
-        'task': 'climateconnect_api.tasks.schedule_weekly_international_recommendations_email',
+    'schedule_weekly_local_recommendations_email': {
+        'task': 'climateconnect_api.tasks.schedule_weekly_local_recommendations_email',
         'schedule': crontab()
     }, 
     'schedule_weekly_international_recommendations_email': {
