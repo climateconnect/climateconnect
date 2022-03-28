@@ -10,12 +10,12 @@ from climateconnect_api.utility.translation import (edit_translations,
                                                     translate_text)
 from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_main.utility.general import get_image_from_data_url
+from climateconnect_api.utility.common import create_unique_slug
 # Django imports
 from django.contrib.auth.models import User
 from django.contrib.gis.db.models.functions import Distance
 from django.db.models import Q
 from django.utils.translation import gettext as _
-from django.utils.text import slugify
 from django_filters.rest_framework import DjangoFilterBackend
 from hubs.models.hub import Hub
 from location.models import Location
@@ -176,13 +176,7 @@ class CreateOrganizationView(APIView):
         organization, created = Organization.objects.get_or_create(name=request.data['name'])
 
         if created:
-            url_slug = slugify(organization.name)
-            if len(url_slug) == 0:
-                url_slug = str(organization.id)
-            orgas_with_same_url_slug = Organization.objects.filter(url_slug=url_slug)
-            if orgas_with_same_url_slug.exists():
-                url_slug = url_slug + str(organization.id)
-            organization.url_slug = url_slug
+            organization.url_slug = create_unique_slug(organization.name, organization.id, Organization.objects)
             # Add primary language to organization table. 
             source_language = Language.objects.get(language_code=request.data['source_language'])
             organization.language = source_language

@@ -27,7 +27,7 @@ from django.contrib.gis.db.models.functions import Distance
 from django.db.models import Count, Q
 from django.utils import timezone
 from django.utils.translation import gettext as _
-from django.utils.text import slugify
+from climateconnect_api.utility.common import create_unique_slug
 
 from django_filters.rest_framework import DjangoFilterBackend
 from knox.views import LoginView as KnoxLoginView
@@ -99,7 +99,8 @@ class SignUpView(APIView):
         user.set_password(request.data['password'])
         user.save()
 
-        url_slug = slugify(user.first_name + '-' + user.last_name + str(user.id)) 
+        full_name = user.first_name + '-' + user.last_name
+        url_slug = create_unique_slug(full_name, user.id, User.objects)
         # Get location
         source_language = Language.objects.get(language_code=request.data['source_language'])
         user_profile = UserProfile.objects.create(

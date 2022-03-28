@@ -6,7 +6,7 @@ from climateconnect_api.models.language import Language
 from climateconnect_api.utility.translation import get_translations
 from climateconnect_main.utility.general import get_image_from_data_url
 from location.utility import get_location
-from django.utils.text import slugify
+from climateconnect_api.utility.common import create_unique_slug
 
 from organization.models import Project
 from organization.models.tags import ProjectTags
@@ -48,14 +48,8 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
         project.website = data['website']
     project.language = source_language
 
-    url_slug = slugify(data['name'])
-    if len(url_slug) == 0:
-        url_slug = str(project.id)
-    projects_with_same_url_slug = Project.objects.filter(url_slug=url_slug)
-    if projects_with_same_url_slug.exists():
-        url_slug = url_slug + str(project.id)
-    project.url_slug = url_slug
-
+    project.url_slug = create_unique_slug(project.name, project.id, Project.objects)
+    
     if 'skills' in data:
         for skill_id in data['skills']:
             try:
