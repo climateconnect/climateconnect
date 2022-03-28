@@ -1,6 +1,7 @@
 import os
 
 from celery import Celery
+from celery.schedules import crontab
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'climateconnect_main.settings')
 
@@ -12,3 +13,15 @@ app = Celery('climateconnect_main')
 #   should have a `CELERY_` prefix.
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
+
+# add weekly scheduling
+app.conf.beat_schedule = {
+    'schedule_weekly_international_recommendations_email': {
+        'task': 'climateconnect_api.tasks.schedule_weekly_international_recommendations_email',
+        'schedule': crontab()
+    }, 
+    'schedule_weekly_international_recommendations_email': {
+        'task': 'climateconnect_api.tasks.schedule_weekly_international_recommendations_email',
+        'schedule': crontab()
+    }
+}
