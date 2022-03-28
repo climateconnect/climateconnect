@@ -1,15 +1,15 @@
 import {
-    Avatar,
-    Button,
-    Checkbox,
-    Chip,
-    Container,
-    IconButton,
-    TextField,
-    Tooltip,
-    Typography,
-    useMediaQuery,
-  } from "@material-ui/core";
+  Avatar,
+  Button,
+  Checkbox,
+  Chip,
+  Container,
+  IconButton,
+  TextField,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
 import React, { useContext } from "react";
@@ -22,24 +22,24 @@ import Form from "./../general/Form";
 const useStyles = makeStyles((theme) => {
   return {
     backButton: {
-        float: "left",
-      },
-  cancelButton: {
-    top: theme.spacing(16.5),
-    [theme.breakpoints.up("md")]: {
-      top: theme.spacing(6.5),
+      float: "left",
     },
-  },
-      actionButton: {
-        position: "absolute",
-        right: theme.spacing(1),
-        width: theme.spacing(18),
-        [theme.breakpoints.down("sm")]: {
-          width: theme.spacing(14),
-          fontSize: 10,
-          textAlign: "center",
-        },
+    cancelButton: {
+      top: theme.spacing(16.5),
+      [theme.breakpoints.up("md")]: {
+        top: theme.spacing(6.5),
       },
+    },
+    actionButton: {
+      position: "absolute",
+      right: theme.spacing(1),
+      width: theme.spacing(18),
+      [theme.breakpoints.down("sm")]: {
+        width: theme.spacing(14),
+        fontSize: 10,
+        textAlign: "center",
+      },
+    },
   };
 });
 
@@ -50,12 +50,12 @@ export default function AddInterests({
   values,
   handleGoBack,
 }) {
-    const classes = useStyles();
+  const classes = useStyles();
 
-    // hier muss die karte gebaut werden
-  return (<div>
-      
-    {/* <ActiveHubsSelect
+  // hier muss die karte gebaut werden
+  return (
+    <div>
+      {/* <ActiveHubsSelect
       info={i}
       hubsToSelectFrom={allHubs.filter(
         (h) =>
@@ -66,29 +66,29 @@ export default function AddInterests({
       selectedHubs={editedAccount.info.hubs}
       onSelectNewHub={onSelectNewHub}
     /> */}
-            <IconButton
-              size="small"
-              className={classes.backButton}
-              onClick={(event, values) => handleGoBack(event, values)}
-            >
-              <KeyboardBackspaceIcon />
-            </IconButton>
-    <Button
-            className={`${classes.cancelButton} ${classes.actionButton}`}
-            color="secondary"
-            variant="contained"
-            onClick={(event, values) => handleSkip(event, values)}
-          >
-            Skip
-    </Button>
-    <Button
-            className={`${classes.cancelButton} ${classes.actionButton}`}
-            color="secondary"
-            variant="contained"
-            onClick={(event, values) => handleSubmit(event, values)}
-          >
-            Submit
-          </Button>
+      <IconButton
+        size="small"
+        className={classes.backButton}
+        onClick={(event, values) => handleGoBack(event, values)}
+      >
+        <KeyboardBackspaceIcon />
+      </IconButton>
+      <Button
+        className={`${classes.cancelButton} ${classes.actionButton}`}
+        color="secondary"
+        variant="contained"
+        onClick={(event, values) => handleSkip(event, values)}
+      >
+        Skip
+      </Button>
+      <Button
+        className={`${classes.cancelButton} ${classes.actionButton}`}
+        color="secondary"
+        variant="contained"
+        onClick={(event, values) => handleSubmit(event, values)}
+      >
+        Submit
+      </Button>
     </div>
   );
 }

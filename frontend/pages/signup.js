@@ -1,7 +1,8 @@
 import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Card from '@material-ui/core/Card';
+import Card from "@material-ui/core/Card";
+import Box from '@material-ui/core/Box';
 import Cookies from "universal-cookie";
 import { apiRequest } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
@@ -24,8 +25,8 @@ import AddInfo from "./../src/components/signup/AddInfo";
 import AddInterests from "../src/components/signup/AddInterests";
 
 const useStyles = makeStyles({
-  card: {
-
+  box: {
+    borderRadius: "10%",
     shadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
     transition: "0.3s",
     width: 600,
@@ -110,7 +111,7 @@ export default function Signup() {
     setCurStep(steps[2]);
   };
 
-  const handleSkipInterestsSubmit = (event, values) =>{
+  const handleSkipInterestsSubmit = (event, values) => {
     const payload = {
       email: userInfo.email.trim().toLowerCase(),
       password: userInfo.password,
@@ -154,7 +155,7 @@ export default function Signup() {
       });
   };
 
-  const handleAddInterestsSubmit = (event, values) =>{
+  const handleAddInterestsSubmit = (event, values) => {
     // add interests submit etc
   };
 
@@ -172,7 +173,7 @@ export default function Signup() {
     setUserInfo({
       ...userInfo,
       // todo: figure out how to input the saved location properly
-      location: {}
+      location: {},
       // add interests
     });
     setCurStep(steps[1]);
@@ -180,41 +181,41 @@ export default function Signup() {
 
   return (
     <Layout
-      title={texts.sign_up}
       isLoading={isLoading}
       message={errorMessage}
       messageType={errorMessage && "error"}
     >
-          <Card className={classes.card}>
-      {curStep === "basicinfo" && (
-        <BasicInfo
-          values={userInfo}
-          handleSubmit={handleBasicInfoSubmit}
-          errorMessage={errorMessages[steps[0]]}
-        />
-      )}
-      {curStep === "personalinfo" && (
-        <AddInfo
-          values={userInfo}
-          handleSubmit={handleAddInfoSubmit}
-          errorMessage={errorMessages[steps[1]]}
-          handleGoBack={handleGoBackFromAddInfo}
-          locationInputRef={locationInputRef}
-          locationOptionsOpen={locationOptionsOpen}
-          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-        />
-      )}
-      {curStep == "interestsinfo" && (
-      <AddInterests
-      values={userInfo}
-      errorMessage={errorMessages[steps[2]]}
-      handleSkip={handleSkipInterestsSubmit}
-      handleSubmit={handleAddInterestsSubmit}
-      handleGoBack={handleGoBackFromInterestsInfo}
-      />
-      )}
-    </Card>
+      <Card className={classes.box}>
+        {curStep === "basicinfo" && (
+          <BasicInfo
 
+            title={texts.sign_up}
+            values={userInfo}
+            handleSubmit={handleBasicInfoSubmit}
+            errorMessage={errorMessages[steps[0]]}
+          />
+        )}
+        {curStep === "personalinfo" && (
+          <AddInfo
+            values={userInfo}
+            handleSubmit={handleAddInfoSubmit}
+            errorMessage={errorMessages[steps[1]]}
+            handleGoBack={handleGoBackFromAddInfo}
+            locationInputRef={locationInputRef}
+            locationOptionsOpen={locationOptionsOpen}
+            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+          />
+        )}
+        {curStep == "interestsinfo" && (
+          <AddInterests
+            values={userInfo}
+            errorMessage={errorMessages[steps[2]]}
+            handleSkip={handleSkipInterestsSubmit}
+            handleSubmit={handleAddInterestsSubmit}
+            handleGoBack={handleGoBackFromInterestsInfo}
+          />
+        )}
+      </Card>
     </Layout>
   );
 }

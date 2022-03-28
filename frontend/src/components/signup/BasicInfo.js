@@ -6,17 +6,22 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import Form from "./../general/Form";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   appealText: {
-    textAlign: "center",
+    textAlign: "left",
     fontWeight: "bold",
   },
-});
+  mainHeading: {
+    textAlign: "center",
+    margin: `${theme.spacing(4)}px 0`,
+  },
+}));
 
 export default function BasicInfo({ handleSubmit, errorMessage, values }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
+  const title = title;
   const fields = [
     {
       required: true,
@@ -54,11 +59,11 @@ export default function BasicInfo({ handleSubmit, errorMessage, values }) {
 
   return (
     <>
+    <Typography component="h1" variant="h5" className={classes.mainHeading}>
+    {title}
+  </Typography>
       <Typography color="secondary" className={classes.appealText}>
-        {texts.here_you_can_create_your_personal_account}
-      </Typography>
-      <Typography color="secondary" className={classes.appealText}>
-        {texts.you_will_have_an_opportunity_to_create_or_add_an_organization_once_signed_up}
+        {texts.create_your_personal_account_you_will_have_the_opportunity}
       </Typography>
       <Form
         fields={fields}
