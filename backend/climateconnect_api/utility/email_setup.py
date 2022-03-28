@@ -2,7 +2,6 @@ import logging
 from datetime import datetime, timedelta
 from typing import List
 
-<<<<<<< HEAD
 from django.contrib.auth.models import User
 from climateconnect_api.models import UserNotification, UserProfile
 from climateconnect_api.models.notification import EmailNotification
@@ -10,7 +9,6 @@ from climateconnect_api.utility.translation import (
     get_user_lang_code, get_user_lang_url
 )
 from django.conf import settings
-=======
 from typing import List
 
 from django.contrib.auth.models import User
@@ -21,7 +19,6 @@ from ideas.models.ideas import Idea
 from climateconnect_api.utility.translation import (get_user_lang_code,
                                                     get_user_lang_url)
 from django.conf import Settings, settings
->>>>>>> 347496df (initial commit)
 from mailjet_rest import Client
 
 logger = logging.getLogger(__name__)
@@ -364,58 +361,56 @@ def create_variables_for_weekly_recommendations(project_ids: List = [], organiza
     entities = []
     for project_id in project_ids:
         project = Project.objects.select_related('loc').get(id=project_id)
-        project_template = {}
-        project_template['type'] = "Project"
-        project_template['name'] = project.name
-        project_template['imageUrl'] = settings.ALLOWED_HOSTS[6] + project.thumbnail_image.url if project.thumbnail_image else ''
-        project_template['url'] = settings.FRONTEND_URL + "/projects/" + project.url_slug if project.url_slug else main_page
-        project_template['creator'] = ''
-        project_template['location'] = project.loc.name if project.loc else ''
-        project_template['tags'] = ''
+        project_template = {
+            "type": project_translation.get(language_code, "en"),
+            "name": project.name,
+            "imageUrl": (settings.ALLOWED_HOSTS[6] + project.thumbnail_image.url) if project.thumbnail_image else '',
+            "url": (settings.FRONTEND_URL + "/projects/" + project.url_slug) if project.url_slug else main_page.get(language_code, "en"),
+            "location": project.loc.name if project.loc else '',
+            "creator": '',
+            "tags": '',
+        }
         entities.append(project_template)
     for organization_id in organization_ids:
-        orga = Organization.objects.select_related('location').get(id=organization_id)
-        orga_template = {}
-        orga_template['type'] = "Organization"
-        orga_template['name'] = orga.name
-        orga_template['imageUrl'] = settings.ALLOWED_HOSTS[6] + orga.thumbnail_image.url if orga.thumbnail_image else ''
-        orga_template['url'] = settings.FRONTEND_URL + "/organizations/" + orga.url_slug if orga.url_slug else main_page
-        orga_template['creator'] = ''
-        orga_template['location'] = orga.location.name if orga.location else ''
-        orga_template['tags'] = ''
+        organization = Organization.objects.select_related('location').get(id=organization_id)
+        orga_template = {
+            "type": organization_translation.get(language_code, "en"),
+            "name": organization.name,
+            "imageUrl": (settings.ALLOWED_HOSTS[6] + organization.thumbnail_image.url) if organization.thumbnail_image else '',
+            "url": (settings.FRONTEND_URL + "/organizations/" + organization.url_slug) if organization.url_slug else main_page.get(language_code, "en"),
+            "location": organization.location.name if organization.location else '',
+            "creator": '',
+            "tags": '',
+        }
         entities.append(orga_template)
     for idea_id in idea_ids:
         idea = Idea.objects.select_related('location', 'user').get(id=idea_id)
-        idea_template = {}
-        idea_template['type'] = "Idea"
-        idea_template['name'] = idea.name
-        idea_template['imageUrl'] = settings.ALLOWED_HOSTS[6] + idea.thumbnail_image.url if idea.thumbnail_image else ''
-        idea_template['url'] = ''#settings.FRONTEND_URL + "/idea/" + idea.url_slug if idea.url_slug else main_page
-        idea_template['creator'] = idea.user.first_name + " " + idea.user.last_name if idea.user else ''
-        idea_template['location'] = idea.location.name if idea.location else ''
-        idea_template['tags'] = ''
+        idea_template = {
+            "type": idea_translation.get(language_code, "en"),
+            "name": idea.name,
+            "imageUrl": (settings.ALLOWED_HOSTS[6] + idea.thumbnail_image.url) if idea.thumbnail_image else '',
+            # How does the idea url generation work
+            "url": main_page.get(language_code, "en"), #(settings.FRONTEND_URL + "/idea/" + idea.url_slug) if idea.url_slug else main_page.get(language_code, "en"),
+            "location": idea.location.name if idea.location else '',
+            "creator": '',
+            "tags": '',
+        }
         entities.append(idea_template)
     return entities
 
 
 def send_weekly_personalized_recommendations_email(user: User, project_ids: List = [], organization_ids: List = [], idea_ids: List = []):
 
-    entities = create_variables_for_weekly_recommendations(project_ids, organization_ids, idea_ids) 
-
     template_key = "WEEKLY_RECOMMENDATIONS_EMAIL"
 
     lang_code = get_user_lang_code(user)
-    
-    # subjects_by_language = {
-    #     "en": f"You have new recommendations",
-    #     "de": f"Du hast neue Empfehlungen"
-    # }
-    # subject = subjects_by_language.get(lang_code, "en")
     
     template_id = get_template_id(
         template_key=template_key,
         lang_code=lang_code
     )
+
+    entities = create_variables_for_weekly_recommendations(lang_code, project_ids, organization_ids, idea_ids) 
 
     variables =  {
         "FirstName": user.first_name,
@@ -454,5 +449,3 @@ def send_weekly_personalized_recommendations_email(user: User, project_ids: List
 
     if mail.status_code != 200:
         logger.error(f"EmailFailure: Error sending email -> {mail.text}")
-
-    return mail

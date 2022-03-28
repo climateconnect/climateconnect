@@ -10,4 +10,4 @@ cd backend
 pip install -r requirements.txt
 
 # starting celery worker and celery beat together.
-celery -A climateconnect_main worker -B -l INFO
+celery -A climateconnect_main worker -B -l INFO 
