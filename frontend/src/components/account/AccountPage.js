@@ -1,4 +1,4 @@
-import { Avatar, Button, Chip, Container, Link, Tooltip, Typography } from "@material-ui/core";
+import { Avatar, Button, Chip, Container, Link, Tooltip, Typography, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PlaceIcon from "@material-ui/icons/Place";
 import React, { useContext } from "react";
@@ -15,6 +15,8 @@ import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import ProfileBadge from "../profile/ProfileBadge";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import UserContext from "../context/UserContext";
+import EditSharpIcon from '@material-ui/icons/EditSharp';
+import IconButton from '@material-ui/core/IconButton';
 
 const useStyles = makeStyles((theme) => ({
   avatarContainer: {
@@ -94,35 +96,50 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
   },
   editButton: {
+    position: "relative",
+    cursor: "pointer",
+    color: theme.palette.primary.main,
+    width: "35px",
+    height: "35px",
+    marginRight: theme.spacing(0.5),
+    backgroundColor: "white",
+    "&:hover": {
+      backgroundColor: "white",
+    },
+    borderRadius: "50%",
+    padding: "5px",
+    left: "0",
+  },
+  desktopButton: {
+    marginTop: theme.spacing(2),
+    right: theme.spacing(2),
     position: "absolute",
-    right: theme.spacing(1),
-    top: theme.spacing(12),
-    [theme.breakpoints.up("sm")]: {
-      top: theme.spacing(1),
-    },
-    [theme.breakpoints.down("xs")]: {
-      width: theme.spacing(14),
-      textAlign: "center",
-    },
   },
   infoIcon: {
     marginBottom: -4,
+  },
+  innerIcon: {
+    marginRight: theme.spacing(0.5),
+    marginLeft: -theme.spacing(1)
   },
   detailledDescription: {
     marginTop: theme.spacing(3),
     marginBottom: theme.spacing(3),
   },
-  shareButtonContainer: (props) => ({
+  shareButtonContainer: {
+    position: "relative",
+    right: "0",
+  },
+  smallIconContainer: {
     position: "absolute",
-    right: "0%",
-    bottom: "0%",
+    width: "auto",
+    display: "flex",
+    justifyContent: "space-between",
     marginRight: theme.spacing(2),
     marginBottom: theme.spacing(2),
-    [theme.breakpoints.down("xs")]: {
-      marginBottom: props.isOwnAccount ? theme.spacing(4) : theme.spacing(2),
-    },
-  }),
-
+    right: "0%",
+    bottom: "0%",
+  },
   subOrgContainer: {
     display: "flex",
     alignItems: "center",
@@ -285,6 +302,15 @@ export default function AccountPage({
           position: "relative",
         }}
       >
+      <div className={classes.smallIconContainer}>
+        {isOwnAccount && isSmallScreen && (
+          <IconButton
+            href={editHref}
+            className={classes.editButton}
+          >
+            <EditSharpIcon />
+          </IconButton>
+        )}
         {isOrganization && (
           <SocialMediaShareButton
             containerClassName={classes.shareButtonContainer}
@@ -301,15 +327,14 @@ export default function AccountPage({
             switchColors={true}
           />
         )}
+        </div>
       </div>
       <Container className={classes.infoContainer}>
-        {isOwnAccount && (
-          <Button
-            className={classes.editButton}
-            color="primary"
-            variant="contained"
-            href={editHref}
-          >
+        {isOwnAccount && !isSmallScreen && (
+          <Button variant="contained" color="primary" className={classes.desktopButton} href={editHref}>
+            <EditSharpIcon
+              className={classes.innerIcon}
+            />
             {editText ? editText : texts.edit_profile}
           </Button>
         )}
@@ -349,6 +374,7 @@ export default function AccountPage({
         </Container>
         <Container className={classes.accountInfo}>{displayAccountInfo(account.info)}</Container>
       </Container>
+      <Divider className={classes.marginTop}/>
       {detailledDescription?.value && (
         <Container>
           <DetailledDescription
