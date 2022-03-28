@@ -95,26 +95,21 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
     marginRight: theme.spacing(1),
   },
-  editButton: (props) => ({
-    position: "absolute",
+  editButton: {
+    position: "relative",
     cursor: "pointer",
     color: theme.palette.primary.main,
     width: "35px",
     height: "35px",
+    marginRight: theme.spacing(0.5),
     backgroundColor: "white",
     "&:hover": {
       backgroundColor: "white",
     },
     borderRadius: "50%",
     padding: "5px",
-    right: "0%",
-    bottom: "0%",
-    marginRight: props.isOrganization ? theme.spacing(8) : theme.spacing(4),
-    marginBottom: theme.spacing(2),
-    [theme.breakpoints.down("xs")]: {
-      marginBottom: theme.spacing(4),
-    },
-  }),
+    left: "0",
+  },
   desktopButton: {
     marginTop: theme.spacing(2),
     right: theme.spacing(2),
@@ -131,17 +126,20 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(3),
     marginBottom: theme.spacing(3),
   },
-  shareButtonContainer: (props) => ({
+  shareButtonContainer: {
+    position: "relative",
+    right: "0",
+  },
+  smallIconContainer: {
     position: "absolute",
-    right: "0%",
-    bottom: "0%",
+    width: "auto",
+    display: "flex",
+    justifyContent: "space-between",
     marginRight: theme.spacing(2),
     marginBottom: theme.spacing(2),
-    [theme.breakpoints.down("xs")]: {
-      marginBottom: props.isOwnAccount ? theme.spacing(4) : theme.spacing(2),
-    },
-  }),
-
+    right: "0%",
+    bottom: "0%",
+  },
   subOrgContainer: {
     display: "flex",
     alignItems: "center",
@@ -304,6 +302,7 @@ export default function AccountPage({
           position: "relative",
         }}
       >
+      <div className={classes.smallIconContainer}>
         {isOwnAccount && isSmallScreen && (
           <IconButton
             href={editHref}
@@ -328,6 +327,7 @@ export default function AccountPage({
             switchColors={true}
           />
         )}
+        </div>
       </div>
       <Container className={classes.infoContainer}>
         {isOwnAccount && !isSmallScreen && (
