@@ -12,17 +12,33 @@ import {
   isLocationValid,
   parseLocation,
 } from "../public/lib/locationOperations";
-import { redirectOnLogin } from "../public/lib/profileOperations";
+import { 
+  redirectOnLogin, 
+  nullifyUndefinedValues 
+} from "../public/lib/profileOperations";
 import {
   getLastCompletedTutorialStep,
   getLastStepBeforeSkip,
 } from "../public/lib/tutorialOperations";
+import { getAllHubs } from "../public/lib/hubOperations.js";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import Layout from "../src/components/layouts/layout";
 import BasicInfo from "../src/components/signup/BasicInfo";
 import AddInfo from "./../src/components/signup/AddInfo";
 import AddInterests from "../src/components/signup/AddInterests";
+
+
+export async function getServerSideProps(ctx) {
+  const allHubs = await Promise.all([
+    getAllHubs(ctx.locale, true),
+  ]);
+  return {
+    props: nullifyUndefinedValues({
+      allHubs: allHubs,
+    }),
+  };
+}
 
 const useStyles = makeStyles({
   box: {
@@ -33,7 +49,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Signup() {
+export default function Signup({allHubs}) {
   const { ReactGA } = useContext(UserContext);
 
   const [userInfo, setUserInfo] = React.useState({
@@ -209,6 +225,7 @@ export default function Signup() {
         {curStep == "interestsinfo" && (
           <AddInterests
             values={userInfo}
+            allHubs={allHubs}
             errorMessage={errorMessages[steps[2]]}
             handleSkip={handleSkipInterestsSubmit}
             handleSubmit={handleAddInterestsSubmit}
