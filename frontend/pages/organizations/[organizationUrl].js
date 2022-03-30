@@ -23,10 +23,10 @@ import ProjectPreviews from "../../src/components/project/ProjectPreviews";
 import theme from "../../src/themes/theme";
 import getOrganizationInfoMetadata from "./../../public/data/organization_info_metadata.js";
 import UserContext from "./../../src/components/context/UserContext";
-import IconButton from '@material-ui/core/IconButton';
-import GroupAddIcon from '@material-ui/icons/GroupAdd';
-import EditSharpIcon from '@material-ui/icons/EditSharp';
-import ControlPointSharpIcon from '@material-ui/icons/ControlPointSharp';
+import IconButton from "@material-ui/core/IconButton";
+import GroupAddIcon from "@material-ui/icons/GroupAdd";
+import EditSharpIcon from "@material-ui/icons/EditSharp";
+import ControlPointSharpIcon from "@material-ui/icons/ControlPointSharp";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
   },
   innerIcon: {
     marginRight: theme.spacing(0.5),
-    marginLeft: -theme.spacing(1)
+    marginLeft: -theme.spacing(1),
   },
   divider: {
     marginTop: theme.spacing(1),
@@ -218,24 +218,19 @@ function OrganizationLayout({
             {texts.this_organizations_projects}
           </Typography>
           {isTinyScreen ? (
-            <IconButton
-              href={getLocalePrefix(locale) + "/share"}
-            >
+            <IconButton href={getLocalePrefix(locale) + "/share"}>
               <ControlPointSharpIcon
                 className={classes.button}
                 variant="contained"
                 color="primary"
               />
             </IconButton>
-           ) : (
+          ) : (
             <Button variant="contained" color="primary" href={getLocalePrefix(locale) + "/share"}>
-              <ControlPointSharpIcon
-                className={classes.innerIcon}
-              />
+              <ControlPointSharpIcon className={classes.innerIcon} />
               {texts.share_a_project}
             </Button>
-          )
-        }
+          )}
         </div>
         {projects && projects.length ? (
           <ProjectPreviews projects={projects} />
@@ -251,26 +246,27 @@ function OrganizationLayout({
           <Typography color="primary" className={classes.headline} component="h2">
             {texts.members_of_organization}
           </Typography>
-          {canEdit && (
-            isTinyScreen ? (
+          {canEdit &&
+            (isTinyScreen ? (
               <IconButton
-                href={getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug}
+                href={
+                  getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug
+                }
               >
-                <GroupAddIcon
-                  className={classes.button}
-                  variant="contained"
-                  color="primary"
-                />
+                <GroupAddIcon className={classes.button} variant="contained" color="primary" />
               </IconButton>
             ) : (
-              <Button variant="contained" color="primary" href={getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug}>
-                <GroupAddIcon
-                  className={classes.innerIcon}
-                />
+              <Button
+                variant="contained"
+                color="primary"
+                href={
+                  getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug
+                }
+              >
+                <GroupAddIcon className={classes.innerIcon} />
                 {texts.manage_members}
               </Button>
-            )
-          )}
+            ))}
         </div>
         {members && members.length ? (
           <ProfilePreviews profiles={membersWithAdditionalInfo} showAdditionalInfo />
