@@ -20,7 +20,6 @@ import UserContext from "../context/UserContext";
 import Form from "./../general/Form";
 import ActiveHubsSelect from "../hub/ActiveHubsSelect";
 
-
 const useStyles = makeStyles((theme) => {
   return {
     backButton: {
@@ -51,51 +50,25 @@ export default function AddInterests({
   handleSkip,
   handleGoBack,
   errorMessage,
+  onSelectNewHub,
+  onClickRemoveHub,
 }) {
   const classes = useStyles();
-
-  // const onSelectNewHub = (event) => {
-  //   event.preventDefault();
-  //   const hub = allHubs.find((h) => h.name === event.target.value);
-  //   if (editedAccount?.info?.hubs?.filter((h) => h.url_slug === hub.url_slug)?.length === 0) {
-  //     setEditedAccount({
-  //       ...editedAccount,
-  //       info: {
-  //         ...editedAccount.info,
-  //         hubs: [...editedAccount.info.hubs, hub],
-  //       },
-  //     });
-  //   }
-  // };
-  // const onClickRemoveHub = (hub) => {
-  //   const hubsAfterRemoval = editedAccount?.info?.hubs.filter(
-  //     (h) => h.url_slug !== hub.url_slug
-  //   );
-  //   setEditedAccount({
-  //     ...editedAccount,
-  //     info: {
-  //       ...editedAccount.info,
-  //       hubs: hubsAfterRemoval,
-  //     },
-  //   });
-  // };
 
   // hier muss die karte gebaut werden
   return (
     <div>
-      { <ActiveHubsSelect
-      hubsToSelectFrom={allHubs
-      //   .filter(
-      //   (h) =>
-      //     values?.hubs?.filter((addedHub) => addedHub.url_slug === h.url_slug)
-      //       .length === 0
-      // )
-    }
-    //   onClickRemoveHub={onClickRemoveHub}
-      selectedHubs={values.hubs}
-    //   onSelectNewHub={onSelectNewHub}
-    // 
-    /> }
+      {
+        <ActiveHubsSelect
+          hubsToSelectFrom={allHubs.filter(
+            (h) => values?.hubs?.filter((addedHub) => addedHub.url_slug === h.url_slug).length === 0
+          )}
+          onClickRemoveHub={onClickRemoveHub}
+          selectedHubs={values.hubs}
+          onSelectNewHub={onSelectNewHub}
+          type = "userprofile"
+        />
+      }
       <IconButton
         size="small"
         className={classes.backButton}

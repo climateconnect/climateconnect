@@ -59,9 +59,9 @@ export default function BasicInfo({ handleSubmit, errorMessage, values }) {
 
   return (
     <>
-    <Typography component="h1" variant="h5" className={classes.mainHeading}>
-    {title}
-  </Typography>
+      <Typography component="h1" variant="h5" className={classes.mainHeading}>
+        {title}
+      </Typography>
       <Typography color="secondary" className={classes.appealText}>
         {texts.create_your_personal_account_you_will_have_the_opportunity}
       </Typography>

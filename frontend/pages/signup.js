@@ -2,7 +2,7 @@ import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
-import Box from '@material-ui/core/Box';
+import Box from "@material-ui/core/Box";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
@@ -12,10 +12,7 @@ import {
   isLocationValid,
   parseLocation,
 } from "../public/lib/locationOperations";
-import { 
-  redirectOnLogin, 
-  nullifyUndefinedValues 
-} from "../public/lib/profileOperations";
+import { redirectOnLogin, nullifyUndefinedValues } from "../public/lib/profileOperations";
 import {
   getLastCompletedTutorialStep,
   getLastStepBeforeSkip,
@@ -27,12 +24,10 @@ import Layout from "../src/components/layouts/layout";
 import BasicInfo from "../src/components/signup/BasicInfo";
 import AddInfo from "./../src/components/signup/AddInfo";
 import AddInterests from "../src/components/signup/AddInterests";
-
+import { Typography } from "@material-ui/core";
 
 export async function getServerSideProps(ctx) {
-  const allHubs = await Promise.all([
-    getAllHubs(ctx.locale, true),
-  ]);
+  const [allHubs] = await Promise.all([getAllHubs(ctx.locale, true)]);
   return {
     props: nullifyUndefinedValues({
       allHubs: allHubs,
@@ -49,7 +44,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Signup({allHubs}) {
+export default function Signup({ allHubs }) {
   const { ReactGA } = useContext(UserContext);
 
   const [userInfo, setUserInfo] = React.useState({
@@ -60,6 +55,7 @@ export default function Signup({allHubs}) {
     last_name: "",
     location: {},
     newsletter: "",
+    hubs: [], 
   });
   const classes = useStyles();
   const cookies = new Cookies();
@@ -139,6 +135,7 @@ export default function Signup({allHubs}) {
       is_activist: isClimateActorCookie?.isActivist,
       last_completed_tutorial_step: lastCompletedTutorialStep,
       source_language: locale,
+      // hubs,
     };
     const headers = {
       Accept: "application/json",
@@ -195,44 +192,64 @@ export default function Signup({allHubs}) {
     setCurStep(steps[1]);
   };
 
-  return (
-    <Layout
-      isLoading={isLoading}
-      message={errorMessage}
-      messageType={errorMessage && "error"}
-    >
-      <Card className={classes.box}>
-        {curStep === "basicinfo" && (
-          <BasicInfo
+  const onSelectNewHub = (event) => {
+    event.preventDefault();
+    const hub = allHubs.find((h) => h.name === event.target.value);
+    if (userInfo.hubs?.filter((h) => h.url_slug === hub.url_slug)?.length === 0) {
+      setUserInfo({
+        ...userInfo,
+        hubs: [...userInfo.hubs, hub],
+      });
+    }
+  };
+  const onClickRemoveHub = (hub) => {
+    const hubsAfterRemoval = userInfo?.hubs.filter((h) => h.url_slug !== hub.url_slug);
+    setUserInfo({
+      ...userInfo,
+      hubs: hubsAfterRemoval,
+    });
+  };
 
-            title={texts.sign_up}
-            values={userInfo}
-            handleSubmit={handleBasicInfoSubmit}
-            errorMessage={errorMessages[steps[0]]}
-          />
-        )}
-        {curStep === "personalinfo" && (
-          <AddInfo
-            values={userInfo}
-            handleSubmit={handleAddInfoSubmit}
-            errorMessage={errorMessages[steps[1]]}
-            handleGoBack={handleGoBackFromAddInfo}
-            locationInputRef={locationInputRef}
-            locationOptionsOpen={locationOptionsOpen}
-            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-          />
-        )}
-        {curStep == "interestsinfo" && (
-          <AddInterests
-            values={userInfo}
-            allHubs={allHubs}
-            errorMessage={errorMessages[steps[2]]}
-            handleSkip={handleSkipInterestsSubmit}
-            handleSubmit={handleAddInterestsSubmit}
-            handleGoBack={handleGoBackFromInterestsInfo}
-          />
-        )}
-      </Card>
+  return (
+    <Layout isLoading={isLoading} message={errorMessage} messageType={errorMessage && "error"}>
+      <ul>
+        {allHubs.map((hub, index) => (
+          <li key={index}>{hub.name}</li>
+        ))}
+      </ul>
+      {/* <Card className={classes.box}> */}
+      {curStep === "interestsinfo" && ( //"basicinfo" && (
+        <BasicInfo
+          title={texts.sign_up}
+          values={userInfo}
+          handleSubmit={handleBasicInfoSubmit}
+          errorMessage={errorMessages[steps[0]]}
+        />
+      )}
+      {curStep === "personalinfo" && (
+        <AddInfo
+          values={userInfo}
+          handleSubmit={handleAddInfoSubmit}
+          errorMessage={errorMessages[steps[1]]}
+          handleGoBack={handleGoBackFromAddInfo}
+          locationInputRef={locationInputRef}
+          locationOptionsOpen={locationOptionsOpen}
+          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+        />
+      )}
+      {curStep == "basicinfo" && ( // "interestsinfo" && (
+        <AddInterests
+          values={userInfo}
+          allHubs={allHubs}
+          errorMessage={errorMessages[steps[2]]}
+          handleSkip={handleSkipInterestsSubmit}
+          handleSubmit={handleAddInterestsSubmit}
+          handleGoBack={handleGoBackFromInterestsInfo}
+          onSelectNewHub={onSelectNewHub}
+          onClickRemoveHub={onClickRemoveHub}
+        />
+      )}
+      {/* </Card> */}
     </Layout>
   );
 }

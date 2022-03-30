@@ -37,30 +37,49 @@ export default function MiniOrganizationPreview({
   onDelete,
   nolink,
 }) {
-  const { locale } = useContext(UserContext);
-  if (!nolink)
     return (
-      <Link
-        className={className}
-        color="inherit"
-        href={getLocalePrefix(locale) + "/organizations/" + organization.url_slug}
-        target="_blank"
-      >
-        <Content organization={organization} size={size} onDelete={onDelete} />
-      </Link>
-    );
-  else
-    return (
-      <div className={className}>
-        <Content organization={organization} size={size} onDelete={onDelete} />
-      </div>
+        <Content className={className} organization={organization} size={size} onDelete={onDelete} nolink={nolink} />
     );
 }
 
-function Content({ organization, size, onDelete }) {
+function Content({ organization, size, onDelete, nolink }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   const classes = useStyles();
+  if (!nolink)
+  return (
+    <span className={classes.wrapper}>
+      <Link
+      color="inherit"
+      href={getLocalePrefix(locale) + "/organizations/" + organization.url_slug}
+      target="_blank"
+    >
+    <img
+      src={getImageUrl(organization.thumbnail_image)}
+      className={`${classes.orgImage} ${size === "small" && classes.smallOrgImage} ${
+        size === "medium" && classes.mediumOrgImage
+      }`}
+      alt={texts.organizations_logo}
+    />
+    {size === "small" ? (
+      <>{organization.name}</>
+    ) : size === "medium" ? (
+      <Typography className={classes.mediumOrgName}>{organization.name}</Typography>
+    ) : (
+      <Typography variant="h5" className={classes.orgName}>
+        {organization.name}
+      </Typography>
+    )}
+    </Link>
+    {onDelete && (
+      <IconButton onClick={() => onDelete(organization)}>
+        <CloseIcon />
+      </IconButton>
+    )}
+  </span>
+    
+  );
+    else
   return (
     <span className={classes.wrapper}>
       <img

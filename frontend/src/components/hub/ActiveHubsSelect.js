@@ -15,6 +15,7 @@ export default function ActiveHubsSelect({
   hubsToSelectFrom,
   onSelectNewHub,
   onClickRemoveHub,
+  type,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -22,7 +23,7 @@ export default function ActiveHubsSelect({
   return (
     <div>
       <Typography color="secondary" className={classes.headline}>
-        {texts.add_hubs_in_which_your_organization_is_active}
+        {(type === "userprofile") ? texts.add_hubs_you_are_interested_in : texts.add_hubs_in_which_your_organization_is_active}
       </Typography>
       <MiniHubPreviews
         allowCreate
