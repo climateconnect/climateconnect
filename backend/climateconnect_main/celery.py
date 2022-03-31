@@ -18,5 +18,12 @@ app.conf.beat_schedule = {
     'schedule_automated_email_reminder_for_notifications': {
         'task': 'climateconnect_api.tasks.schedule_automated_reminder_for_user_notifications',
         'schedule': crontab(minute=0, hour=0)
+    'schedule_weekly_local_recommendations_email': {
+        'task': 'climateconnect_api.tasks.schedule_weekly_local_recommendations_email',
+        'schedule': crontab(day_of_week=5, hour=11, minute=11)
+    }, 
+    'schedule_weekly_international_recommendations_email': {
+        'task': 'climateconnect_api.tasks.schedule_weekly_international_recommendations_email',
+        'schedule': crontab(day_of_week=5, hour=11, minute=11)
     }
 }

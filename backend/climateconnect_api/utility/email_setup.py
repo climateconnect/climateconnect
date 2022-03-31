@@ -86,8 +86,8 @@ def send_email(
                 "Variables": variables,
                 "Subject": subject,
                 "TemplateErrorReporting": {
-                    "Email": "christoph.stoll@climateconnect.earth",
-                    "Name": "Christoph Stoll"
+                    "Email": settings.MAILJET_ADMIN_EMAIL,
+                    "Name": "Mailjet Admin"
                 }
             }
         ]
@@ -373,7 +373,7 @@ def create_variables_for_weekly_recommendations(project_ids: List = [], organiza
         entities.append(project_template)
     for organization_id in organization_ids:
         organization = Organization.objects.select_related('location').get(id=organization_id)
-        orga_template = {
+        organization_template = {
             "type": organization_translation.get(language_code, "en"),
             "name": organization.name,
             "imageUrl": (settings.ALLOWED_HOSTS[6] + organization.thumbnail_image.url) if organization.thumbnail_image else '',
@@ -382,15 +382,15 @@ def create_variables_for_weekly_recommendations(project_ids: List = [], organiza
             "creator": '',
             "tags": '',
         }
-        entities.append(orga_template)
+        entities.append(organization_template)
     for idea_id in idea_ids:
         idea = Idea.objects.select_related('location', 'user').get(id=idea_id)
         idea_template = {
             "type": idea_translation.get(language_code, "en"),
             "name": idea.name,
             "imageUrl": (settings.ALLOWED_HOSTS[6] + idea.thumbnail_image.url) if idea.thumbnail_image else '',
-            # How does the idea url generation work
-            "url": main_page.get(language_code, "en"), #(settings.FRONTEND_URL + "/idea/" + idea.url_slug) if idea.url_slug else main_page.get(language_code, "en"),
+            # url for ideas: URL/hubs/<hubUrl>?idea=<slug>#ideas
+            "url": (settings.FRONTEND_URL + "" + "/idea/" + idea.url_slug) if idea.url_slug else main_page.get(language_code, "en"),
             "location": idea.location.name if idea.location else '',
             "creator": '',
             "tags": '',
@@ -399,7 +399,7 @@ def create_variables_for_weekly_recommendations(project_ids: List = [], organiza
     return entities
 
 
-def send_weekly_personalized_recommendations_email(user: User, project_ids: List = [], organization_ids: List = [], idea_ids: List = []):
+def send_weekly_personalized_recommendations_email(user: User, project_ids: List = [], organization_ids: List = [], idea_ids: List = [], isInHub: bool = False):
 
     template_key = "WEEKLY_RECOMMENDATIONS_EMAIL"
 
@@ -409,6 +409,19 @@ def send_weekly_personalized_recommendations_email(user: User, project_ids: List
         template_key=template_key,
         lang_code=lang_code
     )
+
+    if isInHub:
+        subjects_by_language = {
+            "en": "We have new recommendations in your area!",
+            "de": "Wir haben neue Empfehlungen in deiner Region", 
+        }
+    else:
+        subjects_by_language = {
+            "en": "We have new recommendations for you!",
+            "de": "Wir haben neue Empfehlungen für dich!", 
+        }
+
+    subject = subjects_by_language.get(lang_code, "en")
 
     entities = create_variables_for_weekly_recommendations(lang_code, project_ids, organization_ids, idea_ids) 
 
@@ -433,14 +446,14 @@ def send_weekly_personalized_recommendations_email(user: User, project_ids: List
                 "TemplateID": int(template_id),
                 "TemplateLanguage": True,
                 "Variables": variables,
+                "Subject": subject,
                 "TemplateErrorReporting": {
-                    "Email": "philipp.ernstberger@climateconnect.earth",
-                    "Name": "Philipp Ernstberger"
+                    "Email": settings.MAILJET_ADMIN_EMAIL,
+                    "Name": "Mailjet Admin"
                 }
             }
         ]
     }
-
 
     try:
         mail = mailjet_send_api.send.create(data=data)
