@@ -1,4 +1,3 @@
-from asyncio.windows_events import NULL
 from datetime import datetime, timedelta
 from climateconnect_api.models.notification import EmailNotification
 import logging
