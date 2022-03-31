@@ -18,10 +18,10 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'schedule_weekly_local_recommendations_email': {
         'task': 'climateconnect_api.tasks.schedule_weekly_local_recommendations_email',
-        'schedule': crontab()
+        'schedule': crontab(day_of_week=5, hour=11, minute=11)
     }, 
     'schedule_weekly_international_recommendations_email': {
         'task': 'climateconnect_api.tasks.schedule_weekly_international_recommendations_email',
-        'schedule': crontab()
+        'schedule': crontab(day_of_week=5, hour=11, minute=11)
     }
 }
