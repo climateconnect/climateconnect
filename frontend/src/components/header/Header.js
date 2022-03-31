@@ -63,12 +63,12 @@ const useStyles = makeStyles((theme) => {
           !props.transparentHeader &&
           props.fixedHeader &&
           (props.background ? props.background : "#F8F8F8"),
+        transition: "all 0.25s linear", // use all instead of transform since the background color too is changing at some point. It'll be nice to have a smooth transition.
       };
     },
     hideHeader: {
       [theme.breakpoints.down("md")]: {
-        transition: "top 0.2s linear",
-        top: "-97px !important"
+        transform: "translateY(-97px)"
       },
     },
     spacingBottom: {
@@ -405,7 +405,7 @@ export default function Header({
     return () => {
       window.removeEventListener("scroll", handleScroll);
     }
-  }, [])
+  }, [lastScrollY]);
 
   return (
     <Box
