@@ -27,7 +27,6 @@ export default function DetailledDescriptionInput({ title, helpText, value, onCh
         </Tooltip>
       </Typography>
       <TextField
-        required = {true}
         variant="outlined"
         fullWidth
         multiline
