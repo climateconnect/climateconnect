@@ -55,7 +55,7 @@ export default function Signup({ allHubs }) {
     last_name: "",
     location: {},
     newsletter: "",
-    hubs: [], 
+    hubs: [],
   });
   const classes = useStyles();
   const cookies = new Cookies();

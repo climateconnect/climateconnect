@@ -66,7 +66,7 @@ export default function AddInterests({
           onClickRemoveHub={onClickRemoveHub}
           selectedHubs={values.hubs}
           onSelectNewHub={onSelectNewHub}
-          type = "userprofile"
+          type="userprofile"
         />
       }
       <IconButton

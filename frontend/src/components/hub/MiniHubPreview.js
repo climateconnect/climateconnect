@@ -1,5 +1,16 @@
-import { Card, IconButton, Link, makeStyles, Typography } from "@material-ui/core";
+import {
+  Card,
+  IconButton,
+  Link,
+  makeStyles,
+  Typography,
+  TextField,
+  Collapse,
+} from "@material-ui/core";
+import CardActionArea from "@material-ui/core/CardActionArea";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import CloseIcon from "@material-ui/icons/Close";
+import clsx from "clsx";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
@@ -64,6 +75,16 @@ const useStyles = makeStyles((theme) => ({
       background: "rgba(255, 255, 255, 0.98)",
     },
   },
+  expand: {
+    transform: "rotate(0deg)",
+    marginLeft: "auto",
+    transition: theme.transitions.create("transform", {
+      duration: theme.transitions.duration.shortest,
+    }),
+  },
+  expandOpen: {
+    transform: "rotate(180deg)",
+  },
 }));
 
 export default function MiniHubPreview({
@@ -81,18 +102,28 @@ export default function MiniHubPreview({
     event.preventDefault();
     onClickRemoveHub(hub);
   };
+
+  const [expanded, setExpanded] = React.useState(false);
+
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
+  };
   return (
-    <Link
-      href={hub && getLocalePrefix(locale) + `/hubs/${hub.url_slug}`}
-      target="_blank"
-      className={classes.link}
-    >
-      <Card className={classes.root}>
-        {editMode && (
-          <IconButton className={classes.closeIconButton} size="small" onClick={handleRemoveHub}>
-            <CloseIcon />
-          </IconButton>
-        )}
+    // <Link
+    //   href={hub && getLocalePrefix(locale) + `/hubs/${hub.url_slug}`}
+    //   target="_blank"
+    //   className={classes.link}
+    // >
+    <Card className={classes.root}>
+      {editMode && (
+        <IconButton className={classes.closeIconButton} size="small" onClick={handleRemoveHub}>
+          <CloseIcon />
+        </IconButton>
+      )}
+      <CardActionArea
+        href={hub && getLocalePrefix(locale) + `/hubs/${hub.url_slug}`}
+        target="_blank"
+      >
         <div className={classes.placeholderImageContainer}>
           <img
             src={
@@ -103,22 +134,55 @@ export default function MiniHubPreview({
             className={classes.placeholderImage}
           />
         </div>
-        <div className={classes.textContainer}>
-          {createMode ? (
-            <SelectField
-              label={texts.add_a_hub_where_you_are_active}
-              size="small"
-              options={hubsToSelectFrom}
-              onChange={(event) => event.target.value && onSelect(event)}
-            />
-          ) : (
-            <Typography color="secondary" className={classes.hubName}>
-              {hub.icon && <img src={getImageUrl(hub.icon)} className={classes.hubIcon} />}
-              {hub?.name}
-            </Typography>
-          )}
+      </CardActionArea>
+
+
+      <div className={classes.textContainer}>
+
+      
+        {/* <div className={classes.textContainer}> */}
+        {createMode ? (
+          <SelectField
+            label={texts.add_a_hub_where_you_are_active}
+            size="small"
+            options={hubsToSelectFrom}
+            onChange={(event) => event.target.value && onSelect(event)}
+          />
+        ) : (
+          <CardActionArea className={clsx(classes.expand,)}
+      onClick={handleExpandClick}
+      aria-expanded={expanded}
+      aria-label="show more"
+      >
+          <Typography color="secondary" className={classes.hubName}>
+            {hub.icon && <img src={getImageUrl(hub.icon)} className={classes.hubIcon} />}
+            {hub?.name}
+          </Typography>
+          </CardActionArea>
+        )}
+        {/* <IconButton
+          className={clsx(classes.expand, {
+            [classes.expandOpen]: expanded,
+          })}
+          onClick={handleExpandClick}
+          aria-expanded={expanded}
+          aria-label="show more"
+        > */}
+          {/* <ExpandMoreIcon />
+        </IconButton> */}
         </div>
-      </Card>
-    </Link>
+      <Collapse className={classes.textContainer} in={expanded} timeout="auto" unmountOnExit>
+        <TextField
+          //className={classes.name}
+          fullWidth
+          //value={editedAccount.name}
+          //onChange={(event) => handleTextFieldChange("name", event.target.value)}
+          multiline
+          required
+        />
+      </Collapse>
+      
+    </Card>
+    // </Link>
   );
 }
