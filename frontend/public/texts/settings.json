@@ -137,11 +137,11 @@
   },
   "change_linked_email": {
     "en": "Change linked email",
-    "de": "Verknüpfte email ändern"
+    "de": "Verknüpfte E-Mail ändern"
   },
   "your_linked_email_is": {
     "en": "Your linked email is",
-    "de": "Deine verknüpfte email ist"
+    "de": "Deine verknüpfte E-Mail ist"
   },
   "new_email": {
     "en": "New Email",
@@ -157,7 +157,7 @@
   },
   "change_email_preferences": {
     "en": "Change email preferences",
-    "de": "email Einstellungen ändern"
+    "de": "E-Mail Einstellungen ändern"
   },
   "change_preferences": {
     "en": "Change preferences",
