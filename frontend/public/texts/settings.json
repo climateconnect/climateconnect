@@ -37,11 +37,11 @@
   },
   "send_verification_email_again": {
     "en": "Send verification email again",
-    "de": "Verifizierungs-email erneut senden"
+    "de": "Verifizierungs-E-Mail erneut senden"
   },
   "resend_verification_email": {
-    "en": "Resend verification Email",
-    "de": "Verifizierungs-email erneut senden"
+    "en": "Resend verification email",
+    "de": "Verifizierungs-E-Mail erneut senden"
   },
   "send_password_reset_email": {
     "en": "Send password reset email",
