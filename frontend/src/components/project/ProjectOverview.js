@@ -1,21 +1,41 @@
-import { Container, Link, Tooltip, Typography } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  IconButton,
+  Link,
+  Tooltip,
+  Typography,
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import Cookies from "universal-cookie";
 import ExploreIcon from "@material-ui/icons/Explore";
 import LanguageIcon from "@material-ui/icons/Language";
-import PlaceIcon from "@material-ui/icons/Place";
-import React from "react";
 import Linkify from "react-linkify";
-import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
+import PlaceIcon from "@material-ui/icons/Place";
+import React, { useContext, useEffect, useState } from "react";
+import Router from "next/router";
+
+// Relative imports
+import { apiRequest, redirect } from "../../../public/lib/apiOperations";
+import ButtonIcon from "./Buttons/ButtonIcon";
+import { getImageUrl } from "./../../../public/lib/imageOperations";
+import { getParams } from "../../../public/lib/generalOperations";
+import { startPrivateChat } from "../../../public/lib/messagingOperations";
+import ContactCreatorButton from "./Buttons/ContactCreatorButton";
+import FollowButton from "./Buttons/FollowButton";
 import getTexts from "../../../public/texts/texts";
+import GoBackFromProjectPageButton from "./Buttons/GoBackFromProjectPageButton";
+import LikeButton from "./Buttons/LikeButton";
+import JoinButton from "./Buttons/JoinButton";
 import MessageContent from "../communication/MessageContent";
 import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
 import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
+import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
+import ROLE_TYPES from "../../../public/data/role_types";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
-import { getImageUrl } from "./../../../public/lib/imageOperations";
-import ContactCreatorButton from "./Buttons/ContactCreatorButton";
-import FollowButton from "./Buttons/FollowButton";
-import GoBackFromProjectPageButton from "./Buttons/GoBackFromProjectPageButton";
-import LikeButton from "./Buttons/LikeButton";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
@@ -24,6 +44,11 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(3),
     justifyContent: props.hasAdminPermissions ? "flex-start" : "space-between",
   }),
+  largeScreenButtonContainer: {
+    display: "inline-flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
   smallScreenHeader: {
     fontSize: "calc(1.6rem + 6 * ((100vw - 320px) / 680))",
     paddingBottom: theme.spacing(2),
@@ -36,6 +61,8 @@ const useStyles = makeStyles((theme) => ({
   },
   linkContainer: {
     display: "flex",
+    marginTop: theme.spacing(3),
+    justifyContent: "flex-start",
     cursor: "pointer",
     marginRight: theme.spacing(1),
   },
@@ -79,78 +106,193 @@ const componentDecorator = (href, text, key) => (
 );
 
 export default function ProjectOverview({
-  project,
-  screenSize,
+  apiEndpointShareButton,
+  contactProjectCreatorButtonRef,
+  dialogTitleShareButton,
+  followers,
+  followingChangePending,
+  handleClickContact,
   handleToggleFollowProject,
   handleToggleLikeProject,
-  isUserFollowing,
-  isUserLiking,
-  followingChangePending,
-  likingChangePending,
-  contactProjectCreatorButtonRef,
-  projectAdmin,
-  handleClickContact,
-  toggleShowFollowers,
   hasAdminPermissions,
-  user,
-  followers,
-  likes,
-  locale,
-  showFollowers,
-  showLikes,
   initiallyCaughtFollowers,
   initiallyCaughtLikes,
-  toggleShowLikes,
-  numberOfLikes,
-  numberOfFollowers,
-  projectLinkPath,
-  apiEndpointShareButton,
-  token,
-  messageTitleShareButton,
+  isUserFollowing,
+  isUserLiking,
+  likes,
+  likingChangePending,
+  locale,
   mailBodyShareButton,
-  dialogTitleShareButton,
+  messageTitleShareButton,
+  numberOfFollowers,
+  numberOfLikes,
+  project,
+  projectAdmin,
+  projectLinkPath,
+  screenSize,
+  showFollowers,
+  showLikes,
+  toggleShowFollowers,
+  toggleShowLikes,
+  token,
+  user,
 }) {
   const classes = useStyles();
+  const cookies = new Cookies();
+  const { notifications, pathName, refreshNotifications, setNotificationsRead } = useContext(
+    UserContext
+  );
+
+  const userPermission =
+    user && project.team && project.team.find((m) => m.id === user.id)
+      ? project.team.find((m) => m.id === user.id).permission
+      : null;
+
+  const [requestedToJoinProject, setRequestedToJoinProject] = useState(false);
 
   const texts = getTexts({ page: "project", locale: locale, project: project });
 
+  /**
+   * Calls endpoint to return a current list
+   * of users that have requested to
+   * join a specific project (i.e. requested membership).
+   *
+   * Note that the response includes a list of requests
+   * (with corresponding request ID), and the users themselves.
+   */
+  async function getMembershipRequests(url_slug) {
+    const resp = await apiRequest({
+      method: "get",
+      url: `/api/projects/${url_slug}/requesters/`,
+    });
+
+    if (!resp?.data?.results) {
+      // TODO: error appropriately here
+    }
+
+    const requestedMembers = resp.data.results;
+
+    // Now update the state, and thus button state,
+    // if the current user has already requested to join the project,
+    // based on results from the backend.
+    const members = requestedMembers.filter((m) => m.user_profile.url_slug === user.url_slug);
+    if (members.length > 0) {
+      setRequestedToJoinProject(true);
+    }
+
+    // TODO: we should probably have an associated timestamp with each request too.
+    return requestedMembers;
+  }
+
+  /**
+   * Calls backend, sending a request to join this project based
+   * on user token stored in cookies.
+   */
+  const handleSendProjectJoinRequest = async (event) => {
+    // Get the actual project name from the URL, removing any query params
+    // and projects/ prefix. For example,
+    // "/projects/Anotherproject6?projectId=Anotherproject6" -> "Anotherproject6"
+    const projectName = pathName?.split("/")[2].split("?")[0];
+
+    // Also strip any trailing '#' too.
+    const strippedProjectName = projectName.endsWith("#") ? projectName.slice(0, -1) : projectName;
+
+    const cookies = new Cookies();
+    const token = cookies.get("token");
+
+    try {
+      const response = await apiRequest({
+        method: "post",
+        url: `/api/projects/${strippedProjectName}/request_membership/${user.url_slug}/`,
+        payload: {
+          message: "Would like to join the project!",
+          // TODO: currently, we default user's availability to 4. In
+          // the future, we could consider customizing this option
+          user_availability: "4",
+        },
+
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+
+      setRequestedToJoinProject(true);
+    } catch (error) {
+      if (error?.response?.data?.message === "Request already exists to join project") {
+        setRequestedToJoinProject(true);
+      }
+    }
+  };
+
+  const [gotParams, setGotParams] = useState(false);
+  useEffect(() => {
+    if (!gotParams) {
+      const params = getParams(window.location.href);
+      if (params.show_followers && !showFollowers) {
+        toggleShowFollowers();
+      }
+      setGotParams(true);
+    }
+
+    // For non-creators, call the list of current requesters for this project,
+    // so that we can update the state of the button as "Requested"
+    // for the user.
+
+    if (!hasAdminPermissions && !requestedToJoinProject) {
+      getMembershipRequests(project.url_slug);
+    }
+  }, []);
+
   return (
     <Container className={classes.projectOverview}>
-      {screenSize.belowSmall ? (
+      {screenSize?.belowSmall ? (
         <SmallScreenOverview
+          contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
+          followingChangePending={followingChangePending}
+          handleClickContact={handleClickContact}
+          handleToggleFollowProject={handleToggleFollowProject}
+          handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+          hasAdminPermissions={hasAdminPermissions}
+          isUserFollowing={isUserFollowing}
           project={project}
+          requestedToJoinProject={requestedToJoinProject}
           texts={texts}
-          screenSize={screenSize}
-          locale={locale}
-          projectLinkPath={projectLinkPath}
-          apiEndpointShareButton={apiEndpointShareButton}
-          token={token}
-          messageTitleShareButton={messageTitleShareButton}
-          mailBodyShareButton={mailBodyShareButton}
-          dialogTitleShareButton={dialogTitleShareButton}
+          toggleShowFollowers={toggleShowFollowers}
+          userPermission={userPermission}
         />
       ) : (
         <LargeScreenOverview
-          project={project}
+          apiEndpointShareButton={apiEndpointShareButton}
+          contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
+          dialogTitleShareButton={dialogTitleShareButton}
+          followingChangePending={followingChangePending}
+          handleClickContact={handleClickContact}
+          handleSendProjectJoinRequest={handleSendProjectJoinRequest}
           handleToggleFollowProject={handleToggleFollowProject}
           handleToggleLikeProject={handleToggleLikeProject}
+          hasAdminPermissions={hasAdminPermissions}
           isUserFollowing={isUserFollowing}
           isUserLiking={isUserLiking}
-          handleClickContact={handleClickContact}
-          hasAdminPermissions={hasAdminPermissions}
-          toggleShowFollowers={toggleShowFollowers}
-          followingChangePending={followingChangePending}
-          contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
-          texts={texts}
-          projectAdmin={projectAdmin}
           likes={likes}
-          toggleShowLikes={toggleShowLikes}
           likingChangePending={likingChangePending}
-          screenSize={screenSize}
-          numberOfLikes={numberOfLikes}
+          locale={locale}
+          mailBodyShareButton={mailBodyShareButton}
+          messageTitleShareButton={messageTitleShareButton}
           numberOfFollowers={numberOfFollowers}
+          numberOfLikes={numberOfLikes}
+          project={project}
+          projectAdmin={projectAdmin}
+          projectLinkPath={projectLinkPath}
+          requestedToJoinProject={requestedToJoinProject}
+          screenSize={screenSize}
+          texts={texts}
+          toggleShowFollowers={toggleShowFollowers}
+          toggleShowLikes={toggleShowLikes}
+          token={token}
+          userPermission={userPermission}
         />
       )}
+
       <ProjectFollowersDialog
         open={showFollowers}
         loading={!initiallyCaughtFollowers}
@@ -160,6 +302,7 @@ export default function ProjectOverview({
         user={user}
         url={"projects/" + project.url_slug + "?show_followers=true"}
       />
+
       <ProjectLikesDialog
         open={showLikes}
         loading={!initiallyCaughtLikes}
@@ -174,22 +317,33 @@ export default function ProjectOverview({
 }
 
 function SmallScreenOverview({
-  project,
-  texts,
-  screenSize,
-  locale,
-  projectLinkPath,
   apiEndpointShareButton,
-  token,
-  messageTitleShareButton,
-  mailBodyShareButton,
+  contactProjectCreatorButtonRef,
   dialogTitleShareButton,
+  followingChangePending,
+  handleClickContact,
+  handleSendProjectJoinRequest,
+  handleToggleFollowProject,
+  hasAdminPermissions,
+  isUserFollowing,
+  locale,
+  mailBodyShareButton,
+  messageTitleShareButton,
+  project,
+  projectLinkPath,
+  requestedToJoinProject,
+  screenSize,
+  texts,
+  toggleShowFollowers,
+  token,
+  userPermission,
 }) {
   const classes = useStyles();
+
   return (
     <>
       <div className={classes.imageContainer}>
-        {screenSize.belowTiny && (
+        {screenSize?.belowTiny && (
           <GoBackFromProjectPageButton
             containerClassName={classes.goBackButtonContainer}
             texts={texts}
@@ -204,8 +358,8 @@ function SmallScreenOverview({
           locale={locale}
           token={token}
           messageTitle={messageTitleShareButton}
-          tinyScreen={screenSize.belowTiny}
-          smallScreen={screenSize.belowSmall}
+          tinyScreen={screenSize?.belowTiny}
+          smallScreen={screenSize?.belowSmall}
           mailBody={mailBodyShareButton}
           texts={texts}
           dialogTitle={dialogTitleShareButton}
@@ -248,32 +402,69 @@ function SmallScreenOverview({
             {project.tags.join(", ")}
           </Typography>
         </div>
+        <div className={classes.infoBottomBar}>
+          {/* If the user is an admin on the project, or is already part
+            of the project (has read only permissions), then we don't want to show the membership request button. */}
+          {!hasAdminPermissions &&
+            !(userPermission && [ROLE_TYPES.read_only_type].includes(userPermission)) && (
+              <JoinButton
+                handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+                requestedToJoin={requestedToJoinProject}
+              />
+            )}
+
+          <FollowButton
+            isUserFollowing={isUserFollowing}
+            handleToggleFollowProject={handleToggleFollowProject}
+            project={project}
+            hasAdminPermissions={hasAdminPermissions}
+            toggleShowFollowers={toggleShowFollowers}
+            followingChangePending={followingChangePending}
+            texts={texts}
+          />
+
+          {!hasAdminPermissions && (
+            <Button
+              className={classes.contactProjectButton}
+              variant="contained"
+              color="primary"
+              onClick={handleClickContact}
+              ref={contactProjectCreatorButtonRef}
+            >
+              {texts.contact}
+            </Button>
+          )}
+        </div>
       </div>
     </>
   );
 }
 
 function LargeScreenOverview({
-  project,
+  contactProjectCreatorButtonRef,
+  followingChangePending,
+  handleClickContact,
+  handleSendProjectJoinRequest,
   handleToggleFollowProject,
   handleToggleLikeProject,
+  hasAdminPermissions,
   isUserFollowing,
   isUserLiking,
-  handleClickContact,
-  hasAdminPermissions,
-  toggleShowFollowers,
-  followingChangePending,
-  contactProjectCreatorButtonRef,
-  texts,
-  projectAdmin,
   likes,
-  toggleShowLikes,
   likingChangePending,
-  screenSize,
-  numberOfLikes,
   numberOfFollowers,
+  numberOfLikes,
+  project,
+  projectAdmin,
+  requestedToJoinProject,
+  screenSize,
+  texts,
+  toggleShowFollowers,
+  toggleShowLikes,
+  userPermission,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
+
   return (
     <>
       <Typography component="h1" variant="h4" className={classes.largeScreenHeader}>
@@ -319,6 +510,16 @@ function LargeScreenOverview({
             </Typography>
           </div>
           <div className={classes.infoBottomBar}>
+            {/* If the user is an admin on the project, or is already part
+            of the project (has read only permissions), then we don't want to show the membership request button. */}
+            {!hasAdminPermissions &&
+              !(userPermission && [ROLE_TYPES.read_only_type].includes(userPermission)) && (
+                <JoinButton
+                  handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+                  requestedToJoin={requestedToJoinProject}
+                />
+              )}
+
             <LikeButton
               texts={texts}
               isUserLiking={isUserLiking}
@@ -332,15 +533,15 @@ function LargeScreenOverview({
               numberOfLikes={numberOfLikes}
             />
             <FollowButton
-              isUserFollowing={isUserFollowing}
-              handleToggleFollowProject={handleToggleFollowProject}
-              project={project}
-              hasAdminPermissions={hasAdminPermissions}
-              toggleShowFollowers={toggleShowFollowers}
               followingChangePending={followingChangePending}
-              texts={texts}
-              screenSize={screenSize}
+              handleToggleFollowProject={handleToggleFollowProject}
+              hasAdminPermissions={hasAdminPermissions}
+              isUserFollowing={isUserFollowing}
               numberOfFollowers={numberOfFollowers}
+              project={project}
+              screenSize={screenSize}
+              texts={texts}
+              toggleShowFollowers={toggleShowFollowers}
             />
             {!hasAdminPermissions && (
               <ContactCreatorButton

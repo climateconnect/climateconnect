@@ -12,7 +12,9 @@ from organization.models.project import (
 from organization.models.content import (
     Post, Comment, PostComment, ProjectComment
 )
-from organization.models.members import (ProjectMember, OrganizationMember)
+from organization.models.members import (
+    ProjectMember, OrganizationMember, MembershipRequests
+)
 
 from organization.models.status import ProjectStatus
 

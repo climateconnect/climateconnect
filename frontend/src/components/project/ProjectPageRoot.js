@@ -297,7 +297,7 @@ export default function ProjectPageRoot({
     const team_size = project?.team?.length;
     if (user_permission === ROLE_TYPES.all_type && team_size > 1)
       setMessage({
-        message: `You can't leave a project as the creator. Please give the creator role to another team member by clicking "Manage Members" in the team tab`,
+        message: `You can't leave a project as the creator. Please give the creator role to another team member by clicking "Manage Members" in the team tab.`,
         messageType: "error",
       });
     else setConfirmDialogOpen({ ...confirmDialogOpen, leave: true });
@@ -368,36 +368,36 @@ export default function ProjectPageRoot({
   return (
     <div className={classes.root}>
       <ProjectOverview
-        project={project}
-        screenSize={screenSize}
+        apiEndpointShareButton={apiEndpointShareButton}
+        contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
+        dialogTitleShareButton={dialogTitleShareButton}
+        followers={followers}
+        followingChangePending={followingChangePending}
+        handleClickContact={handleClickContact}
         handleToggleFollowProject={handleToggleFollowProject}
         handleToggleLikeProject={handleToggleLikeProject}
+        hasAdminPermissions={hasAdminPermissions}
+        initiallyCaughtFollowers={initiallyCaughtFollowers}
+        initiallyCaughtLikes={initiallyCaughtLikes}
         isUserFollowing={isUserFollowing}
         isUserLiking={isUserLiking}
-        followingChangePending={followingChangePending}
-        likingChangePending={likingChangePending}
-        contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
-        projectAdmin={projectAdmin}
-        handleClickContact={handleClickContact}
-        hasAdminPermissions={hasAdminPermissions}
-        toggleShowFollowers={toggleShowFollowers}
-        user={user}
-        followers={followers}
-        locale={locale}
-        showFollowers={showFollowers}
-        initiallyCaughtFollowers={initiallyCaughtFollowers}
         likes={likes}
-        toggleShowLikes={toggleShowLikes}
-        showLikes={showLikes}
-        initiallyCaughtLikes={initiallyCaughtLikes}
-        numberOfLikes={numberOfLikes}
-        numberOfFollowers={numberOfFollowers}
-        projectLinkPath={projectLinkPath}
-        apiEndpointShareButton={apiEndpointShareButton}
-        token={token}
-        messageTitleShareButton={messageTitleShareButton}
+        likingChangePending={likingChangePending}
+        locale={locale}
         mailBodyShareButton={mailBodyShareButton}
-        dialogTitleShareButton={dialogTitleShareButton}
+        messageTitleShareButton={messageTitleShareButton}
+        numberOfFollowers={numberOfFollowers}
+        numberOfLikes={numberOfLikes}
+        project={project}
+        projectAdmin={projectAdmin}
+        projectLinkPath={projectLinkPath}
+        screenSize={screenSize}
+        showFollowers={showFollowers}
+        showLikes={showLikes}
+        toggleShowFollowers={toggleShowFollowers}
+        toggleShowLikes={toggleShowLikes}
+        token={token}
+        user={user}
       />
 
       <Container className={classes.tabsContainerWithoutPadding}>
