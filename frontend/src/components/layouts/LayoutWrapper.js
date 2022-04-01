@@ -136,9 +136,19 @@ export default function LayoutWrapper({
     <>
       <Head>
         <title>{title ? title + " | Climate Connect" : "Climate Connect"}</title>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
-          href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700,800"
+          // rel="stylesheet"
+          rel="preload"
+          as="style"
+          href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700,800&display=swap"
+          // href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700,800"
+        />
+        <link
           rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700,800&display=swap"
+          media="print"
+          onload="this.media='all'"
         />
         {useFloodStdFont && <link rel="stylesheet" href="https://use.typekit.net/hoy3dgi.css" />}
         <meta
