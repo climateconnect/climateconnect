@@ -69,31 +69,29 @@ const NOTIFICATION_TYPES = [
 export default function Notification({ notification, isPlaceholder }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", locale: locale, idea: notification?.idea });
-  if (isPlaceholder) return <PlaceholderNotification />;
-  else {
-    const type = NOTIFICATION_TYPES[notification.notification_type];
-    if (type === "private_message")
-      return <PrivateMessageNotification notification={notification} />;
-    else if (type === "group_message")
-      return <GroupMessageNotification notification={notification} />;
-    else if (type === "project_comment")
-      return <ProjectCommentNotification notification={notification} />;
-    else if (type === "mention")
-      return <MentionNotification notification={notification} texts={texts} locale={locale} />;
-    else if (type === "reply_to_project_comment")
-      return <ProjectCommentReplyNotification notification={notification} />;
-    else if (type === "project_follower")
-      return <ProjectFollowerNotification notification={notification} />;
-    else if (type === "idea_comment")
-      return <IdeaCommentNotification notification={notification} />;
-    else if (type === "reply_to_idea_comment")
-      return <IdeaCommentReplyNotification notification={notification} />;
-    else if (type === "person_joined_idea")
-      return <PersonJoinedIdeaNotification notification={notification} />;
-    else if (type === "project_like")
-      return <ProjectLikeNotification notification={notification} />;
-    else return <></>;
+  if (isPlaceholder) {
+    return <PlaceholderNotification />;
   }
+
+  const type = NOTIFICATION_TYPES[notification.notification_type];
+  if (type === "private_message") return <PrivateMessageNotification notification={notification} />;
+  else if (type === "group_message")
+    return <GroupMessageNotification notification={notification} />;
+  else if (type === "project_comment")
+    return <ProjectCommentNotification notification={notification} />;
+  else if (type === "mention")
+    return <MentionNotification notification={notification} texts={texts} locale={locale} />;
+  else if (type === "reply_to_project_comment")
+    return <ProjectCommentReplyNotification notification={notification} />;
+  else if (type === "project_follower")
+    return <ProjectFollowerNotification notification={notification} />;
+  else if (type === "idea_comment") return <IdeaCommentNotification notification={notification} />;
+  else if (type === "reply_to_idea_comment")
+    return <IdeaCommentReplyNotification notification={notification} />;
+  else if (type === "person_joined_idea")
+    return <PersonJoinedIdeaNotification notification={notification} />;
+  else if (type === "project_like") return <ProjectLikeNotification notification={notification} />;
+  else return <></>;
 }
 
 const PersonJoinedIdeaNotification = ({ notification }) => {
@@ -172,25 +170,41 @@ const MentionNotification = ({ notification, texts, locale }) => {
   const classes = useStyles();
   const entityType = notification.project_comment ? "project" : "idea";
   const commentProp = `${entityType}_comment`;
-  const sender = notification[commentProp].author_user;
-  const urlEnding =
-    entityType === "project"
-      ? `/projects/${notification.project.url_slug}/#comments`
-      : `/hubs/${notification.idea.hub_url_slug}?idea=${notification.idea.url_slug}#ideas`;
-  const previewText = getFragmentsWithMentions(notification[commentProp].content, false, locale);
+
+  // TODO: need to refactor this to suport the correct
+  // notifications when a user has requested to join a project. See
+  // https://github.com/climateconnect/climateconnect/issues/898
+  const sender = notification[commentProp] ? notification[commentProp].author_user : "Anonymous";
+
+  let urlEnding;
+  if (!notification.idea && !notification.project) {
+    urlEnding = null;
+  } else {
+    urlEnding =
+      entityType === "project"
+        ? `/projects/${notification.project.url_slug}/#comments`
+        : `/hubs/${notification.idea.hub_url_slug}?idea=${notification.idea.url_slug}#ideas`;
+  }
+
+  const previewText = getFragmentsWithMentions(notification[commentProp]?.content, false, locale);
+
   return (
-    <Link href={getLocalePrefix(locale) + urlEnding} underline="none">
+    <Link href={urlEnding && getLocalePrefix(locale) + urlEnding} underline="none">
       <StyledMenuItem>
         <ListItemIcon>
           <AlternateEmailIcon />
         </ListItemIcon>
         <ListItemText
           primary={
-            sender.first_name +
-            " " +
-            sender.last_name +
-            " " +
-            texts.mentioned_you_in_comment_about_project
+            // TODO: should refactor to support richer notification requests; see
+            // // https://github.com/climateconnect/climateconnect/issues/898
+            notification.text.includes("wants to join your project")
+              ? texts.wants_to_join_your_project
+              : sender.first_name +
+                " " +
+                sender.last_name +
+                " " +
+                texts.mentioned_you_in_comment_about_project
           }
           secondary={previewText}
           primaryTypographyProps={{

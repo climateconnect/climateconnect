@@ -28,6 +28,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Hover button that's used in the global navbar to switch
+ * between multiple languages on hover (currently German and
+ * English).
+ */
 export default function LanguageSelect({ transparentHeader }) {
   const classes = useStyles({ transparentHeader: transparentHeader });
   const { locale, locales, startLoading } = useContext(UserContext);

@@ -1,6 +1,6 @@
 from organization.models.members import ProjectMember
 from climateconnect_api.models.language import Language
-from organization.models.tags import ProjectTagging, ProjectTags
+from organization.models.tags import ProjectTagging, ProjectTags, OrganizationTags
 from organization.models.project import ProjectParents
 from django.core.management.base import BaseCommand
 import random
@@ -144,6 +144,24 @@ def create_project_tags_test_data():
     if not ProjectTags.objects.filter(name='Energy').exists():
         ProjectTags.objects.create(name='Energy', key='energy')
     print("finished creating project tags test data!")
+
+def create_organization_tags_test_data():
+    print("Creating organization tags test data...")
+    if not OrganizationTags.objects.filter(name='Volunteer group').exists():
+        OrganizationTags.objects.create(
+            name='Volunteer group',
+            name_de_translation='Ehrenamtliche Gruppe',
+            show_in_climatematch=True,
+            key='volunteergroup',
+        )
+    if not OrganizationTags.objects.filter(name='Non-profit company').exists():
+        OrganizationTags.objects.create(
+            name='Non-profit company',
+            name_de_translation='non-profitcompany',
+            show_in_climatematch=True,
+            key='encouragingaplantbasedlifestyle'
+        )
+    print("finished creating organization tags test data!")
 
 def create_project_test_data(number_of_rows: int):
     print("Creating project data...")
@@ -379,5 +397,6 @@ class Command(BaseCommand):
         create_project_status_test_data()
         create_organization_test_data(number_of_rows=number_of_rows)
         create_project_tags_test_data()
+        create_organization_tags_test_data()
         create_project_test_data(number_of_rows=number_of_rows)
         create_skills()

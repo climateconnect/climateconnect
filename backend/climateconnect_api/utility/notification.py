@@ -7,11 +7,8 @@ from chat_messages.models import Participant
 from chat_messages.utility.email import (
     send_group_chat_message_notification_email,
     send_private_chat_message_notification_email)
-from climateconnect_api.models.notification import (EmailNotification,
-                                                    Notification,
-                                                    UserNotification)
+from climateconnect_api.models.notification import (Notification, UserNotification)
 from climateconnect_api.models.user import UserProfile
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models.query_utils import Q
 from ideas.models.comment import IdeaComment
@@ -38,16 +35,26 @@ async def send_out_live_notification(user_id):
 
 
 def create_user_notification(user, notification):
-    old_notification_object = UserNotification.objects.filter(
-        user=user, 
-        notification=notification
-    )
+    # TODO: root cause why this filtering is failing
+    # on the creation of Project Approval notifications
+    old_notification_object = None
+    try:
+        old_notification_object = UserNotification.objects.filter(
+            user=user,
+            notification=notification
+        )
+    except Exception:
+        print(f"User notification filter and \
+        creation failed. [user={user}, notification={notification}")
+        return
+
     if not old_notification_object.exists():
         UserNotification.objects.create(
-            user=user, notification=notification
+            user=user,
+            notification=notification
         )
-    else :
-        if not old_notification_object[0].read_at == None:
+    else:
+        if not old_notification_object[0].read_at is None:
             old_notification = old_notification_object[0]
             old_notification.read_at = None
             old_notification.save()
@@ -59,21 +66,22 @@ def create_email_notification(receiver, chat, message_content, sender, notificat
     is_group_chat = (number_of_participants > 2) | (len(chat.name) > 0)
     if is_group_chat:
         send_group_chat_message_notification_email(
-            receiver, 
-            message_content, 
-            chat.chat_uuid, 
-            sender_name, 
+            receiver,
+            message_content,
+            chat.chat_uuid,
+            sender_name,
             chat.name,
             notification
         )
-    else:
-        send_private_chat_message_notification_email(
-            receiver, 
-            message_content, 
-            chat.chat_uuid, 
-            sender_name,
-            notification
-        )
+        return
+
+    send_private_chat_message_notification_email(
+        receiver,
+        message_content,
+        chat.chat_uuid,
+        sender_name,
+        notification
+    )
 
 
 # The users in @user_url_slugs_to_ignore were already notified about this comment
@@ -175,9 +183,9 @@ def send_comment_email_notification(
     type_props = properties_by_type[notification_type]
     comment_serializer = type_props['serializer'](comment)
     type_props['send_email_function'](
-        user, 
-        object_commented_on, 
-        comment_serializer.data["content"], 
+        user,
+        object_commented_on,
+        comment_serializer.data["content"],
         sender,
         notification
     )

@@ -1,6 +1,7 @@
 import { IconButton, TextField, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
+
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
@@ -53,7 +54,11 @@ export default function AddSummarySection({
           required
           fullWidth
           multiline
-          helperText={texts.briefly_summarise_what_you_are_doing}
+          helperText={
+            texts.briefly_summarise_what_you_are_doing_part_one +
+            (projectData.short_description ? projectData.short_description.length : 0) +
+            texts.briefly_summarise_what_you_are_doing_part_two
+          }
           ref={shortDescriptionRef}
           InputLabelProps={{
             shrink: true,
@@ -63,7 +68,6 @@ export default function AddSummarySection({
           InputProps={{
             classes: { root: classes.fullHeight, inputMultiline: classes.fullHeight },
           }}
-          placeholder={texts.briefly_summarise_what_you_are_doing}
           rows={2}
           value={projectData.short_description}
         />

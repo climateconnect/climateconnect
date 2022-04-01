@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from organization.models import (Project, Organization)
 from climateconnect_api.models import (Role, Availability)
-
+from organization.utility import MembershipTarget, RequestStatus
 
 class ProjectMember(models.Model):
     user = models.ForeignKey(
@@ -47,7 +47,7 @@ class ProjectMember(models.Model):
         help_text="Time when project members were updated", verbose_name="Updated At",
         auto_now=True
     )
-    
+
     is_active = models.BooleanField(
         help_text="Indicates whether the user is still assigned to the project ", verbose_name="Active",
         null=False, blank=False,default=True
@@ -114,3 +114,74 @@ class OrganizationMember(models.Model):
 
     def __str__(self):
         return "User %d member for organization %s" % (self.user.id, self.organization.name)
+
+class MembershipRequests(models.Model):
+
+    user = models.ForeignKey(
+        User,
+        verbose_name="Requesting user",
+        help_text="Points to the user who sent the request",
+        on_delete=models.CASCADE,
+        null=False,
+        related_name='users'
+    )
+
+    target_membership_type = models.SmallIntegerField(choices=[(x.value,x.name) for x in MembershipTarget]
+                                                     ,null=False
+                                                     ,verbose_name="Membership Request Target Type",
+                                                      help_text="The type of entity a user requested to join (organization, project...)")
+
+    target_project =  models.ForeignKey(Project,
+                                            null=True,
+                                            on_delete=models.CASCADE,
+                                            help_text="Points to the requested project",
+                                            verbose_name="Target Project of Membership Request",
+                                            related_name='projects')
+
+    target_organization =  models.ForeignKey(Organization,
+                                            null=True,
+                                            on_delete=models.CASCADE,
+                                            help_text="Points to the requested organization",
+                                            related_name='organizations',
+                                            verbose_name='Target Ogranization of Membership request')
+
+    availability = models.ForeignKey(Availability,
+                                     null=False,
+                                     on_delete=models.CASCADE,
+                                     help_text="Points to the Availability offered by the user",
+                                     verbose_name='requested membership availability',
+                                     related_name='availabilities'
+                                     )
+
+
+    requested_at = models.DateTimeField(help_text="Time of request",
+                                        verbose_name="Requested at",
+                                        default=None,
+                                        null=False
+                                        )
+    approved_at = models.DateTimeField(help_text="Time of request approval",
+                                        verbose_name="Approved at",
+                                        default=None,
+                                        null=True
+                                        )
+    rejected_at = models.DateTimeField(help_text="Time of request rejection",
+                                        verbose_name="Rejected at",
+                                        default=None,
+                                        null=True
+                                        )
+
+    message = models.TextField(help_text="Message associated with the request",
+        verbose_name="Request Message",
+        max_length=4096,
+        null=True,
+        blank=True)
+
+    request_status = models.SmallIntegerField(
+        choices=[(x.value,x.name) for x in RequestStatus],
+        default=RequestStatus.PENDING.value
+    )
+
+    class Meta:
+        unique_together = ('user', 'target_project')
+        verbose_name = 'Member Requests'
+
