@@ -87,7 +87,7 @@ export default function LikeButton({
 }) {
   const classes = useStyles({ likingChangePending: likingChangePending });
 
-  if (screenSize.belowSmall) {
+  if (screenSize?.belowSmall) {
     return (
       <span
         className={classes.mobileButtonContainer}
@@ -106,7 +106,7 @@ export default function LikeButton({
         )}
       </span>
     );
-  } else if (screenSize.belowMedium && !screenSize.belowSmall && !hasAdminPermissions) {
+  } else if (screenSize?.belowMedium && !screenSize.belowSmall && !hasAdminPermissions) {
     return (
       <span className={classes.largeScreenButtonContainer}>
         <IconButton

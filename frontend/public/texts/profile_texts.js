@@ -58,7 +58,7 @@ export default function getProfileTexts({ profile, locale }) {
       de: "Rolle beschreiben",
     },
     hours_contributed_per_week: {
-      en: "Hour contributed per week",
+      en: "Hours contributed per week",
       de: "Arbeitszeit pro Woche",
     },
     pick_how_many_hours_user_contributes_to_org: {

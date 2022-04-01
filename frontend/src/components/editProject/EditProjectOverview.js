@@ -2,6 +2,8 @@ import { Button, Chip, Container, List, TextField, Typography } from "@material-
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import React, { useContext } from "react";
+
+// Relative imports
 import {
   getCompressedJPG,
   getImageDialogHeight,
