@@ -50,7 +50,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// This component should only be used by other "dialog" components
+/**
+ * Simple base wrapper on top of the Material UI (MUI)
+ * core Dialog component. This component
+ * should only be used by other "*Dialog" components, like
+ * "ProjectRequestersDialog".
+ */
 export default function GenericDialog({
   applyText,
   children,

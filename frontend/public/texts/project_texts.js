@@ -2,7 +2,7 @@ import { Link } from "@material-ui/core";
 import React from "react";
 import { getLocalePrefix } from "../lib/apiOperations";
 
-export default function getProjectTexts({ project, user, url_slug, locale }) {
+export default function getProjectTexts({ project, user, url_slug, locale, creator }) {
   return {
     please_log_in_to_edit_project: {
       en: "Please Log In to Edit a project.",
@@ -133,20 +133,15 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       de: "Du hast das Projekt erfolgreich verlassen.",
     },
     please_log_in_to_follow_a_project: {
-      en: (
-        <>
-          Please <Link href={getLocalePrefix(locale) + "/signin"}>log in</Link> to follow a project.
-        </>
-      ),
-      de: (
-        <>
-          Bitte <Link href={getLocalePrefix(locale) + "/signin"}>logge dich ein</Link>, um einem
-          Projekt zu folgen.
-        </>
-      ),
+      en: "Please log in to follow a project.",
+      de: "Bitte logge dich ein, um einem Projekt zu folgen.",
+    },
+    please_log_in_to_like_a_project: {
+      en: "Please log in to like a project.",
+      de: "Bitte logge dich ein, um ein Projekt zu liken.",
     },
     you_cant_leave_a_project_as_the_creator: {
-      en: `You can't leave a project as the Super Admin. Please give the Super Admin role to another team member by clicking "Manage Members" in the team tab`,
+      en: `You can't leave a project as the Super Admin. Please give the Super Admin role to another team member by clicking "Manage Members" in the team tab.`,
       de: `Du kannst das Projekt als Super Admin nicht verlassen. Bitte übertrage diese Rolle auf ein anderes Teammitglied, indem du "Mitglieder verwalten" im Team-Tab klickst`,
     },
     do_you_really_want_to_unfollow: {
@@ -168,6 +163,15 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
           Du wirst keine Updates mehr davon erhalten
         </>
       ),
+    },
+    do_you_really_want_to_dislike: {
+      en: "Do you really want to remove your like?",
+      de: "Möchtest du deinen Like wirklich entfernen? ",
+    },
+
+    are_you_sure_that_you_want_to_dislike_this_project: {
+      en: "Are you sure that you want to remove your like from this project?",
+      de: "Bist du sicher, dass du dieses Projekt nicht mehr liken möchtest?",
     },
     do_you_really_want_to_leave_this_project: {
       en: "Do you really want to leave this project?",
@@ -200,10 +204,6 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       de:
         "Bitte erstelle ein Konto oder melde dich an, um die Verantwortlichen des Projektes zu kontaktieren.",
     },
-    contact_the_projects_creator_with_just_one_click: {
-      en: "Contact the project's creator with just one click!",
-      de: "Kontaktiere die Verantwortlichen mit nur einem Klick",
-    },
     contact_creator: {
       en: "Contact creator",
       de: "Verantwortliche Kontaktieren",
@@ -227,6 +227,22 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     following: {
       en: "Following",
       de: "Du folgst",
+    },
+    like: {
+      en: "Like",
+      de: "Liken",
+    },
+    liked: {
+      en: "Liked",
+      de: "Geliked",
+    },
+    one_like: {
+      en: "Like",
+      de: "Like",
+    },
+    likes: {
+      en: "Likes",
+      de: "Likes",
     },
     leave_project: {
       en: "Leave project",
@@ -286,6 +302,10 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "to see this project's followers",
       de: ", um die Followers des Projektes zu sehen",
     },
+    to_see_this_projects_likes: {
+      en: "to see this project's likes",
+      de: ", um die Likes des Projektes zu sehen",
+    },
     we_could_not_find_any_members_of_this_project: {
       en: "We could not find any members of this project.",
       de: "Wir konnten keine Mitglieder für dieses Projekt finden.",
@@ -335,18 +355,35 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Share your Climate Solution",
       de: "Teile dein Klimaprojekt",
     },
+    // This is for project join requests
+    requesters_of: {
+      en: "Requesters of",
+      de: "Anforderer von",
+    },
     //Kontext: Followers of Projektname
     followers_of: {
       en: "Followers of",
       de: "Follower von",
     },
+    likes_of: {
+      en: "Likes of",
+      de: "Likes von",
+    },
     this_project_does_not_have_any_followers_yet: {
       en: "This project does not have any followers yet.",
       de: "Dieses Projekt hat noch keine Follower",
     },
+    this_project_does_not_have_any_likes_yet: {
+      en: "This project does not have any likes yet.",
+      de: "Dieses Projekt hat noch keine Likes",
+    },
     following_since: {
       en: "Following since",
       de: "Folgt seit",
+    },
+    liking_since: {
+      en: "Liking since",
+      de: "Gefällt seit",
     },
     delete_draft: {
       en: "Delete Draft",
@@ -414,7 +451,7 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       de:
         "Wenn du dein Projekt löscht, geht es verloren. Bist du dir sicher, dass du es löschen möchtest?",
     },
-    briefly_summarise_what_you_are_doing_up_to_240_characters: {
+    briefly_summarise_what_you_are_doing_please_only_use_english: {
       en: "Briefly summarise what you are doing (up to 280 characters)\n\nPlease only use English!",
       de: "Fass kurz zusammen, was ihr tun (bis zu 280 Zeichen)",
     },
@@ -598,8 +635,16 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       de: "Fasse dein Projekt zusammen",
     },
     briefly_summarise_what_you_are_doing: {
-      en: "Briefly summarise what you are doing (up to 280 characters)",
+      en: "Briefly summarize what you are doing (up to 280 characters)",
       de: "Fasse kurz zusammen, was du tust (bis zu 280 Zeichen)",
+    },
+    briefly_summarise_what_you_are_doing_part_one: {
+      en: "Briefly summarise what you are doing (",
+      de: "Fasse kurz zusammen, was ihr macht (",
+    },
+    briefly_summarise_what_you_are_doing_part_two: {
+      en: " / 280 characters)",
+      de: " / 280 Zeichen)",
     },
     search_for_your_team_members: {
       en: "Search for your team members",
@@ -627,13 +672,13 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     },
     add_photo_helptext: {
       en:
-        "Upload a photo that represents your project. This way other climate protectors can see at a glance what your project is about. It is recommended to use a non-transparent image in 16:9 format",
+        "Upload a photo that represents your project. This way other climate protectors can see at a glance what your project is about. It is recommended to use a non-transparent image in 16:9 format.",
       de:
-        "Lade ein Foto hoch, das dein Projekt repräsentiert. So können andere Klimaschützer*innen auf einen Blick sehen, worum es bei deinem Projekt geht. Wir empfehlen, ein nicht-transparentes Bild im Format 16:9 zu verwenden",
+        "Lade ein Foto hoch, das dein Projekt repräsentiert. So können andere Klimaschützer*innen auf einen Blick sehen, worum es bei deinem Projekt geht. Wir empfehlen, ein nicht-transparentes Bild im Format 16:9 zu verwenden.",
     },
     short_description_helptext: {
       en:
-        "Summarize your project in less than 280 characters. Other climate protectors should be able to grasp what your project wants to achieve.",
+        "Summarize your project in fewer than 280 characters. Other climate protectors should be able to grasp what your project wants to achieve.",
       de:
         "Fasse dein Projekt in weniger als 280 Zeichen zusammen. Andere Klimaschützer*innen sollen verstehen, was dein Projekt erreichen will.",
     },
@@ -677,6 +722,22 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     responsible_organization: {
       en: "Responsible Organization",
       de: "Verantwortliche Organisation",
+    },
+    responsible_person_project: {
+      en: "Project Creator",
+      de: "Verantwortliche*r",
+    },
+    responsible_person_idea: {
+      en: "Idea Creator",
+      de: "Ideenersteller*in",
+    },
+    responsible_person_org: {
+      en: "Reponsible for organization",
+      de: "Verantwortliche*r",
+    },
+    responsible_person_generic: {
+      en: "Responsible",
+      de: "Verantwortliche*r",
     },
     collaborating_organizations: {
       en: "Collaborating Organizations",
@@ -744,9 +805,9 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     },
     you_can_combine_categories_text: {
       en: `You can combine categories. For example if you fund treeplanting, select both
-      Afforestation/Reforestration and Funding`,
+      Afforestation/Reforestration and Funding.`,
       de: `Du kannst Kategorien kombinieren. Wenn du zum Beispiel Baumpflanzungen finanzierst, kannst du sowohl
-      Aufforstung/Wiederaufforstung, als auch Finanzierung wählen`,
+      Aufforstung/Wiederaufforstung, als auch Finanzierung wählen.`,
     },
     this_way_you_can_specify_what_you_are_doing_and_in_which_field: {
       en: "This way you can specify what you are doing and in which field.",
@@ -834,6 +895,14 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Internal Server Error",
       de: "Interner Serverfehler",
     },
+    number_of_likes: {
+      en: "Number of likes",
+      de: "Anzahl der Likes",
+    },
+    number_of_comments: {
+      en: "Number of comments",
+      de: "Anzahl an Kommentaren",
+    },
     error_when_publishing_project: {
       en: (
         <>
@@ -848,6 +917,40 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
           <br /> Bitte wende dich an contact@climateconnect.earth.
         </>
       ),
+    },
+    tell_others_about_this_project: {
+      en: "Tell others about this project!",
+      de: "Erzähle anderen von diesem Projekt!",
+    },
+    climate_protection_project_by: {
+      en: "Climate project by ",
+      de: "Klimaschutzprojekt von ",
+    },
+    share_project_email_body: {
+      en: `Hey,
+      I found this awesome climate project: "${project?.name}"${
+        project?.creator &&
+        ` created by ${project.creator?.name ? project.creator?.name : creator?.name}`
+      }.
+      You should check it out here: `,
+      de: `Hey,
+      Ich habe gerade dieses spannende Klimaschutzprojekt gefunden: "${project?.name}"${
+        project?.creator &&
+        `, erstellt von ${project.creator?.name ? project.creator?.name : creator?.name}`
+      }.
+      Schau's dir doch mal an: `,
+    },
+    contact_creator_to_know_more_about_project: {
+      en: `Contact ${creator?.first_name} if you want to chat about this project.`,
+      de: `Kontaktiere ${creator?.first_name}, um über das Projekt zu reden.`,
+    },
+    contact_creator_to_know_more_about_organization: {
+      en: `Contact ${creator?.first_name} if you want to chat about this organization.`,
+      de: `Kontaktiere ${creator?.first_name}, um über diese Organisation zu reden.`,
+    },
+    contact_creator_to_know_more_about_idea: {
+      en: `Contact ${creator?.first_name} if you want to chat about this project.`,
+      de: `Kontaktiere ${creator?.first_name}, um über diese Organisation zu reden.`,
     },
   };
 }

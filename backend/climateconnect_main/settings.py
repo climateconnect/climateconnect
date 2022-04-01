@@ -10,10 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
-from climateconnect_main.utility.general import get_allowed_hosts
 import os
-from dotenv import find_dotenv, load_dotenv
+import ssl
 from datetime import timedelta
+
+from dotenv import find_dotenv, load_dotenv
+
+from climateconnect_main.utility.general import get_allowed_hosts
 
 load_dotenv(find_dotenv('.backend_env'))
 
@@ -50,7 +53,8 @@ CUSTOM_APPS = [
     'chat_messages',
     'hubs',
     'location',
-    'ideas'
+    'ideas',
+    'climate_match'
 ]
 
 LIBRARY_APPS = [
@@ -109,7 +113,8 @@ CORS_ORIGIN_WHITELIST = [
     "https://www.cc-test-domain.com",
     "https://cc-test-domain.com",
     "http://cc-test-domain.com",
-    "https://test-climateconnect-frontend.azurewebsites.net"
+    "https://test-climateconnect-frontend.azurewebsites.net",
+    "https://climateconnect-frontend-slot2.azurewebsites.net"
 ]
 APPEND_SLASH = False
 
@@ -185,8 +190,10 @@ if env('ENVIRONMENT') not in('development', 'test'):
     AZURE_ACCOUNT_KEY = env('AZURE_ACCOUNT_KEY')
     AZURE_CONTAINER = env('AZURE_CONTAINER')
 
-STATIC_URL = '/static/' if env('ENVIRONMENT') in ('development', 'test') else 'https://'+env('AZURE_ACCOUNT_NAME')+'.'+env('AZURE_HOST')+'/{}/'.format(env('AZURE_CONTAINER'))
-STATIC_ROOT = env('STATIC_ROOT') if env('ENVIRONMENT') in ('development', 'test') else "static/"
+STATIC_URL = '/static/' if env('ENVIRONMENT') in ('development', 'test') else 'https://'+env(
+    'AZURE_ACCOUNT_NAME')+'.'+env('AZURE_HOST')+'/{}/'.format(env('AZURE_CONTAINER'))
+STATIC_ROOT = env('STATIC_ROOT') if env('ENVIRONMENT') in (
+    'development', 'test') else "static/"
 MEDIA_ROOT = env('MEDIA_ROOT')
 MEDIA_URL = '/media/'
 
@@ -210,8 +217,10 @@ MAILJET_NEWSLETTER_LIST_ID = env('MAILJET_NEWSLETTER_LIST_ID')
 CLIMATE_CONNECT_SUPPORT_EMAIL = env('CLIMATE_CONNECT_SUPPORT_EMAIL', '')
 
 EMAIL_VERIFICATION_TEMPLATE_ID = env('EMAIL_VERIFICATION_TEMPLATE_ID', '')
-NEW_EMAIL_VERIFICATION_TEMPLATE_ID = env('NEW_EMAIL_VERIFICATION_TEMPLATE_ID', '')
-NEW_EMAIL_VERIFICATION_TEMPLATE_ID_DE = env('NEW_EMAIL_VERIFICATION_TEMPLATE_ID_DE')
+NEW_EMAIL_VERIFICATION_TEMPLATE_ID = env(
+    'NEW_EMAIL_VERIFICATION_TEMPLATE_ID', '')
+NEW_EMAIL_VERIFICATION_TEMPLATE_ID_DE = env(
+    'NEW_EMAIL_VERIFICATION_TEMPLATE_ID_DE')
 EMAIL_VERIFICATION_TEMPLATE_ID_DE = env('EMAIL_VERIFICATION_TEMPLATE_ID_DE')
 RESET_PASSWORD_TEMPLATE_ID = env('RESET_PASSWORD_TEMPLATE_ID', '')
 RESET_PASSWORD_TEMPLATE_ID_DE = env('RESET_PASSWORD_TEMPLATE_ID_DE')
@@ -221,15 +230,21 @@ PRIVATE_MESSAGE_TEMPLATE_ID_DE = env('PRIVATE_MESSAGE_TEMPLATE_ID_DE')
 GROUP_MESSAGE_TEMPLATE_ID = env('GROUP_MESSAGE_TEMPLATE_ID')
 GROUP_MESSAGE_TEMPLATE_ID_DE = env('GROUP_MESSAGE_TEMPLATE_ID_DE')
 PROJECT_COMMENT_TEMPLATE_ID = env('PROJECT_COMMENT_TEMPLATE_ID')
+PROJECT_MENTION_TEMPLATE_ID = env('PROJECT_MENTION_TEMPLATE_ID')
+PROJECT_MENTION_TEMPLATE_ID_DE = env('PROJECT_MENTION_TEMPLATE_ID_DE')
 PROJECT_COMMENT_TEMPLATE_ID_DE = env('PROJECT_COMMENT_TEMPLATE_ID_DE')
 PROJECT_COMMENT_REPLY_TEMPLATE_ID = env('PROJECT_COMMENT_REPLY_TEMPLATE_ID')
 PROJECT_COMMENT_REPLY_TEMPLATE_ID_DE = env('PROJECT_COMMENT_REPLY_TEMPLATE_ID_DE')
 PROJECT_FOLLOWER_TEMPLATE_ID = env('PROJECT_FOLLOWER_TEMPLATE_ID')
 PROJECT_FOLLOWER_TEMPLATE_ID_DE = env('PROJECT_FOLLOWER_TEMPLATE_ID_DE')
+PROJECT_LIKE_TEMPLATE_ID = env('PROJECT_LIKE_TEMPLATE_ID')
+PROJECT_LIKE_TEMPLATE_ID_DE = env('PROJECT_LIKE_TEMPLATE_ID_DE')
 IDEA_COMMENT_TEMPLATE_ID = env('IDEA_COMMENT_TEMPLATE_ID')
 IDEA_COMMENT_TEMPLATE_ID_DE = env('IDEA_COMMENT_TEMPLATE_ID_DE')
 IDEA_COMMENT_REPLY_TEMPLATE_ID = env('IDEA_COMMENT_REPLY_TEMPLATE_ID')
 IDEA_COMMENT_REPLY_TEMPLATE_ID_DE = env('IDEA_COMMENT_REPLY_TEMPLATE_ID_DE')
+IDEA_MENTION_TEMPLATE_ID = env('IDEA_MENTION_TEMPLATE_ID')
+IDEA_MENTION_TEMPLATE_ID_DE = env('IDEA_MENTION_TEMPLATE_ID_DE')
 JOINED_IDEA_TEMPLATE = env('JOINED_IDEA_TEMPLATE')
 JOINED_IDEA_TEMPLATE_DE = env('JOINED_IDEA_TEMPLATE_DE')
 
@@ -255,6 +270,9 @@ CHANNEL_LAYERS = {
 
 # For Celery we use Redis as a broker URL
 CELERY_BROKER_URL = env('CELERY_BROKER_URL')
+CELERY_BROKER_USE_SSL = {
+    'ssl_cert_reqs': ssl.CERT_REQUIRED
+}
 CELERY_TIMEZONE = "UTC"
 LOCALES = ['en', 'de']
 
@@ -266,7 +284,7 @@ LOCALE_PATHS = [
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    
+
     'fromatters': {
         'Simple_Format': '{levelname} {message}',
         'style': '{'

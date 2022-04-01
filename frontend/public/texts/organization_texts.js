@@ -260,5 +260,21 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: "people",
       de: "Menschen",
     },
+    climate_protection_organization: {
+      en: "Interesting climate organization: ",
+      de: "Interessante Klimaschutzorganisation: ",
+    },
+    tell_others_about_this_organization: {
+      en: "Tell others about this organization!",
+      de: "Erzähle anderen von dieser Organisation!",
+    },
+    share_organization_email_body: {
+      en: `Hey,
+      I found this awesome climate protection organization: "${organization?.name}". 
+      You should check it out here: `,
+      de: `Hey,
+      Ich habe gerade diese spannende Klimaschutzorganisation gefunden: "${organization?.name}". 
+      Schau sie dir doch mal an: `,
+    },
   };
 }

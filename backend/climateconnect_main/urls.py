@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from climateconnect_api.views import (
-    status_views, user_views, common_views,
+    badge_views, status_views, user_views, common_views,
     settings_views, role_views,
     faq_views, notifications_views, donation_views,
     translation_views
@@ -68,6 +68,7 @@ urls = [
     ),
     path('availability/', common_views.ListAvailabilitiesView.as_view(), name='list-availabilities-api'),
     path('skills/', common_views.ListSkillsView.as_view(), name='list-skills-api'),
+    path('parentskills/', common_views.ListParentSkillsView.as_view(), name='list-parent-skills-api'),
     path('roles/', role_views.ListRolesView.as_view(), name='list-roles-api'),
     path(
         'api/feedback/',
@@ -86,6 +87,8 @@ urls = [
     path('api/donation_goal_progress/', donation_views.GetDonationGoalProgress.as_view(), name='get-donations-this-month'),
     path('api/translate/', translation_views.TranslateTextView.as_view(), name='translate-testing-api'),
     path('api/translate_many/', translation_views.TranslateManyTextsView.as_view(), name='translate-testing-api'),
+    path('api/donors_with_badges/', donation_views.GetDonorsWithBadges.as_view(), name='retrieve-donors-with-badges-api'),
+    path('api/donor_badges/', badge_views.getDonorBadges.as_view(), name='get-possible-donor-badges'),
     # Organization views
     path('api/', include('organization.urls')),
     # Chat messages views
@@ -94,7 +97,9 @@ urls = [
     path('api/', include('hubs.urls')),
     path('api/', include('location.urls')),
     # Idea views
-    path('api/', include('ideas.urls'))
+    path('api/', include('ideas.urls')),
+    # Climate match APIs
+    path('api/', include('climate_match.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns = urls

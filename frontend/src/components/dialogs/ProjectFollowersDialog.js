@@ -97,7 +97,6 @@ export default function ProjectFollowersDialog({
 
 const ProjectFollowers = ({ followers, texts, locale }) => {
   const classes = useStyles();
-  console.log(followers);
   return (
     <>
       <Divider />
@@ -113,7 +112,7 @@ const ProjectFollowers = ({ followers, texts, locale }) => {
                   >
                     <Avatar
                       className={classes.avatar}
-                      src={getImageUrl(f.user_profile.image)}
+                      src={getImageUrl(f.user_profile.thumbnail_image)}
                       alt={f.user_profile.first_name + " " + f.user_profile.last_name}
                     />
                     <Typography component="span" color="secondary" className={classes.username}>

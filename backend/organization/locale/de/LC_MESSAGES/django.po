@@ -1,0 +1,36 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-08 12:03+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: organization/views/organization_views.py:283
+#: organization/views/organization_views.py:300
+msgid "Organization not found:"
+msgstr "Organisation nicht gefunden:"
+
+#: organization/views/organization_views.py:337
+msgid "Parent organization not found for organization"
+msgstr "Mutterorganisation der Organisation nicht gefunden"
+
+#: organization/views/organization_views.py:389
+msgid "Passed organization tag id does not exists: "
+msgstr "Dieser Organisationstyp existiert nicht: "
+
+#: organization/views/organization_views.py:392
+msgid "Successfully updated organization."
+msgstr "Organisation erfolgreich bearbeitet"

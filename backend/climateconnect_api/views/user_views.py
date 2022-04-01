@@ -1,4 +1,3 @@
-
 from ideas.serializers.idea import IdeaFromIdeaSupporterSerializer
 from ideas.models.support import IdeaSupporter
 
@@ -22,20 +21,20 @@ from climateconnect_api.utility.translation import (edit_translations)
 from climateconnect_main.utility.general import get_image_from_data_url
 from django.conf import settings
 from django.contrib.auth import authenticate, login
-# Backend imports
+
 from django.contrib.auth.models import User
 from django.contrib.gis.db.models.functions import Distance
 from django.db.models import Count, Q
 from django.utils import timezone
 from django.utils.translation import gettext as _
-# Rest imports
+
 from django_filters.rest_framework import DjangoFilterBackend
 from knox.views import LoginView as KnoxLoginView
 from location.models import Location
 from location.utility import get_location, get_location_with_range
 from organization.models.members import OrganizationMember, ProjectMember
 from organization.serializers.organization import \
-    OrganizationsFromProjectMember
+    OrganizationsFromOrganizationMember
 from organization.serializers.project import ProjectFromProjectMemberSerializer
 from rest_framework import status
 from rest_framework.exceptions import NotFound, ValidationError
@@ -51,30 +50,44 @@ logger = logging.getLogger(__name__)
 class LoginView(KnoxLoginView):
     permission_classes = [AllowAny]
 
+    # Tries to log the user in with the provided
+    # credentials (username and password).
     def post(self, request, format=None):
         if 'username' and 'password' not in request.data:
             message = "Must include 'username' and 'password'"
             return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
 
+        # First, authenticate the user
         user = authenticate(username=request.data['username'], password=request.data['password'])
+
         if user:
             user_profile = UserProfile.objects.filter(user = user)[0]
             if not user_profile.is_profile_verified:
                 message = "You first have to activate your account by clicking the link we sent to your E-Mail."
                 return Response({'message': message, 'type': 'not_verified'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+            if user.is_authenticated:
+                print("User is authenticated")
+
+            # Then, log in the user to attach them to the current Django session,
+            # and ensure we have a valid User object (instead of AnonymousUser).
+            # See more: https://docs.djangoproject.com/en/4.0/topics/auth/default/#how-to-log-a-user-in
             login(request, user)
-            if user_profile.has_logged_in<2:
-                user_profile.has_logged_in = user_profile.has_logged_in +1
+
+            if user_profile.has_logged_in < 2:
+                user_profile.has_logged_in = user_profile.has_logged_in + 1
                 user_profile.save()
+
             return super(LoginView, self).post(request, format=None)
         else:
-            if not User.objects.filter(username=request.data['username']).exists():
-                return Response({
-                    'message': 'Username does not exist. Have you signed up yet?'
-                }, status=status.HTTP_401_UNAUTHORIZED)
             return Response({
-                'message': 'Invalid password.'
+                'message': _('Invalid email or password')
             }, status=status.HTTP_401_UNAUTHORIZED)
+
+        return Response({
+            'message': 'Invalid password.'
+        }, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class SignUpView(APIView):
@@ -256,6 +269,7 @@ class ListMemberProjectsView(ListAPIView):
                 is_active=True
             ).order_by('-id')
 
+
 class ListMemberIdeasView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter]
@@ -269,12 +283,13 @@ class ListMemberIdeasView(ListAPIView):
             user=searched_user
         ).order_by('-id')
 
+
 class ListMemberOrganizationsView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter]
     search_fields = ['parent_organization__url_slug']
     pagination_class = MembersPagination
-    serializer_class = OrganizationsFromProjectMember
+    serializer_class = OrganizationsFromOrganizationMember
 
     def get_queryset(self):
         return OrganizationMember.objects.filter(

@@ -2,6 +2,7 @@ import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Cookies from "next-cookies";
 import React, { useContext } from "react";
+
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, sendToLogin } from "../../public/lib/apiOperations";
 import getTexts from "../../public/texts/texts";
@@ -25,7 +26,7 @@ export async function getServerSideProps(ctx) {
   const texts = getTexts({ page: "project", locale: ctx.locale });
   if (ctx.req && !token) {
     const message = texts.you_have_to_log_in_to_manage_a_projects_members;
-    return sendToLogin(ctx, message);
+    return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
   }
   const projectUrl = encodeURI(ctx.query.projectUrl);
   const [project, members, rolesOptions, availabilityOptions] = await Promise.all([
@@ -34,6 +35,7 @@ export async function getServerSideProps(ctx) {
     getRolesOptions(token, ctx.locale),
     getAvailabilityOptions(token, ctx.locale),
   ]);
+
   return {
     props: {
       project: project,
@@ -58,6 +60,7 @@ export default function manageProjectMembers({
   const [currentMembers, setCurrentMembers] = React.useState(
     members ? [...members.sort((a, b) => b.role.role_type - a.role.role_type)] : []
   );
+
   if (!user)
     return (
       <WideLayout

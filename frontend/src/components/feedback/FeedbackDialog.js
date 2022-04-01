@@ -31,7 +31,7 @@ export default function FeedbackDialog({ onClose, open, title, inputLabel, maxLe
   const texts = getTexts({ page: "communication", locale: locale });
   const handleClose = () => {
     onClose();
-    setElement(null);
+    setElement("");
   };
 
   const onSend = (event) => {
@@ -42,6 +42,7 @@ export default function FeedbackDialog({ onClose, open, title, inputLabel, maxLe
       send_response: checked,
     };
     onClose(data);
+    setElement("");
   };
 
   const handleChange = (event) => {

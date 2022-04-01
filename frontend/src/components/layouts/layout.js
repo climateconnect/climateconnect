@@ -16,24 +16,23 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     margin: `${theme.spacing(4)}px 0`,
   },
-  alert: {
+  alert: (props) => ({
     width: "100%",
     zIndex: 100,
-    marginTop: theme.spacing(-2),
-  },
+    marginTop: !props.donationCampaignRunning && theme.spacing(-2),
+  }),
 }));
 
 export default function Layout({
   title,
   hideHeadline,
-  noSpacingBottom,
   children,
   message,
   messageType,
   isLoading,
   isStaticPage,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({ donationCampaignRunning: process.env.DONATION_CAMPAIGN_RUNNING });
   const [hideAlertMessage, setHideAlertMessage] = React.useState(false);
   const [initialMessageType, setInitialMessageType] = React.useState(null);
   const [initialMessage, setInitialMessage] = React.useState("");
@@ -47,8 +46,8 @@ export default function Layout({
   }, []);
   return (
     <LayoutWrapper theme={theme} title={title}>
-      <Header noSpacingBottom={noSpacingBottom} isStaticPage={isStaticPage} />
-      {process.env.DONATION_CAMPAIGN_RUNNING === "true" && <DonationCampaignInformation />}
+      <Header noSpacingBottom isStaticPage={isStaticPage} />
+      {<DonationCampaignInformation />}
       {isLoading ? (
         <LoadingContainer headerHeight={113} footerHeight={80} />
       ) : (

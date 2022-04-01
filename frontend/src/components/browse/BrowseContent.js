@@ -1,9 +1,11 @@
-import { Container, Divider, makeStyles, Tab, Tabs, useMediaQuery } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Container, Divider, Tab, Tabs, useMediaQuery } from "@material-ui/core";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import _ from "lodash";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState, Suspense, useMemo } from "react";
 import Cookies from "universal-cookie";
 import getFilters from "../../../public/data/possibleFilters";
+import { splitFiltersFromQueryObject } from "../../../public/lib/filterOperations";
 import { loadMoreData } from "../../../public/lib/getDataOperations";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
@@ -18,15 +20,18 @@ import {
   getSearchParams,
 } from "../../../public/lib/urlOperations";
 import getTexts from "../../../public/texts/texts";
+import FeedbackContext from "../context/FeedbackContext";
 import LoadingContext from "../context/LoadingContext";
 import UserContext from "../context/UserContext";
-import IdeasBoard from "../ideas/IdeasBoard";
-import FilterSection from "../indexPage/FilterSection";
-import OrganizationPreviews from "../organization/OrganizationPreviews";
-import ProfilePreviews from "../profile/ProfilePreviews";
-import ProjectPreviews from "../project/ProjectPreviews";
-import Tutorial from "../tutorial/Tutorial";
-import TabContentWrapper from "./TabContentWrapper";
+import LoadingSpinner from "../general/LoadingSpinner";
+
+const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
+const IdeasBoard = React.lazy(() => import("../ideas/IdeasBoard"));
+const OrganizationPreviews = React.lazy(() => import("../organization/OrganizationPreviews"));
+const ProfilePreviews = React.lazy(() => import("../profile/ProfilePreviews"));
+const ProjectPreviews = React.lazy(() => import("../project/ProjectPreviews"));
+const Tutorial = React.lazy(() => import("../tutorial/Tutorial"));
+const TabContentWrapper = React.lazy(() => import("./TabContentWrapper"));
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -73,6 +78,8 @@ export default function BrowseContent({
   filters,
   handleUpdateFilterValues,
   initialLocationFilter,
+  resetTabsWhereFiltersWereApplied,
+  hubUrl,
 }) {
   const initialState = {
     items: {
@@ -96,7 +103,7 @@ export default function BrowseContent({
     },
     urlEnding: "",
   };
-  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+
   const token = new Cookies().get("token");
   //saving these refs for the tutorial
   const firstProjectCardRef = useRef(null);
@@ -112,7 +119,7 @@ export default function BrowseContent({
     TYPES_BY_TAB_VALUE.push("ideas");
   }
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "general", locale: locale });
+  const texts = useMemo(() => getTexts({ page: "general", locale: locale }), [locale]);
   const type_names = {
     projects: texts.projects,
     organizations: isNarrowScreen ? texts.orgs : texts.organizations,
@@ -122,6 +129,7 @@ export default function BrowseContent({
   const [hash, setHash] = useState(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
 
+  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const isMobileScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
 
   // Always default to filters being expanded
@@ -158,6 +166,7 @@ export default function BrowseContent({
 
   const hasQueryParams = (Object.keys(getSearchParams(window.location.search)).length === 0) !== 0;
 
+  const { showFeedbackMessage } = useContext(FeedbackContext);
   /**
    * Support the functionality of a user entering
    * a provided URL, that already has URL encoded
@@ -166,6 +175,8 @@ export default function BrowseContent({
    * that this isn't invoked on extraneous renders.
    */
   const [initialized, setInitialized] = useState(false);
+
+  const [nonFilterParams, setNonFilterParams] = useState({});
 
   useEffect(() => {
     const newHash = window?.location?.hash.replace("#", "");
@@ -183,22 +194,35 @@ export default function BrowseContent({
 
       // For each query param option, ensure that it's
       // split into array before spreading onto the new filters object.
-      const queryObject = getQueryObjectFromUrl(getSearchParams(window.location.search));
-      const newFilters = {
-        ...queryObject,
-      };
       const tabKey = newHash ? newHash : TYPES_BY_TAB_VALUE[0];
-      if (initialLocationFilter) {
-        const possibleFilters = getFilters({
-          key: tabKey,
-          filterChoices: filterChoices,
-          locale: locale,
+      const possibleFilters = getFilters({
+        key: tabKey,
+        filterChoices: filterChoices,
+        locale: locale,
+      });
+      const queryObject = getQueryObjectFromUrl(getSearchParams(window.location.search));
+      const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFilters);
+      const newFilters = {
+        ...queryObject.filters,
+      };
+      setNonFilterParams(splitQueryObject.nonFilters);
+      if (splitQueryObject?.nonFilters?.message) {
+        showFeedbackMessage({
+          message: splitQueryObject.nonFilters.message,
         });
+      }
+
+      if (initialLocationFilter) {
         const locationFilter = possibleFilters.find((f) => f.type === "location");
         newFilters[locationFilter.key] = initialLocationFilter;
       }
       // Apply new filters with the query object immediately:
-      handleApplyNewFilters(tabKey, newFilters, false, state.urlEnding);
+      handleApplyNewFilters({
+        type: tabKey,
+        newFilters: newFilters,
+        closeFilters: false,
+        nonFilterParams: splitQueryObject.nonFilters,
+      });
 
       // And then update state
       setInitialized(true);
@@ -236,19 +260,24 @@ export default function BrowseContent({
       });
       const locationFilter = possibleFilters.find((f) => f.type === "location");
       queryObject[locationFilter.key] = filters[locationFilter.key];
-      queryObject;
+      const splitQueryObject = splitFiltersFromQueryObject(newFilters, possibleFilters);
 
-      const newFilters = { ...emptyFilters, ...queryObject };
+      const newFilters = { ...emptyFilters, ...splitQueryObject.filters };
       const tabValue = TYPES_BY_TAB_VALUE[newValue];
       // Apply new filters with the query object immediately:
-      handleApplyNewFilters(tabValue, newFilters, false, state.urlEnding);
+      handleApplyNewFilters({
+        type: tabValue,
+        newFilters: newFilters,
+        closeFilters: false,
+        nonFilterParams: splitQueryObject.nonFilters,
+      });
     }
 
     window.location.hash = TYPES_BY_TAB_VALUE[newValue];
     setTabValue(newValue);
   };
 
-  /* We always save filter values in the url in english. 
+  /* We always save filter values in the url in english.
   Therefore we need to get the name in the current language
   when retrieving them from the query object */
   const getValueInCurrentLanguage = (metadata, value) => {
@@ -266,7 +295,8 @@ export default function BrowseContent({
       filterChoices: filterChoices,
       locale: locale,
     });
-    for (const [key, value] of Object.entries(queryObject)) {
+    const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFiltersMetadata);
+    for (const [key, value] of Object.entries(splitQueryObject.filters)) {
       const metadata = possibleFiltersMetadata.find((f) => f.key === key);
 
       if (value.indexOf(",") > 0) {
@@ -334,12 +364,13 @@ export default function BrowseContent({
    * returned from applying the new filters. Then updates the
    * state, and persists the new filters as query params in the URL.
    */
-  const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
+  const handleApplyNewFilters = async ({ type, newFilters, closeFilters, nonFilterParams }) => {
     const newUrl = getFilterUrl({
       activeFilters: newFilters,
       infoMetadata: getInfoMetadataByType(type),
       filterChoices: filterChoices,
       locale: locale,
+      nonFilterParams: nonFilterParams,
     });
     if (newUrl !== window?.location?.href) {
       window.history.pushState({}, "", newUrl);
@@ -359,8 +390,12 @@ export default function BrowseContent({
 
     handleSetErrorMessage("");
     setIsFiltering(true);
-
-    const res = await applyNewFilters(type, newFilters, closeFilters);
+    const res = await applyNewFilters({
+      type: type,
+      newFilters: newFilters,
+      closeFilters: closeFilters,
+      nonFilterParams: nonFilterParams,
+    });
     if (res?.closeFilters) {
       if (isMobileScreen) setFiltersExpandedOnMobile(false);
       else setFiltersExpanded(false);
@@ -390,8 +425,13 @@ export default function BrowseContent({
       infoMetadata: getInfoMetadataByType(type),
       filterChoices: filterChoices,
       locale: locale,
+      nonFilterParams: nonFilterParams,
     });
-    const res = await applyNewFilters(type, newFilters, false);
+    const res = await applyNewFilters({
+      type: type,
+      newFilters: newFilters,
+      closeFilters: false,
+    });
     setIsFiltering(false);
     if (newUrl !== window?.location?.href) {
       window.history.pushState({}, "", newUrl);
@@ -447,6 +487,7 @@ export default function BrowseContent({
     isFiltering: isFiltering,
     state: state,
     hubName: hubName,
+    nonFilterParams: nonFilterParams,
   };
   return (
     <LoadingContext.Provider
@@ -455,16 +496,18 @@ export default function BrowseContent({
       }}
     >
       <Container maxWidth="lg">
-        <FilterSection
-          filtersExpanded={isMobileScreen ? filtersExandedOnMobile : filtersExpanded}
-          onSubmit={handleSearchSubmit}
-          setFiltersExpanded={isMobileScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
-          type={TYPES_BY_TAB_VALUE[tabValue]}
-          customSearchBarLabels={customSearchBarLabels}
-          filterButtonRef={filterButtonRef}
-          searchValue={filters.search}
-          hideFilterButton={tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas")}
-        />
+        <Suspense fallback={null}>
+          <FilterSection
+            filtersExpanded={isMobileScreen ? filtersExandedOnMobile : filtersExpanded}
+            onSubmit={handleSearchSubmit}
+            setFiltersExpanded={isMobileScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
+            type={TYPES_BY_TAB_VALUE[tabValue]}
+            customSearchBarLabels={customSearchBarLabels}
+            filterButtonRef={filterButtonRef}
+            searchValue={filters.search}
+            hideFilterButton={tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas")}
+          />
+        </Suspense>
         <Tabs
           variant={isNarrowScreen ? "fullWidth" : "standard"}
           value={tabValue}
@@ -492,7 +535,7 @@ export default function BrowseContent({
 
         <Divider className={classes.mainContentDivider} />
 
-        <>
+        <Suspense fallback={<LoadingSpinner isLoading />}>
           <TabContentWrapper type={"projects"} {...tabContentWrapperProps}>
             <ProjectPreviews
               className={classes.itemsContainer}
@@ -501,6 +544,7 @@ export default function BrowseContent({
               parentHandlesGridItems
               projects={state.items.projects}
               firstProjectCardRef={firstProjectCardRef}
+              hubUrl={hubUrl}
             />
           </TabContentWrapper>
           <TabContentWrapper type={"organizations"} {...tabContentWrapperProps}>
@@ -509,7 +553,6 @@ export default function BrowseContent({
               loadFunc={() => handleLoadMoreData("organizations")}
               organizations={state.items.organizations}
               parentHandlesGridItems
-              showOrganizationType
             />
           </TabContentWrapper>
           {!hideMembers && (
@@ -535,24 +578,29 @@ export default function BrowseContent({
               hubLocation={hubLocation}
               hubData={hubData}
               filters={filters}
+              resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
               filterChoices={filterChoices}
             />
           </TabContentWrapper>
-        </>
+        </Suspense>
       </Container>
-      <Tutorial
-        fixedPosition
-        pointerRefs={{
-          projectCardRef: firstProjectCardRef,
-          filterButtonRef: filterButtonRef,
-          organizationsTabRef: organizationsTabRef,
-          hubsSubHeaderRef: hubsSubHeaderRef,
-          hubQuickInfoRef: hubQuickInfoRef,
-          hubProjectsButtonRef: hubProjectsButtonRef,
-        }}
-        hubName={hubName}
-        nextStepTriggeredBy={nextStepTriggeredBy}
-      />
+      <Suspense fallback={null}>
+        <Tutorial
+          fixedPosition
+          pointerRefs={{
+            projectCardRef: firstProjectCardRef,
+            filterButtonRef: filterButtonRef,
+            organizationsTabRef: organizationsTabRef,
+            hubsSubHeaderRef: hubsSubHeaderRef,
+            hubQuickInfoRef: hubQuickInfoRef,
+            hubProjectsButtonRef: hubProjectsButtonRef,
+          }}
+          hubName={hubName}
+          nextStepTriggeredBy={nextStepTriggeredBy}
+          handleTabChange={handleTabChange}
+          typesByTabValue={TYPES_BY_TAB_VALUE}
+        />
+      </Suspense>
     </LoadingContext.Provider>
   );
 }

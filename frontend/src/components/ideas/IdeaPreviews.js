@@ -1,17 +1,23 @@
 import { Grid, makeStyles } from "@material-ui/core";
 import React from "react";
 import InfiniteScroll from "react-infinite-scroller";
+import NoItemsFound from "../browse/NoItemsFound";
 import LoadingSpinner from "../general/LoadingSpinner";
 import IdeaPreview from "./IdeaPreview";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   reset: {
     margin: 0,
     padding: 0,
     listStyleType: "none",
     width: "100%",
   },
-});
+  noItemsFound: {
+    marginTop: `${theme.spacing(1)}px !important`,
+    marginBottom: theme.spacing(2),
+    width: "100%",
+  },
+}));
 
 const toIdeaPreviews = ({ ideas, onClickIdea, hasIdeaOpen, hubData, sendToIdeaPageOnClick }) => {
   return ideas.map((idea, index) => (
@@ -41,6 +47,7 @@ export default function IdeaPreviews({
   hubData,
   noCreateCard,
   sendToIdeaPageOnClick,
+  resetTabsWhereFiltersWereApplied,
 }) {
   const classes = useStyles();
   const [gridItems, setGridItems] = React.useState(
@@ -88,6 +95,9 @@ export default function IdeaPreviews({
         spacing={2}
         alignContent="flex-start"
       >
+        {ideas?.length === 0 && (
+          <NoItemsFound type="ideas" hubName={hubData?.name} className={classes.noItemsFound} />
+        )}
         {!noCreateCard && (
           <GridItem
             isCreateCard
@@ -96,6 +106,7 @@ export default function IdeaPreviews({
             hasIdeaOpen={hasIdeaOpen}
             hubLocation={hubLocation}
             hubData={hubData}
+            resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
           />
         )}
         {parentHandlesGridItems
@@ -124,6 +135,7 @@ function GridItem({
   hubLocation,
   hubData,
   sendToIdeaPageOnClick,
+  resetTabsWhereFiltersWereApplied,
 }) {
   return (
     <Grid
@@ -145,6 +157,7 @@ function GridItem({
         hubLocation={hubLocation}
         hubData={hubData}
         sendToIdeaPageOnClick={sendToIdeaPageOnClick}
+        resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
       />
     </Grid>
   );

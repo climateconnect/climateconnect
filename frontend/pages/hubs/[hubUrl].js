@@ -1,4 +1,6 @@
 import { makeStyles, Typography } from "@material-ui/core";
+import parseHtml from "html-react-parser";
+import Head from "next/head";
 import React, { useContext, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../public/lib/apiOperations";
@@ -23,11 +25,15 @@ import HubHeaderImage from "../../src/components/hub/HubHeaderImage";
 import NavigationSubHeader from "../../src/components/hub/NavigationSubHeader";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import DonationCampaignInformation from "../../src/components/staticpages/donate/DonationCampaignInformation";
+import { retrievePage } from "../../src/utils/webflow";
 
 const useStyles = makeStyles((theme) => ({
   contentRefContainer: {
     paddingTop: theme.spacing(4),
     position: "relative",
+    [theme.breakpoints.down("sm")]: {
+      paddingTop: theme.spacing(1),
+    },
   },
   contentUnderHeader: {
     marginTop: 112,
@@ -43,10 +49,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const DESCRIPTION_WEBFLOW_LINKS = {
+  energy: {
+    en: "energy-hub",
+  },
+};
+
 //potentially switch back to getinitialprops here?!
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hubUrl;
   const ideaToOpen = ctx.query.idea;
+
   const [
     hubData,
     project_categories,
@@ -55,6 +68,7 @@ export async function getServerSideProps(ctx) {
     project_statuses,
     location_filtered_by,
     allHubs,
+    hubDescription,
   ] = await Promise.all([
     getHubData(hubUrl, ctx.locale),
     getProjectTagsOptions(hubUrl, ctx.locale),
@@ -62,8 +76,10 @@ export async function getServerSideProps(ctx) {
     getSkillsOptions(ctx.locale),
     getStatusOptions(ctx.locale),
     getLocationFilteredBy(ctx.query),
-    getAllHubs(ctx.locale, true),
+    getAllHubs(ctx.locale, false),
+    retrieveDescriptionFromWebflow(ctx.query, ctx.locale),
   ]);
+
   return {
     props: {
       hubUrl: hubUrl,
@@ -85,8 +101,10 @@ export async function getServerSideProps(ctx) {
         project_statuses: project_statuses,
       },
       initialLocationFilter: location_filtered_by,
-      allHubs,
+      sectorHubs: allHubs.filter((h) => h.hub_type === "sector hub"),
+      allHubs: allHubs,
       initialIdeaUrlSlug: ideaToOpen ? encodeURIComponent(ideaToOpen) : null,
+      hubDescription: hubDescription,
     },
   };
 }
@@ -104,10 +122,12 @@ export default function Hub({
   subHeadline,
   initialLocationFilter,
   filterChoices,
+  sectorHubs,
   allHubs,
   initialIdeaUrlSlug,
   hubLocation,
   hubData,
+  hubDescription,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -128,6 +148,17 @@ export default function Hub({
     setErrorMessage(newMessage);
   };
   const contentRef = useRef(null);
+
+  /*
+   * When you share an idea through CreateIdeaDialog, you will be
+   * redirected to the idea's board with the new idea open.
+   * However this redirect does not reset state which is why we need
+   * this function to make sure ideas are caught again after refreshing.
+   * otherwise the idea's board will be empty.
+   */
+  const resetTabsWhereFiltersWereApplied = () => {
+    setTabsWhereFiltersWereApplied([]);
+  };
 
   //Refs and state for tutorial
   const hubQuickInfoRef = useRef(null);
@@ -161,7 +192,7 @@ export default function Hub({
     setTabsWhereFiltersWereApplied(tabs);
   };
 
-  const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
+  const handleApplyNewFilters = async ({ type, newFilters, closeFilters, nonFilterParams }) => {
     return await applyNewFilters({
       type: type,
       filters: filters,
@@ -172,9 +203,10 @@ export default function Hub({
       token: token,
       handleAddFilters: handleAddFilters,
       handleSetErrorMessage: handleSetErrorMessage,
-      tabsWhereFiltersWereApplied,
+      tabsWhereFiltersWereApplied: tabsWhereFiltersWereApplied,
       handleSetTabsWhereFiltersWereApplied: handleSetTabsWhereFiltersWereApplied,
       hubUrl: hubUrl,
+      idea: nonFilterParams?.idea,
     });
   };
 
@@ -191,60 +223,77 @@ export default function Hub({
   };
 
   return (
-    <WideLayout title={headline} fixedHeader headerBackground="#FFF">
-      <div className={classes.contentUnderHeader}>
-        <NavigationSubHeader hubName={name} />
-        {process.env.DONATION_CAMPAIGN_RUNNING === "true" && <DonationCampaignInformation />}
-        <HubHeaderImage
-          image={getImageUrl(image)}
-          source={image_attribution}
-          onClose={closeHubHeaderImage}
-          isLocationHub={isLocationHub}
-          statBoxTitle={statBoxTitle}
-          stats={stats}
-        />
-        <HubContent
-          hubQuickInfoRef={hubQuickInfoRef}
-          headline={headline}
-          quickInfo={quickInfo}
-          statBoxTitle={statBoxTitle}
-          stats={stats}
-          scrollToSolutions={scrollToSolutions}
-          detailledInfo={<HubDescription hub={hubUrl} texts={texts} />}
-          subHeadline={subHeadline}
-          hubProjectsButtonRef={hubProjectsButtonRef}
-          isLocationHub={isLocationHub}
-          location={hubLocation}
-        />
-        <div className={classes.contentRefContainer}>
-          <div ref={contentRef} className={classes.contentRef} />
-          {!isLocationHub && <BrowseExplainer />}
-          <BrowseContent
-            applyNewFilters={handleApplyNewFilters}
-            customSearchBarLabels={customSearchBarLabels}
-            errorMessage={errorMessage}
-            filters={filters}
-            handleUpdateFilterValues={handleUpdateFilterValues}
-            filterChoices={filterChoices}
-            handleSetErrorMessage={handleSetErrorMessage}
-            hideMembers={!isLocationHub}
-            hubName={name}
-            hubProjectsButtonRef={hubProjectsButtonRef}
-            hubQuickInfoRef={hubQuickInfoRef}
-            initialLocationFilter={initialLocationFilter}
-            // TODO: is this still needed?
-            // initialOrganizations={initialOrganizations}
-            // initialProjects={initialProjects}
-            nextStepTriggeredBy={nextStepTriggeredBy}
-            showIdeas={isLocationHub}
-            allHubs={allHubs}
-            initialIdeaUrlSlug={initialIdeaUrlSlug}
-            hubLocation={hubLocation}
-            hubData={hubData}
+    <>
+      {hubDescription && hubDescription.headContent && (
+        <Head>{parseHtml(hubDescription.headContent)}</Head>
+      )}
+      <WideLayout title={headline} fixedHeader headerBackground="#FFF" image={getImageUrl(image)}>
+        <div className={classes.contentUnderHeader}>
+          <NavigationSubHeader hubName={name} allHubs={allHubs} isLocationHub={isLocationHub} />
+          {<DonationCampaignInformation />}
+          <HubHeaderImage
+            image={getImageUrl(image)}
+            source={image_attribution}
+            onClose={closeHubHeaderImage}
+            isLocationHub={isLocationHub}
+            statBoxTitle={statBoxTitle}
+            stats={stats}
           />
+          <HubContent
+            hubQuickInfoRef={hubQuickInfoRef}
+            headline={headline}
+            quickInfo={quickInfo}
+            statBoxTitle={statBoxTitle}
+            stats={stats}
+            scrollToSolutions={scrollToSolutions}
+            detailledInfo={
+              hubDescription?.bodyContent ? (
+                <div dangerouslySetInnerHTML={{ __html: hubDescription.bodyContent }} />
+              ) : (
+                <HubDescription hub={hubUrl} texts={texts} />
+              )
+            }
+            hubUrl={hubUrl}
+            subHeadline={subHeadline}
+            hubProjectsButtonRef={hubProjectsButtonRef}
+            isLocationHub={isLocationHub}
+            location={hubLocation}
+            allHubs={sectorHubs}
+            hubData={hubData}
+            hubName={name}
+          />
+          <div className={classes.contentRefContainer}>
+            <div ref={contentRef} className={classes.contentRef} />
+            {!isLocationHub && <BrowseExplainer />}
+            <BrowseContent
+              applyNewFilters={handleApplyNewFilters}
+              customSearchBarLabels={customSearchBarLabels}
+              errorMessage={errorMessage}
+              filters={filters}
+              handleUpdateFilterValues={handleUpdateFilterValues}
+              filterChoices={filterChoices}
+              handleSetErrorMessage={handleSetErrorMessage}
+              hideMembers={!isLocationHub}
+              hubName={name}
+              hubProjectsButtonRef={hubProjectsButtonRef}
+              hubQuickInfoRef={hubQuickInfoRef}
+              initialLocationFilter={initialLocationFilter}
+              // TODO: is this still needed?
+              // initialOrganizations={initialOrganizations}
+              // initialProjects={initialProjects}
+              nextStepTriggeredBy={nextStepTriggeredBy}
+              showIdeas={isLocationHub}
+              allHubs={sectorHubs}
+              initialIdeaUrlSlug={initialIdeaUrlSlug}
+              hubLocation={hubLocation}
+              hubData={hubData}
+              resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
+              hubUrl={hubUrl}
+            />
+          </div>
         </div>
-      </div>
-    </WideLayout>
+      </WideLayout>
+    </>
   );
 }
 
@@ -257,6 +306,21 @@ const HubDescription = ({ hub, texts }) => {
       {texts.more_info_about_hub_coming_soon}
     </Typography>
   );
+};
+
+const WEBFLOW_BASE_LINK = "https://climateconnect.webflow.io/";
+
+const retrieveDescriptionFromWebflow = async (query, locale) => {
+  if (
+    DESCRIPTION_WEBFLOW_LINKS[query?.hubUrl] &&
+    DESCRIPTION_WEBFLOW_LINKS[query?.hubUrl][locale]
+  ) {
+    const props = await retrievePage(
+      WEBFLOW_BASE_LINK + DESCRIPTION_WEBFLOW_LINKS[query.hubUrl][locale]
+    );
+    return props;
+  }
+  return null;
 };
 
 const getHubData = async (url_slug, locale) => {

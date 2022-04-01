@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function NoItemsFound({ type, hubName }) {
+export default function NoItemsFound({ type, hubName, className }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({
@@ -22,7 +22,7 @@ export default function NoItemsFound({ type, hubName }) {
     hubName: hubName,
   });
   return (
-    <Typography component="h4" variant="h5" className={classes.infoMessage}>
+    <Typography component="h4" variant="h5" className={`${classes.infoMessage} ${className}`}>
       {texts.could_not_find_any_items_of_type}
     </Typography>
   );

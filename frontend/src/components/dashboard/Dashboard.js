@@ -14,12 +14,16 @@ import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import Cookies from "universal-cookie";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
+import OpenClimateMatchButton from "../climateMatch/OpenClimateMatchButton";
 import UserContext from "../context/UserContext";
 import UserImage from "./UserImage";
+import CreateIdeaDialog from "../ideas/createIdea/CreateIdeaDialog";
+import { getUserOrganizations } from "../../../public/lib/organizationOperations";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -97,14 +101,13 @@ const useStyles = makeStyles((theme) => {
       display: "flex",
       justifyContent: "space-around",
     },
-
-    cityHubOption: {
+    climateHubOption: {
       width: "100%",
     },
   };
 });
 
-// TODO(Piper): generalize this spacing unit to be used in other places,
+// TODO: generalize this spacing unit to be used in other places,
 // for consistency.
 const HorizontalSpacing = ({ children, size }) => {
   return (
@@ -115,7 +118,7 @@ const HorizontalSpacing = ({ children, size }) => {
 };
 
 // TODO(Piper): we should generalize these components post launch
-// of CityHub so that they can be used across the platform.
+// of ClimateHub so that they can be used across the platform.
 const HoverButton = ({ items, label, startIcon }) => {
   const classes = useStyles();
   const buttonRef = useRef(null);
@@ -161,8 +164,12 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
   const classes = useStyles();
   const { startLoading } = useContext(UserContext);
 
-  const handleClick = () => {
-    startLoading();
+  const handleClick = (onClick) => {
+    if (onClick) {
+      onClick();
+    } else {
+      startLoading();
+    }
   };
 
   return (
@@ -170,8 +177,12 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
       <Paper onMouseEnter={handleOpen} onMouseLeave={handleClose} className={classes.menu}>
         <MenuList>
           {items?.map((item) => (
-            <Link key={item.url_slug} href={item.url_slug} onClick={handleClick}>
-              <MenuItem component="button" className={classes.cityHubOption}>
+            <Link
+              key={item.url_slug}
+              href={item.url_slug}
+              onClick={() => handleClick(item.onClick)}
+            >
+              <MenuItem component="button" className={classes.climateHubOption}>
                 {item.name}
               </MenuItem>
             </Link>
@@ -182,8 +193,20 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
   );
 };
 
-export default function Dashboard({ className, headline, location }) {
+export default function Dashboard({ allHubs, hubData, className, headline, location, hubUrl }) {
   const classes = useStyles();
+
+  const [userOrganizations, setUserOrganizations] = useState(null);
+  const [isCreateIdeaOpen, setCreateIdeaOpen] = useState(false);
+  const token = new Cookies().get("token");
+
+  useEffect(async function () {
+    if (userOrganizations === null) {
+      setUserOrganizations("");
+      const userOrgsFromServer = await getUserOrganizations(token, locale);
+      setUserOrganizations(userOrgsFromServer || []);
+    }
+  }, []);
 
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "dashboard", locale: locale, user: user, location: location });
@@ -232,7 +255,8 @@ export default function Dashboard({ className, headline, location }) {
                   {
                     name: texts.create_idea,
                     // url_slug: `${getLocalePrefix(locale)}/${item.url_slug}/`,
-                    url_slug: `#ideas`,
+                    url_slug: "#",
+                    onClick: () => setCreateIdeaOpen(true),
                   },
                   {
                     name: texts.my_ideas,
@@ -282,7 +306,7 @@ export default function Dashboard({ className, headline, location }) {
                   },
                 ]}
               />
-
+              <OpenClimateMatchButton hubUrl={hubUrl} />
               {/* TODO: restore Climate Match icon and link once CM is live  */}
               {/* <Button type="submit">Climate Match</Button> */}
             </>
@@ -299,6 +323,15 @@ export default function Dashboard({ className, headline, location }) {
           )}
         </div>
       </div>
+      <CreateIdeaDialog
+        open={isCreateIdeaOpen}
+        onClose={() => setCreateIdeaOpen(false)}
+        allHubs={allHubs}
+        userOrganizations={userOrganizations}
+        hubLocation={location}
+        hubData={hubData}
+        resetTabsWhereFiltersWereApplied={() => {}}
+      />
     </div>
   );
 }

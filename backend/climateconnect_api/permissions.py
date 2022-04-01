@@ -5,5 +5,5 @@ class UserPermission(BasePermission):
     def has_permission(self, request, view):
         if request.user.is_authenticated and UserProfile.objects.filter(user=request.user).exists():
             return True
-        else:
-            return False
+
+        return False

@@ -1,6 +1,7 @@
-import { Button, Container, Divider, Typography } from "@material-ui/core";
+import { Button, Container, Divider, Typography, Link, useMediaQuery } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
+import EditSharp from "@material-ui/icons/EditSharp";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import NextCookies from "next-cookies";
 import Router from "next/router";
@@ -8,6 +9,7 @@ import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getLocalePrefix, getRolesOptions } from "../../public/lib/apiOperations";
+import { getImageUrl } from "../../public/lib/imageOperations";
 import { startPrivateChat } from "../../public/lib/messagingOperations";
 import { parseOrganization } from "../../public/lib/organizationOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
@@ -18,8 +20,13 @@ import PageNotFound from "../../src/components/general/PageNotFound";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import ProfilePreviews from "../../src/components/profile/ProfilePreviews";
 import ProjectPreviews from "../../src/components/project/ProjectPreviews";
+import theme from "../../src/themes/theme";
 import getOrganizationInfoMetadata from "./../../public/data/organization_info_metadata.js";
 import UserContext from "./../../src/components/context/UserContext";
+import IconButton from "@material-ui/core/IconButton";
+import GroupAddIcon from "@material-ui/icons/GroupAdd";
+import EditSharpIcon from "@material-ui/icons/EditSharp";
+import ControlPointSharpIcon from "@material-ui/icons/ControlPointSharp";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -35,8 +42,14 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     margin: "0 auto",
   },
-  editButton: {
+  button: {
+    width: "30px",
+    height: "auto",
     marginBottom: theme.spacing(1),
+  },
+  innerIcon: {
+    marginRight: theme.spacing(0.5),
+    marginLeft: -theme.spacing(1),
   },
   divider: {
     marginTop: theme.spacing(1),
@@ -49,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
   sectionHeadlineWithButtonContainer: {
     display: "flex",
     justifyContent: "space-between",
+    alignItems: "center",
     marginTop: theme.spacing(3),
   },
   no_content_yet: {
@@ -92,6 +106,7 @@ export default function OrganizationPage({
     <WideLayout
       title={organization ? organization.name : texts.not_found_error}
       description={organization.name + " | " + organization.info.short_description}
+      image={getImageUrl(organization.image)}
     >
       {organization ? (
         <OrganizationLayout
@@ -170,6 +185,9 @@ function OrganizationLayout({
     );
 
   const membersWithAdditionalInfo = getMembersWithAdditionalInfo(members);
+
+  const isTinyScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   return (
     <AccountPage
       account={organization}
@@ -178,7 +196,10 @@ function OrganizationLayout({
       type="organization"
       infoMetadata={infoMetadata}
       isOwnAccount={canEdit}
+      isOrganization={true}
       editText={texts.edit_organization}
+      isTinyScreen={isTinyScreen}
+      isSmallScreen={isSmallScreen}
     >
       {!user && (
         <LoginNudge
@@ -196,9 +217,20 @@ function OrganizationLayout({
           <Typography color="primary" className={classes.headline} component="h2">
             {texts.this_organizations_projects}
           </Typography>
-          <Button variant="contained" color="primary" href={getLocalePrefix(locale) + "/share"}>
-            {texts.share_a_project}
-          </Button>
+          {isTinyScreen ? (
+            <IconButton href={getLocalePrefix(locale) + "/share"}>
+              <ControlPointSharpIcon
+                className={classes.button}
+                variant="contained"
+                color="primary"
+              />
+            </IconButton>
+          ) : (
+            <Button variant="contained" color="primary" href={getLocalePrefix(locale) + "/share"}>
+              <ControlPointSharpIcon className={classes.innerIcon} />
+              {texts.share_a_project}
+            </Button>
+          )}
         </div>
         {projects && projects.length ? (
           <ProjectPreviews projects={projects} />
@@ -214,16 +246,27 @@ function OrganizationLayout({
           <Typography color="primary" className={classes.headline} component="h2">
             {texts.members_of_organization}
           </Typography>
-          {canEdit && (
-            <Button
-              className={classes.editButton}
-              variant="contained"
-              color="primary"
-              href={getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug}
-            >
-              {texts.manage_members}
-            </Button>
-          )}
+          {canEdit &&
+            (isTinyScreen ? (
+              <IconButton
+                href={
+                  getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug
+                }
+              >
+                <GroupAddIcon className={classes.button} variant="contained" color="primary" />
+              </IconButton>
+            ) : (
+              <Button
+                variant="contained"
+                color="primary"
+                href={
+                  getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug
+                }
+              >
+                <GroupAddIcon className={classes.innerIcon} />
+                {texts.manage_members}
+              </Button>
+            ))}
         </div>
         {members && members.length ? (
           <ProfilePreviews profiles={membersWithAdditionalInfo} showAdditionalInfo />

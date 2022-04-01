@@ -71,7 +71,7 @@ export async function getServerSideProps(ctx) {
   if (ctx.req && !token) {
     const texts = getTexts({ page: "chat", locale: ctx.locale });
     const message = texts.you_have_to_log_in_to_see_your_inbox;
-    return sendToLogin(ctx, message);
+    return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
   }
   const chatData = await getChatsOfLoggedInUser(token, null, ctx.locale);
   return {
@@ -92,7 +92,7 @@ export default function Inbox({ chatData, next }) {
   const [errorMessage, setErrorMessage] = React.useState("");
   const [groupName, setGroupName] = React.useState("");
   const [chatsState, setChatsState] = React.useState({
-    chats: parseChats(chatData, user, texts),
+    chats: parseChats(chatData, texts),
     next: next,
   });
 
@@ -263,12 +263,12 @@ export default function Inbox({ chatData, next }) {
   );
 }
 
-const parseChats = (chats, user, texts) =>
+const parseChats = (chats, texts) =>
   chats
     ? chats.map((chat) => ({
         ...chat,
         chatting_partner:
-          chat.participants.length === 2 && chat.participants.filter((p) => p.id != user.id)[0],
+          chat.participants.length === 2 && chat.participants.find((p) => p.id !== chat.user.id),
         unread_count: chat.unread_count,
         content: chat.last_message ? chat.last_message.content : texts.chat_has_been_created,
       }))

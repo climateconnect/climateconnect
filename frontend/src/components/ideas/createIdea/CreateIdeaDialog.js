@@ -44,6 +44,7 @@ export default function CreateIdeaDialog({
   userOrganizations,
   hubLocation,
   hubData,
+  resetTabsWhereFiltersWereApplied,
 }) {
   const [waitingForCreation, setWaitingForCreation] = useState(false);
   const classes = useStyles({ userOrganization: userOrganizations });
@@ -117,15 +118,18 @@ export default function CreateIdeaDialog({
         locale: locale,
       });
       const url_slug = response.data;
+
       //TODO: link idea!
+      resetTabsWhereFiltersWereApplied();
       redirect(
         window.location.pathname,
         {
-          message: "Congratulations! Your idea " + idea.name + " has been created!",
+          message: texts.idea_has_been_created,
           idea: url_slug,
         },
         window.location.hash
       );
+
       setWaitingForCreation(false);
     } catch (e) {
       console.log("there has been an error :,(");

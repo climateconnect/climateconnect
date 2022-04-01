@@ -13,42 +13,48 @@ logger = logging.getLogger(__name__)
 mailjet_send_api = Client(auth=(settings.MJ_APIKEY_PUBLIC, settings.MJ_APIKEY_PRIVATE), version='v3.1')
 mailjet_api = Client(auth=(settings.MJ_APIKEY_PUBLIC, settings.MJ_APIKEY_PRIVATE))
 
+
 def get_template_id(template_key, lang_code):
     if not lang_code == "en":
         return getattr(settings, template_key + "_" + lang_code.upper())
     else:
         return getattr(settings, template_key)
 
+
 def check_send_email_notification(user):
     three_hours_ago = datetime.now() - timedelta(hours=3)
     recent_email_notification = EmailNotification.objects.filter(
-        user=user, 
+        user=user,
         created_at__gte=three_hours_ago
     )
     return not recent_email_notification.exists()
 
+
 def send_email(
-    user, 
-    variables, 
-    template_key, 
-    subjects_by_language, 
-    should_send_email_setting, 
+    user,
+    variables,
+    template_key,
+    subjects_by_language,
+    should_send_email_setting,
     notification
 ):
-    if check_send_email_notification(user) == False:
+    if not check_send_email_notification(user):
         return
     if should_send_email_setting:
         try:
             user_profile = UserProfile.objects.get(user=user)
-            # short circuit if the user has changed his settings to not receive emails on idea join
-            if getattr(user_profile, should_send_email_setting) == False:
+            # short circuit if the user has changed his settings to not
+            # receive emails on this topic
+            if not getattr(user_profile, should_send_email_setting):
                 return
         except UserProfile.DoesNotExist:
-            print("there is no user profile (send_idea_join_email")
+            print("there is no user profile (send_email)")
     lang_code = get_user_lang_code(user)
     subject = subjects_by_language[lang_code]
-    template_id = get_template_id(template_key=template_key, lang_code=lang_code)
-
+    template_id = get_template_id(
+        template_key=template_key,
+        lang_code=lang_code
+    )
     data = {
         'Messages': [
             {
@@ -119,7 +125,7 @@ def get_reset_password_url(verification_key, lang_url):
 def send_user_verification_email(user, verification_key):
     lang_url = get_user_lang_url(get_user_lang_code(user))
     url = get_user_verification_url(verification_key, lang_url)
-    
+
     subjects_by_language = {
         "en": "Welcome to Climate Connect! Verify your email address",
         "de": "Willkommen bei Climate Connect! Verifiziere deine Email-Adresse!"
@@ -130,9 +136,9 @@ def send_user_verification_email(user, verification_key):
         "url": url
     }
     send_email(
-        user=user, 
-        variables=variables, 
-        template_key="EMAIL_VERIFICATION_TEMPLATE_ID", 
+        user=user,
+        variables=variables,
+        template_key="EMAIL_VERIFICATION_TEMPLATE_ID",
         subjects_by_language=subjects_by_language,
         should_send_email_setting="",
         notification=None
@@ -141,7 +147,7 @@ def send_user_verification_email(user, verification_key):
 def send_new_email_verification(user, new_email, verification_key):
     lang_url = get_user_lang_url(get_user_lang_code(user))
     url = get_new_email_verification_url(verification_key, lang_url)
-    
+
     subjects_by_language = {
         "en": "Verify your new email address",
         "de": "Bestätige deine neue Email Adresse"
@@ -153,9 +159,9 @@ def send_new_email_verification(user, new_email, verification_key):
         "NewMail": new_email
     }
     send_email(
-        user=user, 
-        variables=variables, 
-        template_key="NEW_EMAIL_VERIFICATION_TEMPLATE_ID", 
+        user=user,
+        variables=variables,
+        template_key="NEW_EMAIL_VERIFICATION_TEMPLATE_ID",
         subjects_by_language=subjects_by_language,
         should_send_email_setting="",
         notification=None
@@ -164,7 +170,7 @@ def send_new_email_verification(user, new_email, verification_key):
 def send_password_link(user, password_reset_key):
     lang_url = get_user_lang_url(get_user_lang_code(user))
     url = get_reset_password_url(password_reset_key, lang_url)
-    
+
     subjects_by_language = {
         "en": "Reset your Climate Connect password",
         "de": "Setze deine Climate Connect Passwort zurück"
@@ -175,16 +181,15 @@ def send_password_link(user, password_reset_key):
         "url": url
     }
     send_email(
-        user=user, 
-        variables=variables, 
-        template_key="RESET_PASSWORD_TEMPLATE_ID", 
+        user=user,
+        variables=variables,
+        template_key="RESET_PASSWORD_TEMPLATE_ID",
         subjects_by_language=subjects_by_language,
         should_send_email_setting="",
         notification=None
     )
 
 def send_feedback_email(email, message, send_response):
-
     data = {
         'Messages': [
             {
@@ -202,20 +207,21 @@ def send_feedback_email(email, message, send_response):
                 "TemplateLanguage": True,
                 "Subject": "Climate Connect User Feedback",
                 "Variables": {
-                    "text": message,
-                    "sendReply": send_response,
-                    "email": email
+                    "text": str(message),
+                    "sendReply": str(send_response),
+                    "email": str(email if email else "")
                 }
             }
-	    ]
+        ]
     }
+    print(data)
+
     try:
-        mail = mailjet_send_api.send.create(data=data)
+        mailjet_send_api.send.create(data=data)
     except Exception as ex:
-        logger.error("%s: Error sending email: %s" % (
+        print("%s: Error sending email: %s" % (
             send_user_verification_email.__name__, ex
         ))
-        logger.error(mail)
 
 def register_newsletter_contact(email_address):
     old_contact = mailjet_api.contact.get(email_address)

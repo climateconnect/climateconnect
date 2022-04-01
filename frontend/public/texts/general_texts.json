@@ -487,6 +487,10 @@
     "en": "Work on",
     "de": "Arbeite an"
   },
+  "wants_to_join_your_project": {
+    "en": "A user wants to join your project!",
+    "de": "Jemand möchte deinem Projekt beitreten!"
+  },
   "get_inspired_by": {
     "en": "Get inspired by",
     "de": "Lass dich inspirieren durch"
@@ -495,13 +499,25 @@
     "en": "Replicate",
     "de": "Verbreite"
   },
+  "requested": {
+    "en": "Requested",
+    "de": "Angefragt"
+  },
   "join": {
+    "en": "Join",
+    "de": "Mitmachen"
+  },
+  "join_invitation": {
     "en": "Join",
     "de": "Mach mit bei"
   },
   "join_now": {
     "en": "Join now",
     "de": "Jetzt anmelden"
+  },
+  "review_join_requests": {
+    "en": "Review join requests",
+    "de": "Anfragen ansehen"
   },
   "collaborate_with": {
     "en": "Collaborate with",
@@ -617,7 +633,7 @@
   },
   "you_will_have_an_opportunity_to_create_or_add_an_organization_once_signed_up": {
     "en": "You will have an opportunity to create/add an organization once signed up.",
-    "de": "Du hast die Möglichkeit, eine Organisation zu erstellen/hinzufügen, sobald du dich angemeldet hast."
+    "de": "Du hast die Möglichkeit, eine Organisation zu erstellen/hinzuzufügen, sobald du dich angemeldet hast."
   },
   "edit_profile": {
     "en": "Edit Profile",
@@ -694,5 +710,57 @@
   "orgs": {
     "en": "Orgs",
     "de": "Orgs"
+  },
+  "forward": {
+    "en": "Forward",
+    "de": "Weiter"
+  },
+  "new": {
+    "en": "new",
+    "de": "Neu"
+  },
+  "get_active": {
+    "en": "Act now",
+    "de": "Engagieren"
+  },
+  "more": {
+    "en": "More",
+    "de": "Mehr"
+  },
+  "copy_link": {
+    "en": "Copy link",
+    "de": "Link kopieren"
+  },
+  "copy": {
+    "en": "Copy",
+    "de": "Kopieren"
+  },
+  "link": {
+    "en": "Link",
+    "de": "Link"
+  },
+  "year": {
+    "en": "year",
+    "de": "Jahr"
+  },
+  "years": {
+    "en": "years",
+    "de": "Jahre"
+  },
+  "month": {
+    "en": "month",
+    "de": "Monat"
+  },
+  "months": {
+    "en": "months",
+    "de": "Monate"
+  },
+  "day": {
+    "en": "day",
+    "de": "Tag"
+  },
+  "days": {
+    "en": "days",
+    "de": "Tage"
   }
 }

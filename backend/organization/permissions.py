@@ -1,7 +1,7 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
+
 from organization.models import (Organization, OrganizationMember, Project, ProjectMember, ProjectParents)
 from climateconnect_api.models import Role
-
 
 
 class OrganizationProjectCreationPermission(BasePermission):
@@ -17,6 +17,7 @@ class OrganizationProjectCreationPermission(BasePermission):
             return True
 
         return False
+
 
 class ProjectReadWritePermission(BasePermission):
     def has_permission(self, request, view):
@@ -40,6 +41,7 @@ class ProjectReadWritePermission(BasePermission):
 
         return False
 
+
 class ReadSensibleProjectDataPermission(BasePermission):
     def has_permission(self, request, view):
         try:
@@ -50,6 +52,7 @@ class ReadSensibleProjectDataPermission(BasePermission):
         if ProjectMember.objects.filter(user=request.user, role__role_type=Role.ALL_TYPE, project=project).exists():
             return True
         return False
+
 
 class OrganizationReadWritePermission(BasePermission):
     def has_permission(self, request, view):
@@ -73,11 +76,12 @@ class OrganizationReadWritePermission(BasePermission):
 
         return False
 
+
 class OrganizationMemberReadWritePermission(BasePermission):
     def has_permission(self, request, view):
         if request.method in SAFE_METHODS:
             return True
-            
+
         try:
             organization = Organization.objects.get(url_slug=str(view.kwargs.get('url_slug')))
         except Organization.DoesNotExist:
@@ -89,14 +93,15 @@ class OrganizationMemberReadWritePermission(BasePermission):
             )
             member_to_update = OrganizationMember.objects.filter(id=int(view.kwargs.get('pk')), organization=organization)
         except OrganizationMember.DoesNotExist:
-            return False      
-        if requesting_member.exists() and member_to_update.exists(): 
+            return False
+        if requesting_member.exists() and member_to_update.exists():
             if requesting_member[0].id == member_to_update[0].id and not requesting_member[0].role.role_type == Role.ALL_TYPE:
                 return True
             if requesting_member[0].role.role_type > member_to_update[0].role.role_type:
                 return True
 
         return False
+
 
 class ProjectMemberReadWritePermission(BasePermission):
     def has_permission(self, request, view):
@@ -113,8 +118,8 @@ class ProjectMemberReadWritePermission(BasePermission):
             )
             member_to_update = ProjectMember.objects.filter(id=int(view.kwargs.get('pk')), project=project)
         except ProjectMember.DoesNotExist:
-            return False      
-        if requesting_member.exists() and member_to_update.exists(): 
+            return False
+        if requesting_member.exists() and member_to_update.exists():
             if requesting_member[0].id == member_to_update[0].id:
                 if requesting_member[0].role.role_type == Role.ALL_TYPE and not requesting_member[0].role.role_type == member_to_update[0].role.role_type:
                     return False
@@ -123,6 +128,7 @@ class ProjectMemberReadWritePermission(BasePermission):
             if requesting_member[0].role.role_type > member_to_update[0].role.role_type:
                 return True
         return False
+
 
 class AddOrganizationMemberPermission(BasePermission):
     def has_permission(self, request, view):
@@ -139,7 +145,7 @@ class AddOrganizationMemberPermission(BasePermission):
                 user=request.user, role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE], organization=organization
             )
         except OrganizationMember.DoesNotExist:
-            return False   
+            return False
 
         if 'organization_members' in request.data:
             for member in request.data['organization_members']:
@@ -152,6 +158,7 @@ class AddOrganizationMemberPermission(BasePermission):
                 if new_member_role.role_type >= requesting_member[0].role.role_type:
                     return False
         return True
+
 
 class AddProjectMemberPermission(BasePermission):
     def has_permission(self, request, view):
@@ -168,7 +175,7 @@ class AddProjectMemberPermission(BasePermission):
                 user=request.user, role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE], project=project
             )
         except ProjectMember.DoesNotExist:
-            return False   
+            return False
 
         if 'project_members' in request.data:
             for member in request.data['project_members']:
@@ -181,6 +188,7 @@ class AddProjectMemberPermission(BasePermission):
                 if new_member_role.role_type >= requesting_member[0].role.role_type:
                     return False
         return True
+
 
 class ChangeOrganizationCreatorPermission(BasePermission):
     def has_permission(self, request, view):
@@ -197,12 +205,13 @@ class ChangeOrganizationCreatorPermission(BasePermission):
                 user=request.user, role__role_type__in=[Role.ALL_TYPE], organization=organization
             )
         except OrganizationMember.DoesNotExist:
-            return False   
+            return False
 
         if requesting_member:
             return True
 
         return False
+
 
 class ChangeProjectCreatorPermission(BasePermission):
     def has_permission(self, request, view):
@@ -219,9 +228,30 @@ class ChangeProjectCreatorPermission(BasePermission):
                 user=request.user, role__role_type__in=[Role.ALL_TYPE], project=project
             )
         except ProjectMember.DoesNotExist:
-            return False   
+            return False
 
         if requesting_member:
             return True
 
         return False
+
+class ApproveDenyProjectMemberRequest(BasePermission):
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return True
+
+        if not request.user.is_authenticated:
+            print(f"{request.user} is not authenticated")
+            return False
+
+        project = Project.objects.filter(url_slug=str(view.kwargs.get('project_slug'))).first()
+
+        # When calling from the POST in ManageJoinProjectView, Verify
+        # that we don't have duplicate requests causing the error to be thrown,
+        # or some other method.
+        permission_exists = ProjectMember.objects.filter(
+            project=project,
+            user=request.user,
+            role__role_type__in=[Role.ALL_TYPE]).exists()
+
+        return permission_exists

@@ -1,7 +1,7 @@
-import { Container } from "@material-ui/core";
+import { Collapse, Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { getParams } from "../../../public/lib/generalOperations";
 import { getMessageFromUrl } from "../../../public/lib/parsingOperations";
 import theme from "../../themes/theme";
@@ -52,12 +52,17 @@ export default function WideLayout({
   landingPage,
   headerBackground,
   subHeader,
+  image,
+  useFloodStdFont,
+  rootClassName,
 }) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);
   const [initialMessageType, setInitialMessageType] = React.useState(null);
   const [initialMessage, setInitialMessage] = React.useState("");
   const [alertEl, setAlertEl] = React.useState(null);
+  //Atm this is simply used to slide in the donation campaign banner after a certain timeout
+  const [showDonationBanner, setShowDonationBanner] = useState(false);
   const spaceToTop = ElementSpaceToTop({ initTopOfPage: true, el: alertEl });
   useEffect(() => {
     const params = getParams(window.location.href);
@@ -66,6 +71,9 @@ export default function WideLayout({
       setInitialMessage(decodeURI(params.errorMessage));
       setInitialMessageType("error");
     }
+    setTimeout(() => {
+      setShowDonationBanner(true);
+    }, 3000);
   }, []);
   useEffect(() => {
     setAlertOpen(true);
@@ -76,7 +84,9 @@ export default function WideLayout({
       noFeedbackButton={noFeedbackButton}
       noSpaceForFooter={noSpaceBottom}
       description={description}
+      useFloodStdFont={useFloodStdFont}
       theme={theme}
+      image={image}
     >
       <Header
         isStaticPage={isStaticPage}
@@ -88,7 +98,7 @@ export default function WideLayout({
       {isLoading ? (
         <LoadingContainer headerHeight={113} footerHeight={80} />
       ) : (
-        <Container maxWidth={false} component="main" className={classes.main}>
+        <Container maxWidth={false} component="main" className={`${classes.main} ${rootClassName}`}>
           {(message || initialMessage) && alertOpen && (
             <Alert
               className={`
@@ -112,7 +122,9 @@ export default function WideLayout({
           )}
           {subHeader && subHeader}
           {!fixedHeader && process.env.DONATION_CAMPAIGN_RUNNING === "true" && !landingPage && (
-            <DonationCampaignInformation />
+            <Collapse in={showDonationBanner}>
+              <DonationCampaignInformation />
+            </Collapse>
           )}
           {children}
         </Container>

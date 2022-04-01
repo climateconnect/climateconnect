@@ -82,7 +82,8 @@ export default function getAboutTexts(classes) {
       de: (
         <>
           Viele Menschen arbeiten an sehr effektiven Lösungen für die Klimakrise. Wir müssen
-          lediglich diese effektiven Lösungen weltweit verbreiten.
+          lediglich diese effektiven{" "}
+          <span className={classes?.marked}>Lösungen weltweit verbreiten</span>.
         </>
       ),
     },
@@ -238,13 +239,13 @@ export default function getAboutTexts(classes) {
     },
     leaving_beta: {
       en: "Leaving Beta",
-      de: "Release",
+      de: "Verlassen der Beta",
     },
     leaving_beta_text: {
       en:
-        "In the summer of 2021 we expect all core functionality to work smoothly and all pages and content to be polished and user-friendly. Help us get here by sharing your feedback!",
+        "In the winter of 2021/2022 we expect all core functionality to work smoothly and all pages and content to be polished and user-friendly. Help us get here by sharing your feedback!",
       de:
-        "Im Sommer 2021 erwarten wir, dass alle Kernfunktionen reibungslos funktionieren und alle Seiten sowie Inhalte ausgefeilt und benutzerfreundlich sind. Helft uns, dies zu erreichen, indem ihr uns Feedback gebt!",
+        "Im Winter 2021/2022 erwarten wir, dass alle Kernfunktionen reibungslos funktionieren und alle Seiten sowie Inhalte ausgefeilt und benutzerfreundlich sind. Helft uns, dies zu erreichen, indem ihr uns Feedback gebt!",
     },
     after_realizing_the_need_for_global_collaboration: {
       en:
@@ -392,6 +393,10 @@ export default function getAboutTexts(classes) {
     effective_climate_action_only_works_with_global_collaboration: {
       en: "Effective climate action only works with global collaboration",
       de: "Effektiver Klimaschutz funktioniert nur durch globale Zusammenarbeit",
+    },
+    winter: {
+      en: "Winter",
+      de: "Winter",
     },
   };
 }

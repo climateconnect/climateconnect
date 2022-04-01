@@ -45,17 +45,17 @@ const projectOverviewStyles = (theme) => {
     },
     flexContainer: {
       display: "flex",
-      alignItems: "flex-start",
+      alignItems: "center",
       marginBottom: theme.spacing(1),
       flexWrap: "wrap",
     },
     inlineImage: {
       display: "inline-block",
       width: "50%",
+      height: "50%",
       maxWidth: 550,
     },
     inlineProjectInfo: {
-      display: "inline-block",
       width: "50%",
       verticalAlign: "top",
       padding: theme.spacing(1),

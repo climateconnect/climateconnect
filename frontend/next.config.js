@@ -1,8 +1,12 @@
 const pick = require("lodash/pick");
 
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+});
+
 require("dotenv").config();
 
-module.exports = {
+module.exports = withBundleAnalyzer({
   // Read set variables from `.env` file
   env: pick(process.env, [
     "API_HOST",
@@ -24,4 +28,39 @@ module.exports = {
   exportPathMap: async function (defaultPathMap) {
     return defaultPathMap;
   },
-};
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/browse",
+        has: [
+          {
+            type: "cookie",
+            key: "token",
+          },
+        ],
+        permanent: false,
+      },
+      {
+        source: "/spenden",
+        destination: "/de/donate",
+        permanent: true,
+      },
+      {
+        source: "/spendenwald",
+        destination: "/de/donorforest",
+        permanent: true,
+      },
+      {
+        source: "/klimakuechen-erlangen",
+        destination: "/de/projects/klimakuechen?hubPage=erlangen",
+        permanent: true,
+      },
+      {
+        source: "/blog/weihnachten",
+        destination: "/post/es-ist-weihnachtszeit-auf-climate-connect",
+        permanent: true,
+      },
+    ];
+  },
+});

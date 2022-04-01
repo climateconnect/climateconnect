@@ -65,7 +65,7 @@
   },
   "email_on_private_chat_message_text": {
     "en": "Get notified when somebody sends you a personal chat message",
-    "de": "Ich möchte benachrichtigt werden, wenn dir jemand persönlich schreibt"
+    "de": "Ich möchte benachrichtigt werden, wenn mir jemand persönlich schreibt"
   },
   "email_on_group_chat_message_text": {
     "en": "Get notified when somebody sends you a chat message in a group",
@@ -86,6 +86,14 @@
   "email_on_new_project_follower_text": {
     "en": "Get notified when somebody follows a project you're part of.",
     "de": "Ich möchte benachrichtigt werden, wenn jemand einem Projekt folgt, an dem ich beteiligt bin"
+  },
+  "email_on_new_project_like_text": {
+    "en": "Get notified when somebody likes your project",
+    "de": "Ich möchte benachrichtigt werden, wenn jemand mein Projekt liked"
+  },
+  "email_on_mention_text": {
+    "en": "Get notified when somebody mentions you in comment.",
+    "de": "Ich möchte benachrichtigt werden, wenn mich jemand in einem Kommentar erwähnt"
   },
   "email_on_new_idea_join_text": {
     "en": "Get notified when somebody joins an ideas team that you're also part of",
