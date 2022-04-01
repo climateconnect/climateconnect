@@ -154,7 +154,7 @@ export default function ClimateMatchResultsRoot() {
                 href={`${getLocalePrefix(locale)}/hubs/${fromHub?.url_slug}`}
               >
                 <ArrowBackIosIcon className={classes.backIcon} />
-                {texts.cityhub} {fromHub?.name}
+                {texts.climatehub} {fromHub?.name}
               </Button>
               <Button
                 className={classes.backButton}

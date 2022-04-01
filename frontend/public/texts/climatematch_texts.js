@@ -87,9 +87,9 @@ export default function getClimatematchTexts({ location, question }) {
       en: "restart",
       de: "Neu starten",
     },
-    cityhub: {
-      en: "CityHub",
-      de: "CityHub",
+    climatehub: {
+      en: "ClimateHub",
+      de: "ClimateHub",
     },
     please_create_an_account_or_log_in_to_contact_a_projects_organizer: {
       en: "Please sign up to get in contact with others.",
