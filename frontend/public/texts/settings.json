@@ -1,11 +1,11 @@
 {
   "new_email_verification": {
     "en": "New Email verification",
-    "de": "Neue email Adresse verifizieren"
+    "de": "Neue E-Mail Adresse verifizieren"
   },
   "verifying_new_email": {
     "en": "Verifying your new email address...",
-    "de": "Überprüfe deine neuen email Adresse..."
+    "de": "Überprüfe deine neuen E-Mail Adresse..."
   },
   "enter_your_new_password": {
     "en": "Enter your new password",
@@ -49,11 +49,11 @@
   },
   "enter_your_login_email": {
     "en": "Enter your login email",
-    "de": "Gib deine email Adresse ein"
+    "de": "Gib deine E-Mail Adresse ein"
   },
   "you_didnt_enter_an_email": {
     "en": "You didn't enter an email.",
-    "de": "Du hast keine email Adresse eingegeben"
+    "de": "Du hast keine E-Mail Adresse eingegeben"
   },
   "reset_password": {
     "en": "Reset Password",
@@ -113,11 +113,11 @@
   },
   "your_new_email_can_not_be_the_same_as_your_old_email": {
     "en": "Your new email can not be the same as your old email.",
-    "de": "Deine neue email Adresse kann nicht dieselbe wie die alte sein"
+    "de": "Deine neue E-Mail Adresse kann nicht dieselbe wie die alte sein"
   },
   "an_e_mail_to_confirm_this_e_mail_address_change_has_been_sent_to_your_old_e_mail_address": {
     "en": "An email to confirm this email address change has been sent to your old email address.",
-    "de": "Zur Bestätigung der Adressänderung wurde eine email an deine alte email Adresse gesendet"
+    "de": "Zur Bestätigung der Adressänderung wurde eine email an deine alte E-Mail Adresse gesendet"
   },
   "you_havent_made_any_changes": {
     "en": "You haven't made any changes.",
@@ -145,15 +145,15 @@
   },
   "new_email": {
     "en": "New Email",
-    "de": "Neue email Adresse"
+    "de": "Neue E-Mail Adresse"
   },
   "change_email": {
     "en": "Change email",
-    "de": "email Adresse ändern"
+    "de": "E-Mail Adresse ändern"
   },
   "change_email_text": {
     "en": "Changing your email will not change the email you use for Login. It will just change the email that your E-Mails are delivered to.",
-    "de": "Wenn du deine email Adresse änderst, ändert sich nicht die email Adresse, die du zum Anmelden verwendest. Es wird nur die email Adresse geändert, an die deine E-Mails zugestellt werden"
+    "de": "Wenn du deine E-Mail Adresse änderst, ändert sich nicht die E-Mail Adresse, die du zum Anmelden verwendest. Es wird nur die E-Mail Adresse geändert, an die deine E-Mails zugestellt werden"
   },
   "change_email_preferences": {
     "en": "Change email preferences",
