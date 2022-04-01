@@ -45,7 +45,7 @@
   },
   "send_password_reset_email": {
     "en": "Send password reset email",
-    "de": "Sende eine Email, um dein Passwort zurückzusetzen"
+    "de": "Sende eine E-Mail, um dein Passwort zurückzusetzen"
   },
   "enter_your_login_email": {
     "en": "Enter your login email",
@@ -117,7 +117,7 @@
   },
   "an_e_mail_to_confirm_this_e_mail_address_change_has_been_sent_to_your_old_e_mail_address": {
     "en": "An email to confirm this email address change has been sent to your old email address.",
-    "de": "Zur Bestätigung der Adressänderung wurde eine email an deine alte E-Mail Adresse gesendet"
+    "de": "Zur Bestätigung der Adressänderung wurde eine E-Mail an deine alte E-Mail Adresse gesendet"
   },
   "you_havent_made_any_changes": {
     "en": "You haven't made any changes.",
@@ -177,7 +177,7 @@
   },
   "if_you_wish_to_delete_this_account": {
     "en": "If you wish to delete this account, send an email to contact@climateconnect.earth",
-    "de": "Wenn du das Konto löschen willst, sende eine email an contact@climateconnect.earth"
+    "de": "Wenn du das Konto löschen willst, sende eine E-Mail an contact@climateconnect.earth"
   },
   "old_password": {
     "en": "Old Password",
