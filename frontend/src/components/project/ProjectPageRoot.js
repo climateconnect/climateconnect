@@ -297,7 +297,7 @@ export default function ProjectPageRoot({
     const team_size = project?.team?.length;
     if (user_permission === ROLE_TYPES.all_type && team_size > 1)
       setMessage({
-        message: `You can't leave a project as the creator. Please give the creator role to another team member by clicking "Manage Members" in the team tab`,
+        message: `You can't leave a project as the creator. Please give the creator role to another team member by clicking "Manage Members" in the team tab.`,
         messageType: "error",
       });
     else setConfirmDialogOpen({ ...confirmDialogOpen, leave: true });
