@@ -11,6 +11,7 @@ from climateconnect_api.utility.translation import (
 from django.conf import settings
 from typing import List
 
+from django.db.models.query import QuerySet
 from django.contrib.auth.models import User
 from climateconnect_api.models.user import UserProfile
 from organization.models.project import Project
@@ -359,51 +360,70 @@ def create_variables_for_weekly_recommendations(project_ids: List = [], organiza
     main_page = 'https://climateconnect.earth/en/browse'
 
     entities = []
-    for project_id in project_ids:
-        project = Project.objects.select_related('loc').get(id=project_id)
+
+    projects = Project.objects.filter(id__in=project_ids).values_list("name", "thumbnail_image", "url_slug", "loc__name", "project_parent__parent_user__first_name", "project_parent__parent_user__last_name")
+    for project in projects:
         project_template = {
-            "type": project_translation.get(language_code, "en"),
-            "name": project.name,
-            "imageUrl": (settings.ALLOWED_HOSTS[6] + project.thumbnail_image.url) if project.thumbnail_image else '',
-            "url": (settings.FRONTEND_URL + "/projects/" + project.url_slug) if project.url_slug else main_page.get(language_code, "en"),
-            "location": project.loc.name if project.loc else '',
-            "creator": '',
+            "type": "project",
+            "name": project[0],
+            "imageUrl": (settings.BACKEND_URL + "/media/" + project[1]) if project[1] else main_page,
+            "url": (settings.FRONTEND_URL + "/projects/" + project[2]) if project[2] else main_page,
+            "location": project[3] if project[3] and not isInHub else '',
+            "creator": project[4] + ' ' + project[5] if (project[4] and project[5]) else '',
             "tags": '',
         }
         entities.append(project_template)
+
+    # organizations = Organization.objects.filter(id__in=organization_ids).values_list("name", "thumbnail_image", "url_slug", "loc__name", "project_parent__parent_user__first_name", "project_parent__parent_user__last_name")
     for organization_id in organization_ids:
         organization = Organization.objects.select_related('location').get(id=organization_id)
         organization_template = {
-            "type": organization_translation.get(language_code, "en"),
+            "type": "organization",
             "name": organization.name,
-            "imageUrl": (settings.ALLOWED_HOSTS[6] + organization.thumbnail_image.url) if organization.thumbnail_image else '',
-            "url": (settings.FRONTEND_URL + "/organizations/" + organization.url_slug) if organization.url_slug else main_page.get(language_code, "en"),
-            "location": organization.location.name if organization.location else '',
+            "imageUrl": (settings.BACKEND_URL + organization.thumbnail_image.url) if organization.thumbnail_image else '',
+            "url": (settings.FRONTEND_URL + "/organizations/" + organization.url_slug) if organization.url_slug else main_page,
+            "location": organization.location.name if organization.location and not isInHub else '',
             "creator": '',
             "tags": '',
         }
         entities.append(organization_template)
     for idea_id in idea_ids:
-        idea = Idea.objects.select_related('location', 'user').get(id=idea_id)
+        idea = Idea.objects.select_related('location', 'user', 'hub').get(id=idea_id)
         idea_template = {
-            "type": idea_translation.get(language_code, "en"),
+            "type": "idea",
             "name": idea.name,
-            "imageUrl": (settings.ALLOWED_HOSTS[6] + idea.thumbnail_image.url) if idea.thumbnail_image else '',
+            "imageUrl": (settings.BACKEND_URL + idea.thumbnail_image.url) if idea.thumbnail_image else '',
             # url for ideas: URL/hubs/<hubUrl>?idea=<slug>#ideas
-            "url": (settings.FRONTEND_URL + "" + "/idea/" + idea.url_slug) if idea.url_slug else main_page.get(language_code, "en"),
-            "location": idea.location.name if idea.location else '',
-            "creator": '',
+            "url": (settings.FRONTEND_URL + "/hubs/"+ idea.hub.url_slug + "?idea=" + idea.url_slug + "#ideas") if idea.url_slug else main_page,
+            "location": idea.location.name if idea.location and not isInHub else '',
+            "creator": idea.user.get_full_name() if idea.user else '',
             "tags": '',
         }
         entities.append(idea_template)
     return entities
 
 
-def send_weekly_personalized_recommendations_email(user: User, project_ids: List = [], organization_ids: List = [], idea_ids: List = [], isInHub: bool = False):
+def create_messages_for_weekly_recommendations(chunked_user_query : QuerySet) -> List:
+    # ("user__email", "user__first_name", "user__last_name")
+    messages = []
+    for user in chunked_user_query:
+        messages.append(
+        {
+                    "To": [
+                        {
+                            "Email": user[0],
+                            "Name": user[1] + " " + user[2]
+                        }
+                    ],
+                    "Variables": {"FirstName": user[1]},
+                }
+        )
+    return messages
+
+
+def send_weekly_recommendations_email(messages: List, entities: List, lang_code: str, isInHub: bool = False):
 
     template_key = "WEEKLY_RECOMMENDATIONS_EMAIL"
-
-    lang_code = get_user_lang_code(user)
     
     template_id = get_template_id(
         template_key=template_key,
@@ -423,36 +443,28 @@ def send_weekly_personalized_recommendations_email(user: User, project_ids: List
 
     subject = subjects_by_language.get(lang_code, "en")
 
-    entities = create_variables_for_weekly_recommendations(lang_code, project_ids, organization_ids, idea_ids) 
 
-    variables =  {
-        "FirstName": user.first_name,
+    global_variables = {
         "Entities": entities,
     }
 
+
     data = {
-        'Messages': [
-            {
-                "From": {
+        'Globals': {
+            "From": {
                     "Email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
                     "Name": "Climate Connect"
                 },
-                "To": [
-                    {
-                        "Email": user.email,
-                        "Name": user.first_name + " " + user.last_name
-                    }
-                ],
-                "TemplateID": int(template_id),
-                "TemplateLanguage": True,
-                "Variables": variables,
-                "Subject": subject,
-                "TemplateErrorReporting": {
-                    "Email": settings.MAILJET_ADMIN_EMAIL,
-                    "Name": "Mailjet Admin"
-                }
-            }
-        ]
+            "TemplateID": int(template_id),
+            "TemplateLanguage": True,
+            "Variables": global_variables,
+            "Subject": subject,
+            "TemplateErrorReporting": {
+                "Email": settings.MAILJET_ADMIN_EMAIL,
+                "Name": "Mailjet Admin"
+            },
+        },
+        'Messages': messages
     }
 
     try:
@@ -462,3 +474,9 @@ def send_weekly_personalized_recommendations_email(user: User, project_ids: List
 
     if mail.status_code != 200:
         logger.error(f"EmailFailure: Error sending email -> {mail.text}")
+
+    # debugging
+    return mail
+
+
+    # https://prod.liveshare.vsengsaas.visualstudio.com/join?2BC38C908F4975D103E8698AE7BA0EA16FC9 
