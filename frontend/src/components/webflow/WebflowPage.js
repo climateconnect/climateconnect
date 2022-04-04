@@ -5,7 +5,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import WideLayout from "../layouts/WideLayout";
 
-export default function WebflowPage({ bodyContent, headContent, pageKey, className }) {
+export default function WebflowPage({ bodyContent, headContent, pageKey, className, hideFooter }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   return (
@@ -17,6 +17,7 @@ export default function WebflowPage({ bodyContent, headContent, pageKey, classNa
         isStaticPage
         hideHeadline
         noSpaceBottom
+        hideFooter={hideFooter}
       >
         <div dangerouslySetInnerHTML={{ __html: bodyContent }} />
       </WideLayout>
