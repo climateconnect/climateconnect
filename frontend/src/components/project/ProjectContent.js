@@ -213,7 +213,7 @@ export default function ProjectContent({
     // Now transform to a shape of objects where a specific request ID is
     // alongside a user profile.
     const userRequests = membershipRequests.map((r) => {
-      let user = {};
+      const user = {};
       user.requestId = r.id;
       user.user = r.user_profile;
       return user;

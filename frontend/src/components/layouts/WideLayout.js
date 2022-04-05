@@ -56,7 +56,7 @@ export default function WideLayout({
   image,
   useFloodStdFont,
   rootClassName,
-  hideFooter
+  hideFooter,
 }) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);
@@ -131,14 +131,14 @@ export default function WideLayout({
           {children}
         </Container>
       )}
-      {!hideFooter &&
+      {!hideFooter && (
         <Footer
           noSpacingTop={noSpaceBottom}
           noAbsolutePosition={noSpaceBottom}
           showOnScrollUp={showOnScrollUp}
           large={isStaticPage || largeFooter}
         />
-      }
+      )}
     </LayoutWrapper>
   );
 }

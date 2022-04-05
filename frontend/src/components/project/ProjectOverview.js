@@ -1,9 +1,6 @@
 import {
-  Box,
   Button,
-  CircularProgress,
   Container,
-  IconButton,
   Link,
   Tooltip,
   Typography,
@@ -15,14 +12,11 @@ import LanguageIcon from "@material-ui/icons/Language";
 import Linkify from "react-linkify";
 import PlaceIcon from "@material-ui/icons/Place";
 import React, { useContext, useEffect, useState } from "react";
-import Router from "next/router";
 
 // Relative imports
-import { apiRequest, redirect } from "../../../public/lib/apiOperations";
-import ButtonIcon from "./Buttons/ButtonIcon";
+import { apiRequest } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 import { getParams } from "../../../public/lib/generalOperations";
-import { startPrivateChat } from "../../../public/lib/messagingOperations";
 import ContactCreatorButton from "./Buttons/ContactCreatorButton";
 import FollowButton from "./Buttons/FollowButton";
 import getTexts from "../../../public/texts/texts";
@@ -138,8 +132,7 @@ export default function ProjectOverview({
   user,
 }) {
   const classes = useStyles();
-  const cookies = new Cookies();
-  const { notifications, pathName, refreshNotifications, setNotificationsRead } = useContext(
+  const { pathName } = useContext(
     UserContext
   );
 
@@ -188,7 +181,7 @@ export default function ProjectOverview({
    * Calls backend, sending a request to join this project based
    * on user token stored in cookies.
    */
-  const handleSendProjectJoinRequest = async (event) => {
+  const handleSendProjectJoinRequest = async () => {
     // Get the actual project name from the URL, removing any query params
     // and projects/ prefix. For example,
     // "/projects/Anotherproject6?projectId=Anotherproject6" -> "Anotherproject6"
@@ -201,7 +194,7 @@ export default function ProjectOverview({
     const token = cookies.get("token");
 
     try {
-      const response = await apiRequest({
+      await apiRequest({
         method: "post",
         url: `/api/projects/${strippedProjectName}/request_membership/${user.url_slug}/`,
         payload: {

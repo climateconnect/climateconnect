@@ -60,7 +60,7 @@ function getTeamWithAdditionalInfo(team, texts) {
   });
 }
 
-export default function TeamContent({ project, leaveProject }) {
+export default function TeamContent({ project }) {
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const classes = useStyles();

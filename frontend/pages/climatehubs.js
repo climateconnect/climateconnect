@@ -8,7 +8,14 @@ import { retrievePage } from "../src/utils/webflow";
 
 //Explainer page for what a ClimateHub is and how we plan to spread them throughout Germany
 export default function ClimateHubs({ bodyContent, headContent }) {
-  return <WebflowPage bodyContent={bodyContent} headContent={headContent} pageKey="climatehubs" hideFooter />;
+  return (
+    <WebflowPage
+      bodyContent={bodyContent}
+      headContent={headContent}
+      pageKey="climatehubs"
+      hideFooter
+    />
+  );
 }
 
 export async function getServerSideProps(ctx) {
