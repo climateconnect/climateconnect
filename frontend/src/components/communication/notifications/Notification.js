@@ -59,6 +59,8 @@ const NOTIFICATION_TYPES = [
   "post_comment",
   "reply_to_post_comment",
   "group_message",
+  "join_project_request",
+  "project_join_request_approved",
   "mention",
   "project_like",
   "idea_comment",

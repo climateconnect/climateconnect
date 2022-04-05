@@ -9,6 +9,8 @@ from organization.models.likes import ProjectLike
 
 
 class Notification(models.Model):
+    # When editing this: make sure all entries are still at the correct index afterwards
+    # After making a change here you'll also have to update NOTIFICATION_TYPES in frontend/src/components/communication/notifications/Notification.js
     BROADCAST = 0
     PRIVATE_MESSAGE = 1
     PROJECT_COMMENT = 2
@@ -20,11 +22,11 @@ class Notification(models.Model):
     GROUP_MESSAGE = 8
     JOIN_PROJECT_REQUEST = 9
     PROJECT_JOIN_REQUEST_APPROVED = 10
-    IDEA_COMMENT = 11
-    REPLY_TO_IDEA_COMMENT = 12
-    PERSON_JOINED_IDEA = 13
-    MENTION = 14
-    PROJECT_LIKE = 15
+    MENTION = 11
+    PROJECT_LIKE = 12
+    IDEA_COMMENT = 13
+    REPLY_TO_IDEA_COMMENT = 14
+    PERSON_JOINED_IDEA = 15
     NOTIFICATION_TYPES = (
         (BROADCAST, "broadcast"),
         (PRIVATE_MESSAGE, "private_message"),
