@@ -16,7 +16,7 @@ import {
 } from "@material-ui/core";
 import BlockIcon from "@material-ui/icons/Block";
 import CheckIcon from "@material-ui/icons/Check";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";
 
 // Relative imports

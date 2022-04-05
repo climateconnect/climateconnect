@@ -1,5 +1,4 @@
 import { Button, makeStyles } from "@material-ui/core";
-import { Textsms } from "@material-ui/icons";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import React, { useContext, useRef } from "react";
 import getTexts from "../../../../public/texts/texts";
@@ -31,8 +30,8 @@ export default function HubsDropDown({
   const classes = useStyles();
   const buttonRef = useRef(null);
   const popperRef = useRef(null);
-  const { locale } = useContext(UserContext)
-  const texts = getTexts({page: "hub", locale: locale})
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "hub", locale: locale });
 
   const toggleButtonProps = {};
   if (!isNarrowScreen) {
@@ -49,15 +48,15 @@ export default function HubsDropDown({
   const dropDownHubItems = hubs.map((h) => ({
     href: `/hubs/${h.url_slug}/`,
     text: h.name,
-  }))
+  }));
 
   const dropDownItems = [
     ...dropDownHubItems,
     addLocationHubExplainerLink && {
       href: `/climatehubs`,
-      text: texts.more_info
-    }
-  ]
+      text: texts.more_info,
+    },
+  ];
 
   return (
     <span onBlur={handleBlur} id={`dropdown-${label.toLowerCase()}`}>
