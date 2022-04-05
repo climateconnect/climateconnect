@@ -50,13 +50,15 @@ export default function HubsDropDown({
     text: h.name,
   }));
 
-  const dropDownItems = [
-    ...dropDownHubItems,
-    addLocationHubExplainerLink && {
-      href: `/climatehubs`,
-      text: texts.more_info,
-    },
-  ];
+  const dropDownItems = addLocationHubExplainerLink
+    ? [
+        ...dropDownHubItems,
+        {
+          href: `/climatehubs`,
+          text: texts.more_info,
+        },
+      ]
+    : [...dropDownHubItems];
 
   return (
     <span onBlur={handleBlur} id={`dropdown-${label.toLowerCase()}`}>
