@@ -1,10 +1,4 @@
-import {
-  Button,
-  Container,
-  Link,
-  Tooltip,
-  Typography,
-} from "@material-ui/core";
+import { Button, Container, Link, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Cookies from "universal-cookie";
 import ExploreIcon from "@material-ui/icons/Explore";
@@ -132,9 +126,7 @@ export default function ProjectOverview({
   user,
 }) {
   const classes = useStyles();
-  const { pathName } = useContext(
-    UserContext
-  );
+  const { pathName } = useContext(UserContext);
 
   const userPermission =
     user && project.team && project.team.find((m) => m.id === user.id)
