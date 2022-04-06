@@ -118,7 +118,7 @@ def create_project_follower_notification(project_follower):
             send_project_follower_email(user, project_follower, notification)
 
 
-def create_project_join_request_notification(requester,project_admins,project):
+def create_project_join_request_notification(requester,project_admins,project, request):
     """
     Creates a notification about a joining request from a requester to a project admin.
     :param requester: UserProfile object of the user who's sent the request
@@ -130,7 +130,8 @@ def create_project_join_request_notification(requester,project_admins,project):
     requester_name = requester.first_name + " " + requester.last_name
     notification = Notification.objects.create(
         notification_type=9,
-        text=f"{requester_name} wants to join your project {project.name}!"
+        text=f"{requester_name} wants to join your project {project.name}!",
+        membership_request = request
     )
 
     for project_admin in project_admins:
