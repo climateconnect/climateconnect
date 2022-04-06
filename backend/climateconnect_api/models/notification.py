@@ -1,3 +1,4 @@
+from organization.models.members import MembershipRequests
 from chat_messages.models.message import MessageParticipants, MessageReceiver
 from django.contrib.auth.models import User
 from django.db import models
@@ -102,6 +103,12 @@ class Notification(models.Model):
     project_update_post = models.ForeignKey(
         Post, related_name="notification_project_update_post",
         verbose_name="Project Post", on_delete=models.CASCADE,
+        null=True, blank=True
+    )
+
+    membership_request = models.ForeignKey(
+        MembershipRequests, related_name="notification_membership_request",
+        verbose_name="Membership Request", on_delete=models.CASCADE,
         null=True, blank=True
     )
 
