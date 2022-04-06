@@ -130,6 +130,12 @@ const useStyles = makeStyles((theme) => ({
   editProjectButton: {
     marginTop: theme.spacing(1),
   },
+  showRequestsButton: {
+    background: "white",
+    "&:hover": {
+      background: "#f7f7f7"
+    }
+  },
 
   leaveProjectButton: {
     // TODO: we should really encapsulate
@@ -180,6 +186,8 @@ export default function ProjectContent({
   projectDescriptionRef,
   projectTabsRef,
   typesByTabValue,
+  showRequesters,
+  toggleShowRequests
 }) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
@@ -192,20 +200,10 @@ export default function ProjectContent({
       ? project.team.find((m) => m.id === user.id).permission
       : null;
 
-  const [showRequesters, setShowRequesters] = useState(false);
   const [requesters, setRequesters] = useState([]);
-  const toggleShowRequest = async () => {
-    setShowRequesters(!showRequesters);
-  };
-
+  const [requestersRetrieved, setRequestersRetrieved] = useState(false)
   // Fetch and populate requesters on initial load
-  useEffect(() => {
-    getMembershipRequests(project.url_slug).then((response) => {
-      setRequesters(response);
-    });
-  }, []);
-
-  async function viewOpenProjectRequests() {
+  useEffect(async() => {
     // Returns an array of objects with an ID (request ID) and
     // associated user profile.
     const membershipRequests = await getMembershipRequests(project.url_slug);
@@ -218,10 +216,9 @@ export default function ProjectContent({
       user.user = r.user_profile;
       return user;
     });
-
     setRequesters(userRequests);
-    setShowRequesters(!showRequesters);
-  }
+    setRequestersRetrieved(true)
+  }, []);
 
   const CalculateMaxDisplayedDescriptionLength = (description) => {
     const words = description.split(" ");
@@ -255,8 +252,9 @@ export default function ProjectContent({
                     {/* Badge is dynamic based on the number of membership requesters */}
                     <Badge badgeContent={requesters.length} color="primary">
                       <Button
-                        className={classes.editProjectButton}
-                        onClick={viewOpenProjectRequests}
+                        className={`${classes.editProjectButton} ${classes.showRequestsButton}`}
+                        variant="contained"
+                        onClick={toggleShowRequests}
                       >
                         {texts.review_join_requests}
                       </Button>
@@ -286,8 +284,9 @@ export default function ProjectContent({
             open={showRequesters}
             project={project}
             requesters={requesters}
-            onClose={toggleShowRequest}
+            onClose={toggleShowRequests}
             user={user}
+            loading={!requestersRetrieved}
           />
 
           {/* Note: created date is not the same as the start date, for projects */}

@@ -65,7 +65,9 @@ export default function ProjectInteractionButtons({
               withIcons={!screenSize.belowTiny}
             />
           )}
-          <JoinButton />
+          {!hasAdminPermissions && (
+            <JoinButton />
+          )}
           <FollowButton
             isUserFollowing={isUserFollowing}
             handleToggleFollowProject={handleToggleFollowProject}

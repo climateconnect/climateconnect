@@ -49,6 +49,9 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
   },
+  noOpenRequestsText: {
+    textAlign: "center"
+  }
 }));
 
 export default function ProjectRequestersDialog({
@@ -69,7 +72,7 @@ export default function ProjectRequestersDialog({
   };
 
   return (
-    <GenericDialog onClose={handleClose} open={open} title={"Members requested to join project"}>
+    <GenericDialog onClose={handleClose} open={open} title={texts.project_requesters_dialog_title}>
       <>
         {loading ? (
           <LinearProgress />
@@ -99,7 +102,7 @@ export default function ProjectRequestersDialog({
             texts={texts}
           />
         ) : (
-          <Typography>{texts.this_project_does_not_have_any_requesters_yet}</Typography>
+          <Typography className={classes.noOpenRequestsText}>{texts.no_open_project_join_requests}</Typography>
         )}
       </>
     </GenericDialog>
