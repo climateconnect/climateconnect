@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
+import Cookies from "universal-cookie";
 import { useLongPress } from "use-long-press";
 import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest, getLocalePrefix, redirect } from "../../../public/lib/apiOperations";
@@ -80,7 +81,7 @@ export default function ProjectPageRoot({
   const tabContentContainerSpaceToRight = ElementSpaceToRight({ el: tabContentRef.current });
 
   const classes = useStyles();
-  const { locale } = useContext(UserContext);
+  const { locale, pathName } = useContext(UserContext);
 
   const texts = getTexts({
     locale: locale,
@@ -139,6 +140,53 @@ export default function ProjectPageRoot({
       setTabValue(typesByTabValue.indexOf(window.location.hash.replace("#", "")));
     }
   });
+
+
+  const [requestedToJoinProject, setRequestedToJoinProject] = useState(false);
+  
+  const handleSetRequestedToJoinProject = (newValue) => {
+    setRequestedToJoinProject(newValue)
+  }
+  
+  /**
+   * Calls backend, sending a request to join this project based
+   * on user token stored in cookies.
+   */
+   const handleSendProjectJoinRequest = async () => {
+    // Get the actual project name from the URL, removing any query params
+    // and projects/ prefix. For example,
+    // "/projects/Anotherproject6?projectId=Anotherproject6" -> "Anotherproject6"
+    const projectName = pathName?.split("/")[2].split("?")[0];
+
+    // Also strip any trailing '#' too.
+    const strippedProjectName = projectName.endsWith("#") ? projectName.slice(0, -1) : projectName;
+
+    const cookies = new Cookies();
+    const token = cookies.get("token");
+
+    try {
+      await apiRequest({
+        method: "post",
+        url: `/api/projects/${strippedProjectName}/request_membership/${user.url_slug}/`,
+        payload: {
+          message: "Would like to join the project!",
+          // TODO: currently, we default user's availability to 4. In
+          // the future, we could consider customizing this option
+          user_availability: "4",
+        },
+
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+
+      setRequestedToJoinProject(true);
+    } catch (error) {
+      if (error?.response?.data?.message === "Request already exists to join project") {
+        setRequestedToJoinProject(true);
+      }
+    }
+  };
 
   const [tabValue, setTabValue] = useState(hash ? typesByTabValue.indexOf(hash) : 0);
 
@@ -406,6 +454,8 @@ export default function ProjectPageRoot({
         toggleShowLikes={toggleShowLikes}
         token={token}
         user={user}
+        requestedToJoinProject={requestedToJoinProject}
+        handleSetRequestedToJoinProject={handleSetRequestedToJoinProject}
       />
 
       <Container className={classes.tabsContainerWithoutPadding}>
@@ -452,10 +502,12 @@ export default function ProjectPageRoot({
             projectTabsRef={projectTabsRef}
             showRequesters={showRequesters}
             toggleShowRequests={toggleShowRequests}
+            handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+            requestedToJoinProject={requestedToJoinProject}
           />
         </TabContent>
         <TabContent value={tabValue} index={1}>
-          <ProjectTeamContent project={project} leaveProject={requestLeaveProject} />
+          <ProjectTeamContent project={project} handleReadNotifications={handleReadNotifications} leaveProject={requestLeaveProject} />
         </TabContent>
         <TabContent value={tabValue} index={2}>
           <ProjectCommentsContent

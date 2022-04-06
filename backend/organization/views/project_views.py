@@ -1096,7 +1096,7 @@ class ManageJoinProjectView(RetrieveUpdateDestroyAPIView):
 
             if request_action == 'approve':
                 request_manager.approve_request()
-                create_project_join_request_approval_notification(requester=request.user, project=project)
+                create_project_join_request_approval_notification(request_id=request_id)
             elif request_action == 'reject':
                 request_manager.reject_request()
             else:

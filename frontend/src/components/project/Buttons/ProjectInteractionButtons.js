@@ -3,7 +3,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 import ContactCreatorButton from "./ContactCreatorButton";
 import FollowButton from "./FollowButton";
-import JoinButton from "./JoinButton";
 import LikeButton from "./LikeButton";
 
 const useStyles = makeStyles(() => ({
@@ -64,9 +63,6 @@ export default function ProjectInteractionButtons({
               handleClickContact={handleClickContact}
               withIcons={!screenSize.belowTiny}
             />
-          )}
-          {!hasAdminPermissions && (
-            <JoinButton />
           )}
           <FollowButton
             isUserFollowing={isUserFollowing}

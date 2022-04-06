@@ -21,6 +21,7 @@ import ProjectRequestersDialog from "../dialogs/ProjectRequestersDialog";
 import ProjectStatus from "./ProjectStatus";
 import ROLE_TYPES from "../../../public/data/role_types";
 import UserContext from "../context/UserContext";
+import JoinButton from "./Buttons/JoinButton";
 
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
@@ -152,6 +153,9 @@ const useStyles = makeStyles((theme) => ({
   finishedDate: {
     marginTop: theme.spacing(0.5),
   },
+  joinButton: {
+    float: "right"
+  }
 }));
 
 /**
@@ -187,7 +191,9 @@ export default function ProjectContent({
   projectTabsRef,
   typesByTabValue,
   showRequesters,
-  toggleShowRequests
+  toggleShowRequests,
+  handleSendProjectJoinRequest,
+  requestedToJoinProject
 }) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
@@ -240,6 +246,7 @@ export default function ProjectContent({
     ? CalculateMaxDisplayedDescriptionLength(project.description)
     : null;
 
+  const hasAdminPermissions = [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission)
   return (
     <>
       <div className={classes.contentBlock}>
@@ -247,7 +254,7 @@ export default function ProjectContent({
           {user && project.team && project.team.find((m) => m.id === user.id) && (
             <div className={classes.memberButtons}>
               {user_permission &&
-                [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission) && (
+                hasAdminPermissions && (
                   <>
                     {/* Badge is dynamic based on the number of membership requesters */}
                     <Badge badgeContent={requesters.length} color="primary">
@@ -267,7 +274,7 @@ export default function ProjectContent({
                       {project.is_draft ? texts.edit_draft : texts.edit_project}
                     </Button>
                   </>
-                )}
+                )}                
               {/* Otherwise if not a project admin, just show the Leave Project button */}
               <Button
                 className={classes.leaveProjectButton}
@@ -278,6 +285,17 @@ export default function ProjectContent({
               </Button>
             </div>
           )}
+
+          {/* If the user is an admin on the project, or is already part
+            of the project (has read only permissions), then we don't want to show the membership request button. */}
+            {!hasAdminPermissions &&
+              !(user_permission && [ROLE_TYPES.read_only_type].includes(user_permission)) && (
+                <JoinButton
+                  handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+                  requestedToJoin={requestedToJoinProject}
+                  className={classes.joinButton}
+                />
+            )}
 
           {/* Only present dialog if button has been clicked! */}
           <ProjectRequestersDialog

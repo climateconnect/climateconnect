@@ -88,6 +88,8 @@ export default function Notification({ notification, isPlaceholder }) {
     return <GroupMessageNotification notification={notification} />;
   }else if (type === "join_project_request") {
     return <JoinProjectRequestNotification notification={notification}/>
+  }else if (type === "project_join_request_approved") {
+    return <JoinProjectRequestApprovedNotification notification={notification}/>
   }
   else if (type === "mention"){
     return <MentionNotification notification={notification} texts={texts} locale={locale} />;
@@ -101,10 +103,9 @@ export default function Notification({ notification, isPlaceholder }) {
 }
 
 const JoinProjectRequestNotification = ({ notification }) => {
-  console.log(notification)
   const requester = notification.membership_requester;
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "notification", project: notification.project });
+  const texts = getTexts({ page: "notification", project: notification.project, locale: locale });
   const requesterName = requester.first_name + " " + requester.last_name
   return (
     <GenericNotification
@@ -117,6 +118,20 @@ const JoinProjectRequestNotification = ({ notification }) => {
     />
   );
 };
+
+const JoinProjectRequestApprovedNotification = ({ notification }) => {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "notification", project: notification.project, locale: locale });
+  return (
+    <GenericNotification
+      link={`/projects/${notification.project.url_slug}#team`}
+      notificationIcon={{
+        icon: GroupIcon,
+      }}
+      primaryText={texts.project_accepted_you_as_a_member}
+    />
+  );
+}
 
 const PersonJoinedIdeaNotification = ({ notification }) => {
   const supporter = notification.idea_supporter;

@@ -199,6 +199,11 @@ class UserProfile(models.Model):
         verbose_name="Email on new idea join", null=True, blank=True, default=True
     )
 
+    email_on_join_request = models.BooleanField(
+        help_text="Check if user wants to receive emails when somebody asks to join their project or organization",
+        verbose_name="Email on join request", null=True, blank=True, default=True
+    )
+
     has_logged_in = models.PositiveSmallIntegerField(
         help_text="Check if the user should be redirected to the edit profile page. Shows the number of logins up to 2",
         verbose_name="Number of logins up to 2",

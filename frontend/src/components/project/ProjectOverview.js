@@ -5,7 +5,7 @@ import ExploreIcon from "@material-ui/icons/Explore";
 import LanguageIcon from "@material-ui/icons/Language";
 import Linkify from "react-linkify";
 import PlaceIcon from "@material-ui/icons/Place";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // Relative imports
 import { apiRequest } from "../../../public/lib/apiOperations";
@@ -16,7 +16,6 @@ import FollowButton from "./Buttons/FollowButton";
 import getTexts from "../../../public/texts/texts";
 import GoBackFromProjectPageButton from "./Buttons/GoBackFromProjectPageButton";
 import LikeButton from "./Buttons/LikeButton";
-import JoinButton from "./Buttons/JoinButton";
 import MessageContent from "../communication/MessageContent";
 import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
 import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
@@ -124,16 +123,15 @@ export default function ProjectOverview({
   toggleShowLikes,
   token,
   user,
+  handleSetRequestedToJoinProject,
+  requestedToJoinProject,
 }) {
   const classes = useStyles();
-  const { pathName } = useContext(UserContext);
 
   const userPermission =
     user && project.team && project.team.find((m) => m.id === user.id)
       ? project.team.find((m) => m.id === user.id).permission
       : null;
-
-  const [requestedToJoinProject, setRequestedToJoinProject] = useState(false);
 
   const texts = getTexts({ page: "project", locale: locale, project: project });
 
@@ -162,52 +160,12 @@ export default function ProjectOverview({
     // based on results from the backend.
     const members = requestedMembers.filter((m) => m.user_profile.url_slug === user.url_slug);
     if (members.length > 0) {
-      setRequestedToJoinProject(true);
+      handleSetRequestedToJoinProject(true);
     }
 
     // TODO: we should probably have an associated timestamp with each request too.
     return requestedMembers;
   }
-
-  /**
-   * Calls backend, sending a request to join this project based
-   * on user token stored in cookies.
-   */
-  const handleSendProjectJoinRequest = async () => {
-    // Get the actual project name from the URL, removing any query params
-    // and projects/ prefix. For example,
-    // "/projects/Anotherproject6?projectId=Anotherproject6" -> "Anotherproject6"
-    const projectName = pathName?.split("/")[2].split("?")[0];
-
-    // Also strip any trailing '#' too.
-    const strippedProjectName = projectName.endsWith("#") ? projectName.slice(0, -1) : projectName;
-
-    const cookies = new Cookies();
-    const token = cookies.get("token");
-
-    try {
-      await apiRequest({
-        method: "post",
-        url: `/api/projects/${strippedProjectName}/request_membership/${user.url_slug}/`,
-        payload: {
-          message: "Would like to join the project!",
-          // TODO: currently, we default user's availability to 4. In
-          // the future, we could consider customizing this option
-          user_availability: "4",
-        },
-
-        headers: {
-          Authorization: `Token ${token}`,
-        },
-      });
-
-      setRequestedToJoinProject(true);
-    } catch (error) {
-      if (error?.response?.data?.message === "Request already exists to join project") {
-        setRequestedToJoinProject(true);
-      }
-    }
-  };
 
   const [gotParams, setGotParams] = useState(false);
   useEffect(() => {
@@ -236,14 +194,11 @@ export default function ProjectOverview({
           followingChangePending={followingChangePending}
           handleClickContact={handleClickContact}
           handleToggleFollowProject={handleToggleFollowProject}
-          handleSendProjectJoinRequest={handleSendProjectJoinRequest}
           hasAdminPermissions={hasAdminPermissions}
           isUserFollowing={isUserFollowing}
           project={project}
-          requestedToJoinProject={requestedToJoinProject}
           texts={texts}
           toggleShowFollowers={toggleShowFollowers}
-          userPermission={userPermission}
         />
       ) : (
         <LargeScreenOverview
@@ -252,7 +207,6 @@ export default function ProjectOverview({
           dialogTitleShareButton={dialogTitleShareButton}
           followingChangePending={followingChangePending}
           handleClickContact={handleClickContact}
-          handleSendProjectJoinRequest={handleSendProjectJoinRequest}
           handleToggleFollowProject={handleToggleFollowProject}
           handleToggleLikeProject={handleToggleLikeProject}
           hasAdminPermissions={hasAdminPermissions}
@@ -268,13 +222,11 @@ export default function ProjectOverview({
           project={project}
           projectAdmin={projectAdmin}
           projectLinkPath={projectLinkPath}
-          requestedToJoinProject={requestedToJoinProject}
           screenSize={screenSize}
           texts={texts}
           toggleShowFollowers={toggleShowFollowers}
           toggleShowLikes={toggleShowLikes}
           token={token}
-          userPermission={userPermission}
         />
       )}
 
@@ -307,7 +259,6 @@ function SmallScreenOverview({
   dialogTitleShareButton,
   followingChangePending,
   handleClickContact,
-  handleSendProjectJoinRequest,
   handleToggleFollowProject,
   hasAdminPermissions,
   isUserFollowing,
@@ -316,12 +267,10 @@ function SmallScreenOverview({
   messageTitleShareButton,
   project,
   projectLinkPath,
-  requestedToJoinProject,
   screenSize,
   texts,
   toggleShowFollowers,
   token,
-  userPermission,
 }) {
   const classes = useStyles();
 
@@ -388,15 +337,6 @@ function SmallScreenOverview({
           </Typography>
         </div>
         <div className={classes.infoBottomBar}>
-          {/* If the user is an admin on the project, or is already part
-            of the project (has read only permissions), then we don't want to show the membership request button. */}
-          {!hasAdminPermissions &&
-            !(userPermission && [ROLE_TYPES.read_only_type].includes(userPermission)) && (
-              <JoinButton
-                handleSendProjectJoinRequest={handleSendProjectJoinRequest}
-                requestedToJoin={requestedToJoinProject}
-              />
-            )}
 
           <FollowButton
             isUserFollowing={isUserFollowing}
@@ -429,7 +369,6 @@ function LargeScreenOverview({
   contactProjectCreatorButtonRef,
   followingChangePending,
   handleClickContact,
-  handleSendProjectJoinRequest,
   handleToggleFollowProject,
   handleToggleLikeProject,
   hasAdminPermissions,
@@ -441,12 +380,10 @@ function LargeScreenOverview({
   numberOfLikes,
   project,
   projectAdmin,
-  requestedToJoinProject,
   screenSize,
   texts,
   toggleShowFollowers,
   toggleShowLikes,
-  userPermission,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
 
@@ -495,16 +432,6 @@ function LargeScreenOverview({
             </Typography>
           </div>
           <div className={classes.infoBottomBar}>
-            {/* If the user is an admin on the project, or is already part
-            of the project (has read only permissions), then we don't want to show the membership request button. */}
-            {!hasAdminPermissions &&
-              !(userPermission && [ROLE_TYPES.read_only_type].includes(userPermission)) && (
-                <JoinButton
-                  handleSendProjectJoinRequest={handleSendProjectJoinRequest}
-                  requestedToJoin={requestedToJoinProject}
-                />
-              )}
-
             <LikeButton
               texts={texts}
               isUserLiking={isUserLiking}
