@@ -954,11 +954,11 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     no_open_project_join_requests: {
       en: "There are currently no open join requests",
-      de: "Keine offenen Anfragen."
-    }, 
+      de: "Keine offenen Anfragen.",
+    },
     project_requesters_dialog_title: {
       en: "Open requests to join project",
-      de: "Offene Anfragen zum Mitmachen"
-    }
+      de: "Offene Anfragen zum Mitmachen",
+    },
   };
 }

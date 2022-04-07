@@ -99,8 +99,8 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
     },
     {
       key: "email_on_join_request",
-      text: texts.email_on_join_request_text
-    }
+      text: texts.email_on_join_request_text,
+    },
   ];
 
   const possibleCookiePreferences = [

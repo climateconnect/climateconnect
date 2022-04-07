@@ -1,6 +1,5 @@
 import { Button, Container, Link, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Cookies from "universal-cookie";
 import ExploreIcon from "@material-ui/icons/Explore";
 import LanguageIcon from "@material-ui/icons/Language";
 import Linkify from "react-linkify";
@@ -20,9 +19,7 @@ import MessageContent from "../communication/MessageContent";
 import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
 import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
-import ROLE_TYPES from "../../../public/data/role_types";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
-import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
@@ -127,11 +124,6 @@ export default function ProjectOverview({
   requestedToJoinProject,
 }) {
   const classes = useStyles();
-
-  const userPermission =
-    user && project.team && project.team.find((m) => m.id === user.id)
-      ? project.team.find((m) => m.id === user.id).permission
-      : null;
 
   const texts = getTexts({ page: "project", locale: locale, project: project });
 
@@ -337,7 +329,6 @@ function SmallScreenOverview({
           </Typography>
         </div>
         <div className={classes.infoBottomBar}>
-
           <FollowButton
             isUserFollowing={isUserFollowing}
             handleToggleFollowProject={handleToggleFollowProject}

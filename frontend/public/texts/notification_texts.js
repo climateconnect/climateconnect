@@ -48,11 +48,11 @@ export default function getNotificationTexts({ idea, project }) {
     },
     wants_to_join_your_project: {
       en: `wants to join your project "${project?.name}"`,
-      de: `möchte bei deinem Project "${project?.name}" mitmachen`
+      de: `möchte bei deinem Project "${project?.name}" mitmachen`,
     },
     project_accepted_you_as_a_member: {
       en: `The project "${project?.name}" has accepted your request to join!`,
-      de: `Das Project "${project?.name}" hat dich in's Team aufgenommen!`
-    }
+      de: `Das Project "${project?.name}" hat dich in's Team aufgenommen!`,
+    },
   };
 }

@@ -50,8 +50,8 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
   },
   noOpenRequestsText: {
-    textAlign: "center"
-  }
+    textAlign: "center",
+  },
 }));
 
 export default function ProjectRequestersDialog({
@@ -102,7 +102,9 @@ export default function ProjectRequestersDialog({
             texts={texts}
           />
         ) : (
-          <Typography className={classes.noOpenRequestsText}>{texts.no_open_project_join_requests}</Typography>
+          <Typography className={classes.noOpenRequestsText}>
+            {texts.no_open_project_join_requests}
+          </Typography>
         )}
       </>
     </GenericDialog>

@@ -134,8 +134,8 @@ const useStyles = makeStyles((theme) => ({
   showRequestsButton: {
     background: "white",
     "&:hover": {
-      background: "#f7f7f7"
-    }
+      background: "#f7f7f7",
+    },
   },
 
   leaveProjectButton: {
@@ -154,8 +154,8 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(0.5),
   },
   joinButton: {
-    float: "right"
-  }
+    float: "right",
+  },
 }));
 
 /**
@@ -193,7 +193,7 @@ export default function ProjectContent({
   showRequesters,
   toggleShowRequests,
   handleSendProjectJoinRequest,
-  requestedToJoinProject
+  requestedToJoinProject,
 }) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
@@ -207,9 +207,9 @@ export default function ProjectContent({
       : null;
 
   const [requesters, setRequesters] = useState([]);
-  const [requestersRetrieved, setRequestersRetrieved] = useState(false)
+  const [requestersRetrieved, setRequestersRetrieved] = useState(false);
   // Fetch and populate requesters on initial load
-  useEffect(async() => {
+  useEffect(async () => {
     // Returns an array of objects with an ID (request ID) and
     // associated user profile.
     const membershipRequests = await getMembershipRequests(project.url_slug);
@@ -223,7 +223,7 @@ export default function ProjectContent({
       return user;
     });
     setRequesters(userRequests);
-    setRequestersRetrieved(true)
+    setRequestersRetrieved(true);
   }, []);
 
   const CalculateMaxDisplayedDescriptionLength = (description) => {
@@ -246,35 +246,36 @@ export default function ProjectContent({
     ? CalculateMaxDisplayedDescriptionLength(project.description)
     : null;
 
-  const hasAdminPermissions = [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission)
+  const hasAdminPermissions = [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(
+    user_permission
+  );
   return (
     <>
       <div className={classes.contentBlock}>
         <div className={classes.createdBy}>
           {user && project.team && project.team.find((m) => m.id === user.id) && (
             <div className={classes.memberButtons}>
-              {user_permission &&
-                hasAdminPermissions && (
-                  <>
-                    {/* Badge is dynamic based on the number of membership requesters */}
-                    <Badge badgeContent={requesters.length} color="primary">
-                      <Button
-                        className={`${classes.editProjectButton} ${classes.showRequestsButton}`}
-                        variant="contained"
-                        onClick={toggleShowRequests}
-                      >
-                        {texts.review_join_requests}
-                      </Button>
-                    </Badge>
+              {user_permission && hasAdminPermissions && (
+                <>
+                  {/* Badge is dynamic based on the number of membership requesters */}
+                  <Badge badgeContent={requesters.length} color="primary">
                     <Button
-                      className={classes.editProjectButton}
+                      className={`${classes.editProjectButton} ${classes.showRequestsButton}`}
                       variant="contained"
-                      href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
+                      onClick={toggleShowRequests}
                     >
-                      {project.is_draft ? texts.edit_draft : texts.edit_project}
+                      {texts.review_join_requests}
                     </Button>
-                  </>
-                )}                
+                  </Badge>
+                  <Button
+                    className={classes.editProjectButton}
+                    variant="contained"
+                    href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
+                  >
+                    {project.is_draft ? texts.edit_draft : texts.edit_project}
+                  </Button>
+                </>
+              )}
               {/* Otherwise if not a project admin, just show the Leave Project button */}
               <Button
                 className={classes.leaveProjectButton}
@@ -288,13 +289,13 @@ export default function ProjectContent({
 
           {/* If the user is an admin on the project, or is already part
             of the project (has read only permissions), then we don't want to show the membership request button. */}
-            {!hasAdminPermissions &&
-              !(user_permission && [ROLE_TYPES.read_only_type].includes(user_permission)) && (
-                <JoinButton
-                  handleSendProjectJoinRequest={handleSendProjectJoinRequest}
-                  requestedToJoin={requestedToJoinProject}
-                  className={classes.joinButton}
-                />
+          {!hasAdminPermissions &&
+            !(user_permission && [ROLE_TYPES.read_only_type].includes(user_permission)) && (
+              <JoinButton
+                handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+                requestedToJoin={requestedToJoinProject}
+                className={classes.joinButton}
+              />
             )}
 
           {/* Only present dialog if button has been clicked! */}

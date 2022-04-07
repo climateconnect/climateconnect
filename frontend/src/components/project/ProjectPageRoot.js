@@ -141,18 +141,17 @@ export default function ProjectPageRoot({
     }
   });
 
-
   const [requestedToJoinProject, setRequestedToJoinProject] = useState(false);
-  
+
   const handleSetRequestedToJoinProject = (newValue) => {
-    setRequestedToJoinProject(newValue)
-  }
-  
+    setRequestedToJoinProject(newValue);
+  };
+
   /**
    * Calls backend, sending a request to join this project based
    * on user token stored in cookies.
    */
-   const handleSendProjectJoinRequest = async () => {
+  const handleSendProjectJoinRequest = async () => {
     // Get the actual project name from the URL, removing any query params
     // and projects/ prefix. For example,
     // "/projects/Anotherproject6?projectId=Anotherproject6" -> "Anotherproject6"
@@ -507,7 +506,11 @@ export default function ProjectPageRoot({
           />
         </TabContent>
         <TabContent value={tabValue} index={1}>
-          <ProjectTeamContent project={project} handleReadNotifications={handleReadNotifications} leaveProject={requestLeaveProject} />
+          <ProjectTeamContent
+            project={project}
+            handleReadNotifications={handleReadNotifications}
+            leaveProject={requestLeaveProject}
+          />
         </TabContent>
         <TabContent value={tabValue} index={2}>
           <ProjectCommentsContent

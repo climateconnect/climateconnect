@@ -61,14 +61,14 @@ function getTeamWithAdditionalInfo(team, texts) {
   });
 }
 
-export default function TeamContent({ project,handleReadNotifications }) {
-  const { user, locale, notifications } = useContext(UserContext);
+export default function TeamContent({ project, handleReadNotifications }) {
+  const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const classes = useStyles();
 
-  useEffect(async() => {
-    await handleReadNotifications(NOTIFICATION_TYPES.indexOf("project_join_request_approved"))
-  }, [])
+  useEffect(async () => {
+    await handleReadNotifications(NOTIFICATION_TYPES.indexOf("project_join_request_approved"));
+  }, []);
 
   // Not logged in
   if (!user) {
