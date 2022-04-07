@@ -103,6 +103,7 @@ export default function HubLinks({
           open={open["climateHubs"]}
           onOpen={(e) => handleOpen(e, "climateHubs")}
           onClose={() => handleClose("climateHubs")}
+          addLocationHubExplainerLink
         />
       )}
     </div>

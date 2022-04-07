@@ -70,9 +70,10 @@ export default function FollowButton({
   const classes = useStyles({
     hasAdminPermissions: hasAdminPermissions,
     followingChangePending: followingChangePending,
-    belowSmallScreen: screenSize.belowSmall,
+    belowSmallScreen: screenSize?.belowSmall,
   });
-  if (screenSize.belowSmall && !screenSize.belowTiny) {
+
+  if (screenSize?.belowSmall && !screenSize.belowTiny) {
     return (
       <Button
         {...bindFollow}
@@ -97,7 +98,7 @@ export default function FollowButton({
         </div>
       </Button>
     );
-  } else if (screenSize.belowTiny) {
+  } else if (screenSize?.belowTiny) {
     return (
       <Button
         {...bindFollow}

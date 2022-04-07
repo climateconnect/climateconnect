@@ -25,6 +25,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     idea_comment_parent = serializers.SerializerMethodField()
     idea_supporter = serializers.SerializerMethodField()
     idea_supporter_chat = serializers.SerializerMethodField()
+    membership_requester = serializers.SerializerMethodField()
 
     class Meta:
         model = Notification
@@ -44,7 +45,8 @@ class NotificationSerializer(serializers.ModelSerializer):
             'idea_comment',
             'idea_comment_parent',
             'idea_supporter',
-            'idea_supporter_chat'
+            'idea_supporter_chat',
+            'membership_requester'
         )
 
     def get_last_message(self, obj):
@@ -97,6 +99,11 @@ class NotificationSerializer(serializers.ModelSerializer):
             return {
                 "name": obj.project_like.project.name,
                 "url_slug": obj.project_like.project.url_slug
+            }
+        if obj.membership_request and not obj.membership_request.target_project == None:
+            return {
+                "name": obj.membership_request.target_project.name,
+                "url_slug": obj.membership_request.target_project.url_slug
             }
 
     def get_project_follower(self, obj):
@@ -152,3 +159,9 @@ class NotificationSerializer(serializers.ModelSerializer):
             idea = obj.idea_supporter.idea
             chat = MessageParticipants.objects.get(related_idea=idea)
             return chat.chat_uuid
+
+    def get_membership_requester(self, obj):
+        if obj.membership_request:
+            requester_user = UserProfile.objects.get(user=obj.membership_request.user)
+            serializer = UserProfileStubSerializer(requester_user)
+            return serializer.data
