@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
 
   largeJoinButton: {
     height: 40,
-    maxWidth: 140
+    maxWidth: 140,
   },
 
   mediumScreenIconButton: {
@@ -64,7 +64,7 @@ export default function JoinButton({
   screenSize,
   handleSendProjectJoinRequest,
   requestedToJoin,
-  className
+  className,
 }) {
   const classes = useStyles();
 
@@ -73,7 +73,10 @@ export default function JoinButton({
 
   if (screenSize?.belowSmall) {
     return (
-      <span className={`${className} ${classes.mobileButtonContainer}`} onClick={handleSendProjectJoinRequest}>
+      <span
+        className={`${className} ${classes.mobileButtonContainer}`}
+        onClick={handleSendProjectJoinRequest}
+      >
         <IconButton className={classes.iconButton} disabled={requestedToJoin}>
           <ButtonIcon icon="add" size={40} color={"primary"} />
         </IconButton>
