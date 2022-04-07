@@ -59,6 +59,8 @@ const NOTIFICATION_TYPES = [
   "post_comment",
   "reply_to_post_comment",
   "group_message",
+  "join_project_request",
+  "project_join_request_approved",
   "mention",
   "project_like",
   "idea_comment",
@@ -66,6 +68,7 @@ const NOTIFICATION_TYPES = [
   "person_joined_idea",
 ];
 
+//component for rendering the notifications that are shown when clicking on the bell on the right side of the header
 export default function Notification({ notification, isPlaceholder }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", locale: locale, idea: notification?.idea });
@@ -74,25 +77,63 @@ export default function Notification({ notification, isPlaceholder }) {
   }
 
   const type = NOTIFICATION_TYPES[notification.notification_type];
-  if (type === "private_message") return <PrivateMessageNotification notification={notification} />;
-  else if (type === "group_message")
-    return <GroupMessageNotification notification={notification} />;
-  else if (type === "project_comment")
+  if (type === "private_message") {
+    return <PrivateMessageNotification notification={notification} />;
+  } else if (type === "project_comment") {
     return <ProjectCommentNotification notification={notification} />;
-  else if (type === "mention")
-    return <MentionNotification notification={notification} texts={texts} locale={locale} />;
-  else if (type === "reply_to_project_comment")
+  } else if (type === "reply_to_project_comment") {
     return <ProjectCommentReplyNotification notification={notification} />;
-  else if (type === "project_follower")
+  } else if (type === "project_follower") {
     return <ProjectFollowerNotification notification={notification} />;
-  else if (type === "idea_comment") return <IdeaCommentNotification notification={notification} />;
-  else if (type === "reply_to_idea_comment")
+  } else if (type === "group_message") {
+    return <GroupMessageNotification notification={notification} />;
+  } else if (type === "join_project_request") {
+    return <JoinProjectRequestNotification notification={notification} />;
+  } else if (type === "project_join_request_approved") {
+    return <JoinProjectRequestApprovedNotification notification={notification} />;
+  } else if (type === "mention") {
+    return <MentionNotification notification={notification} texts={texts} locale={locale} />;
+  } else if (type === "idea_comment") {
+    return <IdeaCommentNotification notification={notification} />;
+  } else if (type === "reply_to_idea_comment") {
     return <IdeaCommentReplyNotification notification={notification} />;
-  else if (type === "person_joined_idea")
+  } else if (type === "person_joined_idea") {
     return <PersonJoinedIdeaNotification notification={notification} />;
-  else if (type === "project_like") return <ProjectLikeNotification notification={notification} />;
-  else return <></>;
+  } else if (type === "project_like") {
+    return <ProjectLikeNotification notification={notification} />;
+  } else return <></>;
 }
+
+const JoinProjectRequestNotification = ({ notification }) => {
+  const requester = notification.membership_requester;
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "notification", project: notification.project, locale: locale });
+  const requesterName = requester.first_name + " " + requester.last_name;
+  return (
+    <GenericNotification
+      link={`/projects/${notification.project.url_slug}?show_join_requests=true`}
+      avatar={{
+        alt: requesterName,
+        image: requester.thumbnail_image,
+      }}
+      primaryText={requesterName + " " + texts.wants_to_join_your_project}
+    />
+  );
+};
+
+const JoinProjectRequestApprovedNotification = ({ notification }) => {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "notification", project: notification.project, locale: locale });
+  return (
+    <GenericNotification
+      link={`/projects/${notification.project.url_slug}#team`}
+      notificationIcon={{
+        icon: GroupIcon,
+      }}
+      primaryText={texts.project_accepted_you_as_a_member}
+    />
+  );
+};
 
 const PersonJoinedIdeaNotification = ({ notification }) => {
   const supporter = notification.idea_supporter;

@@ -1043,12 +1043,12 @@ class RequestJoinProject(RetrieveUpdateAPIView):
                             }, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            request_id = request_manager.create_membership_request()
+            request = request_manager.create_membership_request()
             project_admins = get_project_admin_creators(project)
-            create_project_join_request_notification(requester=user, project_admins=project_admins, project=project)
+            create_project_join_request_notification(requester=user, project_admins=project_admins, project=project, request=request)
 
             # Now pass the requestId back to the client.
-            return Response({ "requestId": request_id }, status=status.HTTP_200_OK)
+            return Response({ "requestId": request.id }, status=status.HTTP_200_OK)
         except:
             logging.error(traceback.format_exc())
             return Response({
@@ -1096,7 +1096,7 @@ class ManageJoinProjectView(RetrieveUpdateDestroyAPIView):
 
             if request_action == 'approve':
                 request_manager.approve_request()
-                create_project_join_request_approval_notification(requester=request.user, project=project)
+                create_project_join_request_approval_notification(request_id=request_id)
             elif request_action == 'reject':
                 request_manager.reject_request()
             else:

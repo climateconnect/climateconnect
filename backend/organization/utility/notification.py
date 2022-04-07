@@ -2,9 +2,10 @@ import re
 from datetime import datetime, timedelta
 
 from asgiref.sync import async_to_sync
+from organization.models.members import MembershipRequests
 from channels.layers import get_channel_layer
 from organization.utility.email import (
-    send_mention_email, send_project_follower_email,
+    send_join_project_request_email, send_mention_email, send_project_follower_email,
     send_project_like_email)
 from climateconnect_api.models import UserProfile
 from climateconnect_api.models.notification import (EmailNotification,
@@ -118,7 +119,7 @@ def create_project_follower_notification(project_follower):
             send_project_follower_email(user, project_follower, notification)
 
 
-def create_project_join_request_notification(requester,project_admins,project):
+def create_project_join_request_notification(requester,project_admins,project, request):
     """
     Creates a notification about a joining request from a requester to a project admin.
     :param requester: UserProfile object of the user who's sent the request
@@ -130,24 +131,25 @@ def create_project_join_request_notification(requester,project_admins,project):
     requester_name = requester.first_name + " " + requester.last_name
     notification = Notification.objects.create(
         notification_type=9,
-        text=f"{requester_name} wants to join your project {project.name}!"
+        text=f"{requester_name} wants to join your project {project.name}!",
+        membership_request = request
     )
 
     for project_admin in project_admins:
         create_user_notification(project_admin, notification)
+        send_join_project_request_email(project_admin, request, requester, notification)
 
     return
 
-def create_project_join_request_approval_notification(requester, project):
+def create_project_join_request_approval_notification(request_id):
     """
     Creates a notification about an approved request to join a project to the requester.
-    :param requester: UserProfile object of the user who's sent the request
-    :type requester: UserProfile
-    :param project: Iterable UserProfile object of the project administrators
-    :type project: List(UserProfile)
+    :param request_id: Id of the request of the approved MembershipRequest
+    :type request_id: int
     """
-    notification = Notification.objects.create(notification_type=10)
-    create_user_notification(requester, notification)
+    request = MembershipRequests.objects.get(id=request_id)
+    notification = Notification.objects.create(notification_type=10, membership_request=request)
+    create_user_notification(request.user, notification)
 
 def create_project_like_notification(project_like):
     notification = Notification.objects.create(

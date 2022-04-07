@@ -99,6 +99,10 @@
     "en": "Get notified when somebody joins an ideas team that you're also part of",
     "de": "Ich möchte benachrichtigt werden, wenn jemand neues bei einer Idee mitmacht, an der ich beteiligt bin"
   },
+  "email_on_join_request_text": {
+    "en": "Get notified when somebody asks to join your project or idea",
+    "de": "Ich möchte benachrichtigt werden, wenn jemand bei meiner Organisation oder Projekt mitmachen will"
+  },
   "accepted_statistics_text": {
     "en": "Enable Statistics cookies to help us improve Climate Connect",
     "de": "Aktiviere Statistik-Cookies, damit wir Climate Connect verbessern können"
