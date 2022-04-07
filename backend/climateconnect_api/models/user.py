@@ -18,7 +18,7 @@ class UserProfile(models.Model):
         help_text="Points to user table",
         on_delete=models.CASCADE,
         verbose_name="User",
-        related_name="user_profile"
+        related_name="user_profile",
     )
 
     name = models.CharField(
@@ -26,7 +26,7 @@ class UserProfile(models.Model):
         verbose_name="Full name",
         max_length=256,
         null=True,
-        blank=True
+        blank=True,
     )
 
     url_slug = models.CharField(
@@ -35,7 +35,7 @@ class UserProfile(models.Model):
         max_length=512,
         unique=True,
         null=True,
-        blank=True
+        blank=True,
     )
 
     # Keeping this column blank. User may not want to upload their profile picture.
@@ -44,7 +44,7 @@ class UserProfile(models.Model):
         verbose_name="Profile Image",
         upload_to=profile_image_path,
         null=True,
-        blank=True
+        blank=True,
     )
 
     thumbnail_image = models.ImageField(
@@ -52,7 +52,7 @@ class UserProfile(models.Model):
         verbose_name="Thumbnail Image",
         upload_to=profile_image_path,
         null=True,
-        blank=True
+        blank=True,
     )
 
     background_image = models.ImageField(
@@ -60,7 +60,7 @@ class UserProfile(models.Model):
         verbose_name="Background Image",
         upload_to=background_image_path,
         null=True,
-        blank=True
+        blank=True,
     )
 
     # Field not in use. Keeping temporarily for backwards compatibility
@@ -69,7 +69,7 @@ class UserProfile(models.Model):
         verbose_name="Country",
         max_length=256,
         blank=True,
-        null=True
+        null=True,
     )
 
     # Field not in use. Keeping temporarily for backwards compatibility
@@ -78,7 +78,7 @@ class UserProfile(models.Model):
         verbose_name="State",
         max_length=512,
         null=True,
-        blank=True
+        blank=True,
     )
 
     # Field not in use. Keeping temporarily for backwards compatibility
@@ -87,7 +87,7 @@ class UserProfile(models.Model):
         verbose_name="City",
         max_length=512,
         null=True,
-        blank=True
+        blank=True,
     )
 
     location = models.ForeignKey(
@@ -97,37 +97,37 @@ class UserProfile(models.Model):
         related_name="user_profile_loc",
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
     )
 
     biography = models.TextField(
-        help_text="Points to user's bio",
-        verbose_name="bio",
-        null=True,
-        blank=True
+        help_text="Points to user's bio", verbose_name="bio", null=True, blank=True
     )
 
     created_at = models.DateTimeField(
         help_text="Time when object first created",
         verbose_name="Created At",
-        auto_now_add=True
+        auto_now_add=True,
     )
 
     updated_at = models.DateTimeField(
         help_text="Time when profile was updated",
         verbose_name="Update at",
-        auto_now=True
+        auto_now=True,
     )
 
     is_profile_verified = models.BooleanField(
         help_text="Checks whether user's profile is verfied or not",
         verbose_name="Is profile verified",
-        default=False
+        default=False,
     )
 
     verification_key = models.UUIDField(
         help_text="On signup create a unique key that will be used for user's profile verification",
-        verbose_name="Verification Key", null=True, blank=True, unique=True
+        verbose_name="Verification Key",
+        null=True,
+        blank=True,
+        unique=True,
     )
 
     availability = models.ForeignKey(
@@ -137,7 +137,7 @@ class UserProfile(models.Model):
         null=True,
         blank=True,
         related_name="user_availability",
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
     )
 
     skills = models.ManyToManyField(
@@ -145,87 +145,122 @@ class UserProfile(models.Model):
         help_text="Points to user's skills",
         verbose_name="Skills",
         related_name="user_skills",
-        blank=True
+        blank=True,
     )
 
     send_newsletter = models.BooleanField(
         help_text="Check if user wants to receive our newsletter",
-        verbose_name="Send newsletter", null=True, blank=True,
-        default=True
+        verbose_name="Send newsletter",
+        null=True,
+        blank=True,
+        default=True,
     )
 
     email_on_private_chat_message = models.BooleanField(
         help_text="Check if user wants to receive emails when they receive a private chat message",
-        verbose_name="Email on private chat message", null=True, blank=True, default=True
+        verbose_name="Email on private chat message",
+        null=True,
+        blank=True,
+        default=True,
     )
 
     email_on_group_chat_message = models.BooleanField(
         help_text="Check if user wants to receive emails when they receive a group chat message",
-        verbose_name="Email on group chat message", null=True, blank=True, default=True
+        verbose_name="Email on group chat message",
+        null=True,
+        blank=True,
+        default=True,
     )
 
     email_on_comment_on_your_project = models.BooleanField(
         help_text="Check if user wants to receive emails when they receive a comment on a project they're a member of",
-        verbose_name="Email on project comment", null=True, blank=True, default=True
+        verbose_name="Email on project comment",
+        null=True,
+        blank=True,
+        default=True,
     )
 
     email_on_mention = models.BooleanField(
         help_text="Check if user wants to receive emails when they are mentioned in a comment on a project",
-        verbose_name="Email on mention", null=True, blank=True, default=True
+        verbose_name="Email on mention",
+        null=True,
+        blank=True,
+        default=True,
     )
 
     email_on_comment_on_your_idea = models.BooleanField(
         help_text="Check if user wants to receive emails when they receive a comment on an idea they're a member of",
-        verbose_name="Email on idea comment", null=True, blank=True, default=True
+        verbose_name="Email on idea comment",
+        null=True,
+        blank=True,
+        default=True,
     )
 
     email_on_reply_to_your_comment = models.BooleanField(
         help_text="Check if user wants to receive emails when somebody answers to their comment on a project",
-        verbose_name="Email on comment reply", null=True, blank=True, default=True
+        verbose_name="Email on comment reply",
+        null=True,
+        blank=True,
+        default=True,
     )
 
     email_on_new_project_follower = models.BooleanField(
         help_text="Check if user wants to receive emails when somebody follows their project",
-        verbose_name="Email on new project follower", null=True, blank=True, default=True
+        verbose_name="Email on new project follower",
+        null=True,
+        blank=True,
+        default=True,
     )
 
     email_on_new_project_like = models.BooleanField(
         help_text="Check if user wants to receive emails when somebody likes their project",
-        verbose_name="Email on new project like", null=True, blank=True, default=True
+        verbose_name="Email on new project like",
+        null=True,
+        blank=True,
+        default=True,
     )
 
     email_on_idea_join = models.BooleanField(
         help_text="Check if user wants to receive emails when somebody joins an idea they are part of",
-        verbose_name="Email on new idea join", null=True, blank=True, default=True
+        verbose_name="Email on new idea join",
+        null=True,
+        blank=True,
+        default=True,
     )
 
     email_on_join_request = models.BooleanField(
         help_text="Check if user wants to receive emails when somebody asks to join their project or organization",
-        verbose_name="Email on join request", null=True, blank=True, default=True
+        verbose_name="Email on join request",
+        null=True,
+        blank=True,
+        default=True,
     )
 
     has_logged_in = models.PositiveSmallIntegerField(
         help_text="Check if the user should be redirected to the edit profile page. Shows the number of logins up to 2",
         verbose_name="Number of logins up to 2",
-        default=0
+        default=0,
     )
 
     pending_new_email = models.EmailField(
         help_text="If the user is in the process of changing their email, this field will show the potential new email",
         verbose_name="Potential new E-Mail address",
         null=True,
-        blank=True
+        blank=True,
     )
 
     password_reset_key = models.UUIDField(
         help_text="key for resetting your password",
-        verbose_name="Password reset key", null=True, blank=True, unique=True
+        verbose_name="Password reset key",
+        null=True,
+        blank=True,
+        unique=True,
     )
 
     password_reset_timeout = models.DateTimeField(
         help_text="Time when the password reset times out",
         verbose_name="Password reset timeout",
-        auto_now_add=True
+        auto_now_add=True,
     )
 
     website = models.CharField(
@@ -233,38 +268,40 @@ class UserProfile(models.Model):
         verbose_name="User's Website",
         max_length=256,
         null=True,
-        blank=True
+        blank=True,
     )
 
     from_tutorial = models.BooleanField(
-        help_text="Check whether the user signed up by clicking the \"sign up\" link in the tutorial",
+        help_text='Check whether the user signed up by clicking the "sign up" link in the tutorial',
         verbose_name="Signed up through tutorial?",
         null=True,
         blank=True,
-        default=False
+        default=False,
     )
 
     is_activist = models.CharField(
-        help_text="Options: [\"yes\", \"soon\", \"no\"]. Soon means they said they're interested in becoming active.",
+        help_text='Options: ["yes", "soon", "no"]. Soon means they said they\'re interested in becoming active.',
         verbose_name="Is already active in climate action?",
         null=True,
         blank=True,
-        max_length=8
+        max_length=8,
     )
 
     last_completed_tutorial_step = models.SmallIntegerField(
         help_text="Last tutorial step the user completed (16=finished)",
         verbose_name="Last completed tutorial step",
         null=True,
-        blank=True
+        blank=True,
     )
 
     language = models.ForeignKey(
-        Language, related_name="profile_language",
+        Language,
+        related_name="profile_language",
         help_text="Points to user's original language",
         verbose_name="Language",
-        null=True, blank=True,
-        on_delete=models.SET_NULL
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
     )
 
     class Meta:
@@ -275,47 +312,60 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return "%s %s [profile id: %d]" % (
-            self.user.first_name, self.user.last_name, self.id
+            self.user.first_name,
+            self.user.last_name,
+            self.id,
         )
 
 
 class UserProfileTranslation(models.Model):
     user_profile = models.ForeignKey(
-        UserProfile, related_name="profile_translation",
-        help_text="Points to user profile object", verbose_name="User profile",
-        on_delete=models.CASCADE
+        UserProfile,
+        related_name="profile_translation",
+        help_text="Points to user profile object",
+        verbose_name="User profile",
+        on_delete=models.CASCADE,
     )
 
     language = models.ForeignKey(
-        Language, related_name="profile_translatiion_lang",
-        help_text="Points to language object", verbose_name="Language",
-        on_delete=models.CASCADE
+        Language,
+        related_name="profile_translatiion_lang",
+        help_text="Points to language object",
+        verbose_name="Language",
+        on_delete=models.CASCADE,
     )
 
     biography_translation = models.TextField(
-        help_text="Translation of user bio", verbose_name="Biography translation",
-        null=True, blank=True
+        help_text="Translation of user bio",
+        verbose_name="Biography translation",
+        null=True,
+        blank=True,
     )
 
     is_manual_translation = models.BooleanField(
         help_text="Did the user manually translate this or was it automatically translated with DeepL?",
-        verbose_name="Is manual translation?", default=False
+        verbose_name="Is manual translation?",
+        default=False,
     )
 
     created_at = models.DateTimeField(
-        auto_now_add=True, help_text="Time when translation object was created",
-        verbose_name="Created at"
+        auto_now_add=True,
+        help_text="Time when translation object was created",
+        verbose_name="Created at",
     )
 
     updated_at = models.DateTimeField(
-        auto_now=True, help_text="Time when translation object was updated",
-        verbose_name="Updated at"
+        auto_now=True,
+        help_text="Time when translation object was updated",
+        verbose_name="Updated at",
     )
 
     class Meta:
         verbose_name = "User profile translation"
         verbose_name_plural = "User profile translations"
-        unique_together = [['user_profile', 'language']]
+        unique_together = [["user_profile", "language"]]
 
     def __str__(self):
-        return "{}: {} translation of user {}".format(self.id, self.language.name, self.user_profile.name)
+        return "{}: {} translation of user {}".format(
+            self.id, self.language.name, self.user_profile.name
+        )

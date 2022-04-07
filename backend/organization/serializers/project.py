@@ -1,8 +1,10 @@
 from organization.models.members import MembershipRequests
 from climateconnect_api.models import UserProfile
 from climateconnect_api.models.role import Role
-from climateconnect_api.serializers.common import (AvailabilitySerializer,
-                                                   SkillSerializer)
+from climateconnect_api.serializers.common import (
+    AvailabilitySerializer,
+    SkillSerializer,
+)
 from climateconnect_api.serializers.role import RoleSerializer
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from django.conf import settings
@@ -12,20 +14,26 @@ from location.serializers import LocationStubSerializer
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 
-from organization.models import (Project, ProjectCollaborators,
-                                 ProjectFollower, ProjectLike, ProjectMember,
-                                 ProjectParents)
+from organization.models import (
+    Project,
+    ProjectCollaborators,
+    ProjectFollower,
+    ProjectLike,
+    ProjectMember,
+    ProjectParents,
+)
 from organization.models.content import ProjectComment
 from organization.models.translations import ProjectTranslation
 from organization.serializers.organization import OrganizationStubSerializer
 from organization.serializers.status import ProjectStatusSerializer
-from organization.serializers.tags import (OrganizationTagging,
-                                           ProjectTaggingSerializer)
+from organization.serializers.tags import OrganizationTagging, ProjectTaggingSerializer
 from organization.serializers.translation import ProjectTranslationSerializer
-from organization.utility.project import (get_project_description,
-                                          get_project_helpful_connections,
-                                          get_project_name,
-                                          get_project_short_description)
+from organization.utility.project import (
+    get_project_description,
+    get_project_helpful_connections,
+    get_project_name,
+    get_project_short_description,
+)
 from organization.utility.status import get_project_status
 
 
@@ -48,19 +56,31 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = (
-            'id', 'name', 'url_slug',
-            'image', 'status',
-            'start_date', 'end_date',
-            'short_description', 'description',
-            'loc', 'location',
-            'collaborators_welcome',
-            'skills', 'helpful_connections',
-            'project_parents', 'tags',
-            'created_at', 'collaborating_organizations', 'is_draft',
-            'website', 'number_of_followers', 'number_of_likes',
-            'language'
+            "id",
+            "name",
+            "url_slug",
+            "image",
+            "status",
+            "start_date",
+            "end_date",
+            "short_description",
+            "description",
+            "loc",
+            "location",
+            "collaborators_welcome",
+            "skills",
+            "helpful_connections",
+            "project_parents",
+            "tags",
+            "created_at",
+            "collaborating_organizations",
+            "is_draft",
+            "website",
+            "number_of_followers",
+            "number_of_likes",
+            "language",
         )
-        read_only_fields = ['url_slug']
+        read_only_fields = ["url_slug"]
 
     def get_name(self, obj):
         return get_project_name(obj, get_language())
@@ -72,8 +92,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         return get_project_description(obj, get_language())
 
     def get_collaborating_organizations(self, obj):
-        serializer = ProjectCollaboratorsSerializer(
-            obj.project_collaborator, many=True)
+        serializer = ProjectCollaboratorsSerializer(obj.project_collaborator, many=True)
         return serializer.data
 
     def get_skills(self, obj):
@@ -109,7 +128,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def get_status(self, obj):
         serializer = ProjectStatusSerializer(obj.status, many=False)
-        return serializer.data['name']
+        return serializer.data["name"]
 
     def get_language(self, obj):
         return obj.language.language_code
@@ -125,10 +144,7 @@ class EditProjectSerializer(ProjectSerializer):
 
     def get_loc(self, obj):
         if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
-            return {
-                "city": obj.loc.city,
-                "country": obj.loc.country
-            }
+            return {"city": obj.loc.city, "country": obj.loc.country}
         else:
             if obj.loc == None:
                 return None
@@ -155,7 +171,7 @@ class EditProjectSerializer(ProjectSerializer):
         return obj.helpful_connections
 
     class Meta(ProjectSerializer.Meta):
-        fields = ProjectSerializer.Meta.fields + ('loc', 'translations')
+        fields = ProjectSerializer.Meta.fields + ("loc", "translations")
 
 
 class ProjectParentsSerializer(serializers.ModelSerializer):
@@ -164,10 +180,7 @@ class ProjectParentsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProjectParents
-        fields = (
-            'parent_organization', 'parent_user',
-            'created_at'
-        )
+        fields = ("parent_organization", "parent_user", "created_at")
 
     def get_parent_organization(self, obj):
         if obj.parent_organization:
@@ -191,9 +204,15 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = (
-            'name', 'url_slug',
-            'skills', 'image',
-            'status', 'location', 'project_parents', 'is_draft', 'website'
+            "name",
+            "url_slug",
+            "skills",
+            "image",
+            "status",
+            "location",
+            "project_parents",
+            "is_draft",
+            "website",
         )
 
     def get_name(self, obj):
@@ -210,7 +229,7 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
 
     def get_status(self, obj):
         serializer = ProjectStatusSerializer(obj.status, many=False)
-        return serializer.data['name']
+        return serializer.data["name"]
 
 
 class ProjectStubSerializer(serializers.ModelSerializer):
@@ -227,11 +246,18 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = (
-            'id', 'name', 'url_slug',
-            'image', 'location', 'status',
-            'project_parents', 'tags',
-            'is_draft', 'short_description',
-            'number_of_comments', 'number_of_likes'
+            "id",
+            "name",
+            "url_slug",
+            "image",
+            "location",
+            "status",
+            "project_parents",
+            "tags",
+            "is_draft",
+            "short_description",
+            "number_of_comments",
+            "number_of_likes",
         )
 
     def get_name(self, obj):
@@ -245,15 +271,23 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         if parent is None:
             return []
         if parent.parent_organization:
-            return [{
-                'parent_user': None,
-                'parent_organization': (OrganizationStubSerializer(parent.parent_organization)).data
-            }]
+            return [
+                {
+                    "parent_user": None,
+                    "parent_organization": (
+                        OrganizationStubSerializer(parent.parent_organization)
+                    ).data,
+                }
+            ]
         else:
-            return [{
-                'parent_user': (UserProfileStubSerializer(parent.parent_user.user_profile)).data,
-                'parent_organization': None
-            }]
+            return [
+                {
+                    "parent_user": (
+                        UserProfileStubSerializer(parent.parent_user.user_profile)
+                    ).data,
+                    "parent_organization": None,
+                }
+            ]
 
     def get_tags(self, obj):
         serializer = ProjectTaggingSerializer(obj.tag_project, many=True)
@@ -274,7 +308,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
 
     def get_status(self, obj):
         serializer = ProjectStatusSerializer(obj.status, many=False)
-        return serializer.data['name']
+        return serializer.data["name"]
 
     def get_number_of_comments(self, obj):
         return ProjectComment.objects.filter(project=obj).count()
@@ -282,14 +316,19 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     def get_number_of_likes(self, obj):
         return ProjectLike.objects.filter(project=obj).count()
 
+
 class ProjectSuggestionSerializer(ProjectStubSerializer):
     project_creator = serializers.SerializerMethodField()
+
     class Meta(ProjectStubSerializer.Meta):
-        fields = ProjectStubSerializer.Meta.fields + ('project_creator',)
+        fields = ProjectStubSerializer.Meta.fields + ("project_creator",)
 
     def get_project_creator(self, obj):
-        member = ProjectMember.objects.filter(project=obj, role__role_type=Role.ALL_TYPE).first()
+        member = ProjectMember.objects.filter(
+            project=obj, role__role_type=Role.ALL_TYPE
+        ).first()
         return (ProjectMemberSerializer(member)).data
+
 
 class ProjectMemberSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
@@ -298,17 +337,18 @@ class ProjectMemberSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProjectMember
-        fields = ('id', 'user', 'role', 'role_in_project', 'availability')
+        fields = ("id", "user", "role", "role_in_project", "availability")
 
     def get_user(self, obj):
-        return UserProfileStubSerializer(UserProfile.objects.filter(user=obj.user)[0]).data
+        return UserProfileStubSerializer(
+            UserProfile.objects.filter(user=obj.user)[0]
+        ).data
 
 
 class InsertProjectMemberSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = ProjectMember
-        fields = ('id', 'user', 'role', 'role_in_project', 'availability')
+        fields = ("id", "user", "role", "role_in_project", "availability")
 
 
 class ProjectCollaboratorsSerializer(serializers.ModelSerializer):
@@ -316,7 +356,7 @@ class ProjectCollaboratorsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProjectCollaborators
-        fields = ['collaborating_organization']
+        fields = ["collaborating_organization"]
 
     def get_collaborating_organization(self, obj):
         serializer = OrganizationStubSerializer(obj.collaborating_organization)
@@ -328,7 +368,7 @@ class ProjectFromProjectParentsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProjectParents
-        fields = ('project',)
+        fields = ("project",)
 
     def get_project(self, obj):
         serializer = ProjectStubSerializer(obj.project)
@@ -340,7 +380,7 @@ class ProjectFromProjectMemberSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProjectMember
-        fields = ('project',)
+        fields = ("project",)
 
     def get_project(self, obj):
         serializer = ProjectStubSerializer(obj.project)
@@ -350,7 +390,7 @@ class ProjectFromProjectMemberSerializer(serializers.ModelSerializer):
 class ProjectSitemapEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = ('url_slug', 'updated_at')
+        fields = ("url_slug", "updated_at")
 
 
 class ProjectFollowerSerializer(serializers.ModelSerializer):
@@ -358,7 +398,7 @@ class ProjectFollowerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProjectFollower
-        fields = ('user_profile', 'created_at')
+        fields = ("user_profile", "created_at")
 
     def get_user_profile(self, obj):
         user_profile = UserProfile.objects.get(user=obj.user)
@@ -371,6 +411,7 @@ class ProjectRequesterSerializer(serializers.ModelSerializer):
     to the client, so that it can be sent appropriately
     alongside the approve/deny actions for project requesters.
     """
+
     user_profile = serializers.SerializerMethodField()
 
     class Meta:
@@ -378,18 +419,20 @@ class ProjectRequesterSerializer(serializers.ModelSerializer):
 
         # Locally defined variables take precedence
         # over what's defined on the model
-        fields = ('user_profile', 'id')
+        fields = ("user_profile", "id")
 
     def get_user_profile(self, obj):
         user_profile = UserProfile.objects.get(user=obj.user)
         serializer = UserProfileStubSerializer(user_profile)
         return serializer.data
 
+
 class ProjectLikeSerializer(serializers.ModelSerializer):
     user_profile = serializers.SerializerMethodField()
+
     class Meta:
         model = ProjectLike
-        fields = ('user_profile', 'created_at')
+        fields = ("user_profile", "created_at")
 
     def get_user_profile(self, obj):
         user_profile = UserProfile.objects.get(user=obj.user)

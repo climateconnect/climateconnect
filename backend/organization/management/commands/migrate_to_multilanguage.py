@@ -6,7 +6,8 @@ from climateconnect_api.models import UserProfile
 
 from organization.models.project import Project
 
-def migrate_elements(type: str, object:Project, language:Language):
+
+def migrate_elements(type: str, object: Project, language: Language):
     print("Total objects of type" + type + ": {}".format(object.count()))
     objects_counter = 0
 
@@ -24,21 +25,23 @@ class Command(BaseCommand):
     def handle(self, *args: Any, **options: Any) -> None:
         required_languages = [
             {
-                'name': "english",
-                'native_name': "Englisch",
-                'language_code': "en",
-                'currency': "$"
+                "name": "english",
+                "native_name": "Englisch",
+                "language_code": "en",
+                "currency": "$",
             },
             {
-                'name': "german",
-                'native_name': "Deutsch",
-                'language_code': "de",
-                'currency': "€"
-            }
+                "name": "german",
+                "native_name": "Deutsch",
+                "language_code": "de",
+                "currency": "€",
+            },
         ]
         # Make sure all required languages exist. If they don't, then create them
         for language in required_languages:
-            if(not Language.objects.filter(language_code=language['language_code']).exists()):
+            if not Language.objects.filter(
+                language_code=language["language_code"]
+            ).exists():
                 Language.objects.create(**language)
 
         english = Language.objects.get(language_code="en")
