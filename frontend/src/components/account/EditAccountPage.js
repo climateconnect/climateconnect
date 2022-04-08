@@ -606,7 +606,7 @@ export default function EditAccountPage({
                 </Tooltip>
               )}
             </Typography>
-            <TextField fullWidth value={i.value} multiline onChange={handleChange} />
+            <TextField required={i.required} fullWidth value={i.value} multiline onChange={handleChange} />
           </div>
         );
       }
