@@ -16,6 +16,7 @@ from django.contrib.auth.models import User
 from climateconnect_api.models.user import UserProfile
 from organization.models.project import Project
 from organization.models.organization import Organization
+from organization.models.members import OrganizationMember
 from ideas.models.ideas import Idea 
 from climateconnect_api.utility.translation import (get_user_lang_code,
                                                     get_user_lang_url)
@@ -366,47 +367,52 @@ def create_variables_for_weekly_recommendations(project_ids: List = [], organiza
         project_template = {
             "type": "project",
             "name": project[0],
-            "imageUrl": (settings.BACKEND_URL + "/media/" + project[1]) if project[1] else main_page,
+            "imageUrl": (settings.BACKEND_URL + project[1]) if project[1] else main_page,
             "url": (settings.FRONTEND_URL + "/projects/" + project[2]) if project[2] else main_page,
-            "location": project[3] if project[3] and not isInHub else '',
+            "location": project[3] if project[3] and not is_in_hub else '',
             "creator": project[4] + ' ' + project[5] if (project[4] and project[5]) else '',
             "tags": '',
         }
         entities.append(project_template)
 
-    # organizations = Organization.objects.filter(id__in=organization_ids).values_list("name", "thumbnail_image", "url_slug", "loc__name", "project_parent__parent_user__first_name", "project_parent__parent_user__last_name")
-    for organization_id in organization_ids:
-        organization = Organization.objects.select_related('location').get(id=organization_id)
+    organizations = Organization.objects.filter(id__in=organization_ids).values_list("name", "thumbnail_image", "url_slug", "location__name", "id")
+    for organization in organizations:
+        org_creators = OrganizationMember.objects.filter(organization__id=organization[4], role__role_type=2).values_list("user__first_name", "user__last_name")
+        creator = ''
+        # only one creator possible but the query needs to be iterated through
+        for org_creator in org_creators:
+            creator += org_creator[0] + " " + org_creator[1]
         organization_template = {
             "type": "organization",
-            "name": organization.name,
-            "imageUrl": (settings.BACKEND_URL + organization.thumbnail_image.url) if organization.thumbnail_image else '',
-            "url": (settings.FRONTEND_URL + "/organizations/" + organization.url_slug) if organization.url_slug else main_page,
-            "location": organization.location.name if organization.location and not isInHub else '',
-            "creator": '',
+            "name": organization[0],
+            "imageUrl": (settings.BACKEND_URL + organization[1]) if organization[1] else '',
+            "url": (settings.FRONTEND_URL + "/organizations/" + organization[2]) if organization[2] else main_page,
+            "location": organization[3] if organization[3] and not is_in_hub else '',
+            "creator": creator,
             "tags": '',
         }
         entities.append(organization_template)
-    for idea_id in idea_ids:
-        idea = Idea.objects.select_related('location', 'user', 'hub').get(id=idea_id)
+
+    ideas = Idea.objects.filter(id__in=idea_ids).values_list("name", "thumbnail_image", "url_slug", "location__name", "user__first_name", "user__last_name", "hub__url_slug")
+    for idea in ideas:
         idea_template = {
             "type": "idea",
-            "name": idea.name,
-            "imageUrl": (settings.BACKEND_URL + idea.thumbnail_image.url) if idea.thumbnail_image else '',
+            "name": idea[0],
+            "imageUrl": (settings.BACKEND_URL + idea[1]) if idea[1] else '',
             # url for ideas: URL/hubs/<hubUrl>?idea=<slug>#ideas
-            "url": (settings.FRONTEND_URL + "/hubs/"+ idea.hub.url_slug + "?idea=" + idea.url_slug + "#ideas") if idea.url_slug else main_page,
-            "location": idea.location.name if idea.location and not isInHub else '',
-            "creator": idea.user.get_full_name() if idea.user else '',
+            "url": (settings.FRONTEND_URL + "/hubs/"+ idea[6] + "?idea=" + idea[2] + "#ideas") if idea[2] else main_page,
+            "location": idea[3] if idea[3] and not is_in_hub else '',
+            "creator": idea[4] + ' ' + idea[5] if idea[4] and idea[5] else '',
             "tags": '',
         }
         entities.append(idea_template)
     return entities
 
 
-def create_messages_for_weekly_recommendations(chunked_user_query : QuerySet) -> List:
+def create_messages_for_weekly_recommendations(chunked_user_info) -> List:
     # ("user__email", "user__first_name", "user__last_name")
     messages = []
-    for user in chunked_user_query:
+    for user in chunked_user_info:
         messages.append(
         {
                     "To": [
@@ -421,7 +427,7 @@ def create_messages_for_weekly_recommendations(chunked_user_query : QuerySet) ->
     return messages
 
 
-def send_weekly_recommendations_email(messages: List, entities: List, lang_code: str, isInHub: bool = False):
+def send_weekly_recommendations_email(messages: List, entities: List, lang_code: str, is_in_hub: bool = False, sandbox_mode = False):
 
     template_key = "WEEKLY_RECOMMENDATIONS_EMAIL"
     
@@ -430,7 +436,7 @@ def send_weekly_recommendations_email(messages: List, entities: List, lang_code:
         lang_code=lang_code
     )
 
-    if isInHub:
+    if is_in_hub:
         subjects_by_language = {
             "en": "We have new recommendations in your area!",
             "de": "Wir haben neue Empfehlungen in deiner Region", 
@@ -464,7 +470,8 @@ def send_weekly_recommendations_email(messages: List, entities: List, lang_code:
                 "Name": "Mailjet Admin"
             },
         },
-        'Messages': messages
+        'Messages': messages,
+        'SandboxMode': sandbox_mode
     }
 
     try:
@@ -478,5 +485,3 @@ def send_weekly_recommendations_email(messages: List, entities: List, lang_code:
     # debugging
     return mail
 
-
-    # https://prod.liveshare.vsengsaas.visualstudio.com/join?2BC38C908F4975D103E8698AE7BA0EA16FC9 
