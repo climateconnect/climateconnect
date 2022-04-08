@@ -1,7 +1,6 @@
-import { Button, Container, Divider, Typography, Link, useMediaQuery } from "@material-ui/core";
+import { Button, Container, Divider, Typography, useMediaQuery } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
-import EditSharp from "@material-ui/icons/EditSharp";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import NextCookies from "next-cookies";
 import Router from "next/router";
@@ -25,7 +24,6 @@ import getOrganizationInfoMetadata from "./../../public/data/organization_info_m
 import UserContext from "./../../src/components/context/UserContext";
 import IconButton from "@material-ui/core/IconButton";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
-import EditSharpIcon from "@material-ui/icons/EditSharp";
 import ControlPointSharpIcon from "@material-ui/icons/ControlPointSharp";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";

@@ -88,23 +88,23 @@ export default function ProjectInteractionButtons({
         </Toolbar>
       </AppBar>
     );
-  else
-    return (
-      <Container>
-        {!hasAdminPermissions &&
-          !messageButtonIsVisible &&
-          contactProjectCreatorButtonRef?.current && (
-            <ContactCreatorButton
-              className={classes.largeScreenButton}
-              creator={projectAdmin}
-              handleClickContact={handleClickContact}
-              explanationBackground={"#fff"}
-              customCardWidth={220}
-              withInfoCard={true}
-              withIcons={true}
-              collapsable={true}
-            />
-          )}
-      </Container>
-    );
+
+  return (
+    <Container>
+      {!hasAdminPermissions &&
+        !messageButtonIsVisible &&
+        contactProjectCreatorButtonRef?.current && (
+          <ContactCreatorButton
+            className={classes.largeScreenButton}
+            creator={projectAdmin}
+            handleClickContact={handleClickContact}
+            explanationBackground={"#fff"}
+            customCardWidth={220}
+            withInfoCard={true}
+            withIcons={true}
+            collapsable={true}
+          />
+        )}
+    </Container>
+  );
 }

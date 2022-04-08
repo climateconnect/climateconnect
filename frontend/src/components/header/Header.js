@@ -35,6 +35,9 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import SettingsIcon from "@material-ui/icons/Settings";
 import noop from "lodash/noop";
 import React, { useContext, useState } from "react";
+import { getStaticPageLinks } from "../../../public/data/getStaticPageLinks";
+
+// Relative imports
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -45,6 +48,7 @@ import UserContext from "../context/UserContext";
 import ProfileBadge from "../profile/ProfileBadge";
 import DropDownButton from "./DropDownButton";
 import LanguageSelect from "./LanguageSelect";
+import StaticPageLinks from "./StaticPageLinks";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -130,42 +134,6 @@ const useStyles = makeStyles((theme) => {
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(2),
     },
-    staticPageLinksWrapper: {
-      width: "100%",
-      height: 50,
-      background: theme.palette.primary.main,
-    },
-    staticPageLinksContainer: {
-      width: "100%",
-      maxWidth: 1280,
-      height: "100%",
-    },
-    staticPageLinks: {
-      float: "right",
-      display: "inline-flex",
-      height: "100%",
-      alignItems: "center",
-      [theme.breakpoints.down("xs")]: {
-        width: "100%",
-        justifyContent: "space-between",
-      },
-    },
-    staticPageLink: {
-      paddingLeft: theme.spacing(2),
-      marginLeft: theme.spacing(2),
-      paddingRight: theme.spacing(2),
-      marginRight: theme.spacing(2),
-      fontSize: 16,
-      fontWeight: 600,
-      textDecoration: "inherit",
-      color: "white",
-      [theme.breakpoints.down("xs")]: {
-        padding: 0,
-      },
-    },
-    currentStaticPageLink: {
-      textDecoration: "underline",
-    },
     notificationsHeadline: {
       padding: theme.spacing(2),
       textAlign: "center",
@@ -179,9 +147,6 @@ const useStyles = makeStyles((theme) => {
     normalScreenIcon: {
       fontSize: 20,
       marginRight: theme.spacing(0.25),
-    },
-    moreButtonMobile: {
-      color: "white",
     },
     mobileAvatarContainer: {
       display: "flex",
@@ -253,41 +218,6 @@ const getLinks = (path_to_redirect, texts) => [
     isOutlinedInHeader: true,
     onlyShowLoggedOut: true,
     alwaysDisplayDirectly: true,
-  },
-];
-
-const getStaticPageLinks = (texts) => [
-  {
-    href: "/about",
-    text: texts.about,
-  },
-  {
-    href: "/donate",
-    text: texts.donate,
-  },
-  {
-    href: "/faq",
-    text: texts.faq,
-  },
-  {
-    href: "/team",
-    text: texts.team,
-  },
-  {
-    href: "/join",
-    text: texts.join,
-  },
-  {
-    href: "/blog",
-    text: texts.blog,
-  },
-  {
-    href: "/press",
-    text: texts.press,
-  },
-  {
-    href: "/donorforest",
-    text: texts.donorforest,
   },
 ];
 
@@ -412,57 +342,6 @@ export default function Header({
       </Container>
       <div>{isStaticPage && <StaticPageLinks />}</div>
     </Box>
-  );
-}
-
-function StaticPageLinks() {
-  const classes = useStyles();
-  const { locale } = useContext(UserContext);
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
-
-  const texts = getTexts({ page: "navigation", locale: locale });
-  const STATIC_PAGE_LINKS = getStaticPageLinks(texts);
-  const localePrefix = getLocalePrefix(locale);
-
-  const getLinksToShow = () => {
-    if (isNarrowScreen) {
-      return STATIC_PAGE_LINKS.slice(0, 2);
-    } else {
-      return STATIC_PAGE_LINKS;
-    }
-  };
-  return (
-    <div className={classes.staticPageLinksWrapper}>
-      <Container className={classes.staticPageLinksContainer}>
-        <div className={classes.staticPageLinks}>
-          {getLinksToShow().map((link, index) => {
-            return (
-              <Link
-                href={localePrefix + link.href}
-                key={index + "-" + link.text}
-                className={`${classes.staticPageLink} ${
-                  window.location.href.includes(link.href) && classes.currentStaticPageLink
-                }`}
-              >
-                {link.text}
-              </Link>
-            );
-          })}
-          {isNarrowScreen && (
-            <DropDownButton
-              options={STATIC_PAGE_LINKS}
-              buttonProps={{
-                classes: {
-                  root: classes.moreButtonMobile,
-                },
-              }}
-            >
-              {texts.more}
-            </DropDownButton>
-          )}
-        </div>
-      </Container>
-    </div>
   );
 }
 

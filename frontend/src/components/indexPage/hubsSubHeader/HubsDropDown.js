@@ -1,6 +1,8 @@
 import { Button, makeStyles } from "@material-ui/core";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
-import React, { useRef } from "react";
+import React, { useContext, useRef } from "react";
+import getTexts from "../../../../public/texts/texts";
+import UserContext from "../../context/UserContext";
 import DropDownList from "../../header/DropDownList";
 
 const useStyles = makeStyles((theme) => ({
@@ -14,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+//Generic component to show a list of hubs in the HubsSubHeader
 export default function HubsDropDown({
   open,
   hubs,
@@ -22,10 +25,13 @@ export default function HubsDropDown({
   onToggleOpen,
   onOpen,
   onClose,
+  addLocationHubExplainerLink,
 }) {
   const classes = useStyles();
   const buttonRef = useRef(null);
   const popperRef = useRef(null);
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "hub", locale: locale });
 
   const toggleButtonProps = {};
   if (!isNarrowScreen) {
@@ -38,6 +44,21 @@ export default function HubsDropDown({
       onClose();
     }
   };
+
+  const dropDownHubItems = hubs.map((h) => ({
+    href: `/hubs/${h.url_slug}/`,
+    text: h.name,
+  }));
+
+  const dropDownItems = addLocationHubExplainerLink
+    ? [
+        ...dropDownHubItems,
+        {
+          href: `/climatehubs`,
+          text: texts.more_info,
+        },
+      ]
+    : [...dropDownHubItems];
 
   return (
     <span onBlur={handleBlur} id={`dropdown-${label.toLowerCase()}`}>
@@ -54,10 +75,7 @@ export default function HubsDropDown({
       <DropDownList
         buttonRef={buttonRef}
         handleOpen={onOpen}
-        items={hubs.map((h) => ({
-          href: `/hubs/${h.url_slug}/`,
-          text: h.name,
-        }))}
+        items={dropDownItems}
         handleClose={onClose}
         open={open}
         popperRef={popperRef}

@@ -67,6 +67,7 @@ export default function Signin() {
       redirectOnLogin(user, redirectUrl, locale);
     }
   });
+
   const handleSubmit = async (event, values) => {
     //don't redirect to the post url
     event.preventDefault();
