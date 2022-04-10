@@ -181,7 +181,7 @@ const GroupMessageNotification = ({ notification }) => {
       notificationIcon={{
         icon: GroupIcon,
       }}
-      primaryText={texts.message_in + group_title}
+      primaryText={texts.message_in + " " + group_title}
       secondaryText={
         sender.first_name + " " + sender.last_name + ": " + notification.last_message.content
       }
@@ -237,15 +237,11 @@ const MentionNotification = ({ notification, texts, locale }) => {
         </ListItemIcon>
         <ListItemText
           primary={
-            // TODO: should refactor to support richer notification requests; see
-            // // https://github.com/climateconnect/climateconnect/issues/898
-            notification.text.includes("wants to join your project")
-              ? texts.wants_to_join_your_project
-              : sender.first_name +
-                " " +
-                sender.last_name +
-                " " +
-                texts.mentioned_you_in_comment_about_project
+            sender.first_name +
+            " " +
+            sender.last_name +
+            " " +
+            texts.mentioned_you_in_comment_about_project
           }
           secondary={previewText}
           primaryTypographyProps={{
