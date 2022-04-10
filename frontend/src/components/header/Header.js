@@ -61,13 +61,19 @@ const useStyles = makeStyles((theme) => {
             : `1px solid ${theme.palette.grey[300]}`,
         position: props.fixedHeader ? "fixed" : "auto",
         width: props.fixedHeader ? "100%" : "auto",
-        height: props.fixedHeader ? 97 : "auto",
+        // height: props.fixedHeader ? 97 : "auto",
         top: props.fixedHeader ? 0 : "auto",
         background:
           !props.transparentHeader &&
           props.fixedHeader &&
           (props.background ? props.background : "#F8F8F8"),
+        transition: "all 0.25s linear", // use all instead of transform since the background color too is changing at some point. It'll be nice to have a smooth transition.
       };
+    },
+    hideHeader: {
+      [theme.breakpoints.down("md")]: {
+        transform: "translateY(-97px)",
+      },
     },
     spacingBottom: {
       marginBottom: theme.spacing(2),
@@ -79,11 +85,25 @@ const useStyles = makeStyles((theme) => {
       [theme.breakpoints.down("md")]: {
         padding: theme.spacing(2),
       },
+      [theme.breakpoints.down("sm")]: {
+        padding: `${theme.spacing(0.8)}px ${theme.spacing(2)}px`,
+      },
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
     },
+    logoLink: {
+      [theme.breakpoints.down("sm")]: {
+        flex: `0 1 auto`,
+        width: "calc(1.1vw + 1.3em)",
+        maxWidth: "2.3rem",
+        minWidth: "1.3rem",
+      },
+    },
     logo: {
+      [theme.breakpoints.down("sm")]: {
+        height: "auto",
+      },
       height: 60,
     },
     buttonMarginLeft: {
@@ -299,14 +319,33 @@ export default function Header({
   };
 
   const logo = getLogo();
+  const [hideHeader, setHideHeader] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setHideHeader(window.scrollY > lastScrollY); // hide when user scrolls down and show when user scrolls up
+
+      // remember last scroll position
+      setLastScrollY(window.scrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [lastScrollY]);
 
   return (
     <Box
       component="header"
-      className={`${classes.root} ${className} ${!noSpacingBottom && classes.spacingBottom}`}
+      className={`${classes.root} ${className} ${!noSpacingBottom && classes.spacingBottom} ${
+        hideHeader ? classes.hideHeader : ""
+      }`}
     >
       <Container className={classes.container}>
-        <Link href={localePrefix + "/"}>
+        <Link href={localePrefix + "/"} className={classes.logoLink}>
           <img src={logo} alt={texts.climate_connect_logo} className={classes.logo} />
         </Link>
         {isNarrowScreen ? (
