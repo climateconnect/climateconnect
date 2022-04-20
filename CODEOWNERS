@@ -1,5 +1,11 @@
-# Over time, we can scope specific pieces of the project
-# to owners with more context (e.g. backend vs. frontend), but
-# for now we use this to rely on tagging teammates during
-# pull request review
-* @positiveimpact @ddhanesha @FnayouSeif @samschaevitz @piperchester @verena-e-p @TheMeerCat
+# Historically, we've tagged all contributors of the project
+# on every single pull request. We found
+# that this creates too much noise and blurs the
+# intent of who should be the reviewer for the change.
+#
+# Over time, we can revisit this and
+# tag specific people for specific areas of the codebase
+# with more context (e.g. backend vs. frontend).
+# * @positiveimpact @ddhanesha @FnayouSeif @samschaevitz @piperchester @verena-e-p @TheMeerCat
+
+/backend/ @ddhanesha
