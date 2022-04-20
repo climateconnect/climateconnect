@@ -108,13 +108,13 @@ const JoinProjectRequestNotification = ({ notification }) => {
   const requester = notification.membership_requester;
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", project: notification.project, locale: locale });
-  const requesterName = requester.first_name + " " + requester.last_name;
+  const requesterName = requester?.first_name + " " + requester?.last_name;
   return (
     <GenericNotification
-      link={`/projects/${notification.project.url_slug}?show_join_requests=true`}
+      link={`/projects/${notification?.project?.url_slug}?show_join_requests=true`}
       avatar={{
         alt: requesterName,
-        image: requester.thumbnail_image,
+        image: requester?.thumbnail_image,
       }}
       primaryText={requesterName + " " + texts.wants_to_join_your_project}
     />
@@ -144,10 +144,12 @@ const PersonJoinedIdeaNotification = ({ notification }) => {
     <GenericNotification
       link={`/chat/${notification.idea_supporter_chat}`}
       avatar={{
-        alt: supporter.first_name + " " + supporter.last_name,
-        image: supporter.thumbnail_image,
+        alt: supporter?.first_name + " " + supporter?.last_name,
+        image: supporter?.thumbnail_image,
       }}
-      primaryText={supporter.first_name + " " + supporter.last_name + " " + texts.joined_your_idea}
+      primaryText={
+        supporter?.first_name + " " + supporter?.last_name + " " + texts.joined_your_idea
+      }
       secondaryText={texts.send_a_Message_to_welcome_them_in_the_group_chat}
     />
   );
@@ -161,10 +163,10 @@ const PrivateMessageNotification = ({ notification }) => {
     <GenericNotification
       link={`/chat/${notification.chat_uuid}/`}
       avatar={{
-        alt: sender.first_name + " " + sender.last_name,
-        image: sender.thumbnail_image,
+        alt: sender?.first_name + " " + sender?.last_name,
+        image: sender?.thumbnail_image,
       }}
-      primaryText={texts.message_from + " " + sender.first_name + " " + sender.last_name}
+      primaryText={texts.message_from + " " + sender?.first_name + " " + sender?.last_name}
       secondaryText={notification.last_message.content}
     />
   );
