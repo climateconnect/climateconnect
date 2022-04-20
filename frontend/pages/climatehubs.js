@@ -6,15 +6,22 @@ import React from "react";
 import WebflowPage from "../src/components/webflow/WebflowPage";
 import { retrievePage } from "../src/utils/webflow";
 
-//Static page caught from Webflow where we show information about our team
-export default function Team({ bodyContent, headContent }) {
-  return <WebflowPage bodyContent={bodyContent} headContent={headContent} pageKey="team" />;
+//Explainer page for what a ClimateHub is and how we plan to spread them throughout Germany
+export default function ClimateHubs({ bodyContent, headContent }) {
+  return (
+    <WebflowPage
+      bodyContent={bodyContent}
+      headContent={headContent}
+      pageKey="climatehubs"
+      hideFooter
+    />
+  );
 }
 
 export async function getServerSideProps(ctx) {
   const WEBFLOW_URLS = {
-    de: "https://climateconnect.webflow.io/team-de",
-    en: "https://climateconnect.webflow.io/team-en",
+    de: "https://climateconnect.webflow.io",
+    en: "https://climateconnect.webflow.io",
   };
   const props = await retrievePage(WEBFLOW_URLS[ctx.locale]);
   return {

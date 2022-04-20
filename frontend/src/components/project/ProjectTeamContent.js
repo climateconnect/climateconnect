@@ -1,11 +1,12 @@
 import { Button, makeStyles, Typography } from "@material-ui/core";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 
 import ROLE_TYPES from "../../../public/data/role_types";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
+import { NOTIFICATION_TYPES } from "../communication/notifications/Notification";
 import UserContext from "../context/UserContext";
 import LoginNudge from "../general/LoginNudge";
 import ProfilePreviews from "./../profile/ProfilePreviews";
@@ -60,10 +61,14 @@ function getTeamWithAdditionalInfo(team, texts) {
   });
 }
 
-export default function TeamContent({ project, leaveProject }) {
+export default function TeamContent({ project, handleReadNotifications }) {
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const classes = useStyles();
+
+  useEffect(async () => {
+    await handleReadNotifications(NOTIFICATION_TYPES.indexOf("project_join_request_approved"));
+  }, []);
 
   // Not logged in
   if (!user) {

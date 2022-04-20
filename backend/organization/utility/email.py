@@ -225,4 +225,31 @@ def send_project_like_email(user, project_like, notification):
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_new_project_like",
         notification=notification
-    )    
+    )
+
+def send_join_project_request_email(user, request, requester, notification):
+    lang_code = get_user_lang_code(user)
+    requester_name = requester.first_name + \
+        " " + requester.last_name
+    subjects_by_language = {
+        "en": "{} requested to join your project on Climate Connect".format(requester_name),
+        "de": "{} möchte bei deinem Project auf Climate Connect mitmachen".format(requester_name)
+    }
+
+    base_url = settings.FRONTEND_URL
+    url_ending = "/projects/" + request.target_project.url_slug + "?show_join_requests=true"
+
+    variables = {
+        "RequesterName": requester_name,
+        "FirstName": user.first_name,
+        "ProjectName": request.target_project.name,
+        "url": base_url + get_user_lang_url(lang_code) + url_ending
+    }
+    send_email(
+        user=user,
+        variables=variables,
+        template_key="PROJECT_JOIN_REQUEST_TEMPLATE_ID",
+        subjects_by_language=subjects_by_language,
+        should_send_email_setting="email_on_join_request",
+        notification=notification
+    )  

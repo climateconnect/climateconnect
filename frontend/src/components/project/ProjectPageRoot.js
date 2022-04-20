@@ -2,7 +2,8 @@ import { Container, Tab, Tabs, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Router from "next/router";
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import Cookies from "universal-cookie";
 import { useLongPress } from "use-long-press";
 import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest, getLocalePrefix, redirect } from "../../../public/lib/apiOperations";
@@ -80,7 +81,7 @@ export default function ProjectPageRoot({
   const tabContentContainerSpaceToRight = ElementSpaceToRight({ el: tabContentRef.current });
 
   const classes = useStyles();
-  const { locale } = useContext(UserContext);
+  const { locale, pathName } = useContext(UserContext);
 
   const texts = getTexts({
     locale: locale,
@@ -96,8 +97,8 @@ export default function ProjectPageRoot({
     belowLarge: useMediaQuery((theme) => theme.breakpoints.down("xl")),
   };
 
-  const [hash, setHash] = React.useState(null);
-  const [confirmDialogOpen, setConfirmDialogOpen] = React.useState({
+  const [hash, setHash] = useState(null);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState({
     follow: false,
     leave: false,
     like: false,
@@ -140,7 +141,53 @@ export default function ProjectPageRoot({
     }
   });
 
-  const [tabValue, setTabValue] = React.useState(hash ? typesByTabValue.indexOf(hash) : 0);
+  const [requestedToJoinProject, setRequestedToJoinProject] = useState(false);
+
+  const handleSetRequestedToJoinProject = (newValue) => {
+    setRequestedToJoinProject(newValue);
+  };
+
+  /**
+   * Calls backend, sending a request to join this project based
+   * on user token stored in cookies.
+   */
+  const handleSendProjectJoinRequest = async () => {
+    // Get the actual project name from the URL, removing any query params
+    // and projects/ prefix. For example,
+    // "/projects/Anotherproject6?projectId=Anotherproject6" -> "Anotherproject6"
+    const projectName = pathName?.split("/")[2].split("?")[0];
+
+    // Also strip any trailing '#' too.
+    const strippedProjectName = projectName.endsWith("#") ? projectName.slice(0, -1) : projectName;
+
+    const cookies = new Cookies();
+    const token = cookies.get("token");
+
+    try {
+      await apiRequest({
+        method: "post",
+        url: `/api/projects/${strippedProjectName}/request_membership/${user.url_slug}/`,
+        payload: {
+          message: "Would like to join the project!",
+          // TODO: currently, we default user's availability to 4. In
+          // the future, we could consider customizing this option
+          user_availability: "4",
+        },
+
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+
+      setRequestedToJoinProject(true);
+    } catch (error) {
+      if (error?.response?.data?.message === "Request already exists to join project") {
+        setRequestedToJoinProject(true);
+      }
+    }
+  };
+
+  const [tabValue, setTabValue] = useState(hash ? typesByTabValue.indexOf(hash) : 0);
 
   // pagination will only return 12 members
   const teamTabLabel = () => {
@@ -311,9 +358,9 @@ export default function ProjectPageRoot({
     await refreshNotifications();
   };
 
-  const [initiallyCaughtFollowers, setInitiallyCaughtFollowers] = React.useState(false);
-  const [followers, setFollowers] = React.useState([]);
-  const [showFollowers, setShowFollowers] = React.useState(false);
+  const [initiallyCaughtFollowers, setInitiallyCaughtFollowers] = useState(false);
+  const [followers, setFollowers] = useState([]);
+  const [showFollowers, setShowFollowers] = useState(false);
   const toggleShowFollowers = async () => {
     setShowFollowers(!showFollowers);
     if (!initiallyCaughtFollowers) {
@@ -326,9 +373,9 @@ export default function ProjectPageRoot({
     const retrievedFollowers = await getFollowers(project, token, locale);
     setFollowers(retrievedFollowers);
   };
-  const [initiallyCaughtLikes, setInitiallyCaughtLikes] = React.useState(false);
-  const [likes, setLikes] = React.useState([]);
-  const [showLikes, setShowLikes] = React.useState(false);
+  const [initiallyCaughtLikes, setInitiallyCaughtLikes] = useState(false);
+  const [likes, setLikes] = useState([]);
+  const [showLikes, setShowLikes] = useState(false);
   const toggleShowLikes = async () => {
     setShowLikes(!showLikes);
     if (!initiallyCaughtLikes) {
@@ -341,12 +388,20 @@ export default function ProjectPageRoot({
     const retrievedLikes = await getLikes(project, token, locale);
     setLikes(retrievedLikes);
   };
-  const [gotParams, setGotParams] = React.useState(false);
+
+  const [showRequesters, setShowRequesters] = useState(false);
+  const toggleShowRequests = () => {
+    setShowRequesters(!showRequesters);
+    handleReadNotifications(NOTIFICATION_TYPES.indexOf("join_project_request"));
+  };
+
+  const [gotParams, setGotParams] = useState(false);
   useEffect(() => {
     if (!gotParams) {
       const params = getParams(window.location.href);
       if (params.show_followers && !showFollowers) toggleShowFollowers();
       if (params.show_likes && !showLikes) toggleShowLikes();
+      if (params.show_join_requests && !showRequesters) toggleShowRequests();
       setGotParams(true);
     }
   });
@@ -398,6 +453,8 @@ export default function ProjectPageRoot({
         toggleShowLikes={toggleShowLikes}
         token={token}
         user={user}
+        requestedToJoinProject={requestedToJoinProject}
+        handleSetRequestedToJoinProject={handleSetRequestedToJoinProject}
       />
 
       <Container className={classes.tabsContainerWithoutPadding}>
@@ -442,10 +499,18 @@ export default function ProjectPageRoot({
             handleTabChange={handleTabChange}
             typesByTabValue={typesByTabValue}
             projectTabsRef={projectTabsRef}
+            showRequesters={showRequesters}
+            toggleShowRequests={toggleShowRequests}
+            handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+            requestedToJoinProject={requestedToJoinProject}
           />
         </TabContent>
         <TabContent value={tabValue} index={1}>
-          <ProjectTeamContent project={project} leaveProject={requestLeaveProject} />
+          <ProjectTeamContent
+            project={project}
+            handleReadNotifications={handleReadNotifications}
+            leaveProject={requestLeaveProject}
+          />
         </TabContent>
         <TabContent value={tabValue} index={2}>
           <ProjectCommentsContent
