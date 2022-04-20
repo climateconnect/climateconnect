@@ -28,7 +28,7 @@ daphne==2.5.0
 Django==2.2.27
 django-cors-headers==3.2.1
 django-debug-toolbar==3.2.1
-django-filter==2.3.0
+django-filter==2.4.0
 django-redis==5.1.0
 django-rest-knox==4.1.0
 django-storages==1.9.1
