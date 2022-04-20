@@ -150,7 +150,7 @@ def send_new_email_verification(user, new_email, verification_key):
 
     subjects_by_language = {
         "en": "Verify your new email address",
-        "de": "Bestätige deine neue Email Adresse"
+        "de": "Bestätige deine neue E-Mail Adresse"
     }
 
     variables =  {
