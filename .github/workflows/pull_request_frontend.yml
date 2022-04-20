@@ -21,3 +21,9 @@ jobs:
         with:
           eslint: true
           prettier: true
+
+      - name: Format frontend
+        uses: yarn format
+        with:
+          eslint: true
+          prettier: true
