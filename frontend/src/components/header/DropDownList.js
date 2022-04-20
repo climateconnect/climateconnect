@@ -4,7 +4,7 @@ import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
-  cityHubOption: {
+  climateHubOption: {
     textAlign: "center",
     paddingLeft: theme.spacing(3),
     paddingRight: theme.spacing(3),
@@ -43,7 +43,7 @@ export default function DropDownList({
               href={`${getLocalePrefix(locale)}${item.href}`}
               onClick={loadOnClick && handleClickLink}
             >
-              <MenuItem component="button" className={classes.cityHubOption}>
+              <MenuItem component="button" className={classes.climateHubOption}>
                 {item.text}
               </MenuItem>
             </Link>
