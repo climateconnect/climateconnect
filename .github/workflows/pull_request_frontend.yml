@@ -1,8 +1,9 @@
 name: Lint and format fronted code
 on: [pull_request]
 
+# https://docs.github.com/en/actions/using-jobs/using-jobs-in-a-workflow
 jobs:
-  build:
+  pull-request-checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -10,20 +11,20 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12
-      - name: Set up Node.js
 
-      # ESLint and Prettier must be in `package.json`
+      # Install deps as we need to invoke ESLint and Prettier
+      # in the next steps
       - name: Install Node.js dependencies
         run: yarn
 
       - name: Lint frontend
-        uses: yarn lint
+        run: yarn lint
         with:
           eslint: true
           prettier: true
 
       - name: Format frontend
-        uses: yarn format
+        run: yarn format
         with:
           eslint: true
           prettier: true
