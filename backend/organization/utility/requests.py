@@ -101,8 +101,7 @@ class MembershipRequestsManager:
                                                         ,request_status=RequestStatus.PENDING.value
                 )
 
-        request_id = request_obj.id
-        return request_id
+        return request_obj
 
 
     def approve_request(self):

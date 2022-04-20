@@ -46,5 +46,13 @@ export default function getNotificationTexts({ idea, project }) {
       en: `has mentioned you in a comment`,
       de: `hat dich in einem Kommentar erwähnt`,
     },
+    wants_to_join_your_project: {
+      en: `wants to join your project "${project?.name}"`,
+      de: `möchte bei deinem Project "${project?.name}" mitmachen`,
+    },
+    project_accepted_you_as_a_member: {
+      en: `The project "${project?.name}" has accepted your request to join!`,
+      de: `Das Project "${project?.name}" hat dich in's Team aufgenommen!`,
+    },
   };
 }

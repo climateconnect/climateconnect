@@ -6,15 +6,15 @@ import React from "react";
 import WebflowPage from "../src/components/webflow/WebflowPage";
 import { retrievePage } from "../src/utils/webflow";
 
-//Static page caught from Webflow where we show information about our team
-export default function Team({ bodyContent, headContent }) {
-  return <WebflowPage bodyContent={bodyContent} headContent={headContent} pageKey="team" />;
+//Static page caught from webflow that includes transparency reports and other transparency-related info
+export default function Transparency({ bodyContent, headContent }) {
+  return <WebflowPage bodyContent={bodyContent} headContent={headContent} pageKey="transparency" />;
 }
 
 export async function getServerSideProps(ctx) {
   const WEBFLOW_URLS = {
-    de: "https://climateconnect.webflow.io/team-de",
-    en: "https://climateconnect.webflow.io/team-en",
+    de: "https://climateconnect.webflow.io/transparency-de",
+    en: "https://climateconnect.webflow.io/transparency-en",
   };
   const props = await retrievePage(WEBFLOW_URLS[ctx.locale]);
   return {
