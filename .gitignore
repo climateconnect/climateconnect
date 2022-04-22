@@ -31,4 +31,5 @@ frontend/.vscode
 backend/.azure
 
 yarn.lock
+/backend/celerybeat-schedule
 frontend/.eslintcache

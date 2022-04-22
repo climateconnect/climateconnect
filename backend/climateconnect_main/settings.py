@@ -305,3 +305,5 @@ LOGGING = {
         }
     }
 }
+
+USER_CHUNK_SIZE = env('USER_CHUNK_SIZE', 100)
