@@ -10,6 +10,17 @@ I'm aiming to keep the ROI high with this, and just outlining some basic functio
 can keep moving fast with more quality. This should help raise our bus factor, and dissemeniate more
 context and knowledge of various test cases across the team and project contributors.
 
+## End to end testing
+
+<!-- Note: this documentation might move elsewhere as the project evolves. -->
+
+### API calls
+
+### Tips
+
+1. Don't forget the trailing slash!
+1. We reuse Postman collections and snippets. Ping the web team's Slack channel to get them.
+
 ## Functional test cases
 
 ### Filtering with query params

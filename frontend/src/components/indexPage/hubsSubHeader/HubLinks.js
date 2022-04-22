@@ -22,7 +22,7 @@ export default function HubLinks({
   onlyShowDropDown,
 }) {
   const classes = useStyles();
-  const [open, setOpen] = useState({ sectorHubs: false, cityHubs: false });
+  const [open, setOpen] = useState({ sectorHubs: false, climateHubs: false });
   const texts = getTexts({ page: "navigation", locale: locale });
   const sectorHubs = hubs.filter((h) => h.hub_type === "sector hub");
   const locationHubs = hubs.filter((h) => h.hub_type === "location hub");
@@ -97,12 +97,13 @@ export default function HubLinks({
       {locationHubs?.length > 0 && (
         <HubsDropDown
           hubs={locationHubs}
-          label="CityHubs"
+          label="ClimateHubs"
           isNarrowScreen={isNarrowScreen}
-          onToggleOpen={(e) => handleToggleOpen(e, "cityHubs")}
-          open={open["cityHubs"]}
-          onOpen={(e) => handleOpen(e, "cityHubs")}
-          onClose={() => handleClose("cityHubs")}
+          onToggleOpen={(e) => handleToggleOpen(e, "climateHubs")}
+          open={open["climateHubs"]}
+          onOpen={(e) => handleOpen(e, "climateHubs")}
+          onClose={() => handleClose("climateHubs")}
+          addLocationHubExplainerLink
         />
       )}
     </div>

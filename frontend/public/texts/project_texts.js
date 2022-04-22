@@ -141,7 +141,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Bitte logge dich ein, um ein Projekt zu liken.",
     },
     you_cant_leave_a_project_as_the_creator: {
-      en: `You can't leave a project as the Super Admin. Please give the Super Admin role to another team member by clicking "Manage Members" in the team tab`,
+      en: `You can't leave a project as the Super Admin. Please give the Super Admin role to another team member by clicking "Manage Members" in the team tab.`,
       de: `Du kannst das Projekt als Super Admin nicht verlassen. Bitte übertrage diese Rolle auf ein anderes Teammitglied, indem du "Mitglieder verwalten" im Team-Tab klickst`,
     },
     do_you_really_want_to_unfollow: {
@@ -355,6 +355,11 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Share your Climate Solution",
       de: "Teile dein Klimaprojekt",
     },
+    // This is for project join requests
+    requesters_of: {
+      en: "Requesters of",
+      de: "Anforderer von",
+    },
     //Kontext: Followers of Projektname
     followers_of: {
       en: "Followers of",
@@ -446,7 +451,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de:
         "Wenn du dein Projekt löscht, geht es verloren. Bist du dir sicher, dass du es löschen möchtest?",
     },
-    briefly_summarise_what_you_are_doing_up_to_240_characters: {
+    briefly_summarise_what_you_are_doing_please_only_use_english: {
       en: "Briefly summarise what you are doing (up to 280 characters)\n\nPlease only use English!",
       de: "Fass kurz zusammen, was ihr tun (bis zu 280 Zeichen)",
     },
@@ -630,8 +635,16 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Fasse dein Projekt zusammen",
     },
     briefly_summarise_what_you_are_doing: {
-      en: "Briefly summarise what you are doing (up to 280 characters)",
+      en: "Briefly summarize what you are doing (up to 280 characters)",
       de: "Fasse kurz zusammen, was du tust (bis zu 280 Zeichen)",
+    },
+    briefly_summarise_what_you_are_doing_part_one: {
+      en: "Briefly summarise what you are doing (",
+      de: "Fasse kurz zusammen, was ihr macht (",
+    },
+    briefly_summarise_what_you_are_doing_part_two: {
+      en: " / 280 characters)",
+      de: " / 280 Zeichen)",
     },
     search_for_your_team_members: {
       en: "Search for your team members",
@@ -659,13 +672,13 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     add_photo_helptext: {
       en:
-        "Upload a photo that represents your project. This way other climate protectors can see at a glance what your project is about. It is recommended to use a non-transparent image in 16:9 format",
+        "Upload a photo that represents your project. This way other climate protectors can see at a glance what your project is about. It is recommended to use a non-transparent image in 16:9 format.",
       de:
-        "Lade ein Foto hoch, das dein Projekt repräsentiert. So können andere Klimaschützer*innen auf einen Blick sehen, worum es bei deinem Projekt geht. Wir empfehlen, ein nicht-transparentes Bild im Format 16:9 zu verwenden",
+        "Lade ein Foto hoch, das dein Projekt repräsentiert. So können andere Klimaschützer*innen auf einen Blick sehen, worum es bei deinem Projekt geht. Wir empfehlen, ein nicht-transparentes Bild im Format 16:9 zu verwenden.",
     },
     short_description_helptext: {
       en:
-        "Summarize your project in less than 280 characters. Other climate protectors should be able to grasp what your project wants to achieve.",
+        "Summarize your project in fewer than 280 characters. Other climate protectors should be able to grasp what your project wants to achieve.",
       de:
         "Fasse dein Projekt in weniger als 280 Zeichen zusammen. Andere Klimaschützer*innen sollen verstehen, was dein Projekt erreichen will.",
     },
@@ -792,9 +805,9 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     you_can_combine_categories_text: {
       en: `You can combine categories. For example if you fund treeplanting, select both
-      Afforestation/Reforestration and Funding`,
+      Afforestation/Reforestration and Funding.`,
       de: `Du kannst Kategorien kombinieren. Wenn du zum Beispiel Baumpflanzungen finanzierst, kannst du sowohl
-      Aufforstung/Wiederaufforstung, als auch Finanzierung wählen`,
+      Aufforstung/Wiederaufforstung, als auch Finanzierung wählen.`,
     },
     this_way_you_can_specify_what_you_are_doing_and_in_which_field: {
       en: "This way you can specify what you are doing and in which field.",
@@ -938,6 +951,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     contact_creator_to_know_more_about_idea: {
       en: `Contact ${creator?.first_name} if you want to chat about this project.`,
       de: `Kontaktiere ${creator?.first_name}, um über diese Organisation zu reden.`,
+    },
+    no_open_project_join_requests: {
+      en: "There are currently no open join requests",
+      de: "Keine offenen Anfragen.",
+    },
+    project_requesters_dialog_title: {
+      en: "Open requests to join project",
+      de: "Offene Anfragen zum Mitmachen",
     },
   };
 }

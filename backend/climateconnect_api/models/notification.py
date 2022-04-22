@@ -1,3 +1,4 @@
+from organization.models.members import MembershipRequests
 from chat_messages.models.message import MessageParticipants, MessageReceiver
 from django.contrib.auth.models import User
 from django.db import models
@@ -6,10 +7,11 @@ from ideas.models.support import IdeaSupporter
 from organization.models.content import Post, PostComment, ProjectComment
 from organization.models.followers import ProjectFollower
 from organization.models.likes import ProjectLike
-from organization.models.project import Project
 
 
 class Notification(models.Model):
+    # When editing this: make sure all entries are still at the correct index afterwards
+    # After making a change here you'll also have to update NOTIFICATION_TYPES in frontend/src/components/communication/notifications/Notification.js
     BROADCAST = 0
     PRIVATE_MESSAGE = 1
     PROJECT_COMMENT = 2
@@ -19,11 +21,13 @@ class Notification(models.Model):
     POST_COMMENT = 6
     REPLY_TO_POST_COMMENT = 7
     GROUP_MESSAGE = 8
-    MENTION = 9
-    PROJECT_LIKE = 10
-    IDEA_COMMENT = 11
-    REPLY_TO_IDEA_COMMENT = 12
-    PERSON_JOINED_IDEA = 13
+    JOIN_PROJECT_REQUEST = 9
+    PROJECT_JOIN_REQUEST_APPROVED = 10
+    MENTION = 11
+    PROJECT_LIKE = 12
+    IDEA_COMMENT = 13
+    REPLY_TO_IDEA_COMMENT = 14
+    PERSON_JOINED_IDEA = 15
     NOTIFICATION_TYPES = (
         (BROADCAST, "broadcast"),
         (PRIVATE_MESSAGE, "private_message"),
@@ -34,11 +38,13 @@ class Notification(models.Model):
         (POST_COMMENT, "post_comment"),
         (REPLY_TO_POST_COMMENT, "reply_to_post_comment"),
         (GROUP_MESSAGE, "group_message"),
+        (JOIN_PROJECT_REQUEST,"join_project_request"),
+        (PROJECT_JOIN_REQUEST_APPROVED,"project_join_request_approved"),
         (MENTION, "mention"),
         (PROJECT_LIKE, "project_like"),
         (IDEA_COMMENT, "idea_comment"),
         (REPLY_TO_IDEA_COMMENT, "reply_to_idea_comment"),
-        (PERSON_JOINED_IDEA, "person_joined_idea")
+        (PERSON_JOINED_IDEA, "person_joined_idea"),
     )
 
     notification_type = models.IntegerField(
@@ -97,6 +103,12 @@ class Notification(models.Model):
     project_update_post = models.ForeignKey(
         Post, related_name="notification_project_update_post",
         verbose_name="Project Post", on_delete=models.CASCADE,
+        null=True, blank=True
+    )
+
+    membership_request = models.ForeignKey(
+        MembershipRequests, related_name="notification_membership_request",
+        verbose_name="Membership Request", on_delete=models.CASCADE,
         null=True, blank=True
     )
 

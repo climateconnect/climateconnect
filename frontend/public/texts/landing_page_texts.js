@@ -55,7 +55,7 @@ export default function getLandingPageTexts({ classes, isNarrowScreen }) {
     },
     explore: {
       en: "Explore",
-      de: "Entdecke",
+      de: "Entdecken",
     },
     explore_climate_projects: {
       en: "Explore climate projects",

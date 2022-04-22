@@ -94,5 +94,9 @@
   "donorforest": {
     "en": "Donor Forest",
     "de": "Spendenwald"
+  },
+  "transparency": {
+    "en": "Transparency",
+    "de": "Transparenz"
   }
 }

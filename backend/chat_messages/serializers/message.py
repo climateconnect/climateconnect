@@ -43,7 +43,7 @@ class MessageParticipantSerializer(serializers.ModelSerializer):
         model = MessageParticipants
         # Could use user profile serializer for participant_one and participant_two
         fields = (
-            'id', 'chat_uuid', 'participants', 'is_active', 'last_message', 
+            'id', 'chat_uuid', 'participants', 'is_active', 'last_message',
             'unread_count', 'user', 'created_at', 'name', 'related_idea'
         )
 
@@ -65,7 +65,7 @@ class MessageParticipantSerializer(serializers.ModelSerializer):
         user = self.context.get('request', None).user
         unread_receivers = MessageReceiver.objects.filter(receiver=user, read_at=None).values('message')
         unread_messages = Message.objects.filter(
-            id__in=[(obj['message']) for obj in unread_receivers], 
+            id__in=[(obj['message']) for obj in unread_receivers],
             message_participant=obj
         ).count()
         return unread_messages
@@ -104,7 +104,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
 
     def get_role(self, obj):
         return RoleSerializer(obj.role).data
-    
+
     def get_participant_id(self, obj):
         return obj.id
 

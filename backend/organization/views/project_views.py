@@ -1,32 +1,41 @@
 import logging
-import re
 import traceback
+from organization.serializers.project import ProjectRequesterSerializer
 
 from climateconnect_api.models import (Availability, Role, Skill, UserProfile,
                                        ContentShares)
 from climateconnect_api.models.language import Language
+from climateconnect_api.permissions import UserPermission
 from climateconnect_api.utility.translation import (edit_translation,
                                                     edit_translations,
                                                     translate_text)
-from climateconnect_api.utility.content_shares import save_content_shared                                                 
+from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_main.utility.general import get_image_from_data_url
+
 from dateutil.parser import parse
+
 from django.contrib.auth.models import User
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from django.db import transaction
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
+
 from hubs.models.hub import Hub
 from location.models import Location
 from location.utility import get_location, get_location_with_range
+
+# Organization models
 from organization.models import (Organization, OrganizationTagging,
                                  OrganizationTags, Post, Project,
                                  ProjectCollaborators, ProjectComment,
                                  ProjectFollower, ProjectMember,
                                  ProjectParents, ProjectStatus, ProjectTagging,
                                  ProjectTags, ProjectLike)
+
+from organization.models.members import MembershipRequests
 from organization.models.translations import ProjectTranslation
+
 from organization.pagination import (MembersPagination,
                                      ProjectCommentPagination,
                                      ProjectPostPagination, ProjectsPagination, ProjectsSitemapPagination)
@@ -34,7 +43,8 @@ from organization.permissions import (AddProjectMemberPermission,
                                       ChangeProjectCreatorPermission,
                                       ProjectMemberReadWritePermission,
                                       ProjectReadWritePermission,
-                                      ReadSensibleProjectDataPermission)
+                                      ReadSensibleProjectDataPermission,
+                                      ApproveDenyProjectMemberRequest)
 from organization.serializers.content import (PostSerializer,
                                               ProjectCommentSerializer)
 from organization.serializers.project import (EditProjectSerializer,
@@ -53,12 +63,18 @@ from organization.utility.notification import (
     create_project_comment_notification,
     create_project_comment_reply_notification,
     create_project_follower_notification,
+    create_project_join_request_approval_notification,
+    create_project_join_request_notification,
     create_project_like_notification,
-    get_mentions)
+    get_mentions
+    )
+
 from organization.utility.organization import check_organization
 from organization.utility.project import (create_new_project,
-                                          get_project_translations)
+                                          get_project_translations,
+                                          get_project_admin_creators)
 from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import (ListAPIView, RetrieveUpdateAPIView,
@@ -66,6 +82,9 @@ from rest_framework.generics import (ListAPIView, RetrieveUpdateAPIView,
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from organization.utility.requests import (MembershipRequestsManager)
+from organization.utility import (MembershipTarget)
 
 logger = logging.getLogger(__name__)
 
@@ -237,22 +256,35 @@ class CreateProjectView(APIView):
                 'message': "Passed status {} does not exist".format(request.data["status"])
             })
         translations_failed = False
+
+        translations_object = None
         try:
             translations_object = get_project_translations(request.data)
         except ValueError:
             translations_failed = True
 
+
+        # If we still don't have a translations object, then skip this
+        if not translations_object:
+            translations_failed = True
+
+        source_language = None
+        translations = None
+        if translations_object:
+            source_language = Language.objects.get(language_code=translations_object['source_language'])
+            translations = translations_object['translations']
+
         source_language = Language.objects.get(
             language_code=translations_object['source_language'])
         translations = translations_object['translations']
         project = create_new_project(request.data, source_language)
+
         if not translations_failed:
             for language in translations:
                 if not language == source_language.language_code:
                     texts = translations[language]
                     try:
-                        language_object = Language.objects.get(
-                            language_code=language)
+                        language_object = Language.objects.get(language_code=language)
                         translation = ProjectTranslation.objects.create(
                             project=project,
                             language=language_object,
@@ -769,10 +801,9 @@ class IsUserFollowing(APIView):
         try:
             project = Project.objects.get(url_slug=url_slug)
         except Project.DoesNotExist:
-            raise NotFound(detail="Project not found:"+url_slug,
-                           code=status.HTTP_404_NOT_FOUND)
-        is_following = ProjectFollower.objects.filter(
-            user=request.user, project=project).exists()
+            raise NotFound(detail="Project not found:"+url_slug, code=status.HTTP_404_NOT_FOUND)
+
+        is_following = ProjectFollower.objects.filter(user=request.user, project=project).exists()
         return Response({'is_following': is_following}, status=status.HTTP_200_OK)
 
 class IsUserLiking(APIView):
@@ -785,7 +816,7 @@ class IsUserLiking(APIView):
             raise NotFound(detail="Project not found:"+url_slug, code=status.HTTP_404_NOT_FOUND)
         is_liking = ProjectLike.objects.filter(
             user=request.user, project=project).exists()
-        return Response({'is_liking': is_liking}, status=status.HTTP_200_OK) 
+        return Response({'is_liking': is_liking}, status=status.HTTP_200_OK)
 
 class ProjectCommentView(APIView):
     permission_classes = [IsAuthenticated]
@@ -885,6 +916,29 @@ class ListProjectFollowersView(ListAPIView):
         followers = ProjectFollower.objects.filter(project=project[0])
         return followers
 
+class ListProjectRequestersView(ListAPIView):
+    """This is the endpoint view to return a list of users
+    who have requested membership for a specific project, including their request IDs."""
+
+    serializer_class = ProjectRequesterSerializer
+
+    def get_queryset(self):
+        try:
+            project = Project.objects.get(url_slug=self.kwargs['url_slug'])
+        except Project.DoesNotExist:
+            return Response(data={'message': f'Project does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Only show requests that are currently open, as
+        # in they haven't been approved nor rejected.
+        open_membership_requests = MembershipRequests.objects.filter(
+            target_project=project,
+            rejected_at=None,
+            approved_at=None,
+        )
+
+        print(f"Total number of OPEN membership requests for this project: {len(open_membership_requests)}")
+
+        return open_membership_requests
 class ListProjectLikesView(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ProjectLikeSerializer
@@ -894,10 +948,10 @@ class ListProjectLikesView(ListAPIView):
             project = Project.objects.get(url_slug=self.kwargs['url_slug'])
         except Project.DoesNotExist:
             return None
-            
-        
+
+
         likes = ProjectLike.objects.filter(project=project)
-        return likes        
+        return likes
 
 class LeaveProject(RetrieveUpdateAPIView):
     """
@@ -918,7 +972,8 @@ class LeaveProject(RetrieveUpdateAPIView):
             if project_member_record.role.name == 'Creator':
                 if active_members_in_project > 1:
                     return Response(data={'message': f'A new creator needs to be assigned first'}, status=status.HTTP_400_BAD_REQUEST)
-                elif active_members_in_project == 1:
+
+                if active_members_in_project == 1:
                     # deactivate project
                     project.is_active = False
                     updatable_records.append(project)
@@ -930,17 +985,131 @@ class LeaveProject(RetrieveUpdateAPIView):
             return Response(data={'message': f'Left project {url_slug} successfully'}, status=status.HTTP_200_OK)
 
         except ProjectMember.DoesNotExist:
-            return Response(data={'message': f'User and/or Project not found '}, status=status.HTTP_404_NOT_FOUND)
+            return Response(data={'message':f'User and/or Project not found '}, status=status.HTTP_404_NOT_FOUND)
 
         except ProjectMember.MultipleObjectsReturned:
-            # Multiple records for the same user/ project id. Duplicate records.
-            # TODO: Implement a signal to send dev a message
-            return Response(data={'message': f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            #Multiple records for the same user/ project id. Duplicate records.
+            #TODO: Implement a signal to send dev a message
+            return Response(data={'message':f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except:
             # Send E to dev
             # send to dev logs E= traceback.format_exc()
-            return Response(data={'message': f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(data={'message':f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+class RequestJoinProject(RetrieveUpdateAPIView):
+    """
+    A view that enables a user to request to join a project
+    """
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, user_slug, project_slug):
+        required_params = ['user_availability','message']
+        missing_param = any([param not in request.data for param in required_params])
+        if missing_param:
+            return Response({
+                'message': f"Missing required parameters. Need {required_params}"
+                            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # To avoid spoofing
+        user = request.user
+        user_profile_slug = UserProfile.objects.get(user=user).url_slug
+        if user_profile_slug != user_slug:
+            return Response({
+                        'message': f"Unauthorized. The provided user slug {user_slug} does not match the user {user_profile_slug}"
+                        }, status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            project = Project.objects.get(url_slug=project_slug)
+        except Project.DoesNotExist:
+            return Response({
+                            'message': 'Requested project does not exist'
+                            }, status=status.HTTP_404_NOT_FOUND)
+
+        user_availability = Availability.objects.filter(id=request.data['user_availability']).first()
+
+        request_manager = MembershipRequestsManager(user=user
+                                                , membership_target=MembershipTarget.PROJECT
+                                                , user_availability=user_availability
+                                                , project=project
+                                                , organization=None
+                                                , message=request.data['message'])
+
+
+        exists = request_manager.duplicate_request
+        if exists:
+            return Response({
+                            'message': 'Request already exists to join project'
+                            }, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            request = request_manager.create_membership_request()
+            project_admins = get_project_admin_creators(project)
+            create_project_join_request_notification(requester=user, project_admins=project_admins, project=project, request=request)
+
+            # Now pass the requestId back to the client.
+            return Response({ "requestId": request.id }, status=status.HTTP_200_OK)
+        except:
+            logging.error(traceback.format_exc())
+            return Response({
+                        'message': f'Internal Server Error {traceback.format_exc()}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+# class ManageJoinProjectView(RetrieveUpdateAPIView):
+class ManageJoinProjectView(RetrieveUpdateDestroyAPIView):
+    """
+    A view that enables a user to request to join a project.
+    """
+
+    # This class attribute needed to be added for the project join
+    # feature.
+    #
+    # Note that authentication always runs at the very start of the view,
+    # before the permission and throttling checks occur, and before any other code is
+    # allowed to proceed. If the request to join the project isn't authenticated
+    # (HTTP 401), then the remainder of this View code will not execute. See
+    # https://www.django-rest-framework.org/api-guide/authentication/
+    #
+    # Keep in mind that when we redefine class attributes at the View level,
+    # we're overwriting the default permission and authentication classes
+    # that're defined within settings.py.
+    authentication_classes = [TokenAuthentication]
+
+    serializer_class = ProjectMemberSerializer
+
+    lookup_field = 'project_slug'
+
+    def post(self, request, project_slug, request_action, request_id):
+        try:
+            project = Project.objects.filter(url_slug=project_slug).first()
+        except:
+            return Response({
+                            'message': 'Project Does Not Exist'
+                            }, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            request_manager = MembershipRequestsManager(membership_request_id=request_id, project=project, membership_target=MembershipTarget.PROJECT)
+            if request_manager.corrupt_membership_request_id:
+                return Response({'message': 'Request Does Not Exist'}, status=status.HTTP_404_NOT_FOUND)
+
+            if request_manager.validation_failed:
+                return Response({f"message': 'Operation failed. Errors: {' | '.join(request_manager.errors)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+            if request_action == 'approve':
+                request_manager.approve_request()
+                create_project_join_request_approval_notification(request_id=request_id)
+            elif request_action == 'reject':
+                request_manager.reject_request()
+            else:
+                raise NotImplementedError(f"membership request action <{request_action}> is not implemented")
+
+            return Response(data={'message':'Operation succeeded'}, status=status.HTTP_200_OK)
+        except:
+            return Response({
+                            'message': f'Internal Server Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def get_queryset(self):
+        membership_requests = MembershipRequests.objects.all()
+        return membership_requests
 class SetProjectSharedView(APIView):
     permission_classes = [AllowAny]
     def post(self, request, url_slug):

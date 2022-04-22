@@ -1,6 +1,8 @@
 import { Divider, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
+
+// Relative imports
 import { apiRequest } from "../../../public/lib/apiOperations.js";
 import { getCommentsObjectAfterAddingComment } from "../../../public/lib/communicationOperations.js";
 import getTexts from "../../../public/texts/texts.js";
