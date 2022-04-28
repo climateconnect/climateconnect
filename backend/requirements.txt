@@ -46,7 +46,7 @@ incremental==17.5.0
 kombu==5.2.2
 mailjet-rest==1.3.4
 mccabe==0.6.1
-msgpack==0.6.0
+msgpack==1.0.3
 Pillow==8.3.2
 prompt-toolkit==3.0.14
 protobuf==3.15.0
