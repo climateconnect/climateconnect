@@ -20,28 +20,30 @@ class UserFactory(factory.DjangoModelFactory):
     class Meta:
         model = User
 
-    username = factory.Sequence(lambda n: 'user{}'.format(n+1))
+    username = factory.Sequence(lambda n: "user{}".format(n + 1))
     is_active = True
-    first_name = factory.Faker('first_name')
-    last_name = factory.Faker('last_name')
-    email = factory.LazyAttribute(lambda a: '{}.{}@test.test'.format(a.first_name, a.last_name).lower())
+    first_name = factory.Faker("first_name")
+    last_name = factory.Faker("last_name")
+    email = factory.LazyAttribute(
+        lambda a: "{}.{}@test.test".format(a.first_name, a.last_name).lower()
+    )
 
 
 class LocationFactory(factory.DjangoModelFactory):
     class Meta:
         model = Location
 
-    name = factory.Sequence(lambda n: f'test-location{n+1}') 
-    city = factory.Sequence(lambda n: f'test-city{n+1}') 
-    country = factory.Sequence(lambda n: f'test-country{n+1}')
-    
+    name = factory.Sequence(lambda n: f"test-location{n+1}")
+    city = factory.Sequence(lambda n: f"test-city{n+1}")
+    country = factory.Sequence(lambda n: f"test-country{n+1}")
+
 
 class LanguageFactory(factory.DjangoModelFactory):
-    class Meta: 
+    class Meta:
         model = Language
 
-    name = factory.Sequence(lambda n: 'languagename{}'.format(n+1))
-    language_code = factory.Sequence(lambda n: '{}'.format(n+1))
+    name = factory.Sequence(lambda n: "languagename{}".format(n + 1))
+    language_code = factory.Sequence(lambda n: "{}".format(n + 1))
 
 
 class UserProfileFactory(factory.DjangoModelFactory):
@@ -49,9 +51,15 @@ class UserProfileFactory(factory.DjangoModelFactory):
         model = UserProfile
 
     user = factory.SubFactory(UserFactory)
-    url_slug = factory.Sequence(lambda n: 'userslug{}'.format(n+1))
+    url_slug = factory.Sequence(lambda n: "userslug{}".format(n + 1))
     image = "profile.png"
-    thumbnail_image = factory.django.ImageField(from_path=(settings.BASE_DIR + "/climateconnect_api/tests/media/" + "userprofile_thumbnail_image.jpeg"))
+    thumbnail_image = factory.django.ImageField(
+        from_path=(
+            settings.BASE_DIR
+            + "/climateconnect_api/tests/media/"
+            + "userprofile_thumbnail_image.jpeg"
+        )
+    )
     background_image = "background.png"
     biography = "This is a biography"
     send_newsletter = True
@@ -62,8 +70,8 @@ class HubFactory(factory.DjangoModelFactory):
     class Meta:
         model = Hub
 
-    name = factory.Sequence(lambda n: 'hubname{}'.format(n+1))
-    url_slug = factory.Sequence(lambda n: 'hub_slug{}'.format(n+1))
+    name = factory.Sequence(lambda n: "hubname{}".format(n + 1))
+    url_slug = factory.Sequence(lambda n: "hub_slug{}".format(n + 1))
     segway_text = "This is a segway_text"
     quick_info = "This is a quick_info"
     hub_type = 0
@@ -84,22 +92,28 @@ class HubFactory(factory.DjangoModelFactory):
 class ProjectStatusFactory(factory.DjangoModelFactory):
     class Meta:
         model = ProjectStatus
-        django_get_or_create = ('name',)
+        django_get_or_create = ("name",)
 
-    name="In Progress"
-    status_type=1
-    has_end_date= True
-    has_start_date=True
+    name = "In Progress"
+    status_type = 1
+    has_end_date = True
+    has_start_date = True
 
 
 class ProjectFactory(factory.DjangoModelFactory):
     class Meta:
         model = Project
 
-    name = factory.Sequence(lambda n: 'Projectname{}'.format(n+1))
-    url_slug = factory.Sequence(lambda n: 'projectslug{}'.format(n+1))
+    name = factory.Sequence(lambda n: "Projectname{}".format(n + 1))
+    url_slug = factory.Sequence(lambda n: "projectslug{}".format(n + 1))
     status = factory.SubFactory(ProjectStatusFactory)
-    thumbnail_image = factory.django.ImageField(from_path=(settings.BASE_DIR + "/climateconnect_api/tests/media/" + "project_thumbnail_image.jpeg"))
+    thumbnail_image = factory.django.ImageField(
+        from_path=(
+            settings.BASE_DIR
+            + "/climateconnect_api/tests/media/"
+            + "project_thumbnail_image.jpeg"
+        )
+    )
     short_description = "How can we maximize our chances to fight climate change? Climate Connect web-platform is a tool, free of use, helping all climate actors to gain visibility and collaborate with each other!"
 
 
@@ -122,18 +136,24 @@ class ProjectLikeFactory(factory.DjangoModelFactory):
 class OrganizationFactory(factory.DjangoModelFactory):
     class Meta:
         model = Organization
-    
-    name = factory.Sequence(lambda n: 'org_name{}'.format(n+1))
-    url_slug = factory.Sequence(lambda n: 'org_slug{}'.format(n+1))
-    thumbnail_image = factory.django.ImageField(from_path=(settings.BASE_DIR + "/climateconnect_api/tests/media/" + "org_thumbnail_image.jpeg"))
+
+    name = factory.Sequence(lambda n: "org_name{}".format(n + 1))
+    url_slug = factory.Sequence(lambda n: "org_slug{}".format(n + 1))
+    thumbnail_image = factory.django.ImageField(
+        from_path=(
+            settings.BASE_DIR
+            + "/climateconnect_api/tests/media/"
+            + "org_thumbnail_image.jpeg"
+        )
+    )
 
 
 class RoleFactory(factory.DjangoModelFactory):
     class Meta:
         model = Role
-        django_get_or_create = ('name', 'role_type')
+        django_get_or_create = ("name", "role_type")
 
-    name = 'Creator'
+    name = "Creator"
     role_type = Role.ALL_TYPE
 
 
@@ -150,9 +170,14 @@ class IdeaFactory(factory.DjangoModelFactory):
     class Meta:
         model = Idea
 
-    name = factory.Sequence(lambda n: 'idea_name{}'.format(n+1))
-    url_slug = factory.Sequence(lambda n: 'idea_slug{}'.format(n+1))
-    thumbnail_image = factory.django.ImageField(from_path=(settings.BASE_DIR + "/climateconnect_api/tests/media/" + "idea_thumbnail_image.jpeg"))
+    name = factory.Sequence(lambda n: "idea_name{}".format(n + 1))
+    url_slug = factory.Sequence(lambda n: "idea_slug{}".format(n + 1))
+    thumbnail_image = factory.django.ImageField(
+        from_path=(
+            settings.BASE_DIR
+            + "/climateconnect_api/tests/media/"
+            + "idea_thumbnail_image.jpeg"
+        )
+    )
     user = factory.SubFactory(UserFactory)
-    short_description="This is a short description"
-    
+    short_description = "This is a short description"
