@@ -2,7 +2,7 @@ from typing import Dict
 
 from climateconnect_api.models.language import Language
 
-from organization.models import Organization, OrganizationTranslation
+from organization.models import Organization, OrganizationTranslation, OrganizationMember
 from organization.models.tags import OrganizationTags
 
 
@@ -78,3 +78,10 @@ def is_valid_organization_size(org_size) -> bool:
         if size_option[0] == org_size:
             return True
     return False
+
+def add_organization_member(organization, user, user_role, role_in_organization):
+    OrganizationMember.objects.create(
+                    organization=organization, user=user, role=user_role, role_in_organization=role_in_organization
+                )
+
+    return

@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function DropDownButton({ buttonProps, options, children }) {
+export default function DropDownButton({ buttonProps, options, children, href }) {
   const classes = useStyles();
   const [showOptions, setShowOptions] = useState(false);
   const buttonRef = useRef(null);
@@ -36,6 +36,7 @@ export default function DropDownButton({ buttonProps, options, children }) {
         onMouseLeave={handleHideOptions}
         {...buttonProps}
         className={classes.button}
+        href={href}
       >
         {children}
         <ArrowDropDownIcon />

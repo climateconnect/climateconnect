@@ -4,6 +4,7 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import React, { useContext } from "react";
 import Truncate from "react-truncate";
+
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -165,7 +166,7 @@ export default function Post({
             ) : (
               <MessageContent content={post.content} maxLines={maxLines} />
             )}
-            <div>
+            <>
               {type !== "reply" &&
                 type !== "preview" &&
                 (replyInterfaceExpanded ? (
@@ -184,8 +185,8 @@ export default function Post({
               {user && user.id === post.author_user.id && type !== "preview" && (
                 <Button onClick={toggleDeleteDialogOpen}>Delete</Button>
               )}
-            </div>
-            <div>
+            </>
+            <>
               {type !== "reply" && !!post.replies && post.replies.length > 0 && type !== "preview" && (
                 <Link className={classes.toggleReplies} onClick={handleViewRepliesClick}>
                   {!displayReplies ? (
@@ -201,11 +202,11 @@ export default function Post({
                   )}
                 </Link>
               )}
-            </div>
+            </>
           </span>
         </div>
       )}
-      <div>
+      <>
         {post.replies &&
           post.replies.length > 0 &&
           displayReplies &&
@@ -220,7 +221,7 @@ export default function Post({
               infoTextSize={infoTextSize}
             />
           )}
-      </div>
+      </>
       <ConfirmDialog
         open={open}
         onClose={onConfirmDialogClose}

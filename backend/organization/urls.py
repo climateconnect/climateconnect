@@ -129,12 +129,18 @@ urlpatterns = [
         'projects/<str:url_slug>/followers/',
         project_views.ListProjectFollowersView.as_view(), name='list-followers-view'
     ),
+    # This is the endpoint to list the users
+    # that have requested to join a project
+    path(
+        'projects/<str:url_slug>/requesters/',
+        project_views.ListProjectRequestersView.as_view(), name='list-requesters-view'
+    ),
     path(
         'projects/<str:url_slug>/likes/',
         project_views.ListProjectLikesView.as_view(), name='list-likes-view'
     ),
     path(
-        'projecttags/', project_views.ListProjectTags.as_view(), 
+        'projecttags/', project_views.ListProjectTags.as_view(),
         name='list-project-tags'
     ),
     path(
@@ -155,6 +161,16 @@ urlpatterns = [
         'projects/<str:url_slug>/leave/',
         project_views.LeaveProject.as_view(),
         name='leave-project'
+    ),
+    path(
+        'projects/<str:project_slug>/request_membership/<str:user_slug>/',
+        project_views.RequestJoinProject.as_view(),
+        name = 'request-join-entity'
+    ),
+    path(
+        'projects/<str:project_slug>/request_membership/<str:request_action>/<str:request_id>/',
+         project_views.ManageJoinProjectView.as_view(),
+         name = 'request-membership-action-entity'
     ),
     path(
         'projects/<str:url_slug>/set_shared_project/',
