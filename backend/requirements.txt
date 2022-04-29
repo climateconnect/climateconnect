@@ -39,7 +39,7 @@ Faker==4.0.2
 flake8==3.7.9
 h11==0.11.0
 hiredis==1.1.0
-httptools==0.1.1
+httptools==0.4.0
 hyperlink==20.0.1
 idna==2.9
 incremental==21.3.0
@@ -75,7 +75,7 @@ Twisted==22.4.0
 txaio==20.4.1
 urllib3==1.26.5
 uvicorn==0.17.6
-uvloop==0.14.0
+uvloop==0.16.0
 vine==5.0.0
 watchgod==0.6
 wcwidth==0.2.5
