@@ -11,9 +11,6 @@ from climateconnect_api.models import UserNotification, Notification
 from climateconnect_api.utility.email_setup import \
     send_email_reminder_for_unread_notifications
 from copy import deepcopy
-from django.utils import timezone
-from django.conf import settings
-from climateconnect_main.celery import app
 from climateconnect_api.utility.email_setup import (
     create_global_variables_for_weekly_recommendations,
     create_messages_for_weekly_recommendations,

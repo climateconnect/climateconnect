@@ -13,7 +13,6 @@ from location.models import Location
 from organization.models.organization import Organization
 from organization.models.members import OrganizationMember
 from climateconnect_api.models.role import Role
-from climateconnect_api.models.user import UserProfile
 
 
 class UserFactory(factory.DjangoModelFactory):
