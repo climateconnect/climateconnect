@@ -195,7 +195,7 @@ class Organization(models.Model):
     hubs = models.ManyToManyField(
         "hubs.Hub",
         related_name="organization_hubs",
-        help_text="Hubs that the organization is active in",
+        help_text="Sector Hubs that the organization is active in",
         verbose_name="Hubs",
         blank=True
     )

@@ -346,42 +346,67 @@ def send_email_reminder_for_unread_notifications(
         logger.error(f"EmailFailure: Error sending email -> {mail.text}")
 
 
-def create_variables_for_weekly_recommendations(project_ids: List = [], organization_ids: List = [], idea_ids: List = []):
-    # edit the image and url path for production
-    # todo idea has no url 
-    # entity_template = {
-    #     "type": '',
-    #     "name": '',
-    #     "imageUrl": '',
-    #     "url": '',
-    #     "creator": '',
-    #     "location": '',
-    #     "tags": '',
-    # }
-    main_page = 'https://climateconnect.earth/en/browse'
-
+def create_global_variables_for_weekly_recommendations(project_ids: List = [], organization_ids: List = [], idea_ids: List = [], is_in_hub: bool = False) -> List:
+    main_page = "https://climateconnect.earth"
     entities = []
 
-    projects = Project.objects.filter(id__in=project_ids).values_list("name", "thumbnail_image", "url_slug", "loc__name", "project_parent__parent_user__first_name", "project_parent__parent_user__last_name")
+    projects = Project.objects.filter(id__in=project_ids).values_list(
+        "name", 
+        "thumbnail_image", 
+        "url_slug", 
+        "loc__name", 
+        "project_parent__parent_user__first_name", 
+        "project_parent__parent_user__last_name", 
+        "project_parent__parent_user__user_profile__thumbnail_image", 
+        "project_parent__parent_organization__name", 
+        "project_parent__parent_organization__thumbnail_image",
+        )
     for project in projects:
+        if project[7]:
+            creator = project[7]
+            creator_image_url = settings.BACKEND_URL + project[8] if project[8] else ''
+        elif project[4] and project[5]:
+            creator = project[4] + ' ' + project[5]
+            creator_image_url = settings.BACKEND_URL + "/" + project[6] if project[6] else ''
+        else:
+            creator = ''
+            creator_image_url = ''
+
         project_template = {
             "type": "project",
             "name": project[0],
             "imageUrl": (settings.BACKEND_URL + project[1]) if project[1] else main_page,
             "url": (settings.FRONTEND_URL + "/projects/" + project[2]) if project[2] else main_page,
             "location": project[3] if project[3] and not is_in_hub else '',
-            "creator": project[4] + ' ' + project[5] if (project[4] and project[5]) else '',
+            "creator": creator,
+            "creatorImageUrl": creator_image_url,
             "tags": '',
         }
         entities.append(project_template)
 
-    organizations = Organization.objects.filter(id__in=organization_ids).values_list("name", "thumbnail_image", "url_slug", "location__name", "id")
+        print(creator_image_url)
+
+
+
+    organizations = Organization.objects.filter(id__in=organization_ids).values_list(
+        "name", 
+        "thumbnail_image", 
+        "url_slug", 
+        "location__name", 
+        "id"
+        )
     for organization in organizations:
-        org_creators = OrganizationMember.objects.filter(organization__id=organization[4], role__role_type=2).values_list("user__first_name", "user__last_name")
+        org_creators = OrganizationMember.objects.filter(organization__id=organization[4], role__role_type=2).values_list(
+            "user__first_name", 
+            "user__last_name", 
+            "user__user_profile__thumbnail_image"
+            )
         creator = ''
         # only one creator possible but the query needs to be iterated through
         for org_creator in org_creators:
             creator += org_creator[0] + " " + org_creator[1]
+            creator_image_url = settings.BACKEND_URL + "/" + org_creator[2] if org_creator[2] else ''
+
         organization_template = {
             "type": "organization",
             "name": organization[0],
@@ -389,30 +414,38 @@ def create_variables_for_weekly_recommendations(project_ids: List = [], organiza
             "url": (settings.FRONTEND_URL + "/organizations/" + organization[2]) if organization[2] else main_page,
             "location": organization[3] if organization[3] and not is_in_hub else '',
             "creator": creator,
+            "creatorImageUrl": creator_image_url,
             "tags": '',
         }
         entities.append(organization_template)
 
-    ideas = Idea.objects.filter(id__in=idea_ids).values_list("name", "thumbnail_image", "url_slug", "location__name", "user__first_name", "user__last_name", "hub__url_slug")
+        print(creator_image_url)
+
+
+    ideas = Idea.objects.filter(id__in=idea_ids).values_list("name", "thumbnail_image", "url_slug", "hub__url_slug", "location__name", "user__first_name", "user__last_name", "user__user_profile__thumbnail_image")
     for idea in ideas:
         idea_template = {
             "type": "idea",
             "name": idea[0],
             "imageUrl": (settings.BACKEND_URL + idea[1]) if idea[1] else '',
-            # url for ideas: URL/hubs/<hubUrl>?idea=<slug>#ideas
-            "url": (settings.FRONTEND_URL + "/hubs/"+ idea[6] + "?idea=" + idea[2] + "#ideas") if idea[2] else main_page,
-            "location": idea[3] if idea[3] and not is_in_hub else '',
-            "creator": idea[4] + ' ' + idea[5] if idea[4] and idea[5] else '',
+            # url for ideas: URL/hubs/<hubUrl>?idea=<slug>#ideas 
+            "url": (settings.FRONTEND_URL + "/hubs/"+ idea[3] + "?idea=" + idea[2] + "#ideas") if (idea[2] and idea[3]) else main_page,
+            "location": idea[4] if idea[4] and not is_in_hub else '',
+            "creator": idea[5] + ' ' + idea[6] if idea[5] and idea[6] else '',
+            "creatorImageUrl": (settings.BACKEND_URL + "/" + idea[7]) if idea[7] else '',
             "tags": '',
         }
         entities.append(idea_template)
+
+        print(creator_image_url)
+
     return entities
 
 
-def create_messages_for_weekly_recommendations(chunked_user_info) -> List:
-    # ("user__email", "user__first_name", "user__last_name")
+def create_messages_for_weekly_recommendations(user_ids) -> List:
+    users = User.objects.filter(id__in = user_ids).values_list("email", "first_name", "last_name")
     messages = []
-    for user in chunked_user_info:
+    for user in users:
         messages.append(
         {
                     "To": [

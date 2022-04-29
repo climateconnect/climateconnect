@@ -10,6 +10,7 @@ from django.utils import timezone
 from climateconnect_api.models import UserNotification, Notification
 from climateconnect_api.utility.email_setup import \
     send_email_reminder_for_unread_notifications
+from copy import deepcopy
 from django.utils import timezone
 from django.conf import settings
 from climateconnect_main.celery import app
@@ -228,7 +229,7 @@ def test_async(a: int, b: int):
 @app.task
 def schedule_weekly_recommendations_email():
     max_entities = 3
-    timespan = timezone.now() - timedelta(days=30)
+    timespan = timezone.now() - timedelta(days=7)
 
     all_locations_in_hubs = list(Location.objects.filter(hub_location__hub_type=1).values_list('id', flat = True).distinct())
     # "0" acts as a flag for the international recommendations email
@@ -243,12 +244,12 @@ def schedule_weekly_recommendations_email():
         user_queries_by_language = fetch_user_info_for_weekly_recommendations(location_id, is_in_hub) 
 
         if mailjet_global_vars:
-            for (user_query_by_language, lang_code) in user_queries_by_language:
+            for lang_code, user_query_by_language in user_queries_by_language.items():
                 for i in range(0, len(user_query_by_language), settings.USER_CHUNK_SIZE):
-                    chunked_user_info = list(user_query_by_language[i: i + settings.USER_CHUNK_SIZE])
+                    user_ids = list(user_query_by_language[i: i + settings.USER_CHUNK_SIZE])
                     # maybe apply_async here?
                     # process_user_info_and_send_weekly_recommendations.apply_async((chunked_user_info, mailjet_global_vars, lang_code, is_in_hub))
-                    process_user_info_and_send_weekly_recommendations(chunked_user_info, mailjet_global_vars, lang_code, is_in_hub)
+                    process_user_info_and_send_weekly_recommendations(user_ids, mailjet_global_vars, lang_code, is_in_hub)
 
 
 def fetch_and_create_globals_for_weekly_recommendations(max_entities, timespan, location_id, is_in_hub):
@@ -260,15 +261,17 @@ def fetch_and_create_globals_for_weekly_recommendations(max_entities, timespan, 
 def fetch_entities_for_weekly_recommendations(max_entities, timespan, location_id, is_in_hub):
     new_projects = Project.objects.filter(created_at__gt=timespan)
     new_orgs = Organization.objects.filter(created_at__gt=timespan)
-    
+
+    max_orgs = 1 if max_entities >= 1 else 0
     # recommendations for hubs
     if is_in_hub and location_id:
         new_projects = new_projects.filter(loc__id=location_id)
-        org_ids = list(new_orgs.filter(hubs__location__id=location_id, hubs__hub_type=1).values_list('id', flat = True)[:1])
-        idea_ids = list(Idea.objects.filter(created_at__gt=timespan, hub_shared_in__location__id=location_id, hub_shared_in__hub_type=1,).values_list('id', flat = True)[:1])
+        org_ids = list(new_orgs.filter(location__id=location_id).values_list('id', flat = True)[:max_orgs])
+        max_ideas = 1 if (max_entities-len(org_ids)) >= 1 else 0
+        idea_ids = list(Idea.objects.filter(created_at__gt=timespan, hub_shared_in__location__id=location_id).values_list('id', flat = True)[:max_ideas])
     # international recommendations
     else:
-        org_ids = list(new_orgs.values_list('id', flat = True)[:1])
+        org_ids = list(new_orgs.values_list('id', flat = True)[:max_orgs])
         idea_ids = list()
 
     max_projects = max_entities - (len(org_ids) + len(idea_ids))
@@ -278,26 +281,67 @@ def fetch_entities_for_weekly_recommendations(max_entities, timespan, location_i
 
 
 def fetch_user_info_for_weekly_recommendations(location_id: int, is_in_hub: bool):
-    user_queries_by_language = []
+    user_queries_by_language = {}
 
-    user_query_by_language = UserProfile.objects.filter(send_newsletter=True).values_list("user__email", "user__first_name", "user__last_name")
+    user_query= UserProfile.objects.filter(send_newsletter=True).values_list("user__id", flat = True)
     if location_id and is_in_hub:
-        user_query_by_language = user_query_by_language.filter(location__id=location_id)
+        user_query = user_query.filter(location__id=location_id)
     else:
-        user_query_by_language = user_query_by_language.exclude(location__isnull=False, location__hub_location__hub_type = 1)
-  
+        user_query = user_query.exclude(location__isnull=False, location__hub_location__hub_type = 1)
+
     languages = list(Language.objects.values_list("id", "language_code").distinct())
     for (language_id, lang_code) in languages:
+        user_query_by_language = deepcopy(user_query)
         # all users that havent specified a language are fetched together with english users
-        if (lang_code == "en"):
+        if (lang_code == 'en'):
             user_query_by_language = user_query_by_language.filter(Q(language__isnull=True) | Q(language__id = language_id))
         else:
             user_query_by_language = user_query_by_language.filter(language__id = language_id)
-        user_queries_by_language.append((user_query_by_language, lang_code))
+        
+        user_queries_by_language[lang_code] = user_query_by_language
     return user_queries_by_language
 
 
 @app.task
-def process_user_info_and_send_weekly_recommendations(chunked_user_user_query_by_language, mailjet_global_vars, lang_code, isInHub):
+def process_user_info_and_send_weekly_recommendations(chunked_user_user_query_by_language, mailjet_global_vars, lang_code, isInHub, sandbox_mode=False):
     messages = create_messages_for_weekly_recommendations(chunked_user_user_query_by_language)
-    send_weekly_recommendations_email(messages, mailjet_global_vars, lang_code, isInHub)
+    return send_weekly_recommendations_email(messages, mailjet_global_vars, lang_code, isInHub, sandbox_mode)
+
+    
+def schedule_automated_reminder_for_user_notifications():
+    # Get all user_ids for people who have not checked their notification
+    all_user_ids = list(
+        UserNotification.objects.filter(
+            read_at__isnull=True,
+            created_at__lte=(timezone.now() - timedelta(days=2)),
+            notification__notification_type=Notification.PRIVATE_MESSAGE
+        ).values_list('user_id', flat=True).distinct()
+    )
+    for i in range(0, len(all_user_ids), settings.USER_CHUNK_SIZE):
+        user_ids = [
+            u_ids for u_ids in all_user_ids[i: i + settings.USER_CHUNK_SIZE]
+        ]
+        send_email_notifications.apply_async((user_ids,))
+
+
+@app.task(bind=True)
+def send_email_notifications(self, user_ids: List):
+    for u_id in user_ids:
+        try:
+            user = User.objects.get(user_id=u_id)
+        except User.DoesNotExist:
+            logger.info(f"User profile does not exists for user {u_id}")
+            continue
+
+        unread_user_notifications = UserNotification.objects.filter(
+            user_id=u_id,
+            read_at__isnull=True,
+            notification__notification_type=Notification.PRIVATE_MESSAGE
+        )
+
+        if unread_user_notifications.exists() and user.user_profile \
+            and user.user_profile.email_on_private_chat_message is True:
+            send_email_reminder_for_unread_notifications(
+                user=user,
+                user_notifications=unread_user_notifications
+            )
