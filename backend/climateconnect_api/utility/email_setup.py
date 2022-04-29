@@ -7,7 +7,6 @@ from organization.models.project import Project
 from organization.models.organization import Organization
 from organization.models.members import OrganizationMember
 from ideas.models.ideas import Idea
-from climateconnect_api.utility.translation import get_user_lang_code, get_user_lang_url
 from django.conf import settings
 from climateconnect_api.models import UserProfile
 from climateconnect_api.models.notification import EmailNotification, UserNotification
