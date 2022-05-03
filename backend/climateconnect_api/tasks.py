@@ -66,8 +66,7 @@ def send_email_notifications(self, user_ids: List):
                 user=user,
                 user_notifications=unread_user_notifications
             )
-def add(a, b):
-    logger.info(f"testing.... {a+b}")
+
     # for users not in hubs
 # @app.task
 # def schedule_weekly_international_recommendations_email():
@@ -131,100 +130,6 @@ def add(a, b):
 #     send_weekly_recommendations_email(user_ids, lang_code, project_ids, organization_ids, idea_ids, isInHub)
 
 
-
-@app.task(task_always_eager=True)
-def test_celery(a: int, b: int):
-    w = test_async.apply_async((a, b))
-    return w.get()
-
-
-@app.task(task_always_eager=True)
-def test_async(a: int, b: int):
-    return a + b
-
-
-# # refactoring 
-
-# @app.task
-# def schedule_weekly_recommendations_email():
-#     max_entities = 3
-#     timespan = timezone.now() - timedelta(days=7)
-#     fetch_local_entities_and_send_weekly_recommendations.apply_async((max_entities, timespan))
-#     fetch_international_entities_and_send_weekly_recommendations.apply_async((max_entities, timespan))
-#     # debugging
-#     # fetch_local_entities_and_send_weekly_recommendations(max_entities, timespan)
-#     # fetch_international_entities_and_send_weekly_recommendations(max_entities, timespan)
-
-
-# @app.task
-# def fetch_local_entities_and_send_weekly_recommendations(max_entities, timespan):
-#     all_locations_in_hubs = list(Location.objects.filter(hub_location__hub_type=1).values_list('id', flat = True).distinct())
-#     for location_id in all_locations_in_hubs:
-#         new_orgs = Organization.objects.filter(hubs__location__id=location_id, hubs__hub_type=1, created_at__gt=timespan,).values_list('id', flat = True)[:1:1]
-#         new_ideas = Idea.objects.filter(hub_shared_in__location__id=location_id, hub_shared_in__hub_type=1, created_at__gt=timespan,).values_list('id', flat = True)[:1:1]
-#         max_projects = max_entities - (len(new_orgs) + len(new_ideas))
-#         new_projects = Project.objects.filter(loc__id=location_id, created_at__gt=timespan,).annotate(count_likes=Count('project_liked')).order_by('-count_likes').values_list('id', flat = True)[:max_projects:1]
-        
-#         mailjet_global_vars = create_global_variables_for_weekly_recommendations(new_projects, new_orgs, new_ideas, isInHub=True)
-#         if (mailjet_global_vars):
-#             fetch_user_info_and_send_weekly_recommendations.apply_async((mailjet_global_vars, location_id))
-#             # debugging
-#             # fetch_user_info_and_send_weekly_recommendations(mailjet_global_vars, location_id)
-
-
-# @app.task
-# def fetch_international_entities_and_send_weekly_recommendations(max_entities, timespan):
-#     new_international_orgs = Organization.objects.filter(created_at__gt=timespan,).values_list('id', flat = True)[:1:1]
-#     max_international_projects = max_entities - len(new_international_orgs)
-#     new_international_projects = Project.objects.filter(created_at__gt=timespan,).annotate(count_likes=Count('project_liked')).order_by('-count_likes').values_list('id', flat = True)[:max_international_projects:1]  
-#     mailjet_global_vars = create_global_variables_for_weekly_recommendations(new_international_projects, new_international_orgs, isInHub=False)
-#     if mailjet_global_vars:
-#         # fetch_user_info_and_send_weekly_recommendations.apply_async((mailjet_global_vars)) 
-#         # debugging
-#         fetch_user_info_and_send_weekly_recommendations(mailjet_global_vars) 
-
-
-# @app.task
-# def fetch_user_info_and_send_weekly_recommendations(mailjet_global_vars: List, location_id: int = None):
-    
-#     user_query_by_language = UserProfile.objects.filter(send_newsletter=True).values_list("user__email", "user__first_name", "user__last_name")
-
-#     if location_id is not None:
-#         user_query_by_language = user_query_by_language.filter(location__id=location_id)
-#         isInHub = True
-#     else:
-#         user_query_by_language = user_query_by_language.exclude(location__isnull=False, location__hub_location__hub_type = 1)
-#         isInHub = False
-
-#     languages = list(Language.objects.values_list("id", "language_code").distinct())
-#     for (language_id, lang_code) in languages:
-#         # all users that havent specified a language are fetched together with english users
-#         if (lang_code == "en"):
-#             user_queries_by_language = user_query_by_language.filter(Q(language__isnull=True) | Q(language__id = language_id))
-#         else:
-#             user_queries_by_language = user_query_by_language.filter(language__id = language_id)
-#         for i in range(0, len(user_queries_by_language), settings.USER_CHUNK_SIZE):
-#             chunked_user_info = list(user_queries_by_language[i: i + settings.USER_CHUNK_SIZE])
-#             # maybe apply_async here?
-#             process_user_info_and_send_weekly_recommendations.apply_async((chunked_user_info, mailjet_global_vars, lang_code, isInHub))
-#             # debugging
-#             # process_user_info_and_send_weekly_recommendations(chunked_user_info, mailjet_global_vars, lang_code, isInHub)
-
-
-# @app.task
-# def process_user_info_and_send_weekly_recommendations(chunked_user_user_query_by_language, mailjet_global_vars, lang_code, isInHub):
-#     messages = create_messages_for_weekly_recommendations(chunked_user_user_query_by_language)
-#     send_weekly_recommendations_email(messages, mailjet_global_vars, lang_code, isInHub)
-
-
-
-
-
-
-
-
-
-# refactoring PART 2
 
 @app.task
 def schedule_weekly_recommendations_email():
