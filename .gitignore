@@ -10,7 +10,8 @@ yarn-debug.log*
 yarn-error.log*
 
 .backend_env*
-/backend/media
+/backend/media/*
+!/backend/media/test
 */__pycache__/
 __pycache__
 *.swp

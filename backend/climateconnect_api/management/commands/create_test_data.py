@@ -2,6 +2,7 @@ from organization.models.members import ProjectMember
 from climateconnect_api.models.language import Language
 from organization.models.tags import ProjectTagging, ProjectTags, OrganizationTags
 from organization.models.project import ProjectParents
+from hubs.models.hub import Hub
 from django.core.management.base import BaseCommand
 import random
 
@@ -377,7 +378,58 @@ def create_skills():
                 )
 
 
+def create_sector_hubs_test_data():
+    print("Creating sector hub data...")
+    english_language = Language.objects.filter(language_code='en')[0]
 
+    name = "Energy"
+    url_slug = "energy"
+    if not Hub.objects.filter(name=name).exists():
+        hub = Hub.objects.create(
+            name=name,
+            url_slug=url_slug,
+            headline="Clean energy climate solutions",
+            sub_headline="How to solve climate change with renewable energy",
+            hub_type=0,
+            segway_text="This is a segway_text.",
+            image="/test/energy_hub_img.jpg",
+            icon="/test/energy_hub_icon.svg",
+            thumbnail_image="/test/energy_hub_thumbnail.jpg",
+            language=english_language,
+        )
+
+    name = "Food"
+    url_slug = "food"
+    if not Hub.objects.filter(name=name).exists():
+        hub = Hub.objects.create(
+            name=name,
+            url_slug=url_slug,
+            headline="Climate solutions in the food sector",
+            sub_headline="Consequences of the way we eat on climate change",
+            hub_type=0,
+            segway_text="This is a segway_text.",
+            image="/test/food_hub_img.jpg",
+            icon="/test/food_hub_icon.svg",
+            thumbnail_image="/test/food_hub_thumbnail.jpg",
+            language=english_language,
+        )
+
+    name = "Biodiversity"
+    url_slug = "biodiversity"
+    if not Hub.objects.filter(name=name).exists():
+        hub = Hub.objects.create(
+            name=name,
+            url_slug=url_slug,
+            headline="Protecting & restoring biodiversity ecosystems",
+            sub_headline="How to combat the climate crisis by preserving our ecosystems",
+            hub_type=0,
+            segway_text="This is a segway_text.",
+            image="/test/biodiversity_hub_img.jpg",
+            icon="/test/biodiversity_hub_icon.svg",
+            thumbnail_image="/test/biodiversity_hub_thumbnail.jpg",
+            language=english_language,
+        )
+    print("finished creating sector hubs test data!")
 
 
 
@@ -400,3 +452,4 @@ class Command(BaseCommand):
         create_organization_tags_test_data()
         create_project_test_data(number_of_rows=number_of_rows)
         create_skills()
+        create_sector_hubs_test_data()
