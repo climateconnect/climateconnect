@@ -29,17 +29,6 @@ from climateconnect_api.utility.email_setup import (
 logger = logging.getLogger(__name__)
 
 
-@app.task(task_always_eager=True)
-def test_celery(a: int, b: int):
-    w = test_async.apply_async((a, b))
-    return w.get()
-
-
-@app.task(task_always_eager=True)
-def test_async(a: int, b: int):
-    return a + b
-
-
 @app.task
 def schedule_weekly_recommendations_email():
     max_entities = 3
