@@ -136,10 +136,7 @@ export default function MiniHubPreview({
         </div>
       </CardActionArea>
 
-
       <div className={classes.textContainer}>
-
-      
         {/* <div className={classes.textContainer}> */}
         {createMode ? (
           <SelectField
@@ -149,15 +146,16 @@ export default function MiniHubPreview({
             onChange={(event) => event.target.value && onSelect(event)}
           />
         ) : (
-          <CardActionArea className={clsx(classes.expand,)}
-      onClick={handleExpandClick}
-      aria-expanded={expanded}
-      aria-label="show more"
-      >
-          <Typography color="secondary" className={classes.hubName}>
-            {hub.icon && <img src={getImageUrl(hub.icon)} className={classes.hubIcon} />}
-            {hub?.name}
-          </Typography>
+          <CardActionArea
+            className={clsx(classes.expand)}
+            onClick={handleExpandClick}
+            aria-expanded={expanded}
+            aria-label="show more"
+          >
+            <Typography color="secondary" className={classes.hubName}>
+              {hub.icon && <img src={getImageUrl(hub.icon)} className={classes.hubIcon} />}
+              {hub?.name}
+            </Typography>
           </CardActionArea>
         )}
         {/* <IconButton
@@ -168,9 +166,9 @@ export default function MiniHubPreview({
           aria-expanded={expanded}
           aria-label="show more"
         > */}
-          {/* <ExpandMoreIcon />
+        {/* <ExpandMoreIcon />
         </IconButton> */}
-        </div>
+      </div>
       <Collapse className={classes.textContainer} in={expanded} timeout="auto" unmountOnExit>
         <TextField
           //className={classes.name}
@@ -181,7 +179,6 @@ export default function MiniHubPreview({
           required
         />
       </Collapse>
-      
     </Card>
     // </Link>
   );
