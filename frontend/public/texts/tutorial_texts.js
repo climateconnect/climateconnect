@@ -19,7 +19,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
     tutorial_welcome_to_climate_connect_text_first_part: {
       en: "Climate Connect is a free collaboration platform for people taking climate action.",
       de:
-        "Climate Connect eine kostenlose Kooperationsplattform für Menschen, die sich für Klimaschutz einsetzen",
+        "Climate Connect ist eine kostenlose Kooperationsplattform für Menschen, die sich für Klimaschutz einsetzen.",
     },
     tutorial_welcome_to_climate_connect_text_last_part: {
       en: "Want to discover all the things you can do here?",
