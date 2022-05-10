@@ -318,10 +318,9 @@ def create_global_variables_for_weekly_recommendations(
             "creator": creator,
             "creatorImageUrl": creator_image_url,
             "tags": "",
+            "shortDescription": "",
         }
         entities.append(project_template)
-
-        print(creator_image_url)
 
     organizations = Organization.objects.filter(id__in=organization_ids).values_list(
         "name", "thumbnail_image", "url_slug", "location__name", "id"
@@ -353,10 +352,9 @@ def create_global_variables_for_weekly_recommendations(
             "creator": creator,
             "creatorImageUrl": creator_image_url,
             "tags": "",
+            "shortDescription": "",
         }
         entities.append(organization_template)
-
-        print(creator_image_url)
 
     ideas = Idea.objects.filter(id__in=idea_ids).values_list(
         "name",
@@ -390,10 +388,9 @@ def create_global_variables_for_weekly_recommendations(
             if idea[7]
             else "",
             "tags": "",
+            "shortDescription": "",
         }
         entities.append(idea_template)
-
-        print(creator_image_url)
 
     return entities
 
