@@ -21,6 +21,7 @@ from climateconnect_api.models.user import UserProfile
 from organization.models.project import Project
 from climateconnect_api.models.language import Language
 from ideas.models.ideas import Idea
+from hubs.models.hub import Hub
 from location.models import Location
 from django.db.models import Count
 from django.db.models import Q
@@ -134,28 +135,27 @@ def send_email_notifications(self, user_ids: List):
 @app.task
 def schedule_weekly_recommendations_email():
     max_entities = 3
-    timespan = timezone.now() - timedelta(days=7)
+    timespan_start = timezone.now() - timedelta(days=7)
 
     all_locations_in_hubs = list(
-        Location.objects.filter(hub_location__hub_type=1)
+        Location.objects.filter(hub_location__hub_type=Hub.LOCATION_HUB_TYPE)
         .values_list("id", flat=True)
         .distinct()
     )
     # "0" acts as a flag for the international recommendations email
     all_locations_in_hubs.append(0)
     for location_id in all_locations_in_hubs:
-        if location_id:
-            is_in_hub = True
-        else:
-            is_in_hub = False
+
+        is_in_hub = location_id != 0
 
         mailjet_global_vars = fetch_and_create_globals_for_weekly_recommendations(
-            max_entities, timespan, location_id, is_in_hub
+            max_entities, timespan_start, location_id, is_in_hub
         )
         user_queries_by_language = fetch_user_info_for_weekly_recommendations(
             location_id, is_in_hub
         )
 
+        # check if there are any new entities otherwise mailjet_global_vars will be an empty list
         if mailjet_global_vars:
             for lang_code, user_query_by_language in user_queries_by_language.items():
                 for i in range(
@@ -172,10 +172,10 @@ def schedule_weekly_recommendations_email():
 
 
 def fetch_and_create_globals_for_weekly_recommendations(
-    max_entities, timespan, location_id, is_in_hub
+    max_entities, timespan_start, location_id, is_in_hub
 ):
     [project_ids, org_ids, idea_ids] = fetch_entities_for_weekly_recommendations(
-        max_entities, timespan, location_id, is_in_hub
+        max_entities, timespan_start, location_id, is_in_hub
     )
     mailjet_global_vars = create_global_variables_for_weekly_recommendations(
         project_ids, org_ids, idea_ids, is_in_hub
@@ -184,11 +184,13 @@ def fetch_and_create_globals_for_weekly_recommendations(
 
 
 def fetch_entities_for_weekly_recommendations(
-    max_entities, timespan, location_id, is_in_hub
+    max_entities, timespan_start, location_id, is_in_hub
 ):
-    new_projects = Project.objects.filter(created_at__gt=timespan)
-    new_orgs = Organization.objects.filter(created_at__gt=timespan)
+    new_projects = Project.objects.filter(created_at__gt=timespan_start)
+    new_orgs = Organization.objects.filter(created_at__gt=timespan_start)
 
+    # max_entities is considered to be a variable that can be changed in the future 
+    # so this is just a safeguard if max_entities is set to 0 to have consistent behaviour
     max_orgs = 1 if max_entities >= 1 else 0
     # recommendations for hubs
     if is_in_hub and location_id:
@@ -198,10 +200,11 @@ def fetch_entities_for_weekly_recommendations(
                 :max_orgs
             ]
         )
+        # safeguard to have consistent behaviour when changing max_entities
         max_ideas = 1 if (max_entities - len(org_ids)) >= 1 else 0
         idea_ids = list(
             Idea.objects.filter(
-                created_at__gt=timespan, hub_shared_in__location__id=location_id
+                created_at__gt=timespan_start, hub_shared_in__location__id=location_id
             ).values_list("id", flat=True)[:max_ideas]
         )
     # international recommendations
@@ -229,7 +232,7 @@ def fetch_user_info_for_weekly_recommendations(location_id: int, is_in_hub: bool
         user_query = user_query.filter(location__id=location_id)
     else:
         user_query = user_query.exclude(
-            location__isnull=False, location__hub_location__hub_type=1
+            location__isnull=False, location__hub_location__hub_type=Hub.LOCATION_HUB_TYPE
         )
 
     languages = list(Language.objects.values_list("id", "language_code").distinct())
