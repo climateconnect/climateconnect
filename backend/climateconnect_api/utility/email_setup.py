@@ -324,13 +324,20 @@ def create_global_variables_for_weekly_recommendations(
         entities.append(project_template)
 
     organizations = Organization.objects.filter(id__in=organization_ids).values_list(
-        "name", "thumbnail_image", "url_slug", "location__name", "id", "short_description"
+        "name",
+        "thumbnail_image",
+        "url_slug",
+        "location__name",
+        "id",
+        "short_description",
     )
     for organization in organizations:
         org_creators = OrganizationMember.objects.filter(
             organization__id=organization[4], role__role_type=2
         ).values_list(
-            "user__first_name", "user__last_name", "user__user_profile__thumbnail_image",
+            "user__first_name",
+            "user__last_name",
+            "user__user_profile__thumbnail_image",
         )
         creator = ""
         # only one creator possible but the query needs to be iterated through
@@ -413,22 +420,64 @@ def create_messages_for_weekly_recommendations(user_ids) -> List:
 
 
 def create_html_content_for_weekly_recommendations(entities):
-    """ due to limitations in mailjet this function generates the card sections in html to be implemented directly in the mail """
-    
-    content = [] 
+    """due to limitations in mailjet this function generates the card sections in html to be implemented directly in the mail"""
+
+    content = []
     for entity in entities:
         if entity["type"] == "project":
-            card = generate_project_card(entity["name"], entity["url"], entity["imageUrl"], entity["location"], entity["creator"], entity["creatorImageUrl"])
-            content.append({"card": card, "shortDescription": entity["shortDescription"], "url": entity["url"], "type": entity["type"], })
-    
+            card = generate_project_card(
+                entity["name"],
+                entity["url"],
+                entity["imageUrl"],
+                entity["location"],
+                entity["creator"],
+                entity["creatorImageUrl"],
+            )
+            content.append(
+                {
+                    "card": card,
+                    "shortDescription": entity["shortDescription"],
+                    "url": entity["url"],
+                    "type": entity["type"],
+                }
+            )
+
         if entity["type"] == "organization":
-            card = generate_org_card(entity["name"], entity["url"], entity["imageUrl"], entity["location"], entity["creator"], entity["creatorImageUrl"])
-            content.append({"card": card, "shortDescription": entity["shortDescription"], "url": entity["url"], "type": entity["type"], })
-    
+            card = generate_org_card(
+                entity["name"],
+                entity["url"],
+                entity["imageUrl"],
+                entity["location"],
+                entity["creator"],
+                entity["creatorImageUrl"],
+            )
+            content.append(
+                {
+                    "card": card,
+                    "shortDescription": entity["shortDescription"],
+                    "url": entity["url"],
+                    "type": entity["type"],
+                }
+            )
+
         if entity["type"] == "idea":
-            card = generate_idea_card(entity["name"], entity["url"], entity["imageUrl"], entity["location"], entity["creator"], entity["creatorImageUrl"])
-            content.append({"card": card, "shortDescription": entity["shortDescription"], "url": entity["url"], "type": entity["type"], })
-    
+            card = generate_idea_card(
+                entity["name"],
+                entity["url"],
+                entity["imageUrl"],
+                entity["location"],
+                entity["creator"],
+                entity["creatorImageUrl"],
+            )
+            content.append(
+                {
+                    "card": card,
+                    "shortDescription": entity["shortDescription"],
+                    "url": entity["url"],
+                    "type": entity["type"],
+                }
+            )
+
     return content
 
 
@@ -506,7 +555,7 @@ def generate_org_card(name, url, thumbnail_url, location, creator, creator_image
                     </span>
                   </div>        
         """
-    else: 
+    else:
         location_htmlsection = ""
 
     card = f"""
@@ -535,7 +584,9 @@ def generate_org_card(name, url, thumbnail_url, location, creator, creator_image
     return card
 
 
-def generate_project_card(name, url, thumbnail_url, location, creator, creator_image_url):
+def generate_project_card(
+    name, url, thumbnail_url, location, creator, creator_image_url
+):
     if creator_image_url:
         creator_image_htmlsection = f"""
                         <div style="justify-content:center;display:flex;height:20px;width:20px;overflow:hidden;border-radius:50%;">
@@ -568,7 +619,7 @@ def generate_project_card(name, url, thumbnail_url, location, creator, creator_i
                       </span>
                     </div>
         """
-    else: 
+    else:
         location_htmlsection = ""
 
     card = f"""<div style="padding:8px;box-sizing:border-box;font-size:14px;font-weight:400;font-family:open sans;line-height:20px;">
@@ -590,7 +641,7 @@ def generate_project_card(name, url, thumbnail_url, location, creator, creator_i
               </div>
             </a>
           </div>"""
-    
+
     return card
 
 

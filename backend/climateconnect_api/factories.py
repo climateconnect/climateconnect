@@ -29,7 +29,8 @@ class UserFactory(factory.DjangoModelFactory):
 
 
 class LocationFactory(factory.DjangoModelFactory):
-    """ Creates a stub location. Add coordinates for additional functionality such as location search"""
+    """Creates a stub location. Add coordinates for additional functionality such as location search"""
+
     class Meta:
         model = Location
 
@@ -67,7 +68,8 @@ class UserProfileFactory(factory.DjangoModelFactory):
 
 
 class HubFactory(factory.DjangoModelFactory):
-    """ Creates by default a stub SectorHub """
+    """Creates by default a stub SectorHub"""
+
     class Meta:
         model = Hub
 

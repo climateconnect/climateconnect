@@ -189,7 +189,7 @@ def fetch_entities_for_weekly_recommendations(
     new_projects = Project.objects.filter(created_at__gt=timespan_start)
     new_orgs = Organization.objects.filter(created_at__gt=timespan_start)
 
-    # max_entities is considered to be a variable that can be changed in the future 
+    # max_entities is considered to be a variable that can be changed in the future
     # so this is just a safeguard if max_entities is set to 0 to have consistent behaviour
     max_orgs = 1 if max_entities >= 1 else 0
     # recommendations for hubs
@@ -232,7 +232,8 @@ def fetch_user_info_for_weekly_recommendations(location_id: int, is_in_hub: bool
         user_query = user_query.filter(location__id=location_id)
     else:
         user_query = user_query.exclude(
-            location__isnull=False, location__hub_location__hub_type=Hub.LOCATION_HUB_TYPE
+            location__isnull=False,
+            location__hub_location__hub_type=Hub.LOCATION_HUB_TYPE,
         )
 
     languages = list(Language.objects.values_list("id", "language_code").distinct())
