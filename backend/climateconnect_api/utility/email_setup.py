@@ -280,6 +280,7 @@ def create_global_variables_for_weekly_recommendations(
         "project_parent__parent_user__user_profile__thumbnail_image",
         "project_parent__parent_organization__name",
         "project_parent__parent_organization__thumbnail_image",
+        "short_description",
     )
     for project in projects:
         if project[7]:
@@ -307,18 +308,18 @@ def create_global_variables_for_weekly_recommendations(
             "creator": creator,
             "creatorImageUrl": creator_image_url,
             "tags": "",
-            "shortDescription": "",
+            "shortDescription": project[9] if project[9] else "",
         }
         entities.append(project_template)
 
     organizations = Organization.objects.filter(id__in=organization_ids).values_list(
-        "name", "thumbnail_image", "url_slug", "location__name", "id"
+        "name", "thumbnail_image", "url_slug", "location__name", "id", "short_description"
     )
     for organization in organizations:
         org_creators = OrganizationMember.objects.filter(
             organization__id=organization[4], role__role_type=2
         ).values_list(
-            "user__first_name", "user__last_name", "user__user_profile__thumbnail_image"
+            "user__first_name", "user__last_name", "user__user_profile__thumbnail_image",
         )
         creator = ""
         # only one creator possible but the query needs to be iterated through
@@ -341,7 +342,7 @@ def create_global_variables_for_weekly_recommendations(
             "creator": creator,
             "creatorImageUrl": creator_image_url,
             "tags": "",
-            "shortDescription": "",
+            "shortDescription": organization[5] if organization[5] else "",
         }
         entities.append(organization_template)
 
@@ -354,6 +355,7 @@ def create_global_variables_for_weekly_recommendations(
         "user__first_name",
         "user__last_name",
         "user__user_profile__thumbnail_image",
+        "short_description",
     )
     for idea in ideas:
         idea_template = {
@@ -377,7 +379,7 @@ def create_global_variables_for_weekly_recommendations(
             if idea[7]
             else "",
             "tags": "",
-            "shortDescription": "",
+            "shortDescription": idea[8] if idea[8] else "",
         }
         entities.append(idea_template)
 
@@ -397,6 +399,188 @@ def create_messages_for_weekly_recommendations(user_ids) -> List:
             }
         )
     return messages
+
+
+def create_html_content_for_weekly_recommendations(entities):
+    """ due to limitations in mailjet this function generates the card sections in html to be implemented directly in the mail """
+    
+    content = [] 
+    for entity in entities:
+        if entity["type"] == "project":
+            card = generate_project_card(entity["name"], entity["url"], entity["imageUrl"], entity["location"], entity["creator"], entity["creatorImageUrl"])
+            content.append({"card": card, "shortDescription": entity["shortDescription"], "url": entity["url"], "type": entity["type"], })
+    
+        if entity["type"] == "organization":
+            card = generate_org_card(entity["name"], entity["url"], entity["imageUrl"], entity["location"], entity["creator"], entity["creatorImageUrl"])
+            content.append({"card": card, "shortDescription": entity["shortDescription"], "url": entity["url"], "type": entity["type"], })
+    
+        if entity["type"] == "idea":
+            card = generate_idea_card(entity["name"], entity["url"], entity["imageUrl"], entity["location"], entity["creator"], entity["creatorImageUrl"])
+            content.append({"card": card, "shortDescription": entity["shortDescription"], "url": entity["url"], "type": entity["type"], })
+    
+    return content
+
+
+def generate_idea_card(name, url, thumbnail_url, location, creator, creator_image_url):
+    if creator_image_url:
+        creator_image_htmlsection = f"""
+                        <div style="justify-content:center;display:flex;height:20px;width:20px;overflow:hidden;border-radius:50%;">
+                        <img src={creator_image_url} style="object-fit:cover;">
+                        </div> 
+        """
+    else:
+        creator_image_htmlsection = f"""
+                    <span class="material-icons" style="display:block;flex-basis:40px;font-size:20px;color: #bdbdbd">account_circle</span>
+        """
+
+    if creator:
+        creator_htmlsection = f"""                 
+                <div>
+                    <span style="display:inline-flex;text-align:left;align-items:center;">
+{creator_image_htmlsection}
+                      <h6 style="margin-top:8px;margin-bottom:8px;display: inline-block;margin-left: 8px;white-space: nowrap;vertical-align: middle;font-weight:500;font-family:open sans;font-size:14px;">{creator}
+                      </h6>
+                    </span>
+                  </div>
+        """
+
+    card = f"""
+          <div style="padding:8px;color:rgba(0, 0, 0, 0.87);line-height:20px;font-family:open sans;font-size:14px;font-weight:400;">
+            <a href="{url}" target="_blank" style="color: black; text-decoration: none;">
+              <div style="display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;height:350px;background-color:rgb(248,248,248);border-radius:16px;border:3px solid #207178;overflow:hidden;text-align:center;transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;box-shadow: rgb(0 0 0 / 16%) 3px 3px 6px;">
+                <div style="box-sizing:inherit;display:block;padding:8px;font-family:open sans;font-size:14px;font-weight:400;">
+                  <h2 style="font-size:18px;font-weight:600;line-height:27px;margin:0px;">{name}</h2>
+                  {creator_htmlsection}
+                </div>
+                <div style="box-sizing:inherit;display:block;">
+                  <div style="background-repeat: no-repeat;display:block;margin:0px;padding:0px;background-size:100%;background-origin:content-box;width:100%;background-position-y:50%;background-position-x:50%;background-image: url({thumbnail_url});">
+                    <img style="margin:0px;padding:0px;width:100%;object-fit:cover;border-radius:inherit;background-position-y:inherit;visibility:hidden;" src="{thumbnail_url}" alt="" />
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+    """
+    return card
+
+
+def generate_org_card(name, url, thumbnail_url, location, creator, creator_image_url):
+    if creator_image_url:
+        creator_image_htmlsection = f"""
+                        <div style="justify-content:center;display:flex;height:20px;width:20px;overflow:hidden;border-radius:50%;">
+                        <img src={creator_image_url} style="object-fit:cover;">
+                        </div> 
+        """
+    else:
+        creator_image_htmlsection = f"""
+                    <span class="material-icons" style="display:block;flex-basis:40px;flex-grow:0;flex-shrink:0;font-size:20px;width:40px;color: #207178">account_circle</span>
+        """
+
+    if creator:
+        creator_htmlsection = f"""
+                <div style="display:block;margin-top:20px">
+                    <span style="display:grid;margin-bottom:4px;grid-template-columns: 40px min-content;justify-content:center;text-align:center;">
+{creator_image_htmlsection}
+                      <span style="font-family:open sans;font-size:14px;font-weight:400;line-height:20px;overflow:hidden;max-width:220px;text-align:center">{creator}</span>
+                    </span>
+                  </div>
+        """
+
+    if location:
+        location_htmlsection = f"""
+                  <div style="display:block;margin-top:20px">
+                    <span style="display:grid;margin-bottom:4px;grid-template-columns: 40px min-content;justify-content:center;text-align:center;">
+                      <span class="material-icons" style="display:block;flex-basis:40px;flex-grow:0;flex-shrink:0;font-size:20px;width:40px;color:#207178">place</span>
+                      <span style="font-family:open sans;font-size:14px;font-weight:400;line-height:20px;overflow:hidden;max-width:220px;text-align:center">{location}</span>
+                    </span>
+                  </div>        
+        """
+    else: 
+        location_htmlsection = ""
+
+    card = f"""
+        <div style="padding:8px;color: rgba(0, 0, 0, 0.87);line-height:20px;">
+            <a href="{url}" target="_blank" style="color: black; text-decoration: none;">
+              <div style="display:flex;flex-direction:column;height:350px;margin:0px;background-color:rgb(241,241,241);background-size: calc(100% - 1px) 100%;border:1px solid rgba(0,0,0,0.12);border-radius:5px;border-image-repeat:stretch;box-shadow:rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;overflow:hidden;box-sizing:border-box;
+              display:grid;grid-template-rows: min-content;transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;padding:0 14px;text-align:center;">
+
+                <div style="display:block;">
+                  <div style="height:80px;width80px;display:flex;justify-content:center;margin:24px auto 0px;overflow:hidden;position:relative;">
+                    <img style="max-width: 220px;margin:0px;padding:0px;width:80px;border-radius:50%;object-fit:cover;" src="{thumbnail_url}" alt="" />
+                  </div>
+
+                  <div style="display:block;">
+                    <h2 style="margin:5px;display:inline-block;line-height:32px;font-family:open sans;font-size:20px;font-weight:700;overflow:hidden;text-overflow:ellipsis;">{name}</h2>
+                  </div>
+                </div>
+                <div style="padding:0px;display:grid;box-sizing:border-box;grid-template-rows: min-content;">
+                  {creator_htmlsection}
+                  {location_htmlsection}
+                </div>
+              </div>
+            </a>
+          </div>
+    """
+    return card
+
+
+def generate_project_card(name, url, thumbnail_url, location, creator, creator_image_url):
+    if creator_image_url:
+        creator_image_htmlsection = f"""
+                        <div style="justify-content:center;display:flex;height:20px;width:20px;overflow:hidden;border-radius:50%;">
+                        <img src={creator_image_url} style="object-fit:cover;">
+                        </div> 
+        """
+    else:
+        creator_image_htmlsection = f"""
+                        <span class="material-icons" style="display:block;flex-basis:40px;font-size:20px;color: #bdbdbd">account_circle</span>
+        """
+
+    if creator:
+        creator_htmlsection = f"""
+                    <div>
+                      <span style="display:inline-flex;text-align:left;align-items:center;">
+{creator_image_htmlsection}
+                        <h6 style="margin-top:8px;margin-bottom:8px;display: inline-block;margin-left: 8px;white-space: nowrap;vertical-align: middle;font-weight:500;font-family:open sans;font-size:14px;">{creator}
+                        </h6>
+                      </span>
+                    </div>           
+        """
+
+    if location:
+        location_htmlsection = f"""
+                    <div>
+                      <span style="display:inline-flex;text-align:left;align-items:center;">
+                        <span class="material-icons" style="display:block;flex-basis:40px;font-size:20px;color: #bdbdbd">place</span>
+                        <h6 style="margin-top:8px;margin-bottom:8px;display: inline-block;margin-left: 8px;white-space: nowrap;vertical-align: middle;font-weight:500;font-family:open sans;font-size:14px;">{location}
+                        </h6>
+                      </span>
+                    </div>
+        """
+    else: 
+        location_htmlsection = ""
+
+    card = f"""<div style="padding:8px;box-sizing:border-box;font-size:14px;font-weight:400;font-family:open sans;line-height:20px;">
+            <a href="{url}" target="_blank" style="box-sizing:inherit;color: black; text-decoration: none;">
+              <div style="box-sizing:inherit;height:350px;background-color:#FFF;border:1px solid #EEE;border-radius:3px;
+              color: rgba(0, 0, 0, 0.87);transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;display:flex;flex-direction:column;overflow:hidden;box-shadow: rgb(0 0 0 / 16%) 3px 3px 6px;">
+                <div style="height:175px;box-sizing: inherit;display: block;background-size: cover;background-repeat: no-repeat;background-position: center;background-image: url({thumbnail_url});">
+
+                </div>
+                <div style="box-sizing:inherit;display:block;">
+                  <div style="box-sizing:inherit;display:block;margin-bottom:6px;padding:16px 16px 0px;">
+                    <h2 style="font-family:open sans; font-size:15px;font-weight:700;line-height:24px">{name}</h2>
+                  </div>
+                  <div style="box-sizing:inherit;display:block;padding:0px 16px 16px;margin-left:auto;margin-right:auto;">
+{creator_htmlsection}
+{location_htmlsection}
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>"""
+    
+    return card
 
 
 def send_weekly_recommendations_email(
@@ -424,8 +608,12 @@ def send_weekly_recommendations_email(
 
     subject = subjects_by_language.get(lang_code, "en")
 
+    # the card sections are generated in html
+    content = create_html_content_for_weekly_recommendations(entities)
+
     global_variables = {
-        "Entities": entities,
+        "content": content,
+        # "Entities": entities,
     }
 
     data = {
@@ -451,9 +639,11 @@ def send_weekly_recommendations_email(
         mail = mailjet_send_api.send.create(data=data)
     except Exception as ex:
         logger.error(f"EmailFailure: Exception sending email -> {ex}")
+        print(f"EmailFailure: Exception sending email -> {ex}")
 
     if mail.status_code != 200:
         logger.error(f"EmailFailure: Error sending email -> {mail.text}")
+        print(f"EmailFailure: Error sending email -> {mail.text}")
 
     return mail
 

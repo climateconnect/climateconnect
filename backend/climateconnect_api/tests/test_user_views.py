@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.conf import settings
 
 from climateconnect_api.models.language import Language
+from hubs.models.hub import Hub
 from location.models import Location
 from climateconnect_api.tests.create_test_data import (
     create_project_test_data,
@@ -103,8 +104,8 @@ class TestRecommendedEmail(TestCase):
         cls.location_2 = LocationFactory()
         cls.location_3 = LocationFactory()
 
-        hub_1 = HubFactory(hub_type=1, location=[cls.location_1])
-        hub_2 = HubFactory(hub_type=1, location=[cls.location_2])
+        hub_1 = HubFactory(hub_type=Hub.LOCATION_HUB_TYPE, location=[cls.location_1])
+        hub_2 = HubFactory(hub_type=Hub.LOCATION_HUB_TYPE, location=[cls.location_2])
 
         cls.english_user_in_hub_1 = UserProfileFactory(
             language=english_language, location=cls.location_1
@@ -162,18 +163,18 @@ class TestRecommendedEmail(TestCase):
         cls.admin_user = UserFactory(
             username="Admin",
             email=settings.MAILJET_ADMIN_EMAIL,
-            first_name="You",
+            first_name="Admin",
             last_name="Admin",
         )
 
     def test_entities(self):
         max_entities = 3
-        timespan = timezone.now() - timedelta(days=7)
+        timespan_start = timezone.now() - timedelta(days=7)
         is_in_hub = True
 
         # fetch entities in hub 1
         result = fetch_entities_for_weekly_recommendations(
-            max_entities, timespan, self.location_1.id, is_in_hub
+            max_entities, timespan_start, self.location_1.id, is_in_hub
         )
         expected_result = [
             [self.project_in_hub_1_3likes.id],
@@ -184,7 +185,7 @@ class TestRecommendedEmail(TestCase):
 
         # fetch entities in hub 2
         result = fetch_entities_for_weekly_recommendations(
-            max_entities, timespan, self.location_2.id, is_in_hub
+            max_entities, timespan_start, self.location_2.id, is_in_hub
         )
         expected_result = [
             [self.project_in_hub_2_2likes.id, self.project_in_hub_2_1likes.id],
@@ -197,7 +198,7 @@ class TestRecommendedEmail(TestCase):
         is_in_hub = False
         no_location = 0
         result = fetch_entities_for_weekly_recommendations(
-            max_entities, timespan, no_location, is_in_hub
+            max_entities, timespan_start, no_location, is_in_hub
         )
         expected_result = [
             [self.project_no_hub_4likes.id, self.project_in_hub_1_3likes.id],
@@ -207,7 +208,7 @@ class TestRecommendedEmail(TestCase):
         self.assertEqual(result, expected_result)
 
     def test_user_data(self):
-        # tests if the users_ids are generated correctly
+        """tests if the users_ids are generated correctly"""
 
         # for hub_1
         result = {}
@@ -255,7 +256,7 @@ class TestRecommendedEmail(TestCase):
         self.assertCountEqual(result, expected_result)
 
     def test_send_email(self):
-        # this test will send emails to the mailjet_admin_email adress set in .backend_env
+        """this test will send emails to the mailjet_admin_email adress set in .backend_env"""
         # it sends emails for each hub/international and for each language, so a maximum number of 6 emails
         # to turn email sending on, set sandbox_mode to False
         sandbox_mode = True
@@ -263,23 +264,21 @@ class TestRecommendedEmail(TestCase):
         max_emails_sent = 2
 
         max_entities = 3
-        timespan = timezone.now() - timedelta(days=7)
+        timespan_start = timezone.now() - timedelta(days=7)
 
         all_locations_in_hubs = list(
-            Location.objects.filter(hub_location__hub_type=1)
+            Location.objects.filter(hub_location__hub_type=Hub.LOCATION_HUB_TYPE)
             .values_list("id", flat=True)
             .distinct()
         )
         # "0" acts as a flag for the international recommendations email
         all_locations_in_hubs.append(0)
         for location_id in all_locations_in_hubs:
-            if location_id:
-                is_in_hub = True
-            else:
-                is_in_hub = False
+
+            is_in_hub = location_id != 0
 
             mailjet_global_vars = fetch_and_create_globals_for_weekly_recommendations(
-                max_entities, timespan, location_id, is_in_hub
+                max_entities, timespan_start, location_id, is_in_hub
             )
 
             lang_codes = list(

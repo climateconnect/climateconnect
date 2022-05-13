@@ -29,6 +29,7 @@ class UserFactory(factory.DjangoModelFactory):
 
 
 class LocationFactory(factory.DjangoModelFactory):
+    """ Creates a stub location. Add coordinates for additional functionality such as location search"""
     class Meta:
         model = Location
 
@@ -66,6 +67,7 @@ class UserProfileFactory(factory.DjangoModelFactory):
 
 
 class HubFactory(factory.DjangoModelFactory):
+    """ Creates by default a stub SectorHub """
     class Meta:
         model = Hub
 
@@ -73,7 +75,7 @@ class HubFactory(factory.DjangoModelFactory):
     url_slug = factory.Sequence(lambda n: "hub_slug{}".format(n + 1))
     segway_text = "This is a segway_text"
     quick_info = "This is a quick_info"
-    hub_type = 0
+    hub_type = Hub.SECTOR_HUB_TYPE
 
     # implementation of manytomany field
     @factory.post_generation
@@ -138,6 +140,7 @@ class OrganizationFactory(factory.DjangoModelFactory):
 
     name = factory.Sequence(lambda n: "org_name{}".format(n + 1))
     url_slug = factory.Sequence(lambda n: "org_slug{}".format(n + 1))
+    short_description = "This is a short description!"
     thumbnail_image = factory.django.ImageField(
         from_path=(
             settings.BASE_DIR
@@ -179,4 +182,4 @@ class IdeaFactory(factory.DjangoModelFactory):
         )
     )
     user = factory.SubFactory(UserFactory)
-    short_description = "This is a short description"
+    short_description = "This is a short description!"
