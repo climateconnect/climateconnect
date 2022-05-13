@@ -318,7 +318,7 @@ def create_global_variables_for_weekly_recommendations(
             "location": project[3] if project[3] and not is_in_hub else "",
             "creator": creator,
             "creatorImageUrl": creator_image_url,
-            "tags": "",
+            "category": "",
             "shortDescription": project[9] if project[9] else "",
         }
         entities.append(project_template)
@@ -432,6 +432,7 @@ def create_html_content_for_weekly_recommendations(entities):
                 entity["location"],
                 entity["creator"],
                 entity["creatorImageUrl"],
+                entity["category"],
             )
             content.append(
                 {
@@ -558,10 +559,8 @@ def generate_org_card(name, url, thumbnail_url, location, creator, creator_image
     else:
         location_htmlsection = ""
 
-    card = f"""
-        <div style="padding:8px;color: rgba(0, 0, 0, 0.87);line-height:20px;">
-            <a href="{url}" target="_blank" style="color: black; text-decoration: none;">
-              <div style="display:flex;flex-direction:column;height:350px;margin:0px;background-color:rgb(241,241,241);background-size: calc(100% - 1px) 100%;border:1px solid rgba(0,0,0,0.12);border-radius:5px;border-image-repeat:stretch;box-shadow:rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;overflow:hidden;box-sizing:border-box;
+    card = f"""    if category:
+ound-color:rgb(241,241,241);background-size: calc(100% - 1px) 100%;border:1px solid rgba(0,0,0,0.12);border-radius:5px;border-image-repeat:stretch;box-shadow:rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;overflow:hidden;box-sizing:border-box;
               display:grid;grid-template-rows: min-content;transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;padding:0 14px;text-align:center;">
 
                 <div style="display:block;">
@@ -585,7 +584,7 @@ def generate_org_card(name, url, thumbnail_url, location, creator, creator_image
 
 
 def generate_project_card(
-    name, url, thumbnail_url, location, creator, creator_image_url
+    name, url, thumbnail_url, location, creator, creator_image_url, category
 ):
     if creator_image_url:
         creator_image_htmlsection = f"""
@@ -595,7 +594,7 @@ def generate_project_card(
         """
     else:
         creator_image_htmlsection = f"""
-                        <span class="material-icons" style="display:block;flex-basis:40px;font-size:20px;color: #bdbdbd">account_circle</span>
+                        <span class="material-icons" style="display:block;flex-basis:40px;font-size:20px;color: rgba(0, 0, 0, 0.87)">account_circle</span>
         """
 
     if creator:
@@ -613,14 +612,27 @@ def generate_project_card(
         location_htmlsection = f"""
                     <div>
                       <span style="display:inline-flex;text-align:left;align-items:center;">
-                        <span class="material-icons" style="display:block;flex-basis:40px;font-size:20px;color: #bdbdbd">place</span>
-                        <h6 style="margin-top:8px;margin-bottom:8px;display: inline-block;margin-left: 8px;white-space: nowrap;vertical-align: middle;font-weight:500;font-family:open sans;font-size:14px;">{location}
+                        <span class="material-icons" style="display:block;flex-basis:40px;font-size:20px;color: rgba(0, 0, 0, 0.87)">place</span>
+                        <h6 style="margin-top:6px;margin-bottom:6px;display: inline-block;margin-left: 8px;white-space: nowrap;vertical-align: middle;font-weight:500;font-family:open sans;font-size:14px;">{location}
                         </h6>
                       </span>
                     </div>
         """
     else:
         location_htmlsection = ""
+
+    if category:
+        category_htmlsection = f"""
+                    <div>
+                    <span style="display:inline-flex;text-align:left;align-items:center;">
+                        <span class="material-icons" style="display:block;flex-basis:40px;font-size:20px;color: rgba(0, 0, 0, 0.87)">explore</span>
+                        <h6 style="margin-top:6px;margin-bottom:2px;display: inline-block;margin-left: 8px;white-space: nowrap;vertical-align: middle;font-weight:500;font-family:open sans;font-size:14px;">{category}
+                        </h6>
+                    </span>
+                    </div>
+        """
+    else:
+        category_htmlsection = ""
 
     card = f"""<div style="padding:8px;box-sizing:border-box;font-size:14px;font-weight:400;font-family:open sans;line-height:20px;">
             <a href="{url}" target="_blank" style="box-sizing:inherit;color: black; text-decoration: none;">
@@ -636,6 +648,7 @@ def generate_project_card(
                   <div style="box-sizing:inherit;display:block;padding:0px 16px 16px;margin-left:auto;margin-right:auto;">
 {creator_htmlsection}
 {location_htmlsection}
+{category_htmlsection}
                   </div>
                 </div>
               </div>
