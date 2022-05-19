@@ -5,6 +5,7 @@ from django.conf import settings
 from climateconnect_api.models import UserProfile
 from organization.models.project import Project, ProjectParents
 from organization.models.likes import ProjectLike
+from organization.models.tags import ProjectTagging, ProjectTags
 from climateconnect_api.models.language import Language
 from ideas.models.ideas import Idea
 from hubs.models.hub import Hub
@@ -13,6 +14,8 @@ from location.models import Location
 from organization.models.organization import Organization
 from organization.models.members import OrganizationMember
 from climateconnect_api.models.role import Role
+from organization.models.translations import ProjectTranslation, OrganizationTranslation
+from ideas.models.translation import IdeaTranslation
 
 
 class UserFactory(factory.DjangoModelFactory):
@@ -42,9 +45,10 @@ class LocationFactory(factory.DjangoModelFactory):
 class LanguageFactory(factory.DjangoModelFactory):
     class Meta:
         model = Language
+        django_get_or_create = ('language_code',)
 
-    name = factory.Sequence(lambda n: "languagename{}".format(n + 1))
-    language_code = factory.Sequence(lambda n: "{}".format(n + 1))
+    name = "english"
+    language_code = "en"
 
 
 class UserProfileFactory(factory.DjangoModelFactory):
@@ -78,6 +82,13 @@ class HubFactory(factory.DjangoModelFactory):
     segway_text = "This is a segway_text"
     quick_info = "This is a quick_info"
     hub_type = Hub.SECTOR_HUB_TYPE
+    icon =  factory.django.FileField(
+        from_path=(
+            settings.BASE_DIR
+            + "/climateconnect_api/tests/media/"
+            + "project_thumbnail_image.jpeg"
+        )
+    )
 
     # implementation of manytomany field
     @factory.post_generation
@@ -103,6 +114,13 @@ class ProjectStatusFactory(factory.DjangoModelFactory):
     has_start_date = True
 
 
+class ProjectTagsFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = ProjectTags
+
+    name = factory.Sequence(lambda n: "ProjectTag{}".format(n + 1))
+
+
 class ProjectFactory(factory.DjangoModelFactory):
     class Meta:
         model = Project
@@ -118,6 +136,15 @@ class ProjectFactory(factory.DjangoModelFactory):
         )
     )
     short_description = "How can we maximize our chances to fight climate change? Climate Connect web-platform is a tool, free of use, helping all climate actors to gain visibility and collaborate with each other!"
+    language = factory.SubFactory(LanguageFactory)
+
+
+class ProjectTaggingFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = ProjectTagging
+
+    project = factory.SubFactory(ProjectFactory)
+    project_tag = factory.SubFactory(ProjectTagsFactory)
 
 
 class ProjectParentsFactory(factory.DjangoModelFactory):
@@ -150,6 +177,7 @@ class OrganizationFactory(factory.DjangoModelFactory):
             + "org_thumbnail_image.jpeg"
         )
     )
+    language = factory.SubFactory(LanguageFactory)
 
 
 class RoleFactory(factory.DjangoModelFactory):
@@ -184,4 +212,30 @@ class IdeaFactory(factory.DjangoModelFactory):
         )
     )
     user = factory.SubFactory(UserFactory)
+    language = factory.SubFactory(LanguageFactory)
     short_description = "This is a short description!"
+
+
+class ProjectTranslationFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = ProjectTranslation
+
+    name_translation = "translated project_name"
+    short_description_translation = "This is a text in a different language. You cannot understand this language because it is different. Please read the factories.py because you cannot understand this because it is in a different language which you dont understand. This is 249 chars."
+
+
+class OrganizationTranslationFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = OrganizationTranslation
+    
+    name_translation = "translated org_name"
+    short_description_translation = "This is a text in a different language. You cannot understand this language because it is different. Please read the factories.py because you cannot understand this because it is in a different language which you dont understand. This is 249 chars."
+
+
+class IdeaTranslationFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = IdeaTranslation
+
+    name_translation = "translated idea_name"
+    short_description_translation = "This is a text in a different language. You cannot understand this language because it is different. Please read the factories.py because you cannot understand this because it is in a different language which you dont understand. This is 249 chars."
+    

@@ -18,7 +18,6 @@ from climateconnect_api.tasks import (
     fetch_entities_for_weekly_recommendations,
     fetch_user_info_for_weekly_recommendations,
     process_user_info_and_send_weekly_recommendations,
-    fetch_and_create_globals_for_weekly_recommendations,
 )
 
 from django.urls import reverse
@@ -30,6 +29,16 @@ from climateconnect_api.factories import (
     UserFactory,
     UserProfileFactory,
 )
+
+
+from ideas.serializers.idea import IdeaSerializer
+from ideas.models.ideas import Idea
+from climateconnect_api.utility.email_setup import create_global_variables_for_weekly_recommendations
+from organization.serializers.project import ProjectStubSerializer
+from organization.models.project import Project
+import pprint
+
+import json
 
 
 class TestUserLoginView(APITestCase):
@@ -93,6 +102,7 @@ class TestRecommendedEmail(TestCase):
     # this function is called once before any test functions are run; the setUp function is called before every test function
     @classmethod
     def setUpTestData(cls):
+        # ****** languages ******
         english_language = LanguageFactory(
             name="english", native_name="english", language_code="en", currency="$"
         )
@@ -100,13 +110,16 @@ class TestRecommendedEmail(TestCase):
             name="german", native_name="Deutsch", language_code="de", currency="€"
         )
 
+        # ****** locations ******
         cls.location_1 = LocationFactory()
         cls.location_2 = LocationFactory()
         cls.location_3 = LocationFactory()
 
+        # ****** hubs ******
         hub_1 = HubFactory(hub_type=Hub.LOCATION_HUB_TYPE, location=[cls.location_1])
         hub_2 = HubFactory(hub_type=Hub.LOCATION_HUB_TYPE, location=[cls.location_2])
 
+        # ****** UserProfiles ******
         cls.english_user_in_hub_1 = UserProfileFactory(
             language=english_language, location=cls.location_1
         )
@@ -127,34 +140,37 @@ class TestRecommendedEmail(TestCase):
             language=english_language, location=cls.location_1, send_newsletter=False
         )
 
+        # ****** projects ******
         cls.project_in_hub_1_3likes = create_project_test_data(
-            number_of_likes=3, location=cls.location_1, has_parent_organization=True
+            number_of_likes=3, location=cls.location_1, translation_language=german_language, has_parent_organization=True
         )
         cls.project_in_hub_2_2likes = create_project_test_data(
-            number_of_likes=2, location=cls.location_2
+            number_of_likes=2, location=cls.location_2, translation_language=german_language,
         )
         cls.project_in_hub_2_1likes = create_project_test_data(
-            number_of_likes=1, location=cls.location_2, has_parent_organization=True
+            number_of_likes=1, location=cls.location_2, translation_language=german_language, has_parent_organization=True
         )
         cls.project_in_hub_1_1likes = create_project_test_data(
-            number_of_likes=1, location=cls.location_1
+            number_of_likes=1, location=cls.location_1, translation_language=german_language,
         )
         cls.project_outside_of_timespan = create_project_test_data(
-            number_of_likes=5, location=cls.location_1, created_outside_of_timespan=True
+            number_of_likes=5, location=cls.location_1, translation_language=german_language, created_outside_of_timespan=True
         )
         cls.project_no_hub_4likes = create_project_test_data(
-            number_of_likes=4, has_parent_organization=True
+            number_of_likes=4, translation_language=german_language, has_parent_organization=True
         )
-        cls.project_no_hub_0likes = create_project_test_data(number_of_likes=0)
+        cls.project_no_hub_0likes = create_project_test_data(number_of_likes=0, translation_language=german_language,)
 
-        cls.org_in_hub_1 = create_org_test_data(location=cls.location_1)
-        cls.org_in_hub_2 = create_org_test_data(location=cls.location_2)
-        cls.org_no_hub = create_org_test_data()
+        # ****** organizations ******
+        cls.org_in_hub_1 = create_org_test_data(location=cls.location_1, translation_language=german_language)
+        cls.org_in_hub_2 = create_org_test_data(location=cls.location_2, translation_language=german_language)
+        cls.org_no_hub = create_org_test_data(location=cls.location_3, translation_language=german_language)
         cls.org_in_hub_1_outside_of_timespan = create_org_test_data(
             location=cls.location_1, created_outside_of_timespan=True
         )
 
-        cls.idea_in_hub_1 = create_idea_test_data(location=cls.location_1, hub=hub_1)
+        # ****** ideas ******
+        cls.idea_in_hub_1 = create_idea_test_data(location=cls.location_1, hub=hub_1, translation_language=german_language)
         cls.idea_in_hub_2_outside_of_timespan = create_idea_test_data(
             location=cls.location_2, hub=hub_2, created_outside_of_timespan=True
         )
@@ -176,22 +192,22 @@ class TestRecommendedEmail(TestCase):
         result = fetch_entities_for_weekly_recommendations(
             max_entities, timespan_start, self.location_1.id, is_in_hub
         )
-        expected_result = [
-            [self.project_in_hub_1_3likes.id],
-            [self.org_in_hub_1.id],
-            [self.idea_in_hub_1.id],
-        ]
+        expected_result = {
+            "project": [self.project_in_hub_1_3likes.id],
+            "organization": [self.org_in_hub_1.id],
+            "idea": [self.idea_in_hub_1.id],
+        }
         self.assertEqual(result, expected_result)
 
         # fetch entities in hub 2
         result = fetch_entities_for_weekly_recommendations(
             max_entities, timespan_start, self.location_2.id, is_in_hub
         )
-        expected_result = [
-            [self.project_in_hub_2_2likes.id, self.project_in_hub_2_1likes.id],
-            [self.org_in_hub_2.id],
-            [],
-        ]
+        expected_result = {
+            "project": [self.project_in_hub_2_2likes.id, self.project_in_hub_2_1likes.id],
+            "organization": [self.org_in_hub_2.id],
+            "idea": [],
+        }
         self.assertEqual(result, expected_result)
 
         # fetch international entities
@@ -200,11 +216,11 @@ class TestRecommendedEmail(TestCase):
         result = fetch_entities_for_weekly_recommendations(
             max_entities, timespan_start, no_location, is_in_hub
         )
-        expected_result = [
-            [self.project_no_hub_4likes.id, self.project_in_hub_1_3likes.id],
-            [self.org_no_hub.id],
-            [],
-        ]
+        expected_result = {
+            "project": [self.project_no_hub_4likes.id, self.project_in_hub_1_3likes.id],
+            "organization": [self.org_no_hub.id],
+            "idea": [],
+        }
         self.assertEqual(result, expected_result)
 
     def test_user_data(self):
@@ -259,7 +275,7 @@ class TestRecommendedEmail(TestCase):
         """this test will send emails to the mailjet_admin_email adress set in .backend_env"""
         # it sends emails for each hub/international and for each language, so a maximum number of 6 emails
         # to turn email sending on, set sandbox_mode to False
-        sandbox_mode = True
+        sandbox_mode = False
         # to determine how many emails get sent, please set max_emails_sent variable to your desired number
         max_emails_sent = 2
 
@@ -277,15 +293,16 @@ class TestRecommendedEmail(TestCase):
 
             is_in_hub = location_id != 0
 
-            mailjet_global_vars = fetch_and_create_globals_for_weekly_recommendations(
+            entity_ids = fetch_entities_for_weekly_recommendations(
                 max_entities, timespan_start, location_id, is_in_hub
             )
 
-            lang_codes = list(
-                Language.objects.values_list("language_code", flat=True).distinct()
-            )
-            if mailjet_global_vars:
+            if entity_ids:
+                lang_codes = list(
+                    Language.objects.values_list("language_code", flat=True).distinct()
+                )
                 for lang_code in lang_codes:
+                    mailjet_global_vars = create_global_variables_for_weekly_recommendations(entity_ids, lang_code, is_in_hub)
                     if max_emails_sent < 1:
                         break
                     result = process_user_info_and_send_weekly_recommendations(

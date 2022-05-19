@@ -150,11 +150,12 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
         model = Organization
         fields = (
             'id', 'name', 'url_slug', 'thumbnail_image', 'location', 'types', 'short_description', 'members_count',
-            'projects_count'
+            'projects_count', 
         )
     
     def get_name(self, obj):
-        return get_organization_name(obj, get_language())
+        language_code = self.context.get("language_code") if self.context.get("language_code") else get_language()
+        return get_organization_name(obj, language_code)
 
     def get_location(self, obj):
         if obj.location == None:
@@ -162,7 +163,8 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
         return obj.location.name
 
     def get_short_description(self, obj):
-        return get_organization_short_description(obj, get_language())
+        language_code = self.context.get("language_code") if self.context.get("language_code") else get_language()
+        return get_organization_short_description(obj, language_code)
 
     def get_types(self, obj):
         serializer = OrganizationTaggingSerializer(obj.tag_organization, many=True)
