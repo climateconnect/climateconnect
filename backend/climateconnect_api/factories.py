@@ -45,7 +45,7 @@ class LocationFactory(factory.DjangoModelFactory):
 class LanguageFactory(factory.DjangoModelFactory):
     class Meta:
         model = Language
-        django_get_or_create = ('language_code',)
+        django_get_or_create = ("language_code",)
 
     name = "english"
     language_code = "en"
@@ -82,11 +82,9 @@ class HubFactory(factory.DjangoModelFactory):
     segway_text = "This is a segway_text"
     quick_info = "This is a quick_info"
     hub_type = Hub.SECTOR_HUB_TYPE
-    icon =  factory.django.FileField(
+    icon = factory.django.FileField(
         from_path=(
-            settings.BASE_DIR
-            + "/climateconnect_api/tests/media/"
-            + "hub_icon.svg"
+            settings.BASE_DIR + "/climateconnect_api/tests/media/" + "hub_icon.svg"
         )
     )
 
@@ -227,7 +225,7 @@ class ProjectTranslationFactory(factory.DjangoModelFactory):
 class OrganizationTranslationFactory(factory.DjangoModelFactory):
     class Meta:
         model = OrganizationTranslation
-    
+
     name_translation = "translated org_name"
     short_description_translation = "This is a text in a different language. You cannot understand this language because it is different. Please read the factories.py because you cannot understand this because it is in a different language which you dont understand. This is 249 chars."
 
@@ -238,4 +236,3 @@ class IdeaTranslationFactory(factory.DjangoModelFactory):
 
     name_translation = "translated idea_name"
     short_description_translation = "This is a text in a different language. You cannot understand this language because it is different. Please read the factories.py because you cannot understand this because it is in a different language which you dont understand. This is 249 chars."
-    

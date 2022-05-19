@@ -149,7 +149,9 @@ def schedule_weekly_recommendations_email():
 
         is_in_hub = location_id != 0
 
-        entity_ids = fetch_entities_for_weekly_recommendations(max_entities, timespan_start, location_id, is_in_hub)
+        entity_ids = fetch_entities_for_weekly_recommendations(
+            max_entities, timespan_start, location_id, is_in_hub
+        )
 
         # check if there are any new entities otherwise entity_ids will be an empty list
         if entity_ids:
@@ -157,7 +159,11 @@ def schedule_weekly_recommendations_email():
                 location_id, is_in_hub
             )
             for lang_code, user_query_by_language in user_queries_by_language.items():
-                mailjet_global_vars = create_global_variables_for_weekly_recommendations(entity_ids, lang_code, is_in_hub)
+                mailjet_global_vars = (
+                    create_global_variables_for_weekly_recommendations(
+                        entity_ids, lang_code, is_in_hub
+                    )
+                )
                 for i in range(
                     0, len(user_query_by_language), settings.USER_CHUNK_SIZE
                 ):
@@ -200,10 +206,14 @@ def fetch_entities_for_weekly_recommendations(
         )
     # international recommendations
     else:
-        entity_ids["organization"] = list(new_orgs.values_list("id", flat=True)[:max_orgs])
+        entity_ids["organization"] = list(
+            new_orgs.values_list("id", flat=True)[:max_orgs]
+        )
         entity_ids["idea"] = list()
 
-    max_projects = max_entities - (len(entity_ids["organization"]) + len(entity_ids["idea"]))
+    max_projects = max_entities - (
+        len(entity_ids["organization"]) + len(entity_ids["idea"])
+    )
     entity_ids["project"] = list(
         new_projects.annotate(count_likes=Count("project_liked"))
         .order_by("-count_likes")

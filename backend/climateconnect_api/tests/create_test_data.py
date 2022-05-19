@@ -32,7 +32,8 @@ def create_project_test_data(
     # creates a creator for the project
     creator = UserProfileFactory()
     project_parents = ProjectParentsFactory(
-        project=project, parent_user=creator.user,
+        project=project,
+        parent_user=creator.user,
     )
     if has_parent_organization:
         project_parents.parent_organization = OrganizationFactory()
@@ -57,7 +58,12 @@ def create_project_test_data(
     return project
 
 
-def create_org_test_data(location=None, hub=None, translation_language=None, created_outside_of_timespan=False):
+def create_org_test_data(
+    location=None,
+    hub=None,
+    translation_language=None,
+    created_outside_of_timespan=False,
+):
     # changes the creation date to 8 days ago, so it should be filtered out
     outside_of_timespan = timezone.now() - timedelta(days=8)
 
@@ -79,7 +85,9 @@ def create_org_test_data(location=None, hub=None, translation_language=None, cre
     return org
 
 
-def create_idea_test_data(location, hub, translation_language=None, created_outside_of_timespan=False):
+def create_idea_test_data(
+    location, hub, translation_language=None, created_outside_of_timespan=False
+):
     # changes the creation date to 8 days ago, so it should be filtered out
     outside_of_timespan = timezone.now() - timedelta(days=8)
 
@@ -95,7 +103,7 @@ def create_idea_test_data(location, hub, translation_language=None, created_outs
     if created_outside_of_timespan:
         idea.created_at = outside_of_timespan
     if translation_language:
-        IdeaTranslationFactory(idea=idea,language=translation_language)
+        IdeaTranslationFactory(idea=idea, language=translation_language)
 
     idea.save()
     return idea

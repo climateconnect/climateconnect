@@ -277,58 +277,78 @@ def remove_contact_from_list(contact_id, list_id):
 
 def create_global_variables_for_weekly_recommendations(
     entity_ids: dict,
-    lang_code: str, 
+    lang_code: str,
     is_in_hub: bool = False,
 ):
-    """This function creates all global variables for mailjet that contain the information about all shown content, 
+    """This function creates all global variables for mailjet that contain the information about all shown content,
     namely the projects, organizations or ideas"""
     content = []
 
     projects = Project.objects.filter(id__in=entity_ids["project"])
-    project_serializer = ProjectStubSerializer(projects, many=True, context={"language_code": lang_code})
+    project_serializer = ProjectStubSerializer(
+        projects, many=True, context={"language_code": lang_code}
+    )
 
     for entity in project_serializer.data:
         content.append(generate_project_mailjet_vars(entity, is_in_hub))
 
     organizations = Organization.objects.filter(id__in=entity_ids["organization"])
-    org_serializer = OrganizationCardSerializer(organizations, many=True, context={'language_code': lang_code})
+    org_serializer = OrganizationCardSerializer(
+        organizations, many=True, context={"language_code": lang_code}
+    )
     for entity in org_serializer.data:
         content.append(generate_org_mailjet_vars(entity, is_in_hub))
 
     ideas = Idea.objects.filter(id__in=entity_ids["idea"])
-    idea_serializer = IdeaSerializer(ideas, many=True, context={'language_code': lang_code})
+    idea_serializer = IdeaSerializer(
+        ideas, many=True, context={"language_code": lang_code}
+    )
     for entity in idea_serializer.data:
         content.append(generate_idea_mailjet_vars(entity))
 
     return content
-    
-def generate_project_mailjet_vars(entity : dict, is_in_hub : bool):
+
+
+def generate_project_mailjet_vars(entity: dict, is_in_hub: bool):
     """This function creates all global variables for mailjet for a project"""
     main_page = "https://climateconnect.earth"
-    url = (settings.FRONTEND_URL + "/projects/" + entity["url_slug"]) if entity["url_slug"] else main_page
+    url = (
+        (settings.FRONTEND_URL + "/projects/" + entity["url_slug"])
+        if entity["url_slug"]
+        else main_page
+    )
     image_url = (settings.BACKEND_URL + entity["image"]) if entity["image"] else ""
     location = entity["location"] if not is_in_hub else ""
     for parent in entity["project_parents"]:
         if parent["parent_organization"]:
             creator = parent["parent_organization"]["name"]
             if parent["parent_organization"]["thumbnail_image"]:
-                creator_image =  settings.BACKEND_URL + parent["parent_organization"]["thumbnail_image"]
+                creator_image = (
+                    settings.BACKEND_URL
+                    + parent["parent_organization"]["thumbnail_image"]
+                )
             else:
                 creator_image = ""
         elif parent["parent_user"]:
-            creator = parent["parent_user"]["first_name"] + " " + parent["parent_user"]["last_name"]
+            creator = (
+                parent["parent_user"]["first_name"]
+                + " "
+                + parent["parent_user"]["last_name"]
+            )
             if parent["parent_user"]["thumbnail_image"]:
-                creator_image =  settings.BACKEND_URL + parent["parent_user"]["thumbnail_image"]
+                creator_image = (
+                    settings.BACKEND_URL + parent["parent_user"]["thumbnail_image"]
+                )
             else:
                 creator_image = ""
         else:
-            creator =""
+            creator = ""
             creator_image = ""
     if entity["tags"]:
         category = entity["tags"][0]["project_tag"]["name"]
     else:
         category = ""
-    
+
     card = generate_project_card(
         entity["name"],
         url,
@@ -339,19 +359,28 @@ def generate_project_mailjet_vars(entity : dict, is_in_hub : bool):
         category,
     )
     return {
-            "card": card,
-            "shortDescription": entity["short_description"],
-            "url": url,
-            "type": "organization",
-        }
+        "card": card,
+        "shortDescription": entity["short_description"],
+        "url": url,
+        "type": "organization",
+    }
+
 
 def generate_org_mailjet_vars(entity: dict, is_in_hub: bool):
     """This function creates all global variables for mailjet for an organization"""
     main_page = "https://climateconnect.earth"
-    url = (settings.FRONTEND_URL + "/organizations/" + entity["url_slug"]) if entity["url_slug"] else main_page
-    image_url = (settings.BACKEND_URL + entity["thumbnail_image"]) if entity["thumbnail_image"] else ""
+    url = (
+        (settings.FRONTEND_URL + "/organizations/" + entity["url_slug"])
+        if entity["url_slug"]
+        else main_page
+    )
+    image_url = (
+        (settings.BACKEND_URL + entity["thumbnail_image"])
+        if entity["thumbnail_image"]
+        else ""
+    )
     location = entity["location"] if not is_in_hub else ""
-    
+
     org_creators = OrganizationMember.objects.filter(
         organization__id=entity["id"], role__role_type=2
     ).values_list(
@@ -364,9 +393,7 @@ def generate_org_mailjet_vars(entity: dict, is_in_hub: bool):
     # only one creator possible but the query needs to be iterated through
     for org_creator in org_creators:
         creator += org_creator[0] + " " + org_creator[1]
-        creator_image = (
-            settings.BACKEND_URL + org_creator[2] if org_creator[2] else ""
-        )
+        creator_image = settings.BACKEND_URL + org_creator[2] if org_creator[2] else ""
 
     card = generate_org_card(
         entity["name"],
@@ -379,21 +406,41 @@ def generate_org_mailjet_vars(entity: dict, is_in_hub: bool):
         str(entity["projects_count"]),
     )
     return {
-            "card": card,
-            "shortDescription": entity["short_description"],
-            "url": url,
-            "type": "organization",
-        }
+        "card": card,
+        "shortDescription": entity["short_description"],
+        "url": url,
+        "type": "organization",
+    }
+
 
 def generate_idea_mailjet_vars(entity: dict):
     """This function creates all global variables for mailjet for an idea"""
     # url for ideas: URL/hubs/<hubUrl>?idea=<url_slug>#ideas
-    url = settings.FRONTEND_URL + "/hubs/" + entity["hub_shared_in"]["url_slug"] + "?idea=" + entity["url_slug"] + "#ideas"
-    image_url = (settings.BACKEND_URL + entity["thumbnail_image"]) if entity["thumbnail_image"] else ""
-    creator = entity["user"]["first_name"] + " " + entity["user"]["last_name"] if entity["user"] else ""
-    creator_image = settings.BACKEND_URL + entity["user"]["image"] if entity["user"]["image"] else ""
+    url = (
+        settings.FRONTEND_URL
+        + "/hubs/"
+        + entity["hub_shared_in"]["url_slug"]
+        + "?idea="
+        + entity["url_slug"]
+        + "#ideas"
+    )
+    image_url = (
+        (settings.BACKEND_URL + entity["thumbnail_image"])
+        if entity["thumbnail_image"]
+        else ""
+    )
+    creator = (
+        entity["user"]["first_name"] + " " + entity["user"]["last_name"]
+        if entity["user"]
+        else ""
+    )
+    creator_image = (
+        settings.BACKEND_URL + entity["user"]["image"]
+        if entity["user"]["image"]
+        else ""
+    )
     hub_icon = settings.BACKEND_URL + entity["hub_shared_in"]["icon"]
-    
+
     card = generate_idea_card(
         entity["name"],
         url,
@@ -403,11 +450,11 @@ def generate_idea_mailjet_vars(entity: dict):
         hub_icon,
     )
     return {
-            "card": card,
-            "shortDescription": entity["short_description"],
-            "url": url,
-            "type": "idea",
-        }
+        "card": card,
+        "shortDescription": entity["short_description"],
+        "url": url,
+        "type": "idea",
+    }
 
 
 def generate_project_card(
@@ -488,7 +535,16 @@ def generate_project_card(
     return card
 
 
-def generate_org_card(name, url, thumbnail_url, location, creator, creator_image_url, members_count, projects_count):
+def generate_org_card(
+    name,
+    url,
+    thumbnail_url,
+    location,
+    creator,
+    creator_image_url,
+    members_count,
+    projects_count,
+):
     """This function creates the html code for an organization card that gets copied into the mailjet email for weekly recommendatin newsletter"""
     if creator_image_url:
         creator_image_htmlsection = f"""
@@ -510,7 +566,7 @@ def generate_org_card(name, url, thumbnail_url, location, creator, creator_image
                     </span>
                   </div>
         """
-    else: 
+    else:
         creator_htmlsection = ""
 
     if location:
