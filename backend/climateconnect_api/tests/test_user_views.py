@@ -33,7 +33,9 @@ from climateconnect_api.factories import (
 
 from ideas.serializers.idea import IdeaSerializer
 from ideas.models.ideas import Idea
-from climateconnect_api.utility.email_setup import create_global_variables_for_weekly_recommendations
+from climateconnect_api.utility.email_setup import (
+    create_global_variables_for_weekly_recommendations,
+)
 from organization.serializers.project import ProjectStubSerializer
 from organization.models.project import Project
 import pprint
@@ -142,35 +144,61 @@ class TestRecommendedEmail(TestCase):
 
         # ****** projects ******
         cls.project_in_hub_1_3likes = create_project_test_data(
-            number_of_likes=3, location=cls.location_1, translation_language=german_language, has_parent_organization=True
+            number_of_likes=3,
+            location=cls.location_1,
+            translation_language=german_language,
+            has_parent_organization=True,
         )
         cls.project_in_hub_2_2likes = create_project_test_data(
-            number_of_likes=2, location=cls.location_2, translation_language=german_language,
+            number_of_likes=2,
+            location=cls.location_2,
+            translation_language=german_language,
         )
         cls.project_in_hub_2_1likes = create_project_test_data(
-            number_of_likes=1, location=cls.location_2, translation_language=german_language, has_parent_organization=True
+            number_of_likes=1,
+            location=cls.location_2,
+            translation_language=german_language,
+            has_parent_organization=True,
         )
         cls.project_in_hub_1_1likes = create_project_test_data(
-            number_of_likes=1, location=cls.location_1, translation_language=german_language,
+            number_of_likes=1,
+            location=cls.location_1,
+            translation_language=german_language,
         )
         cls.project_outside_of_timespan = create_project_test_data(
-            number_of_likes=5, location=cls.location_1, translation_language=german_language, created_outside_of_timespan=True
+            number_of_likes=5,
+            location=cls.location_1,
+            translation_language=german_language,
+            created_outside_of_timespan=True,
         )
         cls.project_no_hub_4likes = create_project_test_data(
-            number_of_likes=4, translation_language=german_language, has_parent_organization=True
+            number_of_likes=4,
+            translation_language=german_language,
+            has_parent_organization=True,
         )
-        cls.project_no_hub_0likes = create_project_test_data(number_of_likes=0, translation_language=german_language,)
+        cls.project_no_hub_0likes = create_project_test_data(
+            number_of_likes=0,
+            translation_language=german_language,
+        )
 
         # ****** organizations ******
-        cls.org_in_hub_1 = create_org_test_data(location=cls.location_1, translation_language=german_language)
-        cls.org_in_hub_2 = create_org_test_data(location=cls.location_2, translation_language=german_language)
-        cls.org_no_hub = create_org_test_data(location=cls.location_3, translation_language=german_language)
+        cls.org_in_hub_1 = create_org_test_data(
+            location=cls.location_1, translation_language=german_language
+        )
+        cls.org_in_hub_2 = create_org_test_data(
+            location=cls.location_2, translation_language=german_language
+        )
+        cls.org_no_hub = create_org_test_data(
+            location=cls.location_3, translation_language=german_language
+        )
         cls.org_in_hub_1_outside_of_timespan = create_org_test_data(
             location=cls.location_1, created_outside_of_timespan=True
         )
 
         # ****** ideas ******
-        cls.idea_in_hub_1 = create_idea_test_data(location=cls.location_1, hub=hub_1, translation_language=german_language)
+        cls.idea_in_hub_1 = create_idea_test_data(
+            location=cls.location_1, hub=hub_1, translation_language=german_language
+        )
         cls.idea_in_hub_2_outside_of_timespan = create_idea_test_data(
             location=cls.location_2, hub=hub_2, created_outside_of_timespan=True
         )
@@ -205,7 +233,10 @@ class TestRecommendedEmail(TestCase):
             max_entities, timespan_start, self.location_2.id, is_in_hub
         )
         expected_result = {
-            "project": [self.project_in_hub_2_2likes.id, self.project_in_hub_2_1likes.id],
+            "project": [
+                self.project_in_hub_2_2likes.id,
+                self.project_in_hub_2_1likes.id,
+            ],
             "organization": [self.org_in_hub_2.id],
             "idea": [],
         }
@@ -302,7 +333,11 @@ class TestRecommendedEmail(TestCase):
                     Language.objects.values_list("language_code", flat=True).distinct()
                 )
                 for lang_code in lang_codes:
-                    mailjet_global_vars = create_global_variables_for_weekly_recommendations(entity_ids, lang_code, is_in_hub)
+                    mailjet_global_vars = (
+                        create_global_variables_for_weekly_recommendations(
+                            entity_ids, lang_code, is_in_hub
+                        )
+                    )
                     if max_emails_sent < 1:
                         break
                     result = process_user_info_and_send_weekly_recommendations(
