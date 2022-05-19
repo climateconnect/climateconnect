@@ -86,7 +86,7 @@ class HubFactory(factory.DjangoModelFactory):
         from_path=(
             settings.BASE_DIR
             + "/climateconnect_api/tests/media/"
-            + "project_thumbnail_image.jpeg"
+            + "hub_icon.svg"
         )
     )
 

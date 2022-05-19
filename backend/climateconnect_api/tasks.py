@@ -32,6 +32,7 @@ logger = logging.getLogger(__name__)
 
 @app.task
 def schedule_weekly_recommendations_email():
+    """This function acts as the main function for weekly recommendation emails. It handles the main control flow, gathers all necessary information and hands it over to (async) celery workers to send the emails. It is called by the celery scheduler every week"""
     max_entities = 3
     timespan_start = timezone.now() - timedelta(days=7)
 
@@ -48,13 +49,13 @@ def schedule_weekly_recommendations_email():
 
         entity_ids = fetch_entities_for_weekly_recommendations(max_entities, timespan_start, location_id, is_in_hub)
 
-        # check if there are any new entities otherwise mailjet_global_vars will be an empty list
+        # check if there are any new entities otherwise entity_ids will be an empty list
         if entity_ids:
             user_queries_by_language = fetch_user_info_for_weekly_recommendations(
                 location_id, is_in_hub
             )
             for lang_code, user_query_by_language in user_queries_by_language.items():
-                global_vars = create_global_variables_for_weekly_recommendations(entity_ids, lang_code, is_in_hub)
+                mailjet_global_vars = create_global_variables_for_weekly_recommendations(entity_ids, lang_code, is_in_hub)
                 for i in range(
                     0, len(user_query_by_language), settings.USER_CHUNK_SIZE
                 ):
@@ -62,15 +63,16 @@ def schedule_weekly_recommendations_email():
                         user_query_by_language[i : i + settings.USER_CHUNK_SIZE]
                     )
                     # maybe apply_async here?
-                    # process_user_info_and_send_weekly_recommendations.apply_async((chunked_user_info, mailjet_global_vars, lang_code, is_in_hub))
+                    # process_user_info_and_send_weekly_recommendations.apply_async((user_ids, mailjet_global_vars, lang_code, is_in_hub))
                     process_user_info_and_send_weekly_recommendations(
-                        user_ids, global_vars, lang_code, is_in_hub
+                        user_ids, mailjet_global_vars, lang_code, is_in_hub
                     )
 
 
 def fetch_entities_for_weekly_recommendations(
     max_entities, timespan_start, location_id, is_in_hub
 ):
+    """This function gathers the correct project, organization or idea ids based on location hub aswell as for international newsletter. Output is a dictionary with the type of entity as key (project, organization or idea) and a list of IDs as value."""
     entity_ids = {}
 
     new_projects = Project.objects.filter(created_at__gt=timespan_start)
@@ -110,6 +112,7 @@ def fetch_entities_for_weekly_recommendations(
 
 
 def fetch_user_info_for_weekly_recommendations(location_id: int, is_in_hub: bool):
+    """This function gathers the correct user ids as queries based on location and sorts them based on their language"""
     user_queries_by_language = {}
 
     user_query = UserProfile.objects.filter(send_newsletter=True).values_list(
@@ -135,7 +138,7 @@ def fetch_user_info_for_weekly_recommendations(location_id: int, is_in_hub: bool
             user_query_by_language = user_query_by_language.filter(
                 language__id=language_id
             )
-
+        # user queries get stored as values in a dictionary with the language code as keys
         user_queries_by_language[lang_code] = user_query_by_language
     return user_queries_by_language
 
@@ -145,14 +148,14 @@ def process_user_info_and_send_weekly_recommendations(
     chunked_user_user_query_by_language,
     mailjet_global_vars,
     lang_code,
-    isInHub,
-    sandbox_mode=False,
+    is_in_hub,
 ):
+    """This function fetches user information for batch processing and hands all information fetched from the database over to the email sending function"""
     messages = create_messages_for_weekly_recommendations(
         chunked_user_user_query_by_language
     )
     return send_weekly_recommendations_email(
-        messages, mailjet_global_vars, lang_code, isInHub, sandbox_mode
+        messages, mailjet_global_vars, lang_code, is_in_hub
     )
 
 
