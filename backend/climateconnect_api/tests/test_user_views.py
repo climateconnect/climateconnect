@@ -184,6 +184,7 @@ class TestRecommendedEmail(TestCase):
         )
 
     def test_entities(self):
+        """This function tests the function fetch_entities_for_weekly_recommendations()"""
         max_entities = 3
         timespan_start = timezone.now() - timedelta(days=7)
         is_in_hub = True
@@ -224,8 +225,7 @@ class TestRecommendedEmail(TestCase):
         self.assertEqual(result, expected_result)
 
     def test_user_data(self):
-        """tests if the users_ids are generated correctly"""
-
+        """This function tests fetch_user_info_for_weekly_recommendations()"""
         # for hub_1
         result = {}
         is_in_hub = True
@@ -272,7 +272,7 @@ class TestRecommendedEmail(TestCase):
         self.assertCountEqual(result, expected_result)
 
     def test_send_email(self):
-        """this test will send emails to the mailjet_admin_email adress set in .backend_env"""
+        """This function mimics the function schedule_weekly_recommendations_email() in climateconnect_api.tasks.py and sends emails to the mailjet_admin_email adress set in .backend_env if variable sandbox_mode is set"""
         # it sends emails for each hub/international and for each language, so a maximum number of 6 emails
         # to turn email sending on, set sandbox_mode to False
         sandbox_mode = False
