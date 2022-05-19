@@ -118,10 +118,12 @@ class IdeaSerializer(serializers.ModelSerializer):
         )
 
     def get_name(self, obj):
-        return get_idea_name(obj, get_language())
+        language_code = self.context.get("language_code") if self.context.get("language_code") else get_language()
+        return get_idea_name(obj, language_code)
 
     def get_short_description(self, obj):
-        return get_idea_short_description(obj, get_language())
+        language_code = self.context.get("language_code") if self.context.get("language_code") else get_language()
+        return get_idea_short_description(obj, language_code)
 
     def get_hub_image(self, obj):
         if obj.hub and obj.hub.icon:

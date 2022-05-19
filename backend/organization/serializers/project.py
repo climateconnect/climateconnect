@@ -235,10 +235,12 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         )
 
     def get_name(self, obj):
-        return get_project_name(obj, get_language())
+        language_code = self.context.get("language_code") if self.context.get("language_code") else get_language()
+        return get_project_name(obj, language_code) 
 
     def get_short_description(self, obj):
-        return get_project_short_description(obj, get_language())
+        language_code = self.context.get("language_code") if self.context.get("language_code") else get_language()
+        return get_project_short_description(obj, language_code) 
 
     def get_project_parents(self, obj):
         parent = obj.project_parent.first()

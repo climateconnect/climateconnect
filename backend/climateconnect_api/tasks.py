@@ -148,16 +148,15 @@ def schedule_weekly_recommendations_email():
 
         is_in_hub = location_id != 0
 
-        mailjet_global_vars = fetch_and_create_globals_for_weekly_recommendations(
-            max_entities, timespan_start, location_id, is_in_hub
-        )
-        user_queries_by_language = fetch_user_info_for_weekly_recommendations(
-            location_id, is_in_hub
-        )
+        entity_ids = fetch_entities_for_weekly_recommendations(max_entities, timespan_start, location_id, is_in_hub)
 
         # check if there are any new entities otherwise mailjet_global_vars will be an empty list
-        if mailjet_global_vars:
+        if entity_ids:
+            user_queries_by_language = fetch_user_info_for_weekly_recommendations(
+                location_id, is_in_hub
+            )
             for lang_code, user_query_by_language in user_queries_by_language.items():
+                global_vars = create_global_variables_for_weekly_recommendations(entity_ids, lang_code, is_in_hub)
                 for i in range(
                     0, len(user_query_by_language), settings.USER_CHUNK_SIZE
                 ):
@@ -167,25 +166,15 @@ def schedule_weekly_recommendations_email():
                     # maybe apply_async here?
                     # process_user_info_and_send_weekly_recommendations.apply_async((chunked_user_info, mailjet_global_vars, lang_code, is_in_hub))
                     process_user_info_and_send_weekly_recommendations(
-                        user_ids, mailjet_global_vars, lang_code, is_in_hub
+                        user_ids, global_vars, lang_code, is_in_hub
                     )
-
-
-def fetch_and_create_globals_for_weekly_recommendations(
-    max_entities, timespan_start, location_id, is_in_hub
-):
-    [project_ids, org_ids, idea_ids] = fetch_entities_for_weekly_recommendations(
-        max_entities, timespan_start, location_id, is_in_hub
-    )
-    mailjet_global_vars = create_global_variables_for_weekly_recommendations(
-        project_ids, org_ids, idea_ids, is_in_hub
-    )
-    return mailjet_global_vars
 
 
 def fetch_entities_for_weekly_recommendations(
     max_entities, timespan_start, location_id, is_in_hub
 ):
+    entity_ids = {}
+
     new_projects = Project.objects.filter(created_at__gt=timespan_start)
     new_orgs = Organization.objects.filter(created_at__gt=timespan_start)
 
@@ -195,31 +184,31 @@ def fetch_entities_for_weekly_recommendations(
     # recommendations for hubs
     if is_in_hub and location_id:
         new_projects = new_projects.filter(loc__id=location_id)
-        org_ids = list(
+        entity_ids["organization"] = list(
             new_orgs.filter(location__id=location_id).values_list("id", flat=True)[
                 :max_orgs
             ]
         )
         # safeguard to have consistent behaviour when changing max_entities
-        max_ideas = 1 if (max_entities - len(org_ids)) >= 1 else 0
-        idea_ids = list(
+        max_ideas = 1 if (max_entities - len(entity_ids["organization"])) >= 1 else 0
+        entity_ids["idea"] = list(
             Idea.objects.filter(
                 created_at__gt=timespan_start, hub_shared_in__location__id=location_id
             ).values_list("id", flat=True)[:max_ideas]
         )
     # international recommendations
     else:
-        org_ids = list(new_orgs.values_list("id", flat=True)[:max_orgs])
-        idea_ids = list()
+        entity_ids["organization"] = list(new_orgs.values_list("id", flat=True)[:max_orgs])
+        entity_ids["idea"] = list()
 
-    max_projects = max_entities - (len(org_ids) + len(idea_ids))
-    project_ids = list(
+    max_projects = max_entities - (len(entity_ids["organization"]) + len(entity_ids["idea"]))
+    entity_ids["project"] = list(
         new_projects.annotate(count_likes=Count("project_liked"))
         .order_by("-count_likes")
         .values_list("id", flat=True)[:max_projects]
     )
 
-    return [project_ids, org_ids, idea_ids]
+    return entity_ids
 
 
 def fetch_user_info_for_weekly_recommendations(location_id: int, is_in_hub: bool):

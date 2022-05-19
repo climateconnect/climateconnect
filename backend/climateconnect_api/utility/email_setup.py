@@ -18,6 +18,9 @@ from organization.models.project import Project
 from organization.models.organization import Organization
 from organization.models.members import OrganizationMember
 from ideas.models.ideas import Idea
+from organization.serializers.project import ProjectStubSerializer
+from organization.serializers.organization import OrganizationCardSerializer
+from ideas.serializers.idea import IdeaSerializer
 from django.conf import settings
 from climateconnect_api.models import UserProfile
 from climateconnect_api.models.notification import EmailNotification, UserNotification
@@ -273,136 +276,268 @@ def remove_contact_from_list(contact_id, list_id):
 
 
 def create_global_variables_for_weekly_recommendations(
-    project_ids: List = [],
-    organization_ids: List = [],
-    idea_ids: List = [],
+    entity_ids: dict,
+    lang_code: str, 
     is_in_hub: bool = False,
-) -> List:
+):
+    content = []
+
+    projects = Project.objects.filter(id__in=entity_ids["project"])
+    project_serializer = ProjectStubSerializer(projects, many=True, context={"language_code": lang_code})
+
+    for entity in project_serializer.data:
+        content.append(generate_project_mailjet_vars(entity, is_in_hub))
+
+    organizations = Organization.objects.filter(id__in=entity_ids["organization"])
+    org_serializer = OrganizationCardSerializer(organizations, many=True, context={'language_code': lang_code})
+    for entity in org_serializer.data:
+        content.append(generate_org_mailjet_vars(entity, is_in_hub))
+
+    ideas = Idea.objects.filter(id__in=entity_ids["idea"])
+    idea_serializer = IdeaSerializer(ideas, many=True, context={'language_code': lang_code})
+    for entity in idea_serializer.data:
+        content.append(generate_idea_mailjet_vars(entity))
+
+    return content
+    
+def generate_project_mailjet_vars(entity : dict, is_in_hub : bool):
     main_page = "https://climateconnect.earth"
-    entities = []
-
-    projects = Project.objects.filter(id__in=project_ids).values_list(
-        "name",
-        "thumbnail_image",
-        "url_slug",
-        "loc__name",
-        "project_parent__parent_user__first_name",
-        "project_parent__parent_user__last_name",
-        "project_parent__parent_user__user_profile__thumbnail_image",
-        "project_parent__parent_organization__name",
-        "project_parent__parent_organization__thumbnail_image",
-        "short_description",
-    )
-    for project in projects:
-        if project[7]:
-            creator = project[7]
-            creator_image_url = settings.BACKEND_URL + project[8] if project[8] else ""
-        elif project[4] and project[5]:
-            creator = project[4] + " " + project[5]
-            creator_image_url = (
-                settings.BACKEND_URL + "/" + project[6] if project[6] else ""
-            )
+    url = (settings.FRONTEND_URL + "/projects/" + entity["url_slug"]) if entity["url_slug"] else main_page
+    image_url = (settings.BACKEND_URL + entity["image"]) if entity["image"] else ""
+    location = entity["location"] if not is_in_hub else ""
+    for parent in entity["project_parents"]:
+        if parent["parent_organization"]:
+            creator = parent["parent_organization"]["name"]
+            if parent["parent_organization"]["thumbnail_image"]:
+                creator_image =  settings.BACKEND_URL + parent["parent_organization"]["thumbnail_image"]
+            else:
+                creator_image = ""
+        elif parent["parent_user"]:
+            creator = parent["parent_user"]["first_name"] + " " + parent["parent_user"]["last_name"]
+            if parent["parent_user"]["thumbnail_image"]:
+                creator_image =  settings.BACKEND_URL + parent["parent_user"]["thumbnail_image"]
+            else:
+                creator_image = ""
         else:
-            creator = ""
-            creator_image_url = ""
-
-        project_template = {
-            "type": "project",
-            "name": project[0],
-            "imageUrl": (settings.BACKEND_URL + project[1])
-            if project[1]
-            else main_page,
-            "url": (settings.FRONTEND_URL + "/projects/" + project[2])
-            if project[2]
-            else main_page,
-            "location": project[3] if project[3] and not is_in_hub else "",
-            "creator": creator,
-            "creatorImageUrl": creator_image_url,
-            "category": "",
-            "shortDescription": project[9] if project[9] else "",
-        }
-        entities.append(project_template)
-
-    organizations = Organization.objects.filter(id__in=organization_ids).values_list(
-        "name",
-        "thumbnail_image",
-        "url_slug",
-        "location__name",
-        "id",
-        "short_description",
+            creator =""
+            creator_image = ""
+    if entity["tags"]:
+        category = entity["tags"][0]["project_tag"]["name"]
+    else:
+        category = ""
+    
+    card = generate_project_card(
+        entity["name"],
+        url,
+        image_url,
+        location,
+        creator,
+        creator_image,
+        category,
     )
-    for organization in organizations:
-        org_creators = OrganizationMember.objects.filter(
-            organization__id=organization[4], role__role_type=2
-        ).values_list(
-            "user__first_name",
-            "user__last_name",
-            "user__user_profile__thumbnail_image",
-        )
-        creator = ""
-        # only one creator possible but the query needs to be iterated through
-        for org_creator in org_creators:
-            creator += org_creator[0] + " " + org_creator[1]
-            creator_image_url = (
-                settings.BACKEND_URL + "/" + org_creator[2] if org_creator[2] else ""
-            )
-
-        organization_template = {
+    return {
+            "card": card,
+            "shortDescription": entity["short_description"],
+            "url": url,
             "type": "organization",
-            "name": organization[0],
-            "imageUrl": (settings.BACKEND_URL + organization[1])
-            if organization[1]
-            else "",
-            "url": (settings.FRONTEND_URL + "/organizations/" + organization[2])
-            if organization[2]
-            else main_page,
-            "location": organization[3] if organization[3] and not is_in_hub else "",
-            "creator": creator,
-            "creatorImageUrl": creator_image_url,
-            "tags": "",
-            "shortDescription": organization[5] if organization[5] else "",
         }
-        entities.append(organization_template)
 
-    ideas = Idea.objects.filter(id__in=idea_ids).values_list(
-        "name",
-        "thumbnail_image",
-        "url_slug",
-        "hub__url_slug",
-        "location__name",
+def generate_org_mailjet_vars(entity: dict, is_in_hub: bool):
+    main_page = "https://climateconnect.earth"
+    url = (settings.FRONTEND_URL + "/organizations/" + entity["url_slug"]) if entity["url_slug"] else main_page
+    image_url = (settings.BACKEND_URL + entity["thumbnail_image"]) if entity["thumbnail_image"] else ""
+    location = entity["location"] if not is_in_hub else ""
+    
+    org_creators = OrganizationMember.objects.filter(
+        organization__id=entity["id"], role__role_type=2
+    ).values_list(
         "user__first_name",
         "user__last_name",
         "user__user_profile__thumbnail_image",
-        "short_description",
     )
-    for idea in ideas:
-        idea_template = {
-            "type": "idea",
-            "name": idea[0],
-            "imageUrl": (settings.BACKEND_URL + idea[1]) if idea[1] else "",
-            # url for ideas: URL/hubs/<hubUrl>?idea=<slug>#ideas
-            "url": (
-                settings.FRONTEND_URL
-                + "/hubs/"
-                + idea[3]
-                + "?idea="
-                + idea[2]
-                + "#ideas"
-            )
-            if (idea[2] and idea[3])
-            else main_page,
-            "location": idea[4] if idea[4] and not is_in_hub else "",
-            "creator": idea[5] + " " + idea[6] if idea[5] and idea[6] else "",
-            "creatorImageUrl": (settings.BACKEND_URL + "/" + idea[7])
-            if idea[7]
-            else "",
-            "tags": "",
-            "shortDescription": idea[8] if idea[8] else "",
+    creator = ""
+    creator_image = ""
+    # only one creator possible but the query needs to be iterated through
+    for org_creator in org_creators:
+        creator += org_creator[0] + " " + org_creator[1]
+        creator_image = (
+            settings.BACKEND_URL + org_creator[2] if org_creator[2] else ""
+        )
+
+    card = generate_org_card(
+        entity["name"],
+        url,
+        image_url,
+        location,
+        creator,
+        creator_image,
+        str(entity["members_count"]),
+        str(entity["projects_count"]),
+    )
+    return {
+            "card": card,
+            "shortDescription": entity["short_description"],
+            "url": url,
+            "type": "organization",
         }
-        entities.append(idea_template)
 
-    return entities
+def generate_idea_mailjet_vars(entity: dict):
+    # url for ideas: URL/hubs/<hubUrl>?idea=<slug>#ideas
+    url = settings.FRONTEND_URL + "/hubs/" + entity["hub_shared_in"]["url_slug"] + "?idea=" + entity["url_slug"] + "#ideas"
+    image_url = (settings.BACKEND_URL + entity["thumbnail_image"]) if entity["thumbnail_image"] else ""
+    creator = entity["user"]["first_name"] + " " + entity["user"]["last_name"] if entity["user"] else ""
+    creator_image = settings.BACKEND_URL + entity["user"]["image"] if entity["user"]["image"] else ""
+    hub_icon = entity["hub_shared_in"]["icon"]
+    print(hub_icon)
+    
+    card = generate_idea_card(
+        entity["name"],
+        url,
+        image_url,
+        creator,
+        creator_image,
+        hub_icon,
+    )
+    return {
+            "card": card,
+            "shortDescription": entity["short_description"],
+            "url": url,
+            "type": "idea",
+        }
+    
 
+# # deprecated 
+# def create_global_variables_for_weekly_recommendations_NUMBA2(
+#     project_ids: List = [],
+#     organization_ids: List = [],
+#     idea_ids: List = [],
+#     is_in_hub: bool = False,
+# ) -> List:
+#     main_page = "https://climateconnect.earth"
+#     entities = []
+
+#     projects = Project.objects.filter(id__in=project_ids).values_list(
+#         "name",
+#         "thumbnail_image",
+#         "url_slug",
+#         "loc__name",
+#         "project_parent__parent_user__first_name",
+#         "project_parent__parent_user__last_name",
+#         "project_parent__parent_user__user_profile__thumbnail_image",
+#         "project_parent__parent_organization__name",
+#         "project_parent__parent_organization__thumbnail_image",
+#         "short_description",
+#     )
+#     for project in projects:
+#         if project[7]:
+#             creator = project[7]
+#             creator_image_url = settings.BACKEND_URL + project[8] if project[8] else ""
+#         elif project[4] and project[5]:
+#             creator = project[4] + " " + project[5]
+#             creator_image_url = (
+#                 settings.BACKEND_URL + "/" + project[6] if project[6] else ""
+#             )
+#         else:
+#             creator = ""
+#             creator_image_url = ""
+
+#         project_template = {
+#             "type": "project",
+#             "name": project[0],
+#             "imageUrl": (settings.BACKEND_URL + project[1])
+#             if project[1]
+#             else main_page,
+#             "url": (settings.FRONTEND_URL + "/projects/" + project[2])
+#             if project[2]
+#             else main_page,
+#             "location": project[3] if project[3] and not is_in_hub else "",
+#             "creator": creator,
+#             "creatorImageUrl": creator_image_url,
+#             "category": "",
+#             "shortDescription": project[9] if project[9] else "",
+#         }
+#         entities.append(project_template)
+
+#     organizations = Organization.objects.filter(id__in=organization_ids).values_list(
+#         "name",
+#         "thumbnail_image",
+#         "url_slug",
+#         "location__name",
+#         "id",
+#         "short_description",
+#     )
+#     for organization in organizations:
+#         org_creators = OrganizationMember.objects.filter(
+#             organization__id=organization[4], role__role_type=2
+#         ).values_list(
+#             "user__first_name",
+#             "user__last_name",
+#             "user__user_profile__thumbnail_image",
+#         )
+#         creator = ""
+#         # only one creator possible but the query needs to be iterated through
+#         for org_creator in org_creators:
+#             creator += org_creator[0] + " " + org_creator[1]
+#             creator_image_url = (
+#                 settings.BACKEND_URL + "/" + org_creator[2] if org_creator[2] else ""
+#             )
+
+#         organization_template = {
+#             "type": "organization",
+#             "name": organization[0],
+#             "imageUrl": (settings.BACKEND_URL + organization[1])
+#             if organization[1]
+#             else "",
+#             "url": (settings.FRONTEND_URL + "/organizations/" + organization[2])
+#             if organization[2]
+#             else main_page,
+#             "location": organization[3] if organization[3] and not is_in_hub else "",
+#             "creator": creator,
+#             "creatorImageUrl": creator_image_url,
+#             "tags": "",
+#             "shortDescription": organization[5] if organization[5] else "",
+#         }
+#         entities.append(organization_template)
+
+#     ideas = Idea.objects.filter(id__in=idea_ids).values_list(
+#         "name",
+#         "thumbnail_image",
+#         "url_slug",
+#         "hub__url_slug",
+#         "location__name",
+#         "user__first_name",
+#         "user__last_name",
+#         "user__user_profile__thumbnail_image",
+#         "short_description",
+#     )
+#     for idea in ideas:
+#         idea_template = {
+#             "type": "idea",
+#             "name": idea[0],
+#             "imageUrl": (settings.BACKEND_URL + idea[1]) if idea[1] else "",
+#             # url for ideas: URL/hubs/<hubUrl>?idea=<slug>#ideas
+#             "url": (
+#                 settings.FRONTEND_URL
+#                 + "/hubs/"
+#                 + idea[3]
+#                 + "?idea="
+#                 + idea[2]
+#                 + "#ideas"
+#             )
+#             if (idea[2] and idea[3])
+#             else main_page,
+#             "location": idea[4] if idea[4] and not is_in_hub else "",
+#             "creator": idea[5] + " " + idea[6] if idea[5] and idea[6] else "",
+#             "creatorImageUrl": (settings.BACKEND_URL + "/" + idea[7])
+#             if idea[7]
+#             else "",
+#             "tags": "",
+#             "shortDescription": idea[8] if idea[8] else "",
+#         }
+#         entities.append(idea_template)
+
+#     return entities
+# deprecated end
 
 def create_messages_for_weekly_recommendations(user_ids) -> List:
     users = User.objects.filter(id__in=user_ids).values_list(
@@ -418,71 +553,71 @@ def create_messages_for_weekly_recommendations(user_ids) -> List:
         )
     return messages
 
+# # deprecated
+# def create_html_content_for_weekly_recommendations(entities):
+#     """due to limitations in mailjet this function generates the card sections in html to be implemented directly in the mail"""
 
-def create_html_content_for_weekly_recommendations(entities):
-    """due to limitations in mailjet this function generates the card sections in html to be implemented directly in the mail"""
+#     content = []
+#     for entity in entities:
+#         if entity["type"] == "project":
+#             card = generate_project_card(
+#                 entity["name"],
+#                 entity["url"],
+#                 entity["imageUrl"],
+#                 entity["location"],
+#                 entity["creator"],
+#                 entity["creatorImageUrl"],
+#                 entity["category"],
+#             )
+#             content.append(
+#                 {
+#                     "card": card,
+#                     "shortDescription": entity["shortDescription"],
+#                     "url": entity["url"],
+#                     "type": entity["type"],
+#                 }
+#             )
 
-    content = []
-    for entity in entities:
-        if entity["type"] == "project":
-            card = generate_project_card(
-                entity["name"],
-                entity["url"],
-                entity["imageUrl"],
-                entity["location"],
-                entity["creator"],
-                entity["creatorImageUrl"],
-                entity["category"],
-            )
-            content.append(
-                {
-                    "card": card,
-                    "shortDescription": entity["shortDescription"],
-                    "url": entity["url"],
-                    "type": entity["type"],
-                }
-            )
+#         if entity["type"] == "organization":
+#             card = generate_org_card(
+#                 entity["name"],
+#                 entity["url"],
+#                 entity["imageUrl"],
+#                 entity["location"],
+#                 entity["creator"],
+#                 entity["creatorImageUrl"],
+#             )
+#             content.append(
+#                 {
+#                     "card": card,
+#                     "shortDescription": entity["shortDescription"],
+#                     "url": entity["url"],
+#                     "type": entity["type"],
+#                 }
+#             )
 
-        if entity["type"] == "organization":
-            card = generate_org_card(
-                entity["name"],
-                entity["url"],
-                entity["imageUrl"],
-                entity["location"],
-                entity["creator"],
-                entity["creatorImageUrl"],
-            )
-            content.append(
-                {
-                    "card": card,
-                    "shortDescription": entity["shortDescription"],
-                    "url": entity["url"],
-                    "type": entity["type"],
-                }
-            )
+#         if entity["type"] == "idea":
+#             card = generate_idea_card(
+#                 entity["name"],
+#                 entity["url"],
+#                 entity["imageUrl"],
+#                 entity["location"],
+#                 entity["creator"],
+#                 entity["creatorImageUrl"],
+#             )
+#             content.append(
+#                 {
+#                     "card": card,
+#                     "shortDescription": entity["shortDescription"],
+#                     "url": entity["url"],
+#                     "type": entity["type"],
+#                 }
+#             )
 
-        if entity["type"] == "idea":
-            card = generate_idea_card(
-                entity["name"],
-                entity["url"],
-                entity["imageUrl"],
-                entity["location"],
-                entity["creator"],
-                entity["creatorImageUrl"],
-            )
-            content.append(
-                {
-                    "card": card,
-                    "shortDescription": entity["shortDescription"],
-                    "url": entity["url"],
-                    "type": entity["type"],
-                }
-            )
+#     return content
+#deprecated end
 
-    return content
-
-
-def generate_idea_card(name, url, thumbnail_url, location, creator, creator_image_url):
+def generate_idea_card(name, url, thumbnail_url, creator, creator_image_url, hub_icon):
     if creator_image_url:
         creator_image_htmlsection = f"""
                         <div style="justify-content:center;display:flex;height:20px;width:20px;overflow:hidden;border-radius:50%;">
@@ -512,6 +647,9 @@ def generate_idea_card(name, url, thumbnail_url, location, creator, creator_imag
                 <div style="box-sizing:inherit;display:block;padding:8px;font-family:open sans;font-size:14px;font-weight:400;">
                   <h2 style="font-size:18px;font-weight:600;line-height:27px;margin:0px;">{name}</h2>
                   {creator_htmlsection}
+                  <div>
+                    
+                  </div>
                 </div>
                 <div style="box-sizing:inherit;display:block;">
                   <div style="background-repeat: no-repeat;display:block;margin:0px;padding:0px;background-size:100%;background-origin:content-box;width:100%;background-position-y:50%;background-position-x:50%;background-image: url({thumbnail_url});">
@@ -525,7 +663,7 @@ def generate_idea_card(name, url, thumbnail_url, location, creator, creator_imag
     return card
 
 
-def generate_org_card(name, url, thumbnail_url, location, creator, creator_image_url):
+def generate_org_card(name, url, thumbnail_url, location, creator, creator_image_url, members_count, projects_count):
     if creator_image_url:
         creator_image_htmlsection = f"""
                         <div style="justify-content:center;display:flex;height:20px;width:20px;overflow:hidden;border-radius:50%;">
@@ -540,17 +678,19 @@ def generate_org_card(name, url, thumbnail_url, location, creator, creator_image
     if creator:
         creator_htmlsection = f"""
                 <div style="display:block;margin-top:20px">
-                    <span style="display:grid;margin-bottom:4px;grid-template-columns: 40px min-content;justify-content:center;text-align:center;">
+                    <span style="align-items:center;display:grid;margin-bottom:4px;grid-template-columns: 40px min-content;justify-content:center;text-align:center;">
 {creator_image_htmlsection}
                       <span style="font-family:open sans;font-size:14px;font-weight:400;line-height:20px;overflow:hidden;max-width:220px;text-align:center">{creator}</span>
                     </span>
                   </div>
         """
+    else: 
+        creator_htmlsection = ""
 
     if location:
         location_htmlsection = f"""
                   <div style="display:block;margin-top:20px">
-                    <span style="display:grid;margin-bottom:4px;grid-template-columns: 40px min-content;justify-content:center;text-align:center;">
+                    <span style="align-items:center;display:grid;margin-bottom:4px;grid-template-columns: 40px min-content;justify-content:center;text-align:center;">
                       <span class="material-icons" style="display:block;flex-basis:40px;flex-grow:0;flex-shrink:0;font-size:20px;width:40px;color:#207178">place</span>
                       <span style="font-family:open sans;font-size:14px;font-weight:400;line-height:20px;overflow:hidden;max-width:220px;text-align:center">{location}</span>
                     </span>
@@ -559,8 +699,10 @@ def generate_org_card(name, url, thumbnail_url, location, creator, creator_image
     else:
         location_htmlsection = ""
 
-    card = f"""    if category:
-ound-color:rgb(241,241,241);background-size: calc(100% - 1px) 100%;border:1px solid rgba(0,0,0,0.12);border-radius:5px;border-image-repeat:stretch;box-shadow:rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;overflow:hidden;box-sizing:border-box;
+    card = f"""   
+          <div style="padding:8px;color: rgba(0, 0, 0, 0.87);line-height:20px;">
+            <a href="{url}" target="_blank" style="color: black; text-decoration: none;">
+              <div style="display:flex;flex-direction:column;height:350px;margin:0px;background-color:rgb(241,241,241);background-size: calc(100% - 1px) 100%;border:1px solid rgba(0,0,0,0.12);border-radius:5px;border-image-repeat:stretch;box-shadow:rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;overflow:hidden;box-sizing:border-box;
               display:grid;grid-template-rows: min-content;transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;padding:0 14px;text-align:center;">
 
                 <div style="display:block;">
@@ -575,6 +717,24 @@ ound-color:rgb(241,241,241);background-size: calc(100% - 1px) 100%;border:1px so
                 <div style="padding:0px;display:grid;box-sizing:border-box;grid-template-rows: min-content;">
                   {creator_htmlsection}
                   {location_htmlsection}
+                </div>
+                <div style="box-sizing:border-box;align-items:center;align-self:end;display: grid;margin-bottom: 10px;padding:8px;grid-template-columns: 1fr 1fr;>
+                    <div style="box-sizing:inherit;font-size: 14px;font-family: Open Sans;font-weight: 400;line-height: 20px;float: right;display: grid;margin-right: 20px;justify-content: center;grid-template-columns: 40px min-content;list-style-type: none;">
+                        <span style="box-sizing:inherit;align-items:center;text-align:center;float: right;display: grid;margin-right: 20px;justify-content: center;grid-template-columns: 40px min-content;font-size:14px;font-family: Open Sans;font-weight: 400;line-height: 20px;">
+                            <span class="material-icons" style="width:24px;height:24px;display: inline-block;font-size: 24px;flex-shrink: 0;overflow:hidden; text-align:center;color: #207178">group</span>
+                            <p style="box-sizing:inherit;font-size: 1rem;font-family: Open Sans;font-weight: 400;line-height: 1.5;margin:0px;display: block;list-style-type: none;margin-block-start: 1em;margin-block-end: 1em;margin-inline-start: 0px;margin-inline-end: 0px;text-align: center;color: rgba(0, 0, 0, 0.87);">
+                                {members_count}
+                            </p>
+                        </span
+                    </div>
+                    <div style="box-sizing:inherit;margin-left: 8px;font-size: 14px;font-family: Open Sans;font-weight: 400;line-height: 20px;display:block;text-align:center;">
+                        <span style="align-items:center;box-sizing:inherit;float: left;display: grid;margin-left: 20px;justify-content: center;grid-template-columns: 40px min-content;">
+                            <span class="material-icons" style="width:24px;height:24px;display: inline-block;font-size: 24px;flex-shrink: 0;overflow:hidden; text-align:center;color: #207178">assignment</span>
+                            <p style="display: block;font-size: 1rem;font-family: Open Sans;font-weight: 400;line-height: 1.5;margin:0px;margin-block-start: 1em;margin-block-end: 1em;margin-inline-start: 0px;margin-inline-end: 0px;box-sizing:inherit;text-align: center;color: rgba(0, 0, 0, 0.87);">
+                                {projects_count}
+                            </p>
+                        </span>
+                    </div>
                 </div>
               </div>
             </a>
@@ -607,6 +767,8 @@ def generate_project_card(
                       </span>
                     </div>           
         """
+    else:
+        creator_htmlsection = ""
 
     if location:
         location_htmlsection = f"""
@@ -660,7 +822,7 @@ def generate_project_card(
 
 def send_weekly_recommendations_email(
     messages: List,
-    entities: List,
+    mailjet_global_vars,
     lang_code: str,
     is_in_hub: bool = False,
     sandbox_mode=False,
@@ -683,12 +845,8 @@ def send_weekly_recommendations_email(
 
     subject = subjects_by_language.get(lang_code, "en")
 
-    # the card sections are generated in html
-    content = create_html_content_for_weekly_recommendations(entities)
-
     global_variables = {
-        "content": content,
-        # "Entities": entities,
+        "content": mailjet_global_vars,
     }
 
     data = {
