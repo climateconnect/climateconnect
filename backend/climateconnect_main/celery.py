@@ -14,6 +14,7 @@ app = Celery("climateconnect_main")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
 
+# add weekly scheduling
 app.conf.beat_schedule = {
     'schedule_automated_email_reminder_for_notifications': {
         'task': 'climateconnect_api.tasks.schedule_automated_reminder_for_user_notifications',
