@@ -68,7 +68,7 @@ export default function ClimateMatchResultFirstLine({ pos, suggestion }) {
         </>
       ) : (
         <Typography className={classes.ressourceType}>
-          {texts[suggestion.ressource_type]}:
+          {texts[suggestion.ressource_type]}: {isNarrowScreen && suggestion.name}
         </Typography>
       )}
     </div>
