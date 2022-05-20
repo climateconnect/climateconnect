@@ -159,13 +159,14 @@ def process_user_info_and_send_weekly_recommendations(
     mailjet_global_vars,
     lang_code,
     is_in_hub,
+    sandbox_mode : bool = False
 ):
     """This function fetches user information for batch processing and hands all information fetched from the database over to the email sending function"""
     messages = create_messages_for_weekly_recommendations(
         chunked_user_user_query_by_language
     )
     return send_weekly_recommendations_email(
-        messages, mailjet_global_vars, lang_code, is_in_hub
+        messages, mailjet_global_vars, lang_code, is_in_hub, sandbox_mode
     )
 
 
