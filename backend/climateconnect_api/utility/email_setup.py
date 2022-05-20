@@ -2,19 +2,8 @@ import logging
 from datetime import datetime, timedelta
 
 from django.contrib.auth.models import User
-from climateconnect_api.models import UserProfile
-from climateconnect_api.models.notification import EmailNotification, UserNotification
-from climateconnect_api.utility.translation import get_user_lang_code, get_user_lang_url
-from django.conf import settings
 from typing import List
 
-from organization.models.project import Project
-from organization.models.organization import Organization
-from organization.models.members import OrganizationMember
-from ideas.models.ideas import Idea
-from organization.serializers.project import ProjectStubSerializer
-from organization.serializers.organization import OrganizationCardSerializer
-from ideas.serializers.idea import IdeaSerializer
 from organization.models.project import Project
 from organization.models.organization import Organization
 from organization.models.members import OrganizationMember
