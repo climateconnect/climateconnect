@@ -12,7 +12,6 @@ import React, { useContext, useEffect, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
-import CrowdfundingBanner from "../donation/crowdfunding/CrowdfundingBanner";
 import FeedbackButton from "../feedback/FeedbackButton";
 import CookieBanner from "../general/CookieBanner";
 import CloseSnackbarAction from "../snackbarActions/CloseSnackbarAction";
@@ -157,7 +156,6 @@ export default function LayoutWrapper({
       </Head>
       {/* If theme is falsy, slience the MUI console.warning for having an undefined theme */}
       <ThemeProvider theme={theme}>
-        {locale === "de" && <CrowdfundingBanner />}
         {loading || isLoading ? (
           <div className={classes.spinnerContainer}>
             <div>
