@@ -6,6 +6,8 @@ import {
   Typography,
   TextField,
   Collapse,
+  CardMedia,
+  CardActions,
 } from "@material-ui/core";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -38,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: "3px 3px 6px #00000017",
     border: "1px solid #E0E0E0",
     padding: theme.spacing(1),
-    height: 60,
+    minheight: 60,
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
@@ -85,6 +87,9 @@ const useStyles = makeStyles((theme) => ({
   expandOpen: {
     transform: "rotate(180deg)",
   },
+  hubText: {
+    margin: theme.spacing(1),
+  },
 }));
 
 export default function MiniHubPreview({
@@ -94,10 +99,12 @@ export default function MiniHubPreview({
   createMode = false,
   onSelect,
   onClickRemoveHub,
+  isProfile,
 }) {
   const classes = useStyles({ createMode: createMode, thumbnail_image: hub?.thumbnail_image });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
+
   const handleRemoveHub = (event) => {
     event.preventDefault();
     onClickRemoveHub(hub);
@@ -108,23 +115,25 @@ export default function MiniHubPreview({
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
+
   return (
     // <Link
     //   href={hub && getLocalePrefix(locale) + `/hubs/${hub.url_slug}`}
     //   target="_blank"
     //   className={classes.link}
     // >
+
     <Card className={classes.root}>
-      {editMode && (
-        <IconButton className={classes.closeIconButton} size="small" onClick={handleRemoveHub}>
-          <CloseIcon />
-        </IconButton>
-      )}
       <CardActionArea
         href={hub && getLocalePrefix(locale) + `/hubs/${hub.url_slug}`}
         target="_blank"
       >
         <div className={classes.placeholderImageContainer}>
+          {editMode && (
+            <IconButton className={classes.closeIconButton} size="small" onClick={handleRemoveHub}>
+              <CloseIcon />
+            </IconButton>
+          )}
           <img
             src={
               createMode
@@ -136,8 +145,52 @@ export default function MiniHubPreview({
         </div>
       </CardActionArea>
 
-      <div className={classes.textContainer}>
-        {/* <div className={classes.textContainer}> */}
+      <CardActions disableSpacing>
+        {createMode ? (
+          <SelectField
+            label={texts.add_a_hub_where_you_are_active}
+            size="small"
+            options={hubsToSelectFrom}
+            onChange={(event) => event.target.value && onSelect(event)}
+          />
+        ) : (
+          <CardActionArea
+            className={clsx(classes.expand)}
+            aria-expanded={expanded}
+            aria-label="show more"
+          >
+            <Typography color="secondary" className={classes.hubName}>
+              {hub.icon && <img src={getImageUrl(hub.icon)} className={classes.hubIcon} />}
+              {hub?.name}
+            </Typography>
+          </CardActionArea>
+        )}
+        {!createMode && isProfile && (
+          <IconButton
+            className={clsx(classes.expand, {
+              [classes.expandOpen]: expanded,
+            })}
+            onClick={handleExpandClick}
+            aria-expanded={expanded}
+            aria-label="show more"
+          >
+            <ExpandMoreIcon />
+          </IconButton>
+        )}
+      </CardActions>
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <TextField
+          className={classes.hubText}
+          fullWidth
+          //value={editedAccount.name}
+          //onChange={(event) => handleTextFieldChange("name", event.target.value)}
+          multiline
+          required
+          variant="outlined"
+        />
+      </Collapse>
+
+      {/* <div className={classes.textContainer}>
         {createMode ? (
           <SelectField
             label={texts.add_a_hub_where_you_are_active}
@@ -158,27 +211,7 @@ export default function MiniHubPreview({
             </Typography>
           </CardActionArea>
         )}
-        {/* <IconButton
-          className={clsx(classes.expand, {
-            [classes.expandOpen]: expanded,
-          })}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="show more"
-        > */}
-        {/* <ExpandMoreIcon />
-        </IconButton> */}
-      </div>
-      <Collapse className={classes.textContainer} in={expanded} timeout="auto" unmountOnExit>
-        <TextField
-          //className={classes.name}
-          fullWidth
-          //value={editedAccount.name}
-          //onChange={(event) => handleTextFieldChange("name", event.target.value)}
-          multiline
-          required
-        />
-      </Collapse>
+      </div> */}
     </Card>
     // </Link>
   );

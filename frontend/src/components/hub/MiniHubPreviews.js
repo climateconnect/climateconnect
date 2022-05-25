@@ -1,6 +1,7 @@
 import { Grid, makeStyles } from "@material-ui/core";
 import React from "react";
 import MiniHubPreview from "./MiniHubPreview";
+import TestMiniHubPreview from "../../../pages/TestMiniHubPreview";
 
 const useStyles = makeStyles((theme) => ({
   reset: {
@@ -27,6 +28,7 @@ export default function MiniHubPreviews({
   editMode,
   onSelectNewHub,
   onClickRemoveHub,
+  isProfile,
 }) {
   const classes = useStyles();
   return (
@@ -40,6 +42,7 @@ export default function MiniHubPreviews({
             editMode={editMode}
             isFirstItem={index === 0}
             onClickRemoveHub={onClickRemoveHub}
+            isProfile={isProfile}
           />
         ))}
       {allowCreate && (
@@ -62,6 +65,7 @@ function GridItem({
   hubsToSelectFrom,
   onSelectNewHub,
   onClickRemoveHub,
+  isProfile
 }) {
   return (
     <Grid
@@ -80,6 +84,7 @@ function GridItem({
         hubsToSelectFrom={hubsToSelectFrom}
         onSelect={onSelectNewHub}
         onClickRemoveHub={onClickRemoveHub}
+        isProfile={isProfile}
       />
     </Grid>
   );

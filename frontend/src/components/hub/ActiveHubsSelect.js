@@ -19,21 +19,41 @@ export default function ActiveHubsSelect({
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
+  const isProfile = type === "profile";
+  const [count, setCount] = React.useState(0);
+  
+
+  const handleOnSelectNewHub = (event) => {
+    onSelectNewHub(event);
+    setCount(count + 1); 
+  };
+
+  const handleOnClickRemoveHub = (event) => {
+    onClickRemoveHub(event);
+    setCount(count - 1);
+  };
+
+  const handleAllowCreate = () => {
+    (isProfile && count < 3) ? false : true;
+  };
+ 
   const texts = getTexts({ page: "hub", locale: locale });
   return (
     <div>
       <Typography color="secondary" className={classes.headline}>
-        {type === "userprofile"
+        {isProfile
           ? texts.add_hubs_you_are_interested_in
           : texts.add_hubs_in_which_your_organization_is_active}
       </Typography>
+      <Typography>{handleAllowCreate}</Typography>
       <MiniHubPreviews
-        allowCreate
+        allowCreate={(isProfile && count > 2) ? false : true}
         editMode
         allHubs={hubsToSelectFrom}
         hubs={selectedHubs}
-        onSelectNewHub={onSelectNewHub}
-        onClickRemoveHub={onClickRemoveHub}
+        onSelectNewHub={handleOnSelectNewHub}
+        onClickRemoveHub={handleOnClickRemoveHub}
+        isProfile={isProfile}
       />
     </div>
   );

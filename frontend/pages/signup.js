@@ -170,6 +170,7 @@ export default function Signup({ allHubs }) {
 
   const handleAddInterestsSubmit = (event, values) => {
     // add interests submit etc
+    
   };
 
   const handleGoBackFromAddInfo = (event, values) => {
@@ -203,7 +204,7 @@ export default function Signup({ allHubs }) {
     }
   };
   const onClickRemoveHub = (hub) => {
-    const hubsAfterRemoval = userInfo?.hubs.filter((h) => h.url_slug !== hub.url_slug);
+    const hubsAfterRemoval = userInfo?.hubs?.filter((h) => h.url_slug !== hub.url_slug);
     setUserInfo({
       ...userInfo,
       hubs: hubsAfterRemoval,
@@ -212,11 +213,6 @@ export default function Signup({ allHubs }) {
 
   return (
     <Layout isLoading={isLoading} message={errorMessage} messageType={errorMessage && "error"}>
-      <ul>
-        {allHubs.map((hub, index) => (
-          <li key={index}>{hub.name}</li>
-        ))}
-      </ul>
       {/* <Card className={classes.box}> */}
       {curStep === "interestsinfo" && ( //"basicinfo" && (
         <BasicInfo
