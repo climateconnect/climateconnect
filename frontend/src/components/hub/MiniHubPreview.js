@@ -90,6 +90,9 @@ const useStyles = makeStyles((theme) => ({
   hubText: {
     margin: theme.spacing(1),
   },
+  collapsedDescription: {
+    marginRight: theme.spacing(3),
+  },
 }));
 
 export default function MiniHubPreview({
@@ -104,6 +107,7 @@ export default function MiniHubPreview({
   const classes = useStyles({ createMode: createMode, thumbnail_image: hub?.thumbnail_image });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
+  const onClickExpandCard = !createMode && editMode && isProfile;
 
   const handleRemoveHub = (event) => {
     event.preventDefault();
@@ -116,77 +120,88 @@ export default function MiniHubPreview({
     setExpanded(!expanded);
   };
 
-  return (
-    // <Link
-    //   href={hub && getLocalePrefix(locale) + `/hubs/${hub.url_slug}`}
-    //   target="_blank"
-    //   className={classes.link}
-    // >
+  const emptyFunction = () => {};
 
+  return (
     <Card className={classes.root}>
-      <CardActionArea
-        href={hub && getLocalePrefix(locale) + `/hubs/${hub.url_slug}`}
+      <Link
+        href={
+          !onClickExpandCard && hub
+            ? getLocalePrefix(locale) + `/hubs/` + hub.url_slug
+            : emptyFunction
+        }
         target="_blank"
+        onClick={onClickExpandCard ? handleExpandClick : emptyFunction}
+        className={classes.link}
       >
-        <div className={classes.placeholderImageContainer}>
-          {editMode && (
-            <IconButton className={classes.closeIconButton} size="small" onClick={handleRemoveHub}>
-              <CloseIcon />
+        <CardActionArea>
+          <div className={classes.placeholderImageContainer}>
+            {editMode && (
+              <IconButton
+                className={classes.closeIconButton}
+                size="small"
+                onClick={handleRemoveHub}
+              >
+                <CloseIcon />
+              </IconButton>
+            )}
+            <img
+              src={
+                createMode
+                  ? "/images/mini_hub_preview_background.jpg"
+                  : getImageUrl(hub?.thumbnail_image)
+              }
+              className={classes.placeholderImage}
+            />
+          </div>
+        </CardActionArea>
+
+        <CardActions disableSpacing>
+          {createMode ? (
+            <SelectField
+              label={texts.add_a_hub_where_you_are_active}
+              size="small"
+              options={hubsToSelectFrom}
+              onChange={(event) => event.target.value && onSelect(event)}
+            />
+          ) : (
+            <CardActionArea
+              className={clsx(classes.expand)}
+              aria-expanded={expanded}
+              aria-label="show more"
+            >
+              <Typography color="secondary" className={classes.hubName}>
+                {hub.icon && <img src={getImageUrl(hub.icon)} className={classes.hubIcon} />}
+                {hub?.name}
+              </Typography>
+            </CardActionArea>
+          )}
+          {!createMode && isProfile && (
+            <IconButton
+              className={clsx(classes.expand, {
+                [classes.expandOpen]: expanded,
+              })}
+              // onClick={handleExpandClick}
+              aria-expanded={expanded}
+              aria-label="show more"
+            >
+              <ExpandMoreIcon />
             </IconButton>
           )}
-          <img
-            src={
-              createMode
-                ? "/images/mini_hub_preview_background.jpg"
-                : getImageUrl(hub?.thumbnail_image)
-            }
-            className={classes.placeholderImage}
-          />
-        </div>
-      </CardActionArea>
-
-      <CardActions disableSpacing>
-        {createMode ? (
-          <SelectField
-            label={texts.add_a_hub_where_you_are_active}
-            size="small"
-            options={hubsToSelectFrom}
-            onChange={(event) => event.target.value && onSelect(event)}
-          />
-        ) : (
-          <CardActionArea
-            className={clsx(classes.expand)}
-            aria-expanded={expanded}
-            aria-label="show more"
-          >
-            <Typography color="secondary" className={classes.hubName}>
-              {hub.icon && <img src={getImageUrl(hub.icon)} className={classes.hubIcon} />}
-              {hub?.name}
-            </Typography>
-          </CardActionArea>
-        )}
-        {!createMode && isProfile && (
-          <IconButton
-            className={clsx(classes.expand, {
-              [classes.expandOpen]: expanded,
-            })}
-            onClick={handleExpandClick}
-            aria-expanded={expanded}
-            aria-label="show more"
-          >
-            <ExpandMoreIcon />
-          </IconButton>
-        )}
-      </CardActions>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        </CardActions>
+      </Link>
+      <Collapse className={classes.collapsedDescription} in={expanded} timeout="auto" unmountOnExit>
         <TextField
           className={classes.hubText}
           fullWidth
           //value={editedAccount.name}
           //onChange={(event) => handleTextFieldChange("name", event.target.value)}
+          label="Description"
+          placeholder={texts.you_can_describe_why_you_are_interested}
           multiline
-          required
-          variant="outlined"
+          rows={7}
+          size="small"
+          // variant="outlined"
         />
       </Collapse>
 
@@ -213,6 +228,5 @@ export default function MiniHubPreview({
         )}
       </div> */}
     </Card>
-    // </Link>
   );
 }

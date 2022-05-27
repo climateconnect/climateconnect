@@ -21,11 +21,10 @@ export default function ActiveHubsSelect({
   const { locale } = useContext(UserContext);
   const isProfile = type === "profile";
   const [count, setCount] = React.useState(0);
-  
 
   const handleOnSelectNewHub = (event) => {
     onSelectNewHub(event);
-    setCount(count + 1); 
+    setCount(count + 1);
   };
 
   const handleOnClickRemoveHub = (event) => {
@@ -34,9 +33,9 @@ export default function ActiveHubsSelect({
   };
 
   const handleAllowCreate = () => {
-    (isProfile && count < 3) ? false : true;
+    isProfile && count < 3 ? false : true;
   };
- 
+
   const texts = getTexts({ page: "hub", locale: locale });
   return (
     <div>
@@ -47,7 +46,7 @@ export default function ActiveHubsSelect({
       </Typography>
       <Typography>{handleAllowCreate}</Typography>
       <MiniHubPreviews
-        allowCreate={(isProfile && count > 2) ? false : true}
+        allowCreate={isProfile && count > 2 ? false : true}
         editMode
         allHubs={hubsToSelectFrom}
         hubs={selectedHubs}

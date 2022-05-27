@@ -65,7 +65,7 @@ function GridItem({
   hubsToSelectFrom,
   onSelectNewHub,
   onClickRemoveHub,
-  isProfile
+  isProfile,
 }) {
   return (
     <Grid

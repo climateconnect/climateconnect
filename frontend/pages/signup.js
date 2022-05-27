@@ -170,7 +170,6 @@ export default function Signup({ allHubs }) {
 
   const handleAddInterestsSubmit = (event, values) => {
     // add interests submit etc
-    
   };
 
   const handleGoBackFromAddInfo = (event, values) => {
