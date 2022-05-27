@@ -316,4 +316,17 @@ LOGGING = {
     }
 }
 
+# Setting up cache
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': env('REDIS_URL'),
+        'OPTIONS': {
+            'PASSWORD': env('REDIS_PASSWORD')
+        }
+    }
+}
+
+DEFAULT_CACHE_TIMEOUT = 2 * 24 * 3600
+
 USER_CHUNK_SIZE = env('USER_CHUNK_SIZE', 100)
