@@ -319,3 +319,32 @@ class UserProfileTranslation(models.Model):
 
     def __str__(self):
         return "{}: {} translation of user {}".format(self.id, self.language.name, self.user_profile.name)
+
+
+class UserProfileInterests(models.Model):
+    user_profile = models.ForeignKey(
+        UserProfile, related_name="profile_interests",
+        help_text="Points to user profile object", verbose_name="User profile",
+        on_delete=models.CASCADE
+    )
+
+    hub_interested_in = models.ForeignKey(
+        "hubs.Hub", related_name="profile_interests",
+        help_text="Points to (sector) hub", verbose_name="(sector) hub",
+        on_delete=models.CASCADE
+    )
+
+    description = models.CharField(
+        help_text="Description why user is interested in this hub",
+        verbose_name="Description about the Interest",
+        max_length=256,
+        null=True,
+        blank=True
+    )
+
+    class Meta:
+        verbose_name = "User profile interest"
+        index_together = [["user_profile", "hub_interested_in"]]
+
+    def __str__(self):
+        return "User profile {} is interested in sector hub {}".format(self.user_profile.name, self.hub_interested_in.name)
