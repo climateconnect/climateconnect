@@ -1,6 +1,9 @@
 from climateconnect_api.models.common import Availability, Skill
 from climateconnect_api.models.language import Language
 from django.db import models
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+from django.core.cache import cache
 from location.models import Location
 
 
@@ -277,6 +280,13 @@ class UserProfile(models.Model):
         return "%s %s [profile id: %d]" % (
             self.user.first_name, self.user.last_name, self.id
         )
+
+
+@receiver(post_save, sender=UserProfile)
+def remove_cache_keys(sender, instance, created, **kwargs):
+    if created:
+        member_keys = cache.keys('*LIST_MEMBERS*')
+        cache.delete_many(member_keys)
 
 
 class UserProfileTranslation(models.Model):
