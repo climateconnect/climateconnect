@@ -1,49 +1,33 @@
 import logging
-from datetime import timedelta
 from copy import deepcopy
-from climateconnect_api.utility.email_setup import (
-    create_global_variables_for_weekly_recommendations,
-    create_messages_for_weekly_recommendations,
-    send_weekly_recommendations_email,
-)
-from organization.models.organization import Organization
-from climateconnect_api.models.user import UserProfile
-from organization.models.project import Project
-from climateconnect_api.models.language import Language
-from ideas.models.ideas import Idea
-from hubs.models.hub import Hub
-from location.models import Location
-from django.db.models import Count
-from django.db.models import Q
+from datetime import timedelta
 from typing import List
 
-from climateconnect_main.celery import app
+from django.db.models import Count
+from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils import timezone
 
 from climateconnect_api.models import UserNotification, Notification
+from climateconnect_api.models.language import Language
+from climateconnect_api.models.user import UserProfile
 from climateconnect_api.utility.email_setup import (
     send_email_reminder_for_unread_notifications,
 )
-from copy import deepcopy
 from climateconnect_api.utility.email_setup import (
     create_global_variables_for_weekly_recommendations,
     create_messages_for_weekly_recommendations,
     send_weekly_recommendations_email,
 )
-from organization.models.organization import Organization
-from climateconnect_api.models.user import UserProfile
-from organization.models.project import Project
-from climateconnect_api.models.language import Language
-from ideas.models.ideas import Idea
+from climateconnect_main.celery import app
 from hubs.models.hub import Hub
+from ideas.models.ideas import Idea
 from location.models import Location
-from django.db.models import Count
-from django.db.models import Q
+from organization.models.organization import Organization
+from organization.models.project import Project
 
 logger = logging.getLogger(__name__)
-
 
 
 @app.task(bind=True)
