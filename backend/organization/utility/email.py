@@ -2,7 +2,7 @@ import logging
 import re
 
 from climateconnect_api.models.user import UserProfile
-from climateconnect_api.utility.email_setup import get_template_id, send_email
+from climateconnect_api.utility.email_setup.email_setup import get_template_id, send_email
 from climateconnect_api.utility.translation import (get_user_lang_code,
                                                     get_user_lang_url)
 from django.conf import settings

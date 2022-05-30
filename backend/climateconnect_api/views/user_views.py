@@ -12,7 +12,7 @@ from climateconnect_api.serializers.user import (
     EditUserProfileSerializer, PersonalProfileSerializer,
     UserProfileMinimalSerializer, UserProfileSerializer,
     UserProfileSitemapEntrySerializer, UserProfileStubSerializer)
-from climateconnect_api.utility.email_setup import (
+from climateconnect_api.utility.email_setup.email_setup import (
     send_password_link, send_user_verification_email)
 from climateconnect_api.utility.translation import edit_translations
 from climateconnect_main.utility.general import get_image_from_data_url

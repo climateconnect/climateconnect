@@ -12,13 +12,15 @@ from django.utils import timezone
 from climateconnect_api.models import UserNotification, Notification
 from climateconnect_api.models.language import Language
 from climateconnect_api.models.user import UserProfile
-from climateconnect_api.utility.email_setup import (
+from climateconnect_api.utility.email_setup.email_setup import (
     send_email_reminder_for_unread_notifications,
 )
-from climateconnect_api.utility.email_setup import (
+from climateconnect_api.utility.email_setup.email_setup import (
+    send_weekly_recommendations_email,
+)
+from climateconnect_api.utility.email_setup.weekly_recommendations_setup import (
     create_global_variables_for_weekly_recommendations,
     create_messages_for_weekly_recommendations,
-    send_weekly_recommendations_email,
 )
 from climateconnect_main.celery import app
 from hubs.models.hub import Hub

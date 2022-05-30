@@ -8,7 +8,7 @@ from climateconnect_api.serializers.common import AvailabilitySerializer, SkillS
 from climateconnect_api.pagination import SkillsPagination
 from rest_framework.response import Response
 from climateconnect_api.models.common import Feedback
-from climateconnect_api.utility.email_setup import send_feedback_email
+from climateconnect_api.utility.email_setup.email_setup import send_feedback_email
 from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
 from django.utils.translation import get_language

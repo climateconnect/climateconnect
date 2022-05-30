@@ -33,7 +33,7 @@ from climateconnect_api.factories import (
 
 from ideas.serializers.idea import IdeaSerializer
 from ideas.models.ideas import Idea
-from climateconnect_api.utility.email_setup import (
+from climateconnect_api.utility.email_setup.weekly_recommendations_setup import (
     create_global_variables_for_weekly_recommendations,
 )
 from organization.serializers.project import ProjectStubSerializer
