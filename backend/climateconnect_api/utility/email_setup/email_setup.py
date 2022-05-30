@@ -73,8 +73,8 @@ def send_email(
                 "Variables": variables,
                 "Subject": subject,
                 "TemplateErrorReporting": {
-                    "Email": settings.MAILJET_ADMIN_EMAIL,
-                    "Name": "Mailjet Admin",
+                    "Email": "christoph.stoll@climateconnect.earth",
+                    "Name": "Christoph Stoll"
                 },
             }
         ]
@@ -297,10 +297,6 @@ def send_weekly_recommendations_email(
             "TemplateLanguage": True,
             "Variables": global_variables,
             "Subject": subject,
-            "TemplateErrorReporting": {
-                "Email": settings.MAILJET_ADMIN_EMAIL,
-                "Name": "Mailjet Admin",
-            },
         },
         "Messages": messages,
         "SandboxMode": sandbox_mode,
@@ -316,8 +312,6 @@ def send_weekly_recommendations_email(
         logger.error(f"EmailFailure: Error sending email -> {mail.text}")
         print(f"EmailFailure: Error sending email -> {mail.text}")
 
-    # debugging
-    return mail
 
 
 def send_email_reminder_for_unread_notifications(

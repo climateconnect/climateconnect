@@ -2,25 +2,9 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from django.test import TestCase
 from datetime import timedelta
+from django.urls import reverse
 from django.utils import timezone
 from django.conf import settings
-
-from climateconnect_api.models.language import Language
-from hubs.models.hub import Hub
-from location.models import Location
-from climateconnect_api.tests.create_test_data import (
-    create_project_test_data,
-    create_org_test_data,
-    create_idea_test_data,
-)
-
-from climateconnect_api.tasks import (
-    fetch_entities_for_weekly_recommendations,
-    fetch_user_info_for_weekly_recommendations,
-    process_user_info_and_send_weekly_recommendations,
-)
-
-from django.urls import reverse
 
 from climateconnect_api.factories import (
     HubFactory,
@@ -29,18 +13,22 @@ from climateconnect_api.factories import (
     UserFactory,
     UserProfileFactory,
 )
-
-
-from ideas.serializers.idea import IdeaSerializer
-from ideas.models.ideas import Idea
+from climateconnect_api.tasks import (
+    fetch_entities_for_weekly_recommendations,
+    fetch_user_info_for_weekly_recommendations,
+    process_user_info_and_send_weekly_recommendations,
+)
+from climateconnect_api.tests.create_test_data import (
+    create_project_test_data,
+    create_org_test_data,
+    create_idea_test_data,
+)
 from climateconnect_api.utility.email_setup.weekly_recommendations_setup import (
     create_global_variables_for_weekly_recommendations,
 )
-from organization.serializers.project import ProjectStubSerializer
-from organization.models.project import Project
-import pprint
-
-import json
+from climateconnect_api.models.language import Language
+from hubs.models.hub import Hub
+from location.models import Location
 
 
 class TestUserLoginView(APITestCase):
@@ -99,7 +87,6 @@ class TestRecommendedEmail(TestCase):
     # test the recommended email feature
     # unit test for generation of project ids, org ids and idea ids
     # unit test for generation of user ids
-    # test that sends email to MAILJET_ADMIN_EMAIL
 
     # this function is called once before any test functions are run; the setUp function is called before every test function
     @classmethod
@@ -203,15 +190,8 @@ class TestRecommendedEmail(TestCase):
             location=cls.location_2, hub=hub_2, created_outside_of_timespan=True
         )
 
-        # creating user that receives all emails
-        cls.admin_user = UserFactory(
-            username="Admin",
-            email=settings.MAILJET_ADMIN_EMAIL,
-            first_name="Admin",
-            last_name="Admin",
-        )
 
-    def test_entities(self):
+    def test_entities_in_hub1(self):
         """This function tests the function fetch_entities_for_weekly_recommendations()"""
         max_entities = 3
         timespan_start = timezone.now() - timedelta(days=7)
@@ -228,6 +208,13 @@ class TestRecommendedEmail(TestCase):
         }
         self.assertEqual(result, expected_result)
 
+
+    def test_entities_in_hub2(self):
+        """This function tests the function fetch_entities_for_weekly_recommendations()"""
+        max_entities = 3
+        timespan_start = timezone.now() - timedelta(days=7)
+        is_in_hub = True
+
         # fetch entities in hub 2
         result = fetch_entities_for_weekly_recommendations(
             max_entities, timespan_start, self.location_2.id, is_in_hub
@@ -242,6 +229,12 @@ class TestRecommendedEmail(TestCase):
         }
         self.assertEqual(result, expected_result)
 
+
+    def test_entities_no_hub(self):
+        """This function tests the function fetch_entities_for_weekly_recommendations()"""
+        max_entities = 3
+        timespan_start = timezone.now() - timedelta(days=7)
+
         # fetch international entities
         is_in_hub = False
         no_location = 0
@@ -255,7 +248,8 @@ class TestRecommendedEmail(TestCase):
         }
         self.assertEqual(result, expected_result)
 
-    def test_user_data(self):
+
+    def test_user_data_for_hub1(self):
         """This function tests fetch_user_info_for_weekly_recommendations()"""
         # for hub_1
         result = {}
@@ -273,7 +267,13 @@ class TestRecommendedEmail(TestCase):
             result[key_result] = list(result_query)
         self.assertCountEqual(result.items(), expected_result.items())
 
+
+    def test_user_data_for_hub1(self):
+        """This function tests fetch_user_info_for_weekly_recommendations()"""
         # for hub_2
+        result = {}
+        is_in_hub = True
+
         result = fetch_user_info_for_weekly_recommendations(
             self.location_2.id, is_in_hub
         )
@@ -287,7 +287,11 @@ class TestRecommendedEmail(TestCase):
             result[key_result] = list(result_query)
         self.assertCountEqual(result.items(), expected_result.items())
 
+
+    def test_user_data_for_hub1(self):
+        """This function tests fetch_user_info_for_weekly_recommendations()"""
         # for international
+        result = {}
         is_in_hub = False
         # location_id is 0 for international
         loc = 0
@@ -301,51 +305,3 @@ class TestRecommendedEmail(TestCase):
         for key_result, result_query in result.items():
             result[key_result] = list(result_query)
         self.assertCountEqual(result, expected_result)
-
-    def test_send_email(self):
-        """This function mimics the function schedule_weekly_recommendations_email() in climateconnect_api.tasks.py and sends emails to the mailjet_admin_email adress set in .backend_env if variable sandbox_mode is set"""
-        # it sends emails for each hub/international and for each language, so a maximum number of 6 emails
-        # to turn email sending on, set sandbox_mode to False
-        sandbox_mode = False
-        # to determine how many emails get sent, please set max_emails_sent variable to your desired number
-        max_emails_sent = 2
-
-        max_entities = 3
-        timespan_start = timezone.now() - timedelta(days=7)
-
-        all_locations_in_hubs = list(
-            Location.objects.filter(hub_location__hub_type=Hub.LOCATION_HUB_TYPE)
-            .values_list("id", flat=True)
-            .distinct()
-        )
-        # "0" acts as a flag for the international recommendations email
-        all_locations_in_hubs.append(0)
-        for location_id in all_locations_in_hubs:
-
-            is_in_hub = location_id != 0
-
-            entity_ids = fetch_entities_for_weekly_recommendations(
-                max_entities, timespan_start, location_id, is_in_hub
-            )
-
-            if entity_ids:
-                lang_codes = list(
-                    Language.objects.values_list("language_code", flat=True).distinct()
-                )
-                for lang_code in lang_codes:
-                    mailjet_global_vars = (
-                        create_global_variables_for_weekly_recommendations(
-                            entity_ids, lang_code, is_in_hub
-                        )
-                    )
-                    if max_emails_sent < 1:
-                        break
-                    result = process_user_info_and_send_weekly_recommendations(
-                        [self.admin_user.id],
-                        mailjet_global_vars,
-                        lang_code,
-                        is_in_hub,
-                        sandbox_mode,
-                    )
-                    self.assertEqual(result.status_code, status.HTTP_200_OK)
-                    max_emails_sent -= 1

@@ -3,7 +3,7 @@ import uuid
 from climateconnect_api.models import UserProfile
 from climateconnect_api.permissions import UserPermission
 from climateconnect_api.serializers.user import UserAccountSettingsSerializer
-from climateconnect_api.utility.email_setup import (
+from climateconnect_api.utility.email_setup.email_setup import (
     register_newsletter_contact,
     send_new_email_verification,
     unregister_newsletter_contact,

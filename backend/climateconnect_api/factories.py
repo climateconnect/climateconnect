@@ -58,13 +58,6 @@ class UserProfileFactory(factory.DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
     url_slug = factory.Sequence(lambda n: "userslug{}".format(n + 1))
     image = "profile.png"
-    thumbnail_image = factory.django.ImageField(
-        from_path=(
-            settings.BASE_DIR
-            + "/climateconnect_api/tests/media/"
-            + "userprofile_thumbnail_image.jpeg"
-        )
-    )
     background_image = "background.png"
     biography = "This is a biography"
     send_newsletter = True
@@ -82,11 +75,7 @@ class HubFactory(factory.DjangoModelFactory):
     segway_text = "This is a segway_text"
     quick_info = "This is a quick_info"
     hub_type = Hub.SECTOR_HUB_TYPE
-    icon = factory.django.FileField(
-        from_path=(
-            settings.BASE_DIR + "/climateconnect_api/tests/media/" + "hub_icon.svg"
-        )
-    )
+    icon = "icon.svg"
 
     # implementation of manytomany field
     @factory.post_generation
@@ -126,13 +115,7 @@ class ProjectFactory(factory.DjangoModelFactory):
     name = factory.Sequence(lambda n: "Projectname{}".format(n + 1))
     url_slug = factory.Sequence(lambda n: "projectslug{}".format(n + 1))
     status = factory.SubFactory(ProjectStatusFactory)
-    thumbnail_image = factory.django.ImageField(
-        from_path=(
-            settings.BASE_DIR
-            + "/climateconnect_api/tests/media/"
-            + "project_thumbnail_image.jpeg"
-        )
-    )
+    thumbnail_image = "thumbnail_image.jpg"
     short_description = "How can we maximize our chances to fight climate change? Climate Connect web-platform is a tool, free of use, helping all climate actors to gain visibility and collaborate with each other!"
     language = factory.SubFactory(LanguageFactory)
 
@@ -168,13 +151,7 @@ class OrganizationFactory(factory.DjangoModelFactory):
     name = factory.Sequence(lambda n: "org_name{}".format(n + 1))
     url_slug = factory.Sequence(lambda n: "org_slug{}".format(n + 1))
     short_description = "This is a short description!"
-    thumbnail_image = factory.django.ImageField(
-        from_path=(
-            settings.BASE_DIR
-            + "/climateconnect_api/tests/media/"
-            + "org_thumbnail_image.jpeg"
-        )
-    )
+    thumbnail_image = "thumbnail_img.jpg"
     language = factory.SubFactory(LanguageFactory)
 
 
@@ -202,13 +179,7 @@ class IdeaFactory(factory.DjangoModelFactory):
 
     name = factory.Sequence(lambda n: "idea_name{}".format(n + 1))
     url_slug = factory.Sequence(lambda n: "idea_slug{}".format(n + 1))
-    thumbnail_image = factory.django.ImageField(
-        from_path=(
-            settings.BASE_DIR
-            + "/climateconnect_api/tests/media/"
-            + "idea_thumbnail_image.jpeg"
-        )
-    )
+    thumbnail_image = "thumbnail_img.jpg"
     user = factory.SubFactory(UserFactory)
     language = factory.SubFactory(LanguageFactory)
     short_description = "This is a short description!"
