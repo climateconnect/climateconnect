@@ -1,7 +1,6 @@
 import { Grid, makeStyles } from "@material-ui/core";
 import React from "react";
 import MiniHubPreview from "./MiniHubPreview";
-import TestMiniHubPreview from "../../../pages/TestMiniHubPreview";
 
 const useStyles = makeStyles((theme) => ({
   reset: {

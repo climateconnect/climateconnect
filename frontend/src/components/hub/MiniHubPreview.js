@@ -87,11 +87,9 @@ const useStyles = makeStyles((theme) => ({
   expandOpen: {
     transform: "rotate(180deg)",
   },
-  hubText: {
+  collapsedTextfield: {
     margin: theme.spacing(1),
-  },
-  collapsedDescription: {
-    marginRight: theme.spacing(3),
+    width: "calc(100% - " + theme.spacing(2) + "px)",
   },
 }));
 
@@ -109,6 +107,8 @@ export default function MiniHubPreview({
   const texts = getTexts({ page: "hub", locale: locale });
   const onClickExpandCard = !createMode && editMode && isProfile;
 
+ 
+
   const handleRemoveHub = (event) => {
     event.preventDefault();
     onClickRemoveHub(hub);
@@ -120,19 +120,12 @@ export default function MiniHubPreview({
     setExpanded(!expanded);
   };
 
-  const emptyFunction = () => {};
 
   return (
     <Card className={classes.root}>
       <Link
-        href={
-          !onClickExpandCard && hub
-            ? getLocalePrefix(locale) + `/hubs/` + hub.url_slug
-            : emptyFunction
-        }
-        target="_blank"
-        onClick={onClickExpandCard ? handleExpandClick : emptyFunction}
         className={classes.link}
+        {...(onClickExpandCard ? {onClick: handleExpandClick}: {href: hub && getLocalePrefix(locale) + `/hubs/` + hub.url_slug, target: "_blank"})}
       >
         <CardActionArea>
           <div className={classes.placeholderImageContainer}>
@@ -190,10 +183,10 @@ export default function MiniHubPreview({
           )}
         </CardActions>
       </Link>
-      <Collapse className={classes.collapsedDescription} in={expanded} timeout="auto" unmountOnExit>
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
         <TextField
-          className={classes.hubText}
-          fullWidth
+          className={classes.collapsedTextfield}
+          // fullWidth
           //value={editedAccount.name}
           //onChange={(event) => handleTextFieldChange("name", event.target.value)}
           label="Description"
