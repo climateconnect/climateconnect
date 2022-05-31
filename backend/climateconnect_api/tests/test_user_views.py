@@ -190,7 +190,6 @@ class TestRecommendedEmail(TestCase):
             location=cls.location_2, hub=hub_2, created_outside_of_timespan=True
         )
 
-
     def test_entities_in_hub1(self):
         """This function tests the function fetch_entities_for_weekly_recommendations()"""
         max_entities = 3
@@ -207,7 +206,6 @@ class TestRecommendedEmail(TestCase):
             "idea": [self.idea_in_hub_1.id],
         }
         self.assertEqual(result, expected_result)
-
 
     def test_entities_in_hub2(self):
         """This function tests the function fetch_entities_for_weekly_recommendations()"""
@@ -229,7 +227,6 @@ class TestRecommendedEmail(TestCase):
         }
         self.assertEqual(result, expected_result)
 
-
     def test_entities_no_hub(self):
         """This function tests the function fetch_entities_for_weekly_recommendations()"""
         max_entities = 3
@@ -247,7 +244,6 @@ class TestRecommendedEmail(TestCase):
             "idea": [],
         }
         self.assertEqual(result, expected_result)
-
 
     def test_user_data_for_hub1(self):
         """This function tests fetch_user_info_for_weekly_recommendations()"""
@@ -267,8 +263,7 @@ class TestRecommendedEmail(TestCase):
             result[key_result] = list(result_query)
         self.assertCountEqual(result.items(), expected_result.items())
 
-
-    def test_user_data_for_hub1(self):
+    def test_user_data_for_hub2(self):
         """This function tests fetch_user_info_for_weekly_recommendations()"""
         # for hub_2
         result = {}
@@ -287,8 +282,7 @@ class TestRecommendedEmail(TestCase):
             result[key_result] = list(result_query)
         self.assertCountEqual(result.items(), expected_result.items())
 
-
-    def test_user_data_for_hub1(self):
+    def test_user_data_for_no_hub(self):
         """This function tests fetch_user_info_for_weekly_recommendations()"""
         # for international
         result = {}

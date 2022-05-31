@@ -428,4 +428,3 @@ def generate_idea_card(name, url, thumbnail_url, creator, creator_image_url, hub
           </div>
     """
     return card
-
