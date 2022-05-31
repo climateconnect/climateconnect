@@ -3,6 +3,7 @@
 # misc
 .DS_Store
 .env*
+backend/climateconnect_api/tests/test_recommendations_email
 
 # debug
 npm-debug.log*
