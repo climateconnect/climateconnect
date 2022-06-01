@@ -101,23 +101,30 @@ export default function MiniHubPreview({
   onSelect,
   onClickRemoveHub,
   isProfile,
+  onInterestsInfoTextFieldChange
 }) {
   const classes = useStyles({ createMode: createMode, thumbnail_image: hub?.thumbnail_image });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
   const onClickExpandCard = !createMode && editMode && isProfile;
-
- 
+  const [expanded, setExpanded] = React.useState(false);
+  // const [HubInfo, setHubInfo] = React.useState({hub_url_slug: hub?.url_slug, hub_description: ""});
 
   const handleRemoveHub = (event) => {
     event.preventDefault();
     onClickRemoveHub(hub);
   };
 
-  const [expanded, setExpanded] = React.useState(false);
-
   const handleExpandClick = () => {
     setExpanded(!expanded);
+  };
+
+  const handleDescriptionTextFieldChange = (newValue) => {
+    onInterestsInfoTextFieldChange(newValue);
+    // setHubInfo({
+    //   ...HubInfo,
+    //   hub_description: newValue
+    // })
   };
 
 
@@ -174,7 +181,6 @@ export default function MiniHubPreview({
               className={clsx(classes.expand, {
                 [classes.expandOpen]: expanded,
               })}
-              // onClick={handleExpandClick}
               aria-expanded={expanded}
               aria-label="show more"
             >
@@ -186,9 +192,8 @@ export default function MiniHubPreview({
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <TextField
           className={classes.collapsedTextfield}
-          // fullWidth
-          //value={editedAccount.name}
-          //onChange={(event) => handleTextFieldChange("name", event.target.value)}
+          value={hub?.description}
+          onChange={(event) => handleDescriptionTextFieldChange(hub, event.target.value)}
           label="Description"
           placeholder={texts.you_can_describe_why_you_are_interested}
           multiline

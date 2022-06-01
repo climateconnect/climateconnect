@@ -55,7 +55,6 @@ export default function Signup({ allHubs }) {
     last_name: "",
     location: {},
     newsletter: "",
-    hubs: [],
   });
   const classes = useStyles();
   const cookies = new Cookies();
@@ -91,6 +90,11 @@ export default function Signup({ allHubs }) {
     }
   });
 
+  const [interestsInfo, setInterestsInfo] = React.useState();
+  const [hubInfo, setHubInfo] = React.useState([]);
+
+
+
   const handleBasicInfoSubmit = (event, values) => {
     event.preventDefault();
     setUserInfo({
@@ -121,6 +125,12 @@ export default function Signup({ allHubs }) {
       sendNewsletter: values.sendNewsletter,
     });
     setCurStep(steps[2]);
+  };
+
+  const handleAddInterestsSubmit = (event, values) => {
+    event.preventDefault();
+    
+    // add interests submit etc
   };
 
   const handleSkipInterestsSubmit = (event, values) => {
@@ -168,10 +178,7 @@ export default function Signup({ allHubs }) {
       });
   };
 
-  const handleAddInterestsSubmit = (event, values) => {
-    // add interests submit etc
-  };
-
+  
   const handleGoBackFromAddInfo = (event, values) => {
     setUserInfo({
       ...userInfo,
@@ -192,26 +199,51 @@ export default function Signup({ allHubs }) {
     setCurStep(steps[1]);
   };
 
+  const handleOnInterestsInfoTextFieldChange = (hub, description) => {
+    // setInterestsInfo({...interestsInfo, [url_slug]: description})
+    const asdf = hubInfo?.filter((h) => h.url_slug !== hub.url_slug)
+    setHubInfo([...asdf, {...hub, description: description}]);
+  };
+  
   const onSelectNewHub = (event) => {
     event.preventDefault();
     const hub = allHubs.find((h) => h.name === event.target.value);
-    if (userInfo.hubs?.filter((h) => h.url_slug === hub.url_slug)?.length === 0) {
-      setUserInfo({
-        ...userInfo,
-        hubs: [...userInfo.hubs, hub],
-      });
+    if (hubInfo?.filter((h) => h.url_slug === hub.url_slug)?.length === 0) {
+      // setUserInfo({
+      //   ...userInfo,
+      //   hubs: [...userInfo.hubs, hub],
+      // });
+      setHubInfo([...hubInfo, {...hub, description: ""}]);
+      // setInterestsInfo({...interestsInfo, [url_slug]: ""});
     }
   };
+
   const onClickRemoveHub = (hub) => {
-    const hubsAfterRemoval = userInfo?.hubs?.filter((h) => h.url_slug !== hub.url_slug);
-    setUserInfo({
-      ...userInfo,
-      hubs: hubsAfterRemoval,
-    });
+    const hubsAfterRemoval = hubInfo?.filter((h) => h.url_slug !== hub.url_slug);
+    // setUserInfo({
+    //   ...userInfo,
+    //   hubs: hubsAfterRemoval,
+    // });
+    setHubInfo(hubsAfterRemoval);
+    // let interestsInfoAfterRemoval = interestsInfo;
+    // delete interestsInfoAfterRemoval[hub.url_slug];
+    // setInterestsInfo(interestsInfoAfterRemoval);
   };
+
+  const parseHubsForRequest = (hubs) => {
+    const skipInterests=false;
+    if (skipInterests) return [];
+    else return hubs.map((h) => ({key: h.url_slug, value: h.name}))
+  };
+
+  
 
   return (
     <Layout isLoading={isLoading} message={errorMessage} messageType={errorMessage && "error"}>
+      <div>{JSON.stringify(parseHubsForRequest(hubInfo))}
+      </div>
+      <div>{JSON.stringify(hubInfo)}</div>
+      <div>{JSON.stringify(allHubs)}</div>
       {/* <Card className={classes.box}> */}
       {curStep === "interestsinfo" && ( //"basicinfo" && (
         <BasicInfo
@@ -234,7 +266,7 @@ export default function Signup({ allHubs }) {
       )}
       {curStep == "basicinfo" && ( // "interestsinfo" && (
         <AddInterests
-          values={userInfo}
+          hubInfo={hubInfo}
           allHubs={allHubs}
           errorMessage={errorMessages[steps[2]]}
           handleSkip={handleSkipInterestsSubmit}
@@ -242,6 +274,7 @@ export default function Signup({ allHubs }) {
           handleGoBack={handleGoBackFromInterestsInfo}
           onSelectNewHub={onSelectNewHub}
           onClickRemoveHub={onClickRemoveHub}
+          onInterestsInfoTextFieldChange={handleOnInterestsInfoTextFieldChange}
         />
       )}
       {/* </Card> */}
