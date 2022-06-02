@@ -108,7 +108,7 @@ export default function MiniHubPreview({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
   const onClickExpandCard = !createMode && editMode && isProfile;
-  const [expanded, setExpanded] = React.useState(false);
+  const [expanded, setExpanded] = React.useState((createMode? false : true));
 
   const handleRemoveHub = (event) => {
     event.preventDefault();

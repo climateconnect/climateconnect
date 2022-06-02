@@ -111,7 +111,6 @@ export default function Signup({ allHubs }) {
 
   const handleAddInfoSubmit = (event, values) => {
     event.preventDefault();
-    const params = getParams(window?.location?.href);
     if (!isLocationValid(values.location)) {
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage, texts);
       return;
@@ -140,7 +139,8 @@ export default function Signup({ allHubs }) {
   };
 
   const sendPayload = (skipInterests) => {
-    const payload = {
+    const params = getParams(window?.location?.href);
+    let payload = {
       email: userInfo.email.trim().toLowerCase(),
       password: userInfo.password,
       first_name: userInfo.first_name.trim(),
@@ -153,10 +153,10 @@ export default function Signup({ allHubs }) {
       source_language: locale,
     };
     if (!skipInterests){
-      const payload = {
+      payload = {
         ...payload,
         hubs: interestsInfo
-      }
+      };
     };
     const headers = {
       Accept: "application/json",
@@ -243,7 +243,7 @@ export default function Signup({ allHubs }) {
       <div>{JSON.stringify(interestsInfo)}</div>
  
       {/* <Card className={classes.box}> */}
-      {curStep === "interestsinfo" && ( //"basicinfo" && (
+      {curStep === "basicinfo" && (
         <BasicInfo
           title={texts.sign_up}
           values={userInfo}
@@ -262,7 +262,7 @@ export default function Signup({ allHubs }) {
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
         />
       )}
-      {curStep == "basicinfo" && ( // "interestsinfo" && (
+      {curStep == "interestsinfo" && (
         <AddInterests
           selectedHubs={selectedHubs}
           allHubs={allHubs}
