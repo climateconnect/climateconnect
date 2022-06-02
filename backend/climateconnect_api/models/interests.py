@@ -29,4 +29,4 @@ class UserInterests(models.Model):
         index_together = [["user", "hub_interested_in"]]
 
     def __str__(self):
-        return "User {} is interested in sector hub {}".format(self.user.name, self.hub_interested_in.name)
+        return "User {} is interested in sector hub {}".format(self.user.get_full_name(), self.hub_interested_in.name)
