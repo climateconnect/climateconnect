@@ -127,13 +127,19 @@ export default function Signup({ allHubs }) {
     setCurStep(steps[2]);
   };
 
-  const handleAddInterestsSubmit = (event, values) => {
+  const handleSkipInterestsSubmit = (event) => {
     event.preventDefault();
-    
-    // add interests submit etc
+    const skipInterests = true;
+    sendPayload(skipInterests);
   };
 
-  const handleSkipInterestsSubmit = (event, values) => {
+  const handleAddInterestsSubmit = (event, values) => {
+    event.preventDefault();
+    const skipInterests = false;
+    sendPayload(skipInterests);
+  };
+
+  const sendPayload = (skipInterests) => {
     const payload = {
       email: userInfo.email.trim().toLowerCase(),
       password: userInfo.password,
@@ -145,7 +151,12 @@ export default function Signup({ allHubs }) {
       is_activist: isClimateActorCookie?.isActivist,
       last_completed_tutorial_step: lastCompletedTutorialStep,
       source_language: locale,
-      // hubs,
+    };
+    if (!skipInterests){
+      const payload = {
+        ...payload,
+        hubs: interestsInfo
+      }
     };
     const headers = {
       Accept: "application/json",
@@ -176,8 +187,7 @@ export default function Signup({ allHubs }) {
         else if (error.response.data.length > 0)
           setErrorMessages({ ...errorMessages, [steps[2]]: error.response.data[0] });
       });
-  };
-
+  }
   
   const handleGoBackFromAddInfo = (event, values) => {
     event.preventDefault();
@@ -218,13 +228,12 @@ export default function Signup({ allHubs }) {
     setInterestsInfo(interestsInfoAfterRemoval);
   };
 
-  const parseHubsForRequest = (hubs) => {
-    const skipInterests=false;
-    if (skipInterests) return [];
-    else return hubs.map((h) => ({key: h.url_slug, value: h.name}))
-  };
+  // const parseHubsForRequest = (hubs) => {
+  //   const skipInterests=false;
+  //   if (skipInterests) return [];
+  //   else return hubs.map((h) => ({key: h.url_slug, value: h.name}))
+  // };
 
-  
 
   return (
     <Layout isLoading={isLoading} message={errorMessage} messageType={errorMessage && "error"}>
