@@ -91,7 +91,7 @@ export default function Signup({ allHubs }) {
   });
 
   const [interestsInfo, setInterestsInfo] = React.useState();
-  const [hubInfo, setHubInfo] = React.useState([]);
+  const [selectedHubs, setSelectedHubs] = React.useState([]);
 
 
 
@@ -180,6 +180,7 @@ export default function Signup({ allHubs }) {
 
   
   const handleGoBackFromAddInfo = (event, values) => {
+    event.preventDefault();
     setUserInfo({
       ...userInfo,
       first_name: values.first_name,
@@ -189,45 +190,32 @@ export default function Signup({ allHubs }) {
     setCurStep(steps[0]);
   };
 
-  const handleGoBackFromInterestsInfo = (event, values) => {
-    setUserInfo({
-      ...userInfo,
-      // todo: figure out how to input the saved location properly
-      location: {},
-      // add interests
-    });
+  const handleGoBackFromInterestsInfo = (event) => {
+    event.preventDefault();
     setCurStep(steps[1]);
   };
 
-  const handleOnInterestsInfoTextFieldChange = (hub, description) => {
-    // setInterestsInfo({...interestsInfo, [url_slug]: description})
-    const asdf = hubInfo?.filter((h) => h.url_slug !== hub.url_slug)
-    setHubInfo([...asdf, {...hub, description: description}]);
+  const handleOnInterestsInfoTextFieldChange = (url_slug, description) => {
+    const temp = {...interestsInfo, [url_slug]: description};
+    setInterestsInfo(temp);
+
   };
   
   const onSelectNewHub = (event) => {
     event.preventDefault();
     const hub = allHubs.find((h) => h.name === event.target.value);
-    if (hubInfo?.filter((h) => h.url_slug === hub.url_slug)?.length === 0) {
-      // setUserInfo({
-      //   ...userInfo,
-      //   hubs: [...userInfo.hubs, hub],
-      // });
-      setHubInfo([...hubInfo, {...hub, description: ""}]);
-      // setInterestsInfo({...interestsInfo, [url_slug]: ""});
+    if (selectedHubs?.filter((h) => h.url_slug === hub.url_slug)?.length === 0) {
+      setSelectedHubs([...selectedHubs, hub]);
+      setInterestsInfo({...interestsInfo, [hub.url_slug]: ""});
     }
   };
 
   const onClickRemoveHub = (hub) => {
-    const hubsAfterRemoval = hubInfo?.filter((h) => h.url_slug !== hub.url_slug);
-    // setUserInfo({
-    //   ...userInfo,
-    //   hubs: hubsAfterRemoval,
-    // });
-    setHubInfo(hubsAfterRemoval);
-    // let interestsInfoAfterRemoval = interestsInfo;
-    // delete interestsInfoAfterRemoval[hub.url_slug];
-    // setInterestsInfo(interestsInfoAfterRemoval);
+    const hubsAfterRemoval = selectedHubs?.filter((h) => h.url_slug !== hub.url_slug);
+    setSelectedHubs(hubsAfterRemoval);
+    let interestsInfoAfterRemoval = interestsInfo;
+    delete interestsInfoAfterRemoval[hub.url_slug];
+    setInterestsInfo(interestsInfoAfterRemoval);
   };
 
   const parseHubsForRequest = (hubs) => {
@@ -240,10 +228,11 @@ export default function Signup({ allHubs }) {
 
   return (
     <Layout isLoading={isLoading} message={errorMessage} messageType={errorMessage && "error"}>
-      <div>{JSON.stringify(parseHubsForRequest(hubInfo))}
-      </div>
-      <div>{JSON.stringify(hubInfo)}</div>
-      <div>{JSON.stringify(allHubs)}</div>
+      {/* <div>{JSON.stringify(parseHubsForRequest(selectedHubs))}</div> */}
+      <div>{JSON.stringify(selectedHubs)}</div>
+      {/* <div>{JSON.stringify(allHubs)}</div> */}
+      <div>{JSON.stringify(interestsInfo)}</div>
+ 
       {/* <Card className={classes.box}> */}
       {curStep === "interestsinfo" && ( //"basicinfo" && (
         <BasicInfo
@@ -266,7 +255,7 @@ export default function Signup({ allHubs }) {
       )}
       {curStep == "basicinfo" && ( // "interestsinfo" && (
         <AddInterests
-          hubInfo={hubInfo}
+          selectedHubs={selectedHubs}
           allHubs={allHubs}
           errorMessage={errorMessages[steps[2]]}
           handleSkip={handleSkipInterestsSubmit}
@@ -275,6 +264,7 @@ export default function Signup({ allHubs }) {
           onSelectNewHub={onSelectNewHub}
           onClickRemoveHub={onClickRemoveHub}
           onInterestsInfoTextFieldChange={handleOnInterestsInfoTextFieldChange}
+          interestsInfo={interestsInfo}
         />
       )}
       {/* </Card> */}

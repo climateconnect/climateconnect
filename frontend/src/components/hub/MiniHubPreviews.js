@@ -28,7 +28,8 @@ export default function MiniHubPreviews({
   onSelectNewHub,
   onClickRemoveHub,
   isProfile,
-  onInterestsInfoTextFieldChange
+  onInterestsInfoTextFieldChange,
+  interestsInfo
 }) {
   const classes = useStyles();
   return (
@@ -44,6 +45,7 @@ export default function MiniHubPreviews({
             onClickRemoveHub={onClickRemoveHub}
             isProfile={isProfile}
             onInterestsInfoTextFieldChange={onInterestsInfoTextFieldChange}
+            interestsInfo={interestsInfo}
           />
         ))}
       {allowCreate && (
@@ -67,7 +69,8 @@ function GridItem({
   onSelectNewHub,
   onClickRemoveHub,
   isProfile,
-  onInterestsInfoTextFieldChange
+  onInterestsInfoTextFieldChange,
+  interestsInfo
 }) {
   return (
     <Grid
@@ -88,6 +91,7 @@ function GridItem({
         onClickRemoveHub={onClickRemoveHub}
         isProfile={isProfile}
         onInterestsInfoTextFieldChange={onInterestsInfoTextFieldChange}
+        interestsInfo={interestsInfo}
       />
     </Grid>
   );

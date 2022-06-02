@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => {
 });
 
 export default function AddInterests({
-  hubInfo,
+  selectedHubs,
   allHubs,
   handleSubmit,
   handleSkip,
@@ -52,7 +52,8 @@ export default function AddInterests({
   errorMessage,
   onSelectNewHub,
   onClickRemoveHub,
-  onInterestsInfoTextFieldChange
+  onInterestsInfoTextFieldChange,
+  interestsInfo
 }) {
   const classes = useStyles();
 
@@ -62,13 +63,14 @@ export default function AddInterests({
       {
         <ActiveHubsSelect
           hubsToSelectFrom={allHubs.filter(
-            (h) => hubInfo?.filter((addedHub) => addedHub.url_slug === h.url_slug).length === 0
+            (h) => selectedHubs?.filter((addedHub) => addedHub.url_slug === h.url_slug).length === 0
           )}
           onClickRemoveHub={onClickRemoveHub}
-          selectedHubs={hubInfo}
+          selectedHubs={selectedHubs}
           onSelectNewHub={onSelectNewHub}
           type="profile"
           onInterestsInfoTextFieldChange={onInterestsInfoTextFieldChange}
+          interestsInfo={interestsInfo}
         />
       }
       <IconButton

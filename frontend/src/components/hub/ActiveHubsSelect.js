@@ -16,7 +16,8 @@ export default function ActiveHubsSelect({
   onSelectNewHub,
   onClickRemoveHub,
   type,
-  onInterestsInfoTextFieldChange
+  onInterestsInfoTextFieldChange,
+  interestsInfo
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -39,6 +40,7 @@ export default function ActiveHubsSelect({
         onClickRemoveHub={onClickRemoveHub}
         isProfile={isProfile}
         onInterestsInfoTextFieldChange={onInterestsInfoTextFieldChange}
+        interestsInfo={interestsInfo}
       />
     </div>
   );
