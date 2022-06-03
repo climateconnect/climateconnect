@@ -5,6 +5,10 @@ from rest_framework import serializers
 from climateconnect_api.models import (
     Availability, Skill
 )
+from climateconnect_api.models.interests import UserInterests
+from hubs.serializers.hub import HubStubSerializer
+
+
 
 
 class AvailabilitySerializer(serializers.ModelSerializer):
@@ -25,3 +29,21 @@ class SkillSerializer(serializers.ModelSerializer):
     
     def get_original_name(self, obj):
         return obj.name
+
+
+class UserInterestsSerializer(serializers.ModelSerializer):
+    description = serializers.SerializerMethodField(required=False)
+    hub = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserInterests
+        fields = ['hub', 'description']
+
+
+    def get_hub(self, obj):
+        # language 
+        return HubStubSerializer(obj.hub).data
+
+    def get_description(self, obj):
+        # language
+        return obj.description

@@ -3,6 +3,7 @@ import uuid
 from datetime import datetime, timedelta
 
 from climateconnect_api.models import Availability, Skill, UserProfile
+from climateconnect_api.models.interests import UserInterests
 from climateconnect_api.models.language import Language
 from climateconnect_api.models.user import UserProfileTranslation
 from climateconnect_api.pagination import (MembersPagination,
@@ -129,6 +130,10 @@ class SignUpView(APIView):
             user_profile.from_tutorial = request.data['from_tutorial']
         if "is_activist" in request.data:
             user_profile.is_activist = request.data['is_activist']
+        if 'hubs' in request.data:
+            for hub_url_slug, hub_description in request.data["hubs"].items():
+                hub = Hub.objects.get(url_slug=hub_url_slug)
+                UserInterests.objects.create(user=user, hub_interested_in=hub, description=hub_description)
         if "last_completed_tutorial_step" in request.data:
             user_profile.last_completed_tutorial_step = request.data['last_completed_tutorial_step']
         if settings.AUTO_VERIFY == True:
@@ -138,7 +143,7 @@ class SignUpView(APIView):
             send_user_verification_email(user, user_profile.verification_key)
             message = "You're almost done! We have sent an email with a confirmation link to {}. Finish creating your account by clicking the link.".format(user.email)  # NOQA
         user_profile.save()
-
+        
         return Response({'success': message}, status=status.HTTP_201_CREATED)
 
 

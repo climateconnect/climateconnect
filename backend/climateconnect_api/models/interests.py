@@ -10,9 +10,9 @@ class UserInterests(models.Model):
         on_delete=models.CASCADE
     )
 
-    hub_interested_in = models.ForeignKey(
+    hub = models.ForeignKey(
         Hub, related_name="profile_interests",
-        help_text="Points to (sector) hub", verbose_name="(sector) hub",
+        help_text="Points to (sector) hub the user is interested in", verbose_name="(sector) hub",
         on_delete=models.CASCADE
     )
 
@@ -26,7 +26,7 @@ class UserInterests(models.Model):
 
     class Meta:
         verbose_name = "User interest"
-        index_together = [["user", "hub_interested_in"]]
+        index_together = [["user", "hub"]]
 
     def __str__(self):
-        return "User {} is interested in sector hub {}".format(self.user.get_full_name(), self.hub_interested_in.name)
+        return "User {} is interested in sector hub {}".format(self.user.get_full_name(), self.hub.name)
