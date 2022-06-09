@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+from typing import List
+
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from chat_messages.models import Participant
@@ -55,6 +58,7 @@ def create_user_notification(user, notification):
             old_notification = old_notification_object[0]
             old_notification.read_at = None
             old_notification.save()
+
 
 def create_email_notification(receiver, chat, message_content, sender, notification):
     sender_name = sender.first_name + " " + sender.last_name
