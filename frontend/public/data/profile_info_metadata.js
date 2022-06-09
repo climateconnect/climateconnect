@@ -57,5 +57,12 @@ export default function getProfileInfoMetadata(locale) {
         },
       },
     },
+    interests: {
+      key: "interests",
+      type: "interests",
+      name: "",
+      missingMessage: "",
+      maxEntries: 3,
+    },
   };
 }

@@ -39,6 +39,7 @@ import SelectDialog from "./../dialogs/SelectDialog";
 import UploadImageDialog from "./../dialogs/UploadImageDialog";
 import SelectField from "./../general/SelectField";
 import DetailledDescriptionInput from "./DetailledDescriptionInput";
+import MiniHubPreviews from "../hub/MiniHubPreviews";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -590,6 +591,15 @@ export default function EditAccountPage({
             onClickRemoveHub={onClickRemoveHub}
             selectedHubs={editedAccount.info.hubs}
             onSelectNewHub={onSelectNewHub}
+          />
+        );
+      } else if (i.type === "interests") {
+        let interestInfo = new Map();
+        i.value.forEach((interest) => (interestInfo[interest.hub.url_slug] = interest.description));
+        return (
+          <MiniHubPreviews
+            hubs={i.value.map((interest) => interest.hub)}
+            interestsInfo={interestInfo}
           />
         );
       } else if (key != "parent_organization" && ["text", "bio"].includes(i.type)) {

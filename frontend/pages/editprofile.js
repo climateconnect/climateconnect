@@ -67,23 +67,23 @@ export default function EditProfilePage({ skillsOptions, availabilityOptions, us
     );
   else
     return (
-      <WideLayout
-        title={texts.edit_profile}
-        message={errorMessage}
-        messageType={errorMessage && "error"}
-      >
-        <EditProfileRoot
-          profile={profile}
-          user={user}
-          initialTranslations={user.translations}
-          skillsOptions={skillsOptions}
-          infoMetadata={infoMetadata}
-          locationInputRef={locationInputRef}
-          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-          setErrorMessage={setErrorMessage}
-          availabilityOptions={availabilityOptions}
-        />
-      </WideLayout>
+        <WideLayout
+          title={texts.edit_profile}
+          message={errorMessage}
+          messageType={errorMessage && "error"}
+        >
+          <EditProfileRoot
+            profile={profile}
+            user={user}
+            initialTranslations={user.translations}
+            skillsOptions={skillsOptions}
+            infoMetadata={infoMetadata}
+            locationInputRef={locationInputRef}
+            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+            setErrorMessage={setErrorMessage}
+            availabilityOptions={availabilityOptions}
+          />
+        </WideLayout>
     );
 }
 

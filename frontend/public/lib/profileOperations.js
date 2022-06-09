@@ -24,6 +24,7 @@ export function parseProfile(profile, detailledSkills, keepOldProps) {
       skills: profile.skills && profile.skills.map((s) => s.name),
       availability: profile.availability && profile.availability.name,
       website: profile.website,
+      interests: profile.interests,
     },
   };
   user = convertUndefinedToNull(user);
