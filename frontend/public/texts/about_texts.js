@@ -123,7 +123,7 @@ export default function getAboutTexts(classes) {
     },
     accelerate_climate_action_worldwide: {
       en: "Accelerate Climate Action Worldwide",
-      de: "Klimapolitik weltweit beschleunigen",
+      de: "Klimaschutz weltweit beschleunigen",
     },
     one_platform_for_all_climate_actors: {
       en: "One Platform For All Climate Actors",
