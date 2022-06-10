@@ -597,10 +597,13 @@ export default function EditAccountPage({
         let interestInfo = new Map();
         i.value.forEach((interest) => (interestInfo[interest.hub.url_slug] = interest.description));
         return (
-          <MiniHubPreviews
-            hubs={i.value.map((interest) => interest.hub)}
-            interestsInfo={interestInfo}
+          <ActiveHubsSelect
+          // todo: wahrscheinlich alle funktionen von signup kopieren + eigenschaften
           />
+          // <MiniHubPreviews
+          //   hubs={i.value.map((interest) => interest.hub)}
+          //   interestsInfo={interestInfo}
+          // />
         );
       } else if (key != "parent_organization" && ["text", "bio"].includes(i.type)) {
         //This is the fallback for normal textfields
