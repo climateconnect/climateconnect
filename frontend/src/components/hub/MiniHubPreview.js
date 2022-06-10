@@ -20,7 +20,6 @@ import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import SelectField from "../general/SelectField";
-import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 
 const useStyles = makeStyles((theme) => ({
   link: {
@@ -66,8 +65,7 @@ const useStyles = makeStyles((theme) => ({
   },
   hubIcon: {
     height: 26,
-    marginBottom: -3,
-    marginRight: theme.spacing(0.25),
+    marginRight: theme.spacing(0.5),
   },
   closeIconButton: {
     position: "absolute",
@@ -81,6 +79,7 @@ const useStyles = makeStyles((theme) => ({
   },
   expand: {
     transform: "rotate(0deg)",
+    padding: 0,
     marginLeft: "auto",
     transition: theme.transitions.create("transform", {
       duration: theme.transitions.duration.shortest,
@@ -112,6 +111,10 @@ const useStyles = makeStyles((theme) => ({
     margin: "auto",
     width: "90%",
     textAlign: "center",
+    color: "rgba(0, 0, 0, 0.87) ",
+  },
+  iconAndNameContainer: {
+    display: "flex",
   },
 }));
 
@@ -129,7 +132,7 @@ export default function MiniHubPreview({
   const classes = useStyles({ createMode: createMode, thumbnail_image: hub?.thumbnail_image });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
-  const showDescription = !createMode && allowDescription;
+  const showDescription = !createMode && allowDescription && ((hub && interestsInfo[hub.url_slug]) || editMode);
   const [expanded, setExpanded] = React.useState(showDescription ? true : false);
 
   const handleRemoveHub = (event) => {
@@ -140,6 +143,12 @@ export default function MiniHubPreview({
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
+
+  // const cutString = (str) => {
+  //   if (str.length > 50){
+  //     return str.slice(0, 45) + " ...";
+  //   }
+  // };
 
   return (
     <Card className={classes.root}>
@@ -186,10 +195,12 @@ export default function MiniHubPreview({
                 aria-expanded={expanded}
                 aria-label="show more"
               >
+                <div className={classes.iconAndNameContainer}>
+                {hub.icon && <img src={getImageUrl(hub.icon)} className={classes.hubIcon} />}
                 <Typography color="secondary" className={classes.hubName}>
-                  {hub.icon && <img src={getImageUrl(hub.icon)} className={classes.hubIcon} />}
                   {hub?.name}
                 </Typography>
+                </div>
               </CardActionArea>
             )}
           </>
@@ -207,7 +218,7 @@ export default function MiniHubPreview({
             )}
           </>
         </CardActions>
-      </Link>
+
 
       {showDescription && (
         <Collapse in={expanded} timeout="auto" unmountOnExit>
@@ -240,29 +251,7 @@ export default function MiniHubPreview({
           )}
         </Collapse>
       )}
-
-      {/* <div className={classes.textContainer}>
-        {createMode ? (
-          <SelectField
-            label={texts.add_a_hub_where_you_are_active}
-            size="small"
-            options={hubsToSelectFrom}
-            onChange={(event) => event.target.value && onSelect(event)}
-          />
-        ) : (
-          <CardActionArea
-            className={clsx(classes.expand)}
-            onClick={handleExpandClick}
-            aria-expanded={expanded}
-            aria-label="show more"
-          >
-            <Typography color="secondary" className={classes.hubName}>
-              {hub.icon && <img src={getImageUrl(hub.icon)} className={classes.hubIcon} />}
-              {hub?.name}
-            </Typography>
-          </CardActionArea>
-        )}
-      </div> */}
+      </Link>
     </Card>
   );
 }
