@@ -93,8 +93,6 @@ export default function Signup({ allHubs }) {
   const [interestsInfo, setInterestsInfo] = React.useState();
   const [selectedHubs, setSelectedHubs] = React.useState([]);
 
-
-
   const handleBasicInfoSubmit = (event, values) => {
     event.preventDefault();
     setUserInfo({
@@ -152,12 +150,12 @@ export default function Signup({ allHubs }) {
       last_completed_tutorial_step: lastCompletedTutorialStep,
       source_language: locale,
     };
-    if (!skipInterests){
+    if (!skipInterests) {
       payload = {
         ...payload,
-        hubs: interestsInfo
+        hubs: interestsInfo,
       };
-    };
+    }
     const headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
@@ -187,8 +185,8 @@ export default function Signup({ allHubs }) {
         else if (error.response.data.length > 0)
           setErrorMessages({ ...errorMessages, [steps[2]]: error.response.data[0] });
       });
-  }
-  
+  };
+
   const handleGoBackFromAddInfo = (event, values) => {
     event.preventDefault();
     setUserInfo({
@@ -206,17 +204,16 @@ export default function Signup({ allHubs }) {
   };
 
   const handleOnInterestsInfoTextFieldChange = (url_slug, description) => {
-    const temp = {...interestsInfo, [url_slug]: description};
+    const temp = { ...interestsInfo, [url_slug]: description };
     setInterestsInfo(temp);
-
   };
-  
+
   const onSelectNewHub = (event) => {
     event.preventDefault();
     const hub = allHubs.find((h) => h.name === event.target.value);
     if (selectedHubs?.filter((h) => h.url_slug === hub.url_slug)?.length === 0) {
       setSelectedHubs([...selectedHubs, hub]);
-      setInterestsInfo({...interestsInfo, [hub.url_slug]: ""});
+      setInterestsInfo({ ...interestsInfo, [hub.url_slug]: "" });
     }
   };
 
@@ -234,14 +231,8 @@ export default function Signup({ allHubs }) {
   //   else return hubs.map((h) => ({key: h.url_slug, value: h.name}))
   // };
 
-
   return (
     <Layout isLoading={isLoading} message={errorMessage} messageType={errorMessage && "error"}>
-      {/* <div>{JSON.stringify(parseHubsForRequest(selectedHubs))}</div> */}
-      <div>{JSON.stringify(selectedHubs)}</div>
-      {/* <div>{JSON.stringify(allHubs)}</div> */}
-      <div>{JSON.stringify(interestsInfo)}</div>
- 
       {/* <Card className={classes.box}> */}
       {curStep === "basicinfo" && (
         <BasicInfo

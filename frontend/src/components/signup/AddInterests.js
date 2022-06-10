@@ -27,6 +27,8 @@ const useStyles = makeStyles((theme) => {
     },
     cancelButton: {
       top: theme.spacing(16.5),
+      // todo: remove zIndex
+      zIndex: 3,
       [theme.breakpoints.up("md")]: {
         top: theme.spacing(6.5),
       },
@@ -53,7 +55,7 @@ export default function AddInterests({
   onSelectNewHub,
   onClickRemoveHub,
   onInterestsInfoTextFieldChange,
-  interestsInfo
+  interestsInfo,
 }) {
   const classes = useStyles();
 
@@ -68,7 +70,7 @@ export default function AddInterests({
           onClickRemoveHub={onClickRemoveHub}
           selectedHubs={selectedHubs}
           onSelectNewHub={onSelectNewHub}
-          type="profile"
+          type="userprofile"
           onInterestsInfoTextFieldChange={onInterestsInfoTextFieldChange}
           interestsInfo={interestsInfo}
         />

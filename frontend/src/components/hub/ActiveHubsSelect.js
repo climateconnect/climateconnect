@@ -13,34 +13,34 @@ const useStyles = makeStyles(() => ({
 export default function ActiveHubsSelect({
   selectedHubs,
   hubsToSelectFrom,
+  interestsInfo,
   onSelectNewHub,
   onClickRemoveHub,
   type,
   onInterestsInfoTextFieldChange,
-  interestsInfo
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const isProfile = type === "profile";
+  const isUserProfile = type === "userprofile";
   const texts = getTexts({ page: "hub", locale: locale });
-  
+
   return (
     <div>
       <Typography color="secondary" className={classes.headline}>
-        {isProfile
+        {isUserProfile
           ? texts.add_hubs_you_are_interested_in
           : texts.add_hubs_in_which_your_organization_is_active}
       </Typography>
       <MiniHubPreviews
-        allowCreate={isProfile && selectedHubs?.length > 2 ? false : true}
+        allowCreate={isUserProfile && selectedHubs?.length > 2 ? false : true}
         editMode
         allHubs={hubsToSelectFrom}
         hubs={selectedHubs}
+        interestsInfo={interestsInfo}
+        allowDescription={isUserProfile}
         onSelectNewHub={onSelectNewHub}
         onClickRemoveHub={onClickRemoveHub}
-        isProfile={isProfile}
         onInterestsInfoTextFieldChange={onInterestsInfoTextFieldChange}
-        interestsInfo={interestsInfo}
       />
     </div>
   );
