@@ -9,6 +9,7 @@ import {
   CardMedia,
   CardActions,
 } from "@material-ui/core";
+import FormatQuoteIcon from "@material-ui/icons/FormatQuote";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import CloseIcon from "@material-ui/icons/Close";
@@ -19,6 +20,7 @@ import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import SelectField from "../general/SelectField";
+import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 
 const useStyles = makeStyles((theme) => ({
   link: {
@@ -91,24 +93,44 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     width: "calc(100% - " + theme.spacing(2) + "px)",
   },
+  descriptionWrapper: {
+    padding: theme.spacing(1),
+  },
+  leadingQuotationMark: {
+    display: "block",
+    color: "#66BCB5",
+  },
+  trailingQuotationMark: {
+    display: "block",
+    color: "#66BCB5",
+    transform: "rotate(180deg)",
+    float: "right",
+  },
+  descriptionText: {
+    display: "block",
+    float: "center",
+    margin: "auto",
+    width: "90%",
+    textAlign: "center",
+  },
 }));
 
 export default function MiniHubPreview({
   hub,
   hubsToSelectFrom,
+  interestsInfo,
   editMode,
   createMode = false,
+  allowDescription,
   onSelect,
   onClickRemoveHub,
-  isProfile,
   onInterestsInfoTextFieldChange,
-  interestsInfo
 }) {
   const classes = useStyles({ createMode: createMode, thumbnail_image: hub?.thumbnail_image });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
-  const onClickExpandCard = !createMode && editMode && isProfile;
-  const [expanded, setExpanded] = React.useState((createMode? false : true));
+  const showDescription = !createMode && allowDescription;
+  const [expanded, setExpanded] = React.useState(showDescription ? true : false);
 
   const handleRemoveHub = (event) => {
     event.preventDefault();
@@ -119,12 +141,13 @@ export default function MiniHubPreview({
     setExpanded(!expanded);
   };
 
-
   return (
     <Card className={classes.root}>
       <Link
         className={classes.link}
-        {...(onClickExpandCard ? {onClick: handleExpandClick}: {href: hub && getLocalePrefix(locale) + `/hubs/` + hub.url_slug, target: "_blank"})}
+        {...(showDescription
+          ? { onClick: handleExpandClick }
+          : { href: hub && getLocalePrefix(locale) + `/hubs/` + hub.url_slug, target: "_blank" })}
       >
         <CardActionArea>
           <div className={classes.placeholderImageContainer}>
@@ -149,51 +172,74 @@ export default function MiniHubPreview({
         </CardActionArea>
 
         <CardActions disableSpacing>
-          {createMode ? (
-            <SelectField
-              label={texts.add_a_hub_where_you_are_active}
-              size="small"
-              options={hubsToSelectFrom}
-              onChange={(event) => event.target.value && onSelect(event)}
-            />
-          ) : (
-            <CardActionArea
-              className={clsx(classes.expand)}
-              aria-expanded={expanded}
-              aria-label="show more"
-            >
-              <Typography color="secondary" className={classes.hubName}>
-                {hub.icon && <img src={getImageUrl(hub.icon)} className={classes.hubIcon} />}
-                {hub?.name}
-              </Typography>
-            </CardActionArea>
-          )}
-          {!createMode && isProfile && (
-            <IconButton
-              className={clsx(classes.expand, {
-                [classes.expandOpen]: expanded,
-              })}
-              aria-expanded={expanded}
-              aria-label="show more"
-            >
-              <ExpandMoreIcon />
-            </IconButton>
-          )}
+          <>
+            {createMode ? (
+              <SelectField
+                label={texts.add_a_hub_where_you_are_active}
+                size="small"
+                options={hubsToSelectFrom}
+                onChange={(event) => event.target.value && onSelect(event)}
+              />
+            ) : (
+              <CardActionArea
+                className={clsx(classes.expand)}
+                aria-expanded={expanded}
+                aria-label="show more"
+              >
+                <Typography color="secondary" className={classes.hubName}>
+                  {hub.icon && <img src={getImageUrl(hub.icon)} className={classes.hubIcon} />}
+                  {hub?.name}
+                </Typography>
+              </CardActionArea>
+            )}
+          </>
+          <>
+            {showDescription && (
+              <IconButton
+                className={clsx(classes.expand, {
+                  [classes.expandOpen]: expanded,
+                })}
+                aria-expanded={expanded}
+                aria-label="show more"
+              >
+                <ExpandMoreIcon />
+              </IconButton>
+            )}
+          </>
         </CardActions>
       </Link>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <TextField
-          className={classes.collapsedTextfield}
-          value={hub && interestsInfo[hub.url_slug]}
-          onChange={(event) => onInterestsInfoTextFieldChange(hub.url_slug, event.target.value)}
-          label="Description"
-          placeholder={texts.you_can_describe_why_you_are_interested}
-          multiline
-          rows={7}
-          size="small"
-          // variant="outlined"
-        />
-      </Collapse>
+
+      {showDescription && (
+        <Collapse in={expanded} timeout="auto" unmountOnExit>
+          {/* <InterestDescription
+            interestsInfo={interestsInfo}
+            hubUrlSlug={hub.url_slug}
+            editMode={editMode}
+            onInterestsInfoTextFieldChange={onInterestsInfoTextFieldChange}
+          /> */}
+          {editMode ? (
+            <TextField
+              className={classes.collapsedTextfield}
+              value={hub && allowDescription && interestsInfo[hub.url_slug]}
+              onChange={(event) => onInterestsInfoTextFieldChange(hub.url_slug, event.target.value)}
+              label="Description"
+              placeholder={texts.you_can_describe_why_you_are_interested}
+              multiline
+              rows={7}
+              size="small"
+              variant="outlined"
+            />
+          ) : (
+            <div className={classes.descriptionWrapper}>
+              <FormatQuoteIcon className={classes.leadingQuotationMark} />
+              <Typography className={classes.descriptionText}>
+                {hub && allowDescription && interestsInfo[hub.url_slug]}
+              </Typography>
+              <FormatQuoteIcon className={classes.trailingQuotationMark} />
+            </div>
+          )}
+        </Collapse>
+      )}
 
       {/* <div className={classes.textContainer}>
         {createMode ? (
@@ -220,3 +266,40 @@ export default function MiniHubPreview({
     </Card>
   );
 }
+
+// function InterestDescription({
+//   interestsInfo,
+//   hubUrlSlug,
+//   editMode,
+//   onInterestsInfoTextFieldChange,
+// }) {
+//   const createMode = false;
+//   const hub = false;
+//   const classes = useStyles({ createMode: createMode, thumbnail_image: hub?.thumbnail_image });
+//   const { locale } = useContext(UserContext);
+//   const texts = getTexts({ page: "hub", locale: locale });
+
+//   return (
+//     <>
+//       {editMode ? (
+//         <TextField
+//           className={classes.collapsedTextfield}
+//           value={hubUrlSlug && interestsInfo[hubUrlSlug]}
+//           onChange={(event) => onInterestsInfoTextFieldChange(hubUrlSlug, event.target.value)}
+//           label="Description"
+//           placeholder={texts.you_can_describe_why_you_are_interested}
+//           multiline
+//           rows={7}
+//           size="small"
+//           variant="outlined"
+//         />
+//       ) : (
+//         <>
+//           <FormatQuoteIcon />
+//           <Typography>{hubUrlSlug && interestsInfo[hubUrlSlug]}</Typography>
+//           <FormatQuoteIcon />
+//         </>
+//       )}
+//     </>
+//   );
+// }
