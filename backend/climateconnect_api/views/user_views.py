@@ -86,10 +86,6 @@ class LoginView(KnoxLoginView):
                 'message': _('Invalid email or password')
             }, status=status.HTTP_401_UNAUTHORIZED)
 
-        return Response({
-            'message': 'Invalid password.'
-        }, status=status.HTTP_401_UNAUTHORIZED)
-
 
 class SignUpView(APIView):
     permission_classes = [AllowAny]
