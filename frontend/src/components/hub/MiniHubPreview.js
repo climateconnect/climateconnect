@@ -203,8 +203,8 @@ export default function MiniHubPreview({
             )}
           </>
           <>
-            {showEditDescription ||
-              (hasExpandForLongDescription && (
+            {(showEditDescription ||
+              hasExpandForLongDescription) && (
                 <IconButton
                   className={clsx(classes.expand, {
                     [classes.expandOpen]: expanded,
@@ -214,7 +214,7 @@ export default function MiniHubPreview({
                 >
                   <ExpandMoreIcon />
                 </IconButton>
-              ))}
+              )}
           </>
         </CardActions>
 
