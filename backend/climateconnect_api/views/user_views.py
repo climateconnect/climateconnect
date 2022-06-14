@@ -376,10 +376,13 @@ class EditUserProfile(APIView):
 
         user_profile.save()
 
-        if 'hubs' in request.data:
-            for hub_url_slug, hub_description in request.data["hubs"].items():
+        if 'interests' in request.data:
+            for hub_url_slug, hub_description in request.data["interests"].items():
                 hub = Hub.objects.get(url_slug=hub_url_slug)
-                UserInterests.objects.create(user=user, hub_interested_in=hub, description=hub_description)
+                interest = UserInterests.objects.get_or_create(user=user, hub=hub)
+                # update_or_create
+                interest.description=hub_description
+                interest.save()
 
         items_to_translate = [
             {

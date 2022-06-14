@@ -2,6 +2,7 @@ import Cookies from "next-cookies";
 import React, { useContext, useRef, useState } from "react";
 
 import { apiRequest } from "../public/lib/apiOperations";
+import { getAllHubs } from "../public/lib/hubOperations";
 import { parseOptions } from "../public/lib/selectOptionsOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -13,22 +14,23 @@ import EditProfileRoot from "./../src/components/profile/EditProfileRoot";
 
 export async function getServerSideProps(ctx) {
   const { token } = Cookies(ctx);
-  const [skillsOptions, availabilityOptions, userProfile] = await Promise.all([
+  const [skillsOptions, availabilityOptions, userProfile, allHubs] = await Promise.all([
     getSkillsOptions(token, ctx.locale),
     getAvailabilityOptions(token, ctx.locale),
     getUserProfile(token, ctx.locale),
+    getAllHubs(ctx.locale, true),
   ]);
-
   return {
     props: nullifyUndefinedValues({
       skillsOptions: skillsOptions,
       availabilityOptions: availabilityOptions,
       user: userProfile,
+      allHubs: allHubs,
     }),
   };
 }
 
-export default function EditProfilePage({ skillsOptions, availabilityOptions, user }) {
+export default function EditProfilePage({ skillsOptions, availabilityOptions, user, allHubs }) {
   const { locale } = useContext(UserContext);
   let infoMetadata = getProfileInfoMetadata(locale);
   const texts = getTexts({ page: "profile", locale: locale });
@@ -82,6 +84,7 @@ export default function EditProfilePage({ skillsOptions, availabilityOptions, us
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           setErrorMessage={setErrorMessage}
           availabilityOptions={availabilityOptions}
+          allHubs={allHubs}
         />
       </WideLayout>
     );

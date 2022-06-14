@@ -61,7 +61,6 @@ export default function getProfileInfoMetadata(locale) {
       key: "interests",
       type: "interests",
       name: "",
-      missingMessage: "",
       maxEntries: 3,
     },
   };

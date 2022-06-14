@@ -255,14 +255,10 @@ export default function AccountPage({
           } else if (i.type === "hubs") {
             return <MiniHubPreviews hubs={i.value} />;
           } else if (i.type === "interests") {
-            let interestInfo = new Map();
-            i.value.forEach(
-              (interest) => (interestInfo[interest.hub.url_slug] = interest.description)
-            );
             return (
               <MiniHubPreviews
-                hubs={i.value.map((interest) => interest.hub)}
-                interestsInfo={interestInfo}
+                hubs={i.value.hubs}
+                interestsInfo={i.value.descriptions}
                 allowDescription
               />
             );

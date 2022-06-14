@@ -24,9 +24,15 @@ export function parseProfile(profile, detailledSkills, keepOldProps) {
       skills: profile.skills && profile.skills.map((s) => s.name),
       availability: profile.availability && profile.availability.name,
       website: profile.website,
-      interests: profile.interests,
+      // interests: profile.interests,
+      interests:{hubs: profile.interests?.map((h) => h.hub), descriptions: {}},
+      // interestInfo: {},
+      // interests: {hubs: profile.interests.map ... , descriptions:
     },
   };
+  profile.interests?.forEach(
+    (interest) => (user.info.interests.descriptions[interest.hub.url_slug] = interest.description)
+  );
   user = convertUndefinedToNull(user);
   if (keepOldProps) delete user.info.location;
   if (detailledSkills) user.info.skills = profile.skills.map((s) => ({ ...s, key: s.id }));

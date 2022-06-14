@@ -132,7 +132,8 @@ export default function MiniHubPreview({
   const classes = useStyles({ createMode: createMode, thumbnail_image: hub?.thumbnail_image });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
-  const showDescription = !createMode && allowDescription && ((hub && interestsInfo[hub.url_slug]) || editMode);
+  const showDescription =
+    !createMode && allowDescription && ((hub && interestsInfo[hub.url_slug]) || editMode);
   const [expanded, setExpanded] = React.useState(showDescription ? true : false);
 
   const handleRemoveHub = (event) => {
@@ -196,10 +197,10 @@ export default function MiniHubPreview({
                 aria-label="show more"
               >
                 <div className={classes.iconAndNameContainer}>
-                {hub.icon && <img src={getImageUrl(hub.icon)} className={classes.hubIcon} />}
-                <Typography color="secondary" className={classes.hubName}>
-                  {hub?.name}
-                </Typography>
+                  {hub.icon && <img src={getImageUrl(hub.icon)} className={classes.hubIcon} />}
+                  <Typography color="secondary" className={classes.hubName}>
+                    {hub?.name}
+                  </Typography>
                 </div>
               </CardActionArea>
             )}
@@ -218,7 +219,7 @@ export default function MiniHubPreview({
             )}
           </>
         </CardActions>
-
+      </Link>
 
       {showDescription && (
         <Collapse in={expanded} timeout="auto" unmountOnExit>
@@ -251,7 +252,6 @@ export default function MiniHubPreview({
           )}
         </Collapse>
       )}
-      </Link>
     </Card>
   );
 }

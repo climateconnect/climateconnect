@@ -33,6 +33,7 @@ export default function EditAccountRoot({
   handleSetLocationOptionsOpen,
   setErrorMessage,
   availabilityOptions,
+  allHubs,
 }) {
   const { locale, locales } = useContext(UserContext);
   const cookies = new Cookies();
@@ -152,6 +153,7 @@ export default function EditAccountRoot({
             splitName
             type="profile"
             onClickCheckTranslations={onClickCheckTranslations}
+            allHubs={allHubs}
           />
         ) : (
           <>
@@ -204,6 +206,7 @@ const parseProfileForRequest = (profile, availabilityOptions, user) => {
     availability: availability ? availability.id : user.availability ? user.availability.id : null,
     skills: profile.info.skills.map((s) => s.id),
     website: profile.info.website,
+    interests: profile.info.interestInfo,
   };
 };
 
