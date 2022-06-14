@@ -126,10 +126,10 @@ class SignUpView(APIView):
             user_profile.from_tutorial = request.data['from_tutorial']
         if "is_activist" in request.data:
             user_profile.is_activist = request.data['is_activist']
-        if 'hubs' in request.data:
-            for hub_url_slug, hub_description in request.data["hubs"].items():
+        if 'interests' in request.data:
+            for hub_url_slug, description in request.data["interests"].items():
                 hub = Hub.objects.get(url_slug=hub_url_slug)
-                UserInterests.objects.create(user=user, hub_interested_in=hub, description=hub_description)
+                UserInterests.objects.create(user=user, hub=hub, description=description)
         if "last_completed_tutorial_step" in request.data:
             user_profile.last_completed_tutorial_step = request.data['last_completed_tutorial_step']
         if settings.AUTO_VERIFY == True:

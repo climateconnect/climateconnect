@@ -153,7 +153,7 @@ export default function Signup({ allHubs }) {
     if (!skipInterests) {
       payload = {
         ...payload,
-        hubs: interestsInfo,
+        interests: interestsInfo,
       };
     }
     const headers = {
