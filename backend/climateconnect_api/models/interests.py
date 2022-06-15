@@ -26,7 +26,7 @@ class UserInterests(models.Model):
 
     class Meta:
         verbose_name = "User interest"
-        index_together = [["user", "hub"]]
+        unique_together = [["user", "hub"]]
 
     def __str__(self):
         return "User {} is interested in sector hub {}".format(self.user.get_full_name(), self.hub.name)
