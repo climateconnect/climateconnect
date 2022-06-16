@@ -94,9 +94,8 @@ def schedule_weekly_recommendations_email():
         entity_ids = fetch_entities_for_weekly_recommendations(
             max_entities, timespan_start, location_id, is_in_hub
         )
-
         # check if there are any new entities otherwise entity_ids will be an empty list
-        if entity_ids:
+        if any(entity_ids.values()):
             user_queries_by_language = fetch_user_info_for_weekly_recommendations(
                 location_id, is_in_hub
             )
