@@ -203,18 +203,17 @@ export default function MiniHubPreview({
             )}
           </>
           <>
-            {(showEditDescription ||
-              hasExpandForLongDescription) && (
-                <IconButton
-                  className={clsx(classes.expand, {
-                    [classes.expandOpen]: expanded,
-                  })}
-                  aria-expanded={expanded}
-                  aria-label="show more"
-                >
-                  <ExpandMoreIcon />
-                </IconButton>
-              )}
+            {(showEditDescription || hasExpandForLongDescription) && (
+              <IconButton
+                className={clsx(classes.expand, {
+                  [classes.expandOpen]: expanded,
+                })}
+                aria-expanded={expanded}
+                aria-label="show more"
+              >
+                <ExpandMoreIcon />
+              </IconButton>
+            )}
           </>
         </CardActions>
 
