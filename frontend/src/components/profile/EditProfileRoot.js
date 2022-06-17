@@ -206,7 +206,7 @@ const parseProfileForRequest = (profile, availabilityOptions, user) => {
     availability: availability ? availability.id : user.availability ? user.availability.id : null,
     skills: profile.info.skills.map((s) => s.id),
     website: profile.info.website,
-    interests: profile.info.interestInfo,
+    interests: profile.info.interests.descriptions,
   };
 };
 

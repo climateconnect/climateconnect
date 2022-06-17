@@ -24,10 +24,7 @@ export function parseProfile(profile, detailledSkills, keepOldProps) {
       skills: profile.skills && profile.skills.map((s) => s.name),
       availability: profile.availability && profile.availability.name,
       website: profile.website,
-      // interests: profile.interests,
-      interests:{hubs: profile.interests?.map((h) => h.hub), descriptions: {}},
-      // interestInfo: {},
-      // interests: {hubs: profile.interests.map ... , descriptions:
+      interests: { hubs: profile.interests?.map((h) => h.hub), descriptions: {} },
     },
   };
   profile.interests?.forEach(

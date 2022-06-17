@@ -597,15 +597,23 @@ export default function EditAccountPage({
         const onSelectNewHub = (event) => {
           event.preventDefault();
           const hub = allHubs.find((h) => h.name === event.target.value);
-          if (editedAccount.info.interests.hubs?.filter((h) => h.url_slug === hub.url_slug)?.length === 0) {
+          if (
+            editedAccount.info.interests.hubs?.filter((h) => h.url_slug === hub.url_slug)
+              ?.length === 0
+          ) {
             setEditedAccount({
               ...editedAccount,
               info: {
                 ...editedAccount.info,
-                interests: {hubs: [...editedAccount.info.interests.hubs, hub], 
-                  descriptions: {...editedAccount?.info?.imterests?.descriptions, [hub.url_slug]: ""}
+                interests: {
+                  hubs: [...editedAccount.info.interests.hubs, hub],
+                  descriptions: {
+                    ...editedAccount?.info?.interests?.descriptions,
+                    [hub.url_slug]: "",
+                  },
+                },
               },
-            }});
+            });
           }
         };
         const onClickRemoveHub = (hub) => {
@@ -618,8 +626,7 @@ export default function EditAccountPage({
             ...editedAccount,
             info: {
               ...editedAccount.info,
-              interests:{hubs: interestHubsAfterRemoval,
-                descriptions: interestInfoAfterRemoval,}
+              interests: { hubs: interestHubsAfterRemoval, descriptions: interestInfoAfterRemoval },
             },
           });
         };
@@ -628,8 +635,13 @@ export default function EditAccountPage({
             ...editedAccount,
             info: {
               ...editedAccount.info,
-              interests: { ...editedAccount.info.interests, 
-                descriptions: { ...editedAccount.info.interests.descriptions, [hubUrlSlug]: description },}
+              interests: {
+                ...editedAccount.info.interests,
+                descriptions: {
+                  ...editedAccount.info.interests.descriptions,
+                  [hubUrlSlug]: description,
+                },
+              },
             },
           });
         };
