@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
   },
   backButton: {
-    float: "left",
+    marginRight: theme.spacing(1),
   },
   rightAlignedButton: {
     float: "right",
@@ -74,6 +74,9 @@ const useStyles = makeStyles((theme) => ({
   bold: {
     fontWeight: "bold",
   },
+  semibold: {
+    fontWeight: 600,
+  },
   flexBlock: {
     display: "flex",
     justifyContent: "space-around",
@@ -82,13 +85,27 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
   },
+  headerContainer: {
+    display: "flex",
+    marginBottom: theme.spacing(5),
+    alignItems: "center",
+  },
+  headingMessage: {
+    fontWeight: "bold",
+    marginTop: theme.spacing(3),
+    marginBottom: theme.spacing(3),
+  },
+  explanationMessage: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+  },
 }));
 
 //TODO throw error if "label" isn't unique
 
 //@fields: [{required: boolean, label: text, type: CSS Input Type, progressOnFill: number, select:select(see below)}, ...]
 //@select: {selectValues: [{label:text, value: text}], defaultValue=text}
-//@messages: {submitMessage:text, headerMessage: text, bottomMessage:text}
+//@messages: {submitMessage:text, headerMessage: text, bottomMessage:text, explanationMessage:text, headingMessage: text}
 //@bottomLink: {text: text, href: url}
 //@formAction: {href: href, method: method}
 export default function Form({
@@ -159,20 +176,33 @@ export default function Form({
   return (
     <div className={`${className ? className : classes.root}`}>
       {messages.headerMessage ? (
-        <Typography component="h2" variant="subtitle1" className={classes.centerText}>
+        <span className={classes.headerContainer}>
           {onGoBack && (
             <IconButton
               size="small"
+              color="primary"
               className={classes.backButton}
               onClick={(event) => onGoBack(event, values)}
             >
               <KeyboardBackspaceIcon />
             </IconButton>
           )}
-          {messages.headerMessage}
-        </Typography>
+          <Typography
+            component="h2"
+            variant="subtitle1"
+            color="primary"
+            className={classes.semibold}
+          >
+            {messages.headerMessage}
+          </Typography>
+        </span>
       ) : (
         <></>
+      )}
+      {messages.headingMessage && (
+        <Typography component="h1" variant="h1" color="primary" className={classes.headingMessage}>
+          {messages.headingMessage}
+        </Typography>
       )}
       {usePercentage ? (
         <LinearProgress
@@ -182,6 +212,11 @@ export default function Form({
         />
       ) : (
         <></>
+      )}
+      {messages.explanationMessage && (
+        <Typography variant="body2" color="primary" className={classes.explanationMessage}>
+          {messages.explanationMessage}
+        </Typography>
       )}
       <form
         action={formAction && formAction.action}

@@ -277,8 +277,13 @@ export default function getProfileTexts({ profile, locale }) {
       ),
     },
     signup_step_2_headline: {
-      en: "Step 2: A little bit about yourself",
-      de: "Schritt 2: Ein paar Infos über dich",
+      en: "Step 2 of 3: Basic Info",
+      de: "Schritt 2 of 3: Grundlegende Informationen",
+    },
+    add_your_name_and_location: {
+      en: "Add your Name and Location. This way people can find you and know where you are from.",
+      de:
+        "Füge deinen Namen und Standort hinzu. So können dich Leute dann finden und wissen, woher du bist.",
     },
     repeat_password: {
       en: "Repeat Password",

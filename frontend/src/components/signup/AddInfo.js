@@ -74,6 +74,7 @@ export default function AddInfo({
   const messages = {
     submitMessage: texts.next_step,
     headerMessage: texts.signup_step_2_headline,
+    explanationMessage: texts.add_your_name_and_location,
   };
 
   const formAction = {

@@ -615,9 +615,13 @@
     "en": "Add your team",
     "de": "Füge dein Team hinzu"
   },
+  "sign_up_heading": {
+    "en": "Sign Up",
+    "de": "Registrierung"
+  },
   "step_1_basic_information": {
-    "en": "Step 1: Basic Information",
-    "de": "Schritt 1: Grundlegende Informationen"
+    "en": "Step 1 of 3: Email & Password",
+    "de": "Schritt 1 von 3: Email & Passwort"
   },
   "already_have_an_account": {
     "en": "Already have an account?",

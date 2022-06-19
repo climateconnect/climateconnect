@@ -37,10 +37,20 @@ export async function getServerSideProps(ctx) {
 
 const useStyles = makeStyles({
   box: {
+    // border: "1px solid rgba(0,0,0,0.3)",
     borderRadius: "10%",
-    shadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
+    boxShadow: "2px 4px 10px 4px rgba(0,0,0,0.1)",
     transition: "0.3s",
-    width: 600,
+    maxWidth: 600,
+    minWidth: 350,
+  },
+  image: {
+    width: 500,
+  },
+  root: {
+    display: "flex",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
   },
 });
 
@@ -233,41 +243,46 @@ export default function Signup({ allHubs }) {
 
   return (
     <Layout isLoading={isLoading} message={errorMessage} messageType={errorMessage && "error"}>
-      {/* <Card className={classes.box}> */}
-      {curStep === "basicinfo" && (
-        <BasicInfo
-          title={texts.sign_up}
-          values={userInfo}
-          handleSubmit={handleBasicInfoSubmit}
-          errorMessage={errorMessages[steps[0]]}
-        />
-      )}
-      {curStep === "personalinfo" && (
-        <AddInfo
-          values={userInfo}
-          handleSubmit={handleAddInfoSubmit}
-          errorMessage={errorMessages[steps[1]]}
-          handleGoBack={handleGoBackFromAddInfo}
-          locationInputRef={locationInputRef}
-          locationOptionsOpen={locationOptionsOpen}
-          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-        />
-      )}
-      {curStep == "interestsinfo" && (
-        <AddInterests
-          selectedHubs={selectedHubs}
-          allHubs={allHubs}
-          errorMessage={errorMessages[steps[2]]}
-          handleSkip={handleSkipInterestsSubmit}
-          handleSubmit={handleAddInterestsSubmit}
-          handleGoBack={handleGoBackFromInterestsInfo}
-          onSelectNewHub={onSelectNewHub}
-          onClickRemoveHub={onClickRemoveHub}
-          onInterestsInfoTextFieldChange={handleOnInterestsInfoTextFieldChange}
-          interestsInfo={interestsInfo}
-        />
-      )}
-      {/* </Card> */}
+      <div className={classes.root}>
+        <Card className={classes.box}>
+          {/* <div className={classes.box}> */}
+          {curStep === "basicinfo" && (
+            <BasicInfo
+              title={texts.sign_up}
+              values={userInfo}
+              handleSubmit={handleBasicInfoSubmit}
+              errorMessage={errorMessages[steps[0]]}
+            />
+          )}
+          {curStep === "personalinfo" && (
+            <AddInfo
+              values={userInfo}
+              handleSubmit={handleAddInfoSubmit}
+              errorMessage={errorMessages[steps[1]]}
+              handleGoBack={handleGoBackFromAddInfo}
+              locationInputRef={locationInputRef}
+              locationOptionsOpen={locationOptionsOpen}
+              handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+            />
+          )}
+          {curStep == "interestsinfo" && (
+            <AddInterests
+              selectedHubs={selectedHubs}
+              allHubs={allHubs}
+              errorMessage={errorMessages[steps[2]]}
+              handleSkip={handleSkipInterestsSubmit}
+              handleSubmit={handleAddInterestsSubmit}
+              handleGoBack={handleGoBackFromInterestsInfo}
+              onSelectNewHub={onSelectNewHub}
+              onClickRemoveHub={onClickRemoveHub}
+              onInterestsInfoTextFieldChange={handleOnInterestsInfoTextFieldChange}
+              interestsInfo={interestsInfo}
+            />
+          )}
+        </Card>
+        {/* </div>       */}
+        <img src="/images/signup-1.svg" className={classes.image} />
+      </div>
     </Layout>
   );
 }

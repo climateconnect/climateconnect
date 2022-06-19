@@ -6,16 +6,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import Form from "./../general/Form";
 
-const useStyles = makeStyles((theme) => ({
-  appealText: {
-    textAlign: "left",
-    fontWeight: "bold",
-  },
-  mainHeading: {
-    textAlign: "center",
-    margin: `${theme.spacing(4)}px 0`,
-  },
-}));
+const useStyles = makeStyles((theme) => ({}));
 
 export default function BasicInfo({ handleSubmit, errorMessage, values }) {
   const classes = useStyles();
@@ -48,6 +39,8 @@ export default function BasicInfo({ handleSubmit, errorMessage, values }) {
 
   const messages = {
     submitMessage: texts.next_step,
+    explanationMessage: texts.create_your_personal_account_you_will_have_the_opportunity,
+    headingMessage: texts.sign_up_heading,
     headerMessage: texts.step_1_basic_information,
     bottomMessage: texts.already_have_an_account,
   };
@@ -58,20 +51,12 @@ export default function BasicInfo({ handleSubmit, errorMessage, values }) {
   };
 
   return (
-    <>
-      <Typography component="h1" variant="h5" className={classes.mainHeading}>
-        {title}
-      </Typography>
-      <Typography color="secondary" className={classes.appealText}>
-        {texts.create_your_personal_account_you_will_have_the_opportunity}
-      </Typography>
-      <Form
-        fields={fields}
-        messages={messages}
-        bottomLink={bottomLink}
-        onSubmit={(event, values) => handleSubmit(event, values)}
-        errorMessage={errorMessage}
-      />
-    </>
+    <Form
+      fields={fields}
+      messages={messages}
+      bottomLink={bottomLink}
+      onSubmit={(event, values) => handleSubmit(event, values)}
+      errorMessage={errorMessage}
+    />
   );
 }
