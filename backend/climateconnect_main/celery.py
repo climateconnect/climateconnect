@@ -22,6 +22,6 @@ app.conf.beat_schedule = {
     },
     'schedule_weekly_recommendations_email': {
         'task': 'climateconnect_api.tasks.schedule_weekly_recommendations_email',
-        'schedule': crontab(minute=11, hour=11, day_of_week=5)
+        'schedule': crontab(minute=0, hour=9, day_of_week=5)
     },
 }
