@@ -126,9 +126,9 @@ export default function getHubTexts({ hubName }) {
     },
     you_can_describe_why_you_are_interested: {
       en:
-        "You can describe why this sector interests you or what connection you have to this sector, for example maybe you work in this sector (optional)",
+        "Here you can describe why this sector interests you or what connection you have to this sector, for example maybe you work in this sector (optional)",
       de:
-        "Du kannst hier beschreiben, wiso dich speziel dieser Sektor interessiert. Vielleich arbeitest du schon in diesem Sektor oder du hälst Veränderungen in diesem Sektor für sehr wichtig. (optional)",
+        "Hier kannst du beschreiben, wiso dich speziel dieser Sektor interessiert. Vielleich arbeitest du schon in diesem Sektor oder du hälst Veränderungen in diesem Sektor für sehr wichtig. (optional)",
     },
   };
 

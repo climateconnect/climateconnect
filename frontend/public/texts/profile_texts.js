@@ -289,6 +289,30 @@ export default function getProfileTexts({ profile, locale }) {
       en: "Repeat Password",
       de: "Passwort wiederholen",
     },
+    signup_step_2_headline: {
+      en: "Step 3 of 3: Why you join",
+      de: "Schritt 3 of 3: Warum du mitmachen willst",
+    },
+    your_areas_of_interest: {
+      en: (
+        <>
+          Let the climate community know what you are already doing or which fields interest you the
+          most. By doing this you can contribute to Projects more easily. Choose{" "}
+          <strong>up to 3 fields</strong> and explain why.
+        </>
+      ),
+      de: (
+        <>
+          Lass die climate community wissen, was du schon machst oder welche Gebiete dich am meisten
+          interessieren. So kannst du einfacher bei Projekten mitmachen. Wähle{" "}
+          <strong>bis zu 3 Sektoren</strong> und schreib, warum dich das interessiert.
+        </>
+      ),
+    },
+    let_the_climate_community_know_what_you_are_already_doing: {
+      en: "Your areas of interest",
+      de: "Deine Interessen",
+    },
     profile: {
       en: "Profile",
       de: "Profil",
