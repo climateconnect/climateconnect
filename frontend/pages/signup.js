@@ -41,11 +41,12 @@ const useStyles = makeStyles({
     borderRadius: "10%",
     boxShadow: "2px 4px 10px 4px rgba(0,0,0,0.1)",
     transition: "0.3s",
-    maxWidth: 600,
+    maxWidth: 700,
     minWidth: 350,
   },
   image: {
-    width: 500,
+    width: 450,
+    alignSelf: "flex-end ",
   },
   root: {
     display: "flex",

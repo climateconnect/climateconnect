@@ -32,7 +32,8 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
   checkbox: {
-    display: "block",
+    display: "flex",
+    alignItems: "center",
     margin: "0 auto",
     marginTop: theme.spacing(1),
     fontSize: 13,
@@ -93,11 +94,11 @@ const useStyles = makeStyles((theme) => ({
   headingMessage: {
     fontWeight: "bold",
     marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(3),
+    marginBottom: theme.spacing(2),
   },
   explanationMessage: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(3),
   },
 }));
 
