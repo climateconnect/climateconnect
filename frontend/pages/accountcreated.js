@@ -1,4 +1,5 @@
-import { Paper, Typography } from "@material-ui/core";
+import { Link, Typography } from "@material-ui/core";
+import Card from "@material-ui/core/Card";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../public/lib/apiOperations";
@@ -7,12 +8,30 @@ import UserContext from "../src/components/context/UserContext";
 import Layout from "../src/components/layouts/layout";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    textAlign: "center",
+  headline: {
+    fontStyle: "italic",
+    marginBottom: theme.spacing(6),
+  },
+  box: {
+    borderRadius: "60px",
+    boxShadow: "2px 4px 10px 4px rgba(0,0,0,0.1)",
+    transition: "0.3s",
+    maxWidth: 900,
+    minWidth: 350,
     padding: theme.spacing(5),
   },
-  headline: {
-    marginBottom: theme.spacing(3),
+  image: {
+    width: 300,
+  },
+  root: {
+    marginTop: theme.spacing(8),
+    marginBottom: theme.spacing(8),
+    display: "flex",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+  },
+  textbody: {
+    marginTop: theme.spacing(4),
   },
 }));
 
@@ -26,39 +45,39 @@ export default function AccountCreated() {
   if (verified)
     return (
       <Layout title={texts.account_created} hideHeadline>
-        <Paper className={classes.root}>
-          <Typography variant="h5" className={classes.headline}>
-            {texts.congratulations_you_have_created_your_account}
-          </Typography>
-          <Typography variant="h4">
-            <a href={getLocalePrefix(locale) + "/signin"}>{texts.click_here_to_log_in}</a>
-          </Typography>
-        </Paper>
+        <div className={classes.root}>
+          <img src="/images/signup-success.svg" className={classes.image} />
+          <Card className={classes.box}>
+            <Typography variant="h5" color="primary" className={classes.headline}>
+              {texts.congratulations_you_have_created_your_account}
+            </Typography>
+            <Typography variant="h4" color="primary">
+              <Link href={getLocalePrefix(locale) + "/signin"}>{texts.click_here_to_log_in}</Link>
+            </Typography>
+          </Card>
+        </div>
       </Layout>
     );
   else
     return (
       <Layout title={texts.account_created} hideHeadline>
-        <Paper className={classes.root}>
-          <Typography variant="h4" className={classes.headline}>
-            {texts.just_one_more_step_to_complete_your_signup}
-          </Typography>
-          <Typography variant="h5">
-            <div />
-            <div>{texts.please_click_on_the_link_we_emailed_you_to_activate_your_account}</div>
-            <br />
-            <Typography component="p" variant="h6">
-              {texts.if_the_email_does_not_arrive_after_5_minutes}
+        <div className={classes.root}>
+          <img src="/images/signup-success.svg" className={classes.image} />
+          <Card className={classes.box}>
+            <Typography variant="h6" color="primary" className={classes.headline}>
+              {texts.congratulations_just_one_more_step_to_complete_your_signup}
             </Typography>
-            <br />
-            <Typography component="p" variant="h6">
+            <Typography variant="h4" color="primary">
+              {texts.we_have_send_you_an_email_link}
+            </Typography>
+            <Typography variant="h4" color="primary">
+              {texts.please_click_on_the_link_to_activate_your_account}
+            </Typography>
+            <Typography variant="h6" color="primary" className={classes.textbody}>
               {texts.make_sure_to_also_check_your_spam}
             </Typography>
-            <Typography component="p" variant="h6">
-              {texts.if_you_are_experiencing_any_problems_contact_us}.
-            </Typography>
-          </Typography>
-        </Paper>
+          </Card>
+        </div>
       </Layout>
     );
 }
