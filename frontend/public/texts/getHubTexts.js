@@ -120,10 +120,6 @@ export default function getHubTexts({ hubName }) {
       en: "Add Hubs (sectors) in which your organization is active",
       de: "Füge Hubs (Sektoren) hinzu, in denen deine Organisation aktiv ist",
     },
-    add_hubs_you_are_interested_in: {
-      en: "Add Hubs (sectors) you are interested in",
-      de: "Füge Hubs (Sektoren) hinzu, die dich interessieren",
-    },
     you_can_describe_why_you_are_interested: {
       en:
         "Here you can describe why this sector interests you or what connection you have to this sector, for example maybe you work in this sector (optional)",

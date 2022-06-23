@@ -162,36 +162,41 @@ export default function getProfileTexts({ profile, locale }) {
       en: "Congratulations, you have created your account!",
       de: "Glückwunsch, du hast dein Konto erfolgreich erstellt!",
     },
-    just_one_more_step_to_complete_your_signup: {
-      en: "One final step to join Climate Connect!",
-      de: "Nur noch ein Schritt, um deine Anmeldung abzuschließen!",
+    congratulations_just_one_more_step_to_complete_your_signup: {
+      en: "Congratulations! Just one more step to complete your Sign up!",
+      de: "Glückwunsch! Nur noch ein Schritt, um deine Anmeldung abzuschließen!",
     },
-    please_click_on_the_link_we_emailed_you_to_activate_your_account: {
-      en: "Please click on the link we just emailed you to activate your account.",
+    we_have_send_you_an_email_link: {
+      en: "We have sent you an E-Mail with a link!",
+      de: "Wir haben dir eine E-Mail mit einem Link geschickt!",
+    },
+    please_click_on_the_link_to_activate_your_account: {
+      en: "Please click on the link to activate your account.",
       de: "Bitte klicke auf den Link, um dein Konto zu aktivieren.",
     },
     make_sure_to_also_check_your_spam: {
-      en: "Make sure to also check your spam/junk folder in case you can't find the link.",
-      de: "Bitte überprüfe auch deinen Spam-/Junk-Ordner, falls du die E-Mail nicht finden kannst.",
-    },
-    if_you_are_experiencing_any_problems_contact_us: {
-      en: "If you are experiencing any problems, email us at contact@climateconnect.earth",
-      de:
-        "Wenn du Probleme haben solltest, kontaktiere uns einfach unter contact@climateconnect.earth",
-    },
-    if_the_email_does_not_arrive_after_5_minutes: {
       en: (
         <>
-          If the email does not arrive after 5 minutes,{" "}
-          <Link href={getLocalePrefix(locale) + "/resend_verification_email"}>click here</Link> to
-          resend it.
+          Make sure to also check your spam/junk folder in case you cannot find the E-Mail. If you
+          are experiencing any problems, contact us at{" "}
+          <Link href="mailto:support@climateconnect.earth">support@climateconnect.earth</Link> or
+          try to resend the E-Mail after 5 min.{" "}
+          <Link underline="always" href={getLocalePrefix(locale) + "/resend_verification_email"}>
+            Click here
+          </Link>{" "}
+          to resend it.
         </>
       ),
       de: (
         <>
-          Wenn die E-Mail nach 5 Minuten noch nicht angekommen ist,{" "}
-          <Link href={getLocalePrefix(locale) + "/resend_verification_email"}>klicke hier</Link>, um
-          sie erneut versenden zu lassen.
+          Bitte überprüfe auch deinen Spam-/Junk-Ordner, falls du die E-Mail nicht finden kannst.
+          Wenn du Probleme haben solltest, kontaktiere uns einfach unter{" "}
+          <Link href="mailto:support@climateconnect.earth">support@climateconnect.earth</Link> oder
+          versuche, dir die E-Mail nochmal zusenden zu lassen.{" "}
+          <Link underline="always" href={getLocalePrefix(locale) + "/resend_verification_email"}>
+            Klicke hier
+          </Link>
+          , um sie erneut versenden zu lassen.
         </>
       ),
     },
@@ -289,11 +294,11 @@ export default function getProfileTexts({ profile, locale }) {
       en: "Repeat Password",
       de: "Passwort wiederholen",
     },
-    signup_step_2_headline: {
+    signup_step_3_headline: {
       en: "Step 3 of 3: Why you join",
       de: "Schritt 3 of 3: Warum du mitmachen willst",
     },
-    your_areas_of_interest: {
+    let_the_climate_community_know_what_you_are_already_doing: {
       en: (
         <>
           Let the climate community know what you are already doing or which fields interest you the
@@ -309,9 +314,17 @@ export default function getProfileTexts({ profile, locale }) {
         </>
       ),
     },
-    let_the_climate_community_know_what_you_are_already_doing: {
+    your_areas_of_interest: {
       en: "Your areas of interest",
       de: "Deine Interessen",
+    },
+    skip: {
+      en: "SKIP",
+      de: "ÜBERSPRINGEN",
+    },
+    finish_sign_up: {
+      en: "FINISH SIGN UP",
+      de: "ANMELDUNG ABSCHLIEßEN",
     },
     profile: {
       en: "Profile",
