@@ -152,7 +152,7 @@ export default function MiniHubPreview({
     <Card className={classes.root}>
       <Link
         className={classes.link}
-        {...(showEditDescription || hasExpandForLongDescription
+        {...(!createMode && allowDescription
           ? { onClick: handleExpandClick }
           : { href: hub && getLocalePrefix(locale) + `/hubs/` + hub.url_slug, target: "_blank" })}
       >
