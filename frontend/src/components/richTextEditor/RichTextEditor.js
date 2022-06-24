@@ -197,6 +197,7 @@ export default function RichTextEditor({ content }) {
           onBlur={() => setFocusingEditor(false)}
           handleKeyCommand={handleKeyCommand}
           ref={editorRef}
+          blockStyleFn={() => currentBlockType === "blockquote" ? classes.blockquote : null}
         />
       </div>
     </div>
