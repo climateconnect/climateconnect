@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "14px",
   }),
   editorControlsBackground: (props) => ({
-    background: theme.palette.grey[200],
+    background: "F2F2F2F2",
     border: props.focusingEditor ? "2px solid rgb(0, 0, 0, 0)" : "1px solid rgb(0, 0, 0, 0)",
     borderTopLeftRadius: theme.spacing(0.5),
     borderTopRightRadius: theme.spacing(0.5),
