@@ -142,7 +142,7 @@ export default function RichTextEditor({ content }) {
 
   useEffect(() => {
     //focus editor when control-button is clicked
-    editorRef.current.focus();
+    hoveringEditor && editorRef.current.focus();
 
     const currentSelection = editorState.getSelection();
     //get and set inline styles of selection
