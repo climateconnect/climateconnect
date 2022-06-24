@@ -121,6 +121,12 @@ export default function RichTextEditor({ content }) {
     e.preventDefault();
     setEditorState(RichUtils.toggleBlockType(editorState, type));
   };
+  const getBlockStyleClass = (block) => {
+    if (block.getType() === "blockquote") {
+      return classes.blockquote;
+    }
+    return null;
+  };
 
   // Managing inline style control buttons
   const [isBold, setIsBold] = useState(false);
@@ -197,7 +203,7 @@ export default function RichTextEditor({ content }) {
           onBlur={() => setFocusingEditor(false)}
           handleKeyCommand={handleKeyCommand}
           ref={editorRef}
-          blockStyleFn={() => currentBlockType === "blockquote" ? classes.blockquote : null}
+          blockStyleFn={getBlockStyleClass}
         />
       </div>
     </div>
