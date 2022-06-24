@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { convertFromRaw, Editor, EditorState, RichUtils } from "draft-js";
+import { convertFromRaw, convertToRaw, Editor, EditorState, RichUtils } from "draft-js";
 import FormatBoldIcon from "@material-ui/icons/FormatBold";
 import FormatItalicIcon from "@material-ui/icons/FormatItalic";
 import FormatUnderlinedIcon from "@material-ui/icons/FormatUnderlined";
@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function RichTextEditor({ content }) {
+export default function RichTextEditor({ content, onContentChange }) {
   const [hoveringEditor, setHoveringEditor] = useState(false);
   const [focusingEditor, setFocusingEditor] = useState(false);
   const classes = useStyles({ focusingEditor: focusingEditor, hoveringEditor: hoveringEditor });
@@ -149,14 +149,14 @@ export default function RichTextEditor({ content }) {
   useEffect(() => {
     //focus editor when control-button is clicked
     hoveringEditor && editorRef.current.focus();
-
+    //hand editor content to parent component
+    onContentChange(JSON.stringify(convertToRaw(editorState.getCurrentContent())));
+    //get and set editor controls
     const currentSelection = editorState.getSelection();
-    //get and set inline styles of selection
     const inlineStyle = editorState.getCurrentInlineStyle(currentSelection);
     setIsBold(inlineStyle.has("BOLD"));
     setIsItalic(inlineStyle.has("ITALIC"));
     setIsUnderline(inlineStyle.has("UNDERLINE"));
-    //get and set block type at cursor position
     const currentKey = currentSelection.getStartKey();
     setCurrentBlockType(editorState.getCurrentContent().getBlockForKey(currentKey).getType());
   }, [editorState]);
@@ -195,7 +195,7 @@ export default function RichTextEditor({ content }) {
       {
         // div is needed because the Editor component takes no className prop
       }
-      <div className={classes.editor}>
+      <div className={classes.editor} onClick={() => editorRef.current.focus()}>
         <Editor
           editorState={editorState}
           onChange={setEditorState}

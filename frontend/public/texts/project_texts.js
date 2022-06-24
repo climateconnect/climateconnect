@@ -833,6 +833,10 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
         </>
       ),
     },
+    title: {
+      en: "Title",
+      de: "Titel",
+    },
     title_with_explanation_and_example: {
       en: "Title (Use a short, compelling title, e.g. 'Generating energy from ocean waves')",
       de: "Titel (Verwende einen kurzen Titel, z. B. 'Energiegewinnung aus Meereswellen')",
@@ -959,6 +963,10 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     project_requesters_dialog_title: {
       en: "Open requests to join project",
       de: "Offene Anfragen zum Mitmachen",
+    },
+    event_date_upper_case: {
+      en: "Event Date",
+      de: "Eventdatum",
     },
   };
 }
