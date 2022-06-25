@@ -78,6 +78,14 @@ urlpatterns = [
         project_views.ListProjectPostsView.as_view(), name="project-posts-api"
     ),
     path(
+        'projects/<str:url_slug>/create_update_post/',
+        project_views.ProjectPostAPIView.as_view(), name="create-or-update-project-post"
+    ),
+    path(
+        'projects/<str:url_slug>/delete_post/<int:post_id>/',
+        project_views.ProjectPostAPIView.as_view(), name="delete-project-post"
+    ),
+    path(
         'projects/<str:url_slug>/comments/',
         project_views.ListProjectCommentsView.as_view(), name="project-comments-api"
     ),
@@ -140,7 +148,7 @@ urlpatterns = [
         project_views.ListProjectLikesView.as_view(), name='list-likes-view'
     ),
     path(
-        'projecttags/', project_views.ListProjectTags.as_view(),
+        'projecttags/', project_views.ListProjectTags.as_view(), 
         name='list-project-tags'
     ),
     path(

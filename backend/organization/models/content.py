@@ -22,9 +22,16 @@ class Post(models.Model):
         blank=True
     )
 
+    title = models.CharField(
+        help_text="Title of the post",
+        verbose_name="Title",
+        max_length=100
+    )
+
     content = models.TextField(
-        help_text="Content of the post",
-        verbose_name="Content"
+        help_text="Content of the post: To add a content text replace the marked string with your plain and unstyled text.",
+        verbose_name="Content",
+        default='{"blocks":[{"text":"REPLACE THIS STRING WITH YOUR TEXT","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}'
     )
 
     created_at = models.DateTimeField(
@@ -37,6 +44,13 @@ class Post(models.Model):
         help_text="Time when post was updated",
         verbose_name="Updated at",
         auto_now=True
+    )
+
+    event_date = models.DateField(
+        help_text="Date of the event the update is about",
+        verbose_name="Date of event",
+        null=True,
+        blank=True
     )
 
     is_hidden = models.BooleanField(
