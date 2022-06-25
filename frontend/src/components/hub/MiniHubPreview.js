@@ -6,9 +6,9 @@ import {
   Typography,
   TextField,
   Collapse,
-  CardMedia,
   CardActions,
 } from "@material-ui/core";
+import AddBoxRoundedIcon from "@material-ui/icons/AddBoxRounded";
 import FormatQuoteIcon from "@material-ui/icons/FormatQuote";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -94,6 +94,26 @@ const useStyles = makeStyles((theme) => ({
   },
   descriptionWrapper: {
     padding: theme.spacing(1),
+    ["& $expandHoverIcon"]: {
+      visibility: "hidden",
+    },
+    ["& $collapseHoverIcon"]: {
+      visibility: "hidden",
+    },
+    ["&:hover"]: {
+      ["& $expandHoverIcon"]: {
+        visibility: "visible",
+        transition: "0.5s",
+      },
+      ["& $collapseHoverIcon"]: {
+        visibility: "visible",
+        transition: "0.5s",
+      },
+      ["& $descriptionText"]: {
+        opacity: 0.2,
+        transition: "0.5s",
+      },
+    },
   },
   leadingQuotationMark: {
     display: "block",
@@ -106,14 +126,30 @@ const useStyles = makeStyles((theme) => ({
     float: "right",
   },
   descriptionText: {
-    display: "block",
-    float: "center",
     margin: "auto",
     width: "90%",
     textAlign: "center",
     color: "rgba(0, 0, 0, 0.87) ",
   },
+  hoverContainer: {
+    position: "relative",
+  },
   iconAndNameContainer: {
+    display: "flex",
+  },
+  expandHoverIcon: {
+    display: "flex",
+    position: "absolute",
+    top: "calc(60% - 12px)",
+    left: "calc(50% - 35px)",
+  },
+  rotated: {
+    transform: "rotate(180deg)",
+  },
+  collapseHoverIcon: {
+    position: "absolute",
+    top: "calc(90% - 12px)",
+    left: "calc(50% - 40px)",
     display: "flex",
   },
 }));
@@ -220,16 +256,28 @@ export default function MiniHubPreview({
         {viewDescription && (
           <div className={classes.descriptionWrapper}>
             <FormatQuoteIcon className={classes.leadingQuotationMark} />
-            <Typography className={classes.descriptionText}>
-              {expanded || !hasExpandForLongDescription
-                ? interestsInfo[hub.url_slug]
-                : interestsInfo[hub.url_slug].slice(0, 48) + "..."}
-            </Typography>
+            <div className={classes.hoverContainer}>
+              <Typography className={classes.descriptionText}>
+                {expanded || !hasExpandForLongDescription
+                  ? interestsInfo[hub.url_slug]
+                  : interestsInfo[hub.url_slug].slice(0, 48) + "..."}
+              </Typography>
+              {!expanded ? (
+                <span className={classes.expandHoverIcon}>
+                  <AddBoxRoundedIcon />
+                  <Typography>Expand</Typography>
+                </span>
+              ) : (
+                <span className={classes.collapseHoverIcon}>
+                  <ExpandMoreIcon className={classes.rotated} />
+                  <Typography>Collapse</Typography>
+                </span>
+              )}
+            </div>
             <FormatQuoteIcon className={classes.trailingQuotationMark} />
           </div>
         )}
       </Link>
-
       {showEditDescription && (
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <TextField
