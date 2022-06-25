@@ -66,9 +66,13 @@ const useStyles = makeStyles((theme) => ({
     minHeight: 450,
     padding: theme.spacing(2),
   },
+  readOnlyEditor: {
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+  },
 }));
 
-export default function RichTextEditor({ content, onContentChange }) {
+export default function RichTextEditor({ content, onContentChange, readOnly }) {
   const [hoveringEditor, setHoveringEditor] = useState(false);
   const [focusingEditor, setFocusingEditor] = useState(false);
   const classes = useStyles({ focusingEditor: focusingEditor, hoveringEditor: hoveringEditor });
@@ -147,6 +151,7 @@ export default function RichTextEditor({ content, onContentChange }) {
   };
 
   useEffect(() => {
+    if (readOnly) return;
     //focus editor when control-button is clicked
     hoveringEditor && editorRef.current.focus();
     //hand editor content to parent component
@@ -161,53 +166,65 @@ export default function RichTextEditor({ content, onContentChange }) {
     setCurrentBlockType(editorState.getCurrentContent().getBlockForKey(currentKey).getType());
   }, [editorState]);
 
-  return (
-    <div
-      className={classes.root}
-      onMouseEnter={() => setHoveringEditor(true)}
-      onMouseLeave={() => setHoveringEditor(false)}
-    >
-      <div className={classes.editorControlsBackground}>
-        <div className={classes.editorConrols}>
-          <div>
-            {BLOCK_TYPES.map((blockTypeEl) => (
-              <ControlButton
-                key={blockTypeEl.type}
-                controlEl={blockTypeEl}
-                onToggleButton={(e) => toggleBlockType(e, blockTypeEl.type)}
-              />
-            ))}
-            {INLINE_STYLES.map((inlineStyleEl) => (
-              <ControlButton
-                key={inlineStyleEl.style}
-                controlEl={inlineStyleEl}
-                onToggleButton={(e) => toggleInlineStyle(e, inlineStyleEl.style)}
-              />
-            ))}
-          </div>
-          <div>
-            {
-              // Space for image-, link- & mentions
-            }
-          </div>
-        </div>
-      </div>
-      {
-        // div is needed because the Editor component takes no className prop
-      }
-      <div className={classes.editor} onClick={() => editorRef.current.focus()}>
+  if (readOnly)
+    return (
+      <div className={classes.readOnlyEditor}>
         <Editor
           editorState={editorState}
           onChange={setEditorState}
-          onFocus={() => setFocusingEditor(true)}
-          onBlur={() => setFocusingEditor(false)}
-          handleKeyCommand={handleKeyCommand}
-          ref={editorRef}
           blockStyleFn={getBlockStyleClass}
+          readOnly
         />
       </div>
-    </div>
-  );
+    );
+  else
+    return (
+      <div
+        className={classes.root}
+        onMouseEnter={() => setHoveringEditor(true)}
+        onMouseLeave={() => setHoveringEditor(false)}
+      >
+        <div className={classes.editorControlsBackground}>
+          <div className={classes.editorConrols}>
+            <div>
+              {BLOCK_TYPES.map((blockTypeEl) => (
+                <ControlButton
+                  key={blockTypeEl.type}
+                  controlEl={blockTypeEl}
+                  onToggleButton={(e) => toggleBlockType(e, blockTypeEl.type)}
+                />
+              ))}
+              {INLINE_STYLES.map((inlineStyleEl) => (
+                <ControlButton
+                  key={inlineStyleEl.style}
+                  controlEl={inlineStyleEl}
+                  onToggleButton={(e) => toggleInlineStyle(e, inlineStyleEl.style)}
+                />
+              ))}
+            </div>
+            <div>
+              {
+                // Space for image-, link- & mentions
+              }
+            </div>
+          </div>
+        </div>
+        {
+          // div is needed because the Editor component takes no className prop
+        }
+        <div className={classes.editor} onClick={() => editorRef.current.focus()}>
+          <Editor
+            editorState={editorState}
+            onChange={setEditorState}
+            onFocus={() => setFocusingEditor(true)}
+            onBlur={() => setFocusingEditor(false)}
+            handleKeyCommand={handleKeyCommand}
+            ref={editorRef}
+            blockStyleFn={getBlockStyleClass}
+          />
+        </div>
+      </div>
+    );
 }
 
 function ControlButton({ controlEl, onToggleButton }) {

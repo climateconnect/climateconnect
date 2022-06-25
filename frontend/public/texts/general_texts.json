@@ -455,6 +455,14 @@
     "en": "Date",
     "de": "Datum"
   },
+  "delete": {
+    "en": "Delete",
+    "de": "Löschen"
+  },
+  "edit": {
+    "en": "Edit",
+    "de": "Bearbeiten"
+  },
   "edit_skills": {
     "en": "Edit skills",
     "de": "Fähigkeiten bearbeiten"

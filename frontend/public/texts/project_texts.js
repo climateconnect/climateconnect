@@ -260,6 +260,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Project description",
       de: "Projektbeschreibung",
     },
+    this_post_was_created_on: {
+      en: "This post was created on ",
+      de: "Dieser Post wurde erstellt am ",
+    },
+    and_updated_on: {
+      en: " and updated on ",
+      de: " und bearbeitet am ",
+    },
     this_project_hasnt_added_a_description_yet: {
       en: "This project hasn't added a description yet.",
       de: "Zu diesem Projekt wurde noch keine Beschreibung hinzugefügt.",
