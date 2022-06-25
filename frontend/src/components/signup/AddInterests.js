@@ -1,103 +1,48 @@
-import {
-  Avatar,
-  Button,
-  Checkbox,
-  Chip,
-  Container,
-  IconButton,
-  TextField,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
 import React, { useContext } from "react";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
-import { getLocationFields } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import Form from "./../general/Form";
-import ActiveHubsSelect from "../hub/ActiveHubsSelect";
 
-const useStyles = makeStyles((theme) => {
-  return {
-    backButton: {
-      float: "left",
-    },
-    cancelButton: {
-      top: theme.spacing(16.5),
-      // todo: remove zIndex
-      zIndex: 3,
-      [theme.breakpoints.up("md")]: {
-        top: theme.spacing(6.5),
-      },
-    },
-    actionButton: {
-      right: theme.spacing(1),
-      width: theme.spacing(18),
-      [theme.breakpoints.down("sm")]: {
-        width: theme.spacing(14),
-        fontSize: 10,
-        textAlign: "center",
-      },
-    },
-  };
-});
 
 export default function AddInterests({
   selectedHubs,
   allHubs,
   handleSubmit,
-  handleSkip,
   handleGoBack,
-  errorMessage,
   onSelectNewHub,
   onClickRemoveHub,
   onInterestsInfoTextFieldChange,
   interestsInfo,
 }) {
-  const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "profile", locale: locale });
+  const fields = [
+    {
+      type: "interests",
+      allHubs: allHubs,
+      selectedHubs: selectedHubs,
+      onClickRemoveHub: onClickRemoveHub,
+      onSelectNewHub: onSelectNewHub,
+      onInterestsInfoTextFieldChange: onInterestsInfoTextFieldChange,
+      interestsInfo: interestsInfo,
+    },
+  ];
 
-  // hier muss die karte gebaut werden
+  const messages = {
+    headerMessage: texts.signup_step_3_headline,
+    headingMessage: texts.your_areas_of_interest,
+    explanationMessage: texts.let_the_climate_community_know_what_you_are_already_doing,
+    submitMessage: texts.finish_sign_up,
+    skipMessage: texts.skip,
+  };
+
   return (
-    <div>
-      {
-        <ActiveHubsSelect
-          hubsToSelectFrom={allHubs.filter(
-            (h) => selectedHubs?.filter((addedHub) => addedHub.url_slug === h.url_slug).length === 0
-          )}
-          onClickRemoveHub={onClickRemoveHub}
-          selectedHubs={selectedHubs}
-          onSelectNewHub={onSelectNewHub}
-          type="userprofile"
-          onInterestsInfoTextFieldChange={onInterestsInfoTextFieldChange}
-          interestsInfo={interestsInfo}
-        />
-      }
-      <IconButton
-        size="small"
-        className={classes.backButton}
-        onClick={(event, values) => handleGoBack(event, values)}
-      >
-        <KeyboardBackspaceIcon />
-      </IconButton>
-      <Button
-        className={`${classes.cancelButton} ${classes.actionButton}`}
-        color="secondary"
-        variant="contained"
-        onClick={(event, values) => handleSkip(event, values)}
-      >
-        Skip
-      </Button>
-      <Button
-        className={`${classes.cancelButton} ${classes.actionButton}`}
-        color="secondary"
-        variant="contained"
-        onClick={(event, values) => handleSubmit(event, values)}
-      >
-        Submit
-      </Button>
-    </div>
+    <Form
+      fields={fields}
+      messages={messages}
+      onSubmit={(event, values, skipInterests) => handleSubmit(event, values, skipInterests)}
+      onGoBack={handleGoBack}
+      alignButtonsRight
+    />
   );
 }
