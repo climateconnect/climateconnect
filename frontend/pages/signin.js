@@ -1,4 +1,5 @@
 import React, { useContext, useEffect } from "react";
+import { makeStyles } from "@material-ui/core/styles";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
 import { redirectOnLogin } from "../public/lib/profileOperations";
@@ -7,8 +8,15 @@ import Layout from "../src/components/layouts/layout";
 import UserContext from "./../src/components/context/UserContext";
 import Form from "./../src/components/general/Form";
 
+const useStyles = makeStyles({
+  center: {
+    margin: "50px auto",
+  },
+});
+
 export default function Signin() {
   const { user, signIn, locale } = useContext(UserContext);
+  const classes = useStyles();
   const texts = getTexts({ page: "profile", locale: locale });
 
   const fields = [
@@ -27,6 +35,7 @@ export default function Signin() {
   ];
 
   const messages = {
+    headingMessage: texts.log_in,
     submitMessage: texts.log_in,
     bottomMessage: (
       <span>
@@ -97,15 +106,17 @@ export default function Signin() {
   };
 
   return (
-    <Layout title={texts.log_in} isLoading={isLoading} messageType="error">
-      <Form
-        fields={fields}
-        messages={messages}
-        bottomLink={bottomLink}
-        usePercentage={false}
-        onSubmit={handleSubmit}
-        errorMessage={errorMessage}
-      />
+    <Layout title={texts.log_in} hideHeadline isLoading={isLoading} messageType="error">
+      <div className={classes.center}>
+        <Form
+          fields={fields}
+          messages={messages}
+          bottomLink={bottomLink}
+          usePercentage={false}
+          onSubmit={handleSubmit}
+          errorMessage={errorMessage}
+        />
+      </div>
     </Layout>
   );
 }
