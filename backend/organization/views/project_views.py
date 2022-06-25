@@ -60,6 +60,7 @@ from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.tags import ProjectTagsSerializer
 from organization.utility.notification import (
     create_comment_mention_notification,
+    create_new_project_post_notification,
     create_project_comment_notification,
     create_project_comment_reply_notification,
     create_project_follower_notification,
@@ -537,8 +538,46 @@ class ListProjectPostsView(ListAPIView):
     def get_queryset(self):
         return Post.objects.filter(
             project__url_slug=self.kwargs['url_slug'],
-        ).order_by('id')
+         ).order_by('-id')
 
+class ProjectPostAPIView(APIView):
+    permission_classes = [ProjectReadWritePermission]
+
+    def post(self, request, url_slug, format=None):
+        if 'title' not in request.data or 'content' not in request.data :
+            return Response({
+                'message': 'Missing required parameters'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            project = Project.objects.get(url_slug=url_slug)
+        except Project.DoesNotExist:
+            raise NotFound(detail='Project not found.', code=status.HTTP_404_NOT_FOUND)
+        post = Post.objects.create(project=project, author_user=request.user, title=request.data['title'] ,content=request.data['content'], event_date=request.data['event_date'])
+        create_new_project_post_notification(post)
+        return Response({'id': post.id}, status=status.HTTP_201_CREATED)
+
+    def patch(self, request, url_slug, format=None):
+        if 'title' not in request.data or 'content' not in request.data or 'id' not in request.data :
+            return Response({
+                'message': 'Missing required parameters'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            post = Post.objects.get(id=request.data['id'])
+        except Post.DoesNotExist:
+            raise NotFound(detail='Post not found.', code=status.HTTP_404_NOT_FOUND)
+        post.title=request.data['title']
+        post.content=request.data['content']
+        post.event_date=request.data['event_date']
+        post.save()
+        return Response(status=status.HTTP_200_OK)
+
+    def delete(self, request, url_slug, post_id):
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            raise NotFound(detail='Post not found.', code=status.HTTP_404_NOT_FOUND)
+        post.delete()
+        return Response(status=status.HTTP_200_OK)
 
 class ListProjectCommentsView(ListAPIView):
     permission_classes = [AllowAny]
