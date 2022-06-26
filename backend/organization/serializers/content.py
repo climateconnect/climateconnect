@@ -14,8 +14,9 @@ class PostSerializer(serializers.ModelSerializer):
   class Meta:
     model = Post
     fields = (
-      'author_user', 'content', 
-      'created_at', 'updated_at', 
+      'id', 'author_user', 'title', 
+      'content', 'created_at', 
+      'updated_at', 'event_date', 
       'is_hidden', 'replies'
     )
 
@@ -85,3 +86,4 @@ class CommentSerializer(serializers.ModelSerializer):
   
   def get_replies(self, obj):
     return CommentSerializer(obj.comment_parent.filter(deleted_at__isnull=True), many=True).data
+    
