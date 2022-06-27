@@ -5,12 +5,13 @@ import ProgressPost from "./ProgressPost";
 
 export default function ProgressPosts({ project }) {
   const posts = project.timeline_posts;
-  const [editingPostId, setEditingPostId] = useState(1);
+  const [editingPostId, setEditingPostId] = useState(null);
   const changeEditingPostId = (id) => {
     if (editingPostId === null) {
       setEditingPostId(id);
     } else {
       // Add alert that changed content on the currently edited post will be lost
+      setEditingPostId(id);
     }
   };
   return (
