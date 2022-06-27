@@ -16,13 +16,12 @@ import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
-import Posts from "./../communication/Posts.js";
 import ProjectRequestersDialog from "../dialogs/ProjectRequestersDialog";
 import ProjectStatus from "./ProjectStatus";
 import ROLE_TYPES from "../../../public/data/role_types";
 import UserContext from "../context/UserContext";
 import JoinButton from "./Buttons/JoinButton";
-
+import ProgressPosts from "./ProjectProgressPosts/ProgressPosts";
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
 const useStyles = makeStyles((theme) => ({
@@ -447,10 +446,7 @@ export default function ProjectContent({
         </Typography>
         {project.timeline_posts && project.timeline_posts.length > 0 && (
           <div className={classes.progressContent}>
-            <Posts
-              posts={project.timeline_posts.sort((a, b) => new Date(b.date) - new Date(a.date))}
-              type="progresspost"
-            />
+            <ProgressPosts project={project} />
           </div>
         )}
       </div>
