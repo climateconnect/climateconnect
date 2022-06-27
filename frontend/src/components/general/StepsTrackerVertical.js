@@ -2,6 +2,9 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    paddingTop: theme.spacing(2), //half of the icon height
+  },
   step: {
     display: "flex",
     flexDirection: "row",
@@ -41,7 +44,7 @@ export default function StepsTrackerVertical({ index, lastIndex, content }) {
   const classes = useStyles();
   const connectorClass = index === lastIndex ? classes.noConnector : classes.connector;
   return (
-    <div>
+    <div className={classes.root}>
       <div className={classes.step}>
         <div className={classes.stepGrafic}>
           <div className={connectorClass} />
