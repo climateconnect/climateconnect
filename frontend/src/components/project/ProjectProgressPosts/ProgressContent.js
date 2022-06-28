@@ -26,7 +26,7 @@ export default function ProgressContent({ project }) {
   const [editingPostId, setEditingPostId] = useState(null);
   const [creatingPost, setCreatingPost] = useState(false);
   const newPostTempId = parseInt(project.timeline_posts[0].id) + 1;
-  const changeEditingPostId = (id) => {
+  const updateEditingPostId = (id) => {
     if (editingPostId === null) {
       setEditingPostId(id);
       setCreatingPost(true);
@@ -43,13 +43,13 @@ export default function ProgressContent({ project }) {
   const handleNewPost = () => {
     setCreatingPost(true);
     setPosts([{ id: newPostTempId, isNewPost: true }, ...posts]);
-    changeEditingPostId(newPostTempId);
+    updateEditingPostId(newPostTempId);
   };
   const cancelEditingPost = (id) => {
     if (id === newPostTempId) {
         setPosts(posts.filter((p) => p.id !== newPostTempId));
     }
-    changeEditingPostId(id);
+    updateEditingPostId(id);
     setCreatingPost(false);
   };
   return (
@@ -79,7 +79,7 @@ export default function ProgressContent({ project }) {
             project={project}
             posts={posts}
             editingPostId={editingPostId}
-            changeEditingPostId={changeEditingPostId}
+            updateEditingPostId={updateEditingPostId}
             cancelEditingPost={cancelEditingPost}
           />
         </div>

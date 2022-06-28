@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProgressPost({ post, project, changeEditingPostId }) {
+export default function ProgressPost({ post, project, updateEditingPostId }) {
   const classes = useStyles();
 
   const { locale } = useContext(UserContext);
@@ -89,7 +89,7 @@ export default function ProgressPost({ post, project, changeEditingPostId }) {
             <MoreVertIcon />
           </IconButton>
           <Menu open={open} anchorEl={anchorEl} keepMounted onClose={handleMenuClose}>
-            <MenuItem onClick={() => changeEditingPostId(post.id)}>{texts.edit}</MenuItem>
+            <MenuItem onClick={() => updateEditingPostId(post.id)}>{texts.edit}</MenuItem>
             <MenuItem>{texts.delete}</MenuItem>
           </Menu>
         </div>
