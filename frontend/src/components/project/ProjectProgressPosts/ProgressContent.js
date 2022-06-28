@@ -24,23 +24,33 @@ export default function ProgressContent({ project }) {
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [posts, setPosts] = useState([...project.timeline_posts]);
   const [editingPostId, setEditingPostId] = useState(null);
+  const [creatingPost, setCreatingPost] = useState(false);
+  const newPostTempId = parseInt(project.timeline_posts[0].id) + 1;
   const changeEditingPostId = (id) => {
     if (editingPostId === null) {
       setEditingPostId(id);
+      setCreatingPost(true);
     } else if (editingPostId === id) {
         // Add alert that changed content on the currently edited post will be lost
       setEditingPostId(null);
+      setCreatingPost(false);
     } else {
       // Add alert that changed content on the currently edited post will be lost
       setEditingPostId(id);
+      setCreatingPost(true);
     }
   };
-  const [creatingPost, setCreatingPost] = useState(false);
-  const newPostTempId = parseInt(project.timeline_posts[0].id) + 1;
   const handleNewPost = () => {
     setCreatingPost(true);
     setPosts([{ id: newPostTempId, isNewPost: true }, ...posts]);
     changeEditingPostId(newPostTempId);
+  };
+  const cancelEditingPost = (id) => {
+    if (id === newPostTempId) {
+        setPosts(posts.filter((p) => p.id !== newPostTempId));
+    }
+    changeEditingPostId(id);
+    setCreatingPost(false);
   };
   return (
     <>
@@ -70,6 +80,7 @@ export default function ProgressContent({ project }) {
             posts={posts}
             editingPostId={editingPostId}
             changeEditingPostId={changeEditingPostId}
+            cancelEditingPost={cancelEditingPost}
           />
         </div>
       )}

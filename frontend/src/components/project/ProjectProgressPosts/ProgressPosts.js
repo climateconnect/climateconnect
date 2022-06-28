@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import EditProgressPost from "./EditProgressPost";
 import StepsTrackerVertical from "../../general/StepsTrackerVertical";
 import ProgressPost from "./ProgressPost";
 
-export default function ProgressPosts({ posts, project, editingPostId, changeEditingPostId }) {
+export default function ProgressPosts({ posts, project, editingPostId, changeEditingPostId, cancelEditingPost }) {
   return (
     <>
       {posts.map((post, index) => (
@@ -13,7 +13,7 @@ export default function ProgressPosts({ posts, project, editingPostId, changeEdi
           lastIndex={posts.length - 1}
           content={
             post.id === editingPostId ? (
-              <EditProgressPost post={post} project={project} />
+              <EditProgressPost post={post} project={project} cancelEditingPost={cancelEditingPost} />
             ) : (
               <ProgressPost
                 post={post}

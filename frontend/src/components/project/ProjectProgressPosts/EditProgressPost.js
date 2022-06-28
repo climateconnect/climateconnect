@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProgressPost({ post, project }) {
+export default function ProgressPost({ post, project, cancelEditingPost }) {
   const classes = useStyles();
 
   const { locale } = useContext(UserContext);
@@ -92,7 +92,7 @@ export default function ProgressPost({ post, project }) {
       <RichTextEditor content={postContent} onContentChange={onContentChange} />
       <div className={classes.saveAndCancelButtonContainer}>
         <Button className={classes.saveButton}>{texts.save}</Button>
-        <Button className={classes.cancelButton}>{texts.cancel}</Button>
+        <Button className={classes.cancelButton} onClick={() => cancelEditingPost(post.id)}>{texts.cancel}</Button>
       </div>
     </Card>
   );
