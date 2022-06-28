@@ -24,22 +24,16 @@ export default function ProgressContent({ project }) {
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [posts, setPosts] = useState([...project.timeline_posts]);
   const [editingPostId, setEditingPostId] = useState(null);
-  const [creatingPost, setCreatingPost] = useState(false);
   const newPostTempId = parseInt(project.timeline_posts[0].id) + 1;
   const updateEditingPostId = (id) => {
     if (editingPostId === null) {
       setEditingPostId(id);
-      setCreatingPost(true);
-    } else if (editingPostId === id) {
+    }
+    if (editingPostId === id) {
       setEditingPostId(null);
-      setCreatingPost(false);
-    } else {
-      setEditingPostId(id);
-      setCreatingPost(true);
     }
   };
   const handleNewPost = () => {
-    setCreatingPost(true);
     setPosts([{ id: newPostTempId, isNewPost: true }, ...posts]);
     updateEditingPostId(newPostTempId);
   };
@@ -48,7 +42,6 @@ export default function ProgressContent({ project }) {
       setPosts(posts.filter((p) => p.id !== newPostTempId));
     }
     updateEditingPostId(id);
-    setCreatingPost(false);
   };
   return (
     <>
@@ -66,7 +59,7 @@ export default function ProgressContent({ project }) {
           variant="contained"
           color="primary"
           onClick={handleNewPost}
-          disabled={creatingPost}
+          disabled={editingPostId !== null}
         >
           {texts.new_update}
         </Button>
