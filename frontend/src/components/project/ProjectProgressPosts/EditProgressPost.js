@@ -10,6 +10,7 @@ import {
   TextField,
 } from "@material-ui/core";
 import React, { useContext, useState } from "react";
+import FeedbackContext from "../../context/FeedbackContext";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
 import RichTextEditor from "../../richTextEditor/RichTextEditor";
@@ -20,6 +21,9 @@ const useStyles = makeStyles((theme) => ({
   card: {
     padding: theme.spacing(2),
     background: "#F2F2F2",
+    boxShadow: "0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .3)",
+    position: "relative",
+    zIndex: 200,
   },
   titleAndDateFieldContainer: {
     marginBottom: theme.spacing(2),
@@ -51,12 +55,21 @@ const useStyles = makeStyles((theme) => ({
     border: `1px solid ${theme.palette.primary.main}`,
     color: theme.palette.primary.main,
   },
+  notClickableBackground: {
+    position: "fixed",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 199,
+  },
 }));
 
 export default function ProgressPost({ post, project, cancelEditingPost }) {
   const classes = useStyles();
 
   const { locale } = useContext(UserContext);
+  const { showFeedbackMessage } = useContext(FeedbackContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
 
   const [eventDate, setEventDate] = useState(post?.event_date ? post.event_date : null);
@@ -80,8 +93,15 @@ export default function ProgressPost({ post, project, cancelEditingPost }) {
   const closeAlertDialog = () => {
     setOpen(false);
   };
+  const handleBackgroundClick = () => {
+    showFeedbackMessage({
+      message: <span>{texts.please_finish_editing_the_post}</span>,
+      error: true,
+    });
+  };
   return (
     <>
+      <div className={classes.notClickableBackground} onClick={handleBackgroundClick} />
       <Card className={classes.card} raised="true">
         <div className={classes.titleAndDateFieldContainer}>
           <TextField
