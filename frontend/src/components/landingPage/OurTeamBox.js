@@ -27,8 +27,11 @@ const useStyles = makeStyles((theme) => ({
   infoLinkBoxes: {
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
     position: "relative",
+    [theme.breakpoints.up("sm")]: {
+      marginLeft: theme.spacing(3)
+    }
   },
   teamImage: {
     maxWidth: "48%",

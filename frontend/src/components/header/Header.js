@@ -49,7 +49,6 @@ import ProfileBadge from "../profile/ProfileBadge";
 import DropDownButton from "./DropDownButton";
 import LanguageSelect from "./LanguageSelect";
 import StaticPageLinks from "./StaticPageLinks";
-import CrowdfundingBanner from "../donation/crowdfunding/CrowdfundingBanner";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -345,7 +344,6 @@ export default function Header({
         hideHeader ? classes.hideHeader : ""
       }`}
     >
-      {locale === "de" && <CrowdfundingBanner />}
       <Container className={classes.container}>
         <Link href={localePrefix + "/"} className={classes.logoLink}>
           <img src={logo} alt={texts.climate_connect_logo} className={classes.logo} />

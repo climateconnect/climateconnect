@@ -90,7 +90,7 @@ export function getFashionHubDescription() {
       ),
       de: (
         <>
-          Jüngste Berichte schätzen, dass der Modesektor verantwortlich ist für
+          Jüngste Berichte schätzen, dass die Modebranche verantwortlich ist für
           <b> 8-10 % der weltweiten Treibhausgasemissionen</b>. Die Daten variieren je nach
           Energiequelle (wobei Energie auf Kohlebasis im Vergleich zu anderen einen größeren
           Fußabdruck hinterlässt). Der kohlenstoffintensivste Produktionsschritt ist die
