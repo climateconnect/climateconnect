@@ -21,7 +21,7 @@ import ProjectStatus from "./ProjectStatus";
 import ROLE_TYPES from "../../../public/data/role_types";
 import UserContext from "../context/UserContext";
 import JoinButton from "./Buttons/JoinButton";
-import ProgressPosts from "./ProjectProgressPosts/ProgressPosts";
+import ProgressContent from "./ProjectProgressPosts/ProgressContent";
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
 const useStyles = makeStyles((theme) => ({
@@ -97,18 +97,6 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.primary.main,
       },
     },
-  },
-  progressContent: {
-    marginTop: theme.spacing(5),
-  },
-  progressHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-  },
-  newPostButton: {
-    marginTop: theme.spacing(1),
-    whiteSpace: "nowrap",
   },
   collabSection: {
     display: "inline-block",
@@ -257,26 +245,6 @@ export default function ProjectContent({
   const hasAdminPermissions = [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(
     user_permission
   );
-
-  const [posts, setPosts] = useState([...project.timeline_posts]);
-  const [editingPostId, setEditingPostId] = useState(null);
-  const changeEditingPostId = (id) => {
-    if (editingPostId === null) {
-      setEditingPostId(id);
-    } else if (editingPostId === id) {
-      setEditingPostId(null);
-    } else {
-      // Add alert that changed content on the currently edited post will be lost
-      setEditingPostId(id);
-    }
-  };
-  const [creatingPost, setCreatingPost] = useState(false);
-  const handleNewPost = () => {
-    setCreatingPost(true);
-    const tempId = parseInt(project.timeline_posts[0].id) +1;
-    setPosts([{id: tempId}, ...posts])
-    changeEditingPostId(tempId);
-  };
   return (
     <>
       <div className={classes.contentBlock}>
@@ -467,30 +435,7 @@ export default function ProjectContent({
         )}
       </div>
       <div className={classes.contentBlock}>
-        <div className={classes.progressHeader}>
-          <div>
-            <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
-              {texts.progress}
-            </Typography>
-            <Typography variant="body2" fontStyle="italic" fontWeight="bold">
-              {texts.follow_the_project_to_be_notified_when_they_make_an_update_post}
-            </Typography>
-          </div>
-          <Button
-            className={classes.newPostButton}
-            variant="contained"
-            color="primary"
-            onClick={handleNewPost}
-            disabled={creatingPost}
-          >
-            {texts.new_update}
-          </Button>
-        </div>
-        {project.timeline_posts && project.timeline_posts.length > 0 && (
-          <div className={classes.progressContent}>
-            <ProgressPost project={project} posts={posts} editingPostId={editingPostId} changeEditingPostId={changeEditingPostId} />
-          </div>
-        )}
+        <ProgressContent project={project} />
       </div>
     </>
   );
