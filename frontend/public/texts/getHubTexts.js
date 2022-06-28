@@ -126,6 +126,14 @@ export default function getHubTexts({ hubName }) {
       de:
         "Hier kannst du beschreiben, wiso dich speziel dieser Sektor interessiert. Vielleich arbeitest du schon in diesem Sektor oder du hälst Veränderungen in diesem Sektor für sehr wichtig. (optional)",
     },
+    briefly_summarise_why_you_are_interested_part_one: {
+      en: "Briefly summarise why you are interested in this sector (",
+      de: "Fasse kurz zusammen, wieso du dich für diesen Sektor interessierst (",
+    },
+    briefly_summarise_why_you_are_interested_part_two: {
+      en: " / 256 characters)",
+      de: " / 256 Zeichen)",
+    },
   };
 
   if (hubName === "Fashion") return { ...generalHubTexts, ...getFashionHubDescription() };

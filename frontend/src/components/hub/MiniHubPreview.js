@@ -290,6 +290,11 @@ export default function MiniHubPreview({
             rows={7}
             size="small"
             variant="outlined"
+            helperText={
+              texts.briefly_summarise_why_you_are_interested_part_one +
+              interestsInfo[hub.url_slug].length +
+              texts.briefly_summarise_why_you_are_interested_part_two
+            }
           />
         </Collapse>
       )}
