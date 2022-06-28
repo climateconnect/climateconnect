@@ -73,7 +73,7 @@ export default function ProgressPost({ post, project, updateEditingPostId }) {
           {post.event_date && (
             <Typography>
               {texts.event_date}
-              {<DateDisplay date={new Date(post.event_date)} woTimeAgo />}
+              {<DateDisplay date={new Date(post.event_date)} withoutTimeAgo />}
             </Typography>
           )}
           <Typography variant="h5" color="primary" className={classes.title}>
@@ -97,11 +97,11 @@ export default function ProgressPost({ post, project, updateEditingPostId }) {
       <RichTextEditor content={postContent} onContentChange={onContentChange} readOnly />
       <Typography variant="caption" color="secondary">
         {texts.this_post_was_created_on}
-        <DateDisplay date={new Date(post.created_at)} woTimeAgo />
+        <DateDisplay date={new Date(post.created_at)} withoutTimeAgo />
         {post.updated_at && (
           <>
             {texts.and_updated_on}
-            <DateDisplay date={new Date(post.updated_at)} woTimeAgo />
+            <DateDisplay date={new Date(post.updated_at)} withoutTimeAgo />
           </>
         )}
         .
