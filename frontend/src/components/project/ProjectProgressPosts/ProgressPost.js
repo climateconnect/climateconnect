@@ -53,11 +53,6 @@ export default function ProgressPost({ post, project, updateEditingPostId }) {
 
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
-
-  const [postContent, setPostContent] = useState(post.content);
-  const onContentChange = (content) => {
-    setPostContent(content);
-  };
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const handleMenuClick = (event) => {
@@ -94,7 +89,7 @@ export default function ProgressPost({ post, project, updateEditingPostId }) {
           </Menu>
         </div>
       </div>
-      <RichTextEditor content={postContent} onContentChange={onContentChange} readOnly />
+      <RichTextEditor content={post.content} readOnly />
       <Typography variant="caption" color="secondary">
         {texts.this_post_was_created_on}
         <DateDisplay date={new Date(post.created_at)} withoutTimeAgo />

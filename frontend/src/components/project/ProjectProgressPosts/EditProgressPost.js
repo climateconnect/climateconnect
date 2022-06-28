@@ -16,7 +16,7 @@ import UserContext from "../../context/UserContext";
 import RichTextEditor from "../../richTextEditor/RichTextEditor";
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
-
+import { apiRequest } from "../../../../public/lib/apiOperations";
 const useStyles = makeStyles((theme) => ({
   card: {
     padding: theme.spacing(2),
@@ -65,19 +65,37 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProgressPost({ post, project, cancelEditingPost }) {
+export default function EditProgressPost({
+  post,
+  project,
+  cancelEditingPost,
+  token,
+  refreshPosts,
+}) {
   const classes = useStyles();
 
   const { locale } = useContext(UserContext);
   const { showFeedbackMessage } = useContext(FeedbackContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
 
-  const [eventDate, setEventDate] = useState(post?.event_date ? post.event_date : null);
-  const [postTitle, setPostTitle] = useState(post?.title ? post.title : "");
-  const [postContent, setPostContent] = useState(post?.content ? post.content : "");
+  const [eventDate, setEventDate] = useState(post.event_date ? post.event_date : null);
+  const [postTitle, setPostTitle] = useState(post.title ? post.title : "");
+  const [postContent, setPostContent] = useState(post.content);
 
+  const parseDate = (date) => {
+    const unparsedDate = new Date(date);
+    const parsedYear = unparsedDate.getFullYear();
+    const parsedMonth =
+      unparsedDate.getMonth() + 1 >= 10
+        ? unparsedDate.getMonth() + 1
+        : `0${unparsedDate.getMonth() + 1}`;
+    const parsedDay =
+      unparsedDate.getDate() >= 10 ? unparsedDate.getDate() : `0${unparsedDate.getDate()}`;
+    const parsedDate = `${parsedYear}-${parsedMonth}-${parsedDay}`;
+    return parsedDate;
+  };
   const onEventDateChange = (date) => {
-    date != "Invalid Date" && date !== null && setEventDate(date);
+    date != "Invalid Date" && date !== null && setEventDate(parseDate(date));
   };
   const onTitleChange = (e) => {
     setPostTitle(e.target.value);
@@ -92,6 +110,25 @@ export default function ProgressPost({ post, project, cancelEditingPost }) {
   };
   const closeAlertDialog = () => {
     setOpen(false);
+  };
+
+  const createData = {
+    title: postTitle,
+    content: postContent,
+    event_date: eventDate,
+  };
+  const updateData = { id: post.id, ...createData };
+  const handleSave = async () => {
+    await apiRequest({
+      method: post.isNewPost ? "post" : "patch",
+      url: "/api/projects/" + project.url_slug + "/create_update_post/",
+      payload: post.isNewPost ? createData : updateData,
+      token: token,
+      locale: locale,
+    }).then(() => {
+      cancelEditingPost(post.id);
+      refreshPosts();
+    });
   };
   const handleBackgroundClick = () => {
     showFeedbackMessage({
@@ -129,7 +166,9 @@ export default function ProgressPost({ post, project, cancelEditingPost }) {
         </div>
         <RichTextEditor content={postContent} onContentChange={onContentChange} />
         <div className={classes.saveAndCancelButtonContainer}>
-          <Button className={classes.saveButton}>{texts.save}</Button>
+          <Button className={classes.saveButton} onClick={handleSave}>
+            {texts.save}
+          </Button>
           <Button className={classes.cancelButton} onClick={openAlertDialog}>
             {texts.cancel}
           </Button>

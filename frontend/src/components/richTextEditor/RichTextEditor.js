@@ -170,8 +170,7 @@ export default function RichTextEditor({ content, onContentChange, readOnly }) {
     return (
       <div className={classes.readOnlyEditor}>
         <Editor
-          editorState={editorState}
-          onChange={setEditorState}
+          editorState={EditorState.createWithContent(convertFromRaw(JSON.parse(content)))}
           blockStyleFn={getBlockStyleClass}
           readOnly
         />

@@ -190,6 +190,7 @@ export default function ProjectContent({
   toggleShowRequests,
   handleSendProjectJoinRequest,
   requestedToJoinProject,
+  token,
 }) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
@@ -435,7 +436,7 @@ export default function ProjectContent({
         )}
       </div>
       <div className={classes.contentBlock}>
-        <ProgressContent project={project} />
+        <ProgressContent project={project} token={token} />
       </div>
     </>
   );

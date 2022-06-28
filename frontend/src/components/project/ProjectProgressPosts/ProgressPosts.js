@@ -9,6 +9,8 @@ export default function ProgressPosts({
   editingPostId,
   updateEditingPostId,
   cancelEditingPost,
+  token,
+  refreshPosts,
 }) {
   return (
     <>
@@ -23,6 +25,8 @@ export default function ProgressPosts({
                 post={post}
                 project={project}
                 cancelEditingPost={cancelEditingPost}
+                token={token}
+                refreshPosts={refreshPosts}
               />
             ) : (
               <ProgressPost

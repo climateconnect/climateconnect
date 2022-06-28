@@ -503,6 +503,7 @@ export default function ProjectPageRoot({
             toggleShowRequests={toggleShowRequests}
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
             requestedToJoinProject={requestedToJoinProject}
+            token={token}
           />
         </TabContent>
         <TabContent value={tabValue} index={1}>

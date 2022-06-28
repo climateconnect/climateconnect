@@ -1,5 +1,6 @@
 import { Button, makeStyles, Typography } from "@material-ui/core";
 import React, { useContext, useState } from "react";
+import { getPostsByProject } from "../../../../pages/projects/[projectId]";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
 import ProgressPosts from "./ProgressPosts";
@@ -18,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     whiteSpace: "nowrap",
   },
 }));
-export default function ProgressContent({ project }) {
+export default function ProgressContent({ project, token }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
@@ -46,6 +47,11 @@ export default function ProgressContent({ project }) {
       setPosts(posts.filter((p) => p.id !== newPostTempId));
     }
     updateEditingPostId(id);
+  };
+  const refreshPosts = async () => {
+    await Promise.any([getPostsByProject(project.url_slug, token, locale)]).then((result) => {
+      setPosts(result);
+    });
   };
   return (
     <>
@@ -76,6 +82,8 @@ export default function ProgressContent({ project }) {
             editingPostId={editingPostId}
             updateEditingPostId={updateEditingPostId}
             cancelEditingPost={cancelEditingPost}
+            token={token}
+            refreshPosts={refreshPosts}
           />
         </div>
       )}

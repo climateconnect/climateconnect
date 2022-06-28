@@ -56,15 +56,7 @@ export async function getServerSideProps(ctx) {
   };
 }
 
-export default function ProjectPage({
-  project,
-  members,
-  posts,
-  comments,
-  following,
-  liking,
-  hubs,
-}) {
+function ProjectPage({ project, members, posts, comments, following, liking, hubs }) {
   const token = new Cookies().get("token");
   const [curComments, setCurComments] = React.useState(parseComments(comments));
   const [message, setMessage] = React.useState({});
@@ -314,3 +306,5 @@ function parseProjectMembers(projectMembers) {
     };
   });
 }
+
+export { ProjectPage as default, getPostsByProject };
