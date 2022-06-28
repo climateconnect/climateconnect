@@ -22,9 +22,9 @@ export default function ProgressContent({ project }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
-  const [posts, setPosts] = useState([...project.timeline_posts]);
+  const [posts, setPosts] = useState(project.timeline_posts ? [...project.timeline_posts] : null);
   const [editingPostId, setEditingPostId] = useState(null);
-  const newPostTempId = project.timeline_posts[0].id + 1;
+  const newPostTempId = project.timeline_posts ? project.timeline_posts[0].id + 1 : 1;
   const updateEditingPostId = (id) => {
     if (editingPostId === null) {
       setEditingPostId(id);
@@ -34,7 +34,8 @@ export default function ProgressContent({ project }) {
     }
   };
   const handleNewPost = () => {
-    setPosts([{ id: newPostTempId, isNewPost: true }, ...posts]);
+    const newPost = { id: newPostTempId, isNewPost: true };
+    posts ? setPosts([newPost, ...posts]) : setPosts(newPost);
     updateEditingPostId(newPostTempId);
   };
   const cancelEditingPost = (id) => {
