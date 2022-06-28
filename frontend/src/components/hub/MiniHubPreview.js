@@ -262,7 +262,7 @@ export default function MiniHubPreview({
                   ? interestsInfo[hub.url_slug]
                   : interestsInfo[hub.url_slug].slice(0, 48) + "..."}
               </Typography>
-              {!expanded ? (
+              {hasExpandForLongDescription && (!expanded ? (
                 <span className={classes.expandHoverIcon}>
                   <AddBoxRoundedIcon />
                   <Typography>Expand</Typography>
@@ -272,7 +272,7 @@ export default function MiniHubPreview({
                   <ExpandMoreIcon className={classes.rotated} />
                   <Typography>Collapse</Typography>
                 </span>
-              )}
+              ))}
             </div>
             <FormatQuoteIcon className={classes.trailingQuotationMark} />
           </div>
