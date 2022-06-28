@@ -993,5 +993,9 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Please finish editing the post before you do anything else.",
       de: "Bitte schließe erst die Bearbeitung des Posts ab, bevor du etwas anderes machst.",
     },
+    do_you_really_want_to_delete_this_post: {
+      en: "Do you really want to delete this post?",
+      de: "Möchtest du diesen Post wirklich löschen?",
+    },
   };
 }

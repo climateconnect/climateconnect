@@ -33,6 +33,8 @@ export default function ProgressPosts({
                 post={post}
                 project={project}
                 updateEditingPostId={updateEditingPostId}
+                token={token}
+                refreshPosts={refreshPosts}
               />
             )
           }
