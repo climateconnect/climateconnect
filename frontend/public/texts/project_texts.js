@@ -164,6 +164,15 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
         </>
       ),
     },
+    are_you_sure: {
+      en: "Are you sure?",
+      de: "Bist du sicher?",
+    },
+    do_you_really_want_to_stop_editing_this_post: {
+      en: "Do you really wan't to stop editing this post? All changes will be lost.",
+      de:
+        "Willst du wirklich aufhören diesen Post zu bearbeiten? Deine Änderungen werden nicht gespeichert.",
+    },
     do_you_really_want_to_dislike: {
       en: "Do you really want to remove your like?",
       de: "Möchtest du deinen Like wirklich entfernen? ",

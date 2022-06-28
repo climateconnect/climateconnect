@@ -3,7 +3,13 @@ import EditProgressPost from "./EditProgressPost";
 import StepsTrackerVertical from "../../general/StepsTrackerVertical";
 import ProgressPost from "./ProgressPost";
 
-export default function ProgressPosts({ posts, project, editingPostId, updateEditingPostId, cancelEditingPost }) {
+export default function ProgressPosts({
+  posts,
+  project,
+  editingPostId,
+  updateEditingPostId,
+  cancelEditingPost,
+}) {
   return (
     <>
       {posts.map((post, index) => (
@@ -13,7 +19,11 @@ export default function ProgressPosts({ posts, project, editingPostId, updateEdi
           lastIndex={posts.length - 1}
           content={
             post.id === editingPostId ? (
-              <EditProgressPost post={post} project={project} cancelEditingPost={cancelEditingPost} />
+              <EditProgressPost
+                post={post}
+                project={project}
+                cancelEditingPost={cancelEditingPost}
+              />
             ) : (
               <ProgressPost
                 post={post}

@@ -31,11 +31,9 @@ export default function ProgressContent({ project }) {
       setEditingPostId(id);
       setCreatingPost(true);
     } else if (editingPostId === id) {
-        // Add alert that changed content on the currently edited post will be lost
       setEditingPostId(null);
       setCreatingPost(false);
     } else {
-      // Add alert that changed content on the currently edited post will be lost
       setEditingPostId(id);
       setCreatingPost(true);
     }
@@ -47,7 +45,7 @@ export default function ProgressContent({ project }) {
   };
   const cancelEditingPost = (id) => {
     if (id === newPostTempId) {
-        setPosts(posts.filter((p) => p.id !== newPostTempId));
+      setPosts(posts.filter((p) => p.id !== newPostTempId));
     }
     updateEditingPostId(id);
     setCreatingPost(false);
