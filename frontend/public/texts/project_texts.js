@@ -976,5 +976,9 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Event Date",
       de: "Eventdatum",
     },
+    new_update: {
+      en: "New update",
+      de: "Update erstellen",
+    },
   };
 }

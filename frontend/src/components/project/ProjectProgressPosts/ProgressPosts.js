@@ -3,17 +3,7 @@ import EditProgressPost from "./EditProgressPost";
 import StepsTrackerVertical from "../../general/StepsTrackerVertical";
 import ProgressPost from "./ProgressPost";
 
-export default function ProgressPosts({ project }) {
-  const posts = project.timeline_posts;
-  const [editingPostId, setEditingPostId] = useState(null);
-  const changeEditingPostId = (id) => {
-    if (editingPostId === null) {
-      setEditingPostId(id);
-    } else {
-      // Add alert that changed content on the currently edited post will be lost
-      setEditingPostId(id);
-    }
-  };
+export default function ProgressPosts({ posts, project, editingPostId, changeEditingPostId }) {
   return (
     <>
       {posts.map((post, index) => (
