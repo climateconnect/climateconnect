@@ -39,7 +39,6 @@ import SelectDialog from "./../dialogs/SelectDialog";
 import UploadImageDialog from "./../dialogs/UploadImageDialog";
 import SelectField from "./../general/SelectField";
 import DetailledDescriptionInput from "./DetailledDescriptionInput";
-import MiniHubPreviews from "../hub/MiniHubPreviews";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -639,7 +638,7 @@ export default function EditAccountPage({
                 ...editedAccount.info.interests,
                 descriptions: {
                   ...editedAccount.info.interests.descriptions,
-                  [hubUrlSlug]: description,
+                  [hubUrlSlug]: description.substring(0, 256),
                 },
               },
             },

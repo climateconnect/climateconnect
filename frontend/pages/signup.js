@@ -1,8 +1,6 @@
 import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import Box from "@material-ui/core/Box";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
@@ -24,7 +22,7 @@ import Layout from "../src/components/layouts/layout";
 import BasicInfo from "../src/components/signup/BasicInfo";
 import AddInfo from "./../src/components/signup/AddInfo";
 import AddInterests from "../src/components/signup/AddInterests";
-import { Typography } from "@material-ui/core";
+import theme from "../src/themes/theme";
 
 export async function getServerSideProps(ctx) {
   const [allHubs] = await Promise.all([getAllHubs(ctx.locale, true)]);
@@ -37,10 +35,8 @@ export async function getServerSideProps(ctx) {
 
 const useStyles = makeStyles({
   box: {
-    // border: "1px solid rgba(0,0,0,0.3)",
     borderRadius: "10%",
     boxShadow: "2px 4px 10px 4px rgba(0,0,0,0.1)",
-    transition: "0.3s",
     maxWidth: 700,
     minWidth: 350,
   },
@@ -48,10 +44,15 @@ const useStyles = makeStyles({
     width: 450,
     alignSelf: "flex-end ",
   },
+  interestsPageImage: {
+    width: 450,
+    alignSelf: "center",
+  },
   root: {
     display: "flex",
     justifyContent: "space-between",
     flexWrap: "wrap",
+    marginBottom: theme.spacing(5),
   },
 });
 
@@ -135,19 +136,21 @@ export default function Signup({ allHubs }) {
     setCurStep(steps[2]);
   };
 
-  const handleSkipInterestsSubmit = (event) => {
+  // const handleSkipInterestsSubmit = (event) => {
+  //   event.preventDefault();
+  //   const skipInterests = true;
+  //   sendPayload(skipInterests);
+  // };
+
+  const handleAddInterestsSubmit = (event, values, skipInterests) => {
     event.preventDefault();
-    const skipInterests = true;
-    sendPayload(skipInterests);
+    if (skipInterests) {
+      setInterestsInfo = [];
+    }
+    sendPayload();
   };
 
-  const handleAddInterestsSubmit = (event, values) => {
-    event.preventDefault();
-    const skipInterests = false;
-    sendPayload(skipInterests);
-  };
-
-  const sendPayload = (skipInterests) => {
+  const sendPayload = () => {
     const params = getParams(window?.location?.href);
     let payload = {
       email: userInfo.email.trim().toLowerCase(),
@@ -160,13 +163,8 @@ export default function Signup({ allHubs }) {
       is_activist: isClimateActorCookie?.isActivist,
       last_completed_tutorial_step: lastCompletedTutorialStep,
       source_language: locale,
+      interests: interestsInfo,
     };
-    if (!skipInterests) {
-      payload = {
-        ...payload,
-        interests: interestsInfo,
-      };
-    }
     const headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
@@ -215,7 +213,7 @@ export default function Signup({ allHubs }) {
   };
 
   const handleOnInterestsInfoTextFieldChange = (url_slug, description) => {
-    const temp = { ...interestsInfo, [url_slug]: description };
+    const temp = { ...interestsInfo, [url_slug]: description.substring(0, 256) };
     setInterestsInfo(temp);
   };
 
@@ -245,44 +243,42 @@ export default function Signup({ allHubs }) {
   return (
     <Layout isLoading={isLoading} message={errorMessage} messageType={errorMessage && "error"}>
       <div className={classes.root}>
-        <Card className={classes.box}>
-          {/* <div className={classes.box}> */}
-          {curStep === "basicinfo" && (
-            <BasicInfo
-              title={texts.sign_up}
-              values={userInfo}
-              handleSubmit={handleBasicInfoSubmit}
-              errorMessage={errorMessages[steps[0]]}
-            />
-          )}
-          {curStep === "personalinfo" && (
-            <AddInfo
-              values={userInfo}
-              handleSubmit={handleAddInfoSubmit}
-              errorMessage={errorMessages[steps[1]]}
-              handleGoBack={handleGoBackFromAddInfo}
-              locationInputRef={locationInputRef}
-              locationOptionsOpen={locationOptionsOpen}
-              handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-            />
-          )}
-          {curStep == "interestsinfo" && (
-            <AddInterests
-              selectedHubs={selectedHubs}
-              allHubs={allHubs}
-              errorMessage={errorMessages[steps[2]]}
-              handleSkip={handleSkipInterestsSubmit}
-              handleSubmit={handleAddInterestsSubmit}
-              handleGoBack={handleGoBackFromInterestsInfo}
-              onSelectNewHub={onSelectNewHub}
-              onClickRemoveHub={onClickRemoveHub}
-              onInterestsInfoTextFieldChange={handleOnInterestsInfoTextFieldChange}
-              interestsInfo={interestsInfo}
-            />
-          )}
-        </Card>
-        {/* </div>       */}
-        <img src="/images/signup-1.svg" className={classes.image} />
+        {curStep === "basicinfo" && (
+          <BasicInfo
+            title={texts.sign_up}
+            values={userInfo}
+            handleSubmit={handleBasicInfoSubmit}
+            errorMessage={errorMessages[steps[0]]}
+          />
+        )}
+        {curStep === "personalinfo" && (
+          <AddInfo
+            values={userInfo}
+            handleSubmit={handleAddInfoSubmit}
+            errorMessage={errorMessages[steps[1]]}
+            handleGoBack={handleGoBackFromAddInfo}
+            locationInputRef={locationInputRef}
+            locationOptionsOpen={locationOptionsOpen}
+            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+          />
+        )}
+        {curStep == "interestsinfo" && (
+          <AddInterests
+            selectedHubs={selectedHubs}
+            allHubs={allHubs}
+            interestsInfo={interestsInfo}
+            handleSubmit={handleAddInterestsSubmit}
+            handleGoBack={handleGoBackFromInterestsInfo}
+            onSelectNewHub={onSelectNewHub}
+            onClickRemoveHub={onClickRemoveHub}
+            onInterestsInfoTextFieldChange={handleOnInterestsInfoTextFieldChange}
+          />
+        )}
+        {curStep != "interestsinfo" ? (
+          <img src="/images/signup-1.svg" className={classes.image} />
+        ) : (
+          <img src="/images/questions_pana.svg" className={classes.interestsPageImage} />
+        )}
       </div>
     </Layout>
   );
