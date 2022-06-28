@@ -24,7 +24,7 @@ export default function ProgressContent({ project }) {
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [posts, setPosts] = useState([...project.timeline_posts]);
   const [editingPostId, setEditingPostId] = useState(null);
-  const newPostTempId = parseInt(project.timeline_posts[0].id) + 1;
+  const newPostTempId = project.timeline_posts[0].id + 1;
   const updateEditingPostId = (id) => {
     if (editingPostId === null) {
       setEditingPostId(id);
