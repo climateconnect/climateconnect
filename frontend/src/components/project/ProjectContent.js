@@ -191,6 +191,11 @@ export default function ProjectContent({
   handleSendProjectJoinRequest,
   requestedToJoinProject,
   token,
+  isUserFollowing,
+  handleToggleFollowProject,
+  toggleShowFollowers,
+  followingChangePending,
+  numberOfFollowers,
 }) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
@@ -436,7 +441,16 @@ export default function ProjectContent({
         )}
       </div>
       <div className={classes.contentBlock}>
-        <ProgressContent project={project} token={token} />
+        <ProgressContent
+          project={project}
+          token={token}
+          isUserFollowing={isUserFollowing}
+          handleToggleFollowProject={handleToggleFollowProject}
+          hasAdminPermissions={hasAdminPermissions}
+          toggleShowFollowers={toggleShowFollowers}
+          followingChangePending={followingChangePending}
+          numberOfFollowers={numberOfFollowers}
+        />
       </div>
     </>
   );

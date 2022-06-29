@@ -3,6 +3,7 @@ import React, { useContext, useState } from "react";
 import { getPostsByProject } from "../../../../pages/projects/[projectId]";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
+import FollowButton from "../Buttons/FollowButton";
 import ProgressPosts from "./ProgressPosts";
 
 const useStyles = makeStyles((theme) => ({
@@ -19,7 +20,16 @@ const useStyles = makeStyles((theme) => ({
     whiteSpace: "nowrap",
   },
 }));
-export default function ProgressContent({ project, token }) {
+export default function ProgressContent({
+  project,
+  token,
+  isUserFollowing,
+  handleToggleFollowProject,
+  hasAdminPermissions,
+  toggleShowFollowers,
+  followingChangePending,
+  numberOfFollowers,
+}) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
@@ -64,15 +74,27 @@ export default function ProgressContent({ project, token }) {
             {texts.follow_the_project_to_be_notified_when_they_make_an_update_post}
           </Typography>
         </div>
-        <Button
-          className={classes.newPostButton}
-          variant="contained"
-          color="primary"
-          onClick={handleNewPost}
-          disabled={editingPostId !== null}
-        >
-          {texts.new_update}
-        </Button>
+        {hasAdminPermissions ? (
+          <Button
+            className={classes.newPostButton}
+            variant="contained"
+            color="primary"
+            onClick={handleNewPost}
+            disabled={editingPostId !== null}
+          >
+            {texts.new_update}
+          </Button>
+        ) : (
+          <FollowButton
+            texts={texts}
+            isUserFollowing={isUserFollowing}
+            handleToggleFollowProject={handleToggleFollowProject}
+            hasAdminPermissions={hasAdminPermissions}
+            toggleShowFollowers={toggleShowFollowers}
+            followingChangePending={followingChangePending}
+            numberOfFollowers={numberOfFollowers}
+          />
+        )}
       </div>
       {project.timeline_posts && project.timeline_posts.length > 0 && (
         <div className={classes.progressContent}>

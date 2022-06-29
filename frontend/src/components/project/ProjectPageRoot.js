@@ -504,6 +504,11 @@ export default function ProjectPageRoot({
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
             requestedToJoinProject={requestedToJoinProject}
             token={token}
+            isUserFollowing={isUserFollowing}
+            handleToggleFollowProject={handleToggleFollowProject}
+            toggleShowFollowers={toggleShowFollowers}
+            followingChangePending={followingChangePending}
+            numberOfFollowers={numberOfFollowers}
           />
         </TabContent>
         <TabContent value={tabValue} index={1}>
