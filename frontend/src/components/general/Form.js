@@ -31,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: "2px 4px 10px 4px rgba(0,0,0,0.1)",
     maxWidth: 700,
     minWidth: 350,
+    margin: "0 auto",
   },
   blockElement: {
     display: "block",
