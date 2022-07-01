@@ -619,7 +619,7 @@ export default function EditAccountPage({
           const interestHubsAfterRemoval = editedAccount?.info?.interests.hubs?.filter(
             (h) => h.url_slug !== hub.url_slug
           );
-          let interestInfoAfterRemoval = editedAccount?.info?.interests.descriptions;
+          const interestInfoAfterRemoval = editedAccount?.info?.interests.descriptions;
           delete interestInfoAfterRemoval[hub.url_slug];
           setEditedAccount({
             ...editedAccount,

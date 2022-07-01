@@ -3,7 +3,6 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import Form from "./../general/Form";
 
-
 export default function AddInterests({
   selectedHubs,
   allHubs,

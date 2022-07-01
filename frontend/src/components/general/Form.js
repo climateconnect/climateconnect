@@ -132,7 +132,6 @@ export default function Form({
   usePercentage,
   percentage,
   onSubmit,
-  onSkip,
   errorMessage,
   onGoBack,
   alignButtonsRight,

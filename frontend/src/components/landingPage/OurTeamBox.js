@@ -30,8 +30,8 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-around",
     position: "relative",
     [theme.breakpoints.up("sm")]: {
-      marginLeft: theme.spacing(3)
-    }
+      marginLeft: theme.spacing(3),
+    },
   },
   teamImage: {
     maxWidth: "48%",

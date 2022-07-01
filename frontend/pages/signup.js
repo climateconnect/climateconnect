@@ -136,23 +136,17 @@ export default function Signup({ allHubs }) {
     setCurStep(steps[2]);
   };
 
-  // const handleSkipInterestsSubmit = (event) => {
-  //   event.preventDefault();
-  //   const skipInterests = true;
-  //   sendPayload(skipInterests);
-  // };
-
   const handleAddInterestsSubmit = (event, values, skipInterests) => {
     event.preventDefault();
     if (skipInterests) {
-      setInterestsInfo = [];
+      setInterestsInfo([]);
     }
     sendPayload();
   };
 
   const sendPayload = () => {
     const params = getParams(window?.location?.href);
-    let payload = {
+    const payload = {
       email: userInfo.email.trim().toLowerCase(),
       password: userInfo.password,
       first_name: userInfo.first_name.trim(),
@@ -229,16 +223,10 @@ export default function Signup({ allHubs }) {
   const onClickRemoveHub = (hub) => {
     const hubsAfterRemoval = selectedHubs?.filter((h) => h.url_slug !== hub.url_slug);
     setSelectedHubs(hubsAfterRemoval);
-    let interestsInfoAfterRemoval = interestsInfo;
+    const interestsInfoAfterRemoval = interestsInfo;
     delete interestsInfoAfterRemoval[hub.url_slug];
     setInterestsInfo(interestsInfoAfterRemoval);
   };
-
-  // const parseHubsForRequest = (hubs) => {
-  //   const skipInterests=false;
-  //   if (skipInterests) return [];
-  //   else return hubs.map((h) => ({key: h.url_slug, value: h.name}))
-  // };
 
   return (
     <Layout isLoading={isLoading} message={errorMessage} messageType={errorMessage && "error"}>
