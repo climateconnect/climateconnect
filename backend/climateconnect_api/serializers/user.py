@@ -7,13 +7,11 @@ from climateconnect_api.serializers.common import (AvailabilitySerializer,
                                                    UserInterestsSerializer)
 from climateconnect_api.serializers.translation import \
     UserProfileTranslationSerializer
-# from climateconnect_api.serializers.interests import UserInterestsSerializer
 from climateconnect_api.utility.badges import get_badges, get_oldest_relevant_donation
 from climateconnect_api.utility.user import get_user_profile_biography
 from django.conf import settings
 from django.utils.translation import get_language
 from rest_framework import serializers
-from rest_framework.fields import SerializerMethodField
 
 from climateconnect_api.models.interests import UserInterests
 
@@ -120,7 +118,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
             return UserInterestsSerializer(interests, many=True).data
         else:
             return None
-
 
 
 class EditUserProfileSerializer(UserProfileSerializer):
