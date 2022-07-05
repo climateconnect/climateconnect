@@ -1,8 +1,11 @@
-import { Container, makeStyles, Typography } from "@material-ui/core";
+import { Container, makeStyles, Typography, Link } from "@material-ui/core";
 import React, { useContext } from "react";
+import { getStaticPageLinks } from "../../../../public/data/getStaticPageLinks";
+import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
 import InfoLinkBox from "../InfoLinkBox";
+
 
 const useStyles = makeStyles((theme) => ({
   contentWrapper: {
@@ -59,17 +62,22 @@ export default function Team({ headlineClass, className }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "about", locale: locale });
+  const link_to_team_page = getLocalePrefix(locale)+"/team";
+  
   return (
     <Container className={className}>
       <Typography color="primary" component="h1" className={headlineClass}>
         {texts.our_team}
       </Typography>
+      
       <div className={classes.contentWrapper}>
+      <Link href={link_to_team_page} >
         <div className={classes.imageContainer}>
           <div className={classes.imageWrapper}>
-            <img src="/images/team.jpg" alt={texts.our_team_image_text} className={classes.image} />
+            <img src="/images/team.jpg" alt={texts.our_team_image_text} className={classes.image} />        
           </div>
         </div>
+        </Link>
         <div className={classes.textContainer}>
           <Typography color="secondary" className={classes.textBody}>
             {texts.our_team_text}
@@ -80,12 +88,15 @@ export default function Team({ headlineClass, className }) {
           <InfoLinkBox
             className={classes.infoLinkBox}
             iconSrc="/icons/group-icon.svg"
+            link = {link_to_team_page}
             iconAlt={texts.icon_displays_2_people}
             headline={texts.find_out_more}
             text={texts.learn_more_about_out_team}
+        
           />
         </div>
       </div>
+      
     </Container>
   );
 }
