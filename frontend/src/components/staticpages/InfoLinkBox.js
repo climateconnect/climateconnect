@@ -62,22 +62,20 @@ export default function InfoLinkBox({
 }) {
   const classes = useStyles({ centerContent: centerContent });
   return ( 
+    <Link href={link} className={classes.noUnderline}>
     <div className={`${classes.infoLinkBox} ${className}`}>
-      <Link href={link} className={classes.noUnderline}>
       <img src={iconSrc} className={classes.icon} alt={iconAlt} />
-      </Link>
       <div>  
-        <Link href={link} className={classes.noUnderline}>
         <Typography color="primary" component="h2" className={classes.headline}>
           {headline}
         </Typography>
-        </Link>
+       
         <Typography color="secondary" className={classes.text}>
           {text}
         </Typography>
         {children}
       </div>
     </div>
-   
+    </Link>
   );
 }
