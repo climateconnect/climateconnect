@@ -1,9 +1,7 @@
 import React from "react";
 import { makeStyles, Typography, Link } from "@material-ui/core";
 
-
 const useStyles = makeStyles((theme) => ({
- 
   infoLinkBox: (props) => ({
     display: "flex",
     alignItems: "center",
@@ -17,7 +15,6 @@ const useStyles = makeStyles((theme) => ({
       margin: "0 auto",
       marginTop: theme.spacing(3),
     },
-   
   }),
   icon: (props) => ({
     marginRight: props.centerContent ? 0 : theme.spacing(3),
@@ -26,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
       width: 45,
     },
   }),
-  
+
   headline: {
     fontSize: 20,
     fontWeight: 700,
@@ -47,7 +44,6 @@ const useStyles = makeStyles((theme) => ({
   text: {
     fontWeight: 600,
   },
-  
 }));
 
 export default function InfoLinkBox({
@@ -58,24 +54,24 @@ export default function InfoLinkBox({
   headline,
   children,
   centerContent,
-  link
+  link,
 }) {
   const classes = useStyles({ centerContent: centerContent });
-  return ( 
+  return (
     <Link href={link} className={classes.noUnderline}>
-    <div className={`${classes.infoLinkBox} ${className}`}>
-      <img src={iconSrc} className={classes.icon} alt={iconAlt} />
-      <div>  
-        <Typography color="primary" component="h2" className={classes.headline}>
-          {headline}
-        </Typography>
-       
-        <Typography color="secondary" className={classes.text}>
-          {text}
-        </Typography>
-        {children}
+      <div className={`${classes.infoLinkBox} ${className}`}>
+        <img src={iconSrc} className={classes.icon} alt={iconAlt} />
+        <div>
+          <Typography color="primary" component="h2" className={classes.headline}>
+            {headline}
+          </Typography>
+
+          <Typography color="secondary" className={classes.text}>
+            {text}
+          </Typography>
+          {children}
+        </div>
       </div>
-    </div>
     </Link>
   );
 }
