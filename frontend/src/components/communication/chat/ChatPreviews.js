@@ -8,7 +8,6 @@ import {
   useMediaQuery,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { hasBasePath } from "next/dist/server/router";
 import PropTypes from "prop-types";
 import React, { useContext } from "react";
 import InfiniteScroll from "react-infinite-scroller";
@@ -126,7 +125,12 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
           className={classes.listItem}
         >
           {chat.name ? (
-            <ChatTitle chat={chat} className={classes.miniProfilePreview} mobile={isNarrowScreen} size="medium"/>
+            <ChatTitle
+              chat={chat}
+              className={classes.miniProfilePreview}
+              mobile={isNarrowScreen}
+              size="medium"
+            />
           ) : (
             <MiniProfilePreview
               className={classes.miniProfilePreview}
