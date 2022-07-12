@@ -125,7 +125,12 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
           className={classes.listItem}
         >
           {chat.name ? (
-            <ChatTitle chat={chat} className={classes.miniProfilePreview} mobile={isNarrowScreen} />
+            <ChatTitle
+              chat={chat}
+              className={classes.miniProfilePreview}
+              mobile={isNarrowScreen}
+              size="medium"
+            />
           ) : (
             <MiniProfilePreview
               className={classes.miniProfilePreview}
