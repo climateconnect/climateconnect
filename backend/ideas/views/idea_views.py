@@ -43,6 +43,10 @@ class IdeasBoardView(ListAPIView):
 
     def get_queryset(self):
         queryset = Idea.objects.all()
+        if 'hub' in self.request.query_params:
+            hub = Hub.objects.filter(url_slug=self.request.query_params['hub'])
+            if hub.exists() and hub[0].hub_type == Hub.LOCATION_HUB_TYPE:
+                queryset = Idea.objects.filter(hub_shared_in=hub[0])
         if 'idea' in self.request.query_params:
             queryset = queryset.order_by(Case(When(url_slug=self.request.query_params.get('idea'), then=0), default=1), '-id')
         return queryset

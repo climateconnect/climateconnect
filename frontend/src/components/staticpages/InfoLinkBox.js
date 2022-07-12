@@ -1,5 +1,5 @@
 import React from "react";
-import { makeStyles, Typography } from "@material-ui/core";
+import { makeStyles, Typography, Link } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   infoLinkBox: (props) => ({
@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme) => ({
       width: 45,
     },
   }),
+
   headline: {
     fontSize: 20,
     fontWeight: 700,
@@ -31,6 +32,15 @@ const useStyles = makeStyles((theme) => ({
       fontSize: 21,
     },
   },
+
+  noUnderline: {
+    textDecoration: "inherit",
+    "&:hover": {
+      textDecoration: "inherit",
+    },
+    color: "inherit",
+  },
+
   text: {
     fontWeight: 600,
   },
@@ -44,20 +54,24 @@ export default function InfoLinkBox({
   headline,
   children,
   centerContent,
+  link,
 }) {
   const classes = useStyles({ centerContent: centerContent });
   return (
-    <div className={`${classes.infoLinkBox} ${className}`}>
-      <img src={iconSrc} className={classes.icon} alt={iconAlt} />
-      <div>
-        <Typography color="primary" component="h2" className={classes.headline}>
-          {headline}
-        </Typography>
-        <Typography color="secondary" className={classes.text}>
-          {text}
-        </Typography>
-        {children}
+    <Link href={link} className={classes.noUnderline}>
+      <div className={`${classes.infoLinkBox} ${className}`}>
+        <img src={iconSrc} className={classes.icon} alt={iconAlt} />
+        <div>
+          <Typography color="primary" component="h2" className={classes.headline}>
+            {headline}
+          </Typography>
+
+          <Typography color="secondary" className={classes.text}>
+            {text}
+          </Typography>
+          {children}
+        </div>
       </div>
-    </div>
+    </Link>
   );
 }
