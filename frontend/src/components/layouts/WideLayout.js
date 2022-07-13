@@ -57,6 +57,7 @@ export default function WideLayout({
   useFloodStdFont,
   rootClassName,
   hideFooter,
+  setErrorMessage,
 }) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);
@@ -65,6 +66,7 @@ export default function WideLayout({
   const [alertEl, setAlertEl] = React.useState(null);
   //Atm this is simply used to slide in the donation campaign banner after a certain timeout
   const [showDonationBanner, setShowDonationBanner] = useState(false);
+
   const spaceToTop = ElementSpaceToTop({ initTopOfPage: true, el: alertEl });
   useEffect(() => {
     const params = getParams(window.location.href);
@@ -77,9 +79,11 @@ export default function WideLayout({
       setShowDonationBanner(true);
     }, 3000);
   }, []);
+
   useEffect(() => {
     setAlertOpen(true);
   }, [message]);
+
   return (
     <LayoutWrapper
       title={title}
@@ -117,6 +121,7 @@ export default function WideLayout({
               }}
               onClose={() => {
                 setAlertOpen(false);
+                setErrorMessage("");
               }}
             >
               {getMessageFromUrl(message ? message : initialMessage)}
