@@ -53,7 +53,7 @@
   },
   "group_chat_creation_possible": {
     "en": "Search for multiple users to create a group",
-    "de": "Gib den Namen meherer Benutzer*innen, um eine Gruppe zu erstellen"
+    "de": "Wähle mehrere Benutzer*innen aus, um eine Gruppe zu erstellen"
   },
   "group_chat_name": {
     "en": "Group chat name",
