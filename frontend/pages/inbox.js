@@ -96,6 +96,10 @@ export default function Inbox({ chatData, next }) {
     next: next,
   });
 
+  const resetErrorMessage = (e) => {
+    setErrorMessage(e);
+  };
+
   const handleGroupNameChange = (e) => {
     setGroupName(e.target.value);
   };
@@ -119,6 +123,7 @@ export default function Inbox({ chatData, next }) {
     if (newChatMembers.length >= 1) {
       const payload = {};
       if (isGroupchat) {
+        //The if statement (line 127) is never entered due to TextField having a the required property set (line 216)
         if (!groupName) {
           setErrorMessage(
             texts.please_set_a_group_name_if_youre_starting_a_chat_with_more_than_one_member
@@ -179,7 +184,12 @@ export default function Inbox({ chatData, next }) {
 
   return (
     <div>
-      <WideLayout title={texts.inbox} messageType="error" message={errorMessage}>
+      <WideLayout
+        title={texts.inbox}
+        messageType="error"
+        message={errorMessage}
+        resetAlertMessage={resetErrorMessage}
+      >
         <Container maxWidth="md" className={classes.root}>
           <Typography component="h1" variant="h4" className={classes.headline}>
             {texts.inbox}
