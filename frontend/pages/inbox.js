@@ -188,7 +188,7 @@ export default function Inbox({ chatData, next }) {
         title={texts.inbox}
         messageType="error"
         message={errorMessage}
-        resetAlertMessage={resetErrorMessage}
+        resetAlertMessage={updateErrorMessage}
       >
         <Container maxWidth="md" className={classes.root}>
           <Typography component="h1" variant="h4" className={classes.headline}>
