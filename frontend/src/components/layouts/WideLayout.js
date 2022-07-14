@@ -57,6 +57,7 @@ export default function WideLayout({
   useFloodStdFont,
   rootClassName,
   hideFooter,
+  resetAlertMessage,
 }) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);
@@ -117,6 +118,7 @@ export default function WideLayout({
               }}
               onClose={() => {
                 setAlertOpen(false);
+                resetAlertMessage("");
               }}
             >
               {getMessageFromUrl(message ? message : initialMessage)}

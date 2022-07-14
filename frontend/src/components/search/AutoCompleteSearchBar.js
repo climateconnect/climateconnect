@@ -26,6 +26,8 @@ export default function AutoCompleteSearchBar({
   const [searchValue, setSearchValue] = React.useState("");
   const [inputValue, setInputValue] = React.useState("");
 
+  console.log(searchValue);
+
   React.useEffect(() => {
     let active = true;
 
@@ -44,6 +46,7 @@ export default function AutoCompleteSearchBar({
                 filterOut ? !filterOut.find((fo) => fo.url_slug === o.url_slug) : true
               )
           );
+          console.log(options);
         }
       } else {
         setOptions([]);

@@ -77,6 +77,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore }) {
       setIsLoading(false);
     }
   };
+  console.log(chats);
   if (chats.length === 0)
     return (
       <>
@@ -109,6 +110,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore }) {
 }
 
 const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
+  console.log(chat.is_group);
   const lastAction = chat.last_message ? chat.last_message.sent_at : chat.created_at;
   if (!lastAction) console.log(chat);
   const classes = useStyles();
@@ -124,7 +126,7 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
           alignItems="center"
           className={classes.listItem}
         >
-          {chat.name ? (
+          {chat.is_group ? (
             <ChatTitle
               chat={chat}
               className={classes.miniProfilePreview}

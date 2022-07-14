@@ -13,7 +13,13 @@ class MessageParticipants(models.Model):
     name = models.CharField(
         help_text="Name of the chat",
         verbose_name="chat_name",
-        max_length=128, default=""
+        max_length=128
+    )
+
+    is_group = models.BooleanField(
+        help_text="Checks if the chat is a group chat or not",
+        verbose_name="Is group?",
+        default=False
     )
 
     # Making it a bit more future proof.

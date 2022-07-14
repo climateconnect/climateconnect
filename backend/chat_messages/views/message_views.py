@@ -67,6 +67,7 @@ class StartPrivateChat(APIView):
             return Response({'message': 'Participant not found'}, status=status.HTTP_404_NOT_FOUND)
 
         chatting_partner_user = user_profile.user
+        chatting_partner_username = user_profile.name
         participants = [request.user, chatting_partner_user]
 
         chats_with_creator = Participant.objects.filter(user=request.user, is_active=True).values_list('chat', flat=True)
@@ -75,13 +76,15 @@ class StartPrivateChat(APIView):
         private_chat_with_both_users = MessageParticipants.objects.annotate(
             num_participants=Count('participant_participants')
         ).filter(
-            id__in=chats_with_both_users, num_participants=2, related_idea=None, name=''
+            id__in=chats_with_both_users, num_participants=2, related_idea=None, name=chatting_partner_username
         )
         if private_chat_with_both_users.exists():
             private_chat = private_chat_with_both_users[0]
         else:
             private_chat = MessageParticipants.objects.create(
-                chat_uuid=str(uuid4())
+                chat_uuid=str(uuid4()),
+                name=chatting_partner_username
+                
             )
             basic_role = Role.objects.get(role_type=0)
             for participant in participants:
@@ -112,7 +115,10 @@ class StartGroupChatView(APIView):
         
         chat = MessageParticipants.objects.create(
             chat_uuid=str(uuid4()),
-            name=request.data['group_chat_name']
+            name=request.data['group_chat_name'],
+            is_group=True
+
+           
         )
         creator_role = Role.objects.get(role_type=2)
         member_role = Role.objects.get(role_type=0)
@@ -120,11 +126,38 @@ class StartGroupChatView(APIView):
             Participant.objects.create(user=participant, chat=chat, role=member_role)
         Participant.objects.create(user=user, chat=chat, role=creator_role)
         return Response({
-            'chat_uuid': chat.chat_uuid
+            'chat_uuid': chat.chat_uuid,
+            'name': chat.name,
+            'is_group':chat.is_group
         })
 
 
 class GetChatsView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = MessageParticipantSerializer
+    pagination_class = ChatsPagination
+
+    def get_queryset(self):
+        chat_ids = Participant.objects.filter(
+            user=self.request.user, is_active=True
+        ).values_list('chat', flat=True)
+        chats = MessageParticipants.objects.filter(
+            id__in=chat_ids
+        )
+        print(chats)
+        print('\n')
+        if chats.exists():
+            filtered_chats = chats
+            for chat in chats:
+                number_of_participants = Participant.objects.filter(chat=chat, is_active=True).count()
+                if not chat.name and not Message.objects.filter(message_participant=chat).exists() and number_of_participants == 2:
+                    filtered_chats = filtered_chats.exclude(id=chat.id)
+            print(filtered_chats)   
+            return filtered_chats
+        else:
+            return []
+
+class GetSearchedChat(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = MessageParticipantSerializer
     pagination_class = ChatsPagination
@@ -145,7 +178,6 @@ class GetChatsView(ListAPIView):
             return filtered_chats
         else:
             return []
-
 
 class GetChatMessages(ListAPIView):
     permission_classes = [IsAuthenticated]

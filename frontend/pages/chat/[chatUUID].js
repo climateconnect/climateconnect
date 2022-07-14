@@ -41,6 +41,7 @@ export async function getServerSideProps(ctx) {
       rolesOptions: rolesOptions,
       chat_id: chat.id,
       idea: chat.idea,
+      is_group: chat.is_group,
     },
   };
 }
@@ -55,6 +56,7 @@ export default function Chat({
   rolesOptions,
   chat_id,
   idea,
+  is_group,
 }) {
   const token = new Cookies().get("token");
   const { chatSocket, user, socketConnectionState, locale } = useContext(UserContext);
@@ -109,7 +111,8 @@ export default function Chat({
   }, [user]);
 
   const chatting_partner = user && participants?.filter((p) => p.id !== user.id)[0];
-  const isPrivateChat = !title || title.length === 0;
+  const isPrivateChat = !is_group;
+  console.log(isPrivateChat);
 
   const loadMoreMessages = async () => {
     try {
@@ -294,11 +297,13 @@ async function getChat(chat_uuid, token, locale) {
       token: token,
       locale: locale,
     });
+
     return {
       participants: parseParticipants(resp.data.participants, resp.data.user),
       title: resp.data.name,
       id: resp.data.id,
       idea: resp.data.related_idea,
+      is_group: resp.data.is_group,
     };
   } catch (e) {
     console.log(e?.response);

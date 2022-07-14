@@ -1,9 +1,8 @@
-import { Button, Container, IconButton, TextField, Typography } from "@material-ui/core";
+import { Button, Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
-import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import SearchIcon from "@material-ui/icons/Search";
 import NextCookies from "next-cookies";
-import Router from "next/router";
 import React from "react";
 import Cookies from "universal-cookie";
 import { apiRequest, sendToLogin } from "../public/lib/apiOperations";
@@ -12,8 +11,8 @@ import ChatPreviews from "../src/components/communication/chat/ChatPreviews";
 import UserContext from "../src/components/context/UserContext";
 import LoadingContainer from "../src/components/general/LoadingContainer";
 import WideLayout from "../src/components/layouts/WideLayout";
-import MiniProfilePreview from "../src/components/profile/MiniProfilePreview";
-import AutoCompleteSearchBar from "../src/components/search/AutoCompleteSearchBar";
+import UserSearchField from "../src/components/communication/chat/UserSearchField";
+import ChatSearchField from "../src/components/communication/chat/ChatSearchField";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -26,7 +25,14 @@ const useStyles = makeStyles((theme) => {
       textAlign: "center",
     },
     newChatButton: {
-      marginBottom: theme.spacing(2),
+      marginBottom: theme.spacing(1),
+      marginRight: theme.spacing(1),
+      [theme.breakpoints.down("md")]: {
+        marginLeft: theme.spacing(1),
+      },
+    },
+    searchChatButton: {
+      marginBottom: theme.spacing(1),
       [theme.breakpoints.down("md")]: {
         marginLeft: theme.spacing(1),
       },
@@ -88,71 +94,41 @@ export default function Inbox({ chatData, next }) {
   const { user, locale } = React.useContext(UserContext);
   const texts = getTexts({ page: "chat", locale: locale });
   const [userSearchEnabled, setUserSearchEnabled] = React.useState(false);
-  const [newChatMembers, setNewChatMembers] = React.useState([]);
+  const [chatSearchEnabled, setChatSearchEnabled] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
-  const [groupName, setGroupName] = React.useState("");
   const [chatsState, setChatsState] = React.useState({
     chats: parseChats(chatData, texts),
     next: next,
   });
 
-  const handleGroupNameChange = (e) => {
-    setGroupName(e.target.value);
+  console.log(...chatData);
+
+  const updateErrorMessage = (e) => {
+    setErrorMessage(e);
   };
 
   const enableUserSearch = () => {
     setUserSearchEnabled(true);
   };
 
+  const enableChatSearch = () => {
+    setChatSearchEnabled(true);
+  };
+
   const disableUserSearch = () => {
     setUserSearchEnabled(false);
   };
 
-  const handleAddNewChatMember = (member) => {
-    setNewChatMembers([...newChatMembers, member]);
-  };
-
-  const handleStartChat = (e) => {
-    e.preventDefault();
-    const isGroupchat = newChatMembers.length > 1;
-    const urlPostfix = isGroupchat ? "/api/start_group_chat/" : "/api/start_private_chat/";
-    if (newChatMembers.length >= 1) {
-      const payload = {};
-      if (isGroupchat) {
-        if (!groupName) {
-          setErrorMessage(
-            texts.please_set_a_group_name_if_youre_starting_a_chat_with_more_than_one_member
-          );
-          return;
-        }
-        payload.participants = newChatMembers.map((m) => m.id);
-        payload.group_chat_name = groupName;
-      } else {
-        payload.profile_url_slug = newChatMembers[0].url_slug;
-      }
-      apiRequest({
-        method: "post",
-        url: urlPostfix,
-        payload: payload,
-        token: token,
-        locale: locale,
-      })
-        .then(async function (response) {
-          Router.push("/chat/" + response.data.chat_uuid + "/");
-        })
-        .catch(function (error) {
-          console.log(error.response);
-          // TODO: Show error message that user cant connect
-        });
-    } else
-      setErrorMessage(
-        texts.please_add_one_or_more_users_to_chat_to_by_searching_them_in_the_search_bar_above
-      );
+  const disableChatSearch = () => {
+    setChatSearchEnabled(false);
   };
 
   const loadMoreChats = async () => {
+    console.log("does this get called?");
     const newChatData = await getChatsOfLoggedInUser(token, next, locale);
+    console.log(newChatData);
     const newChats = newChatData.chats;
+
     setChatsState({
       ...chatsState,
       next: newChatData.next,
@@ -160,93 +136,67 @@ export default function Inbox({ chatData, next }) {
     });
   };
 
-  const handleRemoveMember = (member) => {
-    setNewChatMembers([...newChatMembers.filter((m) => m.id !== member.id)]);
-  };
-
-  const getUsersToFilterOut = () => [user, ...newChatMembers];
-
-  const renderSearchOption = (option) => {
-    return (
-      <React.Fragment>
-        <IconButton>
-          <AddCircleOutlineIcon />
-        </IconButton>
-        {option.first_name + " " + option.last_name}
-      </React.Fragment>
-    );
-  };
-
   return (
     <div>
-      <WideLayout title={texts.inbox} messageType="error" message={errorMessage}>
+      <WideLayout
+        title={texts.inbox}
+        messageType="error"
+        message={errorMessage}
+        resetAlertMessage={updateErrorMessage}
+      >
         <Container maxWidth="md" className={classes.root}>
           <Typography component="h1" variant="h4" className={classes.headline}>
             {texts.inbox}
           </Typography>
-          {userSearchEnabled ? (
-            <div className={classes.searchSectionContainer}>
-              <AutoCompleteSearchBar
-                label={
-                  newChatMembers.length < 1
-                    ? texts.search_user_to_message + "..."
-                    : texts.add_more_chat_participants + "..."
-                }
-                baseUrl={process.env.API_URL + "/api/members/?search="}
-                clearOnSelect
-                freeSolo
-                filterOut={getUsersToFilterOut()}
-                onSelect={handleAddNewChatMember}
-                renderOption={renderSearchOption}
-                getOptionLabel={(option) => option.first_name + " " + option.last_name}
-                helperText={texts.type_the_name_of_the_users_you_want_to_message}
-              />
-              <form onSubmit={handleStartChat}>
-                {newChatMembers.length > 1 && (
-                  <TextField
-                    label={texts.group_chat_name}
-                    size="small"
-                    className={classes.groupChatName}
-                    required
-                    onChange={handleGroupNameChange}
-                    value={groupName}
-                  />
-                )}
-                <div className={classes.newChatParticipantsContainer}>
-                  {newChatMembers.map((m, index) => (
-                    <MiniProfilePreview
-                      key={index}
-                      profile={m}
-                      className={classes.miniProfilePreview}
-                      onDelete={handleRemoveMember}
+          <div className={classes.searchSectionContainer}>
+            {(() => {
+              if (userSearchEnabled)
+                return (
+                  <span>
+                    <UserSearchField
+                      cancelUserSearch={disableUserSearch}
+                      setErrorMessage={updateErrorMessage}
+                      UserSearchField
                     />
-                  ))}
-                </div>
-                <div className={classes.buttonBar}>
-                  <Button variant="contained" color="primary" type="submit">
-                    {texts.start_chat}
+                  </span>
+                );
+
+              if (chatSearchEnabled)
+                return (
+                  <span>
+                    <ChatSearchField
+                      cancelChatSearch={disableChatSearch}
+                      setErrorMessage={updateErrorMessage}
+                      ChatSearchField
+                    />
+                  </span>
+                );
+              else !userSearchEnabled && !chatSearchEnabled;
+              return (
+                <span>
+                  <Button
+                    className={classes.newChatButton}
+                    startIcon={<AddIcon />}
+                    variant="contained"
+                    color="primary"
+                    onClick={enableUserSearch}
+                  >
+                    {texts.new_chat}
                   </Button>
                   <Button
+                    className={classes.searchChatButton}
+                    startIcon={<SearchIcon />}
                     variant="contained"
-                    className={classes.cancelButton}
-                    onClick={disableUserSearch}
+                    color="primary"
+                    onClick={enableChatSearch}
                   >
-                    {texts.cancel}
+                    {texts.find_a_chat}
                   </Button>
-                </div>
-              </form>
-            </div>
-          ) : (
-            <Button
-              className={classes.newChatButton}
-              startIcon={<AddIcon />}
-              variant="contained"
-              color="primary"
-              onClick={enableUserSearch}
-            >
-              {texts.new_chat}
-            </Button>
-          )}
+                </span>
+              );
+            })()}
+          </div>
+
           {user ? (
             <ChatPreviews
               loadFunc={loadMoreChats}
@@ -276,13 +226,14 @@ const parseChats = (chats, texts) =>
 
 async function getChatsOfLoggedInUser(token, next, locale) {
   try {
-    const url = next ? next : `/api/chats/?page=1`;
+    const url = next ? next : `/api/chats/`;
     const resp = await apiRequest({
       method: "get",
       url: url,
       token: token,
       locale: locale,
     });
+    console.log(resp);
     return {
       chats: parseChatData(resp.data.results),
       next: resp.data.next,
