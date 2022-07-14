@@ -70,7 +70,7 @@ python-dateutil==2.8.1
 python-dotenv==0.14.0
 python-http-client==3.2.7
 pytz==2019.3
-PyYAML==5.4
+PyYAML==6.0
 redis==3.5.3
 requests==2.26.0
 rsa==4.7
