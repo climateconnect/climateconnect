@@ -70,14 +70,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export async function getServerSideProps(ctx) {
-  const { token } = NextCookies(ctx);
+  const { auth_token } = NextCookies(ctx);
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
   const [organization, projects, members, organizationTypes, rolesOptions] = await Promise.all([
-    getOrganizationByUrlIfExists(organizationUrl, token, ctx.locale),
-    getProjectsByOrganization(organizationUrl, token, ctx.locale),
-    getMembersByOrganization(organizationUrl, token, ctx.locale),
+    getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
+    getProjectsByOrganization(organizationUrl, auth_token, ctx.locale),
+    getMembersByOrganization(organizationUrl, auth_token, ctx.locale),
     getOrganizationTypes(),
-    getRolesOptions(token, ctx.locale),
+    getRolesOptions(auth_token, ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({

@@ -67,13 +67,13 @@ const useStyles = makeStyles((theme) => {
 });
 
 export async function getServerSideProps(ctx) {
-  const { token } = NextCookies(ctx);
-  if (ctx.req && !token) {
+  const { auth_token } = NextCookies(ctx);
+  if (ctx.req && !auth_token) {
     const texts = getTexts({ page: "chat", locale: ctx.locale });
     const message = texts.you_have_to_log_in_to_see_your_inbox;
     return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
   }
-  const chatData = await getChatsOfLoggedInUser(token, null, ctx.locale);
+  const chatData = await getChatsOfLoggedInUser(auth_token, null, ctx.locale);
   return {
     props: {
       chatData: chatData.chats,

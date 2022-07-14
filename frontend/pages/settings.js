@@ -9,10 +9,10 @@ import LoginNudge from "../src/components/general/LoginNudge";
 import Layout from "../src/components/layouts/layout";
 
 export async function getServerSideProps(ctx) {
-  const { token } = NextCookies(ctx);
+  const { auth_token } = NextCookies(ctx);
   return {
     props: {
-      settings: await getSettings(token, ctx.locale),
+      settings: await getSettings(auth_token, ctx.locale),
     },
   };
 }

@@ -11,13 +11,13 @@ import { nullifyUndefinedValues, parseProfile } from "./../../public/lib/profile
 import UserContext from "./../../src/components/context/UserContext";
 
 export async function getServerSideProps(ctx) {
-  const { token } = NextCookies(ctx);
+  const { auth_token } = NextCookies(ctx);
   const profileUrl = encodeURI(ctx.query.profileUrl);
   const [profile, organizations, projects, ideas] = await Promise.all([
-    getProfileByUrlIfExists(profileUrl, token, ctx.locale),
-    getOrganizationsByUser(profileUrl, token, ctx.locale),
-    getProjectsByUser(profileUrl, token, ctx.locale),
-    getIdeasByUser(profileUrl, token, ctx.locale),
+    getProfileByUrlIfExists(profileUrl, auth_token, ctx.locale),
+    getOrganizationsByUser(profileUrl, auth_token, ctx.locale),
+    getProjectsByUser(profileUrl, auth_token, ctx.locale),
+    getIdeasByUser(profileUrl, auth_token, ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({

@@ -30,9 +30,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export async function getServerSideProps(ctx) {
-  const { token } = NextCookies(ctx);
+  const { auth_token } = NextCookies(ctx);
   const texts = getTexts({ page: "project", locale: ctx.locale });
-  if (ctx.req && !token) {
+  if (ctx.req && !auth_token) {
     const message = texts.please_log_in_to_edit_project;
     return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
   }
@@ -45,10 +45,10 @@ export async function getServerSideProps(ctx) {
     statusOptions,
     tagsOptions,
   ] = await Promise.all([
-    getProjectByIdIfExists(projectUrl, token, ctx.locale),
-    getMembersByProject(projectUrl, token, ctx.locale),
+    getProjectByIdIfExists(projectUrl, auth_token, ctx.locale),
+    getMembersByProject(projectUrl, auth_token, ctx.locale),
     getSkillsOptions(ctx.locale),
-    getUserOrganizations(token, ctx.locale),
+    getUserOrganizations(auth_token, ctx.locale),
     getStatusOptions(ctx.locale),
     getProjectTagsOptions(null, ctx.locale),
   ]);
