@@ -52,7 +52,7 @@ export default function Share({
   rolesOptions,
   statusOptions,
 }) {
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const [errorMessage, setErrorMessage] = React.useState("");

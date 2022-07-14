@@ -170,7 +170,7 @@ function OrganizationLayout({
 
   const handleConnectBtn = async (e) => {
     e.preventDefault();
-    const token = cookies.get("token");
+    const token = cookies.get("auth_token");
     const creator = members.filter((m) => m.isCreator === true)[0];
     const chat = await startPrivateChat(creator, token, locale);
     Router.push("/chat/" + chat.chat_uuid + "/");

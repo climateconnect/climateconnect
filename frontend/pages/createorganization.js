@@ -46,7 +46,7 @@ export async function getServerSideProps(ctx) {
 }
 
 export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }) {
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
   const classes = useStyles();
   const [errorMessages, setErrorMessages] = React.useState({
     basicOrganizationInfo: "",

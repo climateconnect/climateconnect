@@ -83,7 +83,7 @@ export async function getServerSideProps(ctx) {
 }
 
 export default function Inbox({ chatData, next }) {
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
   const classes = useStyles();
   const { user, locale } = React.useContext(UserContext);
   const texts = getTexts({ page: "chat", locale: locale });

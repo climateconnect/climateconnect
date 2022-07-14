@@ -56,7 +56,7 @@ export default function Chat({
   chat_id,
   idea,
 }) {
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
   const { chatSocket, user, socketConnectionState, locale } = useContext(UserContext);
   const [participants, setParticipants] = React.useState(chatParticipants);
   const [state, setState] = React.useState({

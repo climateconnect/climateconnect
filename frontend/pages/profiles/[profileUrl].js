@@ -30,7 +30,7 @@ export async function getServerSideProps(ctx) {
 }
 
 export default function ProfilePage({ profile, projects, organizations, ideas }) {
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
   const { user, locale } = useContext(UserContext);
   const infoMetadata = getProfileInfoMetadata(locale);
   const texts = getTexts({ page: "profile", locale: locale, profile: profile });

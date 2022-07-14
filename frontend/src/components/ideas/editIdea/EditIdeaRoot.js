@@ -59,7 +59,7 @@ export default function EditIdeaRoot({ idea, cancelEdit, userOrganizations, allH
   const [editedIdea, setEditedIdea] = useState(idea);
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
   const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
 
   const handleValueChange = (newValue, key) => {

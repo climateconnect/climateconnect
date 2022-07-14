@@ -161,7 +161,7 @@ export default function ProjectPageRoot({
     const strippedProjectName = projectName.endsWith("#") ? projectName.slice(0, -1) : projectName;
 
     const cookies = new Cookies();
-    const token = cookies.get("token");
+    const token = cookies.get("auth_token");
 
     try {
       await apiRequest({

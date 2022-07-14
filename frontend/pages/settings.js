@@ -18,7 +18,7 @@ export async function getServerSideProps(ctx) {
 }
 
 export default function Settings({ settings }) {
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
   const { user } = useContext(UserContext);
   const [message, setMessage] = React.useState("");
   const [currentSettings, setCurrentSettings] = React.useState(settings);

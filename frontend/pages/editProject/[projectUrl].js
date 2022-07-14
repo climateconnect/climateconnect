@@ -72,7 +72,7 @@ export default function EditProjectPage({
   statusOptions,
   tagsOptions,
 }) {
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
   const classes = useStyles();
   const [curProject, setCurProject] = React.useState({
     ...project,

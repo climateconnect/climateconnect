@@ -65,7 +65,7 @@ export default function ProjectPage({
   liking,
   hubs,
 }) {
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
   const [curComments, setCurComments] = React.useState(parseComments(comments));
   const [message, setMessage] = React.useState({});
   const [isUserFollowing, setIsUserFollowing] = React.useState(following);
