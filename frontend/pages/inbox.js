@@ -96,7 +96,7 @@ export default function Inbox({ chatData, next }) {
     next: next,
   });
 
-  const resetErrorMessage = (e) => {
+  const updateErrorMessage = (e) => {
     setErrorMessage(e);
   };
 
