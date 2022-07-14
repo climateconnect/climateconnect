@@ -86,7 +86,7 @@ txaio==20.4.1
 typing-extensions==4.2.0
 urllib3==1.26.5
 uvicorn==0.17.6
-uvloop==0.14.0
+uvloop==0.16.0
 validators==0.18.2
 vine==5.0.0
 watchgod==0.6
