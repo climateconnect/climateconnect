@@ -14,7 +14,7 @@ cachetools==4.1.0
 celery==5.2.2
 certifi==2020.4.5.1
 cffi==1.15.0
-channels==3.0.4
+channels==3.0.5
 channels-redis==3.4.0
 chardet==3.0.4
 charset-normalizer==2.0.7
