@@ -30,6 +30,15 @@ DATABASE_HOST=<database host e.g. localhost>
 DATABASE_PORT=<database port e.g. 5432>
 ```
 
+This should correspond to your redis setup
+
+```
+REDIS_HOST=<redis host, e.g.'localhost'>
+REDIS_PORT=<Redis port, default is '6379'>
+REDIS_PASSWORD=<Your redis password. If you don't have one, use ''>
+REDIS_URL=<The full redis url build out of the 3 above variables'redis://localhost'>
+```
+
 Env variables needed for email sending with [mailjet](https://www.mailjet.com/):
 
 ```EMAIL_HOST=<YOUR EMAIL HOST>
