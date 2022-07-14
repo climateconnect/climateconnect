@@ -87,10 +87,10 @@ const useStyles = makeStyles((theme) => {
 });
 
 export async function getServerSideProps(ctx) {
-  const { token } = Cookies(ctx);
+  const { auth_token } = Cookies(ctx);
 
   // Fetch list of FAQ questions from the database
-  const questions = await getQuestionsWithAnswers(token, ctx.locale);
+  const questions = await getQuestionsWithAnswers(auth_token, ctx.locale);
 
   return {
     props: {
