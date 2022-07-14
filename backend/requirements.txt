@@ -70,7 +70,7 @@ python-dateutil==2.8.1
 python-dotenv==0.14.0
 python-http-client==3.2.7
 pytz==2019.3
-PyYAML==5.4
+PyYAML==6.0
 redis==3.5.3
 requests==2.26.0
 rsa==4.7
@@ -78,7 +78,7 @@ service-identity==18.1.0
 shortuuid==1.0.8
 six==1.14.0
 sqlparse==0.3.1
-starkbank-ecdsa==1.0.0
+starkbank-ecdsa==2.0.3
 text-unidecode==1.3
 tomli==1.2.3
 Twisted==22.4.0
@@ -86,7 +86,7 @@ txaio==20.4.1
 typing-extensions==4.2.0
 urllib3==1.26.5
 uvicorn==0.17.6
-uvloop==0.14.0
+uvloop==0.16.0
 validators==0.18.2
 vine==5.0.0
 watchgod==0.6
