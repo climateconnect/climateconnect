@@ -62,7 +62,7 @@ urlpatterns = [
      path(
         'chat/',
         message_views.GetSearchedChat.as_view(),
-        name='get-chat-api'
+        name='get-searched-chats-api'
     ),
 
 ]
