@@ -79,7 +79,7 @@ export async function getServerSideProps(ctx) {
     const message = texts.you_have_to_log_in_to_see_your_inbox;
     return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
   }
-  const chatData = await getChatsOfLoggedInUser(token, null, ctx.locale);
+  const chatData = await getChatsOfLoggedInUser(token, null, ctx.locale, false, "");
   return {
     props: {
       chatData: chatData.chats,
@@ -101,7 +101,13 @@ export default function Inbox({ chatData, next }) {
     next: next,
   });
 
-  console.log(...chatData);
+  const [searchedChats, setSearchedChats] = React.useState(parseChats([], texts));
+
+  const applyFilterToChats = (e) => {
+    e = parseChatData(e);
+    e = parseChats(e, texts);
+    setSearchedChats(e);
+  };
 
   const updateErrorMessage = (e) => {
     setErrorMessage(e);
@@ -120,6 +126,7 @@ export default function Inbox({ chatData, next }) {
   };
 
   const disableChatSearch = () => {
+    setSearchedChats([]); // removes old search value
     setChatSearchEnabled(false);
   };
 
@@ -158,6 +165,13 @@ export default function Inbox({ chatData, next }) {
                       setErrorMessage={updateErrorMessage}
                       UserSearchField
                     />
+                    <ChatPreviews
+                      chatSearchEnabled={chatSearchEnabled}
+                      loadFunc={loadMoreChats}
+                      chats={chatsState.chats}
+                      user={user}
+                      hasMore={!!chatsState.next}
+                    />
                   </span>
                 );
 
@@ -166,47 +180,55 @@ export default function Inbox({ chatData, next }) {
                   <span>
                     <ChatSearchField
                       cancelChatSearch={disableChatSearch}
-                      setErrorMessage={updateErrorMessage}
+                      applyFilterToChats={applyFilterToChats}
                       ChatSearchField
+                    />
+
+                    <ChatPreviews
+                      loadFunc={loadMoreChats}
+                      chats={searchedChats}
+                      user={user}
+                      hasMore={!!chatsState.next}
+                      chatSearchEnabled={chatSearchEnabled}
                     />
                   </span>
                 );
-              else !userSearchEnabled && !chatSearchEnabled;
-              return (
-                <span>
-                  <Button
-                    className={classes.newChatButton}
-                    startIcon={<AddIcon />}
-                    variant="contained"
-                    color="primary"
-                    onClick={enableUserSearch}
-                  >
-                    {texts.new_chat}
-                  </Button>
-                  <Button
-                    className={classes.searchChatButton}
-                    startIcon={<SearchIcon />}
-                    variant="contained"
-                    color="primary"
-                    onClick={enableChatSearch}
-                  >
-                    {texts.find_a_chat}
-                  </Button>
-                </span>
-              );
+              if (!userSearchEnabled && !chatSearchEnabled)
+                return (
+                  <span>
+                    <Button
+                      className={classes.newChatButton}
+                      startIcon={<AddIcon />}
+                      variant="contained"
+                      color="primary"
+                      onClick={enableUserSearch}
+                    >
+                      {texts.new_chat}
+                    </Button>
+                    <Button
+                      className={classes.searchChatButton}
+                      startIcon={<SearchIcon />}
+                      variant="contained"
+                      color="primary"
+                      onClick={enableChatSearch}
+                    >
+                      {texts.find_a_chat}
+                    </Button>
+                    {user ? (
+                      <ChatPreviews
+                        chatSearchEnabled={chatSearchEnabled}
+                        loadFunc={loadMoreChats}
+                        chats={chatsState.chats}
+                        user={user}
+                        hasMore={!!chatsState.next}
+                      />
+                    ) : (
+                      <LoadingContainer />
+                    )}
+                  </span>
+                );
             })()}
           </div>
-
-          {user ? (
-            <ChatPreviews
-              loadFunc={loadMoreChats}
-              chats={chatsState.chats}
-              user={user}
-              hasMore={!!chatsState.next}
-            />
-          ) : (
-            <LoadingContainer />
-          )}
         </Container>
       </WideLayout>
     </div>
@@ -226,7 +248,7 @@ const parseChats = (chats, texts) =>
 
 async function getChatsOfLoggedInUser(token, next, locale) {
   try {
-    const url = next ? next : `/api/chats/`;
+    const url = next ? next : `/api/chats/?page=1`;
     const resp = await apiRequest({
       method: "get",
       url: url,

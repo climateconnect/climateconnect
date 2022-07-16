@@ -5,8 +5,10 @@ import React, { useContext } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import Cookies from "universal-cookie";
 
-export default function AutoCompleteSearchBar({
+export default function InboxSearchBar({
+  applyFilterToChats,
   label,
   baseUrl,
   filterOut,
@@ -19,6 +21,7 @@ export default function AutoCompleteSearchBar({
   freeSolo,
   onUnselect,
 }) {
+  const token = new Cookies().get("token");
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const [open, setOpen] = React.useState(false);
@@ -30,26 +33,15 @@ export default function AutoCompleteSearchBar({
     let active = true;
 
     (async () => {
-      if (searchValue) {
-        const response = await apiRequest({
-          method: "get",
-          url: (baseUrl + searchValue).replace(process.env.API_URL, ""),
-          locale: locale,
-        });
+      const response = await apiRequest({
+        token: token,
+        method: "get",
+        url: (baseUrl + searchValue).replace(process.env.API_URL, ""),
+        locale: locale,
+      });
 
-        if (active) {
-          setOptions(
-            response.data.results
-              .map((o) => ({ ...o, key: o.url_slug }))
-              .filter((o) =>
-                filterOut ? !filterOut.find((fo) => fo.url_slug === o.url_slug) : true
-              )
-          );
-          console.log(options);
-        }
-      } else {
-        setOptions([]);
-      }
+      const searchedChats = response.data.results;
+      applyFilterToChats(searchedChats);
     })();
 
     return () => {

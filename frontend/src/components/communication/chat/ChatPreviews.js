@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function ChatPreviews({ chats, loadFunc, hasMore }) {
+export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabled }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "chat", locale: locale });
@@ -77,13 +77,23 @@ export default function ChatPreviews({ chats, loadFunc, hasMore }) {
       setIsLoading(false);
     }
   };
-  console.log(chats);
-  if (chats.length === 0)
+
+  if (chats.length === 0 && !chatSearchEnabled)
     return (
       <>
         <Divider />
         <Typography variant="h6" className={classes.NoChatsMessage}>
           {texts.you_havent_chatted_to_anybody_yet_click_on}
+        </Typography>
+      </>
+    );
+
+  if (chats.length === 0 && chatSearchEnabled)
+    return (
+      <>
+        <Divider />
+        <Typography variant="h6" className={classes.NoChatsMessage}>
+          {texts.no_chats_found_for_this_search}
         </Typography>
       </>
     );
@@ -110,7 +120,6 @@ export default function ChatPreviews({ chats, loadFunc, hasMore }) {
 }
 
 const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
-  console.log(chat.is_group);
   const lastAction = chat.last_message ? chat.last_message.sent_at : chat.created_at;
   if (!lastAction) console.log(chat);
   const classes = useStyles();

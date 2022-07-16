@@ -4,10 +4,11 @@ from chat_messages.models.message import MessageReceiver
 from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import NotFound
+from rest_framework.filters import SearchFilter
 
 from uuid import uuid4
 
@@ -144,15 +145,14 @@ class GetChatsView(ListAPIView):
         chats = MessageParticipants.objects.filter(
             id__in=chat_ids
         )
-        print(chats)
-        print('\n')
+       
         if chats.exists():
             filtered_chats = chats
             for chat in chats:
                 number_of_participants = Participant.objects.filter(chat=chat, is_active=True).count()
                 if not chat.name and not Message.objects.filter(message_participant=chat).exists() and number_of_participants == 2:
                     filtered_chats = filtered_chats.exclude(id=chat.id)
-            print(filtered_chats)   
+             
             return filtered_chats
         else:
             return []
@@ -161,23 +161,25 @@ class GetSearchedChat(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = MessageParticipantSerializer
     pagination_class = ChatsPagination
-
+    
     def get_queryset(self):
-        chat_ids = Participant.objects.filter(
-            user=self.request.user, is_active=True
-        ).values_list('chat', flat=True)
-        chats = MessageParticipants.objects.filter(
-            id__in=chat_ids
-        )
-        if chats.exists():
-            filtered_chats = chats
-            for chat in chats:
-                number_of_participants = Participant.objects.filter(chat=chat, is_active=True).count()
-                if not chat.name and not Message.objects.filter(message_participant=chat).exists() and number_of_participants == 2:
-                    filtered_chats = filtered_chats.exclude(id=chat.id)
-            return filtered_chats
+        
+       
+        req = self.request
+        
+        query_dict = req.GET
+        query = query_dict.get("search")
+        
+    
+        # empty searchbar
+        if query=="":
+         chat = MessageParticipants.objects.none()
+        # return the chats that match the query
         else:
-            return []
+         chat = MessageParticipants.objects.filter(name__icontains=query)
+    
+        return chat
+
 
 class GetChatMessages(ListAPIView):
     permission_classes = [IsAuthenticated]

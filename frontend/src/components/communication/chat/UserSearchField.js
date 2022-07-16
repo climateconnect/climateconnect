@@ -14,10 +14,12 @@ const useStyles = makeStyles((theme) => {
   return {
     buttonBar: {
       marginTop: 20,
+      marginBottom: theme.spacing(2),
       position: "relative",
       height: 40,
     },
     cancelButton: {
+      marginBottom: theme.spacing(2),
       position: "absolute",
       right: 0,
     },
