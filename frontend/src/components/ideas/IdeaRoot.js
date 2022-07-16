@@ -139,7 +139,7 @@ export default function IdeaRoot({
   allHubs,
   handleSetComments,
 }) {
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
   const borderColor = getIdeaBorderColor({ idea: idea, index: idea.index });
   const { user, notifications, setNotificationsRead, refreshNotifications } = useContext(
     UserContext

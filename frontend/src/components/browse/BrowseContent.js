@@ -104,7 +104,7 @@ export default function BrowseContent({
     urlEnding: "",
   };
 
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
   //saving these refs for the tutorial
   const firstProjectCardRef = useRef(null);
   const filterButtonRef = useRef(null);

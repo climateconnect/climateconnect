@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 export default function IdeaCommentsSection({ idea, handleAddComment, handleRemoveComment }) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
   const texts = getTexts({ page: "idea", locale: locale });
 
   const onSendComment = async (comment, parentComment, clearInput, setDisplayReplies) => {

@@ -12,15 +12,15 @@ import EditOrganizationRoot from "../../src/components/organization/EditOrganiza
 import { getOrganizationTagsOptions } from "./../../public/lib/getOptions";
 
 export async function getServerSideProps(ctx) {
-  const { token } = NextCookies(ctx);
-  if (ctx.req && !token) {
+  const { auth_token } = NextCookies(ctx);
+  if (ctx.req && !auth_token) {
     const texts = getTexts({ page: "organization", locale: ctx.locale });
     const message = texts.log_in_to_edit_organization;
     return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
   }
   const url = encodeURI(ctx.query.organizationUrl);
   const [organization, tagOptions, allHubs] = await Promise.all([
-    getOrganizationByUrlIfExists(url, token, ctx.locale),
+    getOrganizationByUrlIfExists(url, auth_token, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getAllHubs(ctx.locale, true),
   ]);

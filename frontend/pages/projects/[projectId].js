@@ -32,15 +32,15 @@ const parseComments = (comments) => {
 };
 
 export async function getServerSideProps(ctx) {
-  const { token } = NextCookies(ctx);
+  const { auth_token } = NextCookies(ctx);
   const projectUrl = encodeURI(ctx.query.projectId);
   const [project, members, posts, comments, following, liking, hubs] = await Promise.all([
-    getProjectByIdIfExists(projectUrl, token, ctx.locale),
+    getProjectByIdIfExists(projectUrl, auth_token, ctx.locale),
     getProjectMembersByIdIfExists(projectUrl, ctx.locale),
-    getPostsByProject(projectUrl, token, ctx.locale),
-    getCommentsByProject(projectUrl, token, ctx.locale),
-    token ? getIsUserFollowing(projectUrl, token, ctx.locale) : false,
-    token ? getIsUserLiking(projectUrl, token, ctx.locale) : false,
+    getPostsByProject(projectUrl, auth_token, ctx.locale),
+    getCommentsByProject(projectUrl, auth_token, ctx.locale),
+    auth_token ? getIsUserFollowing(projectUrl, auth_token, ctx.locale) : false,
+    auth_token ? getIsUserLiking(projectUrl, auth_token, ctx.locale) : false,
     getAllHubs(ctx.locale),
   ]);
   return {
@@ -65,7 +65,7 @@ export default function ProjectPage({
   liking,
   hubs,
 }) {
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
   const [curComments, setCurComments] = React.useState(parseComments(comments));
   const [message, setMessage] = React.useState({});
   const [isUserFollowing, setIsUserFollowing] = React.useState(following);

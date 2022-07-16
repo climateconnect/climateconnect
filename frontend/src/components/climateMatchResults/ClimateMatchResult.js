@@ -118,7 +118,7 @@ export default function ClimateMatchResult({ suggestion, pos }) {
   const classes = useStyles({ addBackground: pos % 2 === 1 });
   const { locale, user } = useContext(UserContext);
   const cookies = new Cookies();
-  const token = cookies.get("token");
+  const token = cookies.get("auth_token");
   const texts = getTexts({ page: "climatematch", locale: locale });
   const displayContactButtonBelow = useMediaQuery("(max-width:1100px)");
   const creator = parseCreator(suggestion, texts);

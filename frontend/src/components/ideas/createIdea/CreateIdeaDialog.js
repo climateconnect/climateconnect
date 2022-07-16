@@ -48,7 +48,7 @@ export default function CreateIdeaDialog({
 }) {
   const [waitingForCreation, setWaitingForCreation] = useState(false);
   const classes = useStyles({ userOrganization: userOrganizations });
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale });
   const [idea, setIdea] = useState({

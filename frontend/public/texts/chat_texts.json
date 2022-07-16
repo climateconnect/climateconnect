@@ -166,11 +166,7 @@
   "type_the_name_of_a_user_or_group_to_open_a_chat_with": {
     "en": "Type the name of a user or group you want to open",
     "de": "Gib den Namen des Benutzers oder der Gruppe ein, die du kontaktieren möchtest"
-  },
-  "please_add_a_chat_or_group_that_you_want_to_open_in_the_search_bar_below": {
-    "en": "Please add a chat or group that you want to open in the search bar below",
-    "de": "Bitte füge einen Benutzer*innen oder Chat, den du öffnen möchtest, in der Suchleiste unten hinzu"
-  },
+
   "no_chats_found_for_this_search": {
     "en": "No matches found for your search",
     "de": "Keine Suchergebnisse gefunden"
