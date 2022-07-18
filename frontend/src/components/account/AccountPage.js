@@ -176,7 +176,7 @@ export default function AccountPage({
 }) {
   const classes = useStyles({ isOwnAccount: isOwnAccount });
   const { locale } = useContext(UserContext);
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
   const texts = getTexts({ page: "profile", locale: locale });
   const organizationTexts = isOrganization
     ? getTexts({ page: "organization", organization: account, locale: locale })

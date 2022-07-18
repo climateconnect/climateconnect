@@ -36,7 +36,7 @@ export default function EditAccountRoot({
 }) {
   const { locale, locales } = useContext(UserContext);
   const cookies = new Cookies();
-  const token = cookies.get("token");
+  const token = cookies.get("auth_token");
   const classes = useStyles();
   const [translations, setTranslations] = useState(
     initialTranslations ? getTranslationsFromObject(initialTranslations, "user_profile") : {}

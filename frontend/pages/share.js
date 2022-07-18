@@ -11,8 +11,8 @@ import WideLayout from "../src/components/layouts/WideLayout";
 import ShareProjectRoot from "../src/components/shareProject/ShareProjectRoot";
 
 export async function getServerSideProps(ctx) {
-  const { token } = NextCookies(ctx);
-  if (ctx.req && !token) {
+  const { auth_token } = NextCookies(ctx);
+  if (ctx.req && !auth_token) {
     const texts = getTexts({ page: "project", locale: ctx.locale });
     const message = texts.please_log_in_or_sign_up_to_share_a_project;
     return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
@@ -25,12 +25,12 @@ export async function getServerSideProps(ctx) {
     rolesOptions,
     statusOptions,
   ] = await Promise.all([
-    getAvailabilityOptions(token, ctx.locale),
-    getUserOrganizations(token, ctx.locale),
-    getCategoryOptions(token, ctx.locale),
-    getSkillsOptions(token, ctx.locale),
-    getRolesOptions(token, ctx.locale),
-    getStatusOptions(token, ctx.locale),
+    getAvailabilityOptions(auth_token, ctx.locale),
+    getUserOrganizations(auth_token, ctx.locale),
+    getCategoryOptions(auth_token, ctx.locale),
+    getSkillsOptions(auth_token, ctx.locale),
+    getRolesOptions(auth_token, ctx.locale),
+    getStatusOptions(auth_token, ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -52,7 +52,7 @@ export default function Share({
   rolesOptions,
   statusOptions,
 }) {
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const [errorMessage, setErrorMessage] = React.useState("");

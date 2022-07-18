@@ -54,7 +54,7 @@ export async function getServerSideProps(ctx) {
 
 export default function Browse({ filterChoices, hubs, initialLocationFilter }) {
   const cookies = new Cookies();
-  const token = cookies.get("token");
+  const token = cookies.get("auth_token");
   const { locale } = useContext(UserContext);
 
   // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
