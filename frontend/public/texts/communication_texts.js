@@ -70,7 +70,7 @@ export default function getCommunicationTexts() {
     },
     your_email_address: {
       en: "Your email address",
-      de: "Deine Email Adresse",
+      de: "Deine E-Mail Adresse",
     },
     subscribe: {
       en: "Subscribe",

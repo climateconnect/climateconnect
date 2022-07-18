@@ -1,17 +1,12 @@
-name: Lint
-
-on: push
+name: Lint frontend
+on: [pull_request]
 
 jobs:
-  run-linters:
-    name: Run linters
+  build:
     runs-on: ubuntu-latest
-
     steps:
+      - uses: actions/checkout@v2
       - name: Check out Git repository
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
         uses: actions/setup-node@v1
         with:
           node-version: 12
@@ -20,8 +15,8 @@ jobs:
       - name: Install Node.js dependencies
         run: yarn
 
-      - name: Run linters
-        uses: wearerequired/lint-action@v1
+      - name: Lint frontend
+        uses: yarn lint
         with:
           eslint: true
           prettier: true

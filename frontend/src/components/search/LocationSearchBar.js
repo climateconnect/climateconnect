@@ -43,7 +43,7 @@ export default function LocationSearchBar({
   const [inputValue, setInputValue] = React.useState(getValue(initialValue, ""));
   useEffect(
     function () {
-      if (inputValue?.length > 0 && value.length === 0) {
+      if (inputValue?.length > 0 && value?.length === 0) {
         setInputValue("");
         setSearchValue("");
         setOptions([]);

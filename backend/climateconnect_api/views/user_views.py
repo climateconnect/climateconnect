@@ -1,7 +1,3 @@
-from ideas.serializers.idea import IdeaFromIdeaSupporterSerializer
-from ideas.models.support import IdeaSupporter
-
-from hubs.models.hub import Hub
 import logging
 import uuid
 from datetime import datetime, timedelta
@@ -9,7 +5,8 @@ from datetime import datetime, timedelta
 from climateconnect_api.models import Availability, Skill, UserProfile
 from climateconnect_api.models.language import Language
 from climateconnect_api.models.user import UserProfileTranslation
-from climateconnect_api.pagination import MembersPagination, MembersSitemapPagination
+from climateconnect_api.pagination import (MembersPagination,
+                                           MembersSitemapPagination)
 from climateconnect_api.permissions import UserPermission
 from climateconnect_api.serializers.user import (
     EditUserProfileSerializer, PersonalProfileSerializer,
@@ -17,19 +14,23 @@ from climateconnect_api.serializers.user import (
     UserProfileSitemapEntrySerializer, UserProfileStubSerializer)
 from climateconnect_api.utility.email_setup import (
     send_password_link, send_user_verification_email)
-from climateconnect_api.utility.translation import (edit_translations)
+from climateconnect_api.utility.translation import edit_translations
 from climateconnect_main.utility.general import get_image_from_data_url
 from django.conf import settings
 from django.contrib.auth import authenticate, login
-
 from django.contrib.auth.models import User
 from django.contrib.gis.db.models.functions import Distance
 from django.db.models import Count, Q
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from climateconnect_api.utility.common import create_unique_slug
 
+from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
+from hubs.models.hub import Hub
+from ideas.models.support import IdeaSupporter
+from ideas.serializers.idea import IdeaFromIdeaSupporterSerializer
 from knox.views import LoginView as KnoxLoginView
 from location.models import Location
 from location.utility import get_location, get_location_with_range
@@ -51,26 +52,44 @@ logger = logging.getLogger(__name__)
 class LoginView(KnoxLoginView):
     permission_classes = [AllowAny]
 
+    # Tries to log the user in with the provided
+    # credentials (username and password).
     def post(self, request, format=None):
         if 'username' and 'password' not in request.data:
             message = "Must include 'username' and 'password'"
             return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
 
+        # First, authenticate the user
         user = authenticate(username=request.data['username'], password=request.data['password'])
+
         if user:
             user_profile = UserProfile.objects.filter(user = user)[0]
             if not user_profile.is_profile_verified:
                 message = "You first have to activate your account by clicking the link we sent to your E-Mail."
                 return Response({'message': message, 'type': 'not_verified'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+            if user.is_authenticated:
+                print("User is authenticated")
+
+            # Then, log in the user to attach them to the current Django session,
+            # and ensure we have a valid User object (instead of AnonymousUser).
+            # See more: https://docs.djangoproject.com/en/4.0/topics/auth/default/#how-to-log-a-user-in
             login(request, user)
-            if user_profile.has_logged_in<2:
-                user_profile.has_logged_in = user_profile.has_logged_in +1
+
+            if user_profile.has_logged_in < 2:
+                user_profile.has_logged_in = user_profile.has_logged_in + 1
                 user_profile.save()
+
             return super(LoginView, self).post(request, format=None)
         else:
             return Response({
                 'message': _('Invalid email or password')
             }, status=status.HTTP_401_UNAUTHORIZED)
+
+        return Response({
+            'message': 'Invalid password.'
+        }, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class SignUpView(APIView):
@@ -147,6 +166,12 @@ class ListMemberProfilesView(ListAPIView):
     filterset_fields = ['name']
     search_fields = ['name']
     serializer_class = UserProfileStubSerializer
+
+    @method_decorator(cache_page(
+        settings.DEFAULT_CACHE_TIMEOUT, key_prefix="LIST_MEMBERS"
+    ))
+    def dispatch(self, *args, **kwargs):
+        return super(ListMemberProfilesView, self).dispatch(*args, **kwargs)
 
     def get_queryset(self):
         user_profiles = UserProfile.objects\

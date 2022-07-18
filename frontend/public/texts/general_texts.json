@@ -495,6 +495,14 @@
     "en": "Replicate",
     "de": "Verbreite"
   },
+  "requested": {
+    "en": "Requested",
+    "de": "Angefragt"
+  },
+  "join": {
+    "en": "Join",
+    "de": "Mitmachen"
+  },
   "join_invitation": {
     "en": "Join",
     "de": "Mach mit bei"
@@ -502,6 +510,10 @@
   "join_now": {
     "en": "Join now",
     "de": "Jetzt anmelden"
+  },
+  "review_join_requests": {
+    "en": "Review join requests",
+    "de": "Anfragen ansehen"
   },
   "collaborate_with": {
     "en": "Collaborate with",
@@ -525,7 +537,7 @@
   },
   "climate_action_platform_text": {
     "en": "Bringing everyone involved in climate action together.",
-    "de": "Wir bringen alle Klimaschützer zusammen."
+    "de": "Wir bringen alle Klimaschützer:innen zusammen."
   },
   "get_inspired_text": {
     "en": "Find inspiring climate projects to work on. See where you can make the biggest difference.",

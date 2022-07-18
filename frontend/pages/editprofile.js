@@ -12,11 +12,11 @@ import { nullifyUndefinedValues, parseProfile } from "./../public/lib/profileOpe
 import EditProfileRoot from "./../src/components/profile/EditProfileRoot";
 
 export async function getServerSideProps(ctx) {
-  const { token } = Cookies(ctx);
+  const { auth_token } = Cookies(ctx);
   const [skillsOptions, availabilityOptions, userProfile] = await Promise.all([
-    getSkillsOptions(token, ctx.locale),
-    getAvailabilityOptions(token, ctx.locale),
-    getUserProfile(token, ctx.locale),
+    getSkillsOptions(auth_token, ctx.locale),
+    getAvailabilityOptions(auth_token, ctx.locale),
+    getUserProfile(auth_token, ctx.locale),
   ]);
 
   return {

@@ -42,7 +42,7 @@ export default function FeedbackButton({ justLink, children }) {
   const texts = getTexts({ page: "communication", locale: locale });
 
   const submitFeedback = async (data) => {
-    const token = cookies.get("token");
+    const token = cookies.get("auth_token");
     try {
       const response = await apiRequest({
         method: "post",

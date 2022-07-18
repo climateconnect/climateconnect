@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
 
 export default function IdeaJoinButton({ idea, has_joined, chat_uuid, onJoinIdea }) {
   const classes = useStyles();
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
   const { locale, user } = useContext(UserContext);
   const { showFeedbackMessage } = useContext(FeedbackContext);
   const texts = getTexts({ page: "idea", locale: locale });

@@ -2,6 +2,7 @@ import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Cookies from "next-cookies";
 import React, { useContext } from "react";
+
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getRolesOptions, sendToLogin } from "../../public/lib/apiOperations";
 import { parseOrganization } from "../../public/lib/organizationOperations";
@@ -23,18 +24,18 @@ const useStyles = makeStyles((theme) => {
 });
 
 export async function getServerSideProps(ctx) {
-  const { token } = Cookies(ctx);
+  const { auth_token } = Cookies(ctx);
   const texts = getTexts({ page: "organization", locale: ctx.locale });
-  if (ctx.req && !token) {
+  if (ctx.req && !auth_token) {
     const message = texts.you_have_to_log_in_to_manage_organization_members;
     return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
   }
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
   const [organization, members, rolesOptions, availabilityOptions] = await Promise.all([
-    getOrganizationByUrlIfExists(organizationUrl, token, ctx.locale),
-    getMembersByOrganization(organizationUrl, token, ctx.locale),
-    getRolesOptions(token, ctx.locale),
-    getAvailabilityOptions(token, ctx.locale),
+    getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
+    getMembersByOrganization(organizationUrl, auth_token, ctx.locale),
+    getRolesOptions(auth_token, ctx.locale),
+    getAvailabilityOptions(auth_token, ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -42,7 +43,7 @@ export async function getServerSideProps(ctx) {
       members: members,
       rolesOptions: rolesOptions,
       availabilityOptions: availabilityOptions,
-      token: token,
+      token: auth_token,
     }),
   };
 }

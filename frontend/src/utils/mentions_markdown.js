@@ -9,6 +9,10 @@ const displayedMention = (locale, id, display) => (
 );
 
 const getFragmentsWithMentions = (content, linkify, locale) => {
+  if (!content) {
+    return null;
+  }
+
   // this matches all future markdown substrings in the string
   const r = /@@@__([^^]*)\^\^__([^@]*)@@@\^\^\^/g;
 

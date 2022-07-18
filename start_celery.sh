@@ -9,5 +9,5 @@ cd backend
 # Install requirements
 pip install -r requirements.txt
 
-# start server
-celery -A climateconnect_main worker -l INFO
+# starting celery worker
+gunicorn --bind=0.0.0.0 --timeout 600 climateconnect_main.asgi:application & celery -A climateconnect_main worker -l INFO

@@ -107,7 +107,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-// TODO(Piper): generalize this spacing unit to be used in other places,
+// TODO: generalize this spacing unit to be used in other places,
 // for consistency.
 const HorizontalSpacing = ({ children, size }) => {
   return (
@@ -198,7 +198,7 @@ export default function Dashboard({ allHubs, hubData, className, headline, locat
 
   const [userOrganizations, setUserOrganizations] = useState(null);
   const [isCreateIdeaOpen, setCreateIdeaOpen] = useState(false);
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
 
   useEffect(async function () {
     if (userOrganizations === null) {

@@ -9,16 +9,16 @@ import LoginNudge from "../src/components/general/LoginNudge";
 import Layout from "../src/components/layouts/layout";
 
 export async function getServerSideProps(ctx) {
-  const { token } = NextCookies(ctx);
+  const { auth_token } = NextCookies(ctx);
   return {
     props: {
-      settings: await getSettings(token, ctx.locale),
+      settings: await getSettings(auth_token, ctx.locale),
     },
   };
 }
 
 export default function Settings({ settings }) {
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
   const { user } = useContext(UserContext);
   const [message, setMessage] = React.useState("");
   const [currentSettings, setCurrentSettings] = React.useState(settings);

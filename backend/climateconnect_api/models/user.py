@@ -1,6 +1,9 @@
 from climateconnect_api.models.common import Availability, Skill
 from climateconnect_api.models.language import Language
 from django.db import models
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+from django.core.cache import cache
 from location.models import Location
 
 
@@ -199,6 +202,11 @@ class UserProfile(models.Model):
         verbose_name="Email on new idea join", null=True, blank=True, default=True
     )
 
+    email_on_join_request = models.BooleanField(
+        help_text="Check if user wants to receive emails when somebody asks to join their project or organization",
+        verbose_name="Email on join request", null=True, blank=True, default=True
+    )
+
     has_logged_in = models.PositiveSmallIntegerField(
         help_text="Check if the user should be redirected to the edit profile page. Shows the number of logins up to 2",
         verbose_name="Number of logins up to 2",
@@ -272,6 +280,13 @@ class UserProfile(models.Model):
         return "%s %s [profile id: %d]" % (
             self.user.first_name, self.user.last_name, self.id
         )
+
+
+@receiver(post_save, sender=UserProfile)
+def remove_cache_keys(sender, instance, created, **kwargs):
+    if created:
+        member_keys = cache.keys('*LIST_MEMBERS*')
+        cache.delete_many(member_keys)
 
 
 class UserProfileTranslation(models.Model):

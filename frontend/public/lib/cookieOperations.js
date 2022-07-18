@@ -2,7 +2,7 @@ const NECESSARY_COOKIES = [
   "acceptedNecessary",
   "acceptedStatistics",
   "csrftoken",
-  "token",
+  "auth_token",
   "hideInfo",
 ];
 import Cookies from "universal-cookie";
