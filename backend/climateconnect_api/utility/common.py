@@ -1,5 +1,16 @@
 from climateconnect_api.models import Skill
 from climateconnect_api.models.role import Role
+from django.db import models
+from django.utils.text import slugify
+
+
+def create_unique_slug(name: str, id: int, model_manager: models.Manager):
+    url_slug = slugify(name)
+    if len(url_slug) == 0:
+        url_slug = str(id)
+    if model_manager.filter(url_slug=url_slug).exists():
+        url_slug = url_slug + str(id)
+    return url_slug    
 
 
 def get_skill_name(skill: Skill, language_code: str) -> str:

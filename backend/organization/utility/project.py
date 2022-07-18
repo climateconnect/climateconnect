@@ -6,6 +6,7 @@ from climateconnect_api.models.language import Language
 from climateconnect_api.utility.translation import get_translations
 from climateconnect_main.utility.general import get_image_from_data_url
 from location.utility import get_location
+from climateconnect_api.utility.common import create_unique_slug
 
 from organization.models import Project, ProjectMember
 from organization.models.tags import ProjectTags
@@ -49,8 +50,9 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
     if 'website' in data:
         project.website = data['website']
     project.language = source_language
-    project.url_slug = project.name.replace(" ", "") + str(project.id)
 
+    project.url_slug = create_unique_slug(project.name, project.id, Project.objects)
+    
     if 'skills' in data:
         for skill_id in data['skills']:
             try:

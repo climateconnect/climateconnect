@@ -12,7 +12,7 @@ from ideas.models import Idea, IdeaTranslation
 from location.utility import get_location
 from organization.models import Organization
 from rest_framework.exceptions import ValidationError
-from django.utils.text import slugify
+from climateconnect_api.utility.common import create_unique_slug
 
 logger = logging.getLogger(__name__)
 
@@ -34,12 +34,7 @@ def create_idea(data: dict, language: Optional[Language], creator: User) -> Idea
         language=language, user= creator
     )    
     
-    url_slug = slugify(data['name'])
-    if len(url_slug) == 0:
-        url_slug = idea.id
-    ideas_with_same_url_slug = Idea.objects.filter(url_slug=url_slug)
-    if ideas_with_same_url_slug.exists():
-        url_slug = url_slug + str(idea.id)
+    url_slug = create_unique_slug(idea.name, idea.id, Idea.objects)
     add_additional_create_idea_params(idea, data, url_slug)
     return idea
 

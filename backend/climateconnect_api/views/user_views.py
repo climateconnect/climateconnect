@@ -24,6 +24,8 @@ from django.db.models import Count, Q
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
+from climateconnect_api.utility.common import create_unique_slug
+
 from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
 from hubs.models.hub import Hub
@@ -116,7 +118,8 @@ class SignUpView(APIView):
         user.set_password(request.data['password'])
         user.save()
 
-        url_slug = (user.first_name + user.last_name).lower() + str(user.id)
+        full_name = user.first_name + '-' + user.last_name
+        url_slug = create_unique_slug(full_name, user.id, UserProfile.objects)
         # Get location
         source_language = Language.objects.get(language_code=request.data['source_language'])
         user_profile = UserProfile.objects.create(
