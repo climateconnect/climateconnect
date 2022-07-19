@@ -7,5 +7,5 @@ class ChatMessagePagination(PageNumberPagination):
     max_page_size = 20
 
 class ChatsPagination(PageNumberPagination):
-    page_size = 30
+    page_size = 5
     max_page_size = 50

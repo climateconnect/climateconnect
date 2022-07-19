@@ -17,10 +17,7 @@ const useStyles = makeStyles((theme) => {
       position: "absolute",
       right: 0,
     },
-    miniProfilePreview: {
-      padding: theme.spacing(2),
-      display: "inline-flex",
-    },
+   
   };
 });
 

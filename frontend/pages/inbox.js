@@ -25,13 +25,14 @@ const useStyles = makeStyles((theme) => {
       textAlign: "center",
     },
     newChatButton: {
-      marginBottom: theme.spacing(2),
+      marginBottom: theme.spacing(1),
+      marginRight: theme.spacing(1),
       [theme.breakpoints.down("md")]: {
         marginLeft: theme.spacing(1),
       },
     },
     searchChatButton: {
-      marginBottom: theme.spacing(2),
+      marginBottom: theme.spacing(1),
       [theme.breakpoints.down("md")]: {
         marginLeft: theme.spacing(1),
       },
@@ -46,28 +47,7 @@ const useStyles = makeStyles((theme) => {
     buttonBar: {
       position: "relative",
       height: 40,
-    },
-    cancelButton: {
-      position: "absolute",
-      right: 0,
-    },
-    newChatParticipantsContainer: {
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2),
-      [theme.breakpoints.down("xs")]: {
-        display: "flex",
-        flexWrap: "wrap",
-        justifyContent: "center",
-      },
-    },
-    miniProfilePreview: {
-      padding: theme.spacing(2),
-      display: "inline-flex",
-    },
-    groupChatName: {
-      marginLeft: theme.spacing(2),
-      width: 250,
-    },
+    }
   };
 });
 
@@ -135,7 +115,7 @@ export default function Inbox({ chatData, nextPage }) {
 
 
   const loadMoreChats = async () => {
-    const newChatData = await getChatsOfLoggedInUser(token, nextPage, locale);
+    const newChatData = await getChatsOfLoggedInUser(token, chatsState.nextPage, locale);
     const newChats = newChatData.chats;
     setChatsState({
       ...chatsState,
