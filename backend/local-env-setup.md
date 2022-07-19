@@ -7,6 +7,7 @@ Basic env variables which you will need for initial setup:
 
 ```
 FRONTEND_URL=<your frontend URL eg: http://localhost:3001>
+BACKEND_URL=<your backend URL, e.g.: http://localhost:8000>
 SECRET_KEY=<Django secret-key e.g. output of $ openssl rand -base64 32>
 
 ALLOWED_HOSTS=<hosts allowed. eg: http://localhost:8000>
