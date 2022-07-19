@@ -95,7 +95,6 @@ export default function Inbox({ chatData, nextPage }) {
     chats: parseChats(chatData, texts),
     nextPage: nextPage,
   });
-
   const updateErrorMessage = (e) => {
     setErrorMessage(e);
   };
@@ -156,7 +155,7 @@ export default function Inbox({ chatData, nextPage }) {
   };
 
   const loadMoreChats = async () => {
-    const newChatData = await getChatsOfLoggedInUser(token, nextPage, locale);
+    const newChatData = await getChatsOfLoggedInUser(token, chatsState.nextPage, locale);
     const newChats = newChatData.chats;
     setChatsState({
       ...chatsState,
