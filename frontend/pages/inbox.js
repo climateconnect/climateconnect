@@ -73,16 +73,16 @@ export async function getServerSideProps(ctx) {
     const message = texts.you_have_to_log_in_to_see_your_inbox;
     return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
   }
-  const chatData = await getChatsOfLoggedInUser(auth_token, null, ctx.locale);
+  const chatData = await getChatsOfLoggedInUser(auth_token, 1, ctx.locale);
   return {
     props: {
       chatData: chatData.chats,
-      next: chatData.next,
+      nextPage: chatData.nextPage,
     },
   };
 }
 
-export default function Inbox({ chatData, next }) {
+export default function Inbox({ chatData, nextPage }) {
   const token = new Cookies().get("auth_token");
   const classes = useStyles();
   const { user, locale } = React.useContext(UserContext);
@@ -93,7 +93,7 @@ export default function Inbox({ chatData, next }) {
   const [groupName, setGroupName] = React.useState("");
   const [chatsState, setChatsState] = React.useState({
     chats: parseChats(chatData, texts),
-    next: next,
+    nextPage: nextPage,
   });
 
   const updateErrorMessage = (e) => {
@@ -156,11 +156,11 @@ export default function Inbox({ chatData, next }) {
   };
 
   const loadMoreChats = async () => {
-    const newChatData = await getChatsOfLoggedInUser(token, next, locale);
+    const newChatData = await getChatsOfLoggedInUser(token, nextPage, locale);
     const newChats = newChatData.chats;
     setChatsState({
       ...chatsState,
-      next: newChatData.next,
+      nextPage: newChatData.nextPage,
       chats: [...chatsState.chats, ...parseChats(newChats, user, texts)],
     });
   };
@@ -262,7 +262,7 @@ export default function Inbox({ chatData, next }) {
               loadFunc={loadMoreChats}
               chats={chatsState.chats}
               user={user}
-              hasMore={!!chatsState.next}
+              hasMore={!!chatsState.nextPage}
             />
           ) : (
             <LoadingContainer />
@@ -284,9 +284,9 @@ const parseChats = (chats, texts) =>
       }))
     : [];
 
-async function getChatsOfLoggedInUser(token, next, locale) {
+async function getChatsOfLoggedInUser(token, nextPage, locale) {
   try {
-    const url = next ? next : `/api/chats/?page=1`;
+    const url = `/api/chats/?page=${nextPage}`;
     const resp = await apiRequest({
       method: "get",
       url: url,
@@ -295,7 +295,7 @@ async function getChatsOfLoggedInUser(token, next, locale) {
     });
     return {
       chats: parseChatData(resp.data.results),
-      next: resp.data.next,
+      nextPage: resp.data.next ? nextPage+1 : null,
     };
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
