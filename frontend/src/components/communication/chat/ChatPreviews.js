@@ -87,10 +87,11 @@ export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabl
         </Typography>
       </>
     );
-
   if (chats.length === 0 && chatSearchEnabled)
     return (
       <>
+        {" "}
+        <Divider />
         <Divider />
         <Typography variant="h6" className={classes.NoChatsMessage}>
           {texts.no_chats_found_for_this_search}
@@ -135,7 +136,7 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
           alignItems="center"
           className={classes.listItem}
         >
-          {chat.is_group ? (
+          {!chat.chatting_partner ? (
             <ChatTitle
               chat={chat}
               className={classes.miniProfilePreview}

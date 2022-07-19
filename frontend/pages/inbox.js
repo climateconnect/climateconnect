@@ -9,10 +9,10 @@ import { apiRequest, sendToLogin } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import ChatPreviews from "../src/components/communication/chat/ChatPreviews";
 import UserContext from "../src/components/context/UserContext";
-import LoadingContainer from "../src/components/general/LoadingContainer";
 import WideLayout from "../src/components/layouts/WideLayout";
 import UserSearchField from "../src/components/communication/chat/UserSearchField";
 import ChatSearchField from "../src/components/communication/chat/ChatSearchField";
+import LoadingSpinner from "../src/components/general/LoadingSpinner";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -102,15 +102,20 @@ export default function Inbox({ chatData, next }) {
   });
 
   const [searchedChats, setSearchedChats] = React.useState(parseChats([], texts));
+  const [isLoading, setIsLoading] = React.useState(false);
 
-  const applyFilterToChats = (e) => {
-    e = parseChatData(e);
-    e = parseChats(e, texts);
-    setSearchedChats(e);
+  const applyFilterToChats = (chatsAfterFilter) => {
+    const parsedChatData = parseChatData(chatsAfterFilter);
+    const parsedChats = parseChats(parsedChatData, texts);
+    setSearchedChats(parsedChats);
   };
 
-  const updateErrorMessage = (e) => {
-    setErrorMessage(e);
+  const handleSetIsLoading = (newValue) => {
+    setIsLoading(newValue);
+  };
+
+  const updateErrorMessage = (newErrorMessage) => {
+    setErrorMessage(newErrorMessage);
   };
 
   const enableUserSearch = () => {
@@ -126,12 +131,13 @@ export default function Inbox({ chatData, next }) {
   };
 
   const disableChatSearch = () => {
-    setSearchedChats([]); // removes old search value
     setChatSearchEnabled(false);
   };
 
   const loadMoreChats = async () => {
     console.log("does this get called?");
+    console.log(next);
+    console.log(token);
     const newChatData = await getChatsOfLoggedInUser(token, next, locale);
     console.log(newChatData);
     const newChats = newChatData.chats;
@@ -181,16 +187,19 @@ export default function Inbox({ chatData, next }) {
                     <ChatSearchField
                       cancelChatSearch={disableChatSearch}
                       applyFilterToChats={applyFilterToChats}
-                      ChatSearchField
+                      handleSetIsLoading={handleSetIsLoading}
                     />
-
-                    <ChatPreviews
-                      loadFunc={loadMoreChats}
-                      chats={searchedChats}
-                      user={user}
-                      hasMore={!!chatsState.next}
-                      chatSearchEnabled={chatSearchEnabled}
-                    />
+                    {!isLoading ? (
+                      <ChatPreviews
+                        chatSearchEnabled={chatSearchEnabled}
+                        loadFunc={loadMoreChats}
+                        chats={searchedChats}
+                        user={user}
+                        hasMore={!!chatsState.next}
+                      />
+                    ) : (
+                      <LoadingSpinner isLoading />
+                    )}
                   </span>
                 );
               if (!userSearchEnabled && !chatSearchEnabled)
@@ -214,7 +223,7 @@ export default function Inbox({ chatData, next }) {
                     >
                       {texts.find_a_chat}
                     </Button>
-                    {user ? (
+                    {user && !isLoading ? (
                       <ChatPreviews
                         chatSearchEnabled={chatSearchEnabled}
                         loadFunc={loadMoreChats}
@@ -223,7 +232,7 @@ export default function Inbox({ chatData, next }) {
                         hasMore={!!chatsState.next}
                       />
                     ) : (
-                      <LoadingContainer />
+                      <LoadingSpinner isLoading />
                     )}
                   </span>
                 );
@@ -249,6 +258,9 @@ const parseChats = (chats, texts) =>
 async function getChatsOfLoggedInUser(token, next, locale) {
   try {
     const url = next ? next : `/api/chats/?page=1`;
+    console.log("url");
+    console.log(url);
+    console.log(next);
     const resp = await apiRequest({
       method: "get",
       url: url,
@@ -263,6 +275,7 @@ async function getChatsOfLoggedInUser(token, next, locale) {
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     console.log("error!");
+    console.log(err.response);
     console.log(err);
     return null;
   }

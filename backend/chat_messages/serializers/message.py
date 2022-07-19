@@ -44,7 +44,7 @@ class MessageParticipantSerializer(serializers.ModelSerializer):
         # Could use user profile serializer for participant_one and participant_two
         fields = (
             'id', 'chat_uuid', 'participants', 'is_active', 'last_message',
-            'unread_count', 'user', 'created_at', 'name', 'related_idea', 'is_group'
+            'unread_count', 'user', 'created_at', 'name', 'related_idea'
         )
 
     def get_last_message(self, obj):
