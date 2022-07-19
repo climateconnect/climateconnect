@@ -59,7 +59,8 @@ class LoginView(KnoxLoginView):
 
         # First, authenticate the user
         user = authenticate(username=request.data['username'], password=request.data['password'])
-
+        print(user)
+        print(User.objects.all())
         if user:
             user_profile = UserProfile.objects.filter(user = user)[0]
             if not user_profile.is_profile_verified:
@@ -81,6 +82,7 @@ class LoginView(KnoxLoginView):
 
             return super(LoginView, self).post(request, format=None)
         else:
+            print("no user!")
             return Response({
                 'message': _('Invalid email or password')
             }, status=status.HTTP_401_UNAUTHORIZED)
@@ -101,12 +103,12 @@ class SignUpView(APIView):
         for param in required_params:
             if param not in request.data:
                 raise ValidationError('Required parameter is missing')
-
+        print("all params are there!")
         if User.objects.filter(username=request.data['email']).exists():
             raise ValidationError("Email already in use.")
-
+        print("email not in use")
         location = get_location(request.data['location'])
-
+        print("got location!")
         user = User.objects.create(
             username=request.data['email'],
             email=request.data['email'], first_name=request.data['first_name'],

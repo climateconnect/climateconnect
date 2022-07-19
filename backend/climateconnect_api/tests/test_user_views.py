@@ -33,19 +33,19 @@ from location.models import Location
 
 class TestUserLoginView(APITestCase):
     def setUp(self):
-        self.user = UserFactory(username="test_user", password="testing2020")
+        self.user = UserFactory(username="test_user@test.com", password="testing2020")
 
     def test_successful_login_api(self):
         url = reverse("login-api")
-        data = {"username": "test_user", "password": "testing@2020"}
+        data = {"username": "test_user@test.com", "password": "testing2020"}
         response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_failed_login_api(self):
         url = reverse("login-api")
-        data = {"username": "test", "password": "testing2020"}
+        data = {"username": "test", "password": "testing2020_wrong"}
         response = self.client.post(url, data, format="json")
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_missing_password(self):
         url = reverse("login-api")
@@ -55,17 +55,29 @@ class TestUserLoginView(APITestCase):
 
 
 class TestSignUpView(APITestCase):
+    def setUp(self):
+        self.user = LanguageFactory()
+
+
     def test_signup_api_success(self):
         url = reverse("signup-api")
-
         data = {
             "email": "test@testovich.com",
             "password": "testing@2020",
             "first_name": "Climate",
             "last_name": "Tester",
-            "country": "Germany",
-            "state": "Berlin",
-            "City": "Berlin",
+            "location": {
+                "osm_id": 1,
+                "place_id": 1,
+                "country": "test",
+                "name": "test",
+                "type": "Point",
+                "lon": 1,
+                "lat": 1,
+                "geojson": {'type': 'Point', 'coordinates': [10.9334217, 49.5901075]}
+            },
+            "send_newsletter": True,
+            "source_language": "en"
         }
 
         response = self.client.post(url, data, format="json")
