@@ -1,13 +1,19 @@
+from heapq import merge
+from itertools import chain
+import itertools
 from chat_messages.utility.notification import create_chat_message_notification
 from climateconnect_api.utility.notification import create_email_notification, create_user_notification
 from chat_messages.models.message import MessageReceiver
 from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import NotFound
+from rest_framework.filters import SearchFilter
+from django.db.models import Value as V
+from django.db.models.functions import Concat  
 
 from uuid import uuid4
 
@@ -23,6 +29,7 @@ from climateconnect_api.models import UserProfile, Role
 from chat_messages.utility.chat_setup import set_read
 from chat_messages.permissions import ChangeChatCreatorPermission, AddParticipantsPermission, ParticipantReadWritePermission
 import logging
+import time
 logger = logging.getLogger(__name__)
 
 # Connect members of a private 1-on-1 chat
@@ -113,6 +120,8 @@ class StartGroupChatView(APIView):
         chat = MessageParticipants.objects.create(
             chat_uuid=str(uuid4()),
             name=request.data['group_chat_name']
+
+           
         )
         creator_role = Role.objects.get(role_type=2)
         member_role = Role.objects.get(role_type=0)
@@ -120,8 +129,10 @@ class StartGroupChatView(APIView):
             Participant.objects.create(user=participant, chat=chat, role=member_role)
         Participant.objects.create(user=user, chat=chat, role=creator_role)
         return Response({
-            'chat_uuid': chat.chat_uuid
+            'chat_uuid': chat.chat_uuid,
+            'name': chat.name
         })
+
 
 
 class GetChatsView(ListAPIView):
@@ -130,22 +141,59 @@ class GetChatsView(ListAPIView):
     pagination_class = ChatsPagination
 
     def get_queryset(self):
+      
         chat_ids = Participant.objects.filter(
             user=self.request.user, is_active=True
         ).values_list('chat', flat=True)
+        
         chats = MessageParticipants.objects.filter(
             id__in=chat_ids
-        )
+        )   
+        print(chat_ids, '\n')
+    
         if chats.exists():
             filtered_chats = chats
             for chat in chats:
                 number_of_participants = Participant.objects.filter(chat=chat, is_active=True).count()
                 if not chat.name and not Message.objects.filter(message_participant=chat).exists() and number_of_participants == 2:
                     filtered_chats = filtered_chats.exclude(id=chat.id)
+               
             return filtered_chats
         else:
             return []
 
+class GetSearchedChat(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = MessageParticipantSerializer
+    
+    pagination_class = ChatsPagination
+    
+    def get_queryset(self):
+        req = self.request
+    
+        query_dict = req.GET
+        query = query_dict.get("search")
+
+        chat_ids = Participant.objects.filter(
+            user=self.request.user, is_active=True
+        ).values_list('chat', flat=True)
+        print(chat_ids)
+        
+        participants_matching_query = Participant.objects.annotate(
+            full_name=Concat('user__first_name', V(' '), 'user__last_name')
+        ).filter(
+            chat__in=chat_ids, full_name__icontains=query, is_active=True
+        )
+        chats = MessageParticipants.objects.filter(
+            Q(participant_participants__in=participants_matching_query)
+            |
+            Q(name__icontains=query, id__in=chat_ids)
+        ).distinct()
+        print("printing chats!")
+        print(chats)
+        return chats
+
+      
 
 class GetChatMessages(ListAPIView):
     permission_classes = [IsAuthenticated]
