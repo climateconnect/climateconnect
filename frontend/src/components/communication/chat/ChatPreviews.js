@@ -90,8 +90,6 @@ export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabl
   if (chats.length === 0 && chatSearchEnabled)
     return (
       <>
-        {" "}
-        <Divider />
         <Divider />
         <Typography variant="h6" className={classes.NoChatsMessage}>
           {texts.no_chats_found_for_this_search}

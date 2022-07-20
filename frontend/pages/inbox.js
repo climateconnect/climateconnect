@@ -153,7 +153,7 @@ export default function Inbox({ chatData, nextPage }) {
                       loadFunc={loadMoreChats}
                       chats={chatsState.chats}
                       user={user}
-                      hasMore={!!chatsState.next}
+                      hasMore={!!chatsState.nextPage}
                     />
                   </span>
                 );
@@ -172,7 +172,7 @@ export default function Inbox({ chatData, nextPage }) {
                         loadFunc={loadMoreChats}
                         chats={searchedChats}
                         user={user}
-                        hasMore={!!chatsState.next}
+                        hasMore={!!chatsState.nextPage}
                       />
                     ) : (
                       <LoadingSpinner isLoading />
@@ -206,7 +206,7 @@ export default function Inbox({ chatData, nextPage }) {
                         loadFunc={loadMoreChats}
                         chats={chatsState.chats}
                         user={user}
-                        hasMore={!!chatsState.next}
+                        hasMore={!!chatsState.nextPage}
                       />
                     ) : (
                       <LoadingSpinner isLoading />
