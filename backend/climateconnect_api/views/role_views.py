@@ -5,8 +5,8 @@ from climateconnect_api.serializers.role import RoleSerializer
 
 
 class ListRolesView(ListAPIView):
-  permission_classes = [AllowAny]
-  serializer_class = RoleSerializer
+    permission_classes = [AllowAny]
+    serializer_class = RoleSerializer
 
-  def get_queryset(self):
-    return Role.objects.all()
+    def get_queryset(self):
+        return Role.objects.all()

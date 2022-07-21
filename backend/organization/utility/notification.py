@@ -5,15 +5,23 @@ from asgiref.sync import async_to_sync
 from organization.models.members import MembershipRequests
 from channels.layers import get_channel_layer
 from organization.utility.email import (
-    send_join_project_request_email, send_mention_email, send_project_follower_email,
-    send_project_like_email)
+    send_join_project_request_email,
+    send_mention_email,
+    send_project_follower_email,
+    send_project_like_email,
+)
 from climateconnect_api.models import UserProfile
-from climateconnect_api.models.notification import (EmailNotification,
-                                                    Notification,
-                                                    UserNotification)
+from climateconnect_api.models.notification import (
+    EmailNotification,
+    Notification,
+    UserNotification,
+)
 from climateconnect_api.utility.notification import (
-    create_email_notification, create_user_notification,
-    send_comment_notification, send_out_live_notification)
+    create_email_notification,
+    create_user_notification,
+    send_comment_notification,
+    send_out_live_notification,
+)
 from django.contrib.auth.models import User
 from django.db.models import Q
 
@@ -23,10 +31,7 @@ from organization.serializers.content import ProjectCommentSerializer
 
 
 def create_project_comment_reply_notification(
-    project,
-    comment,
-    sender,
-    user_url_slugs_to_ignore
+    project, comment, sender, user_url_slugs_to_ignore
 ):
     notification = send_comment_notification(
         is_reply=True,
@@ -36,17 +41,14 @@ def create_project_comment_reply_notification(
         user_url_slugs_to_ignore=user_url_slugs_to_ignore,
         comment_model=ProjectComment,
         comment_object_name="project_comment",
-        object_commented_on=project
+        object_commented_on=project,
     )
 
     return notification
 
 
 def create_project_comment_notification(
-    project,
-    comment,
-    sender,
-    user_url_slugs_to_ignore
+    project, comment, sender, user_url_slugs_to_ignore
 ):
     notification = send_comment_notification(
         is_reply=False,
@@ -56,15 +58,13 @@ def create_project_comment_notification(
         user_url_slugs_to_ignore=user_url_slugs_to_ignore,
         comment_model=ProjectComment,
         comment_object_name="project_comment",
-        object_commented_on=project
+        object_commented_on=project,
     )
     return notification
 
 
 def get_mentions(text, url_slugs_only):
-    r = re.compile(
-        '(@@@__(?P<url_slug>[^\^]*)\^\^__(?P<display>[^\@]*)@@@\^\^\^)'
-    )
+    r = re.compile("(@@@__(?P<url_slug>[^\^]*)\^\^__(?P<display>[^\@]*)@@@\^\^\^)")
     matches = re.findall(r, text)
     if url_slugs_only:
         return list(map((lambda m: m[1]), matches))
@@ -74,19 +74,14 @@ def get_mentions(text, url_slugs_only):
 def create_comment_mention_notification(entity_type, entity, comment, sender):
     if entity_type == "project":
         notification = Notification.objects.create(
-            notification_type=9,
-            project_comment=comment
+            notification_type=9, project_comment=comment
         )
 
     if entity_type == "idea":
         notification = Notification.objects.create(
-            notification_type=9,
-            idea_comment=comment
+            notification_type=9, idea_comment=comment
         )
-    matches = get_mentions(
-        text=comment.content,
-        url_slugs_only=False
-    )
+    matches = get_mentions(text=comment.content, url_slugs_only=False)
     sender_url_slug = UserProfile.objects.get(user=sender).url_slug
 
     for m in matches:
@@ -101,7 +96,7 @@ def create_comment_mention_notification(entity_type, entity, comment, sender):
                 entity=entity,
                 comment=comment.content,
                 sender=sender,
-                notification=notification
+                notification=notification,
             )
     return notification
 
@@ -111,15 +106,18 @@ def create_project_follower_notification(project_follower):
         notification_type=4, project_follower=project_follower
     )
     project_team = ProjectMember.objects.filter(
-        project=project_follower.project).values('user')
+        project=project_follower.project
+    ).values("user")
     for member in project_team:
-        if not member['user'] == project_follower.user.id:
-            user = User.objects.filter(id=member['user'])[0]
+        if not member["user"] == project_follower.user.id:
+            user = User.objects.filter(id=member["user"])[0]
             create_user_notification(user, notification)
             send_project_follower_email(user, project_follower, notification)
 
 
-def create_project_join_request_notification(requester,project_admins,project, request):
+def create_project_join_request_notification(
+    requester, project_admins, project, request
+):
     """
     Creates a notification about a joining request from a requester to a project admin.
     :param requester: UserProfile object of the user who's sent the request
@@ -132,7 +130,7 @@ def create_project_join_request_notification(requester,project_admins,project, r
     notification = Notification.objects.create(
         notification_type=9,
         text=f"{requester_name} wants to join your project {project.name}!",
-        membership_request = request
+        membership_request=request,
     )
 
     for project_admin in project_admins:
@@ -141,6 +139,7 @@ def create_project_join_request_notification(requester,project_admins,project, r
 
     return
 
+
 def create_project_join_request_approval_notification(request_id):
     """
     Creates a notification about an approved request to join a project to the requester.
@@ -148,19 +147,22 @@ def create_project_join_request_approval_notification(request_id):
     :type request_id: int
     """
     request = MembershipRequests.objects.get(id=request_id)
-    notification = Notification.objects.create(notification_type=10, membership_request=request)
+    notification = Notification.objects.create(
+        notification_type=10, membership_request=request
+    )
     create_user_notification(request.user, notification)
+
 
 def create_project_like_notification(project_like):
     notification = Notification.objects.create(
         notification_type=Notification.PROJECT_LIKE, project_like=project_like
     )
-    project_team = ProjectMember.objects.filter(
-        project=project_like.project).values('user')
+    project_team = ProjectMember.objects.filter(project=project_like.project).values(
+        "user"
+    )
 
     for member in project_team:
-        if not member['user'] == project_like.user.id:
-            user = User.objects.get(id=member['user'])
+        if not member["user"] == project_like.user.id:
+            user = User.objects.get(id=member["user"])
             create_user_notification(user, notification)
             send_project_like_email(user, project_like, notification)
-

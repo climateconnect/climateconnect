@@ -10,9 +10,7 @@ class IdeaRatingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = IdeaRating
-        fields = (
-            'id', 'idea', 'rating', 'user'
-        )
+        fields = ("id", "idea", "rating", "user")
 
     def get_user(self, obj):
-        return f'{obj.user.first_name} {obj.user.last_name}'
+        return f"{obj.user.first_name} {obj.user.last_name}"
