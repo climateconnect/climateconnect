@@ -11,24 +11,23 @@ def get_badges(user_profile):
         d = get_oldest_relevant_donation(all_donations)
         if d:
             today = datetime.datetime.today()
-            time_donated = time_donated = today - d.date_first_received.replace(tzinfo=None)
+            time_donated = time_donated = today - d.date_first_received.replace(
+                tzinfo=None
+            )
             if d:
                 highest_donations_in_streak = all_donations.filter(
                     date_first_received__gte=d.date_first_received
-                ).order_by(
-                    'donation_amount'
-                )
+                ).order_by("donation_amount")
                 highest_donation_in_streak = highest_donations_in_streak[0]
                 badge = DonorBadge.objects.filter(
                     (
                         Q(regular_donor_minimum_duration__lte=time_donated)
-                        |
-                        Q(instantly_awarded_over_amount__lte=highest_donation_in_streak.donation_amount)
+                        | Q(
+                            instantly_awarded_over_amount__lte=highest_donation_in_streak.donation_amount
+                        )
                     ),
-                    is_active=True
-                ).order_by(
-                    "-regular_donor_minimum_duration"
-                )[0]
+                    is_active=True,
+                ).order_by("-regular_donor_minimum_duration")[0]
                 badges.append(badge)
 
     return badges
@@ -37,13 +36,13 @@ def get_badges(user_profile):
 def get_relevant_donations(donations):
     today = datetime.date.today()
     one_month_ago = today - datetime.timedelta(days=30)
-    return donations.filter(
-        Q(donation_amount__gte=5),
-        Q(is_recurring=True) | Q(date_first_received__gte=one_month_ago)
-    ).exclude(
-        date_cancelled__lte=one_month_ago
-    ).order_by(
-        'date_first_received'
+    return (
+        donations.filter(
+            Q(donation_amount__gte=5),
+            Q(is_recurring=True) | Q(date_first_received__gte=one_month_ago),
+        )
+        .exclude(date_cancelled__lte=one_month_ago)
+        .order_by("date_first_received")
     )
 
 
@@ -64,12 +63,9 @@ def get_earliest_donation(donations, current_earliest):
         Q(date_first_received__lt=earliest_received_date),
         (
             Q(date_first_received__gte=one_month_before_earliest)
-            |
-            Q(date_cancelled__gte=one_month_before_earliest)
-        )
-    ).order_by(
-        'date_first_received'
-    )
+            | Q(date_cancelled__gte=one_month_before_earliest)
+        ),
+    ).order_by("date_first_received")
     if earlier_donations.exists():
         return get_earliest_donation(donations, earlier_donations[0])
     else:

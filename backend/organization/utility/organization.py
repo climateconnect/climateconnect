@@ -2,7 +2,11 @@ from typing import Dict
 
 from climateconnect_api.models.language import Language
 
-from organization.models import Organization, OrganizationTranslation, OrganizationMember
+from organization.models import (
+    Organization,
+    OrganizationTranslation,
+    OrganizationMember,
+)
 from organization.models.tags import OrganizationTags
 
 
@@ -15,11 +19,18 @@ def check_organization(organization_id: str) -> Organization:
 
 
 def get_organization_name(organization: Organization, language_code: str) -> str:
-    if organization.language and language_code != organization.language.language_code and \
-            organization.translation_org.filter(language__language_code=language_code).exists():
-        name_translation = organization.translation_org.filter(
+    if (
+        organization.language
+        and language_code != organization.language.language_code
+        and organization.translation_org.filter(
             language__language_code=language_code
-        ).first().name_translation
+        ).exists()
+    ):
+        name_translation = (
+            organization.translation_org.filter(language__language_code=language_code)
+            .first()
+            .name_translation
+        )
 
         if name_translation and len(name_translation) > 0:
             return name_translation
@@ -27,19 +38,35 @@ def get_organization_name(organization: Organization, language_code: str) -> str
     return organization.name
 
 
-def get_organization_short_description(organization: Organization, language_code: str) -> str:
-    if organization.language and language_code != organization.language.language_code and \
-            organization.translation_org.filter(language__language_code=language_code).exists():
-        return organization.translation_org.filter(
+def get_organization_short_description(
+    organization: Organization, language_code: str
+) -> str:
+    if (
+        organization.language
+        and language_code != organization.language.language_code
+        and organization.translation_org.filter(
             language__language_code=language_code
-        ).first().short_description_translation
+        ).exists()
+    ):
+        return (
+            organization.translation_org.filter(language__language_code=language_code)
+            .first()
+            .short_description_translation
+        )
 
     return organization.short_description
 
 
-def get_organization_about_section(organization: Organization, language_code: str) -> str:
-    if organization.language and language_code != organization.language.language_code and \
-            organization.translation_org.filter(language__language_code=language_code).exists():
+def get_organization_about_section(
+    organization: Organization, language_code: str
+) -> str:
+    if (
+        organization.language
+        and language_code != organization.language.language_code
+        and organization.translation_org.filter(
+            language__language_code=language_code
+        ).exists()
+    ):
         return organization.translation_org.get(
             language__language_code=language_code
         ).about_translation
@@ -57,18 +84,21 @@ def get_organizationtag_name(tag: OrganizationTags, language_code: str) -> str:
 
 
 def create_organization_translation(
-    organization: Organization, language: Language, texts: Dict,
-    is_manual_translation: bool
+    organization: Organization,
+    language: Language,
+    texts: Dict,
+    is_manual_translation: bool,
 ) -> None:
     org_translation = OrganizationTranslation.objects.create(
-        organization=organization, language=language,
-        name_translation=texts['name'],
-        is_manual_translation=is_manual_translation
+        organization=organization,
+        language=language,
+        name_translation=texts["name"],
+        is_manual_translation=is_manual_translation,
     )
-    if 'short_description' in texts:
-        org_translation.short_description_translation = texts['short_description']
-    if 'about' in texts:
-        org_translation.about_translation = texts['about']
+    if "short_description" in texts:
+        org_translation.short_description_translation = texts["short_description"]
+    if "about" in texts:
+        org_translation.about_translation = texts["about"]
 
     org_translation.save()
 
@@ -79,9 +109,13 @@ def is_valid_organization_size(org_size) -> bool:
             return True
     return False
 
+
 def add_organization_member(organization, user, user_role, role_in_organization):
     OrganizationMember.objects.create(
-                    organization=organization, user=user, role=user_role, role_in_organization=role_in_organization
-                )
+        organization=organization,
+        user=user,
+        role=user_role,
+        role_in_organization=role_in_organization,
+    )
 
     return

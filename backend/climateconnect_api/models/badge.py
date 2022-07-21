@@ -13,14 +13,14 @@ class Badge(models.Model):
         verbose_name="Name",
         max_length=256,
         null=True,
-        blank=True
+        blank=True,
     )
 
     step = models.PositiveSmallIntegerField(
         help_text="Which step on the way to the best badge is this? This will determine the size in the donor's forest",
         verbose_name="Step",
         null=True,
-        blank=True
+        blank=True,
     )
 
     name_de = models.CharField(
@@ -28,41 +28,41 @@ class Badge(models.Model):
         verbose_name="Name DE",
         max_length=256,
         null=True,
-        blank=True
+        blank=True,
     )
 
     image = models.FileField(
         help_text="Points to the image of the badge",
         verbose_name="Badge Image",
         upload_to=badge_image_path,
-        validators=[FileExtensionValidator(['svg'])],
+        validators=[FileExtensionValidator(["svg"])],
         null=True,
-        blank=True
+        blank=True,
     )
 
     created_at = models.DateTimeField(
         help_text="Time when post was created",
         auto_now_add=True,
-        verbose_name="Created at"
+        verbose_name="Created at",
     )
 
     instantly_awarded_over_amount = models.PositiveIntegerField(
         help_text="You instantly get this badge if you've donated more than this amount in your current streak",
         verbose_name="Instantly awarded over amount",
         null=True,
-        blank=True
+        blank=True,
     )
 
     updated_at = models.DateTimeField(
         help_text="Time when comment was updated",
         verbose_name="Updated at",
-        auto_now=True
+        auto_now=True,
     )
 
     is_active = models.BooleanField(
         help_text="Should Badge be shown publically?",
         verbose_name="Is active?",
-        default=False
+        default=False,
     )
 
     class Meta:
@@ -80,7 +80,7 @@ class DonorBadge(Badge):
         help_text="",
         verbose_name="Minimum donation duration for regular donors",
         null=True,
-        blank=True
+        blank=True,
     )
 
     class Meta:
@@ -90,4 +90,7 @@ class DonorBadge(Badge):
         ordering = ["-id"]
 
     def __str__(self):
-        return "Badge %s acquired after %s" % (self.name, self.regular_donor_minimum_duration)
+        return "Badge %s acquired after %s" % (
+            self.name,
+            self.regular_donor_minimum_duration,
+        )

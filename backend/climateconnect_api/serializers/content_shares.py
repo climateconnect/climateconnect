@@ -9,7 +9,7 @@ class ContentSharesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ContentShares
-        fields = ('user_profile', 'created_at', 'shared_via')
+        fields = ("user_profile", "created_at", "shared_via")
 
     def get_user_profile(self, obj):
         user_profile = UserProfile.objects.get(user=obj.user)
