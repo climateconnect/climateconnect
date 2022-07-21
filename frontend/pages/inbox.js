@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => {
     buttonBar: {
       position: "relative",
       height: 40,
-    }
+    },
   };
 });
 
@@ -62,12 +62,12 @@ export async function getServerSideProps(ctx) {
   return {
     props: {
       chatData: chatData.chats,
-      nextPage: chatData.nextPage,
+      initialNextPage: chatData.nextPage,
     },
   };
 }
 
-export default function Inbox({ chatData, nextPage }) {
+export default function Inbox({ chatData, initialNextPage }) {
   const token = new Cookies().get("auth_token");
   const classes = useStyles();
   const { user, locale } = React.useContext(UserContext);
@@ -77,16 +77,60 @@ export default function Inbox({ chatData, nextPage }) {
   const [errorMessage, setErrorMessage] = React.useState("");
   const [chatsState, setChatsState] = React.useState({
     chats: parseChats(chatData, texts),
-    nextPage: nextPage,
+    nextPage: initialNextPage,
   });
 
-  const [searchedChats, setSearchedChats] = React.useState(parseChats([], texts));
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [searchedChatsState, setSearchedChatsState] = React.useState({
+    chats: [],
+    nextPage: 0,
+  });
 
-  const applyFilterToChats = (chatsAfterFilter) => {
-    const parsedChatData = parseChatData(chatsAfterFilter);
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [searchingOpen, setSearchingOpen] = React.useState(false);
+
+  const applyFilterToChats = async (filter) => {
+    setSearchingOpen(true);
+    setSearchTerm(filter);
+    handleSetIsLoading(true);
+    const url = `/api/chat/?page=1&search=${filter}`;
+    const response = await apiRequest({
+      token: token,
+      method: "get",
+      url: url,
+      locale: locale,
+    });
+
+    handleSetIsLoading(false);
+
+    const parsedChatData = parseChatData(response.data.results);
     const parsedChats = parseChats(parsedChatData, texts);
-    setSearchedChats(parsedChats);
+
+    setSearchedChatsState({
+      chats: parsedChats,
+      nextPage: response.data.next ? 2 : null,
+    });
+  };
+
+  const loadMoreFilteredChats = async () => {
+    handleSetIsLoading(true);
+    const url = `/api/chat/?page=${searchedChatsState.nextPage}&search=${searchTerm}`;
+    const response = await apiRequest({
+      token: token,
+      method: "get",
+      url: url,
+      locale: locale,
+    });
+
+    const parsedChatData = parseChatData(response.data.results);
+    const parsedChats = parseChats(parsedChatData, texts);
+    setSearchedChatsState({
+      ...searchedChatsState,
+      nextPage: response.data.next ? searchedChatsState.nextPage + 1 : null,
+      chats: [...searchedChatsState.chats, ...parsedChats],
+    });
+
+    handleSetIsLoading(false);
   };
 
   const handleSetIsLoading = (newValue) => {
@@ -110,9 +154,12 @@ export default function Inbox({ chatData, nextPage }) {
   };
 
   const disableChatSearch = () => {
+    setSearchedChatsState({
+      chats: [],
+      nextPage: 0,
+    });
     setChatSearchEnabled(false);
   };
-
 
   const loadMoreChats = async () => {
     const newChatData = await getChatsOfLoggedInUser(token, chatsState.nextPage, locale);
@@ -120,11 +167,9 @@ export default function Inbox({ chatData, nextPage }) {
     setChatsState({
       ...chatsState,
       nextPage: newChatData.nextPage,
-      chats: [...chatsState.chats, ...parseChats(newChats, user, texts)],
+      chats: [...chatsState.chats, ...parseChats(newChats, texts)],
     });
   };
-
-
 
   return (
     <div>
@@ -146,7 +191,6 @@ export default function Inbox({ chatData, nextPage }) {
                     <UserSearchField
                       cancelUserSearch={disableUserSearch}
                       setErrorMessage={updateErrorMessage}
-                      UserSearchField
                     />
                     <ChatPreviews
                       chatSearchEnabled={chatSearchEnabled}
@@ -164,18 +208,30 @@ export default function Inbox({ chatData, nextPage }) {
                     <ChatSearchField
                       cancelChatSearch={disableChatSearch}
                       applyFilterToChats={applyFilterToChats}
-                      handleSetIsLoading={handleSetIsLoading}
                     />
-                    {!isLoading ? (
+
+                    {!searchingOpen ? (
                       <ChatPreviews
                         chatSearchEnabled={chatSearchEnabled}
                         loadFunc={loadMoreChats}
-                        chats={searchedChats}
+                        chats={chatsState.chats}
                         user={user}
                         hasMore={!!chatsState.nextPage}
                       />
                     ) : (
-                      <LoadingSpinner isLoading />
+                      [
+                        !isLoading ? (
+                          <ChatPreviews
+                            chatSearchEnabled={chatSearchEnabled}
+                            loadFunc={loadMoreFilteredChats}
+                            chats={searchedChatsState.chats}
+                            user={user}
+                            hasMore={!!searchedChatsState.nextPage}
+                          />
+                        ) : (
+                          <LoadingSpinner isLoading />
+                        ),
+                      ]
                     )}
                   </span>
                 );
@@ -200,7 +256,7 @@ export default function Inbox({ chatData, nextPage }) {
                     >
                       {texts.find_a_chat}
                     </Button>
-                    {user && !isLoading ? (
+                    {user ? (
                       <ChatPreviews
                         chatSearchEnabled={chatSearchEnabled}
                         loadFunc={loadMoreChats}
@@ -243,7 +299,7 @@ async function getChatsOfLoggedInUser(token, nextPage, locale) {
     });
     return {
       chats: parseChatData(resp.data.results),
-      nextPage: resp.data.next ? nextPage+1 : null,
+      nextPage: resp.data.next ? nextPage + 1 : null,
     };
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);

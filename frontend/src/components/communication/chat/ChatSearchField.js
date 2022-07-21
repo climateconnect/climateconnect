@@ -5,7 +5,7 @@ import UserContext from "../../../../src/components/context/UserContext";
 import { Button } from "@material-ui/core";
 import ApplyFilterSearchBar from "../../search/ApplyFilterSearchBar";
 
-const useStyles = makeStyles((theme) => {
+const useStyles = makeStyles(() => {
   return {
     buttonBar: {
       marginTop: 20,
@@ -17,15 +17,10 @@ const useStyles = makeStyles((theme) => {
       position: "absolute",
       right: 0,
     },
-   
   };
 });
 
-export default function ChatSearchField({
-  cancelChatSearch,
-  applyFilterToChats,
-  handleSetIsLoading,
-}) {
+export default function ChatSearchField({ cancelChatSearch, applyFilterToChats }) {
   const classes = useStyles();
   const { locale } = React.useContext(UserContext);
   const texts = getTexts({ page: "chat", locale: locale });
@@ -33,12 +28,10 @@ export default function ChatSearchField({
   return (
     <>
       <ApplyFilterSearchBar
-        applyFilter={applyFilterToChats}
+        applyFilterToChats={applyFilterToChats}
         label={texts.enter_chat_name_to_open}
-        baseUrl={process.env.API_URL + "/api/chat/?search="}
         freeSolo
         helperText={texts.type_the_name_of_a_user_or_group_to_open_a_chat_with}
-        handleSetIsLoading={handleSetIsLoading}
       />
 
       <div className={classes.buttonBar}>

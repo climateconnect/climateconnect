@@ -2,56 +2,35 @@ import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import throttle from "lodash/throttle";
 import React, { useContext } from "react";
-import { apiRequest } from "../../../public/lib/apiOperations";
+
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-import Cookies from "universal-cookie";
 
 export default function ApplyFilterSearchBar({
-  applyFilter,
   label,
-  baseUrl,
   className,
   clearOnSelect,
   onSelect,
   helperText,
   freeSolo,
   onUnselect,
-  handleSetIsLoading
+
+  applyFilterToChats,
 }) {
-  const token = new Cookies().get("auth_token");
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);
   const [searchValue, setSearchValue] = React.useState("");
   const [inputValue, setInputValue] = React.useState("");
+  const isMounted = React.useRef(false);
 
   React.useEffect(() => {
-    let active = true;
-    
-    (async () => {
-   
-        handleSetIsLoading(true);
-       
-        const response = await apiRequest({
-          token: token,
-          method: "get",
-          url: (baseUrl + searchValue).replace(process.env.API_URL, ""),
-          locale: locale,
-        });
-
-
-        handleSetIsLoading(false); 
-        applyFilter(response.data.results);
-      
-      
-    })();
-    
-    return () => {
-      active = false;
-    };
-  
+    if (isMounted.current) {
+      applyFilterToChats(searchValue);
+    } else {
+      isMounted.current = true;
+    }
   }, [searchValue]);
 
   React.useEffect(() => {
@@ -100,7 +79,7 @@ export default function ApplyFilterSearchBar({
       handleHomeEndKeys
       disableClearable
       onClose={handleClose}
-      onChange={handleChange}     
+      onChange={handleChange}
       options={options}
       freeSolo={freeSolo}
       inputValue={inputValue}
