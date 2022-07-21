@@ -1,9 +1,6 @@
 from django.contrib import admin
 
-from hubs.models import (
-    Hub, HubStat,
-    HubTranslation, HubStatTranslation
-)
+from hubs.models import Hub, HubStat, HubTranslation, HubStatTranslation
 
 admin.site.register(Hub, admin.ModelAdmin)
 

@@ -8,8 +8,10 @@ admin.site.register(Location, admin.ModelAdmin)
 
 class LocationTranslationAdmin(admin.ModelAdmin):
     search_fields = (
-        'location__name', 'language__name', 
-        'language__language_code', 'name_translation'
+        "location__name",
+        "language__name",
+        "language__language_code",
+        "name_translation",
     )
 
 

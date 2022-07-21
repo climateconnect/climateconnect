@@ -19,48 +19,50 @@ logger = logging.getLogger(__name__)
 
 def verify_idea(url_slug: str) -> Optional[Idea]:
     try:
-        url_slug = urllib.parse.quote(url_slug, safe='~()*!.\'')
+        url_slug = urllib.parse.quote(url_slug, safe="~()*!.'")
         idea = Idea.objects.get(url_slug=url_slug)
     except Idea.DoesNotExist:
         logger.error("Idea not found for {}".format(url_slug))
         idea = None
-    
+
     return idea
 
 
 def create_idea(data: dict, language: Optional[Language], creator: User) -> Idea:
     idea = Idea.objects.create(
-        name=data['name'], short_description=data['short_description'],
-        language=language, user= creator
-    )    
-    
+        name=data["name"],
+        short_description=data["short_description"],
+        language=language,
+        user=creator,
+    )
+
     url_slug = create_unique_slug(idea.name, idea.id, Idea.objects)
     add_additional_create_idea_params(idea, data, url_slug)
     return idea
 
 
-def add_additional_create_idea_params(idea: Idea, data: dict, url_slug:str) -> None:
+def add_additional_create_idea_params(idea: Idea, data: dict, url_slug: str) -> None:
     idea.url_slug = url_slug
     try:
-        hub = Hub.objects.get(url_slug=data['hub'])
-        hub_shared_in = Hub.objects.get(url_slug=data['hub_shared_in'])
+        hub = Hub.objects.get(url_slug=data["hub"])
+        hub_shared_in = Hub.objects.get(url_slug=data["hub_shared_in"])
     except Hub.DoesNotExist:
         idea.delete()
-        raise ValidationError('Hub does not exist: ' + data['hub'])
+        raise ValidationError("Hub does not exist: " + data["hub"])
     idea.hub = hub
     idea.hub_shared_in = hub_shared_in
-    if 'location' in data:
-        idea.location = get_location(data['location'])
-    
-    if 'image' in data and 'thumbnail_image' in data:
-        idea.image = get_image_from_data_url(data['image'])[0]
-        idea.thumbnail_image = get_image_from_data_url(data['thumbnail_image'])[0]
-    if 'parent_organization' in data:
+    if "location" in data:
+        idea.location = get_location(data["location"])
+
+    if "image" in data and "thumbnail_image" in data:
+        idea.image = get_image_from_data_url(data["image"])[0]
+        idea.thumbnail_image = get_image_from_data_url(data["thumbnail_image"])[0]
+    if "parent_organization" in data:
         try:
-            organization = Organization.objects.get(id=data['parent_organization'])
+            organization = Organization.objects.get(id=data["parent_organization"])
         except Organization.DoesNotExist:
             idea.delete()
-            raise ValidationError('Organization does not exist!')
+            raise ValidationError("Organization does not exist!")
         idea.organization = organization
 
     try:
@@ -83,52 +85,67 @@ def idea_translations(
 ) -> None:
     for language_code in translations:
         try:
-            language = Language.objects.get(
-                language_code=language_code
-            )
+            language = Language.objects.get(language_code=language_code)
         except Language.DoesNotExist:
             language = None
-        
+
         if language and language != source_language:
             idea_translation, created = IdeaTranslation.objects.get_or_create(
-                idea=idea,
-                language=language
+                idea=idea, language=language
             )
 
-            idea_translation.is_manual_translation =\
-                translations[language_code]['is_manual_translation']
+            idea_translation.is_manual_translation = translations[language_code][
+                "is_manual_translation"
+            ]
 
             if created:
-                idea_translation.name_translation = translations[language_code]['name']
-                idea_translation.short_description_translation =\
-                    translations[language_code]['short_description']
+                idea_translation.name_translation = translations[language_code]["name"]
+                idea_translation.short_description_translation = translations[
+                    language_code
+                ]["short_description"]
             else:
-                if translations[language_code]['name'] != idea_translation.name_translation:
-                    idea_translation.name_translation = translations[language_code]['name']
-                
-                if translations[language_code]['short_description'] !=\
-                    idea_translation.short_description_translation:
-                    idea_translation.short_description_translation =\
-                        translations[language_code]['short_description']
-            
+                if (
+                    translations[language_code]["name"]
+                    != idea_translation.name_translation
+                ):
+                    idea_translation.name_translation = translations[language_code][
+                        "name"
+                    ]
+
+                if (
+                    translations[language_code]["short_description"]
+                    != idea_translation.short_description_translation
+                ):
+                    idea_translation.short_description_translation = translations[
+                        language_code
+                    ]["short_description"]
+
             idea_translation.save()
 
 
 def get_idea_name(idea: Idea, language_code: str) -> str:
-    if language_code != idea.language.language_code and\
-        idea.translate_idea.filter(language__language_code=language_code).exists():
-        return idea.translate_idea.filter(
-            language__language_code=language_code
-        ).first().name_translation
-    
+    if (
+        language_code != idea.language.language_code
+        and idea.translate_idea.filter(language__language_code=language_code).exists()
+    ):
+        return (
+            idea.translate_idea.filter(language__language_code=language_code)
+            .first()
+            .name_translation
+        )
+
     return idea.name
 
 
 def get_idea_short_description(idea: Idea, language_code: str) -> str:
-    if language_code != idea.language.language_code and\
-        idea.translate_idea.filter(language__language_code=language_code).exists():
-        return idea.translate_idea.filter(
-            language__language_code=language_code
-        ).first().short_description_translation
-    
+    if (
+        language_code != idea.language.language_code
+        and idea.translate_idea.filter(language__language_code=language_code).exists()
+    ):
+        return (
+            idea.translate_idea.filter(language__language_code=language_code)
+            .first()
+            .short_description_translation
+        )
+
     return idea.short_description

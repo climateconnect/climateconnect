@@ -9,7 +9,7 @@ class IdeaReadWritePermission(BasePermission):
         if request.method in SAFE_METHODS:
             return True
 
-        idea = verify_idea(view.kwargs.get('url_slug'))
+        idea = verify_idea(view.kwargs.get("url_slug"))
         if not idea:
             return False
 
@@ -26,7 +26,7 @@ class IdeaRatingPermission(BasePermission):
         else:
             if request.user.is_authenticated:
                 return True
-        
+
         return False
 
 
@@ -37,5 +37,5 @@ class IdeaSupporterPermission(BasePermission):
         else:
             if request.user.is_authenticated:
                 return True
-        
+
         return False
