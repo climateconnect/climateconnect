@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => {
       [theme.breakpoints.down("xs")]: {
         fontSize: 40,
       },
-      textAlign: "left",
+      textAlign: "center",
     },
     headerTextSmall: {
       color: "white",

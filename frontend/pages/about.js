@@ -1,7 +1,7 @@
 //global imports
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { apiRequest } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -18,6 +18,7 @@ import ExplainerBox from "../src/components/staticpages/ExplainerBox";
 import FaqSection from "../src/components/staticpages/FaqSection";
 import Quote from "../src/components/staticpages/Quote";
 import StartNowBanner from "../src/components/staticpages/StartNowBanner";
+import Cookies from "next-cookies";
 //local components
 import TopSection from "../src/components/staticpages/TopSection";
 
@@ -62,23 +63,30 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export async function getServerSideProps() {
-  const questions = await getQuestionsWithAnswers();
+export async function getServerSideProps(ctx) {
+  const { auth_token } = Cookies(ctx);
+
+  const questions = await getQuestionsWithAnswers(auth_token, ctx.locale);
   return {
     props: {
-      faqQuestions: questions,
+      questionsBySection: questions.by_section,
     },
   };
 }
 
-export default function About({ faqQuestions }) {
+export default function About({questionsBySection}) {
   const classes = useStyles();
   const trigger = !TopOfPage({ initTopOfPage: true });
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "about", locale: locale });
-
   const quoteText = texts.about_quote_text;
+ 
 
+  const [questionsFromSection, setQuestionsFromSection] = React.useState(questionsBySection['Wie startet man']) 
+  
+  //setQuestionsFromSection(questionsBySection['Basics']);
+  console.log(questionsBySection['Basics']);
+  console.log(questionsFromSection);
   return (
     <>
       <WideLayout title="About" isStaticPage noSpaceBottom>
@@ -108,7 +116,7 @@ export default function About({ faqQuestions }) {
           <HowItWorks headlineClass={classes.headlineClass} />
           <FaqSection
             headlineClass={classes.boxHeadlineClass}
-            questions={faqQuestions.by_section["Basics"]}
+            questions={questionsFromSection}
           />
           <Team headlineClass={classes.headlineClass} className={classes.team} />
           {!user && <StartNowBanner h1ClassName={classes.headlineClass} />}
@@ -118,9 +126,14 @@ export default function About({ faqQuestions }) {
   );
 }
 
-const getQuestionsWithAnswers = async () => {
+const getQuestionsWithAnswers = async (token, locale) => {
   try {
-    const resp = await apiRequest({ method: "get", url: "/api/list_faq/" });
+    const resp = await apiRequest({ 
+      method: "get", 
+      url: "/api/list_faq/",
+      token: token,
+      locale: locale,
+     });
     if (resp.data.length === 0) {
       return null;
     }
