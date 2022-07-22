@@ -219,5 +219,9 @@ export default function getIdeaTexts({ idea, creator }) {
       }. 
       Schau sie dir doch mal an: `,
     },
+    loading_ideas: {
+      en: "Loading comments...",
+      de: "Kommentare werden geladen..."
+    }
   };
 }
