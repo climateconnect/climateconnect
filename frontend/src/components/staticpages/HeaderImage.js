@@ -22,5 +22,7 @@ const useStyles = makeStyles((theme) => {
 
 export default function HeaderImage({ src, children, className }) {
   const classes = useStyles({ image: src });
+  console.log(src);
+  console.log(children);
   return <div className={`${classes.imageContainer} ${className}`}>{children}</div>;
 }

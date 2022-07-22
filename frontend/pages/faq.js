@@ -110,11 +110,10 @@ export default function Faq({ questionsBySection, questions }) {
   const handleSearchBarChange = (event) => {
     setSearchValue(event?.target?.value);
   };
-
   return (
     <div>
       <WideLayout title={texts.faq} isStaticPage>
-        <HeaderImage src={"images/supportusheader.jpg"} className={classes.headerImageContainer}>
+        <HeaderImage src="/images/supportusheader.jpg" className={classes.headerImageContainer}>
           <div className={classes.headerTextContainer}>
             <div className={classes.headerTextInnerContainer}>
               <div>

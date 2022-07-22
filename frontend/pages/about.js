@@ -67,27 +67,24 @@ export async function getServerSideProps(ctx) {
   const { auth_token } = Cookies(ctx);
 
   const questions = await getQuestionsWithAnswers(auth_token, ctx.locale);
-  return {
+  /* "Grundlagen is probably the wrong term to find the German name of the section Basics and needs to be changed
+      Should be reworked to be better scalable for more languages
+  */
+  const questionsBySection = ctx.locale === "en" ? questions.by_section['Basics'] : questions.by_section['Grundlagen'] ;
+    return {
     props: {
-      questionsBySection: questions.by_section,
+      questionsFromSection: questionsBySection,
     },
   };
 }
 
-export default function About({questionsBySection}) {
+export default function About({questionsFromSection}) {
   const classes = useStyles();
   const trigger = !TopOfPage({ initTopOfPage: true });
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "about", locale: locale });
   const quoteText = texts.about_quote_text;
- 
-
-  const [questionsFromSection, setQuestionsFromSection] = React.useState(questionsBySection['Wie startet man']) 
-  
-  //setQuestionsFromSection(questionsBySection['Basics']);
-  console.log(questionsBySection['Basics']);
-  console.log(questionsFromSection);
-  return (
+ return (
     <>
       <WideLayout title="About" isStaticPage noSpaceBottom>
         <div className={classes.root}>
