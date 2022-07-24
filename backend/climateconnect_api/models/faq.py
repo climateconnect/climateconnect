@@ -58,6 +58,9 @@ class FaqQuestion(models.Model):
         help_text="The question text",
     )
 
+    # Other language translations need to fit this template field
+    # question_<language code>_translation e.g. question_fr_translation
+    # Same goes for the answer and section name see line 11
     question_de_translation = models.TextField(
         help_text="Deutsch translation of question column",
         verbose_name="Question DE translation",

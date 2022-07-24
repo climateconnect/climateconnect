@@ -1,7 +1,7 @@
 //global imports
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { apiRequest } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -67,24 +67,21 @@ export async function getServerSideProps(ctx) {
   const { auth_token } = Cookies(ctx);
 
   const questions = await getQuestionsWithAnswers(auth_token, ctx.locale);
-  /* "Grundlagen is probably the wrong term to find the German name of the section Basics and needs to be changed
-      Should be reworked to be better scalable for more languages
-  */
-  const questionsBySection = ctx.locale === "en" ? questions.by_section['Basics'] : questions.by_section['Grundlagen'] ;
-    return {
+  return {
     props: {
-      questionsFromSection: questionsBySection,
+      questionsFromSection: questions.all,
     },
   };
 }
 
-export default function About({questionsFromSection}) {
+export default function About({ questionsFromSection }) {
   const classes = useStyles();
   const trigger = !TopOfPage({ initTopOfPage: true });
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "about", locale: locale });
   const quoteText = texts.about_quote_text;
- return (
+
+  return (
     <>
       <WideLayout title="About" isStaticPage noSpaceBottom>
         <div className={classes.root}>
@@ -111,10 +108,7 @@ export default function About({questionsFromSection}) {
           <Born className={classes.born} headlineClass={classes.boxHeadlineClass} />
           <Timeline headlineClass={classes.headlineClass} />
           <HowItWorks headlineClass={classes.headlineClass} />
-          <FaqSection
-            headlineClass={classes.boxHeadlineClass}
-            questions={questionsFromSection}
-          />
+          <FaqSection headlineClass={classes.boxHeadlineClass} questions={questionsFromSection} />
           <Team headlineClass={classes.headlineClass} className={classes.team} />
           {!user && <StartNowBanner h1ClassName={classes.headlineClass} />}
         </div>
@@ -125,18 +119,17 @@ export default function About({questionsFromSection}) {
 
 const getQuestionsWithAnswers = async (token, locale) => {
   try {
-    const resp = await apiRequest({ 
-      method: "get", 
-      url: "/api/list_faq/",
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/about_faq/",
       token: token,
       locale: locale,
-     });
+    });
     if (resp.data.length === 0) {
       return null;
     }
 
     return {
-      by_section: sortBySection(resp.data.results),
       all: resp.data.results,
     };
   } catch (err) {
@@ -147,12 +140,4 @@ const getQuestionsWithAnswers = async (token, locale) => {
     }
     return null;
   }
-};
-
-const sortBySection = (questions) => {
-  return questions.reduce((obj, question) => {
-    if (!obj[question.section]) obj[question.section] = [question];
-    else obj[question.section].push(question);
-    return obj;
-  }, {});
 };

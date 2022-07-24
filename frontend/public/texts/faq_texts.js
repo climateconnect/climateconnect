@@ -20,7 +20,7 @@ export default function getFaqTexts({ classes, locale }) {
     cant_find_the_answer_to_your_question_contact: {
       en: (
         <>
-          Can't find the answer to your question? Contact{" "}
+          Can&apos;t find the answer to your question? Contact{" "}
           <Link
             className={classes?.topText}
             href="mailto:contact@climateconnect.earth"
