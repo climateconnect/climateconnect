@@ -19,7 +19,7 @@ export default function MyApp({ Component, pageProps = {} }) {
   // Cookies
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
-  
+
   const [gaInitialized, setGaInitialized] = useState(false);
   const [isLoading, setLoading] = useState(true);
 
@@ -109,7 +109,9 @@ export default function MyApp({ Component, pageProps = {} }) {
     const cookieProps = getCookieProps(expiry);
 
     cookies.set("auth_token", token, cookieProps);
-    const user = await getLoggedInUser(cookies.get("auth_token") ? cookies.get("auth_token") : token);
+    const user = await getLoggedInUser(
+      cookies.get("auth_token") ? cookies.get("auth_token") : token
+    );
     setState({
       ...state,
       user: user,
