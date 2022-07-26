@@ -21,9 +21,9 @@ class Command(BaseCommand):
             if current_location:
                 geo_location = get_geo_location(",".join(current_location))
                 if geo_location:
-                    project.location = geo_location['location']
-                    project.latitude = geo_location['latitude']
-                    project.longitude = geo_location['longitude']
+                    project.location = geo_location["location"]
+                    project.latitude = geo_location["latitude"]
+                    project.longitude = geo_location["longitude"]
                     project_counter += 1
                     project.save()
                 else:
@@ -32,4 +32,3 @@ class Command(BaseCommand):
                 print("Location not found for project {}".format(project.id))
 
         print("Total projects updated: {}".format(project_counter))
-        

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from django.db. models.signals import pre_save
+from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
 from organization.models import Organization
@@ -8,61 +8,54 @@ from organization.models.project import Project
 
 
 class OrganizationTags(models.Model):
-    name = models.CharField(
-        help_text="Tag name",
-        verbose_name="Name",
-        max_length=256
-    )
+    name = models.CharField(help_text="Tag name", verbose_name="Name", max_length=256)
 
     name_de_translation = models.CharField(
         help_text="Translation of name column",
         verbose_name="Name DE translation",
         max_length=256,
         null=True,
-        blank=True
+        blank=True,
     )
 
     # Adding this because we use organization tags to filter organization
     # and its not possible to filter Name because it contains spaces.
     key = models.CharField(
         help_text="Points to key of the tag. Example: `Student organization` becomes studentorganization",
-        verbose_name='Key',
-        max_length=256, null=True, blank=True
+        verbose_name="Key",
+        max_length=256,
+        null=True,
+        blank=True,
     )
 
     parent_tag = models.ForeignKey(
-        'self',
+        "self",
         related_name="organization_tag_parent",
         verbose_name="Parent Tag",
         help_text="Points to the parent tag",
         null=True,
         blank=True,
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
     )
 
     created_at = models.DateTimeField(
         help_text="Time when tag was created",
         verbose_name="Created At",
-        auto_now_add=True
+        auto_now_add=True,
     )
 
     additional_info = ArrayField(
-        models.CharField(max_length=264),
-        null=True,
-        blank=True,
-        size=5
+        models.CharField(max_length=264), null=True, blank=True, size=5
     )
 
     updated_at = models.DateTimeField(
-        help_text="Time when tag was updated",
-        verbose_name="Updated At",
-        auto_now=True
+        help_text="Time when tag was updated", verbose_name="Updated At", auto_now=True
     )
 
     show_in_climatematch = models.BooleanField(
         help_text="Help display organizations and projects in climate match",
         verbose_name="Show in climatematch?",
-        default=False
+        default=False,
     )
 
     class Meta:
@@ -85,7 +78,7 @@ class OrganizationTagging(models.Model):
         related_name="tag_organization",
         verbose_name="Organization",
         help_text="Points to an organization",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
 
     organization_tag = models.ForeignKey(
@@ -93,19 +86,19 @@ class OrganizationTagging(models.Model):
         related_name="tag_organization",
         verbose_name="Organization Tag",
         help_text="Points to the tag",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
 
     created_at = models.DateTimeField(
         help_text="Time when organization tag was created",
         verbose_name="Created At",
-        auto_now_add=True
+        auto_now_add=True,
     )
 
     updated_at = models.DateTimeField(
         help_text="Time when organization tag was updated",
         verbose_name="Updated At",
-        auto_now=True
+        auto_now=True,
     )
 
     # TODO (Dip): Add additional data field when ready
@@ -114,7 +107,7 @@ class OrganizationTagging(models.Model):
         app_label = "organization"
         verbose_name = "Organization Tagging"
         verbose_name_plural = "Organization Taggings"
-        unique_together = ('organization', 'organization_tag')
+        unique_together = ("organization", "organization_tag")
 
     def __str__(self):
         return "%s => %s" % (self.organization_tag.name, self.organization.name)
@@ -124,7 +117,7 @@ class ProjectTags(models.Model):
     name = models.CharField(
         help_text="Points to name of the project tag",
         verbose_name="Name",
-        max_length=256
+        max_length=256,
     )
 
     name_de_translation = models.CharField(
@@ -132,37 +125,37 @@ class ProjectTags(models.Model):
         verbose_name="Name DE translation",
         max_length=256,
         null=True,
-        blank=True
+        blank=True,
     )
 
     # Adding this because we use project tags to filter project and its not possible to filter Name because
     # it contains spaces.
     key = models.CharField(
         help_text="Points to key of the tag. Example: `Student organization` becomes studentorganization",
-        verbose_name='Key',
-        max_length=256, null=True, blank=True
+        verbose_name="Key",
+        max_length=256,
+        null=True,
+        blank=True,
     )
 
     parent_tag = models.ForeignKey(
-        'self',
+        "self",
         related_name="project_tag_parent",
         verbose_name="Parent Tag",
         help_text="Points to the parent tag",
         null=True,
         blank=True,
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
     )
 
     created_at = models.DateTimeField(
         help_text="Time when tag was created",
         verbose_name="Created at",
-        auto_now_add=True
+        auto_now_add=True,
     )
 
     updated_at = models.DateTimeField(
-        help_text="Time when tag was updated",
-        verbose_name="Updated at",
-        auto_now=True
+        help_text="Time when tag was updated", verbose_name="Updated at", auto_now=True
     )
 
     class Meta:
@@ -185,7 +178,7 @@ class ProjectTagging(models.Model):
         help_text="Points to project",
         verbose_name="Project",
         related_name="tag_project",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
 
     project_tag = models.ForeignKey(
@@ -193,32 +186,32 @@ class ProjectTagging(models.Model):
         verbose_name="Project tag",
         help_text="Points to project tag",
         related_name="tag_project",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
 
     created_at = models.DateTimeField(
         help_text="Time when project tag was created",
         verbose_name="Created At",
-        auto_now_add=True
+        auto_now_add=True,
     )
 
     updated_at = models.DateTimeField(
         help_text="Time when project tag was updated",
         verbose_name="Updated At",
-        auto_now=True
+        auto_now=True,
     )
 
     order = models.PositiveSmallIntegerField(
         help_text="The bigger the number, the more to the top this category will be displayed",
         verbose_name="Position of tag",
-        default=0
+        default=0,
     )
 
     class Meta:
         app_label = "organization"
         verbose_name = "Project Tagging"
         verbose_name_plural = "Project Taggings"
-        unique_together = ('project', 'project_tag')
+        unique_together = ("project", "project_tag")
         ordering = ["-order"]
 
     def __str__(self):
@@ -231,7 +224,7 @@ class OrganizationFieldTagging(models.Model):
         related_name="field_tag_organization",
         verbose_name="Organization",
         help_text="Points to an organization",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
 
     field_tag = models.ForeignKey(
@@ -239,19 +232,19 @@ class OrganizationFieldTagging(models.Model):
         related_name="field_tag",
         verbose_name="Organization Tag",
         help_text="Points to the tag",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
 
     created_at = models.DateTimeField(
         help_text="Time when organization field tag was created",
         verbose_name="Created At",
-        auto_now_add=True
+        auto_now_add=True,
     )
 
     updated_at = models.DateTimeField(
         help_text="Time when organization field tag was updated",
         verbose_name="Updated At",
-        auto_now=True
+        auto_now=True,
     )
 
     # TODO (Dip): Add additional data field when ready
@@ -260,7 +253,7 @@ class OrganizationFieldTagging(models.Model):
         app_label = "organization"
         verbose_name = "Organization Field Tagging"
         verbose_name_plural = "Organization Field Taggings"
-        unique_together = ('organization', 'field_tag')
+        unique_together = ("organization", "field_tag")
 
     def __str__(self):
         return "%s => %s" % (self.field_tag.name, self.organization.name)

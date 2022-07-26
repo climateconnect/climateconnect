@@ -10,7 +10,7 @@ def create_unique_slug(name: str, id: int, model_manager: models.Manager):
         url_slug = str(id)
     if model_manager.filter(url_slug=url_slug).exists():
         url_slug = url_slug + str(id)
-    return url_slug    
+    return url_slug
 
 
 def get_skill_name(skill: Skill, language_code: str) -> str:
