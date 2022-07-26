@@ -368,6 +368,7 @@ export default function IdeaRoot({
                   has_joined={hasJoinedIdea.has_joined}
                   chat_uuid={hasJoinedIdea.chat_uuid}
                   onJoinIdea={handleJoinIdea}
+                  initializing={loading}
                 />
                 {user && idea?.user?.id === user?.id && (
                   <Button onClick={handleClickEditIdea} variant="contained" color="primary">
