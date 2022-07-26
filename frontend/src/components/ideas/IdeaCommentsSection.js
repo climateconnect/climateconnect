@@ -6,6 +6,7 @@ import getTexts from "../../../public/texts/texts";
 import CommentInput, { INFO_TEXT_SIZES } from "../communication/CommentInput";
 import Posts from "../communication/Posts";
 import UserContext from "../context/UserContext";
+import LoadingSpinner from "../general/LoadingSpinner";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,9 +23,20 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 600,
     marginBottom: theme.spacing(2),
   },
+  loadingSpinner: {
+    width: 40,
+    height: 40,
+  },
+  loadingSpinnerContainer: {
+    height: 125,
+    width: "100%",
+    display: "flex",
+    justifyContent: "center",
+    padding: theme.spacing(1),
+  },
 }));
 
-export default function IdeaCommentsSection({ idea, handleAddComment, handleRemoveComment }) {
+export default function IdeaCommentsSection({ idea, loading, handleAddComment, handleRemoveComment }) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
   const token = new Cookies().get("auth_token");
@@ -91,8 +103,14 @@ export default function IdeaCommentsSection({ idea, handleAddComment, handleRemo
           onSendComment={onSendComment}
           hasComments={idea.comments?.length > 0}
           infoTextSize={INFO_TEXT_SIZES.short}
+          useIconButton
         />
         <Divider className={classes.divider} />
+        {loading && (
+          <div className={classes.loadingSpinnerContainer}>
+            <LoadingSpinner isLoading message={texts.loading_ideas} />
+          </div>
+        )}
         {idea.comments && idea.comments?.length > 0 && (
           <Posts
             posts={idea.comments}

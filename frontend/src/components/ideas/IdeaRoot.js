@@ -11,7 +11,6 @@ import theme from "../../themes/theme";
 import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
 import DateDisplay from "../general/DateDisplay";
-import LoadingSpinner from "../general/LoadingSpinner";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
@@ -83,17 +82,6 @@ const useStyles = makeStyles((theme) => ({
   },
   ratingSlider: {
     height: 10,
-  },
-  loadingSpinner: {
-    width: 40,
-    height: 40,
-  },
-  loadingSpinnerContainer: {
-    height: "50vh",
-    width: "100%",
-    display: "flex",
-    justifyContent: "center",
-    padding: theme.spacing(1),
   },
   interactionsCounter: {
     fontWeight: 600,
@@ -224,6 +212,7 @@ export default function IdeaRoot({
           }
           return allComments;
         }, []);
+
         const notification_to_set_read = notifications.filter((n) =>
           all_comment_ids.includes(n.idea_comment?.id)
         );
@@ -302,14 +291,7 @@ export default function IdeaRoot({
   const texts = getTexts({ page: "idea", locale: locale, idea: idea, creator: ideaCreatorName });
   return (
     <Card variant="outlined" className={classes.root}>
-      {loading ? (
-        <div className={classes.contentWrapper}>
-          <CloseIcon className={classes.closeStyle} onClick={handleIdeaClose} />
-          <div className={classes.loadingSpinnerContainer}>
-            <LoadingSpinner isLoading className={classes.loadingSpinner} />
-          </div>
-        </div>
-      ) : isEditing ? (
+      {isEditing ? (
         <EditIdeaRoot
           idea={idea}
           cancelEdit={cancelEdit}
@@ -410,6 +392,7 @@ export default function IdeaRoot({
           <div>
             <IdeaCommentsSection
               idea={idea}
+              loading={loading}
               handleAddComment={handleAddComment}
               handleRemoveComment={handleRemoveComment}
             />
