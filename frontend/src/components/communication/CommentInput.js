@@ -51,14 +51,14 @@ function CommentInput({
   onCancel,
   hasComments,
   infoTextSize,
-  useIconButton
+  useIconButton,
 }) {
   const classes = useStyles();
   const [curComment, setCurComment] = React.useState("");
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "communication", locale: locale });
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const [showSendHelper, setShowSendHelper] = useState(false)
+  const [showSendHelper, setShowSendHelper] = useState(false);
 
   const onCurCommentChange = (e) => {
     setCurComment(e.target.value);
@@ -97,11 +97,11 @@ function CommentInput({
 
   const handleMessageKeydown = (event) => {
     if (event.key === "Enter") {
-      if(event.ctrlKey){
+      if (event.ctrlKey) {
         if (!curComment) return alert(texts.your_comment_cannot_be_empty);
         handleSendComment(event, curComment);
       } else {
-        setShowSendHelper(true)
+        setShowSendHelper(true);
       }
     }
   };
@@ -158,7 +158,7 @@ function CommentInput({
           </div>
           <div className={classes.commentButtonContainer}>
             <Typography className={classes.explanation}>{getInfoText()}</Typography>
-            {!useIconButton &&
+            {!useIconButton && (
               <Button
                 color="primary"
                 variant="contained"
@@ -167,7 +167,7 @@ function CommentInput({
               >
                 {texts.send}
               </Button>
-            }
+            )}
             {onCancel && (
               <Button variant="contained" className={classes.cancelButton} onClick={onCancel}>
                 {texts.cancel}

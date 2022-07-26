@@ -63,7 +63,7 @@ export default function IdeaJoinButton({ idea, has_joined, chat_uuid, onJoinIdea
         </Button>
       ) : (
         <Button color="primary" variant="contained" onClick={onClickJoinButton}>
-          {(loading || initializing) ? <ButtonLoader /> : texts.join_in}
+          {loading || initializing ? <ButtonLoader /> : texts.join_in}
         </Button>
       )}
       <ConfirmDialog

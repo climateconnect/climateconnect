@@ -221,7 +221,7 @@ export default function getIdeaTexts({ idea, creator }) {
     },
     loading_ideas: {
       en: "Loading comments...",
-      de: "Kommentare werden geladen..."
-    }
+      de: "Kommentare werden geladen...",
+    },
   };
 }

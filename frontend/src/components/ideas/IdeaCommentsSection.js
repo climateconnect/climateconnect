@@ -36,7 +36,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function IdeaCommentsSection({ idea, loading, handleAddComment, handleRemoveComment }) {
+export default function IdeaCommentsSection({
+  idea,
+  loading,
+  handleAddComment,
+  handleRemoveComment,
+}) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
   const token = new Cookies().get("auth_token");

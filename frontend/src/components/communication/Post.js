@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   }),
   messageWithMetaData: {
     minWidth: 0,
-    overflowWrap: "break-word"
+    overflowWrap: "break-word",
   },
   avatar: {
     marginRight: theme.spacing(2),
