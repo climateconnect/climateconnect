@@ -11,7 +11,6 @@ import theme from "../../themes/theme";
 import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
 import DateDisplay from "../general/DateDisplay";
-import LoadingSpinner from "../general/LoadingSpinner";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
@@ -83,17 +82,6 @@ const useStyles = makeStyles((theme) => ({
   },
   ratingSlider: {
     height: 10,
-  },
-  loadingSpinner: {
-    width: 40,
-    height: 40,
-  },
-  loadingSpinnerContainer: {
-    height: "50vh",
-    width: "100%",
-    display: "flex",
-    justifyContent: "center",
-    padding: theme.spacing(1),
   },
   interactionsCounter: {
     fontWeight: 600,
@@ -205,25 +193,29 @@ export default function IdeaRoot({
 
   useEffect(
     async function () {
-      if (token) {
-        setLoading(true);
-        setIsEditing(false);
-        const [userRating, comments, hasJoinedIdea] = await Promise.all([
-          getUserRatingFromServer(idea, token, locale),
-          getIdeaCommentsFromServer(idea, token, locale),
-          getHasJoinedIdea(idea, token, locale),
-        ]);
-        //The user has closed the idea in the mean time!
-        if (!idea) {
-          return;
+      setLoading(true);
+      setIsEditing(false);
+      //If the user is logged out, only catch the comments. Otherwise get their rating and join status
+      const [userRating, comments, hasJoinedIdea] = await Promise.all([
+        token ? getUserRatingFromServer(idea, token, locale) : null,
+        getIdeaCommentsFromServer(idea, token, locale),
+        token ? getHasJoinedIdea(idea, token, locale) : null,
+      ]);
+      //The user has closed the idea in the mean time!
+      if (!idea) {
+        return;
+      }
+      const all_comment_ids = comments.reduce(function (allComments, curComment) {
+        allComments.push(curComment.id);
+        if (curComment.replies?.length > 0) {
+          allComments = [...allComments, ...curComment.replies.map((c) => c.id)];
         }
-        const all_comment_ids = comments.reduce(function (allComments, curComment) {
-          allComments.push(curComment.id);
-          if (curComment.replies?.length > 0) {
-            allComments = [...allComments, ...curComment.replies.map((c) => c.id)];
-          }
-          return allComments;
-        }, []);
+        return allComments;
+      }, []);
+
+      handleSetComments && handleSetComments(comments);
+      //if the user is logged in, set their rating and join status. Otherwise just stop loading
+      if(token) {
         const notification_to_set_read = notifications.filter((n) =>
           all_comment_ids.includes(n.idea_comment?.id)
         );
@@ -234,9 +226,10 @@ export default function IdeaRoot({
             has_joined: hasJoinedIdea?.has_joined,
             chat_uuid: hasJoinedIdea?.chat_uuid,
           });
-        handleSetComments && handleSetComments(comments);
-        setLoading(false);
+          setLoading(false);
         await setNotificationsReadAndRefresh(notification_to_set_read);
+      } else {
+        setLoading(false);
       }
     },
     [idea.url_slug]
@@ -302,14 +295,7 @@ export default function IdeaRoot({
   const texts = getTexts({ page: "idea", locale: locale, idea: idea, creator: ideaCreatorName });
   return (
     <Card variant="outlined" className={classes.root}>
-      {loading ? (
-        <div className={classes.contentWrapper}>
-          <CloseIcon className={classes.closeStyle} onClick={handleIdeaClose} />
-          <div className={classes.loadingSpinnerContainer}>
-            <LoadingSpinner isLoading className={classes.loadingSpinner} />
-          </div>
-        </div>
-      ) : isEditing ? (
+      {isEditing ? (
         <EditIdeaRoot
           idea={idea}
           cancelEdit={cancelEdit}
@@ -386,6 +372,7 @@ export default function IdeaRoot({
                   has_joined={hasJoinedIdea.has_joined}
                   chat_uuid={hasJoinedIdea.chat_uuid}
                   onJoinIdea={handleJoinIdea}
+                  initializing={loading}
                 />
                 {user && idea?.user?.id === user?.id && (
                   <Button onClick={handleClickEditIdea} variant="contained" color="primary">
@@ -410,6 +397,7 @@ export default function IdeaRoot({
           <div>
             <IdeaCommentsSection
               idea={idea}
+              loading={loading}
               handleAddComment={handleAddComment}
               handleRemoveComment={handleRemoveComment}
             />
@@ -438,11 +426,11 @@ const getUserRatingFromServer = async (idea, token, locale) => {
 };
 
 const getIdeaCommentsFromServer = async (idea, token, locale) => {
+  console.log("Getting idea comments!")
   try {
     const response = await apiRequest({
       method: "get",
       url: `/api/ideas/${idea.url_slug}/comments/`,
-      token: token,
       locale: locale,
     });
     return response.data.results;

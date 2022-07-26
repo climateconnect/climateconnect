@@ -25,10 +25,8 @@ const useStyles = makeStyles((theme) => ({
     alignItems: props.preview ? "center" : "stretch",
   }),
   messageWithMetaData: {
-    display: "flex",
-    flexDirection: "column",
-    flexWrap: "wrap",
-    flex: 1,
+    minWidth: 0,
+    overflowWrap: "break-word",
   },
   avatar: {
     marginRight: theme.spacing(2),
