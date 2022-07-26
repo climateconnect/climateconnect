@@ -1,5 +1,5 @@
 # Python imports
-from ideas.utility.notification import create_idea_comment_notification, create_idea_join_notification
+from ideas.utility.notification import create_idea_join_notification
 from ideas.models.support import IdeaSupporter
 import logging
 
