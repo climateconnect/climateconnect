@@ -151,6 +151,7 @@ export default function IdeasBoard({
           onIdeaClose={onClose}
           onRatingChange={handleUpdateRating}
           handleAddComments={handleAddComments}
+          handleSetComments={handleSetComments}
           handleRemoveComment={handleRemoveComment}
           userOrganizations={userOrganizations}
           allHubs={allHubs}
