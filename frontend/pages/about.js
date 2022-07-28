@@ -64,9 +64,7 @@ const useStyles = makeStyles((theme) => {
 });
 
 export async function getServerSideProps(ctx) {
-  const { auth_token } = Cookies(ctx);
-
-  const questions = await getQuestionsWithAnswers(auth_token, ctx.locale);
+  const questions = await getQuestionsWithAnswers(ctx.locale);
   return {
     props: {
       questionsFromSection: questions.all,
@@ -117,12 +115,12 @@ export default function About({ questionsFromSection }) {
   );
 }
 
-const getQuestionsWithAnswers = async (token, locale) => {
+const getQuestionsWithAnswers = async  (locale) => {
   try {
     const resp = await apiRequest({
       method: "get",
       url: "/api/about_faq/",
-      token: token,
+      
       locale: locale,
     });
     if (resp.data.length === 0) {
