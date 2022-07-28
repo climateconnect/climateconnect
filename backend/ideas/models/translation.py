@@ -32,7 +32,7 @@ class IdeaTranslation(models.Model):
     short_description_translation = models.CharField(
         help_text="Translation of idea's summary",
         verbose_name="Summary",
-        max_length=1200,
+        max_length=5096,
         null=True,
         blank=True,
     )
