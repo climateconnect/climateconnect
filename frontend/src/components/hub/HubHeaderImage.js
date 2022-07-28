@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     },
     position: "relative",
     [theme.breakpoints.up("md")]: {
-      position: "relative", // we want to have relative positioning when its a location hub and user is logged out
+      position: "relative", // we want to have relative positioning when user is logged out
       zIndex: -1,
     },
   }),
