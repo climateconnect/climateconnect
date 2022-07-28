@@ -44,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
   moreInfoSoon: {
     fontWeight: 600,
+    maxWidth: 800,
     marginTop: theme.spacing(2),
     textAlign: "center",
   },
@@ -227,7 +228,7 @@ export default function Hub({
       {hubDescription && hubDescription.headContent && (
         <Head>{parseHtml(hubDescription.headContent)}</Head>
       )}
-      <WideLayout title={headline} fixedHeader headerBackground="#FFF" image={getImageUrl(image)}>
+      <WideLayout title={headline} fixedHeader headerBackground="#FFF" image={getImageUrl(image)} isHubPage>
         <div className={classes.contentUnderHeader}>
           <NavigationSubHeader hubName={name} allHubs={allHubs} isLocationHub={isLocationHub} />
           {<DonationCampaignInformation />}
