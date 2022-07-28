@@ -4,7 +4,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
-  imageContainer: (props) => ({
+  imageContainerLoggedin: (props) => ({
     background: `url('${props.image}')`,
     backgroundSize: "cover",
     backgroundPosition: "bottom center",
@@ -16,7 +16,23 @@ const useStyles = makeStyles((theme) => ({
     },
     position: "relative",
     [theme.breakpoints.up("md")]: {
-      position: props.isLocationHub && !props.loggedOut ? "absolute" : "relative",
+      position: props.isLocationHub ? "absolute" : "relative", // we want to have absolute positioning when its a location hub and user is not logged out
+      zIndex: -1,
+    },
+  }),
+  imageContainerLoggedOut: (props) => ({
+    background: `url('${props.image}')`,
+    backgroundSize: "cover",
+    backgroundPosition: "bottom center",
+    zIndex: -1,
+    width: "100%",
+    [theme.breakpoints.down("sm")]: {
+      minHeight: 100,
+      backgroundSize: "cover",
+    },
+    position: "relative",
+    [theme.breakpoints.up("md")]: {
+      position: "relative", // we want to have relative positioning when its a location hub and user is logged out
       zIndex: -1,
     },
   }),
@@ -52,16 +68,17 @@ const useStyles = makeStyles((theme) => ({
 
 export default function HubHeaderImage({ image, source, fullWidth, isLocationHub }) {
   const { locale, user } = useContext(UserContext);
+
   const classes = useStyles({
     image: image,
     fullWidth: fullWidth,
     isLocationHub: isLocationHub,
-    loggedOut: !user,
   });
+
   const texts = getTexts({ page: "hub", locale: locale });
   return (
     <>
-      <div className={classes.imageContainer}>
+      <div className={`${user ? classes.imageContainerLoggedin : classes.imageContainerLoggedOut}`}>
         <img src={image} className={classes.img} />
       </div>
       {source && (
