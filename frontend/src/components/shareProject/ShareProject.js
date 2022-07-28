@@ -1,6 +1,8 @@
-import { Typography } from "@material-ui/core";
+import { Typography, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import Router from "next/router";
 import React, { useContext, useRef } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 
 // Relative imports
 import {
@@ -12,6 +14,7 @@ import {
 } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import ShareProjectForm from "./ShareProjectForm";
 import Form from "../general/Form";
 
 const useStyles = makeStyles((theme) => ({
@@ -52,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Share({
+export default function ShareProject({
   project,
   handleSetProjectData,
   goToNextStep,
@@ -64,10 +67,22 @@ export default function Share({
   const texts = getTexts({ page: "project", locale: locale });
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
+  const [isOrgProject, setIsOrgProject] = React.useState(false);
 
+  console.log(isOrgProject);
   const handleSetLocationOptionsOpen = (bool) => {
     setLocationOptionsOpen(bool);
   };
+
+  const handleIsOrgProjectChange = () => {
+    setIsOrgProject(!isOrgProject);
+  };
+
+
+  const handleCreateOrgButton = () => {
+    Router.push(getLocalePrefix(locale) + "/createorganization/");
+  };
+
 
   const organizations = !userOrganizations
     ? []
@@ -84,45 +99,83 @@ export default function Share({
       : project.parent_organization
     : "";
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
-  const fields = [
-    {
-      falseLabel: texts.personal_project,
-      trueLabel: texts.organizations_project,
-      key: "is_organization_project",
-      type: "switch",
-      checked: project.is_organization_project,
-    },
-    {
-      required: true,
-      label: texts.organization,
-      select: {
-        values: organizationOptions,
-        defaultValue: parent_organization_name,
-      },
-      key: "parent_organization",
-      bottomLink: (
-        <Typography className={classes.orgBottomLink}>
-          {texts.if_your_organization_does_not_exist_yet_click_here}
-        </Typography>
-      ),
-      onlyShowIfChecked: "is_organization_project",
-    },
-    {
-      required: true,
-      label: texts.title_with_explanation_and_example,
-      type: "text",
-      key: "name",
-      value: project.name,
-    },
-    ...getLocationFields({
-      locationInputRef: locationInputRef,
-      locationOptionsOpen: locationOptionsOpen,
-      handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
-      values: project,
-      locationKey: "loc",
-      texts: texts,
-    }),
-  ];
+  const fields = !!userOrganizations
+    ? [
+        {
+          falseLabel: texts.personal_project,
+          trueLabel: texts.organizations_project,
+          key: "is_organization_project",
+          type: "switch",
+          checked: project.is_organization_project,
+        },
+        {
+          required: true,
+          label: texts.organization,
+          select: {
+            values: organizationOptions,
+            defaultValue: parent_organization_name,
+          },
+          key: "parent_organization",
+          bottomLink: (
+            <Typography className={classes.orgBottomLink}>
+              {texts.if_your_organization_does_not_exist_yet_click_here}
+            </Typography>
+          ),
+          onlyShowIfChecked: "is_organization_project",
+        },
+        {
+          required: true,
+          label: texts.title_with_explanation_and_example,
+          type: "text",
+          key: "name",
+          value: project.name,
+        },
+        ...getLocationFields({
+          locationInputRef: locationInputRef,
+          locationOptionsOpen: locationOptionsOpen,
+          handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
+          values: project,
+          locationKey: "loc",
+          texts: texts,
+        }),
+      ]
+    : !userOrganizations && !isOrgProject
+    ? [
+        {
+          falseLabel: texts.personal_project,
+          trueLabel: texts.organizations_project,
+          key: "is_organization_project",
+          type: "switch",
+          checked: project.is_organization_project,
+        },
+        {
+          required: true,
+          label: texts.title_with_explanation_and_example,
+          type: "text",
+          key: "name",
+          value: project.name,
+        },
+        ...getLocationFields({
+          locationInputRef: locationInputRef,
+          locationOptionsOpen: locationOptionsOpen,
+          handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
+          values: project,
+          locationKey: "loc",
+          texts: texts,
+        }),
+      ]
+    : !userOrganizations && isOrgProject
+    ? [
+        {
+          falseLabel: texts.personal_project,
+          trueLabel: texts.organizations_project,
+          key: "is_organization_project",
+          type: "switch",
+          checked: project.is_organization_project,
+        },
+      ]
+    : [];
+
   const messages = {
     submitMessage: texts.next_step,
   };
@@ -180,14 +233,19 @@ export default function Share({
           </Typography>
         </div>
       )}
-      <Form
+      <ShareProjectForm
+        isOrgProject={isOrgProject}
+        hasOrg={!!userOrganizations}
+        handleIsOrgProjectChange={   handleIsOrgProjectChange}
         className={classes.form}
         fields={fields}
         messages={messages}
         onSubmit={onSubmit}
         alignButtonsRight
         fieldClassName={classes.field}
+        handleCreateOrgButton={handleCreateOrgButton}
       />
+    
     </>
   );
 }
