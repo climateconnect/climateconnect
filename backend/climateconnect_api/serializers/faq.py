@@ -8,7 +8,6 @@ from climateconnect_api.utility.faq import get_section_name, get_question, get_a
 
 class FaqQuestionSerializer(serializers.ModelSerializer):
     section = serializers.SerializerMethodField()
-    ## So you have to add SerializerMethodFields here to catch question and answer
     question = serializers.SerializerMethodField()
     answer = serializers.SerializerMethodField()
 
