@@ -1,4 +1,4 @@
-import { makeStyles, Typography, Box } from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import OpenClimateMatchButton from "../climateMatch/OpenClimateMatchButton";
@@ -7,7 +7,7 @@ import UserContext from "../context/UserContext";
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
     background: theme.palette.primary.main,
-   
+
     maxWidth: 800,
     borderRadius: 5,
     border: theme.borders.thick,
@@ -15,7 +15,6 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("sm")]: {
       marginTop: props.isLocationHub ? theme.spacing(8) : theme.spacing(-11),
     },
-  
 
     ["@media(max-width:1260px)"]: {
       maxWidth: 550,
@@ -46,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
       paddingBottom: theme.spacing(2),
     },
   },
- 
+
   highlighted: {
     color: theme.palette.yellow.main,
   },
@@ -61,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   subHeadLineText: {
-    fontWeight:600
+    fontWeight: 600,
   },
 
   locationSubHeadlineTextContainer: {
@@ -73,46 +72,34 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     padding: theme.spacing(1.5),
   },
-
-
 }));
 
-export default function HubHeadlineContainer({
-  subHeadline,
-  headline,
-  isLocationHub,
-  hubUrl,
-}) {
-  const classes = useStyles({isLocationHub: isLocationHub});
+export default function HubHeadlineContainer({ subHeadline, headline, isLocationHub, hubUrl }) {
+  const classes = useStyles({ isLocationHub: isLocationHub });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "climatematch", locale: locale });
-
-  
 
   return (
     <div className={classes.root}>
       <div className={classes.headlineContainer}>
         <Typography component="h1" className={classes.headline}>
-     {headline}
-                  </Typography>
+          {headline}
+        </Typography>
       </div>
       <div className={classes.subHeadlineContainer}>
         <div className={`${isLocationHub && classes.locationSubHeadlineTextContainer}`}>
-     
-        <Typography className={classes.subHeadLineText}>
-          {subHeadline}
-        </Typography>
-        
-        
-          
-          </div>
-        
-          {isLocationHub && (
-            <>
-          <hr />
-          <div className={classes.climateMatchButtonContainer}>
-            <OpenClimateMatchButton hubUrl={hubUrl} text={texts.get_active_now_with_climatematch} />
-          </div>
+          <Typography className={classes.subHeadLineText}>{subHeadline}</Typography>
+        </div>
+
+        {isLocationHub && (
+          <>
+            <hr />
+            <div className={classes.climateMatchButtonContainer}>
+              <OpenClimateMatchButton
+                hubUrl={hubUrl}
+                text={texts.get_active_now_with_climatematch}
+              />
+            </div>
           </>
         )}
       </div>

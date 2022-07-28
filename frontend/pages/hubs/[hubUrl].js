@@ -228,7 +228,13 @@ export default function Hub({
       {hubDescription && hubDescription.headContent && (
         <Head>{parseHtml(hubDescription.headContent)}</Head>
       )}
-      <WideLayout title={headline} fixedHeader headerBackground="#FFF" image={getImageUrl(image)} isHubPage>
+      <WideLayout
+        title={headline}
+        fixedHeader
+        headerBackground="#FFF"
+        image={getImageUrl(image)}
+        isHubPage
+      >
         <div className={classes.contentUnderHeader}>
           <NavigationSubHeader hubName={name} allHubs={allHubs} isLocationHub={isLocationHub} />
           {<DonationCampaignInformation />}

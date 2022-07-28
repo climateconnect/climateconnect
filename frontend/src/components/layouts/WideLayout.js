@@ -58,7 +58,7 @@ export default function WideLayout({
   rootClassName,
   hideFooter,
   resetAlertMessage,
-  isHubPage
+  isHubPage,
 }) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);

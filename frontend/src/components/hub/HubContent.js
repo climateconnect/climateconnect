@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
   }),
   quickInfo: {
     fontSize: 17,
-    maxWidth: 800
+    maxWidth: 800,
   },
   marginTop: {
     marginTop: theme.spacing(4),
@@ -79,8 +79,8 @@ const useStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(8),
     },
   },
-  infoBoxContainer:(props) => ( {
-    marginTop: props.isLocationHub ? theme.spacing(6): theme.spacing (0),
+  infoBoxContainer: (props) => ({
+    marginTop: props.isLocationHub ? theme.spacing(6) : theme.spacing(0),
     marginLeft: theme.spacing(2),
     float: "right",
   }),

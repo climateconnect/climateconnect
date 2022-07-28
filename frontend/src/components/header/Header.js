@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => {
       return {
         zIndex: props.fixedHeader ? 20 : "auto",
         borderBottom:
-        props.transparentHeader || props.isStaticPage || props.isHubPage
+          props.transparentHeader || props.isStaticPage || props.isHubPage
             ? 0
             : `1px solid ${theme.palette.grey[300]}`,
         position: props.fixedHeader ? "fixed" : "auto",
@@ -290,16 +290,16 @@ export default function Header({
   fixedHeader,
   transparentHeader,
   background,
-  isHubPage
+  isHubPage,
 }) {
   const classes = useStyles({
     fixedHeader: fixedHeader,
     transparentHeader: transparentHeader,
     isStaticPage: isStaticPage,
     background: background,
-    isHubPage: isHubPage
+    isHubPage: isHubPage,
   });
- 
+
   const { user, signOut, notifications, pathName, locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = React.useState(false);
