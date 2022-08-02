@@ -90,6 +90,7 @@ export default function EditAccountRoot({
     }
     editedAccount.language = sourceLanguage;
     const parsedProfile = parseProfileForRequest(editedAccount, availabilityOptions, user);
+    console.log(parsedProfile);
     const payload = await getProfileWithoutRedundantOptions(user, parsedProfile);
     payload.translations = parseTranslationsForRequest(
       getTranslationsWithoutRedundantKeys(
@@ -137,7 +138,7 @@ export default function EditAccountRoot({
     setEditedProfile(editedAccount);
     setStep(STEPS[1]);
   };
-
+  console.log(editedProfile);
   return (
     <>
       {profile ? (
