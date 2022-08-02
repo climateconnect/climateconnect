@@ -761,7 +761,7 @@ export default function EditAccountPage({
             variant="contained"
             onClick={() => handleDialogClickOpen("confirmExitDialog")}
           >
-            Cancel
+            {texts.cancel}
           </Button>
           <Container className={classes.avatarWithInfo}>
             <div className={classes.avatarContainer}>
