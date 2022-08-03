@@ -4,7 +4,7 @@ import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import NextCookies from "next-cookies";
 import Router from "next/router";
-import React, { useContext } from "react";
+import React, { useRef, useContext } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getLocalePrefix, getRolesOptions } from "../../public/lib/apiOperations";
@@ -25,6 +25,8 @@ import UserContext from "./../../src/components/context/UserContext";
 import IconButton from "@material-ui/core/IconButton";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import ControlPointSharpIcon from "@material-ui/icons/ControlPointSharp";
+import HubsSubHeader from "../../src/components/indexPage/hubsSubHeader/HubsSubHeader";
+import { getAllHubs } from "../../public/lib/hubOperations.js";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -72,12 +74,13 @@ const useStyles = makeStyles((theme) => ({
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
-  const [organization, projects, members, organizationTypes, rolesOptions] = await Promise.all([
+  const [organization, projects, members, organizationTypes, rolesOptions, hubs] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
     getProjectsByOrganization(organizationUrl, auth_token, ctx.locale),
     getMembersByOrganization(organizationUrl, auth_token, ctx.locale),
     getOrganizationTypes(),
     getRolesOptions(auth_token, ctx.locale),
+    getAllHubs(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -86,6 +89,7 @@ export async function getServerSideProps(ctx) {
       members: members,
       organizationTypes: organizationTypes,
       rolesOptions: rolesOptions,
+      hubs: hubs,
     }),
   };
 }
@@ -96,15 +100,20 @@ export default function OrganizationPage({
   members,
   organizationTypes,
   rolesOptions,
+  hubs
 }) {
   const { user, locale } = useContext(UserContext);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
+  const hubsSubHeaderRef = useRef(null);
   return (
     <WideLayout
       title={organization ? organization.name : texts.not_found_error}
       description={organization.name + " | " + organization.info.short_description}
       image={getImageUrl(organization.image)}
+      subHeader={
+        <HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef}  onlyShowDropDown={true} />
+      }
     >
       {organization ? (
         <OrganizationLayout

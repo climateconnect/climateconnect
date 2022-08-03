@@ -26,6 +26,7 @@ import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import UserContext from "../context/UserContext";
 import EditSharpIcon from "@material-ui/icons/EditSharp";
 import IconButton from "@material-ui/core/IconButton";
+import ButtonIcon from "../project/Buttons/ButtonIcon";
 
 const useStyles = makeStyles((theme) => ({
   avatarContainer: {
@@ -155,6 +156,10 @@ const useStyles = makeStyles((theme) => ({
   miniOrgPreview: {
     display: "flex",
   },
+  followButton: {
+    marginTop: theme.spacing(1),
+    
+  }
 }));
 
 //Generic component to display personal profiles or organization profiles
@@ -370,6 +375,18 @@ export default function AccountPage({
               ))}
             </Container>
           )}
+          {isOrganization && (  
+          <Button 
+            className={classes.followButton}
+            variant="contained"
+            fullWidth
+            startIcon={
+            <ButtonIcon icon="follow" size={27} color= "white"  />
+            }  color="primary"
+            >
+              Follow
+           </Button> 
+           )}    
         </Container>
         <Container className={classes.accountInfo}>{displayAccountInfo(account.info)}</Container>
         {isOwnAccount && !isSmallScreen && (
