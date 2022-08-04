@@ -284,7 +284,7 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: "Do you really want to unfollow?",
       de: "Möchtest du diese Organisation wirklich nicht mehr folgen? ",
     },
-    are_you_sure_that_you_want_to_unfollow_this_project: {
+    are_you_sure_that_you_want_to_unfollow_this_organization: {
       en: (
         <>
           Are you sure that you want to unfollow this organization?
@@ -329,6 +329,11 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: "Following since",
       de: "Folgt seit",
     },
+    this_organzation_does_not_have_any_followers_yet: {
+      en: "This organization does not have any followers yet.",
+      de: "Diese Organization  hat noch keine Follower",
+    },
+
 
 
   };
