@@ -276,5 +276,60 @@ export default function getOrganizationTexts({ organization, locale }) {
       Ich habe gerade diese spannende Klimaschutzorganisation gefunden: "${organization?.name}". 
       Schau sie dir doch mal an: `,
     },
+    please_log_in_to_follow_an_organization: {
+      en: "Please log in to follow an organization.",
+      de: "Bitte logge dich ein, um einer Organisation zu folgen.",
+    },
+    do_you_really_want_to_unfollow: {
+      en: "Do you really want to unfollow?",
+      de: "Möchtest du diese Organisation wirklich nicht mehr folgen? ",
+    },
+    are_you_sure_that_you_want_to_unfollow_this_project: {
+      en: (
+        <>
+          Are you sure that you want to unfollow this organization?
+          <br />
+          You {"won't"} receive updates about it anymore
+        </>
+      ),
+      de: (
+        <>
+          Bist du sicher, dass du diese Organisation nicht folgen willst?
+          <br />
+          Du wirst keine Updates mehr davon erhalten
+        </>
+      ),
+    },
+    followers: {
+      en: "Followers",
+      de: "Follower",
+    },
+    follower: {
+      en: "Follower",
+      de: "Follower",
+    },
+    follow: {
+      en: "Follow",
+      de: "Folgen",
+    },
+    following: {
+      en: "Following",
+      de: "Du folgst",
+    },
+    to_see_this_organizations_followers: {
+      en: "to see this organization's followers",
+      de: ", um die Follower der Organisation zu sehen",
+    },
+     //Kontext: Followers of Organization
+     followers_of: {
+      en: "Followers of",
+      de: "Follower von",
+    },
+    following_since: {
+      en: "Following since",
+      de: "Folgt seit",
+    },
+
+
   };
 }
