@@ -2,7 +2,7 @@ import { AppBar, Container, Toolbar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 import ContactCreatorButton from "./ContactCreatorButton";
-import FollowButton from "./FollowButton";
+import FollowButton from "../../general/FollowButton";
 import LikeButton from "./LikeButton";
 
 const useStyles = makeStyles(() => ({

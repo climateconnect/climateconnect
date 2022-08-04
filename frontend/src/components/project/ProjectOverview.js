@@ -11,7 +11,7 @@ import { apiRequest } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 import { getParams } from "../../../public/lib/generalOperations";
 import ContactCreatorButton from "./Buttons/ContactCreatorButton";
-import FollowButton from "./Buttons/FollowButton";
+import FollowButton from "../general/FollowButton";
 import getTexts from "../../../public/texts/texts";
 import GoBackFromPageButton from "../general/GoBackFromPageButton"
 import LikeButton from "./Buttons/LikeButton";
