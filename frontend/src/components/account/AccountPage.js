@@ -33,6 +33,7 @@ import { useLongPress } from "use-long-press";
 import { getParams } from "../../../public/lib/generalOperations";
 import FollowButton from "../general/FollowButton";
 import { NOTIFICATION_TYPES } from "../communication/notifications/Notification";
+import { Send } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   avatarContainer: {
@@ -97,7 +98,8 @@ const useStyles = makeStyles((theme) => ({
   infoContainer: {
     [theme.breakpoints.up("sm")]: {
       display: "flex",
-      alignItems: "center",
+      alignItems: "top",
+      justifyContent: "end"
     },
     position: "relative",
   },
@@ -162,6 +164,19 @@ const useStyles = makeStyles((theme) => ({
   miniOrgPreview: {
     display: "flex",
   },
+  followInfo: {
+    marginTop: theme.spacing(0)
+  },
+  actionButtonContainer: {
+    display: "flex",
+    flexDirection: "column",
+    marginTop: theme.spacing(1.5),
+    flex: "1 0 auto",
+  },
+  spaceBetweenButtons: {
+    height: theme.spacing(1),
+    display: "inline-block",
+  },
 }));
 
 //Generic component to display personal profiles or organization profiles
@@ -184,6 +199,7 @@ export default function AccountPage({
   handleFollow,
   followingChangePending,
   isUserFollowing,
+  startChat,
 }) {
   const classes = useStyles({
     isOwnAccount: isOwnAccount,
@@ -232,7 +248,7 @@ export default function AccountPage({
   const handleToggleFollowOrganization = () => {
     if (!token)
       showFeedbackMessage({
-        message: <span>{followTexts.please_log_in_to_follow_an_organization}</span>, // new msg needed
+        message: <span>{followTexts.please_log_in_to_follow_an_organization}</span>,
         error: true,
         promptLogIn: true,
       });
@@ -431,6 +447,12 @@ export default function AccountPage({
               <EditSharpIcon />
             </IconButton>
           )}
+           {!isOwnAccount && isSmallScreen && (
+            <IconButton onClick={startChat} className={classes.editButton}>
+              <Send />
+            </IconButton>
+            
+          )}
           {isOrganization && (
             <SocialMediaShareButton
               containerClassName={classes.shareButtonContainer}
@@ -448,6 +470,7 @@ export default function AccountPage({
             />
           )}
         </div>
+       
       </div>
       <Container className={classes.infoContainer}>
         <Container className={classes.avatarWithInfo}>
@@ -486,6 +509,7 @@ export default function AccountPage({
           {isOrganization && (
             <>
               <FollowButton
+            
                 isUserFollowing={isUserFollowing}
                 handleToggleFollowProject={handleToggleFollowOrganization}
                 toggleShowFollowers={toggleShowFollowers}
@@ -496,7 +520,38 @@ export default function AccountPage({
                 followingChangePending={followingChangePending}
               ></FollowButton>
 
-              <FollowersDialog
+              <Typography className={classes.followInfo}>
+                Follow this organization to receive updates on projects!
+              </Typography>
+
+             
+            </>
+          )}
+        </Container>
+        
+        <Container className={classes.accountInfo}>{displayAccountInfo(account.info)}</Container>
+        <div className={classes.actionButtonContainer}>      
+        {isOwnAccount && !isSmallScreen && (
+          <>
+            <Button variant="contained" color="primary" href={editHref} >
+              <EditSharpIcon className={classes.innerIcon} />
+              {editText ? editText : texts.edit_profile}
+            </Button>
+            <div className={classes.spaceBetweenButtons}></div>
+           
+              </>
+          )}
+          {(!isOwnAccount && !isSmallScreen && user) && (
+            <Button variant="contained" color="primary" onClick={startChat}>
+                  <Send className={classes.innerIcon} />
+                  {texts.send_message}
+          </Button>)}
+              
+            
+          
+          </div> 
+      </Container>
+      <FollowersDialog
                 open={showFollowers}
                 loading={!initiallyCaughtFollowers}
                 followers={followers}
@@ -522,20 +577,8 @@ export default function AccountPage({
                 confirmText={followTexts.yes}
                 cancelText={followTexts.no}
               />
-            </>
-          )}
-        </Container>
-        <Container className={classes.accountInfo}>{displayAccountInfo(account.info)}</Container>
-        {isOwnAccount && !isSmallScreen && (
-          <div className={classes.editButtonWrapper}>
-            <Button variant="contained" color="primary" href={editHref}>
-              <EditSharpIcon className={classes.innerIcon} />
-              {editText ? editText : texts.edit_profile}
-            </Button>
-          </div>
-        )}
-      </Container>
       <Divider className={classes.marginTop} />
+     
       {detailledDescription?.value && (
         <Container>
           <DetailledDescription
@@ -546,9 +589,12 @@ export default function AccountPage({
         </Container>
       )}
       {children}
+    
     </Container>
+    
   );
 }
+
 
 const getFollowers = async (organization, token, locale) => {
   try {

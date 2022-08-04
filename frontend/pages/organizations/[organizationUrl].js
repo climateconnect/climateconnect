@@ -263,6 +263,8 @@ function OrganizationLayout({
       editText={texts.edit_organization}
       isTinyScreen={isTinyScreen}
       isSmallScreen={isSmallScreen}
+      startChat={handleConnectBtn}
+
     >
       {!user && (
         <LoginNudge
@@ -271,11 +273,6 @@ function OrganizationLayout({
         />
       )}
       <Container>
-        {user && !canEdit && (
-          <Button variant="contained" color="primary" onClick={handleConnectBtn}>
-            {texts.send_message}
-          </Button>
-        )}
         <div className={classes.sectionHeadlineWithButtonContainer}>
           <Typography color="primary" className={classes.headline} component="h2">
             {texts.this_organizations_projects}

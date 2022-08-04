@@ -138,17 +138,13 @@ export default function ProfileRoot({
       infoMetadata={infoMetadata}
       isTinyScreen={isTinyScreen}
       isSmallScreen={isSmallScreen}
+      startChat={handleConnectBtn}
     >
       {!user && (
         <LoginNudge
           className={classes.loginNudge}
           whatToDo={texts.to_see_this_users_full_information}
         />
-      )}
-      {user && user.url_slug !== profile.url_slug && (
-        <Button variant="contained" color="primary" onClick={handleConnectBtn}>
-          {texts.send_message}
-        </Button>
       )}
       <Container className={classes.container} ref={projectsRef}>
         <div className={classes.sectionHeadlineWithButtonContainer}>
