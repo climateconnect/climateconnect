@@ -214,10 +214,10 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     followers: {
       en: "Followers",
-      de: "Followers",
+      de: "Follower",
     },
     follower: {
-      en: "follower",
+      en: "Follower",
       de: "Follower",
     },
     follow: {
@@ -480,7 +480,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Projektname",
     },
     your_project_draft_is_missing_the_following_reqired_property: {
-      en: "Your project draft is missing the following reqired property:",
+      en: "Your project draft is missing the following required property:",
       de: "In deinem Projektentwurf fehlt folgende erforderliche Eigenschaft:",
     },
     you_have_successfully_edited_your_project: {
