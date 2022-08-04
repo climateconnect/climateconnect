@@ -10,10 +10,10 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PlaceIcon from "@material-ui/icons/Place";
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Linkify from "react-linkify";
 import Cookies from "universal-cookie";
-
+import FeedbackContext from "../context/FeedbackContext";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import DetailledDescription from "./DetailledDescription";
@@ -26,7 +26,13 @@ import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import UserContext from "../context/UserContext";
 import EditSharpIcon from "@material-ui/icons/EditSharp";
 import IconButton from "@material-ui/core/IconButton";
-import ButtonIcon from "../project/Buttons/ButtonIcon";
+import ConfirmDialog from "../dialogs/ConfirmDialog";
+import FollowersDialog from "../dialogs/FollowersDialog";
+import { apiRequest } from "../../../public/lib/apiOperations";
+import { useLongPress } from "use-long-press";
+import { getParams } from "../../../public/lib/generalOperations";
+import FollowButton from "../general/FollowButton";
+import { NOTIFICATION_TYPES } from "../communication/notifications/Notification";
 
 const useStyles = makeStyles((theme) => ({
   avatarContainer: {
@@ -156,10 +162,6 @@ const useStyles = makeStyles((theme) => ({
   miniOrgPreview: {
     display: "flex",
   },
-  followButton: {
-    marginTop: theme.spacing(1),
-    
-  }
 }));
 
 //Generic component to display personal profiles or organization profiles
@@ -178,11 +180,23 @@ export default function AccountPage({
   editText,
   isTinyScreen,
   isSmallScreen,
+  numberOfFollowers,
+  handleFollow,
+  followingChangePending,
+  isUserFollowing,
 }) {
-  const classes = useStyles({ isOwnAccount: isOwnAccount });
-  const { locale } = useContext(UserContext);
+  const classes = useStyles({
+    isOwnAccount: isOwnAccount,
+    followingChangePending: followingChangePending,
+  });
+  const { locale, user } = useContext(UserContext);
   const token = new Cookies().get("auth_token");
   const texts = getTexts({ page: "profile", locale: locale });
+  const followTexts = getTexts({
+    page: "organization",
+    locale: locale,
+  });
+
   const organizationTexts = isOrganization
     ? getTexts({ page: "organization", organization: account, locale: locale })
     : "Not an organization";
@@ -198,6 +212,101 @@ export default function AccountPage({
       {text}
     </Link>
   );
+  console.log(isUserFollowing);
+  console.log(followingChangePending);
+
+
+  // Lines 219 - 310 handle follow button for organizations
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState({
+    follow: false,
+  });
+
+  const onFollowDialogClose = (confirmed) => {
+    console.log("called");
+    if (confirmed) toggleFollowOrganization();
+    setConfirmDialogOpen({ ...confirmDialogOpen, follow: false });
+  };
+
+  const { showFeedbackMessage } = useContext(FeedbackContext);
+
+  const handleToggleFollowOrganization = () => {
+    if (!token)
+      showFeedbackMessage({
+        message: <span>{followTexts.please_log_in_to_follow_an_organization}</span>, // new msg needed
+        error: true,
+        promptLogIn: true,
+      });
+    else if (isUserFollowing) setConfirmDialogOpen({ ...confirmDialogOpen, follow: true });
+    else toggleFollowOrganization();
+  };
+  console.log(user);
+
+  const toggleFollowOrganization = () => {
+    handleFollow(isUserFollowing, false, true);
+    apiRequest({
+      method: "post",
+      url: "/api/organizations/" + account.url_slug + "/set_follow/",
+      payload: { following: !isUserFollowing },
+      token: token,
+      locale: locale,
+    })
+      .then(function (response) {
+        handleFollow(response.data.following, true, false);
+        updateFollowers();
+        showFeedbackMessage({
+          message: response.data.message,
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
+        if (error && error.reponse) console.log(error.response);
+      });
+  };
+
+  const handleReadNotifications = async (notificationType) => {
+    const notification_to_set_read = notifications.filter(
+      (n) =>
+        n.notification_type === notificationType &&
+        n.account.url_slug === account.url_slug
+    );
+    await setNotificationsRead(token, notification_to_set_read, locale);
+    await refreshNotifications();
+  };
+
+  const { notifications, setNotificationsRead, refreshNotifications } = useContext(UserContext);
+
+  const [initiallyCaughtFollowers, setInitiallyCaughtFollowers] = useState(false);
+  const [followers, setFollowers] = useState([]);
+  const [showFollowers, setShowFollowers] = useState(false);
+  const toggleShowFollowers = async () => {
+    setShowFollowers(!showFollowers);
+    if (!initiallyCaughtFollowers) {
+      await updateFollowers();
+       handleReadNotifications(NOTIFICATION_TYPES.indexOf("organization_follower")); // TODO add org follower 
+      setInitiallyCaughtFollowers(true);
+    }
+  };
+  const updateFollowers = async () => {
+    const retrievedFollowers = await getFollowers(account, token, locale);
+    setFollowers(retrievedFollowers);
+  };
+
+  console.log(followers);
+
+  const [gotParams, setGotParams] = useState(false);
+  useEffect(() => {
+    if (!gotParams) {
+      const params = getParams(window.location.href);
+      if (params.show_followers && !showFollowers) toggleShowFollowers();
+      if (params.show_likes && !showLikes) toggleShowLikes();
+      if (params.show_join_requests && !showRequesters) toggleShowRequests();
+      setGotParams(true);
+    }
+  });
+
+  const bindFollow = useLongPress(() => {
+    toggleShowFollowers();
+  });
 
   const displayAccountInfo = (info) =>
     Object.keys(info)
@@ -302,7 +411,6 @@ export default function AccountPage({
     src: account.image,
     className: classes.avatar,
   };
-
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <div
@@ -375,18 +483,47 @@ export default function AccountPage({
               ))}
             </Container>
           )}
-          {isOrganization && (  
-          <Button 
-            className={classes.followButton}
-            variant="contained"
-            fullWidth
-            startIcon={
-            <ButtonIcon icon="follow" size={27} color= "white"  />
-            }  color="primary"
-            >
-              Follow
-           </Button> 
-           )}    
+          {isOrganization && (
+            <>
+              <FollowButton
+                isUserFollowing={isUserFollowing}
+                handleToggleFollowProject={handleToggleFollowOrganization}
+                toggleShowFollowers={toggleShowFollowers}
+                bindFollow={bindFollow}
+                numberOfFollowers={numberOfFollowers}
+                texts={followTexts}
+                shouldBeFullWidth={true}
+                followingChangePending={followingChangePending}
+              ></FollowButton>
+
+              <FollowersDialog
+                open={showFollowers}
+                loading={!initiallyCaughtFollowers}
+                followers={followers}
+                object={account}
+                onClose={toggleShowFollowers}
+                user={user}
+                url={"organization/" + account.url_slug + "?show_followers=true"}
+                titleText={followTexts.followers_of}
+                pleaseLogInText={followTexts.please_log_in}
+                toSeeFollowerText={followTexts.to_see_this_organizations_followers}
+                logInText={followTexts.log_in}
+                noFollowersText={followTexts.this_organzation_does_not_have_any_followers_yet}
+                followingSinceText={followTexts.following_since}
+              ></FollowersDialog>
+
+              <ConfirmDialog
+                open={confirmDialogOpen.follow}
+                onClose={onFollowDialogClose}
+                title={followTexts.do_you_really_want_to_unfollow}
+                text={
+                  <span>{followTexts.are_you_sure_that_you_want_to_unfollow_this_organization}</span>
+                }
+                confirmText={followTexts.yes}
+                cancelText={followTexts.no}
+              />
+            </>
+          )}
         </Container>
         <Container className={classes.accountInfo}>{displayAccountInfo(account.info)}</Container>
         {isOwnAccount && !isSmallScreen && (
@@ -412,6 +549,21 @@ export default function AccountPage({
     </Container>
   );
 }
+
+const getFollowers = async (organization, token, locale) => {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/organizations/" + organization.url_slug + "/followers/",
+      token: token,
+      locale: locale,
+    });
+    return resp.data.results;
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+  }
+};
 
 const getFullInfoElement = (infoMetadata, key, value) => {
   return { ...infoMetadata[key], value: value };

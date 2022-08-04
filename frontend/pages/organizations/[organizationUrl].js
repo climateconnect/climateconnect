@@ -74,13 +74,22 @@ const useStyles = makeStyles((theme) => ({
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
-  const [organization, projects, members, organizationTypes, rolesOptions, hubs] = await Promise.all([
+  const [
+    organization,
+    projects,
+    members,
+    organizationTypes,
+    rolesOptions,
+    hubs,
+    following,
+  ] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
     getProjectsByOrganization(organizationUrl, auth_token, ctx.locale),
     getMembersByOrganization(organizationUrl, auth_token, ctx.locale),
     getOrganizationTypes(),
     getRolesOptions(auth_token, ctx.locale),
     getAllHubs(ctx.locale),
+    getIsUserFollowing(organizationUrl, auth_token, ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -90,6 +99,7 @@ export async function getServerSideProps(ctx) {
       organizationTypes: organizationTypes,
       rolesOptions: rolesOptions,
       hubs: hubs,
+      following: following,
     }),
   };
 }
@@ -100,23 +110,61 @@ export default function OrganizationPage({
   members,
   organizationTypes,
   rolesOptions,
-  hubs
+  hubs,
+  following,
 }) {
   const { user, locale } = useContext(UserContext);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   const hubsSubHeaderRef = useRef(null);
+  const [numberOfFollowers, setNumberOfFollowers] = React.useState(
+    organization.number_of_followers
+  );
+  const [isUserFollowing, setIsUserFollowing] = React.useState(following);
+  const [followingChangePending, setFollowingChangePending] = React.useState(false);
+
+  const handleWindowClose = (e) => {
+    if (followingChangePending) {
+      e.preventDefault();
+      return (e.returnValue = texts.changes_might_not_be_saved);
+    }
+  };
+
+  const handleFollow = (userFollows, updateCount, pending) => {
+    setIsUserFollowing(userFollows);
+    if (updateCount) {
+      if (userFollows) {
+        setNumberOfFollowers(numberOfFollowers + 1);
+      } else {
+        setNumberOfFollowers(numberOfFollowers - 1);
+      }
+    }
+    setFollowingChangePending(pending);
+  };
+
+  React.useEffect(() => {
+    window.addEventListener("beforeunload", handleWindowClose);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleWindowClose);
+    };
+  });
+
   return (
     <WideLayout
       title={organization ? organization.name : texts.not_found_error}
       description={organization.name + " | " + organization.info.short_description}
       image={getImageUrl(organization.image)}
       subHeader={
-        <HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef}  onlyShowDropDown={true} />
+        <HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef} onlyShowDropDown={true} />
       }
     >
       {organization ? (
         <OrganizationLayout
+          numberOfFollowers={numberOfFollowers}
+          handleFollow={handleFollow}
+          followingChangePending={followingChangePending}
+          isUserFollowing={isUserFollowing}
           organization={organization}
           projects={projects}
           members={members}
@@ -135,6 +183,10 @@ export default function OrganizationPage({
 }
 
 function OrganizationLayout({
+  numberOfFollowers,
+  handleFollow,
+  followingChangePending,
+  isUserFollowing,
   organization,
   projects,
   members,
@@ -197,6 +249,10 @@ function OrganizationLayout({
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   return (
     <AccountPage
+      numberOfFollowers={numberOfFollowers}
+      handleFollow={handleFollow}
+      followingChangePending={followingChangePending}
+      isUserFollowing={isUserFollowing}
       account={organization}
       default_background={DEFAULT_BACKGROUND_IMAGE}
       editHref={getLocalePrefix(locale) + "/editOrganization/" + organization.url_slug}
@@ -317,6 +373,23 @@ async function getProjectsByOrganization(organizationUrl, token, locale) {
     }
   } catch (err) {
     console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
+async function getIsUserFollowing(organizationUrl, token, locale) {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/organizations/" + organizationUrl + "/am_i_following/",
+      token: token,
+      locale: locale,
+    });
+    if (resp.data.length === 0) return null;
+    else {
+      return resp.data.is_following;
+    }
+  } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }

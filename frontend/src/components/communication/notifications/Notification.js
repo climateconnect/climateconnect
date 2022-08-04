@@ -66,6 +66,7 @@ const NOTIFICATION_TYPES = [
   "idea_comment",
   "reply_to_idea_comment",
   "person_joined_idea",
+  "organization_follower",
 ];
 
 //component for rendering the notifications that are shown when clicking on the bell on the right side of the header
