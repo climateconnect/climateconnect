@@ -20,12 +20,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function GoBackFromPageButton({
-  texts,
-  tinyScreen,
-  locale,
-  containerClassName,
-}) {
+export default function GoBackFromPageButton({ texts, tinyScreen, locale, containerClassName }) {
   const classes = useStyles();
 
   const router = useRouter();

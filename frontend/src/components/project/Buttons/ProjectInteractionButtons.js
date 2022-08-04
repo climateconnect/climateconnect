@@ -47,7 +47,7 @@ export default function ProjectInteractionButtons({
   numberOfLikes,
   bindLike,
   bindFollow,
-  user
+  user,
 }) {
   const classes = useStyles({
     visibleFooterHeight: visibleFooterHeight,
@@ -68,7 +68,7 @@ export default function ProjectInteractionButtons({
           <FollowButton
             isLoggedIn={user}
             isUserFollowing={isUserFollowing}
-            handleToggleFollowProject={handleToggleFollowProject}
+            handleToggleFollow={handleToggleFollowProject}
             project={project}
             hasAdminPermissions={hasAdminPermissions}
             toggleShowFollowers={toggleShowFollowers}

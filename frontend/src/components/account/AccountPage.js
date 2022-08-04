@@ -71,9 +71,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
     marginRight: props.isOwnAccount ? theme.spacing(0.5) : 0,
   }),
-  editButtonWrapper: {
-    flex: "1 0 auto",
-  },
+
   name: {
     fontWeight: "bold",
     padding: theme.spacing(1),
@@ -165,18 +163,20 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
   },
   followInfo: {
-    marginTop: theme.spacing(0)
+    marginTop: theme.spacing(0),
   },
-  actionButtonContainer: {
+  actionButtonContainer: (props) => ({
     display: "flex",
     flexDirection: "column",
-    marginTop: theme.spacing(1.5),
-    flex: "1 0 auto",
-  },
-  spaceBetweenButtons: {
-    height: theme.spacing(1),
-    display: "inline-block",
-  },
+    alignItems: "center",
+    marginTop: props.isOrganization? theme.spacing(3.5) : theme.spacing(1),
+  }),
+
+  actionButton: {
+    width: 225,
+  }
+
+  
 }));
 
 //Generic component to display personal profiles or organization profiles
@@ -204,6 +204,7 @@ export default function AccountPage({
   const classes = useStyles({
     isOwnAccount: isOwnAccount,
     followingChangePending: followingChangePending,
+    isOrganization: isOrganization
   });
   const { locale, user } = useContext(UserContext);
   const token = new Cookies().get("auth_token");
@@ -281,9 +282,7 @@ export default function AccountPage({
 
   const handleReadNotifications = async (notificationType) => {
     const notification_to_set_read = notifications.filter(
-      (n) =>
-        n.notification_type === notificationType &&
-        n.account.url_slug === account.url_slug
+      (n) => n.notification_type === notificationType && n.account.url_slug === account.url_slug
     );
     await setNotificationsRead(token, notification_to_set_read, locale);
     await refreshNotifications();
@@ -298,7 +297,7 @@ export default function AccountPage({
     setShowFollowers(!showFollowers);
     if (!initiallyCaughtFollowers) {
       await updateFollowers();
-       handleReadNotifications(NOTIFICATION_TYPES.indexOf("organization_follower")); // TODO add org follower 
+      handleReadNotifications(NOTIFICATION_TYPES.indexOf("organization_follower")); // TODO add org follower
       setInitiallyCaughtFollowers(true);
     }
   };
@@ -506,12 +505,12 @@ export default function AccountPage({
               ))}
             </Container>
           )}
+          <div className={classes.marginTop}></div>
           {isOrganization && (
             <>
               <FollowButton
-            
                 isUserFollowing={isUserFollowing}
-                handleToggleFollowProject={handleToggleFollowOrganization}
+                handleToggleFollow={handleToggleFollowOrganization}
                 toggleShowFollowers={toggleShowFollowers}
                 bindFollow={bindFollow}
                 numberOfFollowers={numberOfFollowers}
@@ -524,62 +523,64 @@ export default function AccountPage({
               <Typography className={classes.followInfo}>
                 Follow this organization to receive updates on projects!
               </Typography>
-
-             
             </>
           )}
-        </Container>
-        
-        <Container className={classes.accountInfo}>{displayAccountInfo(account.info)}</Container>
-        <div className={classes.actionButtonContainer}>      
-        {isOwnAccount && !isSmallScreen && (
-          <>
-            <Button variant="contained" color="primary" href={editHref} >
-              <EditSharpIcon className={classes.innerIcon} />
-              {editText ? editText : texts.edit_profile}
-            </Button>
-            <div className={classes.spaceBetweenButtons}></div>
-           
-              </>
-          )}
-          {(!isOwnAccount && !isSmallScreen && user) && (
-            <Button variant="contained" color="primary" onClick={startChat}>
-                  <Send className={classes.innerIcon} />
-                  {texts.send_message}
-          </Button>)}
+          <div className={classes.actionButtonContainer}>
+            {isOwnAccount && !isSmallScreen && (
               
+                <Button
+                  variant="contained"
+                  color="primary"
+                  href={editHref}
+                  className={classes.actionButton}
+                >
+                  <EditSharpIcon className={classes.innerIcon} />
+                  {editText ? editText : texts.edit_profile}
+                </Button>
+               
+              
+            )}
+            {!isOwnAccount && !isSmallScreen && user && (
+              <>
+              <Button variant="contained" color="primary" onClick={startChat} className={classes.actionButton}>
+                <Send className={classes.innerIcon} />
+                {texts.send_message}
+              </Button>
             
-          
-          </div> 
+              
+              </>
+            )}
+          </div>
+        </Container>
+
+        <Container className={classes.accountInfo}>{displayAccountInfo(account.info)}</Container>
       </Container>
       <FollowersDialog
-                open={showFollowers}
-                loading={!initiallyCaughtFollowers}
-                followers={followers}
-                object={account}
-                onClose={toggleShowFollowers}
-                user={user}
-                url={"organization/" + account.url_slug + "?show_followers=true"}
-                titleText={followTexts.followers_of}
-                pleaseLogInText={followTexts.please_log_in}
-                toSeeFollowerText={followTexts.to_see_this_organizations_followers}
-                logInText={followTexts.log_in}
-                noFollowersText={followTexts.this_organzation_does_not_have_any_followers_yet}
-                followingSinceText={followTexts.following_since}
-              ></FollowersDialog>
+        open={showFollowers}
+        loading={!initiallyCaughtFollowers}
+        followers={followers}
+        object={account}
+        onClose={toggleShowFollowers}
+        user={user}
+        url={"organization/" + account.url_slug + "?show_followers=true"}
+        titleText={followTexts.followers_of}
+        pleaseLogInText={followTexts.please_log_in}
+        toSeeFollowerText={followTexts.to_see_this_organizations_followers}
+        logInText={followTexts.log_in}
+        noFollowersText={followTexts.this_organzation_does_not_have_any_followers_yet}
+        followingSinceText={followTexts.following_since}
+      ></FollowersDialog>
 
-              <ConfirmDialog
-                open={confirmDialogOpen.follow}
-                onClose={onFollowDialogClose}
-                title={followTexts.do_you_really_want_to_unfollow}
-                text={
-                  <span>{followTexts.are_you_sure_that_you_want_to_unfollow_this_organization}</span>
-                }
-                confirmText={followTexts.yes}
-                cancelText={followTexts.no}
-              />
+      <ConfirmDialog
+        open={confirmDialogOpen.follow}
+        onClose={onFollowDialogClose}
+        title={followTexts.do_you_really_want_to_unfollow}
+        text={<span>{followTexts.are_you_sure_that_you_want_to_unfollow_this_organization}</span>}
+        confirmText={followTexts.yes}
+        cancelText={followTexts.no}
+      />
       <Divider className={classes.marginTop} />
-     
+
       {detailledDescription?.value && (
         <Container>
           <DetailledDescription
@@ -590,12 +591,9 @@ export default function AccountPage({
         </Container>
       )}
       {children}
-    
     </Container>
-    
   );
 }
-
 
 const getFollowers = async (organization, token, locale) => {
   try {

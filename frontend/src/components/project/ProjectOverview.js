@@ -191,8 +191,8 @@ export default function ProjectOverview({
           project={project}
           texts={texts}
           toggleShowFollowers={toggleShowFollowers}
-          user={user}        
-          />
+          user={user}
+        />
       ) : (
         <LargeScreenOverview
           apiEndpointShareButton={apiEndpointShareButton}
@@ -271,7 +271,7 @@ function SmallScreenOverview({
   texts,
   toggleShowFollowers,
   token,
-  user
+  user,
 }) {
   const classes = useStyles();
 
@@ -341,7 +341,7 @@ function SmallScreenOverview({
           <FollowButton
             isLoggedIn={user}
             isUserFollowing={isUserFollowing}
-            handleToggleFollowProject={handleToggleFollowProject}
+            handleToggleFollow={handleToggleFollowProject}
             project={project}
             hasAdminPermissions={hasAdminPermissions}
             toggleShowFollowers={toggleShowFollowers}
@@ -449,7 +449,7 @@ function LargeScreenOverview({
             <FollowButton
               isLoggedIn={user}
               followingChangePending={followingChangePending}
-              handleToggleFollowProject={handleToggleFollowProject}
+              handleToggleFollow={handleToggleFollowProject}
               hasAdminPermissions={hasAdminPermissions}
               isUserFollowing={isUserFollowing}
               numberOfFollowers={numberOfFollowers}

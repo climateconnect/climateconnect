@@ -57,8 +57,7 @@ export default function FollowersDialog({
   toSeeFollowerText,
   logInText,
   noFollowersText,
-  followingSinceText
-
+  followingSinceText,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -67,19 +66,13 @@ export default function FollowersDialog({
     onClose();
   };
   return (
-    <GenericDialog
-      onClose={handleClose}
-      open={open}
-      title={titleText + " " + object.name}
-    >
+    <GenericDialog onClose={handleClose} open={open} title={titleText + " " + object.name}>
       <div>
         {loading ? (
           <LinearProgress />
         ) : !user ? (
           <>
-            <Typography>
-              {pleaseLogInText + " " + toSeeFollowerText + "!"}
-            </Typography>
+            <Typography>{pleaseLogInText + " " + toSeeFollowerText + "!"}</Typography>
             <Container className={classes.loginButtonContainer}>
               <Button
                 className={classes.loginButton}
@@ -92,7 +85,11 @@ export default function FollowersDialog({
             </Container>
           </>
         ) : followers && followers.length > 0 ? (
-          <ProjectFollowers followers={followers} followingSinceText={followingSinceText} locale={locale} />
+          <ProjectFollowers
+            followers={followers}
+            followingSinceText={followingSinceText}
+            locale={locale}
+          />
         ) : (
           <Typography>{noFollowersText}</Typography>
         )}
