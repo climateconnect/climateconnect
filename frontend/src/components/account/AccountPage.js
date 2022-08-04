@@ -518,6 +518,7 @@ export default function AccountPage({
                 texts={followTexts}
                 shouldBeFullWidth={true}
                 followingChangePending={followingChangePending}
+                isLoggedIn={user}
               ></FollowButton>
 
               <Typography className={classes.followInfo}>

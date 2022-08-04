@@ -191,7 +191,8 @@ export default function ProjectOverview({
           project={project}
           texts={texts}
           toggleShowFollowers={toggleShowFollowers}
-        />
+          user={user}        
+          />
       ) : (
         <LargeScreenOverview
           apiEndpointShareButton={apiEndpointShareButton}
@@ -219,6 +220,7 @@ export default function ProjectOverview({
           toggleShowFollowers={toggleShowFollowers}
           toggleShowLikes={toggleShowLikes}
           token={token}
+          user={user}
         />
       )}
 
@@ -269,6 +271,7 @@ function SmallScreenOverview({
   texts,
   toggleShowFollowers,
   token,
+  user
 }) {
   const classes = useStyles();
 
@@ -336,6 +339,7 @@ function SmallScreenOverview({
         </div>
         <div className={classes.infoBottomBar}>
           <FollowButton
+            isLoggedIn={user}
             isUserFollowing={isUserFollowing}
             handleToggleFollowProject={handleToggleFollowProject}
             project={project}
@@ -381,6 +385,7 @@ function LargeScreenOverview({
   texts,
   toggleShowFollowers,
   toggleShowLikes,
+  user,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
 
@@ -442,6 +447,7 @@ function LargeScreenOverview({
               numberOfLikes={numberOfLikes}
             />
             <FollowButton
+              isLoggedIn={user}
               followingChangePending={followingChangePending}
               handleToggleFollowProject={handleToggleFollowProject}
               hasAdminPermissions={hasAdminPermissions}

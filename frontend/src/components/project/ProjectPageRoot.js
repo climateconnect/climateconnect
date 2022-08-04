@@ -523,6 +523,7 @@ export default function ProjectPageRoot({
       </Container>
       <Container className={classes.projectInteractionButtonContainer}>
         <ProjectInteractionButtons
+          user={user}
           screenSize={screenSize}
           project={project}
           projectAdmin={projectAdmin}

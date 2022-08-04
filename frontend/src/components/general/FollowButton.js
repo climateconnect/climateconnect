@@ -66,13 +66,15 @@ export default function FollowButton({
   screenSize,
   numberOfFollowers,
   bindFollow,
+  isLoggedIn
 }) {
   const classes = useStyles({
     hasAdminPermissions: hasAdminPermissions,
     followingChangePending: followingChangePending,
     belowSmallScreen: screenSize?.belowSmall,
+    
   });
-
+  
   if (screenSize?.belowSmall && !screenSize.belowTiny) {
     return (
       <Button
@@ -80,9 +82,9 @@ export default function FollowButton({
         onClick={handleToggleFollowProject}
         variant="contained"
         startIcon={
-          <ButtonIcon icon="follow" size={27} color={isUserFollowing ? "earth" : "white"} />
+          <ButtonIcon icon="follow" size={27} color={isUserFollowing  && isLoggedIn ? "earth" : "white"} />
         }
-        color={isUserFollowing ? "secondary" : "primary"}
+        color={isUserFollowing && isLoggedIn? "secondary" : "primary"}
         disabled={followingChangePending}
         className={classes.followingButton}
       >
@@ -92,7 +94,7 @@ export default function FollowButton({
             className={`${classes.fabProgress} ${!followingChangePending && classes.hidden}`}
           />
           <div className={classes.buttonText}>
-            {isUserFollowing ? texts.following : texts.follow}
+            {isUserFollowing  && isLoggedIn  ? texts.following : texts.follow}
             {!followingChangePending && numberOfFollowers > 0 ? " • " + numberOfFollowers : ""}
           </div>
         </div>
@@ -104,7 +106,7 @@ export default function FollowButton({
         {...bindFollow}
         onClick={handleToggleFollowProject}
         variant="contained"
-        color={isUserFollowing ? "secondary" : "primary"}
+        color={isUserFollowing  && isLoggedIn ? "secondary" : "primary"}
         disabled={followingChangePending}
         className={classes.followingButton}
       >
@@ -114,7 +116,7 @@ export default function FollowButton({
             className={`${classes.fabProgress} ${!followingChangePending && classes.hidden}`}
           />
           <div className={classes.buttonText}>
-            {isUserFollowing ? texts.following : texts.follow}
+            {isUserFollowing && isLoggedIn ? texts.following : texts.follow}
             {!followingChangePending && numberOfFollowers > 0 ? " • " + numberOfFollowers : ""}
           </div>
         </div>
@@ -127,9 +129,9 @@ export default function FollowButton({
           onClick={handleToggleFollowProject}
           variant="contained"
           startIcon={
-            <ButtonIcon icon="follow" size={27} color={isUserFollowing ? "earth" : "white"} />
+            <ButtonIcon icon="follow" size={27} color={isUserFollowing && isLoggedIn ? "earth" : "white"} />
           }
-          color={isUserFollowing ? "secondary" : "primary"}
+          color={(isUserFollowing && isLoggedIn) ? "secondary" : "primary"}
           disabled={followingChangePending}
           className={classes.followingButton}
         >
@@ -139,7 +141,7 @@ export default function FollowButton({
               className={`${classes.fabProgress} ${!followingChangePending && classes.hidden}`}
             />
             <div className={classes.buttonText}>
-              {isUserFollowing ? texts.following : texts.follow}
+              {isUserFollowing && isLoggedIn ? texts.following : texts.follow}
             </div>
           </div>
         </Button>
