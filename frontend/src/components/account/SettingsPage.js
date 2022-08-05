@@ -549,7 +549,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         <InfoOutlinedIcon />
         {texts.if_you_wish_to_delete_this_account}
         <div className={classes.spaceStrings}/>
-        <Link href="contact@climateconnect.earth">
+        <Link href="mailto:contact@climateconnect.earth">
           <a className={classes.primaryColor}>{emailLink}</a>
         </Link>
       </Typography>
