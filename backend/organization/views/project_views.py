@@ -1,3 +1,4 @@
+
 import logging
 import traceback
 from organization.serializers.project import ProjectRequesterSerializer
@@ -111,6 +112,7 @@ from rest_framework.generics import (
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.utils.translation import get_language
 
 from organization.utility.requests import MembershipRequestsManager
 from organization.utility import MembershipTarget
@@ -832,11 +834,13 @@ class ListProjectStatus(ListAPIView):
     def get_queryset(self):
         return ProjectStatus.objects.all()
 
-
+1
 class SetFollowView(APIView):
     permission_classes = [IsAuthenticated]
-
+  
     def post(self, request, url_slug):
+       
+        lang_code = get_language()
         if "following" not in request.data:
             return Response(
                 {"message": "Missing required parameters"},
@@ -857,9 +861,14 @@ class SetFollowView(APIView):
                     user=request.user, project=project
                 )
                 create_project_follower_notification(project_follower)
+                if (lang_code == "en"):
+                    message = "You are now following this project. You will be notified when they post an update!"
+                else:
+                    message = "Du folgst jetzt dieses Projekt. Dir wird mitgeteilt, wenn es Updates gibt!"
+                
                 return Response(
                     {
-                        "message": "You are now following this project. You will be notified when they post an update!",
+                        "message": message,
                         "following": True,
                     },
                     status=status.HTTP_200_OK,
@@ -875,9 +884,13 @@ class SetFollowView(APIView):
                     code=status.HTTP_404_NOT_FOUND,
                 )
             follower_object.delete()
+            if (lang_code == "en"):
+                    message = "You are not following this project anymore."
+            else:
+                    message = "Du folgst jetzt dieses Projekt nicht mehr."
             return Response(
                 {
-                    "message": "You are not following this project anymore.",
+                    "message": message,
                     "following": False,
                 },
                 status=status.HTTP_200_OK,

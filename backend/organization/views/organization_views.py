@@ -84,6 +84,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from django.utils.translation import get_language
+
 logger = logging.getLogger(__name__)
 
 
@@ -121,6 +123,7 @@ class SetFollowView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, url_slug):
+        lang_code = get_language()
         if "following" not in request.data:
             return Response(
                 {"message": "Missing required parameters"},
@@ -144,9 +147,13 @@ class SetFollowView(APIView):
                 )
                 
                 create_organization_follower_notification(organization_follower)
+                if (lang_code == "en"):
+                    message = "You are now following this organization. You will be notified when they post an update!"
+                else:
+                    message = "Du folgst jetzt diese Organisation. Dir wird mitgeteilt, wenn es Updates gibt!"
                 return Response(
                     {
-                        "message": "You are now following this organization. You will be notified when they post an update!",
+                        "message": message,
                         "following": True,
                     },
                     status=status.HTTP_200_OK,
@@ -162,9 +169,13 @@ class SetFollowView(APIView):
                     code=status.HTTP_404_NOT_FOUND,
                 )
             follower_object.delete()
+            if (lang_code == "en"):
+                    message = "You are not following this organization anymore."
+            else:
+                    message = "Du folgst jetzt diese Organisation nicht mehr."
             return Response(
                 {
-                    "message": "You are not following this organization anymore.",
+                    "message": message,
                     "following": False,
                 },
                 status=status.HTTP_200_OK,
