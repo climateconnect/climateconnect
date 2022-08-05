@@ -25,15 +25,7 @@ from climateconnect_api.utility.notification import (
 )
 
 from organization.utility.notification import (
-    create_comment_mention_notification,
     create_organization_follower_notification,
-    create_project_comment_notification,
-    create_project_comment_reply_notification,
-    create_project_follower_notification,
-    create_project_join_request_approval_notification,
-    create_project_join_request_notification,
-    create_project_like_notification,
-    get_mentions,
 )
 
 # Django imports
@@ -101,7 +93,6 @@ class ListOrganizationFollowersView(ListAPIView):
 
     def get_queryset(self):
         organization = Organization.objects.filter(url_slug=self.kwargs["url_slug"])
-        # print(organization)
         if not organization.exists():
             return None
         followers = OrganizationFollower.objects.filter(organization=organization[0])
@@ -151,7 +142,7 @@ class SetFollowView(APIView):
                 organization_follower = OrganizationFollower.objects.create(
                     user=request.user, organization=organization
                 )
-                # print(organization_follower)
+                
                 create_organization_follower_notification(organization_follower)
                 return Response(
                     {
@@ -775,7 +766,6 @@ class ListOrganizationProjectsAPIView(ListAPIView):
     search_fields = ["parent_organization__url_slug"]
     pagination_class = ProjectsPagination
     serializer_class = ProjectFromProjectParentsSerializer
-
     def get_queryset(self):
         return ProjectParents.objects.filter(
             parent_organization__url_slug=self.kwargs["url_slug"],

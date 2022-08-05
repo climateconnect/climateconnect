@@ -104,6 +104,9 @@ export default function Notification({ notification, isPlaceholder }) {
     return <ProjectLikeNotification notification={notification} />;
   } else if (type === "organization_follower") {
     return <OrganizationFollowerNotification notification={notification} />;
+  } else if (type ==="org_project_published") {
+    return <OrgProjectPublishedNotification notification={notification} />;
+  
   } else return <></>;
 }
 
@@ -278,6 +281,25 @@ const ProjectFollowerNotification = ({ notification }) => {
 };
 
 const OrganizationFollowerNotification = ({ notification }) => {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "notification", locale: locale });
+  const followerName =
+    notification.organization_follower.first_name +
+    " " +
+    notification.organization_follower.last_name;
+  return (
+    <GenericNotification
+      link={`/organizations/${notification.organization.url_slug}?show_followers=true`}
+      avatar={{
+        alt: followerName,
+        image: notification.organization_follower.thumbnail_image,
+      }}
+      primaryText={`${followerName} ${texts.now_follows_your_organization} "${notification.organization.name}"`}
+      secondaryText={texts.congratulations}
+    />
+  );
+};
+const OrgProjectPublishedNotification = ({ notification }) => {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", locale: locale });
   const followerName =

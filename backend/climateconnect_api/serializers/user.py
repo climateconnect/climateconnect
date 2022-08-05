@@ -277,6 +277,7 @@ class UserAccountSettingsSerializer(serializers.ModelSerializer):
             "email_on_comment_on_your_idea",
             "email_on_idea_join",
             "email_on_join_request",
+            "email_on_new_organization_follower"
         )
 
     def get_email(self, obj):

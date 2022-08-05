@@ -118,7 +118,7 @@ def create_project_follower_notification(project_follower):
 
 
 def create_organization_follower_notification(organization_follower):
-    print("called")
+    
     notification = Notification.objects.create(
         notification_type=16, organization_follower=organization_follower
     )
@@ -130,7 +130,7 @@ def create_organization_follower_notification(organization_follower):
         if not member["user"] == organization_follower.user.id:
             user = User.objects.filter(id=member["user"])[0]
             create_user_notification(user, notification)
-        # send_organization_follower_email(user, organization_follower, notification)
+            send_organization_follower_email(user, organization_follower, notification)
 
 
 def create_project_join_request_notification(

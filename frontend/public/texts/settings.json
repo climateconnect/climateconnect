@@ -84,7 +84,7 @@
     "de": "Ich möchte benachrichtigt werden, wenn jemand auf meinen Kommentar antwortet"
   },
   "email_on_new_project_follower_text": {
-    "en": "Get notified when somebody follows a project you're part of.",
+    "en": "Get notified when somebody follows a project you're part of",
     "de": "Ich möchte benachrichtigt werden, wenn jemand einem Projekt folgt, an dem ich beteiligt bin"
   },
   "email_on_new_project_like_text": {
@@ -92,7 +92,7 @@
     "de": "Ich möchte benachrichtigt werden, wenn jemand mein Projekt liked"
   },
   "email_on_mention_text": {
-    "en": "Get notified when somebody mentions you in comment.",
+    "en": "Get notified when somebody mentions you in comment",
     "de": "Ich möchte benachrichtigt werden, wenn mich jemand in einem Kommentar erwähnt"
   },
   "email_on_new_idea_join_text": {
@@ -194,5 +194,9 @@
   "confirm_new_password": {
     "en": "Confirm new password",
     "de": "Neues Passwort bestätigen"
+  },
+  "email_on_new_org_follower_text": {
+    "en": "Get notified when somebody follows an organization you're part of",
+    "de": "Ich möchte benachrichtigt werden, wenn jemand eine Organisation folgt, an dem ich beteiligt bin"
   }
 }
