@@ -97,7 +97,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("sm")]: {
       display: "flex",
       alignItems: "top",
-      justifyContent: "end"
+      justifyContent: "end",
     },
     position: "relative",
   },
@@ -169,14 +169,12 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    marginTop: props.isOrganization? theme.spacing(3.5) : theme.spacing(1),
+    marginTop: props.isOrganization ? theme.spacing(3.5) : theme.spacing(1),
   }),
 
   actionButton: {
     width: 225,
-  }
-
-  
+  },
 }));
 
 //Generic component to display personal profiles or organization profiles
@@ -204,7 +202,7 @@ export default function AccountPage({
   const classes = useStyles({
     isOwnAccount: isOwnAccount,
     followingChangePending: followingChangePending,
-    isOrganization: isOrganization
+    isOrganization: isOrganization,
   });
   const { locale, user } = useContext(UserContext);
   const token = new Cookies().get("auth_token");
@@ -231,7 +229,6 @@ export default function AccountPage({
   );
   console.log(isUserFollowing);
   console.log(followingChangePending);
-
 
   // Lines 219 - 310 handle follow button for organizations
   const [confirmDialogOpen, setConfirmDialogOpen] = useState({
@@ -281,9 +278,14 @@ export default function AccountPage({
   };
 
   const handleReadNotifications = async (notificationType) => {
+    console.log(account.url_slug);
+    console.log(notificationType);
+    console.log(notifications);
     const notification_to_set_read = notifications.filter(
-      (n) => n.notification_type === notificationType && n.account.url_slug === account.url_slug
+      (n) =>
+        n.notification_type === notificationType && n.organization.url_slug === account.url_slug
     );
+    console.log(notification_to_set_read);
     await setNotificationsRead(token, notification_to_set_read, locale);
     await refreshNotifications();
   };
@@ -297,7 +299,7 @@ export default function AccountPage({
     setShowFollowers(!showFollowers);
     if (!initiallyCaughtFollowers) {
       await updateFollowers();
-      handleReadNotifications(NOTIFICATION_TYPES.indexOf("organization_follower")); // TODO add org follower
+      handleReadNotifications(NOTIFICATION_TYPES.indexOf("organization_follower"));
       setInitiallyCaughtFollowers(true);
     }
   };
@@ -313,8 +315,6 @@ export default function AccountPage({
     if (!gotParams) {
       const params = getParams(window.location.href);
       if (params.show_followers && !showFollowers) toggleShowFollowers();
-      if (params.show_likes && !showLikes) toggleShowLikes();
-      if (params.show_join_requests && !showRequesters) toggleShowRequests();
       setGotParams(true);
     }
   });
@@ -446,11 +446,10 @@ export default function AccountPage({
               <EditSharpIcon />
             </IconButton>
           )}
-           {!isOwnAccount && isSmallScreen && (
+          {!isOwnAccount && isSmallScreen && (
             <IconButton onClick={startChat} className={classes.editButton}>
               <Send />
             </IconButton>
-            
           )}
           {isOrganization && (
             <SocialMediaShareButton
@@ -469,7 +468,6 @@ export default function AccountPage({
             />
           )}
         </div>
-       
       </div>
       <Container className={classes.infoContainer}>
         <Container className={classes.avatarWithInfo}>
@@ -505,7 +503,7 @@ export default function AccountPage({
               ))}
             </Container>
           )}
-          <div className={classes.marginTop}></div>
+          <div className={classes.marginTop}/>
           {isOrganization && (
             <>
               <FollowButton
@@ -518,7 +516,7 @@ export default function AccountPage({
                 shouldBeFullWidth={true}
                 followingChangePending={followingChangePending}
                 isLoggedIn={user}
-              ></FollowButton>
+              />
 
               <Typography className={classes.followInfo}>
                 Follow this organization to receive updates on projects!
@@ -527,27 +525,27 @@ export default function AccountPage({
           )}
           <div className={classes.actionButtonContainer}>
             {isOwnAccount && !isSmallScreen && (
-              
-                <Button
-                  variant="contained"
-                  color="primary"
-                  href={editHref}
-                  className={classes.actionButton}
-                >
-                  <EditSharpIcon className={classes.innerIcon} />
-                  {editText ? editText : texts.edit_profile}
-                </Button>
-               
-              
+              <Button
+                variant="contained"
+                color="primary"
+                href={editHref}
+                className={classes.actionButton}
+              >
+                <EditSharpIcon className={classes.innerIcon} />
+                {editText ? editText : texts.edit_profile}
+              </Button>
             )}
             {!isOwnAccount && !isSmallScreen && user && (
               <>
-              <Button variant="contained" color="primary" onClick={startChat} className={classes.actionButton}>
-                <Send className={classes.innerIcon} />
-                {texts.send_message}
-              </Button>
-            
-              
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={startChat}
+                  className={classes.actionButton}
+                >
+                  <Send className={classes.innerIcon} />
+                  {texts.send_message}
+                </Button>
               </>
             )}
           </div>
@@ -569,7 +567,7 @@ export default function AccountPage({
         logInText={followTexts.log_in}
         noFollowersText={followTexts.this_organzation_does_not_have_any_followers_yet}
         followingSinceText={followTexts.following_since}
-      ></FollowersDialog>
+      />
 
       <ConfirmDialog
         open={confirmDialogOpen.follow}

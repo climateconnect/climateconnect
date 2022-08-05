@@ -26,6 +26,7 @@ from climateconnect_api.utility.notification import (
 
 from organization.utility.notification import (
     create_comment_mention_notification,
+    create_organization_follower_notification,
     create_project_comment_notification,
     create_project_comment_reply_notification,
     create_project_follower_notification,
@@ -50,7 +51,7 @@ from organization.models import (
     OrganizationTagging,
     OrganizationTags,
     ProjectParents,
-    OrganizationFollower
+    OrganizationFollower,
 )
 from organization.models.tags import ProjectTags
 from organization.models.translations import OrganizationTranslation
@@ -68,7 +69,7 @@ from organization.serializers.organization import (
     OrganizationSerializer,
     OrganizationSitemapEntrySerializer,
     UserOrganizationSerializer,
-    OrganizationFollowerSerializer
+    OrganizationFollowerSerializer,
 )
 from organization.serializers.project import ProjectFromProjectParentsSerializer
 from organization.serializers.tags import OrganizationTagsSerializer
@@ -97,14 +98,13 @@ logger = logging.getLogger(__name__)
 class ListOrganizationFollowersView(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = OrganizationFollowerSerializer
-    print("called?")
+
     def get_queryset(self):
         organization = Organization.objects.filter(url_slug=self.kwargs["url_slug"])
-        print(organization)
+        # print(organization)
         if not organization.exists():
             return None
         followers = OrganizationFollower.objects.filter(organization=organization[0])
-        print(followers)
         return followers
 
 
@@ -116,13 +116,15 @@ class IsUserFollowing(APIView):
             organization = Organization.objects.get(url_slug=url_slug)
         except Organization.DoesNotExist:
             raise NotFound(
-                detail="Organization not found:" + url_slug, code=status.HTTP_404_NOT_FOUND
+                detail="Organization not found:" + url_slug,
+                code=status.HTTP_404_NOT_FOUND,
             )
 
         is_following = OrganizationFollower.objects.filter(
             user=request.user, organization=organization
         ).exists()
         return Response({"is_following": is_following}, status=status.HTTP_200_OK)
+
 
 class SetFollowView(APIView):
     permission_classes = [IsAuthenticated]
@@ -136,7 +138,9 @@ class SetFollowView(APIView):
         try:
             organization = Organization.objects.get(url_slug=url_slug)
         except Organization.DoesNotExist:
-            raise NotFound(detail="Organization not found.", code=status.HTTP_404_NOT_FOUND)
+            raise NotFound(
+                detail="Organization not found.", code=status.HTTP_404_NOT_FOUND
+            )
 
         if request.data["following"] == True:
             if OrganizationFollower.objects.filter(
@@ -145,9 +149,10 @@ class SetFollowView(APIView):
                 raise ValidationErr("You're already following this organization.")
             else:
                 organization_follower = OrganizationFollower.objects.create(
-                    user=request.user,  organization=organization
+                    user=request.user, organization=organization
                 )
-                create_project_follower_notification(organization_follower)
+                # print(organization_follower)
+                create_organization_follower_notification(organization_follower)
                 return Response(
                     {
                         "message": "You are now following this organization. You will be notified when they post an update!",
@@ -178,6 +183,7 @@ class SetFollowView(APIView):
                 {"message": 'Invalid value for variable "following"'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
 
 class ListOrganizationsAPIView(ListAPIView):
     permission_classes = [AllowAny]

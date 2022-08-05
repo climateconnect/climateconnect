@@ -54,5 +54,9 @@ export default function getNotificationTexts({ idea, project }) {
       en: `The project "${project?.name}" has accepted your request to join!`,
       de: `Das Project "${project?.name}" hat dich in's Team aufgenommen!`,
     },
+    now_follows_your_organization: {
+      en: "now follows your organization",
+      de: "folgt jetzt deiner Organisation",
+    },
   };
 }

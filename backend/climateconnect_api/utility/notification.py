@@ -36,6 +36,7 @@ async def send_out_live_notification(user_id):
 def create_user_notification(user, notification):
     # TODO: root cause why this filtering is failing
     # on the creation of Project Approval notifications
+    print("called")
     old_notification_object = None
     try:
         old_notification_object = UserNotification.objects.filter(

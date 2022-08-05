@@ -13,7 +13,7 @@ import { getParams } from "../../../public/lib/generalOperations";
 import ContactCreatorButton from "./Buttons/ContactCreatorButton";
 import FollowButton from "../general/FollowButton";
 import getTexts from "../../../public/texts/texts";
-import GoBackFromPageButton from "../general/GoBackFromPageButton"
+import GoBackFromPageButton from "../general/GoBackFromPageButton";
 import LikeButton from "./Buttons/LikeButton";
 import MessageContent from "../communication/MessageContent";
 import FollowersDialog from "../dialogs/FollowersDialog";

@@ -127,6 +127,7 @@ export default function ProjectPageRoot({
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
   const { notifications, setNotificationsRead, refreshNotifications } = useContext(UserContext);
+
   const user_permission =
     user && project.team && project.team.find((m) => m.id === user.id)
       ? project.team.find((m) => m.id === user.id).permission
@@ -354,6 +355,7 @@ export default function ProjectPageRoot({
     const notification_to_set_read = notifications.filter(
       (n) => n.notification_type === notificationType && n.project.url_slug === project.url_slug
     );
+    console.log(notification_to_set_read);
     await setNotificationsRead(token, notification_to_set_read, locale);
     await refreshNotifications();
   };

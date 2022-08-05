@@ -320,8 +320,8 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: "to see this organization's followers",
       de: ", um die Follower der Organisation zu sehen",
     },
-     //Kontext: Followers of Organization
-     followers_of: {
+    //Kontext: Followers of Organization
+    followers_of: {
       en: "Followers of",
       de: "Follower von",
     },
@@ -333,8 +333,5 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: "This organization does not have any followers yet.",
       de: "Diese Organization  hat noch keine Follower",
     },
-
-
-
   };
 }

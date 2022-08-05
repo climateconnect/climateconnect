@@ -211,6 +211,41 @@ def send_project_follower_email(user, project_follower, notification):
     )
 
 
+def send_organization_follower_email(user, organization_follower, notification):
+    lang_code = get_user_lang_code(user)
+    follower_name = (
+        organization_follower.user.first_name
+        + " "
+        + organization_follower.user.last_name
+    )
+    subjects_by_language = {
+        "en": "{} now follows your project on Climate Connect".format(follower_name),
+        "de": "{} folgt jetzt deinem Projekt auf Climate Connect".format(follower_name),
+    }
+
+    base_url = settings.FRONTEND_URL
+    url_ending = (
+        "/organizations/"
+        + organization_follower.organization.url_slug
+        + "?show_followers=true"
+    )
+
+    variables = {
+        "FollowerName": follower_name,
+        "FirstName": user.first_name,
+        "OrganizationName": organization_follower.organization.name,
+        "url": base_url + get_user_lang_url(lang_code) + url_ending,
+    }
+    send_email(
+        user=user,
+        variables=variables,
+        template_key="ORGANIZATION_FOLLOWER_TEMPLATE_ID",
+        subjects_by_language=subjects_by_language,
+        should_send_email_setting="email_on_new_organization_follower",
+        notification=notification,
+    )
+
+
 def send_project_like_email(user, project_like, notification):
     lang_code = get_user_lang_code(user)
     liking_user_name = project_like.user.first_name + " " + project_like.user.last_name

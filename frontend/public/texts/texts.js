@@ -68,7 +68,10 @@ export default function getTexts({
     }),
     landing_page: getLandingPageTexts({ classes: classes, isNarrowScreen: isNarrowScreen }),
     navigation: navigation_texts,
-    notification: getNotificationTexts({ idea: idea, project: project }),
+    notification: getNotificationTexts({
+      idea: idea,
+      project: project,
+    }),
     organization: getOrganizationTexts({ organization: organization, locale: locale }),
     profile: getProfileTexts({ profile: profile, locale: locale }),
     project: getProjectTexts({

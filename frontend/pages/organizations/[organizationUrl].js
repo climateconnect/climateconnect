@@ -264,7 +264,6 @@ function OrganizationLayout({
       isTinyScreen={isTinyScreen}
       isSmallScreen={isSmallScreen}
       startChat={handleConnectBtn}
-
     >
       {!user && (
         <LoginNudge

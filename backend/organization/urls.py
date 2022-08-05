@@ -75,8 +75,6 @@ urlpatterns = [
         organization_views.ListOrganizationFollowersView.as_view(),
         name="list-followers-view",
     ),
-
-
     # Project URLs
     path("projects/", project_views.ListProjectsView.as_view(), name="list-projects"),
     path(
