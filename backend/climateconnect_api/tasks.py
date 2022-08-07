@@ -16,11 +16,6 @@ logger = logging.getLogger(__name__)
 
 
 @app.task
-def test_task(a: int, b: int):
-    print(a+b)
-
-
-@app.task
 def schedule_automated_reminder_for_user_notifications():
     # Get all user_ids for people who have not checked their notification
     all_user_ids = list(
