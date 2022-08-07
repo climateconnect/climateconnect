@@ -15,13 +15,8 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-    "test_task": {
-        "task": "climateconnect_api.tasks.test_task",
-        "schedule": crontab(minute="*/1"),
-        "args": (6, 5)
+    "schedule_automated_email_reminder_for_notifications": {
+        "task": "climateconnect_api.tasks.schedule_automated_reminder_for_user_notifications",
+        "schedule": crontab(minute=0, hour=0),
     }
-    # "schedule_automated_email_reminder_for_notifications": {
-    #     "task": "climateconnect_api.tasks.schedule_automated_reminder_for_user_notifications",
-    #     "schedule": crontab(minute=0, hour=0),
-    # }
 }
