@@ -11,4 +11,4 @@ cd backend
 pip install -r requirements.txt
 
 #start server
-gunicorn --bind=0.0.0.0 climateconnect_main.asgi:application -w 4 -k uvicorn.workers.UvicornWorker
+NEW_RELIC_CONFIG_FILE=newrelic.ini newrelic-admin run-program gunicorn --bind=0.0.0.0 climateconnect_main.asgi:application -w 4 -k uvicorn.workers.UvicornWorker
