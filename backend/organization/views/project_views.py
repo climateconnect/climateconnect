@@ -1,6 +1,8 @@
 
 import logging
+from re import T
 import traceback
+from organization.utility.follow import check_if_user_follows, get_list_of_followers, set_user_following
 from climateconnect_api.models.notification import Notification
 from organization.utility.email import send_organization_follower_email
 from organization.serializers.project import ProjectRequesterSerializer
@@ -88,7 +90,6 @@ from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.tags import ProjectTagsSerializer
 from organization.utility.notification import (
     create_comment_mention_notification,
-    create_organization_follower_notification,
     create_organization_project_published_notification,
     create_project_comment_notification,
     create_project_comment_reply_notification,
@@ -854,71 +855,19 @@ class ListProjectStatus(ListAPIView):
 1
 class SetFollowView(APIView):
     permission_classes = [IsAuthenticated]
-  
+
     def post(self, request, url_slug):
+        # probably a better way -> .mo / po files todo
+        messages = [
+        "Project not found.",
+        "You're already following this project.",
+        "You are now following this project. You will be notified when they post an update!",
+        "Du folgst jetzt dieses Projekt. Dir wird mitgeteilt, wenn es Updates gibt!",
+        "You weren't following this project.",
+        "You are not following this project anymore.",
+        "Du folgst jetzt dieses Projekt nicht mehr."] 
+        return set_user_following(request.data, request.user, Project, url_slug, ProjectFollower, "project", messages)
        
-        lang_code = get_language()
-        if "following" not in request.data:
-            return Response(
-                {"message": "Missing required parameters"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        try:
-            project = Project.objects.get(url_slug=url_slug)
-        except Project.DoesNotExist:
-            raise NotFound(detail="Project not found.", code=status.HTTP_404_NOT_FOUND)
-
-        if request.data["following"] == True:
-            if ProjectFollower.objects.filter(
-                user=request.user, project=project
-            ).exists():
-                raise ValidationError("You're already following this project.")
-            else:
-                project_follower = ProjectFollower.objects.create(
-                    user=request.user, project=project
-                )
-                create_project_follower_notification(project_follower)
-                if (lang_code == "en"):
-                    message = "You are now following this project. You will be notified when they post an update!"
-                else:
-                    message = "Du folgst jetzt dieses Projekt. Dir wird mitgeteilt, wenn es Updates gibt!"
-                
-                return Response(
-                    {
-                        "message": message,
-                        "following": True,
-                    },
-                    status=status.HTTP_200_OK,
-                )
-        if request.data["following"] == False:
-            try:
-                follower_object = ProjectFollower.objects.get(
-                    user=request.user, project=project
-                )
-            except ProjectFollower.DoesNotExist:
-                raise NotFound(
-                    detail="You weren't following this project.",
-                    code=status.HTTP_404_NOT_FOUND,
-                )
-            follower_object.delete()
-            if (lang_code == "en"):
-                    message = "You are not following this project anymore."
-            else:
-                    message = "Du folgst jetzt dieses Projekt nicht mehr."
-            return Response(
-                {
-                    "message": message,
-                    "following": False,
-                },
-                status=status.HTTP_200_OK,
-            )
-        else:
-            return Response(
-                {"message": 'Invalid value for variable "following"'},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-
 class SetLikeView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -971,17 +920,9 @@ class IsUserFollowing(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, url_slug):
-        try:
-            project = Project.objects.get(url_slug=url_slug)
-        except Project.DoesNotExist:
-            raise NotFound(
-                detail="Project not found:" + url_slug, code=status.HTTP_404_NOT_FOUND
-            )
+        return check_if_user_follows(request.user, url_slug, Project, ProjectFollower, "project", "Project not found")
 
-        is_following = ProjectFollower.objects.filter(
-            user=request.user, project=project
-        ).exists()
-        return Response({"is_following": is_following}, status=status.HTTP_200_OK)
+
 
 
 class IsUserLiking(APIView):
@@ -1104,11 +1045,7 @@ class ListProjectFollowersView(ListAPIView):
     serializer_class = ProjectFollowerSerializer
 
     def get_queryset(self):
-        project = Project.objects.filter(url_slug=self.kwargs["url_slug"])
-        if not project.exists():
-            return None
-        followers = ProjectFollower.objects.filter(project=project[0])
-        return followers
+       return get_list_of_followers(Project, ProjectFollower, "project", self)
 
 
 class ListProjectRequestersView(ListAPIView):

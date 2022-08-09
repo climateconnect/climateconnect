@@ -1,5 +1,6 @@
 import logging
 from xml.dom import ValidationErr
+from organization.utility.follow import check_if_user_follows, get_list_of_followers, set_user_following
 from organization.models import organization
 
 # Backend app imports
@@ -70,7 +71,6 @@ from organization.utility.organization import (
     is_valid_organization_size,
 )
 from rest_framework import status
-from rest_framework.exceptions import NotFound
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import (
     ListAPIView,
@@ -83,6 +83,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.exceptions import NotFound, ValidationError
 
 from django.utils.translation import get_language
 
@@ -94,98 +95,29 @@ class ListOrganizationFollowersView(ListAPIView):
     serializer_class = OrganizationFollowerSerializer
 
     def get_queryset(self):
-        organization = Organization.objects.filter(url_slug=self.kwargs["url_slug"])
-        if not organization.exists():
-            return None
-        followers = OrganizationFollower.objects.filter(organization=organization[0])
-        return followers
-
-
+        return get_list_of_followers(Organization, OrganizationFollower,  "organization", self)
+       
 class IsUserFollowing(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, url_slug):
-        try:
-            organization = Organization.objects.get(url_slug=url_slug)
-        except Organization.DoesNotExist:
-            raise NotFound(
-                detail="Organization not found:" + url_slug,
-                code=status.HTTP_404_NOT_FOUND,
-            )
-
-        is_following = OrganizationFollower.objects.filter(
-            user=request.user, organization=organization
-        ).exists()
-        return Response({"is_following": is_following}, status=status.HTTP_200_OK)
-
+        return check_if_user_follows(request.user, url_slug, Organization, OrganizationFollower, "organization", "Organization not found")
 
 class SetFollowView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, url_slug):
-        lang_code = get_language()
-        if "following" not in request.data:
-            return Response(
-                {"message": "Missing required parameters"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        try:
-            organization = Organization.objects.get(url_slug=url_slug)
-        except Organization.DoesNotExist:
-            raise NotFound(
-                detail="Organization not found.", code=status.HTTP_404_NOT_FOUND
-            )
-
-        if request.data["following"] == True:
-            if OrganizationFollower.objects.filter(
-                user=request.user, organization=organization
-            ).exists():
-                raise ValidationErr("You're already following this organization.")
-            else:
-                organization_follower = OrganizationFollower.objects.create(
-                    user=request.user, organization=organization
-                )
-                
-                create_organization_follower_notification(organization_follower)
-                if (lang_code == "en"):
-                    message = "You are now following this organization. You will be notified when they post an update!"
-                else:
-                    message = "Du folgst jetzt diese Organisation. Dir wird mitgeteilt, wenn es Updates gibt!"
-                return Response(
-                    {
-                        "message": message,
-                        "following": True,
-                    },
-                    status=status.HTTP_200_OK,
-                )
-        if request.data["following"] == False:
-            try:
-                follower_object = OrganizationFollower.objects.get(
-                    user=request.user, organization=organization
-                )
-            except OrganizationFollower.DoesNotExist:
-                raise NotFound(
-                    detail="You weren't following this organization.",
-                    code=status.HTTP_404_NOT_FOUND,
-                )
-            follower_object.delete()
-            if (lang_code == "en"):
-                    message = "You are not following this organization anymore."
-            else:
-                    message = "Du folgst jetzt diese Organisation nicht mehr."
-            return Response(
-                {
-                    "message": message,
-                    "following": False,
-                },
-                status=status.HTTP_200_OK,
-            )
-        else:
-            return Response(
-                {"message": 'Invalid value for variable "following"'},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
+        # probably a better way -> .mo / po files todo
+        messages =[
+            "Organization not found.",
+            "You're already following this organization.",
+            "You are now following this organization. You will be notified when they post an update!",
+            "Du folgst jetzt diese Organisation. Dir wird mitgeteilt, wenn es Updates gibt!",
+            "You weren't following this organization.",
+            "You are not following this organization anymore.",
+            "Du folgst jetzt diese Organisation nicht mehr.",
+        ]
+        return set_user_following(request.data, request.user, Organization, url_slug, OrganizationFollower, "organization", messages)
 
 class ListOrganizationsAPIView(ListAPIView):
     permission_classes = [AllowAny]

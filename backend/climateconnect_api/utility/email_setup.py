@@ -40,8 +40,8 @@ def send_email(
     should_send_email_setting,
     notification,
 ):
-    if not check_send_email_notification(user):
-       return
+ #   if not check_send_email_notification(user):
+  #     return
    
     if should_send_email_setting:
         try:

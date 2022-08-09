@@ -179,7 +179,6 @@ def send_idea_comment_reply_email(user, idea, comment, sender, notification):
         notification=notification,
     )
 
-
 def send_project_follower_email(user, project_follower, notification):
     lang_code = get_user_lang_code(user)
     follower_name = (
@@ -273,6 +272,7 @@ def send_org_project_published_email(user, org_project_published, notification):
         "url": base_url + get_user_lang_url(lang_code) + url_ending,
         "ProjectName": org_project_published.project.name
     }
+    
     send_email(
         user=user,
         variables=variables,

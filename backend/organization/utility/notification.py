@@ -2,7 +2,8 @@ import re
 from datetime import datetime, timedelta
 
 from asgiref.sync import async_to_sync
-from organization.models.org_project_pub import OrgProjectPublished
+
+from organization.models.organization_project_published import OrgProjectPublished
 from organization.models.organization import Organization
 from organization.models.members import MembershipRequests, OrganizationMember
 from channels.layers import get_channel_layer
@@ -10,9 +11,8 @@ from organization.utility.email import (
     send_join_project_request_email,
     send_mention_email,
     send_org_project_published_email,
-    send_organization_follower_email,
-    send_project_follower_email,
     send_project_like_email,
+   
 )
 from climateconnect_api.models import UserProfile
 from climateconnect_api.models.notification import (
@@ -25,6 +25,8 @@ from climateconnect_api.utility.notification import (
     create_user_notification,
     send_comment_notification,
     send_out_live_notification,
+    create_follower_notification
+    
 )
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -104,54 +106,22 @@ def create_comment_mention_notification(entity_type, entity, comment, sender):
             )
     return notification
 
-
-
-
 def create_project_follower_notification(project_follower):
-    notification = Notification.objects.create(
-        notification_type=4, project_follower=project_follower
-    )
-    project_team = ProjectMember.objects.filter(
-        project=project_follower.project
-    ).values("user")
-    for member in project_team:
-        if not member["user"] == project_follower.user.id:
-            user = User.objects.filter(id=member["user"])[0]
-            create_user_notification(user, notification)
-            send_project_follower_email(user, project_follower, notification)
-
-
+    create_follower_notification(4, "project_follower", "project", ProjectMember, project_follower, project_follower.project, project_follower.user.id)
+    
 def create_organization_follower_notification(organization_follower):
-    notification = Notification.objects.create(
-        notification_type=16, organization_follower=organization_follower
-    )
-    organization_team = OrganizationMember.objects.filter(
-        organization=organization_follower.organization
-    ).values("user")
-    for member in organization_team:
-        if not member["user"] == organization_follower.user.id:
-            user = User.objects.filter(id=member["user"])[0]
-            create_user_notification(user, notification)
-            send_organization_follower_email(user, organization_follower, notification)
+    create_follower_notification(16, "organization_follower", "organization", OrganizationMember, organization_follower, organization_follower.organization, organization_follower.user.id)
 
 def create_organization_project_published_notification(followers, organization, project):
 
-    
-    for follower in followers:
-        
+    for follower in followers: 
         org_project_published = OrgProjectPublished.objects.create(
             organization=organization,
             project=project,
             user=follower.user
         )
-        print(org_project_published, "pub")
-        print(org_project_published.user, "user")
-        print(org_project_published.organization, "org")
-        print(org_project_published.project, "proj")
-        
         notification = Notification.objects.create(
         notification_type=17, org_project_published=org_project_published)
-        print(notification)
         create_user_notification(org_project_published.user, notification)
         send_org_project_published_email(org_project_published.user, org_project_published, notification)
 

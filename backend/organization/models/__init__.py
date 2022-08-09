@@ -17,7 +17,7 @@ from organization.models.members import (
     MembershipRequests,
 )
 
-from organization.models.org_project_pub import OrgProjectPublished
+from organization.models.organization_project_published import OrgProjectPublished
 
 from organization.models.status import ProjectStatus
 

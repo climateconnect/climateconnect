@@ -9,7 +9,7 @@ from ideas.models.comment import IdeaComment
 from ideas.models.support import IdeaSupporter
 from organization.models.content import Post, PostComment, ProjectComment
 from organization.models.followers import ProjectFollower, OrganizationFollower
-from organization.models.org_project_pub import OrgProjectPublished
+from organization.models.organization_project_published import OrgProjectPublished
 
 from organization.models.likes import ProjectLike
 
