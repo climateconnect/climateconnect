@@ -214,9 +214,6 @@ def send_project_follower_email(user, project_follower, notification):
 def send_organization_follower_email(user, organization_follower, notification):
     lang_code = get_user_lang_code(user)
 
-    print(subjects_by_language)
-    print(lang_code)
-
     follower_name = (
         organization_follower.user.first_name
         + " "
@@ -226,10 +223,6 @@ def send_organization_follower_email(user, organization_follower, notification):
         "en": "{} now follows your Organization on Climate Connect".format(follower_name),
         "de": "{} folgt jetzt deine Organisation auf Climate Connect".format(follower_name),
     }
-
-    template_key = "PROJECT_FOLLOWER_TEMPLATE_ID"
-    if lang_code == "de":
-        template_key = "PROJECT_FOLLOWER_TEMPLATE_ID_DE"
 
     base_url = settings.FRONTEND_URL
     url_ending = (
@@ -247,9 +240,45 @@ def send_organization_follower_email(user, organization_follower, notification):
     send_email(
         user=user,
         variables=variables,
-        template_key=template_key,
+        template_key="ORGANIZATION_FOLLOWER_TEMPLATE_ID",
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_new_organization_follower",
+        notification=notification,
+    )
+
+def send_org_project_published_email(user, org_project_published, notification):
+    lang_code = get_user_lang_code(user)
+  
+    followerName = (
+        user.first_name
+        + " "
+        + user.last_name
+    )
+    subjects_by_language = {
+        "en": "Hey {}! A new project exists for this organization on Climate Connect!".format(followerName),
+        "de": "Hallo {}! Es gibt ein neues Projekt für diese Organisation auf Climate Connect!1".format(followerName),
+    }
+
+    base_url = settings.FRONTEND_URL
+    url_ending = (
+        "/projects/"
+        + org_project_published.project.url_slug
+        
+    )
+
+    variables = {
+        "FollowerName": followerName,
+        "FirstName": user.first_name,
+        "OrganizationName": org_project_published.organization.name,
+        "url": base_url + get_user_lang_url(lang_code) + url_ending,
+        "ProjectName": org_project_published.project.name
+    }
+    send_email(
+        user=user,
+        variables=variables,
+        template_key="ORG_PUBLISHED_NEW_PROJECT_TEMPLATE_ID",
+        subjects_by_language=subjects_by_language,
+        should_send_email_setting="email_on_new_project_from_followed_org",
         notification=notification,
     )
 

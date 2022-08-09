@@ -21,7 +21,7 @@ msgstr ""
 #: climateconnect_api/views/settings_views.py:81
 #: climateconnect_api/views/user_views.py:326
 msgid "Required parameters are missing."
-msgstr ""
+msgstr "Benötigte Parameter fehlen."
 
 #: climateconnect_api/views/settings_views.py:90
 #: climateconnect_api/views/user_views.py:336
@@ -37,25 +37,25 @@ msgstr ""
 
 #: climateconnect_api/views/settings_views.py:101
 msgid "No pending E-Mail change. This link may already have been used."
-msgstr ""
+msgstr "Keine aktive E-Mail Änderungsanfrage. Vielleicht wurde dieser Link schon benutzt."
 
 #: climateconnect_api/views/settings_views.py:103
 msgid "Your E-Mail address is now "
-msgstr ""
+msgstr "Deine E-Mail Adresse ist jetzt "
 
 #: climateconnect_api/views/user_views.py:344
 msgid ""
 "Account already verified. Please contact us if you are having trouble "
 "signing in."
-msgstr ""
+msgstr "Account bereits verifiziert. Bitte kontaktiere uns unter contact@climateconnect.earth, wenn du Probleme beim einloggen hast."
 
 #: climateconnect_api/views/user_views.py:349
 msgid "Your profile is successfully verified"
-msgstr ""
+msgstr "Dein Profil ist jetzt verifiziert."
 
 #: climateconnect_api/views/user_views.py:351
 msgid "Permission Denied"
-msgstr ""
+msgstr "Keine Zugangsberechtigung"
 
 #~ msgid "Bad request"
 #~ msgstr "Fehlerhafte Anfrage"

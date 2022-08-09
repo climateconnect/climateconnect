@@ -40,8 +40,9 @@ def send_email(
     should_send_email_setting,
     notification,
 ):
-    #if not check_send_email_notification(user):
-    #   return
+    if not check_send_email_notification(user):
+       return
+   
     if should_send_email_setting:
         try:
             user_profile = UserProfile.objects.get(user=user)
@@ -72,8 +73,8 @@ def send_email(
                 "Variables": variables,
                 "Subject": subject,
                 "TemplateErrorReporting": {
-                    "Email": "christoph.stoll@climateconnect.earth",
-                    "Name": "Christoph Stoll",
+                    "Email": "b.stevey@yahoo.de",
+                    "Name": "bob steve",
                 },
             }
         ]

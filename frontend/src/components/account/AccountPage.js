@@ -283,7 +283,7 @@ export default function AccountPage({
     console.log(notifications);
     const notification_to_set_read = notifications.filter(
       (n) =>
-        n.notification_type === notificationType && n.organization.url_slug === account.url_slug
+        (n.notification_type === notificationType && n.organization.url_slug === account.url_slug)
     );
     console.log(notification_to_set_read);
     await setNotificationsRead(token, notification_to_set_read, locale);

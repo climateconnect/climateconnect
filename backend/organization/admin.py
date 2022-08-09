@@ -25,6 +25,7 @@ from organization.models import (
     CommentTranslation,
     ProjectLike,
     OrganizationFollower,
+    OrgProjectPublished
 )
 
 
@@ -48,6 +49,7 @@ pass_through_models = (
     ProjectLike,
     MembershipRequests,
     OrganizationFollower,
+    OrgProjectPublished
 )
 
 for model in pass_through_models:

@@ -1,6 +1,8 @@
 
 import logging
 import traceback
+from climateconnect_api.models.notification import Notification
+from organization.utility.email import send_organization_follower_email
 from organization.serializers.project import ProjectRequesterSerializer
 
 from climateconnect_api.models import (
@@ -49,6 +51,7 @@ from organization.models import (
     ProjectTagging,
     ProjectTags,
     ProjectLike,
+    OrganizationFollower
 )
 
 from organization.models.members import MembershipRequests
@@ -85,6 +88,8 @@ from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.tags import ProjectTagsSerializer
 from organization.utility.notification import (
     create_comment_mention_notification,
+    create_organization_follower_notification,
+    create_organization_project_published_notification,
     create_project_comment_notification,
     create_project_comment_reply_notification,
     create_project_follower_notification,
@@ -276,6 +281,10 @@ class CreateProjectView(APIView):
             organization = check_organization(int(request.data["parent_organization"]))
         else:
             organization = None
+    
+      
+            
+      
         required_params = [
             "name",
             "status",
@@ -443,6 +452,14 @@ class CreateProjectView(APIView):
                     role_in_project=member["role_in_project"],
                 )
                 logger.info("Project member created for user {}".format(user.id))
+          # handle new project from org creation
+        if organization is not None:
+            followers_of_org = OrganizationFollower.objects.filter(organization__name=organization.name)
+            print(followers_of_org, "followers")
+          
+            
+            create_organization_project_published_notification(followers_of_org, organization, project)
+                #send_organization_follower_email(request.user, follower, notification)
 
         return Response(
             {

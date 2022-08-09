@@ -355,7 +355,6 @@ export default function ProjectPageRoot({
     const notification_to_set_read = notifications.filter(
       (n) => n.notification_type === notificationType && n.project.url_slug === project.url_slug
     );
-    console.log(notification_to_set_read);
     await setNotificationsRead(token, notification_to_set_read, locale);
     await refreshNotifications();
   };

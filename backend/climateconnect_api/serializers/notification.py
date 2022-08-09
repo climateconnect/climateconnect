@@ -1,3 +1,5 @@
+from organization.serializers.project import ProjectSerializer
+from organization.models.organization import Organization
 from organization.utility.email import linkify_mentions
 from ideas.serializers.comment import IdeaCommentSerializer
 from rest_framework import serializers
@@ -27,6 +29,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     membership_requester = serializers.SerializerMethodField()
     organization_follower = serializers.SerializerMethodField()
     organization = serializers.SerializerMethodField()
+    org_project_published = serializers.SerializerMethodField()
 
     class Meta:
         model = Notification
@@ -50,6 +53,7 @@ class NotificationSerializer(serializers.ModelSerializer):
             "membership_requester",
             "organization_follower",
             "organization",
+            "org_project_published"
         )
 
     def get_last_message(self, obj):
@@ -114,11 +118,30 @@ class NotificationSerializer(serializers.ModelSerializer):
             }
 
     def get_organization(self, obj):
+    
+        if obj.org_project_published:
+            print("here? 1")
+            print(obj.org_project_published, "Pub")
+            print(obj.org_project_published.organization, "pub org")
+            print(obj.org_project_published.organization.name, "pub orgname ")
+            print(obj.org_project_published.project, "pub proj")
+            print(obj.org_project_published.project.name, "pub proj name")
+            print(obj.org_project_published.project.thumbnail_image, "proj img")
+        
+            return {
+               "org_name": obj.org_project_published.organization.name,
+               "url_slug": obj.org_project_published.project.url_slug,
+               "proj": ProjectSerializer(obj.org_project_published.project).data,
+        }
         if obj.organization_follower:
+            print("here? 2")
             return {
                 "name": obj.organization_follower.organization.name,
                 "url_slug": obj.organization_follower.organization.url_slug,
+                #"thumbnail_image": obj.organization_follower.organization.thumbnail_image,
+             
             }
+        
 
     def get_project_follower(self, obj):
         if obj.project_follower:
@@ -133,6 +156,16 @@ class NotificationSerializer(serializers.ModelSerializer):
             )
             serializer = UserProfileStubSerializer(follower_user[0])
             return serializer.data
+
+    def get_org_project_published(self, obj):
+         
+          if obj.org_project_published:
+            follower_user = UserProfile.objects.filter(
+                user=obj.org_project_published.user
+            )
+            serializer = UserProfileStubSerializer(follower_user[0])
+            return serializer.data
+    
 
     def get_project_like(self, obj):
         if obj.project_like:

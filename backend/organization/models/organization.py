@@ -1,8 +1,9 @@
 from location.models import Location
 from django.db import models
 
-from climateconnect_api.models.language import Language
 
+#
+from climateconnect_api.models.language import Language
 
 def organization_image_path(instance, filename):
     return "organization_images/{}/profile/{}".format(instance.id, filename)
@@ -10,6 +11,8 @@ def organization_image_path(instance, filename):
 
 def organization_background_image_path(instance, filename):
     return "organization_images/{}/background/{}".format(instance.id, filename)
+
+
 
 
 class Organization(models.Model):
@@ -212,3 +215,5 @@ class Organization(models.Model):
 
     def __str__(self):
         return "%s (%d)" % (self.name, self.pk)
+
+

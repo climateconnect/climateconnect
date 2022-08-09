@@ -67,6 +67,7 @@ const NOTIFICATION_TYPES = [
   "reply_to_idea_comment",
   "person_joined_idea",
   "organization_follower",
+  "org_project_published"
 ];
 
 //component for rendering the notifications that are shown when clicking on the bell on the right side of the header
@@ -103,9 +104,11 @@ export default function Notification({ notification, isPlaceholder }) {
   } else if (type === "project_like") {
     return <ProjectLikeNotification notification={notification} />;
   } else if (type === "organization_follower") {
+    console.log("called org follow", type)
     return <OrganizationFollowerNotification notification={notification} />;
   } else if (type ==="org_project_published") {
-    return <OrgProjectPublishedNotification notification={notification} />;
+    console.log("called org pbu", type)
+    return <OrgProjectSharedNotification notification={notification} />;
   
   } else return <></>;
 }
@@ -299,22 +302,25 @@ const OrganizationFollowerNotification = ({ notification }) => {
     />
   );
 };
-const OrgProjectPublishedNotification = ({ notification }) => {
+const OrgProjectSharedNotification = ({ notification }) => {
+
+  // I want org profile picture, org name, link to the project
+  // therefore, I also need the project to be accessible here
+
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", locale: locale });
   const followerName =
-    notification.organization_follower.first_name +
-    " " +
-    notification.organization_follower.last_name;
+   "bob"
+  console.log(notification)
   return (
     <GenericNotification
-      link={`/organizations/${notification.organization.url_slug}?show_followers=true`}
+     link={`/projects/${notification.organization.proj.url_slug}`}
       avatar={{
-        alt: followerName,
-        image: notification.organization_follower.thumbnail_image,
+       alt: followerName,
+       image: notification.organization.proj.image,
       }}
-      primaryText={`${followerName} ${texts.now_follows_your_organization} "${notification.organization.name}"`}
-      secondaryText={texts.congratulations}
+      primaryText= {`${notification.organization.org_name} just shared their project "${notification.organization.proj.name}"`}
+      secondaryText="Go check it out"
     />
   );
 };

@@ -247,6 +247,14 @@ class UserProfile(models.Model):
         default=True,
     )
 
+    email_on_new_project_from_followed_org = models.BooleanField(
+        help_text="Check if user wants to receive emails when an org they follow publishes a project",
+        verbose_name="Email on new organization project published",
+        null=True,
+        blank=True,
+        default=True,
+    )
+
     has_logged_in = models.PositiveSmallIntegerField(
         help_text="Check if the user should be redirected to the edit profile page. Shows the number of logins up to 2",
         verbose_name="Number of logins up to 2",

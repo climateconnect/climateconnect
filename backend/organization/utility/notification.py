@@ -2,12 +2,14 @@ import re
 from datetime import datetime, timedelta
 
 from asgiref.sync import async_to_sync
+from organization.models.org_project_pub import OrgProjectPublished
 from organization.models.organization import Organization
 from organization.models.members import MembershipRequests, OrganizationMember
 from channels.layers import get_channel_layer
 from organization.utility.email import (
     send_join_project_request_email,
     send_mention_email,
+    send_org_project_published_email,
     send_organization_follower_email,
     send_project_follower_email,
     send_project_like_email,
@@ -103,6 +105,8 @@ def create_comment_mention_notification(entity_type, entity, comment, sender):
     return notification
 
 
+
+
 def create_project_follower_notification(project_follower):
     notification = Notification.objects.create(
         notification_type=4, project_follower=project_follower
@@ -118,19 +122,42 @@ def create_project_follower_notification(project_follower):
 
 
 def create_organization_follower_notification(organization_follower):
-    
     notification = Notification.objects.create(
         notification_type=16, organization_follower=organization_follower
     )
     organization_team = OrganizationMember.objects.filter(
         organization=organization_follower.organization
     ).values("user")
-    print(organization_team, "hi")
     for member in organization_team:
         if not member["user"] == organization_follower.user.id:
             user = User.objects.filter(id=member["user"])[0]
             create_user_notification(user, notification)
             send_organization_follower_email(user, organization_follower, notification)
+
+def create_organization_project_published_notification(followers, organization, project):
+
+    
+    for follower in followers:
+        
+        org_project_published = OrgProjectPublished.objects.create(
+            organization=organization,
+            project=project,
+            user=follower.user
+        )
+        print(org_project_published, "pub")
+        print(org_project_published.user, "user")
+        print(org_project_published.organization, "org")
+        print(org_project_published.project, "proj")
+        
+        notification = Notification.objects.create(
+        notification_type=17, org_project_published=org_project_published)
+        print(notification)
+        create_user_notification(org_project_published.user, notification)
+        send_org_project_published_email(org_project_published.user, org_project_published, notification)
+
+    
+   
+
 
 
 def create_project_join_request_notification(

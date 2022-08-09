@@ -32,11 +32,11 @@ channel_layer = get_channel_layer()
 async def send_out_live_notification(user_id):
     await channel_layer.group_send("user-" + str(user_id), {"type": "notification"})
 
-
 def create_user_notification(user, notification):
     # TODO: root cause why this filtering is failing
     # on the creation of Project Approval notifications
     print("called")
+    print(user, notification)
     old_notification_object = None
     try:
         old_notification_object = UserNotification.objects.filter(

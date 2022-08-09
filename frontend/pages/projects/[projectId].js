@@ -13,6 +13,7 @@ import HubsSubHeader from "../../src/components/indexPage/hubsSubHeader/HubsSubH
 import { getAllHubs } from "../../public/lib/hubOperations.js";
 import { useMediaQuery } from "@material-ui/core";
 import { getImageUrl } from "../../public/lib/imageOperations";
+import { NOTIFICATION_TYPES } from "../../src/components/communication/notifications/Notification";
 
 const parseComments = (comments) => {
   return comments
@@ -42,6 +43,7 @@ export async function getServerSideProps(ctx) {
     auth_token ? getIsUserFollowing(projectUrl, auth_token, ctx.locale) : false,
     auth_token ? getIsUserLiking(projectUrl, auth_token, ctx.locale) : false,
     getAllHubs(ctx.locale),
+    
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -76,7 +78,28 @@ export default function ProjectPage({
   const [numberOfFollowers, setNumberOfFollowers] = React.useState(project.number_of_followers);
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
+  const { notifications, setNotificationsRead, refreshNotifications } = useContext(UserContext);
+  console.log(notifications, "");
+ 
 
+  const handleReadNotifications = async (notificationType) => {
+   
+    console.log(notificationType);
+    console.log(notifications);
+    const notification_to_set_read = notifications.filter(
+      (n) =>
+        (n.notification_type === notificationType && n.organization.proj.url_slug === project.url_slug) 
+    );
+    console.log(notification_to_set_read);
+    await setNotificationsRead(token, notification_to_set_read, locale);
+    await refreshNotifications();
+  };
+
+  useEffect( async () => {
+    console.log("called");
+    await handleReadNotifications(NOTIFICATION_TYPES.indexOf("org_project_published"));
+  },[notifications.length!==0]) // wastes time if there are notifs that arent for project shared?
+  
   const handleFollow = (userFollows, updateCount, pending) => {
     setIsUserFollowing(userFollows);
     if (updateCount) {
@@ -99,6 +122,7 @@ export default function ProjectPage({
         setNumberOfLikes(numberOfLikes - 1);
       }
     }
+   
     setLikingChangePending(pending);
   };
 
@@ -216,6 +240,7 @@ async function getIsUserLiking(projectUrl, token, locale) {
     return null;
   }
 }
+
 
 async function getPostsByProject(projectUrl, token, locale) {
   try {
