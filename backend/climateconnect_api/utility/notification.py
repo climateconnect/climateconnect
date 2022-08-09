@@ -21,8 +21,10 @@ from organization.serializers.content import ProjectCommentSerializer
 from organization.utility.email import (
     send_idea_comment_email,
     send_idea_comment_reply_email,
+    send_organization_follower_email,
     send_project_comment_email,
     send_project_comment_reply_email,
+    send_project_follower_email,
 )
 
 channel_layer = get_channel_layer()
@@ -33,9 +35,42 @@ async def send_out_live_notification(user_id):
     await channel_layer.group_send("user-" + str(user_id), {"type": "notification"})
 
 
+def create_follower_notification(
+    notif_type_number,
+    follower_type_field_name,
+    obj_field_name,
+    member_model,
+    follower_type,
+    follower_type_obj,
+    follower_type_user_id,
+):
+    print("called create follower noti")
+    notif_query = {follower_type_field_name: follower_type}
+    notification = Notification.objects.create(
+        notification_type=notif_type_number, **notif_query
+    )
+    # obj_field_name means project/organization
+    team_query = {obj_field_name: follower_type_obj}
+
+    team = member_model.objects.filter(**team_query).values("user")
+    for member in team:
+        if not member["user"] == follower_type_user_id:
+            user = User.objects.filter(id=member["user"])[0]
+            create_user_notification(user, notification)
+            create_follower_email(user, obj_field_name, follower_type, notification)
+
+
+def create_follower_email(user, obj_field_name, follower_type, notification):
+    if obj_field_name == "organization":
+        send_organization_follower_email(user, follower_type, notification)
+    elif obj_field_name == "project":
+        send_project_follower_email(user, follower_type, notification)
+
+
 def create_user_notification(user, notification):
     # TODO: root cause why this filtering is failing
     # on the creation of Project Approval notifications
+
     old_notification_object = None
     try:
         old_notification_object = UserNotification.objects.filter(

@@ -67,6 +67,8 @@ class UserAccountSettingsView(APIView):
             "email_on_mention",
             "email_on_idea_join",
             "email_on_join_request",
+            "email_on_new_organization_follower",
+            "email_on_new_project_from_followed_org",
         ]
 
         if "send_newsletter" in request.data:

@@ -1,4 +1,11 @@
 import logging
+from xml.dom import ValidationErr
+from organization.utility.follow import (
+    check_if_user_follows,
+    get_list_of_followers,
+    set_user_following,
+)
+from organization.models import organization
 
 # Backend app imports
 from climateconnect_api.models import Role, UserProfile, ContentShares
@@ -13,6 +20,18 @@ from climateconnect_api.utility.translation import (
 from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.utility.common import create_unique_slug
+
+
+from climateconnect_api.utility.notification import (
+    create_email_notification,
+    create_user_notification,
+    send_comment_notification,
+    send_out_live_notification,
+)
+
+from organization.utility.notification import (
+    create_organization_follower_notification,
+)
 
 # Django imports
 from django.contrib.auth.models import User
@@ -29,6 +48,7 @@ from organization.models import (
     OrganizationTagging,
     OrganizationTags,
     ProjectParents,
+    OrganizationFollower,
 )
 from organization.models.tags import ProjectTags
 from organization.models.translations import OrganizationTranslation
@@ -46,6 +66,7 @@ from organization.serializers.organization import (
     OrganizationSerializer,
     OrganizationSitemapEntrySerializer,
     UserOrganizationSerializer,
+    OrganizationFollowerSerializer,
 )
 from organization.serializers.project import ProjectFromProjectParentsSerializer
 from organization.serializers.tags import OrganizationTagsSerializer
@@ -54,7 +75,6 @@ from organization.utility.organization import (
     is_valid_organization_size,
 )
 from rest_framework import status
-from rest_framework.exceptions import NotFound
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import (
     ListAPIView,
@@ -67,8 +87,60 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.exceptions import NotFound, ValidationError
+
+from django.utils.translation import get_language
 
 logger = logging.getLogger(__name__)
+
+
+class ListOrganizationFollowersView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = OrganizationFollowerSerializer
+
+    def get_queryset(self):
+        return get_list_of_followers(
+            Organization, OrganizationFollower, "organization", self
+        )
+
+
+class IsUserFollowing(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, url_slug):
+        return check_if_user_follows(
+            request.user,
+            url_slug,
+            Organization,
+            OrganizationFollower,
+            "organization",
+            "Organization not found",
+        )
+
+
+class SetFollowView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, url_slug):
+        # probably a better way -> .mo / po files todo
+        messages = [
+            "Organization not found.",
+            "You're already following this organization.",
+            "You are now following this organization. You will be notified when they post an update!",
+            "Du folgst jetzt diese Organisation. Dir wird mitgeteilt, wenn es Updates gibt!",
+            "You weren't following this organization.",
+            "You are not following this organization anymore.",
+            "Du folgst jetzt diese Organisation nicht mehr.",
+        ]
+        return set_user_following(
+            request.data,
+            request.user,
+            Organization,
+            url_slug,
+            OrganizationFollower,
+            "organization",
+            messages,
+        )
 
 
 class ListOrganizationsAPIView(ListAPIView):

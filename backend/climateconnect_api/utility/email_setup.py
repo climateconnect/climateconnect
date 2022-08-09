@@ -19,7 +19,9 @@ mailjet_api = Client(auth=(settings.MJ_APIKEY_PUBLIC, settings.MJ_APIKEY_PRIVATE
 
 def get_template_id(template_key, lang_code):
     if not lang_code == "en":
-        return getattr(settings, template_key + "_" + lang_code.upper())
+        return getattr(
+            settings, template_key + "_" + lang_code.upper()
+        )  # not sure this works
     else:
         return getattr(settings, template_key)
 
@@ -42,6 +44,7 @@ def send_email(
 ):
     if not check_send_email_notification(user):
         return
+
     if should_send_email_setting:
         try:
             user_profile = UserProfile.objects.get(user=user)
@@ -72,8 +75,8 @@ def send_email(
                 "Variables": variables,
                 "Subject": subject,
                 "TemplateErrorReporting": {
-                    "Email": "christoph.stoll@climateconnect.earth",
-                    "Name": "Christoph Stoll",
+                    "Email": "b.stevey@yahoo.de",
+                    "Name": "bob steve",
                 },
             }
         ]

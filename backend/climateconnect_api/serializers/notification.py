@@ -1,3 +1,5 @@
+from climateconnect_api.utility.follower import get_following_user
+from organization.serializers.project import ProjectSerializer
 from organization.utility.email import linkify_mentions
 from ideas.serializers.comment import IdeaCommentSerializer
 from rest_framework import serializers
@@ -25,6 +27,9 @@ class NotificationSerializer(serializers.ModelSerializer):
     idea_supporter = serializers.SerializerMethodField()
     idea_supporter_chat = serializers.SerializerMethodField()
     membership_requester = serializers.SerializerMethodField()
+    organization_follower = serializers.SerializerMethodField()
+    organization = serializers.SerializerMethodField()
+    org_project_published = serializers.SerializerMethodField()
 
     class Meta:
         model = Notification
@@ -46,6 +51,9 @@ class NotificationSerializer(serializers.ModelSerializer):
             "idea_supporter",
             "idea_supporter_chat",
             "membership_requester",
+            "organization_follower",
+            "organization",
+            "org_project_published",
         )
 
     def get_last_message(self, obj):
@@ -109,11 +117,33 @@ class NotificationSerializer(serializers.ModelSerializer):
                 "url_slug": obj.membership_request.target_project.url_slug,
             }
 
+    def get_organization(self, obj):
+
+        if obj.org_project_published:
+
+            return {
+                "org_name": obj.org_project_published.organization.name,
+                "url_slug": obj.org_project_published.project.url_slug,
+                "proj": ProjectSerializer(obj.org_project_published.project).data,
+            }
+        if obj.organization_follower:
+
+            return {
+                "name": obj.organization_follower.organization.name,
+                "url_slug": obj.organization_follower.organization.url_slug,
+            }
+
     def get_project_follower(self, obj):
         if obj.project_follower:
-            follower_user = UserProfile.objects.filter(user=obj.project_follower.user)
-            serializer = UserProfileStubSerializer(follower_user[0])
-            return serializer.data
+            return get_following_user(obj.project_follower.user)
+
+    def get_organization_follower(self, obj):
+        if obj.organization_follower:
+            return get_following_user(obj.organization_follower.user)
+
+    def get_org_project_published(self, obj):
+        if obj.org_project_published:
+            return get_following_user(obj.org_project_published.user)
 
     def get_project_like(self, obj):
         if obj.project_like:
