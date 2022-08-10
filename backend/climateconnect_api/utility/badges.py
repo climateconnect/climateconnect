@@ -23,7 +23,7 @@ def get_badges(user_profile):
                     date_first_received__gte=d.date_first_received
                 ).order_by("donation_amount")
                 highest_donation_in_streak = highest_donations_in_streak[0]
-                badge = DonorBadge.objects.filter(
+                badges_for_which_user_qualifies = DonorBadge.objects.filter(
                     (
                         Q(regular_donor_minimum_duration__lte=time_donated)
                         | Q(
@@ -31,8 +31,10 @@ def get_badges(user_profile):
                         )
                     ),
                     is_active=True,
-                ).order_by("-regular_donor_minimum_duration")[0]
-                badges.append(badge)
+                ).order_by("-regular_donor_minimum_duration")
+                #Return the best badge the user qualifies for
+                if badges_for_which_user_qualifies.exists():
+                    badges.append(badges_for_which_user_qualifies[0])
 
     return badges
 
