@@ -5,7 +5,6 @@ from organization.utility.follow import (
     get_list_of_followers,
     set_user_following,
 )
-from organization.models import organization
 
 # Backend app imports
 from climateconnect_api.models import Role, UserProfile, ContentShares
