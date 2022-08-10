@@ -14,6 +14,8 @@ import LoadingContainer from "../src/components/general/LoadingContainer";
 import WideLayout from "../src/components/layouts/WideLayout";
 import MiniProfilePreview from "../src/components/profile/MiniProfilePreview";
 import AutoCompleteSearchBar from "../src/components/search/AutoCompleteSearchBar";
+import Layout from "../src/components/layouts/layout";
+import LoginNudge from "../src/components/general/LoginNudge";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -182,95 +184,102 @@ export default function Inbox({ chatData, next }) {
     );
   };
 
-  return (
-    <div>
-      <WideLayout
-        title={texts.inbox}
-        messageType="error"
-        message={errorMessage}
-        resetAlertMessage={updateErrorMessage}
-      >
-        <Container maxWidth="md" className={classes.root}>
-          <Typography component="h1" variant="h4" className={classes.headline}>
-            {texts.inbox}
-          </Typography>
-          {userSearchEnabled ? (
-            <div className={classes.searchSectionContainer}>
-              <AutoCompleteSearchBar
-                label={
-                  newChatMembers.length < 1
-                    ? texts.search_user_to_message + "..."
-                    : texts.add_more_chat_participants + "..."
-                }
-                baseUrl={process.env.API_URL + "/api/members/?search="}
-                clearOnSelect
-                freeSolo
-                filterOut={getUsersToFilterOut()}
-                onSelect={handleAddNewChatMember}
-                renderOption={renderSearchOption}
-                getOptionLabel={(option) => option.first_name + " " + option.last_name}
-                helperText={texts.type_the_name_of_the_users_you_want_to_message}
-              />
-              <form onSubmit={handleStartChat}>
-                {newChatMembers.length > 1 && (
-                  <TextField
-                    label={texts.group_chat_name}
-                    size="small"
-                    className={classes.groupChatName}
-                    required
-                    onChange={handleGroupNameChange}
-                    value={groupName}
-                  />
-                )}
-                <div className={classes.newChatParticipantsContainer}>
-                  {newChatMembers.map((m, index) => (
-                    <MiniProfilePreview
-                      key={index}
-                      profile={m}
-                      className={classes.miniProfilePreview}
-                      onDelete={handleRemoveMember}
+  if (!user)
+    return (
+      <Layout title={texts.please_log_in} hideHeadline>
+        <LoginNudge whatToDo={texts.to_view_inbox} fullPage />
+      </Layout>
+    );
+  else
+    return (
+      <div>
+        <WideLayout
+          title={texts.inbox}
+          messageType="error"
+          message={errorMessage}
+          resetAlertMessage={updateErrorMessage}
+        >
+          <Container maxWidth="md" className={classes.root}>
+            <Typography component="h1" variant="h4" className={classes.headline}>
+              {texts.inbox}
+            </Typography>
+            {userSearchEnabled ? (
+              <div className={classes.searchSectionContainer}>
+                <AutoCompleteSearchBar
+                  label={
+                    newChatMembers.length < 1
+                      ? texts.search_user_to_message + "..."
+                      : texts.add_more_chat_participants + "..."
+                  }
+                  baseUrl={process.env.API_URL + "/api/members/?search="}
+                  clearOnSelect
+                  freeSolo
+                  filterOut={getUsersToFilterOut()}
+                  onSelect={handleAddNewChatMember}
+                  renderOption={renderSearchOption}
+                  getOptionLabel={(option) => option.first_name + " " + option.last_name}
+                  helperText={texts.type_the_name_of_the_users_you_want_to_message}
+                />
+                <form onSubmit={handleStartChat}>
+                  {newChatMembers.length > 1 && (
+                    <TextField
+                      label={texts.group_chat_name}
+                      size="small"
+                      className={classes.groupChatName}
+                      required
+                      onChange={handleGroupNameChange}
+                      value={groupName}
                     />
-                  ))}
-                </div>
-                <div className={classes.buttonBar}>
-                  <Button variant="contained" color="primary" type="submit">
-                    {texts.start_chat}
-                  </Button>
-                  <Button
-                    variant="contained"
-                    className={classes.cancelButton}
-                    onClick={disableUserSearch}
-                  >
-                    {texts.cancel}
-                  </Button>
-                </div>
-              </form>
-            </div>
-          ) : (
-            <Button
-              className={classes.newChatButton}
-              startIcon={<AddIcon />}
-              variant="contained"
-              color="primary"
-              onClick={enableUserSearch}
-            >
-              {texts.new_chat}
-            </Button>
-          )}
-          {user ? (
-            <ChatPreviews
-              loadFunc={loadMoreChats}
-              chats={chatsState.chats}
-              user={user}
-              hasMore={!!chatsState.next}
-            />
-          ) : (
-            <LoadingContainer />
-          )}
-        </Container>
-      </WideLayout>
-    </div>
-  );
+                  )}
+                  <div className={classes.newChatParticipantsContainer}>
+                    {newChatMembers.map((m, index) => (
+                      <MiniProfilePreview
+                        key={index}
+                        profile={m}
+                        className={classes.miniProfilePreview}
+                        onDelete={handleRemoveMember}
+                      />
+                    ))}
+                  </div>
+                  <div className={classes.buttonBar}>
+                    <Button variant="contained" color="primary" type="submit">
+                      {texts.start_chat}
+                    </Button>
+                    <Button
+                      variant="contained"
+                      className={classes.cancelButton}
+                      onClick={disableUserSearch}
+                    >
+                      {texts.cancel}
+                    </Button>
+                  </div>
+                </form>
+              </div>
+            ) : (
+              <Button
+                className={classes.newChatButton}
+                startIcon={<AddIcon />}
+                variant="contained"
+                color="primary"
+                onClick={enableUserSearch}
+              >
+                {texts.new_chat}
+              </Button>
+            )}
+            {user ? (
+              <ChatPreviews
+                loadFunc={loadMoreChats}
+                chats={chatsState.chats}
+                user={user}
+                hasMore={!!chatsState.next}
+              />
+            ) : (
+              <LoadingContainer />
+            )}
+          </Container>
+        </WideLayout>
+      </div>
+    );
 }
 
 const parseChats = (chats, texts) =>
