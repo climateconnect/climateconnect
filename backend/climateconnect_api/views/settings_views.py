@@ -121,7 +121,6 @@ class UserAccountSettingsView(APIView):
                 "email_on_new_project_from_followed_org"
             ]
 
-
             user.user_profile.save()
 
         return Response(
