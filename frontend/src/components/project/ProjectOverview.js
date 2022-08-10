@@ -11,12 +11,12 @@ import { apiRequest } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 import { getParams } from "../../../public/lib/generalOperations";
 import ContactCreatorButton from "./Buttons/ContactCreatorButton";
-import FollowButton from "./Buttons/FollowButton";
+import FollowButton from "../general/FollowButton";
 import getTexts from "../../../public/texts/texts";
 import GoBackFromProjectPageButton from "./Buttons/GoBackFromProjectPageButton";
 import LikeButton from "./Buttons/LikeButton";
 import MessageContent from "../communication/MessageContent";
-import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
+import FollowersDialog from "../dialogs/FollowersDialog";
 import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
@@ -191,6 +191,7 @@ export default function ProjectOverview({
           project={project}
           texts={texts}
           toggleShowFollowers={toggleShowFollowers}
+          user={user}
         />
       ) : (
         <LargeScreenOverview
@@ -219,17 +220,24 @@ export default function ProjectOverview({
           toggleShowFollowers={toggleShowFollowers}
           toggleShowLikes={toggleShowLikes}
           token={token}
+          user={user}
         />
       )}
 
-      <ProjectFollowersDialog
+      <FollowersDialog
         open={showFollowers}
         loading={!initiallyCaughtFollowers}
         followers={followers}
-        project={project}
+        object={project}
         onClose={toggleShowFollowers}
         user={user}
         url={"projects/" + project.url_slug + "?show_followers=true"}
+        titleText={texts.followers_of}
+        pleaseLogInText={texts.please_log_in}
+        toSeeFollowerText={texts.to_see_this_projects_followers}
+        logInText={texts.log_in}
+        noFollowersText={texts.this_project_does_not_have_any_followers_yet}
+        followingSinceText={texts.following_since}
       />
 
       <ProjectLikesDialog
@@ -263,6 +271,7 @@ function SmallScreenOverview({
   texts,
   toggleShowFollowers,
   token,
+  user,
 }) {
   const classes = useStyles();
 
@@ -330,8 +339,9 @@ function SmallScreenOverview({
         </div>
         <div className={classes.infoBottomBar}>
           <FollowButton
+            isLoggedIn={user}
             isUserFollowing={isUserFollowing}
-            handleToggleFollowProject={handleToggleFollowProject}
+            handleToggleFollow={handleToggleFollowProject}
             project={project}
             hasAdminPermissions={hasAdminPermissions}
             toggleShowFollowers={toggleShowFollowers}
@@ -375,6 +385,7 @@ function LargeScreenOverview({
   texts,
   toggleShowFollowers,
   toggleShowLikes,
+  user,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
 
@@ -436,8 +447,9 @@ function LargeScreenOverview({
               numberOfLikes={numberOfLikes}
             />
             <FollowButton
+              isLoggedIn={user}
               followingChangePending={followingChangePending}
-              handleToggleFollowProject={handleToggleFollowProject}
+              handleToggleFollow={handleToggleFollowProject}
               hasAdminPermissions={hasAdminPermissions}
               isUserFollowing={isUserFollowing}
               numberOfFollowers={numberOfFollowers}

@@ -13,6 +13,7 @@ import HubsSubHeader from "../../src/components/indexPage/hubsSubHeader/HubsSubH
 import { getAllHubs } from "../../public/lib/hubOperations.js";
 import { useMediaQuery } from "@material-ui/core";
 import { getImageUrl } from "../../public/lib/imageOperations";
+import { NOTIFICATION_TYPES } from "../../src/components/communication/notifications/Notification";
 
 const parseComments = (comments) => {
   return comments
@@ -76,6 +77,22 @@ export default function ProjectPage({
   const [numberOfFollowers, setNumberOfFollowers] = React.useState(project.number_of_followers);
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
+
+  // l 83-100 handle getting rid of the bell icon notif
+  const { notifications, setNotificationsRead, refreshNotifications } = useContext(UserContext);
+  const handleReadNotifications = async (notificationType) => {
+    const notification_to_set_read = notifications.filter(
+      (n) =>
+        n.notification_type === notificationType &&
+        n.organization.proj.url_slug === project.url_slug
+    );
+    await setNotificationsRead(token, notification_to_set_read, locale);
+    await refreshNotifications();
+  };
+
+  useEffect(async () => {
+    await handleReadNotifications(NOTIFICATION_TYPES.indexOf("org_project_published"));
+  }, [notifications.length !== 0]); // probably need a better way of getting rid of the  bell notification
 
   const handleFollow = (userFollows, updateCount, pending) => {
     setIsUserFollowing(userFollows);

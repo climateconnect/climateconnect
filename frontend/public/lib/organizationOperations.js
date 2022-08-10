@@ -19,6 +19,7 @@ export function parseOrganization(organization, editMode) {
       organization_size: organization.organization_size,
       hubs: organization.hubs,
     },
+    number_of_followers: organization.number_of_followers,
   };
   if (editMode) org.types = org.types.map((t) => t.key);
   const additional_info = organization.types.reduce((additionalInfoArray, t) => {

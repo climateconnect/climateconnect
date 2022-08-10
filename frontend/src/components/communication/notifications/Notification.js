@@ -66,6 +66,8 @@ const NOTIFICATION_TYPES = [
   "idea_comment",
   "reply_to_idea_comment",
   "person_joined_idea",
+  "organization_follower",
+  "org_project_published",
 ];
 
 //component for rendering the notifications that are shown when clicking on the bell on the right side of the header
@@ -101,6 +103,10 @@ export default function Notification({ notification, isPlaceholder }) {
     return <PersonJoinedIdeaNotification notification={notification} />;
   } else if (type === "project_like") {
     return <ProjectLikeNotification notification={notification} />;
+  } else if (type === "organization_follower") {
+    return <OrganizationFollowerNotification notification={notification} />;
+  } else if (type === "org_project_published") {
+    return <OrgProjectSharedNotification notification={notification} />;
   } else return <></>;
 }
 
@@ -288,6 +294,41 @@ const ProjectLikeNotification = ({ notification }) => {
       }}
       primaryText={`${likingUserName} ${texts.liked_your_project}`}
       secondaryText={texts.congratulations}
+    />
+  );
+};
+const OrganizationFollowerNotification = ({ notification }) => {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "notification", locale: locale });
+  const followerName =
+    notification.organization_follower.first_name +
+    " " +
+    notification.organization_follower.last_name;
+  return (
+    <GenericNotification
+      link={`/organizations/${notification.organization.url_slug}?show_followers=true`}
+      avatar={{
+        alt: followerName,
+        image: notification.organization_follower.thumbnail_image,
+      }}
+      primaryText={`${followerName} ${texts.now_follows_your_organization} "${notification.organization.name}"`}
+      secondaryText={texts.congratulations}
+    />
+  );
+};
+const OrgProjectSharedNotification = ({ notification }) => {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "notification", locale: locale });
+  const projectName = notification.organization.proj.name;
+  return (
+    <GenericNotification
+      link={`/projects/${notification.organization.proj.url_slug}`}
+      avatar={{
+        alt: projectName,
+        image: notification.organization.proj.image,
+      }}
+      primaryText={`${notification.organization.org_name} ${texts.just_shared_project} "${notification.organization.proj.name}"`}
+      secondaryText={texts.go_check_it_out}
     />
   );
 };
