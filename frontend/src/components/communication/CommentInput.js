@@ -117,8 +117,7 @@ function CommentInput({
           <div className={classes.flexBox}>
             {user?.badges?.length > 0 ? (
               <ProfileBadge
-                name={user?.badges[0].name}
-                image={getImageUrl(user?.badges[0].image)}
+                badge={user?.badges[0]}
                 size="small"
               >
                 <Avatar {...avatarProps} />

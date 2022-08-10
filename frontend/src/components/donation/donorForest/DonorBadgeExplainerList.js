@@ -61,7 +61,7 @@ const DonorBadgeListEntry = ({ badge }) => {
   return (
     <ListItem className={classes.listItem}>
       <ListItemIcon className={classes.listItemIcon}>
-        <ProfileBadge contentOnly image={getImageUrl(badge.image)} name={badge.name} />
+        <ProfileBadge contentOnly badge={badge} />
       </ListItemIcon>
       <Typography className={classes.badgeExplainerText}>{badgeText[locale]}</Typography>
     </ListItem>

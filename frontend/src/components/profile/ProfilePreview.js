@@ -83,9 +83,8 @@ export default function ProfilePreview({ profile, allowMessage, showAdditionalIn
       >
         {profile.badges?.length > 0 ? (
           <ProfileBadge
-            name={profile.badges[0].name}
+            badge={profile.badges[0]}
             className={classes.badge}
-            image={getImageUrl(profile.badges[0].image)}
           >
             <Avatar {...avatarProps} />
           </ProfileBadge>

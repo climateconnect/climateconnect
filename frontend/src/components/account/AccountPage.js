@@ -341,8 +341,7 @@ export default function AccountPage({
           <div className={classes.avatarContainer}>
             {account.badges?.length > 0 ? (
               <ProfileBadge
-                name={account.badges[0].name}
-                image={getImageUrl(account.badges[0].image)}
+                badge={account.badges[0]}
               >
                 <Avatar {...avatarProps} />
               </ProfileBadge>
