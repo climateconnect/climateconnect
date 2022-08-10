@@ -639,8 +639,7 @@ function NarrowScreenLinks({
                     <div className={classes.mobileAvatarContainer}>
                       {loggedInUser?.badges?.length > 0 ? (
                         <ProfileBadge
-                          name={loggedInUser?.badges[0].name}
-                          image={getImageUrl(loggedInUser?.badges[0].image)}
+                          badge={loggedInUser?.badges[0]}
                           size="medium"
                           className={classes.badge}
                         >
@@ -710,12 +709,7 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader, texts, 
           ref={anchorRef}
         >
           {loggedInUser?.badges?.length > 0 ? (
-            <ProfileBadge
-              name={loggedInUser?.badges[0].name}
-              image={getImageUrl(loggedInUser?.badges[0].image)}
-              size="small"
-              className={classes.badge}
-            >
+            <ProfileBadge badge={loggedInUser?.badges[0]} size="small" className={classes.badge}>
               <Avatar {...avatarProps} />
             </ProfileBadge>
           ) : (
