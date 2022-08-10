@@ -15,14 +15,11 @@ class BadgeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Badge
-        fields = (
-            "name",
-            "image",
-            "created_at"
-        )
+        fields = ("name", "image", "created_at")
 
     def get_name(self, obj):
         return get_attribute_in_correct_language(obj, "name", get_language())
+
 
 class DonorBadgeSerializer(BadgeSerializer):
     min_days_donated = serializers.SerializerMethodField()
@@ -34,7 +31,7 @@ class DonorBadgeSerializer(BadgeSerializer):
             "min_days_donated",
             "step",
             "instantly_awarded_over_amount",
-            "is_donor_forest_badge"
+            "is_donor_forest_badge",
         )
 
     def get_min_days_donated(self, obj):

@@ -32,7 +32,7 @@ def get_badges(user_profile):
                     ),
                     is_active=True,
                 ).order_by("-regular_donor_minimum_duration")
-                #Return the best badge the user qualifies for
+                # Return the best badge the user qualifies for
                 if badges_for_which_user_qualifies.exists():
                     badges.append(badges_for_which_user_qualifies[0])
 

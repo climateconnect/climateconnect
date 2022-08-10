@@ -96,6 +96,7 @@ class DonorBadge(Badge):
             self.regular_donor_minimum_duration,
         )
 
+
 class UserBadge(models.Model):
     user = models.ForeignKey(
         User,

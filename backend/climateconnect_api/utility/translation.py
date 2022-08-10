@@ -40,6 +40,7 @@ def get_user_lang_url(lang_code):
     else:
         return "/" + lang_code
 
+
 def get_attribute_in_correct_language(obj, attr, language_code):
     lang_translation_attr = "{}_{}".format(attr, language_code)
     if hasattr(obj, lang_translation_attr):
