@@ -194,5 +194,13 @@
   "confirm_new_password": {
     "en": "Confirm new password",
     "de": "Neues Passwort bestätigen"
+  },
+  "email_on_new_org_follower_text": {
+    "en": "Get notified when somebody follows an organization you're part of",
+    "de": "Ich möchte benachrichtigt werden, wenn jemand eine Organisation folgt, an dem ich beteiligt bin"
+  },
+  "email_on_new_org_project_text": {
+    "en": "Get notified when an organization you follow posts an update",
+    "de": "Ich möchte benachrichtigt werden, wenn eine Organisation, die ich folge, eine Update postet"
   }
 }

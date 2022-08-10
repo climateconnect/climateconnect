@@ -114,6 +114,14 @@ class UserAccountSettingsView(APIView):
             user.user_profile.email_on_join_request = request.data[
                 "email_on_join_request"
             ]
+            user.user_profile_email_on_new_organization_follower = request.data[
+                "email_on_new_organization_follower"
+            ]
+            user.user_profile_email_on_new_project_from_followed_org = request.data[
+                "email_on_new_project_from_followed_org"
+            ]
+
+
             user.user_profile.save()
 
         return Response(

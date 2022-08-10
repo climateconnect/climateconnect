@@ -101,6 +101,14 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       key: "email_on_join_request",
       text: texts.email_on_join_request_text,
     },
+    {
+      key: "email_on_new_organization_follower",
+      text: texts.email_on_new_org_follower_text,
+    },
+    {
+      key: "email_on_new_project_from_followed_org",
+      text: texts.email_on_new_org_project_text,
+    },
   ];
 
   const possibleCookiePreferences = [
