@@ -116,10 +116,7 @@ function CommentInput({
         <form onSubmit={onSendComment}>
           <div className={classes.flexBox}>
             {user?.badges?.length > 0 ? (
-              <ProfileBadge
-                badge={user?.badges[0]}
-                size="small"
-              >
+              <ProfileBadge badge={user?.badges[0]} size="small">
                 <Avatar {...avatarProps} />
               </ProfileBadge>
             ) : (

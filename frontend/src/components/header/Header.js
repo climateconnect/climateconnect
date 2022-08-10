@@ -709,11 +709,7 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader, texts, 
           ref={anchorRef}
         >
           {loggedInUser?.badges?.length > 0 ? (
-            <ProfileBadge
-              badge={loggedInUser?.badges[0]}
-              size="small"
-              className={classes.badge}
-            >
+            <ProfileBadge badge={loggedInUser?.badges[0]} size="small" className={classes.badge}>
               <Avatar {...avatarProps} />
             </ProfileBadge>
           ) : (

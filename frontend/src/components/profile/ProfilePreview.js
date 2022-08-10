@@ -82,10 +82,7 @@ export default function ProfilePreview({ profile, allowMessage, showAdditionalIn
         className={classes.disableHover}
       >
         {profile.badges?.length > 0 ? (
-          <ProfileBadge
-            badge={profile.badges[0]}
-            className={classes.badge}
-          >
+          <ProfileBadge badge={profile.badges[0]} className={classes.badge}>
             <Avatar {...avatarProps} />
           </ProfileBadge>
         ) : (

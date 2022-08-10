@@ -1,6 +1,5 @@
 import { List, ListItem, ListItemIcon, makeStyles, Typography } from "@material-ui/core";
 import React, { useContext } from "react";
-import { getImageUrl } from "../../../../public/lib/imageOperations";
 import UserContext from "../../context/UserContext";
 import ProfileBadge from "../../profile/ProfileBadge";
 

@@ -36,7 +36,9 @@ export default function ProfileBadge({ className, badge, children, size, content
       classes={{
         badge: `${classes.badgeRoot} ${className}`,
       }}
-      badgeContent={<BadgeContent badge={badge} size={size} withLink={badge.is_donorforest_badge} />}
+      badgeContent={
+        <BadgeContent badge={badge} size={size} withLink={badge.is_donorforest_badge} />
+      }
       anchorOrigin={{
         horizontal: "left",
         vertical: "bottom",
