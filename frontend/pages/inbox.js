@@ -91,13 +91,25 @@ export default function Inbox({ chatData, next }) {
   const [newChatMembers, setNewChatMembers] = React.useState([]);
   const [errorMessage, setErrorMessage] = React.useState("");
   const [groupName, setGroupName] = React.useState("");
+  const [errorMessageController, setErrorMessageController] = React.useState(false);
   const [chatsState, setChatsState] = React.useState({
     chats: parseChats(chatData, texts),
     next: next,
   });
 
-  const updateErrorMessage = (e) => {
-    setErrorMessage(e);
+  const updateErrorMessage = () => {
+    if (errorMessageController) {
+      setErrorMessage(
+        texts.please_add_one_or_more_users_to_chat_to_by_searching_them_in_the_search_bar_above
+      );
+      setErrorMessageController(false);
+    } else {
+      setErrorMessage(
+        texts.please_add_one_or_more_users_to_chat_to_by_searching_them_in_the_search_bar_above +
+          " "
+      );
+      setErrorMessageController(true);
+    }
   };
 
   const handleGroupNameChange = (e) => {
@@ -149,10 +161,7 @@ export default function Inbox({ chatData, next }) {
           console.log(error.response);
           // TODO: Show error message that user cant connect
         });
-    } else
-      setErrorMessage(
-        texts.please_add_one_or_more_users_to_chat_to_by_searching_them_in_the_search_bar_above
-      );
+    } else updateErrorMessage();
   };
 
   const loadMoreChats = async () => {
@@ -184,12 +193,7 @@ export default function Inbox({ chatData, next }) {
 
   return (
     <div>
-      <WideLayout
-        title={texts.inbox}
-        messageType="error"
-        message={errorMessage}
-        resetAlertMessage={updateErrorMessage}
-      >
+      <WideLayout title={texts.inbox} messageType="error" message={errorMessage}>
         <Container maxWidth="md" className={classes.root}>
           <Typography component="h1" variant="h4" className={classes.headline}>
             {texts.inbox}

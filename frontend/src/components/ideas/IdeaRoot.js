@@ -215,7 +215,7 @@ export default function IdeaRoot({
 
       handleSetComments && handleSetComments(comments);
       //if the user is logged in, set their rating and join status. Otherwise just stop loading
-      if(token) {
+      if (token) {
         const notification_to_set_read = notifications.filter((n) =>
           all_comment_ids.includes(n.idea_comment?.id)
         );
@@ -226,7 +226,7 @@ export default function IdeaRoot({
             has_joined: hasJoinedIdea?.has_joined,
             chat_uuid: hasJoinedIdea?.chat_uuid,
           });
-          setLoading(false);
+        setLoading(false);
         await setNotificationsReadAndRefresh(notification_to_set_read);
       } else {
         setLoading(false);
@@ -426,7 +426,7 @@ const getUserRatingFromServer = async (idea, token, locale) => {
 };
 
 const getIdeaCommentsFromServer = async (idea, token, locale) => {
-  console.log("Getting idea comments!")
+  console.log("Getting idea comments!");
   try {
     const response = await apiRequest({
       method: "get",
