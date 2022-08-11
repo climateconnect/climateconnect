@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => {
       "-moz-user-select": "none",
       "-ms-user-select": "none",
       userSelect: "none",
-      backgroundColor: "#f7f7f7",
+      backgroundColor: "#f7f7f7", // f7f7f7
       backgroundRepeat: "no-repeat",
       backgroundSize: "calc(100% - 1px) 100%",
       borderRadius: "5px",
@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme) => {
       height: "350px",
       boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;",
       padding: "0 14px",
+   
     },
     button: {
       marginTop: theme.spacing(1),
