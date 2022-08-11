@@ -55,6 +55,7 @@ const useStyles = makeStyles((theme) => ({
   },
   replyButton: {
     color: theme.palette.grey[700],
+    
   },
   toggleReplies: {
     display: "flex",
@@ -64,6 +65,16 @@ const useStyles = makeStyles((theme) => ({
   inlineBadge: {
     marginRight: theme.spacing(0.5),
   },
+  hideFullComment:{
+    display: "inline-block"
+  },
+  test:{
+    display:"flex",
+    flexDirection:"row",
+    alignItems: "flex-end"
+  
+  }
+ 
 }));
 
 export default function Post({
@@ -83,13 +94,19 @@ export default function Post({
   const texts = getTexts({ page: "communication", locale: locale });
   const [open, setOpen] = React.useState(false);
   const [displayReplies, setDisplayReplies] = React.useState(true);
+  const [displayFullComment, setDisplayFullComment] = React.useState(false);
   const [replyInterfaceExpanded, setInterfaceExpanded] = React.useState(false);
   const expandReplyInterface = () => setInterfaceExpanded(true);
   const unexpandReplyInterface = () => setInterfaceExpanded(false);
+  const COMMENT_SIZE = 100;
 
   const handleViewRepliesClick = () => {
     setDisplayReplies(!displayReplies);
   };
+
+  const handleViewFullCommentClick = () => {
+    setDisplayFullComment(!displayFullComment)
+  }
 
   const handleSendComment = (curComment, parent_comment, clearInput) => {
     onSendComment(curComment, parent_comment, clearInput, setDisplayReplies);
@@ -109,6 +126,47 @@ export default function Post({
       : getImageUrl(post.author_user.thumbnail_image),
     className: classes.avatar,
   };
+
+  console.log(displayFullComment);
+  const showComment = () => {
+
+    if (displayFullComment) {
+      return (
+        <>
+          <span className={classes.test}>
+           <Typography>
+              <MessageContent
+                content={post.content}
+                maxLines={maxLines}
+              />
+            </Typography>
+            <Link className={classes.toggleReplies} onClick={handleViewFullCommentClick}>
+            <ExpandLessIcon />
+            {texts.read_less}
+            </Link>
+            </span>
+            </>
+    );
+    } else {
+      return (
+        <>
+        <Typography>
+          <MessageContent
+            content={post.content.substring(0,100)+"..."}
+            maxLines={maxLines}
+          />
+         
+        </Typography>
+        <Link className={classes.toggleReplies} onClick={handleViewFullCommentClick}>
+            <ExpandMoreIcon />
+            {texts.read_more}
+          </Link>
+      
+          </>
+      )
+    }
+    
+  }
 
   return (
     <div className={className}>
@@ -162,7 +220,17 @@ export default function Post({
                 </Truncate>
               </Typography>
             ) : (
-              <MessageContent content={post.content} maxLines={maxLines} />
+              <>
+                { post.content.length < COMMENT_SIZE ? (
+                  <Typography>
+                    <MessageContent content={post.content} maxLines={maxLines} />
+                  </Typography>
+                ) : (
+                  <div className={classes.test}>
+                    {showComment()}
+                  </div>
+                )}
+            </>
             )}
             <>
               {type !== "reply" &&
@@ -181,7 +249,7 @@ export default function Post({
                   </Button>
                 ))}
               {user && user.id === post.author_user.id && type !== "preview" && (
-                <Button onClick={toggleDeleteDialogOpen}>Delete</Button>
+                <Button onClick={toggleDeleteDialogOpen}>{texts.delete}</Button>
               )}
             </>
             <>

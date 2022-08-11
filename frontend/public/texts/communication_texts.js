@@ -108,5 +108,17 @@ export default function getCommunicationTexts() {
       en: 'With "@" you can mention somebody.',
       de: 'Mit "@" kannst du jemanden erwähnen.',
     },
+    delete: {
+      en: "Delete",
+      de: "Löschen",
+    },
+    read_more: {
+      en: "Read more",
+      de: "Mehr lesen",
+    },
+    read_less: {
+      en: "Read less",
+      de: "Weniger lesen",
+    }
   };
 }
