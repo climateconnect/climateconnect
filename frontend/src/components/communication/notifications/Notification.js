@@ -270,6 +270,7 @@ const ProjectFollowerNotification = ({ notification }) => {
       }}
       primaryText={`${followerName} ${texts.now_follows_your_project} "${notification.project.name}"`}
       secondaryText={texts.congratulations}
+      notification = {notification}
     />
   );
 };

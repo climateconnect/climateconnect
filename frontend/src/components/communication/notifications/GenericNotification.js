@@ -1,5 +1,6 @@
 import {
   Avatar,
+  IconButton,
   Link,
   ListItemAvatar,
   ListItemIcon,
@@ -11,6 +12,9 @@ import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../../public/lib/imageOperations";
 import UserContext from "../../context/UserContext";
 import { StyledMenuItem } from "./Notification";
+
+import CloseIcon from '@material-ui/icons/Close';
+import Cookies from "universal-cookie";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -40,12 +44,21 @@ export default function GenericNotification({
   secondaryText,
   notificationIcon,
   avatar,
+  notification
 }) {
+  const token = new Cookies().get("auth_token");
   const { locale } = useContext(UserContext);
-  const classes = useStyles();
+  const classes = useStyles()
+  const {setNotificationsRead, refreshNotifications } = useContext(UserContext);
+  const deleteNotification =  async () => {
+    const notificationAsArr = [notification];
+    await setNotificationsRead(token, notificationAsArr, locale)
+    await refreshNotifications()
+  }
+
+
   return (
-    <Link href={getLocalePrefix(locale) + link} underline="none">
-      <StyledMenuItem>
+      <StyledMenuItem >      
         {avatar ? (
           <ListItemAvatar>
             <Avatar alt={avatar.alt} src={getImageUrl(avatar.image)} />
@@ -55,6 +68,7 @@ export default function GenericNotification({
             <notificationIcon.icon />
           </ListItemIcon>
         )}
+         <Link href={getLocalePrefix(locale) + link} underline="none">
         <ListItemText
           primary={primaryText}
           secondary={secondaryText}
@@ -64,8 +78,14 @@ export default function GenericNotification({
           secondaryTypographyProps={{
             className: classes.notificationText,
           }}
+       
         />
+         </Link>
+         <IconButton onClick={deleteNotification} >
+          <CloseIcon></CloseIcon>
+         </IconButton>
+        
       </StyledMenuItem>
-    </Link>
+     
   );
 }
