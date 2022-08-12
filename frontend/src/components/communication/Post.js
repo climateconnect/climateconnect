@@ -71,7 +71,9 @@ const useStyles = makeStyles((theme) => ({
   test:{
     display:"flex",
     flexDirection:"row",
-    alignItems: "flex-end"
+    alignItems: "flex-end",
+    
+ 
   
   }
  
@@ -127,7 +129,7 @@ export default function Post({
     className: classes.avatar,
   };
 
-  console.log(displayFullComment);
+ 
   const showComment = () => {
 
     if (displayFullComment) {

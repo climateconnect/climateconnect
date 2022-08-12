@@ -15,12 +15,15 @@ const useStyles = makeStyles((theme) => {
     flexBox: {
       display: "flex",
       alignItems: "center",
+      marginTop: theme.spacing(1.5),
+     
     },
 
     cancelButton: {
       float: "right",
       marginTop: theme.spacing(1),
       marginRight: theme.spacing(1),
+      marginLeft: theme.spacing(1),
     },
     commentButton: {
       float: "right",
@@ -28,6 +31,7 @@ const useStyles = makeStyles((theme) => {
     },
     commentButtonContainer: {
       height: 60,
+    
     },
     explanation: {
       float: "left",
@@ -52,6 +56,7 @@ function CommentInput({
   hasComments,
   infoTextSize,
   useIconButton,
+  defaultProjectCommentInput
 }) {
   const classes = useStyles();
   const [curComment, setCurComment] = React.useState("");
@@ -114,7 +119,7 @@ function CommentInput({
     return (
       <div>
         <form onSubmit={onSendComment}>
-          <div className={classes.flexBox}>
+          <div className={`${classes.flexBox} ${defaultProjectCommentInput}`}>
             {user?.badges?.length > 0 ? (
               <ProfileBadge
                 name={user?.badges[0].name}
