@@ -13,7 +13,7 @@ import { getImageUrl } from "../../../../public/lib/imageOperations";
 import UserContext from "../../context/UserContext";
 import { StyledMenuItem } from "./Notification";
 
-import CloseIcon from '@material-ui/icons/Close';
+import CloseIcon from "@material-ui/icons/Close";
 import Cookies from "universal-cookie";
 
 const useStyles = makeStyles((theme) => {
@@ -44,31 +44,30 @@ export default function GenericNotification({
   secondaryText,
   notificationIcon,
   avatar,
-  notification
+  notification,
 }) {
   const token = new Cookies().get("auth_token");
   const { locale } = useContext(UserContext);
-  const classes = useStyles()
-  const {setNotificationsRead, refreshNotifications } = useContext(UserContext);
-  const deleteNotification =  async () => {
+  const classes = useStyles();
+  const { setNotificationsRead, refreshNotifications } = useContext(UserContext);
+  const deleteNotification = async () => {
     const notificationAsArr = [notification];
-    await setNotificationsRead(token, notificationAsArr, locale)
-    await refreshNotifications()
-  }
-
+    await setNotificationsRead(token, notificationAsArr, locale);
+    await refreshNotifications();
+  };
 
   return (
-      <StyledMenuItem >      
-        {avatar ? (
-          <ListItemAvatar>
-            <Avatar alt={avatar.alt} src={getImageUrl(avatar.image)} />
-          </ListItemAvatar>
-        ) : (
-          <ListItemIcon>
-            <notificationIcon.icon />
-          </ListItemIcon>
-        )}
-         <Link href={getLocalePrefix(locale) + link} underline="none">
+    <StyledMenuItem>
+      {avatar ? (
+        <ListItemAvatar>
+          <Avatar alt={avatar.alt} src={getImageUrl(avatar.image)} />
+        </ListItemAvatar>
+      ) : (
+        <ListItemIcon>
+          <notificationIcon.icon />
+        </ListItemIcon>
+      )}
+      <Link href={getLocalePrefix(locale) + link} underline="none">
         <ListItemText
           primary={primaryText}
           secondary={secondaryText}
@@ -78,14 +77,11 @@ export default function GenericNotification({
           secondaryTypographyProps={{
             className: classes.notificationText,
           }}
-       
         />
-         </Link>
-         <IconButton onClick={deleteNotification} >
-          <CloseIcon></CloseIcon>
-         </IconButton>
-        
-      </StyledMenuItem>
-     
+      </Link>
+      <IconButton onClick={deleteNotification}>
+        <CloseIcon/>
+      </IconButton>
+    </StyledMenuItem>
   );
 }

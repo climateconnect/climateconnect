@@ -117,6 +117,7 @@ const JoinProjectRequestNotification = ({ notification }) => {
         image: requester.thumbnail_image,
       }}
       primaryText={requesterName + " " + texts.wants_to_join_your_project}
+      notification={notification}
     />
   );
 };
@@ -131,6 +132,7 @@ const JoinProjectRequestApprovedNotification = ({ notification }) => {
         icon: GroupIcon,
       }}
       primaryText={texts.project_accepted_you_as_a_member}
+      notification={notification}
     />
   );
 };
@@ -149,6 +151,7 @@ const PersonJoinedIdeaNotification = ({ notification }) => {
       }}
       primaryText={supporter.first_name + " " + supporter.last_name + " " + texts.joined_your_idea}
       secondaryText={texts.send_a_Message_to_welcome_them_in_the_group_chat}
+      notification={notification}
     />
   );
 };
@@ -166,6 +169,7 @@ const PrivateMessageNotification = ({ notification }) => {
       }}
       primaryText={texts.message_from + " " + sender.first_name + " " + sender.last_name}
       secondaryText={notification.last_message.content}
+      notification={notification}
     />
   );
 };
@@ -185,6 +189,7 @@ const GroupMessageNotification = ({ notification }) => {
       secondaryText={
         sender.first_name + " " + sender.last_name + ": " + notification.last_message.content
       }
+      notification={notification}
     />
   );
 };
@@ -270,7 +275,7 @@ const ProjectFollowerNotification = ({ notification }) => {
       }}
       primaryText={`${followerName} ${texts.now_follows_your_project} "${notification.project.name}"`}
       secondaryText={texts.congratulations}
-      notification = {notification}
+      notification={notification}
     />
   );
 };
@@ -289,6 +294,7 @@ const ProjectLikeNotification = ({ notification }) => {
       }}
       primaryText={`${likingUserName} ${texts.liked_your_project}`}
       secondaryText={texts.congratulations}
+      notification={notification}
     />
   );
 };
