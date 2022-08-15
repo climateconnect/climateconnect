@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => {
     },
     defaultProjectCommentInput: {
       marginTop: theme.spacing(0),
-    }
+    },
   };
 });
 
@@ -28,22 +28,22 @@ export default function CommentsContent({ user, project, token, setCurComments }
   const texts = getTexts({ page: "project", locale: locale });
   const comments = project.comments;
 
-
   const handleRemoveComment = (c) => {
- 
-    // removing a top comment 
+    // removing a top comment
     if (c.parent_comment_id === null) {
       setCurComments([...project.comments.filter((pc) => pc.id !== c.id)]);
-    
+
       // remove a comment that has a parent comment
-    } else {   
-      const parentCommentIndex = project.comments.findIndex( comment => comment.id === c.parent_comment_id);   
-      const filterOutReplies = [...project.comments[parentCommentIndex].replies.filter((pc) => pc.id !== c.id)];
+    } else {
+      const parentCommentIndex = project.comments.findIndex(
+        (comment) => comment.id === c.parent_comment_id
+      );
+      const filterOutReplies = [
+        ...project.comments[parentCommentIndex].replies.filter((pc) => pc.id !== c.id),
+      ];
       project.comments[parentCommentIndex].replies = filterOutReplies;
       setCurComments([...project.comments]);
-      
     }
- 
   };
 
   const handleAddComment = (c) => {
@@ -100,7 +100,12 @@ export default function CommentsContent({ user, project, token, setCurComments }
 
   return (
     <div>
-      <CommentInput className={classes.defaultProjectCommentInput} user={user} onSendComment={onSendComment} hasComments={comments.length > 0} />
+      <CommentInput
+        className={classes.defaultProjectCommentInput}
+        user={user}
+        onSendComment={onSendComment}
+        hasComments={comments.length > 0}
+      />
       <Typography>{comments.length + " " + texts.comments}</Typography>
       <Divider className={classes.divider} />
       {comments && comments.length > 0 && (
@@ -111,6 +116,7 @@ export default function CommentsContent({ user, project, token, setCurComments }
           user={user}
           onSendComment={onSendComment}
           onDeletePost={onDeleteComment}
+          truncate={3}
         />
       )}
     </div>

@@ -1,4 +1,4 @@
-import { FormControlLabel, makeStyles, useMediaQuery } from "@material-ui/core";
+import { makeStyles, useMediaQuery } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { getCommentsObjectAfterAddingComments } from "../../../public/lib/communicationOperations";
 import { getInfoMetadataByType } from "../../../public/lib/parsingOperations";
@@ -93,28 +93,28 @@ export default function IdeasBoard({
   };
 
   const handleRemoveComment = (c) => {
-   
-
     // remove a top comment
-    if(c.parent_comment_id === null) {
+    if (c.parent_comment_id === null) {
       console.log("here1");
       setIdea({
         ...idea,
         comments: [...idea.comments.filter((pc) => pc.id !== c.id)],
       });
-    // remove a reply comment
+      // remove a reply comment
     } else {
-      const parentCommentIndex = idea.comments.findIndex( comment => comment.id === c.parent_comment_id);  
-      const filterOutReplies = [...idea.comments[parentCommentIndex].replies.filter((pc) => pc.id !== c.id)];   
+      const parentCommentIndex = idea.comments.findIndex(
+        (comment) => comment.id === c.parent_comment_id
+      );
+      const filterOutReplies = [
+        ...idea.comments[parentCommentIndex].replies.filter((pc) => pc.id !== c.id),
+      ];
       idea.comments[parentCommentIndex].replies = filterOutReplies;
-      
+
       setIdea({
         ...idea,
         comments: [...idea.comments],
       });
     }
-   
-  
   };
 
   const handleSetComments = (newComments) => {

@@ -119,6 +119,6 @@ export default function getCommunicationTexts() {
     read_less: {
       en: "Read less",
       de: "Weniger lesen",
-    }
+    },
   };
 }

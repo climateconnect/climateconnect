@@ -16,7 +16,6 @@ const useStyles = makeStyles((theme) => {
       display: "flex",
       alignItems: "center",
       marginTop: theme.spacing(1.5),
-     
     },
 
     cancelButton: {
@@ -31,7 +30,6 @@ const useStyles = makeStyles((theme) => {
     },
     commentButtonContainer: {
       height: 60,
-    
     },
     explanation: {
       float: "left",
@@ -56,7 +54,7 @@ function CommentInput({
   hasComments,
   infoTextSize,
   useIconButton,
-  defaultProjectCommentInput
+  defaultProjectCommentInput,
 }) {
   const classes = useStyles();
   const [curComment, setCurComment] = React.useState("");
@@ -152,7 +150,7 @@ function CommentInput({
               >
                 <IconButton
                   color="primary"
-                  variant="contained"
+                  variant="contiained"
                   className={classes.commentButton}
                   onClick={(event) => handleSendComment(event)}
                 >

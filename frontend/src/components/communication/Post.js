@@ -1,4 +1,12 @@
-import { Avatar, Button, CircularProgress, Link, Tooltip, Typography } from "@material-ui/core";
+import {
+  Avatar,
+  Button,
+  CircularProgress,
+  Link,
+  Tooltip,
+  Typography,
+  Box,
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -55,7 +63,6 @@ const useStyles = makeStyles((theme) => ({
   },
   replyButton: {
     color: theme.palette.grey[700],
-    
   },
   toggleReplies: {
     display: "flex",
@@ -65,18 +72,16 @@ const useStyles = makeStyles((theme) => ({
   inlineBadge: {
     marginRight: theme.spacing(0.5),
   },
-  hideFullComment:{
-    display: "inline-block"
+  hideFullComment: {
+    display: "inline-block",
   },
-  test:{
-    display:"flex",
-    flexDirection:"row",
-    alignItems: "flex-end",
-    
- 
-  
-  }
- 
+  commentBox: {
+    overflow: "hidden",
+    WebkitBoxOrient: "vertical",
+    display: "-webkit-box",
+    WebkitLineClamp: "3",
+  },
+  showAllText: {},
 }));
 
 export default function Post({
@@ -92,23 +97,23 @@ export default function Post({
   noLink,
 }) {
   const classes = useStyles({ preview: type === "preview" });
+  const classNames = {
+    commentBox: classes.commentBox,
+    showAllText: classes.showAllText,
+  };
+
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "communication", locale: locale });
   const [open, setOpen] = React.useState(false);
   const [displayReplies, setDisplayReplies] = React.useState(true);
-  const [displayFullComment, setDisplayFullComment] = React.useState(false);
+
   const [replyInterfaceExpanded, setInterfaceExpanded] = React.useState(false);
   const expandReplyInterface = () => setInterfaceExpanded(true);
   const unexpandReplyInterface = () => setInterfaceExpanded(false);
-  const COMMENT_SIZE = 100;
 
   const handleViewRepliesClick = () => {
     setDisplayReplies(!displayReplies);
   };
-
-  const handleViewFullCommentClick = () => {
-    setDisplayFullComment(!displayFullComment)
-  }
 
   const handleSendComment = (curComment, parent_comment, clearInput) => {
     onSendComment(curComment, parent_comment, clearInput, setDisplayReplies);
@@ -129,46 +134,47 @@ export default function Post({
     className: classes.avatar,
   };
 
- 
-  const showComment = () => {
+  const ShownComment = () => {
+    const [clamped, setClamped] = React.useState(true);
+    const [showButton, setShowButton] = React.useState(true);
+    const containerRef = React.useRef(null);
+    const handleClick = () => {
+      setClamped(!clamped);
+    };
 
-    if (displayFullComment) {
-      return (
-        <>
-          <span className={classes.test}>
-           <Typography>
-              <MessageContent
-                content={post.content}
-                maxLines={maxLines}
-              />
-            </Typography>
-            <Link className={classes.toggleReplies} onClick={handleViewFullCommentClick}>
-            <ExpandLessIcon />
-            {texts.read_less}
-            </Link>
-            </span>
-            </>
-    );
-    } else {
-      return (
-        <>
-        <Typography>
-          <MessageContent
-            content={post.content.substring(0,100)+"..."}
-            maxLines={maxLines}
-          />
-         
-        </Typography>
-        <Link className={classes.toggleReplies} onClick={handleViewFullCommentClick}>
-            <ExpandMoreIcon />
-            {texts.read_more}
+    React.useEffect(() => {
+      const hasClamping = (element) => {
+        const { clientHeight, scrollHeight } = element;
+        return clientHeight !== scrollHeight;
+      };
+
+      const checkButtonAvailability = () => {
+        if (containerRef.current) {
+          const hadClampClass = containerRef.current.classList.contains("commentBox");
+          if (!hadClampClass) containerRef.current.classList.add("commentBox");
+          setShowButton(hasClamping(containerRef.current));
+          if (!hadClampClass) containerRef.current.classList.remove("commentBox");
+        }
+      };
+
+      checkButtonAvailability();
+    }, [containerRef]);
+
+    return (
+      <>
+        <Box className={classNames[("showAllText", clamped && "commentBox")]} ref={containerRef}>
+          <Typography>
+            <MessageContent content={post.content} maxLines={maxLines} />
+          </Typography>
+        </Box>
+        {showButton && (
+          <Link className={classes.toggleReplies} onClick={handleClick}>
+            {clamped ? texts.read_more : texts.read_less}
           </Link>
-      
-          </>
-      )
-    }
-    
-  }
+        )}
+      </>
+    );
+  };
 
   return (
     <div className={className}>
@@ -223,16 +229,8 @@ export default function Post({
               </Typography>
             ) : (
               <>
-                { post.content.length < COMMENT_SIZE ? (
-                  <Typography>
-                    <MessageContent content={post.content} maxLines={maxLines} />
-                  </Typography>
-                ) : (
-                  <div className={classes.test}>
-                    {showComment()}
-                  </div>
-                )}
-            </>
+                <ShownComment />
+              </>
             )}
             <>
               {type !== "reply" &&

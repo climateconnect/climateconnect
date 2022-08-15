@@ -107,15 +107,12 @@ export default function IdeaCommentsSection({
           {texts.comments} • {idea.comments?.length || 0}
         </Typography>
         <CommentInput
-         
           user={user}
           onSendComment={onSendComment}
           hasComments={idea.comments?.length > 0}
           infoTextSize={INFO_TEXT_SIZES.short}
           useIconButton
           className={classes.defaultProjectCommentInput}
-        
-
         />
         <Divider className={classes.divider} />
         {loading && (
