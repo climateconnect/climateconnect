@@ -95,7 +95,6 @@ export default function IdeasBoard({
   const handleRemoveComment = (c) => {
     // remove a top comment
     if (c.parent_comment_id === null) {
-      console.log("here1");
       setIdea({
         ...idea,
         comments: [...idea.comments.filter((pc) => pc.id !== c.id)],

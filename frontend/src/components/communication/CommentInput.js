@@ -150,7 +150,7 @@ function CommentInput({
               >
                 <IconButton
                   color="primary"
-                  variant="contiained"
+                  variant="contained"
                   className={classes.commentButton}
                   onClick={(event) => handleSendComment(event)}
                 >

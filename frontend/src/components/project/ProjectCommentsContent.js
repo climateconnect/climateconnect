@@ -116,7 +116,6 @@ export default function CommentsContent({ user, project, token, setCurComments }
           user={user}
           onSendComment={onSendComment}
           onDeletePost={onDeleteComment}
-          truncate={3}
         />
       )}
     </div>
