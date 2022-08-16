@@ -105,6 +105,8 @@ export default function Notification({ notification, isPlaceholder }) {
 }
 
 const JoinProjectRequestNotification = ({ notification }) => {
+  console.log("hi");
+  console.log(notification);
   const requester = notification.membership_requester;
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", project: notification.project, locale: locale });
@@ -123,6 +125,8 @@ const JoinProjectRequestNotification = ({ notification }) => {
 };
 
 const JoinProjectRequestApprovedNotification = ({ notification }) => {
+  console.log("hi");
+  console.log(notification);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", project: notification.project, locale: locale });
   return (

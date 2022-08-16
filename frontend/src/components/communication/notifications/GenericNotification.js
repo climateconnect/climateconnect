@@ -20,21 +20,36 @@ const useStyles = makeStyles((theme) => {
   return {
     messageSender: {
       fontWeight: 600,
+      width: "90%",
       whiteSpace: "normal",
+      overflow: "hidden",
+      WebkitBoxOrient: "vertical",
+      display: "-webkit-box",
+      wordBreak: "break-word", 
     },
     listItemText: {
-      whiteSpace: "normal",
+      whiteSpace: "normal",   
     },
     goToInboxText: {
       textAlign: "center",
       display: "block",
       marginTop: theme.spacing(1),
     },
-    notificationText: {
+    notificationText: { 
+      width: "90%",
+      whiteSpace: "normal",
       overflow: "hidden",
-      textOverflow: "ellipsis",
-      whiteSpace: "nowrap",
+      WebkitBoxOrient: "vertical",
+      display: "-webkit-box",
+      WebkitLineClamp: "1", 
+      wordBreak: "break-word",
+      
     },
+    deleteIcon: {
+      position: "absolute",
+      right: 0
+    },
+    
   };
 });
 
@@ -51,13 +66,15 @@ export default function GenericNotification({
   const classes = useStyles();
   const { setNotificationsRead, refreshNotifications } = useContext(UserContext);
   const deleteNotification = async () => {
+    console.log("called");
+    console.log(notification);
     const notificationAsArr = [notification];
     await setNotificationsRead(token, notificationAsArr, locale);
     await refreshNotifications();
   };
 
   return (
-    <StyledMenuItem>
+    <StyledMenuItem >
       {avatar ? (
         <ListItemAvatar>
           <Avatar alt={avatar.alt} src={getImageUrl(avatar.image)} />
@@ -68,6 +85,7 @@ export default function GenericNotification({
         </ListItemIcon>
       )}
       <Link href={getLocalePrefix(locale) + link} underline="none">
+        
         <ListItemText
           primary={primaryText}
           secondary={secondaryText}
@@ -78,8 +96,9 @@ export default function GenericNotification({
             className: classes.notificationText,
           }}
         />
+      
       </Link>
-      <IconButton onClick={deleteNotification}>
+      <IconButton onClick={deleteNotification}className={classes.deleteIcon}>
         <CloseIcon/>
       </IconButton>
     </StyledMenuItem>
