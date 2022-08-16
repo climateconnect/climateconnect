@@ -94,6 +94,7 @@ export default function NavigationSubHeader({ hubName, allHubs, isLocationHub })
             locale={locale}
             isNarrowScreen={isNarrowScreen}
             showAllProjectsButton
+            linkClassName={classes.link}
           />
         </Typography>
       </Container>
