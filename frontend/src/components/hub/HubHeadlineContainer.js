@@ -8,18 +8,21 @@ import theme from "../../themes/theme";
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
     minWidth: 300,
-    position: "relative",
+   
     background: theme.palette.primary.main,
-    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-around",
+  
     maxWidth: "800px",
     borderRadius: 5,
     border: theme.borders.thick,
-    marginTop: props.isLocationHub ? theme.spacing(9) : theme.spacing(-11),
+    marginTop: props.isLocationHub ? theme.spacing(8) : theme.spacing(-11),
     [theme.breakpoints.down("sm")]: {
-      marginTop: props.isLocationHub ? theme.spacing(-9) : theme.spacing(-11),
+      marginTop: props.isLocationHub ? theme.spacing(-11) : theme.spacing(-11),
     },
     
-    ["@media(max-width:1260px)"]: {
+    ["@media(max-width:960px)"]: {
       maxWidth: 550,
     },
   }),
@@ -42,6 +45,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   subHeadlineContainer: (props) =>({
+    
     background: "#f0f2f5",
     borderRadius: 5,
     padding: theme.spacing(1),

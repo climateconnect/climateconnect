@@ -66,6 +66,7 @@ const useStyles = makeStyles((theme) => ({
   quickInfo: {
     fontSize: 17,
     maxWidth: 800,
+    
   },
   marginTop: {
     marginTop: theme.spacing(4),
