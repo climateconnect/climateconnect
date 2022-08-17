@@ -134,6 +134,7 @@ export default function Post({
     className: classes.avatar,
   };
 
+
   const ShownComment = () => {
     const [clamped, setClamped] = React.useState(true);
     const [showButton, setShowButton] = React.useState(true);
@@ -176,6 +177,8 @@ export default function Post({
     );
   };
 
+
+
   return (
     <div className={className}>
       {type === "progresspost" ? (
@@ -206,8 +209,7 @@ export default function Post({
               {post.author_user.badges?.length > 0 && (
                 <ProfileBadge
                   contentOnly
-                  name={post.author_user.badges[0].name}
-                  image={getImageUrl(post.author_user.badges[0].image)}
+                  badge={post.author_user.badges[0]}
                   size="medium"
                   className={classes.inlineBadge}
                 />

@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 16,
     height: 54,
     paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
+    paddingBottom: theme.spacing(2)
   },
 }));
 
