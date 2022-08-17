@@ -925,7 +925,7 @@ export default function EditAccountPage({
             <InfoOutlinedIcon />
             {texts.if_you_wish_to_delete}
             <div className={classes.spaceStrings}> </div>
-            <Link href="mailto:contact@climateconnect.earth">{deleteEmail}</Link>
+            <Link href={`mailto:${deleteEmail}`}>{deleteEmail}</Link>
           </Typography>
         )}
       </form>
