@@ -1,21 +1,24 @@
-import { makeStyles, Typography } from "@material-ui/core";
+import { makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import OpenClimateMatchButton from "../climateMatch/OpenClimateMatchButton";
 import UserContext from "../context/UserContext";
+import theme from "../../themes/theme";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
+    minWidth: 300,
+    position: "relative",
     background: theme.palette.primary.main,
-
-    maxWidth: 800,
+    width: "100%",
+    maxWidth: "800px",
     borderRadius: 5,
     border: theme.borders.thick,
-    marginTop: props.isLocationHub ? theme.spacing(8) : theme.spacing(-11),
+    marginTop: props.isLocationHub ? theme.spacing(9) : theme.spacing(-11),
     [theme.breakpoints.down("sm")]: {
-      marginTop: props.isLocationHub ? theme.spacing(8) : theme.spacing(-11),
+      marginTop: props.isLocationHub ? theme.spacing(-9) : theme.spacing(-11),
     },
-
+    
     ["@media(max-width:1260px)"]: {
       maxWidth: 550,
     },
@@ -24,8 +27,9 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
   },
+
   headline: {
-    fontSize: 30,
+
     fontWeight: 700,
     [theme.breakpoints.down("sm")]: {
       fontSize: 25,
@@ -37,14 +41,15 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
   },
 
-  subHeadlineContainer: {
+  subHeadlineContainer: (props) =>({
     background: "#f0f2f5",
+    borderRadius: 5,
     padding: theme.spacing(1),
     [theme.breakpoints.up("sm")]: {
       padding: theme.spacing(2),
-      paddingBottom: theme.spacing(2),
+      paddingBottom: props.isLocationHub ? theme.spacing(1) : theme.spacing(2),
     },
-  },
+  }),
 
   highlighted: {
     color: theme.palette.yellow.main,
@@ -78,11 +83,12 @@ export default function HubHeadlineContainer({ subHeadline, headline, isLocation
   const classes = useStyles({ isLocationHub: isLocationHub });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "climatematch", locale: locale });
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <div className={classes.root}>
       <div className={classes.headlineContainer}>
-        <Typography component="h1" className={classes.headline}>
+        <Typography variant="h4" component="h1" className={classes.headline}>
           {headline}
         </Typography>
       </div>
@@ -93,7 +99,8 @@ export default function HubHeadlineContainer({ subHeadline, headline, isLocation
 
         {isLocationHub && (
           <>
-            <hr />
+   
+              {!isNarrowScreen && ( <hr />)}
             <div className={classes.climateMatchButtonContainer}>
               <OpenClimateMatchButton
                 hubUrl={hubUrl}

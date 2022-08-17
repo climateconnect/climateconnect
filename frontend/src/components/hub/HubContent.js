@@ -80,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   infoBoxContainer: (props) => ({
-    marginTop: props.isLocationHub ? theme.spacing(6) : theme.spacing(0),
+    marginTop: theme.spacing(0),
     marginLeft: theme.spacing(2),
     float: "right",
   }),
