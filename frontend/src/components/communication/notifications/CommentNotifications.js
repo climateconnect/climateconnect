@@ -24,7 +24,6 @@ function CommentNotification({ link, object_commented_on, comment_text, is_reply
 }
 
 export const ProjectCommentNotification = ({ notification }) => {
-  
   return (
     <CommentNotification
       link={"/projects/" + notification.project.url_slug + "/#comments"}
