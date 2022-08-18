@@ -50,22 +50,22 @@ export const StyledMenuItem = withStyles((theme) => ({
 //When editing this: make sure all entries are still at the correct index afterwards
 //It has to match with Notification.NOTIFICATION_TYPES in the backend
 const NOTIFICATION_TYPES = [
-  "broadcast",
-  "private_message",
-  "project_comment",
-  "reply_to_project_comment",
-  "project_follower",
-  "project_update_post",
-  "post_comment",
-  "reply_to_post_comment",
-  "group_message",
-  "join_project_request",
-  "project_join_request_approved",
-  "mention",
-  "project_like",
-  "idea_comment",
-  "reply_to_idea_comment",
-  "person_joined_idea",
+  "broadcast", // 0
+  "private_message", // 1
+  "project_comment", // 2
+  "reply_to_project_comment", // 3
+  "project_follower", // 4
+  "project_update_post", // 5
+  "post_comment", // 6
+  "reply_to_post_comment", // 7
+  "group_message", // 8
+  "join_project_request", // 9
+  "project_join_request_approved", // 10
+  "mention", // 11
+  "project_like", // 12
+  "idea_comment", // 13
+  "reply_to_idea_comment", // 14
+  "person_joined_idea", // 15
 ];
 
 //component for rendering the notifications that are shown when clicking on the bell on the right side of the header
