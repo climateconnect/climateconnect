@@ -124,7 +124,7 @@ const useStyles = makeStyles((theme) => {
     loggedInAvatarMobile: {
       height: 60,
       width: 60,
-      display: "block",
+
       margin: "0 auto",
     },
     loggedInLink: {
@@ -171,6 +171,8 @@ const useStyles = makeStyles((theme) => {
     mobileAvatarContainer: {
       display: "flex",
       justifyContent: "center",
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
     },
   };
 });
