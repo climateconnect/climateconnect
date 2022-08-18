@@ -1,4 +1,4 @@
-import { Link, ListItemIcon, ListItemText, MenuItem, withStyles } from "@material-ui/core";
+import { Link, ListItemIcon, ListItemText, MenuItem, withStyles, IconButton } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AlternateEmailIcon from "@material-ui/icons/AlternateEmail";
 import GroupIcon from "@material-ui/icons/Group";
@@ -14,6 +14,8 @@ import {
   ProjectCommentReplyNotification,
 } from "./CommentNotifications";
 import GenericNotification from "./GenericNotification";
+import CloseIcon from "@material-ui/icons/Close";
+import Cookies from "universal-cookie";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -239,29 +241,17 @@ const MentionNotification = ({ notification, texts, locale }) => {
   const previewText = getFragmentsWithMentions(notification[commentProp]?.content, false, locale);
 
   return (
-    <Link href={urlEnding && getLocalePrefix(locale) + urlEnding} underline="none">
-      <StyledMenuItem>
-        <ListItemIcon>
-          <AlternateEmailIcon />
-        </ListItemIcon>
-        <ListItemText
-          primary={
-            sender.first_name +
-            " " +
-            sender.last_name +
-            " " +
-            texts.mentioned_you_in_comment_about_project
-          }
-          secondary={previewText}
-          primaryTypographyProps={{
-            className: classes.messageSender,
-          }}
-          secondaryTypographyProps={{
-            className: classes.notificationText,
-          }}
-        />
-      </StyledMenuItem>
-    </Link>
+    <GenericNotification
+      link={urlEnding && getLocalePrefix(locale) + urlEnding}
+      notificationIcon={{ icon: AlternateEmailIcon }}
+      primaryText={sender.first_name +
+        " " +
+        sender.last_name +
+        " " +
+        texts.mentioned_you_in_comment_about_project}
+      secondaryText={previewText}
+      notification={notification}
+    />
   );
 };
 
