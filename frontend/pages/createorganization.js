@@ -150,8 +150,15 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         url: "/api/organizations/?search=" + values.organizationname,
         locale: locale,
       });
-      if (resp.data.results && resp.data.results.find((r) => r.name === values.organizationname)) {
-        const org = resp.data.results.find((r) => r.name === values.organizationname);
+      if (
+        resp.data.results &&
+        resp.data.results.find(
+          (r) => r.name.toLowerCase() === values.organizationname.toLowerCase()
+        )
+      ) {
+        const org = resp.data.results.find(
+          (r) => r.name.toLowerCase() === values.organizationname.toLowerCase()
+        );
         handleSetErrorMessages({
           errorMessages,
           basicOrganizationInfo: (
