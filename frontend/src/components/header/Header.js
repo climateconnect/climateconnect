@@ -639,17 +639,19 @@ function NarrowScreenLinks({
                 if (link.avatar)
                   return (
                     <div className={classes.mobileAvatarContainer}>
-                      {loggedInUser?.badges?.length > 0 ? (
-                        <ProfileBadge
-                          badge={loggedInUser?.badges[0]}
-                          size="medium"
-                          className={classes.badge}
-                        >
+                      <Link href={"/profiles/" + loggedInUser.url_slug}>
+                        {loggedInUser?.badges?.length > 0 ? (
+                          <ProfileBadge
+                            badge={loggedInUser?.badges[0]}
+                            size="medium"
+                            className={classes.badge}
+                          >
+                            <Avatar {...avatarProps} />
+                          </ProfileBadge>
+                        ) : (
                           <Avatar {...avatarProps} />
-                        </ProfileBadge>
-                      ) : (
-                        <Avatar {...avatarProps} />
-                      )}
+                        )}
+                      </Link>
                     </div>
                   );
                 else if (link.isLogoutButton)
