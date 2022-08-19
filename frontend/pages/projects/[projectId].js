@@ -11,8 +11,9 @@ import WideLayout from "../../src/components/layouts/WideLayout";
 import ProjectPageRoot from "../../src/components/project/ProjectPageRoot";
 import HubsSubHeader from "../../src/components/indexPage/hubsSubHeader/HubsSubHeader";
 import { getAllHubs } from "../../public/lib/hubOperations.js";
-import { useMediaQuery } from "@material-ui/core";
+import { makeStyles, useMediaQuery } from "@material-ui/core";
 import { getImageUrl } from "../../public/lib/imageOperations";
+import ProjectSideBar from "../../src/components/project/ProjectSidebar";
 
 const parseComments = (comments) => {
   return comments
@@ -57,6 +58,24 @@ export async function getServerSideProps(ctx) {
     }),
   };
 }
+const useStyles = makeStyles((theme) => ({
+  leftContent: (props) => ({
+    width: props.showSimilarProjects ? "70%" : "90%",
+    float: "left",
+    height: "100%",
+    padding: "20px",
+    border: "2px solid red",
+  }),
+  rightContent: (props) => ({
+    width: props.showSimilarProjects ? "30%" : "10%",
+    float: "right",
+    height: "100%",
+    padding: "20px",
+    border: "2px solid red",
+    backgroundColor: "#00f000"
+  }),
+}));
+
 
 export default function ProjectPage({
   project,
@@ -68,6 +87,7 @@ export default function ProjectPage({
   hubs,
   similarProjects
 }) {
+  
   const token = new Cookies().get("auth_token");
   const [curComments, setCurComments] = React.useState(parseComments(comments));
   const [message, setMessage] = React.useState({});
@@ -79,6 +99,14 @@ export default function ProjectPage({
   const [numberOfFollowers, setNumberOfFollowers] = React.useState(project.number_of_followers);
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
+  const [showSimilarProjects, setShowSimilarProjects] = React.useState(true);
+  const classes = useStyles({
+    showSimilarProjects: showSimilarProjects
+  });
+
+  const handleHideContent = () => {
+    setShowSimilarProjects(!showSimilarProjects);
+  }
 
   const handleFollow = (userFollows, updateCount, pending) => {
     setIsUserFollowing(userFollows);
@@ -140,6 +168,7 @@ export default function ProjectPage({
       }
       image={getImageUrl(project.image)}
     >
+      <div className={classes.leftContent}>
       {project ? (
         <ProjectPageRoot
           project={{ ...project, team: members, timeline_posts: posts, comments: curComments }}
@@ -159,9 +188,15 @@ export default function ProjectPage({
           handleLike={handleLike}
           similarProjects={similarProjects}
         />
+       
       ) : (
         <PageNotFound itemName={texts.project} />
       )}
+       </div>
+       <div className={classes.rightContent}>
+      <ProjectSideBar handleHideContent={handleHideContent} similarProjects={similarProjects}></ProjectSideBar>
+
+      </div>
     </WideLayout>
   );
 }

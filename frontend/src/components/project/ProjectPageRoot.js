@@ -25,13 +25,17 @@ import ProjectContent from "./ProjectContent";
 import ProjectOverview from "./ProjectOverview";
 import ProjectPreview from "./ProjectPreview";
 import ProjectTeamContent from "./ProjectTeamContent";
+import ProjectSideBar from "./ProjectSidebar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     textAlign: "center",
     color: theme.palette.grey[800],
     position: "relative",
+   
+ 
   },
+  
   tabsContainerWithoutPadding: {
     padding: 0,
     display: "flex",
@@ -82,9 +86,11 @@ export default function ProjectPageRoot({
   const tabContentRef = useRef(null);
   const tabContentContainerSpaceToRight = ElementSpaceToRight({ el: tabContentRef.current });
   console.log(similarProjects);
+ 
   const classes = useStyles();
   const { locale, pathName } = useContext(UserContext);
 
+  
   const texts = getTexts({
     locale: locale,
     page: "project",
@@ -413,10 +419,7 @@ export default function ProjectPageRoot({
   const bindFollow = useLongPress(() => {
     toggleShowFollowers();
   });
- const projectPreviewProps =  {
-          project: similarProjects[0],
-        };
-
+  
   const apiEndpointShareButton = `/api/projects/${project.url_slug}/set_shared_project/`;
   const projectAdminName = project?.creator.name ? project?.creator.name : projectAdmin.name;
   const projectLinkPath = `${getLocalePrefix(locale)}/projects/${project.url_slug}`;
@@ -426,8 +429,11 @@ export default function ProjectPageRoot({
 
   const latestParentComment = [project.comments[0]];
   return (
+    <>
     <div className={classes.root}>
-      <ProjectOverview
+    
+       
+       <ProjectOverview
         apiEndpointShareButton={apiEndpointShareButton}
         contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
         dialogTitleShareButton={dialogTitleShareButton}
@@ -459,23 +465,18 @@ export default function ProjectPageRoot({
         token={token}
         user={user}
         requestedToJoinProject={requestedToJoinProject}
-        handleSetRequestedToJoinProject={handleSetRequestedToJoinProject}
-      />
-  
-      <div>
-      {
-       similarProjects.slice(0).map((index) => {
-       
-        console.log(projectPreviewProps);
-        
-        <ProjectPreview key={index} {...projectPreviewProps}/>
-       
-    
-})   
-}
-      </div>
-     
+        handleSetRequestedToJoinProject={handleSetRequestedToJoinProject} />
+
+
+
+
+
+
+
+
+
       <Container className={classes.tabsContainerWithoutPadding}>
+
         <div ref={projectTabsRef}>
           <Tabs
             variant={screenSize.belowSmall ? "fullWidth" : "standard"}
@@ -488,6 +489,7 @@ export default function ProjectPageRoot({
             <Tab label={discussionTabLabel()} className={classes.tab} />
           </Tabs>
         </div>
+
         {!screenSize.belowSmall && (
           <SocialMediaShareButton
             containerClassName={classes.shareButtonContainer}
@@ -500,9 +502,9 @@ export default function ProjectPageRoot({
             smallScreen={screenSize.belowSmall}
             mailBody={mailBodyShareButton}
             texts={texts}
-            dialogTitle={dialogTitleShareButton}
-          />
+            dialogTitle={dialogTitleShareButton} />
         )}
+
       </Container>
 
       <Container className={classes.tabContent} ref={tabContentRef}>
@@ -520,26 +522,24 @@ export default function ProjectPageRoot({
             showRequesters={showRequesters}
             toggleShowRequests={toggleShowRequests}
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
-            requestedToJoinProject={requestedToJoinProject}
-          />
+            requestedToJoinProject={requestedToJoinProject} />
         </TabContent>
         <TabContent value={tabValue} index={1}>
           <ProjectTeamContent
             project={project}
             handleReadNotifications={handleReadNotifications}
-            leaveProject={requestLeaveProject}
-          />
+            leaveProject={requestLeaveProject} />
         </TabContent>
         <TabContent value={tabValue} index={2}>
           <ProjectCommentsContent
             project={project}
             user={user}
             token={token}
-            setCurComments={setCurComments}
-          />
+            setCurComments={setCurComments} />
         </TabContent>
-       
+
       </Container>
+      </div>
       <Container className={classes.projectInteractionButtonContainer}>
         <ProjectInteractionButtons
           screenSize={screenSize}
@@ -562,52 +562,42 @@ export default function ProjectPageRoot({
           numberOfFollowers={numberOfFollowers}
           numberOfLikes={numberOfLikes}
           bindLike={bindLike}
-          bindFollow={bindFollow}
-        />
+          bindFollow={bindFollow} />
       </Container>
       <ConfirmDialog
         open={confirmDialogOpen.follow}
         onClose={onFollowDialogClose}
         title={texts.do_you_really_want_to_unfollow}
-        text={
-          <span className={classes.dialogText}>
-            {texts.are_you_sure_that_you_want_to_unfollow_this_project}
-          </span>
-        }
+        text={<span className={classes.dialogText}>
+          {texts.are_you_sure_that_you_want_to_unfollow_this_project}
+        </span>}
         confirmText={texts.yes}
-        cancelText={texts.no}
-      />
+        cancelText={texts.no} />
       <ConfirmDialog
         open={confirmDialogOpen.like}
         onClose={onLikeDialogClose}
         title={texts.do_you_really_want_to_dislike}
-        text={
-          <span className={classes.dialogText}>
-            {texts.are_you_sure_that_you_want_to_dislike_this_project}
-          </span>
-        }
+        text={<span className={classes.dialogText}>
+          {texts.are_you_sure_that_you_want_to_dislike_this_project}
+        </span>}
         confirmText={texts.yes}
-        cancelText={texts.no}
-      />
+        cancelText={texts.no} />
       <ConfirmDialog
         open={confirmDialogOpen.leave}
         onClose={onConfirmDialogClose}
         title={texts.do_you_really_want_to_leave_this_project}
-        text={
-          <span className={classes.dialogText}>
-            {texts.are_you_sure_that_you_want_to_leave_this_project}
-            <br />
-            {texts.you_wont_be_part_of_the_team_anymore}
-            {project?.team?.length === 1 && (
-              <Typography color="error">
-                <b>{texts.you_are_the_only_member_of_this_project}</b>
-              </Typography>
-            )}
-          </span>
-        }
+        text={<span className={classes.dialogText}>
+          {texts.are_you_sure_that_you_want_to_leave_this_project}
+          <br />
+          {texts.you_wont_be_part_of_the_team_anymore}
+          {project?.team?.length === 1 && (
+            <Typography color="error">
+              <b>{texts.you_are_the_only_member_of_this_project}</b>
+            </Typography>
+          )}
+        </span>}
         confirmText={texts.yes}
-        cancelText={texts.no}
-      />
+        cancelText={texts.no} />
       <Tutorial
         fixedPosition
         pointerRefs={{
@@ -617,9 +607,9 @@ export default function ProjectPageRoot({
           projectTabsRef: projectTabsRef,
         }}
         typesByTabValue={typesByTabValue}
-        handleTabChange={handleTabChange}
-      />
-    </div>
+        handleTabChange={handleTabChange} />
+       
+        </>
   );
 }
 
