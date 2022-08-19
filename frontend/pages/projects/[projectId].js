@@ -34,7 +34,7 @@ const parseComments = (comments) => {
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const projectUrl = encodeURI(ctx.query.projectId);
-  const [project, members, posts, comments, following, liking, hubs] = await Promise.all([
+  const [project, members, posts, comments, following, liking, hubs, similarProjects] = await Promise.all([
     getProjectByIdIfExists(projectUrl, auth_token, ctx.locale),
     getProjectMembersByIdIfExists(projectUrl, ctx.locale),
     getPostsByProject(projectUrl, auth_token, ctx.locale),
@@ -42,6 +42,7 @@ export async function getServerSideProps(ctx) {
     auth_token ? getIsUserFollowing(projectUrl, auth_token, ctx.locale) : false,
     auth_token ? getIsUserLiking(projectUrl, auth_token, ctx.locale) : false,
     getAllHubs(ctx.locale),
+    getSimilarProjects(projectUrl, ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -52,6 +53,7 @@ export async function getServerSideProps(ctx) {
       following: following,
       liking: liking,
       hubs: hubs,
+      similarProjects: similarProjects
     }),
   };
 }
@@ -64,6 +66,7 @@ export default function ProjectPage({
   following,
   liking,
   hubs,
+  similarProjects
 }) {
   const token = new Cookies().get("auth_token");
   const [curComments, setCurComments] = React.useState(parseComments(comments));
@@ -154,6 +157,7 @@ export default function ProjectPage({
           numberOfFollowers={numberOfFollowers}
           handleFollow={handleFollow}
           handleLike={handleLike}
+          similarProjects={similarProjects}
         />
       ) : (
         <PageNotFound itemName={texts.project} />
@@ -262,7 +266,26 @@ async function getProjectMembersByIdIfExists(projectUrl, locale) {
     });
     if (resp.data.results.length === 0) return null;
     else {
+      console.log(resp);
       return parseProjectMembers(resp.data.results);
+    }
+  } catch (err) {
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
+
+async function getSimilarProjects(projectUrl, locale) {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/"+projectUrl+"/similar/",
+      locale: locale
+    });
+    if (resp.data.results.length === 0) return null;
+    else {
+      console.log(resp);
+      return resp.data.results;
     }
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);

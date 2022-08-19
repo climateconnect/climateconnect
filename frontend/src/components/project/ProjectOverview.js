@@ -74,6 +74,10 @@ const useStyles = makeStyles((theme) => ({
   imageContainer: {
     position: "relative",
   },
+  test: {
+    position: "absolute",
+
+  }
 }));
 
 const componentDecorator = (href, text, key) => (
@@ -383,6 +387,7 @@ function LargeScreenOverview({
       <Typography component="h1" variant="h4" className={classes.largeScreenHeader}>
         {project.name}
       </Typography>
+      
       <div className={classes.flexContainer}>
         <img
           className={classes.inlineImage}
@@ -457,8 +462,11 @@ function LargeScreenOverview({
                 collapsable={true}
               />
             )}
+            
           </div>
+        
         </div>
+      
       </div>
     </>
   );

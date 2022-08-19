@@ -23,6 +23,7 @@ import ProjectInteractionButtons from "./Buttons/ProjectInteractionButtons";
 import ProjectCommentsContent from "./ProjectCommentsContent";
 import ProjectContent from "./ProjectContent";
 import ProjectOverview from "./ProjectOverview";
+import ProjectPreview from "./ProjectPreview";
 import ProjectTeamContent from "./ProjectTeamContent";
 
 const useStyles = makeStyles((theme) => ({
@@ -75,11 +76,12 @@ export default function ProjectPageRoot({
   numberOfFollowers,
   handleLike,
   handleFollow,
+  similarProjects,
 }) {
   const visibleFooterHeight = VisibleFooterHeight({});
   const tabContentRef = useRef(null);
   const tabContentContainerSpaceToRight = ElementSpaceToRight({ el: tabContentRef.current });
-
+  console.log(similarProjects);
   const classes = useStyles();
   const { locale, pathName } = useContext(UserContext);
 
@@ -411,6 +413,9 @@ export default function ProjectPageRoot({
   const bindFollow = useLongPress(() => {
     toggleShowFollowers();
   });
+ const projectPreviewProps =  {
+          project: similarProjects[0],
+        };
 
   const apiEndpointShareButton = `/api/projects/${project.url_slug}/set_shared_project/`;
   const projectAdminName = project?.creator.name ? project?.creator.name : projectAdmin.name;
@@ -456,7 +461,20 @@ export default function ProjectPageRoot({
         requestedToJoinProject={requestedToJoinProject}
         handleSetRequestedToJoinProject={handleSetRequestedToJoinProject}
       />
-
+  
+      <div>
+      {
+       similarProjects.slice(0).map((index) => {
+       
+        console.log(projectPreviewProps);
+        
+        <ProjectPreview key={index} {...projectPreviewProps}/>
+       
+    
+})   
+}
+      </div>
+     
       <Container className={classes.tabsContainerWithoutPadding}>
         <div ref={projectTabsRef}>
           <Tabs
@@ -520,6 +538,7 @@ export default function ProjectPageRoot({
             setCurComments={setCurComments}
           />
         </TabContent>
+       
       </Container>
       <Container className={classes.projectInteractionButtonContainer}>
         <ProjectInteractionButtons
