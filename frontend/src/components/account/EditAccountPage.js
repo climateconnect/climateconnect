@@ -247,6 +247,7 @@ export default function EditAccountPage({
   onClickCheckTranslations,
   allHubs,
   type,
+  isOrgCreationStage,
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
@@ -337,6 +338,8 @@ export default function EditAccountPage({
       },
     });
   };
+
+  console.log(isOrgCreationStage);
 
   const displayInfoArrayData = (key, infoEl) => {
     const [skillsDialogOpen, setSkillsDialogOpen] = React.useState(false);
@@ -882,6 +885,7 @@ export default function EditAccountPage({
                 </Button>
               )}
               {isOrganization &&
+                !isOrgCreationStage &&
                 (isNarrowScreen ? (
                   <IconButton
                     className={classes.editButton}

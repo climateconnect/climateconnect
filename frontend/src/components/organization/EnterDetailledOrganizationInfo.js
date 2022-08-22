@@ -78,6 +78,7 @@ export default function EnterDetailledOrganizationInfo({
         errorMessage={errorMessage}
         loadingSubmit={loadingSubmit}
         allHubs={allHubs}
+        isOrgCreationStage={true}
       />
     </div>
   );

@@ -118,7 +118,7 @@ export default function WideLayout({
               }}
               onClose={() => {
                 resetAlertMessage && resetAlertMessage();
-                setAlertOpen(false);                
+                setAlertOpen(false);
               }}
             >
               {getMessageFromUrl(message ? message : initialMessage)}

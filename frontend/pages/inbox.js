@@ -96,7 +96,7 @@ export default function Inbox({ chatData, next }) {
     next: next,
   });
 
-  const resetAlertMessage = () => setErrorMessage("")
+  const resetAlertMessage = () => setErrorMessage("");
 
   const handleGroupNameChange = (e) => {
     setGroupName(e.target.value);
