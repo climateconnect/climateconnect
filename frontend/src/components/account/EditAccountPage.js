@@ -274,7 +274,7 @@ export default function EditAccountPage({
   const handleDialogClickOpen = (dialogKey) => {
     setOpen({ ...open, [dialogKey]: true });
   };
-
+  console.log(account);
   const handleBackgroundClose = (image) => {
     setOpen({ ...open, backgroundDialog: false });
     if (image && image instanceof HTMLCanvasElement) {
@@ -596,6 +596,30 @@ export default function EditAccountPage({
             onSelectNewHub={onSelectNewHub}
           />
         );
+      } else if (key === "short_description") {
+        // textfield for short description of an Org, it should be limited to 280 characters
+        return (
+          <div key={key} className={classes.infoElement}>
+            <Typography className={classes.subtitle}>
+              {i.name}
+              {i.helptext && (
+                <Tooltip title={i.helptext}>
+                  <IconButton>
+                    <HelpOutlineIcon className={classes.helpIcon} />
+                  </IconButton>
+                </Tooltip>
+              )}
+            </Typography>
+            <TextField
+              inputProps={{ maxLength: 280 }}
+              required={i.required}
+              fullWidth
+              value={i.value}
+              multiline
+              onChange={handleChange}
+            />
+          </div>
+        );
       } else if (key != "parent_organization" && ["text", "bio"].includes(i.type)) {
         //This is the fallback for normal textfields
         return (
@@ -690,7 +714,7 @@ export default function EditAccountPage({
     event.preventDefault();
     handleSubmit(editedAccount);
   };
-
+  console.log(editedAccount);
   const getDetailledDescription = () => {
     const detailled_description_obj = Object.keys(editedAccount.info).filter((i) => {
       const el = getFullInfoElement(infoMetadata, i, editedAccount.info[i]);
