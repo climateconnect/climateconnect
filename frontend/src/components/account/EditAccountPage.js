@@ -339,8 +339,6 @@ export default function EditAccountPage({
     });
   };
 
-  console.log(isOrgCreationStage);
-
   const displayInfoArrayData = (key, infoEl) => {
     const [skillsDialogOpen, setSkillsDialogOpen] = React.useState(false);
     const [selectedItems, setSelectedItems] = React.useState(
