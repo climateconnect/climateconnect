@@ -51,7 +51,6 @@ export default function ManageOrganizationMembers({
 
   const router = useRouter();
   const isCreationStage = router.query.isCreationStage;
-  console.log(isCreationStage);
 
   const handleSubmit = (event) => {
     event.preventDefault();
