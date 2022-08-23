@@ -250,7 +250,6 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       targetLanguage
     );
     await makeCreateOrganizationRequest(organizationToSubmit);
-
   };
 
   const makeCreateOrganizationRequest = (organizationToSubmit) => {
@@ -266,7 +265,8 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         Router.push({
           pathname: "/manageOrganizationMembers/" + response.data.url_slug,
           query: {
-            message: "You have successfully created an organization! Why not add some members?"
+            message: texts.you_have_successfully_created_an_organization_you_can_add_members,
+            isCreationStage: true,
           },
         });
         return;

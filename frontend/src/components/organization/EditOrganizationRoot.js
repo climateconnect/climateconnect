@@ -170,7 +170,6 @@ export default function EditOrganizationRoot({
             errorMessage={errorMessage}
             onClickCheckTranslations={onClickCheckTranslations}
             allHubs={allHubs}
-            
           />
         ) : (
           <>
