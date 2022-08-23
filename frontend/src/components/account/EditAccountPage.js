@@ -247,7 +247,6 @@ export default function EditAccountPage({
   onClickCheckTranslations,
   allHubs,
   type,
-  isOrgCreationStage,
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
@@ -882,31 +881,7 @@ export default function EditAccountPage({
                   {texts.check_translations}
                 </Button>
               )}
-              {isOrganization &&
-                !isOrgCreationStage &&
-                (isNarrowScreen ? (
-                  <IconButton
-                    className={classes.editButton}
-                    variant="contained"
-                    color="primary"
-                    href={
-                      getLocalePrefix(locale) + "/manageOrganizationMembers/" + account.url_slug
-                    }
-                  >
-                    <GroupAddIcon />
-                  </IconButton>
-                ) : (
-                  <Button
-                    className={classes.editButton}
-                    variant="contained"
-                    color="primary"
-                    href={
-                      getLocalePrefix(locale) + "/manageOrganizationMembers/" + account.url_slug
-                    }
-                  >
-                    {texts.manage_members}
-                  </Button>
-                ))}
+             
             </div>
           </Container>
         </Container>
