@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
   translationBlockElement: {
     flexGrow: 0.48,
+    flexBasis:400,
   },
   topButtonRow: {
     display: "inline-flex",
