@@ -184,6 +184,8 @@ class GetChatsView(ListAPIView):
         else:
             return []
 
+
+
 class GetSearchedChat(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = MessageParticipantSerializer
@@ -191,15 +193,12 @@ class GetSearchedChat(ListAPIView):
     pagination_class = ChatsPagination
     
     def get_queryset(self):
-        req = self.request
-    
-        query_dict = req.GET
-        query = query_dict.get("search")
+        
+        query = self.request.query_params.get('search')
 
         chat_ids = Participant.objects.filter(
             user=self.request.user, is_active=True
         ).values_list('chat', flat=True)
-        print(chat_ids)
         
         participants_matching_query = Participant.objects.annotate(
             full_name=Concat('user__first_name', V(' '), 'user__last_name')
@@ -211,8 +210,6 @@ class GetSearchedChat(ListAPIView):
             |
             Q(name__icontains=query, id__in=chat_ids)
         ).distinct()
-        print("printing chats!")
-        print(chats)
         return chats
 
       
