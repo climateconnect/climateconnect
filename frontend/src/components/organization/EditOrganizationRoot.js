@@ -192,6 +192,11 @@ export default function EditOrganizationRoot({
               submitButtonText={texts.save}
               textsToTranslate={[
                 {
+                  textKey: "name",
+                  rows: 1,
+                  headlineTextKey: "organization_name",
+                },
+                {
                   textKey: "info.short_description",
                   rows: 5,
                   headlineTextKey: "short_description",

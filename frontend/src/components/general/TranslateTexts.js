@@ -97,6 +97,12 @@ export default function TranslateTexts({
     locale: targetLanguage,
     organization: organization,
   });
+
+  const localeTexts = getTexts({
+    page: pageName,
+    locale: locale,
+    organization: organization
+  })
   const [waitingForTranslation, setWaitingForTranslation] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
@@ -206,11 +212,11 @@ export default function TranslateTexts({
     <Container className={classes.root}>
       <form onSubmit={onSubmit}>
         <Typography className={classes.explanation} color="secondary">
-          {introTextKey && texts[introTextKey]}
+           {introTextKey && localeTexts[introTextKey]}
         </Typography>
         <div className={classes.topButtonRow}>
           <Button onClick={goToPreviousStep} variant="contained">
-            {texts.back}
+            {localeTexts.back}
           </Button>
           <Button
             variant="contained"
@@ -222,7 +228,7 @@ export default function TranslateTexts({
             {waitingForTranslation ? (
               <CircularProgress className={classes.translationLoader} size={23} />
             ) : (
-              texts.automatically_translate
+              localeTexts.automatically_translate
             )}
           </Button>
           <div className={classes.submitOptions}>
@@ -237,7 +243,7 @@ export default function TranslateTexts({
               ) : submitButtonText ? (
                 submitButtonText
               ) : (
-                texts.skip_and_publish
+                localeTexts.skip_and_publish
               )}
             </Button>
             {saveAsDraft && (
@@ -250,7 +256,7 @@ export default function TranslateTexts({
                 {loadingSubmitDraft ? (
                   <CircularProgress className={classes.translationLoader} size={23} />
                 ) : (
-                  texts.save_as_draft
+                  localeTexts.save_as_draft
                 )}
               </Button>
             )}

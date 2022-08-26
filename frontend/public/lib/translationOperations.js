@@ -30,6 +30,7 @@ export function getOrganizationTranslationObject(translation) {
     name: translation.name_translation,
     school: translation.school_translation,
     organ: translation.organ_translation,
+    about: translation.about_translation,
   };
 }
 
