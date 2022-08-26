@@ -8,6 +8,7 @@ import {
 } from "@material-ui/core";
 import _ from "lodash";
 import React, { useContext, useEffect, useState } from "react";
+import de from "react-timeago/lib/language-strings/de";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import { getNestedValue } from "../../../public/lib/generalOperations";
 import getTexts from "../../../public/texts/texts";
@@ -37,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
   translationBlockElement: {
     flexGrow: 0.48,
-    flexBasis:400,
+    flexBasis: 400,
   },
   topButtonRow: {
     display: "inline-flex",
@@ -98,11 +99,13 @@ export default function TranslateTexts({
     organization: organization,
   });
 
+  console.log(data.language);
+
   const localeTexts = getTexts({
     page: pageName,
     locale: locale,
-    organization: organization
-  })
+    organization: organization,
+  });
   const [waitingForTranslation, setWaitingForTranslation] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
@@ -194,7 +197,7 @@ export default function TranslateTexts({
         else obj[key] = translations[key]?.translated_text;
         return obj;
       }, {});
-      console.log(translationsObject);
+
       handleChangeTranslationContent(targetLanguage, translationsObject);
       setWaitingForTranslation(false);
     } catch (e) {
@@ -212,7 +215,7 @@ export default function TranslateTexts({
     <Container className={classes.root}>
       <form onSubmit={onSubmit}>
         <Typography className={classes.explanation} color="secondary">
-           {introTextKey && localeTexts[introTextKey]}
+          {introTextKey && localeTexts[introTextKey]}
         </Typography>
         <div className={classes.topButtonRow}>
           <Button onClick={goToPreviousStep} variant="contained">
@@ -280,6 +283,8 @@ export default function TranslateTexts({
                   targetLanguage={targetLanguage}
                   texts={texts}
                   targetLanguageTexts={targetLanguageTexts}
+                  primaryLanguage={data.language}
+                  locale={locale}
                 />
               ));
             } else
@@ -296,6 +301,8 @@ export default function TranslateTexts({
                   targetLanguage={targetLanguage}
                   texts={texts}
                   targetLanguageTexts={targetLanguageTexts}
+                  primaryLanguage={data.language}
+                  locale={locale}
                 />
               );
           })}
@@ -328,6 +335,8 @@ function TranslationBlock({
   noHeadline,
   texts,
   targetLanguageTexts,
+  primaryLanguage,
+  locale,
 }) {
   const classes = useStyles();
   const flatDataKey = dataKey.includes(".")
@@ -343,30 +352,50 @@ function TranslationBlock({
       handleOriginalTextChange(newArrayValue, dataKey, data);
     }
   };
+
+
+  const leftHeadlineText =
+    primaryLanguage === locale ? texts[headlineTextKey] : targetLanguageTexts[headlineTextKey];
+  const rightHeadlineText =
+    primaryLanguage !== locale ? texts[headlineTextKey] : targetLanguageTexts[headlineTextKey];
+
+  const leftBodyText =
+    primaryLanguage === locale
+      ? isInArray
+        ? getNestedValue(data, dataKey)[indexInArray]
+        : getNestedValue(data, dataKey)
+      : translations[targetLanguage] &&
+        (isInArray
+          ? translations[targetLanguage][flatDataKey][indexInArray]
+          : translations[targetLanguage][flatDataKey]);
+
+  const rigthBodyText =
+    primaryLanguage !== locale
+      ? isInArray
+        ? getNestedValue(data, dataKey)[indexInArray]
+        : getNestedValue(data, dataKey)
+      : translations[targetLanguage] &&
+        (isInArray
+          ? translations[targetLanguage][flatDataKey][indexInArray]
+          : translations[targetLanguage][flatDataKey]);
+
   return (
     <div className={classes.translationBlock}>
       <TranslationBlockElement
-        headline={texts[headlineTextKey]}
+        headline={leftHeadlineText}
         noHeadline={noHeadline}
         rows={rows}
-        content={
-          isInArray ? getNestedValue(data, dataKey)[indexInArray] : getNestedValue(data, dataKey)
-        }
+        content={leftBodyText}
         handleContentChange={(event) => {
           changeOriginalText(event.target.value, dataKey);
         }}
       />
       <TranslationBlockElement
-        headline={targetLanguageTexts[headlineTextKey]}
+        headline={rightHeadlineText}
         noHeadline={noHeadline}
         rows={rows}
         isTranslation
-        content={
-          translations[targetLanguage] &&
-          (isInArray
-            ? translations[targetLanguage][flatDataKey][indexInArray]
-            : translations[targetLanguage][flatDataKey])
-        }
+        content={rigthBodyText}
         handleContentChange={(event) => {
           handleTranslationChange(event.target.value, dataKey, indexInArray);
         }}

@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
   },
   spacer: {
     marginBottom: theme.spacing(1),
-  }
+  },
 }));
 
 export default function EditProjectContent({
@@ -257,7 +257,7 @@ export default function EditProjectContent({
         </div>
         <div className={classes.block}>
           <ProjectDescriptionHelp status={project.status} />
-          <div className={classes.spacer}/>
+          <div className={classes.spacer} />
           <TextField
             variant="outlined"
             fullWidth
