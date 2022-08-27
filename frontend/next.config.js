@@ -36,7 +36,7 @@ module.exports = withBundleAnalyzer({
         has: [
           {
             type: "cookie",
-            key: "token",
+            key: "auth_token",
           },
         ],
         permanent: false,

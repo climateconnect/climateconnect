@@ -115,8 +115,8 @@ export default function TranslateTexts({
     }
   };
 
-  const handleOriginalTextChange = (newValue, dataKey) => {
-    const obj = {};
+  const handleOriginalTextChange = (newValue, dataKey, data) => {
+    const obj = data;
     _.set(obj, dataKey, newValue);
     handleSetData(obj);
   };
@@ -329,11 +329,11 @@ function TranslationBlock({
 
   const changeOriginalText = (newValue, dataKey) => {
     if (!isInArray) {
-      handleOriginalTextChange(newValue, dataKey);
+      handleOriginalTextChange(newValue, dataKey, data);
     } else {
       const newArrayValue = data[dataKey];
       newArrayValue[indexInArray] = newValue;
-      handleOriginalTextChange(newArrayValue, dataKey);
+      handleOriginalTextChange(newArrayValue, dataKey, data);
     }
   };
   return (

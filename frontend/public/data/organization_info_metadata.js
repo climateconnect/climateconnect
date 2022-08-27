@@ -99,7 +99,7 @@ export default function getOrganizationInfoMetadata(locale, organization) {
         },
         {
           key: 2,
-          name: "51-100",
+          name: "51-250",
         },
         {
           key: 3,

@@ -3,25 +3,24 @@ import re
 
 from climateconnect_api.models.user import UserProfile
 from climateconnect_api.utility.email_setup import get_template_id, send_email
-from climateconnect_api.utility.translation import (get_user_lang_code,
-                                                    get_user_lang_url)
+from climateconnect_api.utility.translation import get_user_lang_code, get_user_lang_url
 from django.conf import settings
 from mailjet_rest import Client
 
 logger = logging.getLogger(__name__)
 
-mailjet = Client(auth=(settings.MJ_APIKEY_PUBLIC,
-                 settings.MJ_APIKEY_PRIVATE), version='v3.1')
+mailjet = Client(
+    auth=(settings.MJ_APIKEY_PUBLIC, settings.MJ_APIKEY_PRIVATE), version="v3.1"
+)
 
 
 def linkify_mentions(content):
-    r = re.compile(
-        '(@@@__(?P<url_slug>[^\^]*)\^\^__(?P<display>[^\@]*)@@@\^\^\^)')
+    r = re.compile("(@@@__(?P<url_slug>[^\^]*)\^\^__(?P<display>[^\@]*)@@@\^\^\^)")
     matches = re.findall(r, content)
 
     for m in matches:
         whole, _, display = m[0], m[1], m[2]
-        content = content.replace(whole, '@' + display)
+        content = content.replace(whole, "@" + display)
     return content
 
 
@@ -29,16 +28,16 @@ def send_project_comment_reply_email(user, project, comment, sender, notificatio
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
         "en": "Someone replied to your comment on Climate Connect",
-        "de": "Jemand hat auf deinen Kommentar auf Climate Connect geantwortet"
+        "de": "Jemand hat auf deinen Kommentar auf Climate Connect geantwortet",
     }
     base_url = settings.FRONTEND_URL
-    url_ending = "/projects/"+project.url_slug+"#comments"
+    url_ending = "/projects/" + project.url_slug + "#comments"
     variables = {
         "FirstName": user.first_name,
         "CommenterName": sender.first_name + " " + sender.last_name,
         "CommentText": linkify_mentions(comment),
         "url": base_url + get_user_lang_url(lang_code) + url_ending,
-        "ProjectName": project.name
+        "ProjectName": project.name,
     }
     send_email(
         user=user,
@@ -46,24 +45,28 @@ def send_project_comment_reply_email(user, project, comment, sender, notificatio
         template_key="PROJECT_COMMENT_REPLY_TEMPLATE_ID",
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_reply_to_your_comment",
-        notification=notification
+        notification=notification,
     )
 
 
 def send_project_comment_email(user, project, comment, sender, notification):
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
-        "en": "Somebody left a comment on your project {} on Climate Connect".format(project.name),
-        "de": "Jemand hat dein Projekt {} auf Climate Connect kommentiert".format(project.name)
+        "en": "Somebody left a comment on your project {} on Climate Connect".format(
+            project.name
+        ),
+        "de": "Jemand hat dein Projekt {} auf Climate Connect kommentiert".format(
+            project.name
+        ),
     }
     base_url = settings.FRONTEND_URL
-    url_ending = "/projects/"+project.url_slug+"#comments"
+    url_ending = "/projects/" + project.url_slug + "#comments"
     variables = {
         "ProjectName": project.name,
         "CommentText": linkify_mentions(comment),
         "FirstName": user.first_name,
         "CommenterName": sender.first_name + " " + sender.last_name,
-        "url": base_url + get_user_lang_url(lang_code) + url_ending
+        "url": base_url + get_user_lang_url(lang_code) + url_ending,
     }
     send_email(
         user=user,
@@ -71,26 +74,31 @@ def send_project_comment_email(user, project, comment, sender, notification):
         template_key="PROJECT_COMMENT_TEMPLATE_ID",
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_comment_on_your_project",
-        notification=notification
+        notification=notification,
     )
 
 
 def send_idea_comment_email(user, idea, comment, sender, notification):
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
-        "en": "Somebody left a comment on your idea '{}' on Climate Connect".format(idea.name),
-        "de": "Jemand hat einen Kommentar zu deiner Idee '{}' auf Climate Connect hinterlassen.".format(idea.name)
+        "en": "Somebody left a comment on your idea '{}' on Climate Connect".format(
+            idea.name
+        ),
+        "de": "Jemand hat einen Kommentar zu deiner Idee '{}' auf Climate Connect hinterlassen.".format(
+            idea.name
+        ),
     }
     base_url = settings.FRONTEND_URL
-    url_ending = "/hubs/" + idea.hub_shared_in.url_slug + \
-        "?idea=" + idea.url_slug + "#ideas"
+    url_ending = (
+        "/hubs/" + idea.hub_shared_in.url_slug + "?idea=" + idea.url_slug + "#ideas"
+    )
 
     variables = {
         "IdeaName": idea.name,
         "CommentText": linkify_mentions(comment),
         "FirstName": user.first_name,
         "CommenterName": sender.first_name + " " + sender.last_name,
-        "url": base_url + get_user_lang_url(lang_code) + url_ending
+        "url": base_url + get_user_lang_url(lang_code) + url_ending,
     }
     send_email(
         user=user,
@@ -98,50 +106,48 @@ def send_idea_comment_email(user, idea, comment, sender, notification):
         template_key="IDEA_COMMENT_TEMPLATE_ID",
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_comment_on_your_idea",
-        notification=notification
+        notification=notification,
     )
 
 
 # @entity_type: either "project" or "idea"
 # @entity: the idea or project object (depending on entity_type)
-def send_mention_email(
-    user,
-    entity_type,
-    entity,
-    comment,
-    sender,
-    notification
-):
+def send_mention_email(user, entity_type, entity, comment, sender, notification):
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
         "en": "Somebody mentioned you in a comment on Climate Connect",
-        "de": "Jemand hat dich in einem Kommentar auf Climate Connect erwähnt"
+        "de": "Jemand hat dich in einem Kommentar auf Climate Connect erwähnt",
     }
 
     base_url = settings.FRONTEND_URL
     variables = {
         "CommentText": linkify_mentions(comment),
         "FirstName": user.first_name,
-        "CommenterName": sender.first_name + " " + sender.last_name
+        "CommenterName": sender.first_name + " " + sender.last_name,
     }
-    if(entity_type == "project"):
+    if entity_type == "project":
         variables["ProjectName"] = entity.name
-        url_ending = "/projects/"+entity.url_slug+"#comments"
+        url_ending = "/projects/" + entity.url_slug + "#comments"
         template_key = "PROJECT_MENTION_TEMPLATE_ID"
-    if(entity_type == "idea"):
+    if entity_type == "idea":
         variables["IdeaName"] = entity.name
-        url_ending = "/hubs/" + entity.hub_shared_in.url_slug + \
-            "?idea=" + entity.url_slug + "#ideas"
+        url_ending = (
+            "/hubs/"
+            + entity.hub_shared_in.url_slug
+            + "?idea="
+            + entity.url_slug
+            + "#ideas"
+        )
         template_key = "IDEA_MENTION_TEMPLATE_ID"
     variables["url"] = base_url + get_user_lang_url(lang_code) + url_ending
-    
+
     send_email(
         user=user,
         variables=variables,
         template_key=template_key,
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_mention",
-        notification=notification
+        notification=notification,
     )
 
 
@@ -149,19 +155,20 @@ def send_idea_comment_reply_email(user, idea, comment, sender, notification):
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
         "en": "Someone replied to your comment on Climate Connect",
-        "de": "Jemand hat auf deinen Kommentar auf Climate Connect geantwortet."
+        "de": "Jemand hat auf deinen Kommentar auf Climate Connect geantwortet.",
     }
 
     base_url = settings.FRONTEND_URL
-    url_ending = "/hubs/" + idea.hub_shared_in.url_slug + \
-        "?idea=" + idea.url_slug + "#ideas"
+    url_ending = (
+        "/hubs/" + idea.hub_shared_in.url_slug + "?idea=" + idea.url_slug + "#ideas"
+    )
 
     variables = {
         "FirstName": user.first_name,
         "CommenterName": sender.first_name + " " + sender.last_name,
         "CommentText": linkify_mentions(comment),
         "url": base_url + get_user_lang_url(lang_code) + url_ending,
-        "IdeaName": idea.name
+        "IdeaName": idea.name,
     }
     send_email(
         user=user,
@@ -169,27 +176,30 @@ def send_idea_comment_reply_email(user, idea, comment, sender, notification):
         template_key="IDEA_COMMENT_REPLY_TEMPLATE_ID",
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_reply_to_your_comment",
-        notification=notification
+        notification=notification,
     )
 
 
 def send_project_follower_email(user, project_follower, notification):
     lang_code = get_user_lang_code(user)
-    follower_name = project_follower.user.first_name + \
-        " " + project_follower.user.last_name
+    follower_name = (
+        project_follower.user.first_name + " " + project_follower.user.last_name
+    )
     subjects_by_language = {
         "en": "{} now follows your project on Climate Connect".format(follower_name),
-        "de": "{} folgt jetzt deinem Projekt auf Climate Connect".format(follower_name)
+        "de": "{} folgt jetzt deinem Projekt auf Climate Connect".format(follower_name),
     }
 
     base_url = settings.FRONTEND_URL
-    url_ending = "/projects/" + project_follower.project.url_slug + "?show_followers=true"
+    url_ending = (
+        "/projects/" + project_follower.project.url_slug + "?show_followers=true"
+    )
 
     variables = {
         "FollowerName": follower_name,
         "FirstName": user.first_name,
         "ProjectName": project_follower.project.name,
-        "url": base_url + get_user_lang_url(lang_code) + url_ending
+        "url": base_url + get_user_lang_url(lang_code) + url_ending,
     }
     send_email(
         user=user,
@@ -197,16 +207,16 @@ def send_project_follower_email(user, project_follower, notification):
         template_key="PROJECT_FOLLOWER_TEMPLATE_ID",
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_new_project_follower",
-        notification=notification
+        notification=notification,
     )
+
 
 def send_project_like_email(user, project_like, notification):
     lang_code = get_user_lang_code(user)
-    liking_user_name = project_like.user.first_name + \
-        " " + project_like.user.last_name
+    liking_user_name = project_like.user.first_name + " " + project_like.user.last_name
     subjects_by_language = {
         "en": "{} liked your project on Climate Connect".format(liking_user_name),
-        "de": "{} gefällt dein Projekt auf Climate Connect".format(liking_user_name)
+        "de": "{} gefällt dein Projekt auf Climate Connect".format(liking_user_name),
     }
 
     base_url = settings.FRONTEND_URL
@@ -216,7 +226,7 @@ def send_project_like_email(user, project_like, notification):
         "LikingUserName": liking_user_name,
         "FirstName": user.first_name,
         "ProjectName": project_like.project.name,
-        "url": base_url + get_user_lang_url(lang_code) + url_ending
+        "url": base_url + get_user_lang_url(lang_code) + url_ending,
     }
     send_email(
         user=user,
@@ -224,26 +234,32 @@ def send_project_like_email(user, project_like, notification):
         template_key="PROJECT_LIKE_TEMPLATE_ID",
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_new_project_like",
-        notification=notification
+        notification=notification,
     )
+
 
 def send_join_project_request_email(user, request, requester, notification):
     lang_code = get_user_lang_code(user)
-    requester_name = requester.first_name + \
-        " " + requester.last_name
+    requester_name = requester.first_name + " " + requester.last_name
     subjects_by_language = {
-        "en": "{} requested to join your project on Climate Connect".format(requester_name),
-        "de": "{} möchte bei deinem Project auf Climate Connect mitmachen".format(requester_name)
+        "en": "{} requested to join your project on Climate Connect".format(
+            requester_name
+        ),
+        "de": "{} möchte bei deinem Project auf Climate Connect mitmachen".format(
+            requester_name
+        ),
     }
 
     base_url = settings.FRONTEND_URL
-    url_ending = "/projects/" + request.target_project.url_slug + "?show_join_requests=true"
+    url_ending = (
+        "/projects/" + request.target_project.url_slug + "?show_join_requests=true"
+    )
 
     variables = {
         "RequesterName": requester_name,
         "FirstName": user.first_name,
         "ProjectName": request.target_project.name,
-        "url": base_url + get_user_lang_url(lang_code) + url_ending
+        "url": base_url + get_user_lang_url(lang_code) + url_ending,
     }
     send_email(
         user=user,
@@ -251,5 +267,5 @@ def send_join_project_request_email(user, request, requester, notification):
         template_key="PROJECT_JOIN_REQUEST_TEMPLATE_ID",
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_join_request",
-        notification=notification
-    )  
+        notification=notification,
+    )

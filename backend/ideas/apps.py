@@ -2,4 +2,5 @@ from django.apps import AppConfig
 
 
 class IdeasConfig(AppConfig):
-    name = 'ideas'
+    name = "ideas"
+    default_auto_field = "django.db.models.BigAutoField"

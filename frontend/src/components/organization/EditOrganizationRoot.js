@@ -36,7 +36,7 @@ export default function EditOrganizationRoot({
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
-  const token = cookies.get("token");
+  const token = cookies.get("auth_token");
   const { locale, locales } = useContext(UserContext);
   const STEPS = ["edit_organization", "edit_translations"];
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";

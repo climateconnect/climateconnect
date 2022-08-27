@@ -1,3 +1,6 @@
 from chat_messages.models.message import (
-    MessageParticipants, Message, MessageReceiver, Participant
+    MessageParticipants,
+    Message,
+    MessageReceiver,
+    Participant,
 )

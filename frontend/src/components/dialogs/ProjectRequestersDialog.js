@@ -177,7 +177,7 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
    */
   async function handleApproveRequest() {
     const cookies = new Cookies();
-    const token = cookies.get("token");
+    const token = cookies.get("auth_token");
 
     const response = await apiRequest({
       method: "post",
@@ -202,7 +202,7 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
   // See https://github.com/climateconnect/climateconnect/issues/672
   async function handleRejectRequest() {
     const cookies = new Cookies();
-    const token = cookies.get("token");
+    const token = cookies.get("auth_token");
 
     const response = await apiRequest({
       method: "post",

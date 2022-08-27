@@ -66,7 +66,7 @@ class UserAccountSettingsView(APIView):
             "email_on_new_project_like",
             "email_on_mention",
             "email_on_idea_join",
-            "email_on_join_request"
+            "email_on_join_request",
         ]
 
         if "send_newsletter" in request.data:
@@ -109,7 +109,9 @@ class UserAccountSettingsView(APIView):
                 "email_on_comment_on_your_idea"
             ]
             user.user_profile.email_on_idea_join = request.data["email_on_idea_join"]
-            user.user_profile.email_on_join_request = request.data["email_on_join_request"]
+            user.user_profile.email_on_join_request = request.data[
+                "email_on_join_request"
+            ]
             user.user_profile.save()
 
         return Response(
@@ -135,7 +137,11 @@ class ChangeEmailView(APIView):
         except User.DoesNotExist:
             return Response(
                 {
-                    "message": _("User profile not found.") + " " +  _("Contact contact@climateconnect.earth if you repeatedly experience problems.")
+                    "message": _("User profile not found.")
+                    + " "
+                    + _(
+                        "Contact contact@climateconnect.earth if you repeatedly experience problems."
+                    )
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -147,7 +153,9 @@ class ChangeEmailView(APIView):
         else:
             return Response(
                 {
-                    "message": _("No pending E-Mail change. This link may already have been used.")
+                    "message": _(
+                        "No pending E-Mail change. This link may already have been used."
+                    )
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )

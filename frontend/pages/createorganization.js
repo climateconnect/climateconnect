@@ -30,10 +30,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export async function getServerSideProps(ctx) {
-  const { token } = NextCookies(ctx);
+  const { auth_token } = NextCookies(ctx);
   const [tagOptions, rolesOptions, allHubs] = await Promise.all([
-    await getTags(token, ctx.locale),
-    await getRolesOptions(token, ctx.locale),
+    await getTags(auth_token, ctx.locale),
+    await getRolesOptions(auth_token, ctx.locale),
     getAllHubs(ctx.locale, true),
   ]);
   return {
@@ -46,7 +46,7 @@ export async function getServerSideProps(ctx) {
 }
 
 export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }) {
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
   const classes = useStyles();
   const [errorMessages, setErrorMessages] = React.useState({
     basicOrganizationInfo: "",

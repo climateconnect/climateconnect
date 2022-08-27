@@ -143,6 +143,10 @@
     "en": "Status",
     "de": "Status"
   },
+  "click_here_to_send_or_press_ctrl_enter": {
+    "en": "Click here to send (or press ctrl + Enter)",
+    "de": "Klicke hier, um zu senden (oder drücke ctrl + Enter)"
+  },
   "categories": {
     "en": "Categories",
     "de": "Kategorien"
@@ -537,7 +541,7 @@
   },
   "climate_action_platform_text": {
     "en": "Bringing everyone involved in climate action together.",
-    "de": "Wir bringen alle Klimaschützer zusammen."
+    "de": "Wir bringen alle Klimaschützer:innen zusammen."
   },
   "get_inspired_text": {
     "en": "Find inspiring climate projects to work on. See where you can make the biggest difference.",
