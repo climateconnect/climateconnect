@@ -2,8 +2,5 @@
 /app.yaml
 /gcloud-storage-credentials.json
 
-static/
-
-
 media/
 
