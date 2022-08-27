@@ -548,7 +548,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       <Typography variant="subtitle2" className={classes.deleteMessage}>
         <InfoOutlinedIcon />
         {texts.if_you_wish_to_delete_this_account}
-        <div className={classes.spaceStrings}/>
+        <div className={classes.spaceStrings} />
         <Link href="mailto:contact@climateconnect.earth">
           <a className={classes.primaryColor}>{emailLink}</a>
         </Link>
