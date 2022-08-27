@@ -96,9 +96,7 @@ export default function Inbox({ chatData, next }) {
     next: next,
   });
 
-  const updateErrorMessage = (e) => {
-    setErrorMessage(e);
-  };
+  const resetAlertMessage = () => setErrorMessage("");
 
   const handleGroupNameChange = (e) => {
     setGroupName(e.target.value);
@@ -188,7 +186,7 @@ export default function Inbox({ chatData, next }) {
         title={texts.inbox}
         messageType="error"
         message={errorMessage}
-        resetAlertMessage={updateErrorMessage}
+        resetAlertMessage={resetAlertMessage}
       >
         <Container maxWidth="md" className={classes.root}>
           <Typography component="h1" variant="h4" className={classes.headline}>

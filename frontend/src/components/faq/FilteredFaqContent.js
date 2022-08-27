@@ -25,13 +25,12 @@ export default function FilteredFaqContent({ searchValue, questions }) {
     <div className={classes.root}>
       <Typography className={classes.header}>
         {texts.search_results_for}
-        {texts.search_results_for}
         <Typography className={classes.header} component="span" color="primary">
           {' "' + searchValue + '"'}
         </Typography>
       </Typography>
       {questions
-        .filter((q) => q.question.includes(searchValue))
+        .filter((q) => q.question.toLowerCase().includes(searchValue.toLowerCase()))
         .map((q, index) => (
           <FaqQuestionElement key={index} questionObject={q} />
         ))}
