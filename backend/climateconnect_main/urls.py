@@ -120,6 +120,7 @@ urls = [
         "api/feedback/", common_views.ReceiveFeedback.as_view(), name="receive-feedback"
     ),
     path("api/list_faq/", faq_views.ListFaqView.as_view(), name="list-faq"),
+    path("api/about_faq/", faq_views.AboutFaqView.as_view(), name="about-faq"),
     path(
         "api/notifications/",
         notifications_views.ListNotificationsView.as_view(),
