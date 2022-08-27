@@ -13,21 +13,33 @@ const useStyles = makeStyles((theme) => {
       display: "inline-block",
       verticalAlign: "middle",
       marginLeft: theme.spacing(1),
-      whiteSpace: "nowrap",
+    },
+    mediumProfileName: {
+      fontSize: 16,
+    },
+
+    mediumAvatar: {
+      height: 30,
+      width: 30,
     },
   };
 });
 
-export default function ChatTitle({ chat, className }) {
+export default function ChatTitle({ chat, className, size }) {
   const classes = useStyles();
+
   return (
     <div className={className}>
       <div className={classes.avatarWrapper}>
-        <Avatar>
+        <Avatar className={`${size == "medium" && classes.mediumAvatar}`}>
           <GroupIcon />
         </Avatar>
       </div>
-      <Typography color="inherit" className={classes.profileName} variant="h6">
+      <Typography
+        color="inherit"
+        className={`${classes.profileName} ${size === "medium" && classes.mediumProfileName}`}
+        variant="h6"
+      >
         {chat.name}
       </Typography>
     </div>

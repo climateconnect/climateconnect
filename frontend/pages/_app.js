@@ -18,7 +18,8 @@ export default function MyApp({ Component, pageProps = {} }) {
   const router = useRouter();
   // Cookies
   const cookies = new Cookies();
-  const token = cookies.get("token");
+  const token = cookies.get("auth_token");
+
   const [gaInitialized, setGaInitialized] = useState(false);
   const [isLoading, setLoading] = useState(true);
 
@@ -80,14 +81,14 @@ export default function MyApp({ Component, pageProps = {} }) {
         payload: {},
         locale: locale,
       });
-      cookies.remove("token", cookieProps);
+      cookies.remove("auth_token", cookieProps);
       setState({
         ...state,
         user: null,
       });
     } catch (err) {
       console.log(err);
-      cookies.remove("token", cookieProps);
+      cookies.remove("auth_token", cookieProps);
       setState({
         ...state,
         user: null,
@@ -97,7 +98,7 @@ export default function MyApp({ Component, pageProps = {} }) {
   };
 
   const refreshNotifications = async () => {
-    const notifications = await getNotifications(cookies.get("token"));
+    const notifications = await getNotifications(cookies.get("auth_token"));
     setState({
       ...state,
       notifications: notifications,
@@ -107,8 +108,10 @@ export default function MyApp({ Component, pageProps = {} }) {
   const signIn = async (token, expiry) => {
     const cookieProps = getCookieProps(expiry);
 
-    cookies.set("token", token, cookieProps);
-    const user = await getLoggedInUser(cookies.get("token") ? cookies.get("token") : token);
+    cookies.set("auth_token", token, cookieProps);
+    const user = await getLoggedInUser(
+      cookies.get("auth_token") ? cookies.get("auth_token") : token
+    );
     setState({
       ...state,
       user: user,

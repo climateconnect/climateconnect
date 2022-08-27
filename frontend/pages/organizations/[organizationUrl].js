@@ -70,14 +70,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export async function getServerSideProps(ctx) {
-  const { token } = NextCookies(ctx);
+  const { auth_token } = NextCookies(ctx);
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
   const [organization, projects, members, organizationTypes, rolesOptions] = await Promise.all([
-    getOrganizationByUrlIfExists(organizationUrl, token, ctx.locale),
-    getProjectsByOrganization(organizationUrl, token, ctx.locale),
-    getMembersByOrganization(organizationUrl, token, ctx.locale),
+    getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
+    getProjectsByOrganization(organizationUrl, auth_token, ctx.locale),
+    getMembersByOrganization(organizationUrl, auth_token, ctx.locale),
     getOrganizationTypes(),
-    getRolesOptions(token, ctx.locale),
+    getRolesOptions(auth_token, ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -170,7 +170,7 @@ function OrganizationLayout({
 
   const handleConnectBtn = async (e) => {
     e.preventDefault();
-    const token = cookies.get("token");
+    const token = cookies.get("auth_token");
     const creator = members.filter((m) => m.isCreator === true)[0];
     const chat = await startPrivateChat(creator, token, locale);
     Router.push("/chat/" + chat.chat_uuid + "/");

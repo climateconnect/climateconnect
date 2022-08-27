@@ -132,7 +132,7 @@ export default function Hub({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
 
   // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
   const [filters, setFilters] = useState(

@@ -9,6 +9,7 @@ import {
   Tooltip,
   Typography,
   useMediaQuery,
+  Link,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
@@ -210,6 +211,9 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: "wrap",
     justifyContent: "center",
     marginTop: theme.spacing(10),
+  },
+  spaceStrings: {
+    width: 4,
   },
   checkTranslationsButtonAndManageMembersButtonContainer: {
     display: "flex",
@@ -606,7 +610,13 @@ export default function EditAccountPage({
                 </Tooltip>
               )}
             </Typography>
-            <TextField required={i.required} fullWidth value={i.value} multiline onChange={handleChange} />
+            <TextField
+              required={i.required}
+              fullWidth
+              value={i.value}
+              multiline
+              onChange={handleChange}
+            />
           </div>
         );
       }
@@ -755,7 +765,7 @@ export default function EditAccountPage({
             variant="contained"
             onClick={() => handleDialogClickOpen("confirmExitDialog")}
           >
-            Cancel
+            {texts.cancel}
           </Button>
           <Container className={classes.avatarWithInfo}>
             <div className={classes.avatarContainer}>
@@ -913,7 +923,9 @@ export default function EditAccountPage({
         {deleteEmail && (
           <Typography variant="subtitle2" className={classes.deleteMessage}>
             <InfoOutlinedIcon />
-            {texts.if_you_wish_to_delete} {deleteEmail}
+            {texts.if_you_wish_to_delete}
+            <div className={classes.spaceStrings}> </div>
+            <Link href={`mailto:${deleteEmail}`}>{deleteEmail}</Link>
           </Typography>
         )}
       </form>

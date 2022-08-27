@@ -14,7 +14,6 @@ import React, { useContext } from "react";
 import Linkify from "react-linkify";
 import Cookies from "universal-cookie";
 
-import { getImageUrl } from "../../../public/lib/imageOperations";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import DetailledDescription from "./DetailledDescription";
 import getTexts from "../../../public/texts/texts";
@@ -61,11 +60,11 @@ const useStyles = makeStyles((theme) => ({
   accountInfo: (props) => ({
     padding: 0,
     marginTop: theme.spacing(1),
-    [theme.breakpoints.up("sm")]: {
-      paddingRight: theme.spacing(15),
-    },
-    marginRight: props.isOwnAccount ? theme.spacing(10) : 0,
+    marginRight: props.isOwnAccount ? theme.spacing(0.5) : 0,
   }),
+  editButtonWrapper: {
+    flex: "1 0 auto",
+  },
   name: {
     fontWeight: "bold",
     padding: theme.spacing(1),
@@ -90,6 +89,7 @@ const useStyles = makeStyles((theme) => ({
   infoContainer: {
     [theme.breakpoints.up("sm")]: {
       display: "flex",
+      alignItems: "center",
     },
     position: "relative",
   },
@@ -118,11 +118,6 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "50%",
     padding: "5px",
     left: "0",
-  },
-  desktopButton: {
-    marginTop: theme.spacing(2),
-    right: theme.spacing(2),
-    position: "absolute",
   },
   infoIcon: {
     marginBottom: -4,
@@ -180,7 +175,7 @@ export default function AccountPage({
 }) {
   const classes = useStyles({ isOwnAccount: isOwnAccount });
   const { locale } = useContext(UserContext);
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
   const texts = getTexts({ page: "profile", locale: locale });
   const organizationTexts = isOrganization
     ? getTexts({ page: "organization", organization: account, locale: locale })
@@ -341,24 +336,10 @@ export default function AccountPage({
         </div>
       </div>
       <Container className={classes.infoContainer}>
-        {isOwnAccount && !isSmallScreen && (
-          <Button
-            variant="contained"
-            color="primary"
-            className={classes.desktopButton}
-            href={editHref}
-          >
-            <EditSharpIcon className={classes.innerIcon} />
-            {editText ? editText : texts.edit_profile}
-          </Button>
-        )}
         <Container className={classes.avatarWithInfo}>
           <div className={classes.avatarContainer}>
             {account.badges?.length > 0 ? (
-              <ProfileBadge
-                name={account.badges[0].name}
-                image={getImageUrl(account.badges[0].image)}
-              >
+              <ProfileBadge badge={account.badges[0]}>
                 <Avatar {...avatarProps} />
               </ProfileBadge>
             ) : (
@@ -387,6 +368,14 @@ export default function AccountPage({
           )}
         </Container>
         <Container className={classes.accountInfo}>{displayAccountInfo(account.info)}</Container>
+        {isOwnAccount && !isSmallScreen && (
+          <div className={classes.editButtonWrapper}>
+            <Button variant="contained" color="primary" href={editHref}>
+              <EditSharpIcon className={classes.innerIcon} />
+              {editText ? editText : texts.edit_profile}
+            </Button>
+          </div>
+        )}
       </Container>
       <Divider className={classes.marginTop} />
       {detailledDescription?.value && (

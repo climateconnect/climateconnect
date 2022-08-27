@@ -9,7 +9,7 @@ class ProjectFollower(models.Model):
         related_name="project_following",
         verbose_name="Project",
         help_text="Points to a project",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
 
     user = models.ForeignKey(
@@ -17,19 +17,19 @@ class ProjectFollower(models.Model):
         related_name="follower",
         verbose_name="Follower",
         help_text="Points to the user following the project",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
 
     created_at = models.DateTimeField(
         help_text="Time when the user followed the project",
         verbose_name="Created At",
-        auto_now_add=True
+        auto_now_add=True,
     )
 
     updated_at = models.DateTimeField(
         help_text="Time when the follower was updated",
         verbose_name="Updated At",
-        auto_now_add=True
+        auto_now_add=True,
     )
 
     class Meta:

@@ -49,7 +49,6 @@ import ProfileBadge from "../profile/ProfileBadge";
 import DropDownButton from "./DropDownButton";
 import LanguageSelect from "./LanguageSelect";
 import StaticPageLinks from "./StaticPageLinks";
-import CrowdfundingBanner from "../donation/crowdfunding/CrowdfundingBanner";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -125,7 +124,7 @@ const useStyles = makeStyles((theme) => {
     loggedInAvatarMobile: {
       height: 60,
       width: 60,
-      display: "block",
+
       margin: "0 auto",
     },
     loggedInLink: {
@@ -172,6 +171,8 @@ const useStyles = makeStyles((theme) => {
     mobileAvatarContainer: {
       display: "flex",
       justifyContent: "center",
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
     },
   };
 });
@@ -345,7 +346,6 @@ export default function Header({
         hideHeader ? classes.hideHeader : ""
       }`}
     >
-      {locale === "de" && <CrowdfundingBanner />}
       <Container className={classes.container}>
         <Link href={localePrefix + "/"} className={classes.logoLink}>
           <img src={logo} alt={texts.climate_connect_logo} className={classes.logo} />
@@ -639,18 +639,19 @@ function NarrowScreenLinks({
                 if (link.avatar)
                   return (
                     <div className={classes.mobileAvatarContainer}>
-                      {loggedInUser?.badges?.length > 0 ? (
-                        <ProfileBadge
-                          name={loggedInUser?.badges[0].name}
-                          image={getImageUrl(loggedInUser?.badges[0].image)}
-                          size="medium"
-                          className={classes.badge}
-                        >
+                      <Link href={"/profiles/" + loggedInUser.url_slug}>
+                        {loggedInUser?.badges?.length > 0 ? (
+                          <ProfileBadge
+                            badge={loggedInUser?.badges[0]}
+                            size="medium"
+                            className={classes.badge}
+                          >
+                            <Avatar {...avatarProps} />
+                          </ProfileBadge>
+                        ) : (
                           <Avatar {...avatarProps} />
-                        </ProfileBadge>
-                      ) : (
-                        <Avatar {...avatarProps} />
-                      )}
+                        )}
+                      </Link>
                     </div>
                   );
                 else if (link.isLogoutButton)
@@ -712,12 +713,7 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader, texts, 
           ref={anchorRef}
         >
           {loggedInUser?.badges?.length > 0 ? (
-            <ProfileBadge
-              name={loggedInUser?.badges[0].name}
-              image={getImageUrl(loggedInUser?.badges[0].image)}
-              size="small"
-              className={classes.badge}
-            >
+            <ProfileBadge badge={loggedInUser?.badges[0]} size="small" className={classes.badge}>
               <Avatar {...avatarProps} />
             </ProfileBadge>
           ) : (

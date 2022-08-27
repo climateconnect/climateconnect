@@ -16,90 +16,162 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from climateconnect_api.views import (
-    badge_views, status_views, user_views, common_views,
-    settings_views, role_views,
-    faq_views, notifications_views, donation_views,
-    translation_views
+    badge_views,
+    status_views,
+    user_views,
+    common_views,
+    settings_views,
+    role_views,
+    faq_views,
+    notifications_views,
+    donation_views,
+    translation_views,
 )
 from knox import views as knox_views
 from django.conf import settings
 from django.conf.urls.static import static
 
 
-
 urls = [
-    path('admin/', admin.site.urls),
-    path('ping/', status_views.PingPongView.as_view(), name='ping-pong-api'),
+    path("admin/", admin.site.urls),
+    path("ping/", status_views.PingPongView.as_view(), name="ping-pong-api"),
     # User views
-    path('login/', user_views.LoginView.as_view(), name='login-api'),
-    path('logout/', knox_views.LogoutView.as_view(), name='logout-api'),
-    path('signup/', user_views.SignUpView.as_view(), name="signup-api"),
-    path('api/my_profile/', user_views.PersonalProfileView.as_view(), name='user-profile-api'),
-    path('api/member/<str:url_slug>/', user_views.MemberProfileView.as_view(), name='get-member-profile-api'),
-    path('api/member/<str:url_slug>/projects/', user_views.ListMemberProjectsView.as_view(), name='get-projects-of-member-api'),
-    path('api/member/<str:url_slug>/ideas/', user_views.ListMemberIdeasView.as_view(), name='get-ideas-of-member-api'),
-    path('api/member/<str:url_slug>/organizations/', user_views.ListMemberOrganizationsView.as_view(), name='get-organizations-of-member-api'),
-    path('api/members/', user_views.ListMemberProfilesView.as_view(), name="member-profiles-api"),
+    path("login/", user_views.LoginView.as_view(), name="login-api"),
+    path("logout/", knox_views.LogoutView.as_view(), name="logout-api"),
+    path("signup/", user_views.SignUpView.as_view(), name="signup-api"),
     path(
-        'api/account_settings/',
+        "api/my_profile/",
+        user_views.PersonalProfileView.as_view(),
+        name="user-profile-api",
+    ),
+    path(
+        "api/member/<str:url_slug>/",
+        user_views.MemberProfileView.as_view(),
+        name="get-member-profile-api",
+    ),
+    path(
+        "api/member/<str:url_slug>/projects/",
+        user_views.ListMemberProjectsView.as_view(),
+        name="get-projects-of-member-api",
+    ),
+    path(
+        "api/member/<str:url_slug>/ideas/",
+        user_views.ListMemberIdeasView.as_view(),
+        name="get-ideas-of-member-api",
+    ),
+    path(
+        "api/member/<str:url_slug>/organizations/",
+        user_views.ListMemberOrganizationsView.as_view(),
+        name="get-organizations-of-member-api",
+    ),
+    path(
+        "api/members/",
+        user_views.ListMemberProfilesView.as_view(),
+        name="member-profiles-api",
+    ),
+    path(
+        "api/account_settings/",
         settings_views.UserAccountSettingsView.as_view(),
-        name='user-account-settings-api'
-    ),
-    path('api/edit_profile/', user_views.EditUserProfile.as_view(), name='edit-user-profile-api'),
-    path(
-        'api/verify_profile/',
-        user_views.UserEmailVerificationLinkView.as_view(), name='user-email-verification-link-api'
+        name="user-account-settings-api",
     ),
     path(
-        'api/verify_new_email/',
-        settings_views.ChangeEmailView.as_view(), name='user-new-email-verification-link-api'
+        "api/edit_profile/",
+        user_views.EditUserProfile.as_view(),
+        name="edit-user-profile-api",
     ),
     path(
-        'api/send_reset_password_email/',
-        user_views.SendResetPasswordEmail.as_view(), name='send-reset-password-email'
+        "api/verify_profile/",
+        user_views.UserEmailVerificationLinkView.as_view(),
+        name="user-email-verification-link-api",
     ),
     path(
-        'api/set_new_password/',
-        user_views.SetNewPassword.as_view(), name='set-new-password'
+        "api/verify_new_email/",
+        settings_views.ChangeEmailView.as_view(),
+        name="user-new-email-verification-link-api",
     ),
     path(
-        'api/resend_verification_email/',
-        user_views.ResendVerificationEmail.as_view(), name='resend-verification-email'
-    ),
-    path('availability/', common_views.ListAvailabilitiesView.as_view(), name='list-availabilities-api'),
-    path('skills/', common_views.ListSkillsView.as_view(), name='list-skills-api'),
-    path('parentskills/', common_views.ListParentSkillsView.as_view(), name='list-parent-skills-api'),
-    path('roles/', role_views.ListRolesView.as_view(), name='list-roles-api'),
-    path(
-        'api/feedback/',
-        common_views.ReceiveFeedback.as_view(), name='receive-feedback'
+        "api/send_reset_password_email/",
+        user_views.SendResetPasswordEmail.as_view(),
+        name="send-reset-password-email",
     ),
     path(
-        'api/list_faq/',
-        faq_views.ListFaqView.as_view(), name='list-faq'
+        "api/set_new_password/",
+        user_views.SetNewPassword.as_view(),
+        name="set-new-password",
     ),
     path(
-        'api/notifications/',
-        notifications_views.ListNotificationsView.as_view(), name='list-notifications'
+        "api/resend_verification_email/",
+        user_views.ResendVerificationEmail.as_view(),
+        name="resend-verification-email",
     ),
-    path('api/sitemap/members/', user_views.ListMembersForSitemap.as_view(), name='list-members-for-sitemap'),
-    path('api/set_user_notifications_read/', notifications_views.SetUserNotificationsRead.as_view(), name='set-user-notifications-unread'),
-    path('api/donation_goal_progress/', donation_views.GetDonationGoalProgress.as_view(), name='get-donations-this-month'),
-    path('api/translate/', translation_views.TranslateTextView.as_view(), name='translate-testing-api'),
-    path('api/translate_many/', translation_views.TranslateManyTextsView.as_view(), name='translate-testing-api'),
-    path('api/donors_with_badges/', donation_views.GetDonorsWithBadges.as_view(), name='retrieve-donors-with-badges-api'),
-    path('api/donor_badges/', badge_views.getDonorBadges.as_view(), name='get-possible-donor-badges'),
+    path(
+        "availability/",
+        common_views.ListAvailabilitiesView.as_view(),
+        name="list-availabilities-api",
+    ),
+    path("skills/", common_views.ListSkillsView.as_view(), name="list-skills-api"),
+    path(
+        "parentskills/",
+        common_views.ListParentSkillsView.as_view(),
+        name="list-parent-skills-api",
+    ),
+    path("roles/", role_views.ListRolesView.as_view(), name="list-roles-api"),
+    path(
+        "api/feedback/", common_views.ReceiveFeedback.as_view(), name="receive-feedback"
+    ),
+    path("api/list_faq/", faq_views.ListFaqView.as_view(), name="list-faq"),
+    path("api/about_faq/", faq_views.AboutFaqView.as_view(), name="about-faq"),
+    path(
+        "api/notifications/",
+        notifications_views.ListNotificationsView.as_view(),
+        name="list-notifications",
+    ),
+    path(
+        "api/sitemap/members/",
+        user_views.ListMembersForSitemap.as_view(),
+        name="list-members-for-sitemap",
+    ),
+    path(
+        "api/set_user_notifications_read/",
+        notifications_views.SetUserNotificationsRead.as_view(),
+        name="set-user-notifications-unread",
+    ),
+    path(
+        "api/donation_goal_progress/",
+        donation_views.GetDonationGoalProgress.as_view(),
+        name="get-donations-this-month",
+    ),
+    path(
+        "api/translate/",
+        translation_views.TranslateTextView.as_view(),
+        name="translate-testing-api",
+    ),
+    path(
+        "api/translate_many/",
+        translation_views.TranslateManyTextsView.as_view(),
+        name="translate-testing-api",
+    ),
+    path(
+        "api/donors_with_badges/",
+        donation_views.GetDonorsWithBadges.as_view(),
+        name="retrieve-donors-with-badges-api",
+    ),
+    path(
+        "api/donor_badges/",
+        badge_views.getDonorBadges.as_view(),
+        name="get-possible-donor-badges",
+    ),
     # Organization views
-    path('api/', include('organization.urls')),
+    path("api/", include("organization.urls")),
     # Chat messages views
-    path('api/', include('chat_messages.urls')),
+    path("api/", include("chat_messages.urls")),
     # Hub views
-    path('api/', include('hubs.urls')),
-    path('api/', include('location.urls')),
+    path("api/", include("hubs.urls")),
+    path("api/", include("location.urls")),
     # Idea views
-    path('api/', include('ideas.urls')),
+    path("api/", include("ideas.urls")),
     # Climate match APIs
-    path('api/', include('climate_match.urls'))
+    path("api/", include("climate_match.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns = urls

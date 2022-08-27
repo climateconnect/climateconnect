@@ -67,13 +67,13 @@ const useStyles = makeStyles((theme) => {
 });
 
 export async function getServerSideProps(ctx) {
-  const { token } = NextCookies(ctx);
-  if (ctx.req && !token) {
+  const { auth_token } = NextCookies(ctx);
+  if (ctx.req && !auth_token) {
     const texts = getTexts({ page: "chat", locale: ctx.locale });
     const message = texts.you_have_to_log_in_to_see_your_inbox;
     return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
   }
-  const chatData = await getChatsOfLoggedInUser(token, null, ctx.locale);
+  const chatData = await getChatsOfLoggedInUser(auth_token, null, ctx.locale);
   return {
     props: {
       chatData: chatData.chats,
@@ -83,7 +83,7 @@ export async function getServerSideProps(ctx) {
 }
 
 export default function Inbox({ chatData, next }) {
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
   const classes = useStyles();
   const { user, locale } = React.useContext(UserContext);
   const texts = getTexts({ page: "chat", locale: locale });
@@ -95,6 +95,8 @@ export default function Inbox({ chatData, next }) {
     chats: parseChats(chatData, texts),
     next: next,
   });
+
+  const resetAlertMessage = () => setErrorMessage("");
 
   const handleGroupNameChange = (e) => {
     setGroupName(e.target.value);
@@ -119,6 +121,7 @@ export default function Inbox({ chatData, next }) {
     if (newChatMembers.length >= 1) {
       const payload = {};
       if (isGroupchat) {
+        //The if statement (line 127) is never entered due to TextField having a the required property set (line 216)
         if (!groupName) {
           setErrorMessage(
             texts.please_set_a_group_name_if_youre_starting_a_chat_with_more_than_one_member
@@ -179,7 +182,12 @@ export default function Inbox({ chatData, next }) {
 
   return (
     <div>
-      <WideLayout title={texts.inbox} messageType="error" message={errorMessage}>
+      <WideLayout
+        title={texts.inbox}
+        messageType="error"
+        message={errorMessage}
+        resetAlertMessage={resetAlertMessage}
+      >
         <Container maxWidth="md" className={classes.root}>
           <Typography component="h1" variant="h4" className={classes.headline}>
             {texts.inbox}

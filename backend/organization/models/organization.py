@@ -5,22 +5,18 @@ from climateconnect_api.models.language import Language
 
 
 def organization_image_path(instance, filename):
-    return "organization_images/{}/profile/{}".format(
-        instance.id, filename
-    )
+    return "organization_images/{}/profile/{}".format(instance.id, filename)
 
 
 def organization_background_image_path(instance, filename):
-    return "organization_images/{}/background/{}".format(
-        instance.id, filename
-    )
+    return "organization_images/{}/background/{}".format(instance.id, filename)
 
 
 class Organization(models.Model):
     name = models.CharField(
         help_text="Points to name of the organization",
         verbose_name="Organization",
-        max_length=1024
+        max_length=1024,
     )
 
     url_slug = models.CharField(
@@ -29,7 +25,7 @@ class Organization(models.Model):
         max_length=1024,
         unique=True,
         null=True,
-        blank=True
+        blank=True,
     )
 
     image = models.ImageField(
@@ -37,7 +33,7 @@ class Organization(models.Model):
         verbose_name="Organization Image",
         upload_to=organization_image_path,
         null=True,
-        blank=True
+        blank=True,
     )
 
     thumbnail_image = models.ImageField(
@@ -45,7 +41,7 @@ class Organization(models.Model):
         verbose_name="Thumbnail Image",
         upload_to=organization_image_path,
         null=True,
-        blank=True
+        blank=True,
     )
 
     background_image = models.ImageField(
@@ -53,29 +49,29 @@ class Organization(models.Model):
         verbose_name="Background image",
         upload_to=organization_background_image_path,
         null=True,
-        blank=True
+        blank=True,
     )
 
     parent_organization = models.ForeignKey(
-        'self',
+        "self",
         related_name="organization_parent",
         help_text="Points to parent organization",
         verbose_name="Parent Organization",
         null=True,
         blank=True,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
 
     created_at = models.DateTimeField(
         help_text="Time when organization was created",
         verbose_name="Created At",
-        auto_now_add=True
+        auto_now_add=True,
     )
 
     updated_at = models.DateTimeField(
         help_text="Time when organization object was updated",
         verbose_name="Updated At",
-        auto_now=True
+        auto_now=True,
     )
 
     # Field not in use. Keeping temporarily for backwards compatibility
@@ -84,7 +80,7 @@ class Organization(models.Model):
         verbose_name="Country",
         max_length=512,
         null=True,
-        blank=True
+        blank=True,
     )
 
     # Field not in use. Keeping temporarily for backwards compatibility
@@ -93,7 +89,7 @@ class Organization(models.Model):
         verbose_name="State",
         max_length=512,
         null=True,
-        blank=True
+        blank=True,
     )
 
     # Field not in use. Keeping temporarily for backwards compatibility
@@ -102,7 +98,7 @@ class Organization(models.Model):
         verbose_name="City",
         max_length=1024,  # Keeping higher len because city name in some countries are pretty long
         null=True,
-        blank=True
+        blank=True,
     )
 
     location = models.ForeignKey(
@@ -112,14 +108,14 @@ class Organization(models.Model):
         related_name="organization_loc",
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
     )
 
     about = models.TextField(
         help_text="About section of the organization page",
         verbose_name="About",
         null=True,
-        blank=True
+        blank=True,
     )
 
     short_description = models.TextField(
@@ -127,7 +123,7 @@ class Organization(models.Model):
         verbose_name="Short description",
         null=True,
         blank=True,
-        max_length=280
+        max_length=280,
     )
 
     school = models.CharField(
@@ -135,7 +131,7 @@ class Organization(models.Model):
         verbose_name="School",
         null=True,
         blank=True,
-        max_length=512
+        max_length=512,
     )
 
     organ = models.CharField(
@@ -143,7 +139,7 @@ class Organization(models.Model):
         verbose_name="Organ",
         null=True,
         blank=True,
-        max_length=512
+        max_length=512,
     )
 
     website = models.CharField(
@@ -151,45 +147,53 @@ class Organization(models.Model):
         verbose_name="Organization's website",
         max_length=256,
         null=True,
-        blank=True
+        blank=True,
     )
 
     rating = models.PositiveSmallIntegerField(
         help_text="organizations with a rating of 99 are being shown as featured. Could later be used to sort organizations.",
         verbose_name="Rating (1-100)",
-        default=100
+        default=100,
     )
 
     language = models.ForeignKey(
-        Language, related_name="orgnaization_language",
+        Language,
+        related_name="orgnaization_language",
         help_text="Points to original language organization was created on",
         verbose_name="Language",
-        null=True, blank=True,
-        on_delete=models.SET_NULL
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
     )
 
     VERY_SMALL_ORGANIZATION_SIZE = 0
     SMALL_ORGANIZATION_SIZE = 1
-    SMALL_MEDIUM_ORGANIZATION_SIZE= 2
+    SMALL_MEDIUM_ORGANIZATION_SIZE = 2
     MEDIUM_ORGANIZATION_SIZE = 3
     LARGE_MEDIUM_ORGANIZATION_SIZE = 4
     LARGE_ORGANIZATION_SIZE = 5
-    VERY_LARGE_ORGANIZATION_SIZE= 6
+    VERY_LARGE_ORGANIZATION_SIZE = 6
     HUGE_ORGANIZATION_SIZE = 7
 
-
-    # These options are also hardcoded in the frontend because I figured this will hardly ever change and isn't worth it to get from the server. 
+    # These options are also hardcoded in the frontend because I figured this will hardly ever change and isn't worth it to get from the server.
     # Changes here will need to also be made in the frontend
     ORGANIZATION_SIZE_OPTIONS = (
-        (VERY_SMALL_ORGANIZATION_SIZE, "1-10"), (SMALL_ORGANIZATION_SIZE, "11-50"),
-        (SMALL_MEDIUM_ORGANIZATION_SIZE, "51-250"), (MEDIUM_ORGANIZATION_SIZE, "251-500"), 
-        (LARGE_MEDIUM_ORGANIZATION_SIZE, "501-1000"), (LARGE_ORGANIZATION_SIZE, "1001-5000"), 
-        (VERY_LARGE_ORGANIZATION_SIZE, "5001-50000"), (HUGE_ORGANIZATION_SIZE, "50000+")
+        (VERY_SMALL_ORGANIZATION_SIZE, "1-10"),
+        (SMALL_ORGANIZATION_SIZE, "11-50"),
+        (SMALL_MEDIUM_ORGANIZATION_SIZE, "51-250"),
+        (MEDIUM_ORGANIZATION_SIZE, "251-500"),
+        (LARGE_MEDIUM_ORGANIZATION_SIZE, "501-1000"),
+        (LARGE_ORGANIZATION_SIZE, "1001-5000"),
+        (VERY_LARGE_ORGANIZATION_SIZE, "5001-50000"),
+        (HUGE_ORGANIZATION_SIZE, "50000+"),
     )
 
     organization_size = models.IntegerField(
         help_text="The number of people working in this organization",
-        verbose_name="Organization size", choices=ORGANIZATION_SIZE_OPTIONS, null=True, blank=True
+        verbose_name="Organization size",
+        choices=ORGANIZATION_SIZE_OPTIONS,
+        null=True,
+        blank=True,
     )
 
     hubs = models.ManyToManyField(
@@ -197,7 +201,7 @@ class Organization(models.Model):
         related_name="organization_hubs",
         help_text="Hubs that the organization is active in",
         verbose_name="Hubs",
-        blank=True
+        blank=True,
     )
 
     class Meta:

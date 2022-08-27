@@ -12,37 +12,36 @@ class Feedback(models.Model):
         help_text="Points to the user who gave the feedback",
         on_delete=models.CASCADE,
         null=True,
-        blank=True
+        blank=True,
     )
 
     email = models.EmailField(
         help_text="The email to which we should send the reply",
         verbose_name="User Email",
         null=True,
-        blank=True
+        blank=True,
     )
 
     text = models.TextField(
-        help_text="The text the user wrote",
-        verbose_name="Feedback"
+        help_text="The text the user wrote", verbose_name="Feedback"
     )
 
     send_response = models.BooleanField(
         help_text="Checks whether we should response to this user",
         verbose_name="User requested response",
-        default=False
+        default=False,
     )
 
     created_at = models.DateTimeField(
         help_text="Time when feedback was created",
         verbose_name="Created At",
-        auto_now_add=True
+        auto_now_add=True,
     )
-    
+
     updated_at = models.DateTimeField(
         help_text="Time when feedback was updated",
         verbose_name="Updated At",
-        auto_now=True
+        auto_now=True,
     )
 
     class Meta:
@@ -51,42 +50,40 @@ class Feedback(models.Model):
         verbose_name_plural = "Feedback_Messages"
         db_table = "climateconnect_feedback"
         ordering = ["-id"]
-    
+
     def __str__(self):
-        return "Feedback: %d" % (
-            self.id
-        )
+        return "Feedback: %d" % (self.id)
 
 
 class Availability(models.Model):
     name = models.CharField(
         help_text="Full text of user's availability to work on a project",
         verbose_name="Name",
-        max_length=512
+        max_length=512,
     )
 
     name_de_translation = models.CharField(
         help_text="German translation of user's availability",
         verbose_name="Name DE translation",
-        max_length=512, null=True, blank=True
+        max_length=512,
+        null=True,
+        blank=True,
     )
 
     key = models.CharField(
-        help_text="Key for user' availability",
-        verbose_name="Key",
-        max_length=100
+        help_text="Key for user' availability", verbose_name="Key", max_length=100
     )
 
     created_at = models.DateTimeField(
         help_text="Time when object was created",
         verbose_name="Created At",
-        auto_now_add=True
+        auto_now_add=True,
     )
 
     updated_at = models.DateTimeField(
         help_text="Time when object was updated",
         verbose_name="Updated At",
-        auto_now=True
+        auto_now=True,
     )
 
     class Meta:
@@ -102,44 +99,47 @@ class Availability(models.Model):
 
 class Skill(models.Model):
     name = models.CharField(
-        help_text="Name of the skill",
-        verbose_name="Name",
-        max_length=512
+        help_text="Name of the skill", verbose_name="Name", max_length=512
     )
 
     name_de_translation = models.CharField(
-        help_text="Deutsch translation of name column", 
+        help_text="Deutsch translation of name column",
         verbose_name="Name DE translation",
-        max_length=512, null=True, blank=True
+        max_length=512,
+        null=True,
+        blank=True,
     )
 
     # Skill name has spaces and we use skill filters for projects and users.
     # This would help us for filters.
     key = models.CharField(
-        help_text="Key of a skill", verbose_name="Key",
-        max_length=512, null=True, blank=True
+        help_text="Key of a skill",
+        verbose_name="Key",
+        max_length=512,
+        null=True,
+        blank=True,
     )
 
     parent_skill = models.ForeignKey(
-        'self',
+        "self",
         related_name="skill_parent",
         verbose_name="Parent Skill",
         help_text="Points to the parent skill",
         null=True,
         blank=True,
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
     )
 
     created_at = models.DateTimeField(
         help_text="Time when skill was created",
         verbose_name="Created At",
-        auto_now_add=True
+        auto_now_add=True,
     )
 
     updated_at = models.DateTimeField(
         help_text="Time when skill was updated",
         verbose_name="Updated At",
-        auto_now=True
+        auto_now=True,
     )
 
     details = models.CharField(
@@ -147,13 +147,15 @@ class Skill(models.Model):
         verbose_name="Details",
         max_length=128,
         null=True,
-        blank=True
+        blank=True,
     )
 
     details_de_translation = models.CharField(
         help_text="Deutsch translation for details columns",
         verbose_name="Details DE translation",
-        max_length=128, null=True, blank=True
+        max_length=128,
+        null=True,
+        blank=True,
     )
 
     class Meta:
@@ -169,4 +171,4 @@ class Skill(models.Model):
 
 @receiver(pre_save, sender=Skill)
 def save_skills_key(sender, instance, **kwargs):
-    instance.key = instance.name.replace(' ', '').lower()
+    instance.key = instance.name.replace(" ", "").lower()
