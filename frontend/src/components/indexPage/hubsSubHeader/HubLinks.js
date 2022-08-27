@@ -11,6 +11,10 @@ const useStyles = makeStyles(() => ({
     justifyContent: "flex-end",
     width: "100%",
   },
+  wrapper: {
+    display: "flex",
+    alignItems: "center"
+  }
 }));
 
 export default function HubLinks({
@@ -62,14 +66,11 @@ export default function HubLinks({
     setOpen(newOpen);
   };
   return (
-    <div className={isNarrowScreen && classes.spaceAround}>
+    <div className={`${isNarrowScreen && classes.spaceAround} ${classes.wrapper}`}>
       {!isMediumScreen &&
         !onlyShowDropDown &&
         (showAllProjectsButton ? (
-          <Link
-            className={`${classes.link} ${classes.allProjectsLink}`}
-            href={getLocalePrefix(locale) + "/browse"}
-          >
+          <Link className={linkClassName} href={getLocalePrefix(locale) + "/browse"}>
             {texts.all_projects}
           </Link>
         ) : (
