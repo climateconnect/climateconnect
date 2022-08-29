@@ -1,4 +1,4 @@
-import { Container, Tab, Tabs, Typography } from "@material-ui/core";
+import { Collapse, Container, Tab, Tabs, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Router from "next/router";
@@ -81,6 +81,7 @@ export default function ProjectPageRoot({
   handleLike,
   handleFollow,
   similarProjects,
+  handleHideContent
 }) {
   const visibleFooterHeight = VisibleFooterHeight({});
   const tabContentRef = useRef(null);
@@ -428,6 +429,7 @@ export default function ProjectPageRoot({
   const dialogTitleShareButton = texts.tell_others_about_this_project;
 
   const latestParentComment = [project.comments[0]];
+  
   return (
     <>
     <div className={classes.root}>
@@ -465,18 +467,18 @@ export default function ProjectPageRoot({
         token={token}
         user={user}
         requestedToJoinProject={requestedToJoinProject}
-        handleSetRequestedToJoinProject={handleSetRequestedToJoinProject} />
-
-
-
-
+        handleSetRequestedToJoinProject={handleSetRequestedToJoinProject} 
+        handleHideContent ={handleHideContent} 
+        />
+         
 
 
 
 
 
       <Container className={classes.tabsContainerWithoutPadding}>
-
+      
+ 
         <div ref={projectTabsRef}>
           <Tabs
             variant={screenSize.belowSmall ? "fullWidth" : "standard"}
@@ -540,30 +542,7 @@ export default function ProjectPageRoot({
 
       </Container>
       </div>
-      <Container className={classes.projectInteractionButtonContainer}>
-        <ProjectInteractionButtons
-          screenSize={screenSize}
-          project={project}
-          projectAdmin={projectAdmin}
-          handleClickContact={handleClickContact}
-          hasAdminPermissions={hasAdminPermissions}
-          texts={texts}
-          visibleFooterHeight={visibleFooterHeight}
-          isUserFollowing={isUserFollowing}
-          isUserLiking={isUserLiking}
-          handleToggleFollowProject={handleToggleFollowProject}
-          handleToggleLikeProject={handleToggleLikeProject}
-          toggleShowFollowers={toggleShowFollowers}
-          followingChangePending={followingChangePending}
-          likingChangePending={likingChangePending}
-          messageButtonIsVisible={messageButtonIsVisible}
-          contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
-          tabContentContainerSpaceToRight={tabContentContainerSpaceToRight}
-          numberOfFollowers={numberOfFollowers}
-          numberOfLikes={numberOfLikes}
-          bindLike={bindLike}
-          bindFollow={bindFollow} />
-      </Container>
+
       <ConfirmDialog
         open={confirmDialogOpen.follow}
         onClose={onFollowDialogClose}
@@ -608,6 +587,7 @@ export default function ProjectPageRoot({
         }}
         typesByTabValue={typesByTabValue}
         handleTabChange={handleTabChange} />
+        
        
         </>
   );

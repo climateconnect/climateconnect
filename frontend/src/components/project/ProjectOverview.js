@@ -58,6 +58,17 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
     textAlign: "center",
+    
+  },
+  headerButton: {
+    right : 0,
+    position:"absolute"
+  },
+
+  headerContainer: {
+    display: "flex",
+   
+    justifyContent: "center",
   },
   goBackButtonContainer: {
     position: "absolute",
@@ -74,10 +85,6 @@ const useStyles = makeStyles((theme) => ({
   imageContainer: {
     position: "relative",
   },
-  test: {
-    position: "absolute",
-
-  }
 }));
 
 const componentDecorator = (href, text, key) => (
@@ -126,9 +133,10 @@ export default function ProjectOverview({
   user,
   handleSetRequestedToJoinProject,
   requestedToJoinProject,
+  handleHideContent
 }) {
   const classes = useStyles();
-
+  
   const texts = getTexts({ page: "project", locale: locale, project: project });
 
   /**
@@ -223,6 +231,7 @@ export default function ProjectOverview({
           toggleShowFollowers={toggleShowFollowers}
           toggleShowLikes={toggleShowLikes}
           token={token}
+          handleHideContent={handleHideContent} 
         />
       )}
 
@@ -379,15 +388,18 @@ function LargeScreenOverview({
   texts,
   toggleShowFollowers,
   toggleShowLikes,
+  handleHideContent 
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
-
+ console.log(typeof(handleHideContent))
   return (
-    <>
-      <Typography component="h1" variant="h4" className={classes.largeScreenHeader}>
+    <> 
+    <div  className={classes.headerContainer}>
+      <Typography component="h1" variant="h4"className={classes.largeScreenHeader}>
         {project.name}
       </Typography>
-      
+      <Button className={classes.headerButton} onClick={handleHideContent} > Show </Button>
+      </div>
       <div className={classes.flexContainer}>
         <img
           className={classes.inlineImage}

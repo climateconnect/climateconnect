@@ -290,4 +290,4 @@ def get_similar_projects(url_slug:str,return_count=5):
     df['similarity_score'] = df.apply(lambda x:sum(x)/total_weights,axis=1,raw=True)
 
 
-    return df.sort_values(by=['similarity_score'],ascending=False).head(5).index.values
+    return df.sort_values(by=['similarity_score'],ascending=False).head(return_count).index.values

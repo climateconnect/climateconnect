@@ -14,6 +14,7 @@ import { getAllHubs } from "../../public/lib/hubOperations.js";
 import { makeStyles, useMediaQuery } from "@material-ui/core";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import ProjectSideBar from "../../src/components/project/ProjectSidebar";
+import Collapse from "@material-ui/core";
 
 const parseComments = (comments) => {
   return comments
@@ -74,6 +75,7 @@ const useStyles = makeStyles((theme) => ({
     border: "2px solid red",
     backgroundColor: "#00f000"
   }),
+
 }));
 
 
@@ -105,6 +107,7 @@ export default function ProjectPage({
   });
 
   const handleHideContent = () => {
+    console.log("clicked");
     setShowSimilarProjects(!showSimilarProjects);
   }
 
@@ -168,8 +171,11 @@ export default function ProjectPage({
       }
       image={getImageUrl(project.image)}
     >
-      <div className={classes.leftContent}>
+
+     
       {project ? (
+        <>
+          
         <ProjectPageRoot
           project={{ ...project, team: members, timeline_posts: posts, comments: curComments }}
           token={token}
@@ -187,16 +193,30 @@ export default function ProjectPage({
           handleFollow={handleFollow}
           handleLike={handleLike}
           similarProjects={similarProjects}
+          handleHideContent={handleHideContent} 
         />
-       
-      ) : (
+        
+   
+    
+
+      
+            </>
+      ) 
+    
+      : (
         <PageNotFound itemName={texts.project} />
       )}
-       </div>
-       <div className={classes.rightContent}>
-      <ProjectSideBar handleHideContent={handleHideContent} similarProjects={similarProjects}></ProjectSideBar>
+      
+      
+     
+      <ProjectSideBar 
+           
+           similarProjects={similarProjects}>
+ 
+           </ProjectSideBar>
 
-      </div>
+         
+     
     </WideLayout>
   );
 }
