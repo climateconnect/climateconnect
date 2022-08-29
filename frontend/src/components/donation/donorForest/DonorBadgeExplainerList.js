@@ -1,6 +1,5 @@
 import { List, ListItem, ListItemIcon, makeStyles, Typography } from "@material-ui/core";
 import React, { useContext } from "react";
-import { getImageUrl } from "../../../../public/lib/imageOperations";
 import UserContext from "../../context/UserContext";
 import ProfileBadge from "../../profile/ProfileBadge";
 
@@ -61,7 +60,7 @@ const DonorBadgeListEntry = ({ badge }) => {
   return (
     <ListItem className={classes.listItem}>
       <ListItemIcon className={classes.listItemIcon}>
-        <ProfileBadge contentOnly image={getImageUrl(badge.image)} name={badge.name} />
+        <ProfileBadge contentOnly badge={badge} />
       </ListItemIcon>
       <Typography className={classes.badgeExplainerText}>{badgeText[locale]}</Typography>
     </ListItem>

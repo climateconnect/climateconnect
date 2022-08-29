@@ -1,10 +1,11 @@
-import { Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { Container, makeStyles, Typography, useMediaQuery, Link } from "@material-ui/core";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import InfoLinkBox from "../staticpages/InfoLinkBox";
 import SmallCloud from "../staticpages/SmallCloud";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   teamImage: {
-    maxWidth: "48%",
+    maxWidth: "100%",
     [theme.breakpoints.down("sm")]: {
       width: "100%",
       maxWidth: "100%",
@@ -68,6 +69,8 @@ export default function OurTeamBox({ h1ClassName }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
   const { locale } = useContext(UserContext);
+  const link_to_team_page = getLocalePrefix(locale) + "/team";
+  const link_to_about_page = getLocalePrefix(locale) + "/about";
   const texts = getTexts({
     page: "landing_page",
     locale: locale,
@@ -81,11 +84,18 @@ export default function OurTeamBox({ h1ClassName }) {
         {texts.our_team}
       </Typography>
       <div className={classes.content}>
-        <img src="/images/team.jpg" className={classes.teamImage} alt={texts.our_team_image_text} />
+        <Link href={link_to_team_page}>
+          <img
+            src="/images/team.jpg"
+            className={classes.teamImage}
+            alt={texts.our_team_image_text}
+          />
+        </Link>
         <div className={classes.infoLinkBoxes}>
           <InfoLinkBox
             iconSrc="/icons/group-icon.svg"
             iconAlt={texts.group_icon_alt}
+            link={link_to_team_page}
             headline={texts.who_we_are}
             text={
               texts.find_out_more_about_our_team + !isNarrowScreen
@@ -98,6 +108,7 @@ export default function OurTeamBox({ h1ClassName }) {
           <InfoLinkBox
             iconSrc="/icons/donate-icon.svg"
             iconAlt={texts.open_hand_offering_a_seedling_with_a_heart_instead_of_leaves}
+            link={link_to_about_page}
             headline={texts.our_mission}
             text={
               texts.learn_about_our_goals_and_values + !isNarrowScreen

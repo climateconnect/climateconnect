@@ -140,6 +140,7 @@ export default function Inbox({ chatData, initialNextPage }) {
   const updateErrorMessage = (e) => {
     setErrorMessage(e);
   };
+  const resetAlertMessage = () => setErrorMessage("");
 
   const enableChatSearch = () => {
     setChatSearchEnabled(true);
@@ -177,7 +178,7 @@ export default function Inbox({ chatData, initialNextPage }) {
         title={texts.inbox}
         messageType="error"
         message={errorMessage}
-        resetAlertMessage={updateErrorMessage}
+        resetAlertMessage={resetAlertMessage}
       >
         <Container maxWidth="md" className={classes.root}>
           <Typography component="h1" variant="h4" className={classes.headline}>

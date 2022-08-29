@@ -15,7 +15,8 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function IdeaJoinButton({ idea, has_joined, chat_uuid, onJoinIdea }) {
+//If we are still loading the current value of `has_joined`, initializing will be true
+export default function IdeaJoinButton({ idea, has_joined, chat_uuid, onJoinIdea, initializing }) {
   const classes = useStyles();
   const token = new Cookies().get("auth_token");
   const { locale, user } = useContext(UserContext);
@@ -62,7 +63,7 @@ export default function IdeaJoinButton({ idea, has_joined, chat_uuid, onJoinIdea
         </Button>
       ) : (
         <Button color="primary" variant="contained" onClick={onClickJoinButton}>
-          {loading ? <ButtonLoader /> : texts.join_in}
+          {loading || initializing ? <ButtonLoader /> : texts.join_in}
         </Button>
       )}
       <ConfirmDialog

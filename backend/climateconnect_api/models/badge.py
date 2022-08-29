@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.fields import DurationField
 from django.core.validators import FileExtensionValidator
+from django.contrib.auth.models import User
 
 
 def badge_image_path(instance, filename):
@@ -17,7 +18,7 @@ class Badge(models.Model):
     )
 
     step = models.PositiveSmallIntegerField(
-        help_text="Which step on the way to the best badge is this? This will determine the size in the donor's forest",
+        help_text="Which step on the way to the best badge is this? This will determine the size in the donor's forest (Leave empty for non-donor-forest badges)",
         verbose_name="Step",
         null=True,
         blank=True,
@@ -44,13 +45,6 @@ class Badge(models.Model):
         help_text="Time when post was created",
         auto_now_add=True,
         verbose_name="Created at",
-    )
-
-    instantly_awarded_over_amount = models.PositiveIntegerField(
-        help_text="You instantly get this badge if you've donated more than this amount in your current streak",
-        verbose_name="Instantly awarded over amount",
-        null=True,
-        blank=True,
     )
 
     updated_at = models.DateTimeField(
@@ -83,6 +77,13 @@ class DonorBadge(Badge):
         blank=True,
     )
 
+    instantly_awarded_over_amount = models.PositiveIntegerField(
+        help_text="You instantly get this badge if you've donated more than this amount in your current streak",
+        verbose_name="Instantly awarded over amount",
+        null=True,
+        blank=True,
+    )
+
     class Meta:
         app_label = "climateconnect_api"
         verbose_name = "Donor Badge"
@@ -93,4 +94,48 @@ class DonorBadge(Badge):
         return "Badge %s acquired after %s" % (
             self.name,
             self.regular_donor_minimum_duration,
+        )
+
+
+class UserBadge(models.Model):
+    user = models.ForeignKey(
+        User,
+        related_name="userbadge_user",
+        verbose_name="User",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+
+    badge = models.ForeignKey(
+        Badge,
+        related_name="userbadge_badge",
+        verbose_name="Badge",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+
+    created_at = models.DateTimeField(
+        help_text="Time when donation was created",
+        verbose_name="Created At",
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        help_text="Time when donation was updated",
+        verbose_name="Updated At",
+        auto_now=True,
+    )
+
+    class Meta:
+        app_label = "climateconnect_api"
+        verbose_name = "Custom User Badge"
+        verbose_name_plural = "Custom User Badges"
+        ordering = ["-id"]
+
+    def __str__(self):
+        return "Badge %s awarded to user after %s" % (
+            self.badge.name,
+            self.user.first_name + " " + self.user.last_name,
         )

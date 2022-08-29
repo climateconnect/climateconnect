@@ -25,10 +25,8 @@ const useStyles = makeStyles((theme) => ({
     alignItems: props.preview ? "center" : "stretch",
   }),
   messageWithMetaData: {
-    display: "flex",
-    flexDirection: "column",
-    flexWrap: "wrap",
-    flex: 1,
+    minWidth: 0,
+    overflowWrap: "break-word",
   },
   avatar: {
     marginRight: theme.spacing(2),
@@ -112,6 +110,7 @@ export default function Post({
     className: classes.avatar,
   };
 
+  console.log(post.author_user.badges);
   return (
     <div className={className}>
       {type === "progresspost" ? (
@@ -142,8 +141,7 @@ export default function Post({
               {post.author_user.badges?.length > 0 && (
                 <ProfileBadge
                   contentOnly
-                  name={post.author_user.badges[0].name}
-                  image={getImageUrl(post.author_user.badges[0].image)}
+                  badge={post.author_user.badges[0]}
                   size="medium"
                   className={classes.inlineBadge}
                 />
