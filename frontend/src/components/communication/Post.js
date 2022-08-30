@@ -110,6 +110,7 @@ export default function Post({
     className: classes.avatar,
   };
 
+  console.log(post.author_user.badges);
   return (
     <div className={className}>
       {type === "progresspost" ? (
@@ -140,8 +141,7 @@ export default function Post({
               {post.author_user.badges?.length > 0 && (
                 <ProfileBadge
                   contentOnly
-                  name={post.author_user.badges[0].name}
-                  image={getImageUrl(post.author_user.badges[0].image)}
+                  badge={post.author_user.badges[0]}
                   size="medium"
                   className={classes.inlineBadge}
                 />

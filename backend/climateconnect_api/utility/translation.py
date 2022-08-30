@@ -41,6 +41,15 @@ def get_user_lang_url(lang_code):
         return "/" + lang_code
 
 
+def get_attribute_in_correct_language(obj, attr, language_code):
+    lang_translation_attr = "{}_{}".format(attr, language_code)
+    if hasattr(obj, lang_translation_attr):
+        translation = getattr(obj, lang_translation_attr)
+        if language_code != "en" and translation is not None:
+            return translation
+    return getattr(obj, attr)
+
+
 def translate(text, target_lang):
     if len(text) == 0:
         return {"text": text}

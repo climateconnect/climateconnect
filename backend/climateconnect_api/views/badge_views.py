@@ -1,5 +1,5 @@
 from climateconnect_api.models.badge import DonorBadge
-from climateconnect_api.serializers.badge import DonorBadgeSerializer
+from climateconnect_api.serializers.badge import BadgeSerializer
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -10,5 +10,5 @@ class getDonorBadges(APIView):
 
     def get(self, request):
         badges = DonorBadge.objects.filter(is_active=True)
-        serializer = DonorBadgeSerializer(badges, many=True)
+        serializer = BadgeSerializer(badges, many=True)
         return Response(serializer.data)

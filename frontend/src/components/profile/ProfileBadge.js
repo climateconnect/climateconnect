@@ -1,6 +1,7 @@
 import { Badge, Link, makeStyles, Tooltip } from "@material-ui/core";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import { getImageUrl } from "../../../public/lib/imageOperations";
 import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
@@ -14,8 +15,8 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "100%",
   },
   badgeContent: (props) => ({
-    height: props.size === "small" ? 15 : props.size === "medium" ? 25 : 50,
-    width: props.size === "small" ? 15 : props.size === "medium" ? 25 : 50,
+    height: props.size === "small" ? 15 : props.size === "medium" ? 25 : 55,
+    width: props.size === "small" ? 15 : props.size === "medium" ? 25 : 55,
     background: `url(${props.image})`,
     backgroundRepeat: "no-repeat",
     backgroundPositionY: "center",
@@ -24,17 +25,20 @@ const useStyles = makeStyles((theme) => ({
   }),
 }));
 
-export default function ProfileBadge({ className, name, image, children, size, contentOnly }) {
-  const classes = useStyles({ image: image, size: size });
+export default function ProfileBadge({ className, badge, children, size, contentOnly }) {
+  const classes = useStyles({ image: getImageUrl(badge.image), size: size });
   if (contentOnly) {
-    return <BadgeContent name={name} image={image} size={size} className={className} />;
+    return <BadgeContent badge={badge} size={size} className={className} />;
   }
+
   return (
     <Badge
       classes={{
         badge: `${classes.badgeRoot} ${className}`,
       }}
-      badgeContent={<BadgeContent name={name} image={image} size={size} withLink />}
+      badgeContent={
+        <BadgeContent badge={badge} size={size} withLink={badge.is_donorforest_badge} />
+      }
       anchorOrigin={{
         horizontal: "left",
         vertical: "bottom",
@@ -46,25 +50,27 @@ export default function ProfileBadge({ className, name, image, children, size, c
   );
 }
 
-const BadgeContent = ({ name, image, size, className, withLink }) => {
+const BadgeContent = ({ badge, size, className, withLink }) => {
   const { locale } = useContext(UserContext);
   return (
-    <Tooltip title={name}>
-      {withLink ? (
-        <Link href={`${getLocalePrefix(locale)}/donorforest`} target="_blank">
-          <Content image={image} size={size} className={className} />
-        </Link>
-      ) : (
-        <Content image={image} size={size} className={className} />
-      )}
+    <Tooltip title={badge.name}>
+      <div>
+        {withLink ? (
+          <Link href={`${getLocalePrefix(locale)}/donorforest`} target="_blank">
+            <Content badge={badge} size={size} className={className} />
+          </Link>
+        ) : (
+          <Content badge={badge} size={size} className={className} />
+        )}
+      </div>
     </Tooltip>
   );
 };
 
-const Content = ({ image, size, className }) => {
-  const classes = useStyles({ image: image, size: size });
+const Content = ({ badge, size, className }) => {
+  const classes = useStyles({ image: getImageUrl(badge.image), size: size });
   return (
-    <div className={`${classes.badgeContainer} ${className}`}>
+    <div className={`${badge.is_donorforest_badge && classes.badgeContainer} ${className}`}>
       <div className={classes.badgeContent} />
     </div>
   );

@@ -379,9 +379,6 @@ class EditUserProfile(APIView):
         if "last_name" in request.data:
             user.last_name = request.data["last_name"]
         user_profile.name = user.first_name + " " + user.last_name
-        user_profile.url_slug = (user.first_name + user.last_name).lower() + str(
-            user.id
-        )
         user.save()
 
         if "image" in request.data:
