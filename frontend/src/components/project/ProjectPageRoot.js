@@ -32,10 +32,8 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     color: theme.palette.grey[800],
     position: "relative",
-   
- 
   },
-  
+
   tabsContainerWithoutPadding: {
     padding: 0,
     display: "flex",
@@ -81,17 +79,17 @@ export default function ProjectPageRoot({
   handleLike,
   handleFollow,
   similarProjects,
-  handleHideContent
+  handleHideContent,
+  showSimilarProjects,
 }) {
   const visibleFooterHeight = VisibleFooterHeight({});
   const tabContentRef = useRef(null);
   const tabContentContainerSpaceToRight = ElementSpaceToRight({ el: tabContentRef.current });
   console.log(similarProjects);
- 
+
   const classes = useStyles();
   const { locale, pathName } = useContext(UserContext);
 
-  
   const texts = getTexts({
     locale: locale,
     page: "project",
@@ -420,7 +418,7 @@ export default function ProjectPageRoot({
   const bindFollow = useLongPress(() => {
     toggleShowFollowers();
   });
-  
+
   const apiEndpointShareButton = `/api/projects/${project.url_slug}/set_shared_project/`;
   const projectAdminName = project?.creator.name ? project?.creator.name : projectAdmin.name;
   const projectLinkPath = `${getLocalePrefix(locale)}/projects/${project.url_slug}`;
@@ -429,154 +427,192 @@ export default function ProjectPageRoot({
   const dialogTitleShareButton = texts.tell_others_about_this_project;
 
   const latestParentComment = [project.comments[0]];
-  
+
   return (
     <>
-    <div className={classes.root}>
-    
-       
-       <ProjectOverview
-        apiEndpointShareButton={apiEndpointShareButton}
-        contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
-        dialogTitleShareButton={dialogTitleShareButton}
-        followers={followers}
-        followingChangePending={followingChangePending}
-        handleClickContact={handleClickContact}
-        handleToggleFollowProject={handleToggleFollowProject}
-        handleToggleLikeProject={handleToggleLikeProject}
-        hasAdminPermissions={hasAdminPermissions}
-        initiallyCaughtFollowers={initiallyCaughtFollowers}
-        initiallyCaughtLikes={initiallyCaughtLikes}
-        isUserFollowing={isUserFollowing}
-        isUserLiking={isUserLiking}
-        likes={likes}
-        likingChangePending={likingChangePending}
-        locale={locale}
-        mailBodyShareButton={mailBodyShareButton}
-        messageTitleShareButton={messageTitleShareButton}
-        numberOfFollowers={numberOfFollowers}
-        numberOfLikes={numberOfLikes}
-        project={project}
-        projectAdmin={projectAdmin}
-        projectLinkPath={projectLinkPath}
-        screenSize={screenSize}
-        showFollowers={showFollowers}
-        showLikes={showLikes}
-        toggleShowFollowers={toggleShowFollowers}
-        toggleShowLikes={toggleShowLikes}
-        token={token}
-        user={user}
-        requestedToJoinProject={requestedToJoinProject}
-        handleSetRequestedToJoinProject={handleSetRequestedToJoinProject} 
-        handleHideContent ={handleHideContent} 
+      <div className={classes.root}>
+        <ProjectOverview
+          apiEndpointShareButton={apiEndpointShareButton}
+          contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
+          dialogTitleShareButton={dialogTitleShareButton}
+          followers={followers}
+          followingChangePending={followingChangePending}
+          handleClickContact={handleClickContact}
+          handleToggleFollowProject={handleToggleFollowProject}
+          handleToggleLikeProject={handleToggleLikeProject}
+          hasAdminPermissions={hasAdminPermissions}
+          initiallyCaughtFollowers={initiallyCaughtFollowers}
+          initiallyCaughtLikes={initiallyCaughtLikes}
+          isUserFollowing={isUserFollowing}
+          isUserLiking={isUserLiking}
+          likes={likes}
+          likingChangePending={likingChangePending}
+          locale={locale}
+          mailBodyShareButton={mailBodyShareButton}
+          messageTitleShareButton={messageTitleShareButton}
+          numberOfFollowers={numberOfFollowers}
+          numberOfLikes={numberOfLikes}
+          project={project}
+          projectAdmin={projectAdmin}
+          projectLinkPath={projectLinkPath}
+          screenSize={screenSize}
+          showFollowers={showFollowers}
+          showLikes={showLikes}
+          toggleShowFollowers={toggleShowFollowers}
+          toggleShowLikes={toggleShowLikes}
+          token={token}
+          user={user}
+          requestedToJoinProject={requestedToJoinProject}
+          handleSetRequestedToJoinProject={handleSetRequestedToJoinProject}
+          handleHideContent={handleHideContent}
+          showSimilarProjects={showSimilarProjects}
         />
-         
 
-
-
-
-
-      <Container className={classes.tabsContainerWithoutPadding}>
-      
- 
-        <div ref={projectTabsRef}>
-          <Tabs
-            variant={screenSize.belowSmall ? "fullWidth" : "standard"}
-            value={tabValue}
-            onChange={handleTabChange}
-            indicatorColor="primary"
-          >
-            <Tab label={texts.project} className={classes.tab} />
-            <Tab label={teamTabLabel()} className={classes.tab} />
-            <Tab label={discussionTabLabel()} className={classes.tab} />
-          </Tabs>
-        </div>
-
-        {!screenSize.belowSmall && (
-          <SocialMediaShareButton
-            containerClassName={classes.shareButtonContainer}
-            contentLinkPath={projectLinkPath}
-            apiEndpoint={apiEndpointShareButton}
-            locale={locale}
-            token={token}
-            messageTitle={messageTitleShareButton}
-            tinyScreen={screenSize.belowTiny}
-            smallScreen={screenSize.belowSmall}
-            mailBody={mailBodyShareButton}
-            texts={texts}
-            dialogTitle={dialogTitleShareButton} />
+        {showSimilarProjects ? (
+          <ProjectSideBar
+            handleHideContent={handleHideContent}
+            similarProjects={similarProjects}
+            showSimilarProjects={showSimilarProjects}
+          ></ProjectSideBar>
+        ) : (
+          <></>
         )}
 
-      </Container>
+        <Container className={classes.tabsContainerWithoutPadding}>
+          <div ref={projectTabsRef}>
+            <Tabs
+              variant={screenSize.belowSmall ? "fullWidth" : "standard"}
+              value={tabValue}
+              onChange={handleTabChange}
+              indicatorColor="primary"
+            >
+              <Tab label={texts.project} className={classes.tab} />
+              <Tab label={teamTabLabel()} className={classes.tab} />
+              <Tab label={discussionTabLabel()} className={classes.tab} />
+            </Tabs>
+          </div>
 
-      <Container className={classes.tabContent} ref={tabContentRef}>
-        <TabContent value={tabValue} index={0}>
-          <ProjectContent
+          {!screenSize.belowSmall && (
+            <SocialMediaShareButton
+              containerClassName={classes.shareButtonContainer}
+              contentLinkPath={projectLinkPath}
+              apiEndpoint={apiEndpointShareButton}
+              locale={locale}
+              token={token}
+              messageTitle={messageTitleShareButton}
+              tinyScreen={screenSize.belowTiny}
+              smallScreen={screenSize.belowSmall}
+              mailBody={mailBodyShareButton}
+              texts={texts}
+              dialogTitle={dialogTitleShareButton}
+            />
+          )}
+        </Container>
+        <Container className={classes.projectInteractionButtonContainer}>
+          <ProjectInteractionButtons
+            screenSize={screenSize}
             project={project}
-            leaveProject={requestLeaveProject}
-            projectDescriptionRef={projectDescriptionRef}
-            collaborationSectionRef={collaborationSectionRef}
-            discussionTabLabel={discussionTabLabel()}
-            latestParentComment={latestParentComment}
-            handleTabChange={handleTabChange}
-            typesByTabValue={typesByTabValue}
-            projectTabsRef={projectTabsRef}
-            showRequesters={showRequesters}
-            toggleShowRequests={toggleShowRequests}
-            handleSendProjectJoinRequest={handleSendProjectJoinRequest}
-            requestedToJoinProject={requestedToJoinProject} />
-        </TabContent>
-        <TabContent value={tabValue} index={1}>
-          <ProjectTeamContent
-            project={project}
-            handleReadNotifications={handleReadNotifications}
-            leaveProject={requestLeaveProject} />
-        </TabContent>
-        <TabContent value={tabValue} index={2}>
-          <ProjectCommentsContent
-            project={project}
-            user={user}
-            token={token}
-            setCurComments={setCurComments} />
-        </TabContent>
+            projectAdmin={projectAdmin}
+            handleClickContact={handleClickContact}
+            hasAdminPermissions={hasAdminPermissions}
+            texts={texts}
+            visibleFooterHeight={visibleFooterHeight}
+            isUserFollowing={isUserFollowing}
+            isUserLiking={isUserLiking}
+            handleToggleFollowProject={handleToggleFollowProject}
+            handleToggleLikeProject={handleToggleLikeProject}
+            toggleShowFollowers={toggleShowFollowers}
+            followingChangePending={followingChangePending}
+            likingChangePending={likingChangePending}
+            messageButtonIsVisible={messageButtonIsVisible}
+            contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
+            tabContentContainerSpaceToRight={tabContentContainerSpaceToRight}
+            numberOfFollowers={numberOfFollowers}
+            numberOfLikes={numberOfLikes}
+            bindLike={bindLike}
+            bindFollow={bindFollow}
+          />
+        </Container>
 
-      </Container>
+        <Container className={classes.tabContent} ref={tabContentRef}>
+          <TabContent value={tabValue} index={0}>
+            <ProjectContent
+              project={project}
+              leaveProject={requestLeaveProject}
+              projectDescriptionRef={projectDescriptionRef}
+              collaborationSectionRef={collaborationSectionRef}
+              discussionTabLabel={discussionTabLabel()}
+              latestParentComment={latestParentComment}
+              handleTabChange={handleTabChange}
+              typesByTabValue={typesByTabValue}
+              projectTabsRef={projectTabsRef}
+              showRequesters={showRequesters}
+              toggleShowRequests={toggleShowRequests}
+              handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+              requestedToJoinProject={requestedToJoinProject}
+            />
+          </TabContent>
+          <TabContent value={tabValue} index={1}>
+            <ProjectTeamContent
+              project={project}
+              handleReadNotifications={handleReadNotifications}
+              leaveProject={requestLeaveProject}
+            />
+          </TabContent>
+          <TabContent value={tabValue} index={2}>
+            <ProjectCommentsContent
+              project={project}
+              user={user}
+              token={token}
+              setCurComments={setCurComments}
+            />
+          </TabContent>
+        </Container>
       </div>
 
       <ConfirmDialog
         open={confirmDialogOpen.follow}
         onClose={onFollowDialogClose}
         title={texts.do_you_really_want_to_unfollow}
-        text={<span className={classes.dialogText}>
-          {texts.are_you_sure_that_you_want_to_unfollow_this_project}
-        </span>}
+        text={
+          <span className={classes.dialogText}>
+            {texts.are_you_sure_that_you_want_to_unfollow_this_project}
+          </span>
+        }
         confirmText={texts.yes}
-        cancelText={texts.no} />
+        cancelText={texts.no}
+      />
       <ConfirmDialog
         open={confirmDialogOpen.like}
         onClose={onLikeDialogClose}
         title={texts.do_you_really_want_to_dislike}
-        text={<span className={classes.dialogText}>
-          {texts.are_you_sure_that_you_want_to_dislike_this_project}
-        </span>}
+        text={
+          <span className={classes.dialogText}>
+            {texts.are_you_sure_that_you_want_to_dislike_this_project}
+          </span>
+        }
         confirmText={texts.yes}
-        cancelText={texts.no} />
+        cancelText={texts.no}
+      />
       <ConfirmDialog
         open={confirmDialogOpen.leave}
         onClose={onConfirmDialogClose}
         title={texts.do_you_really_want_to_leave_this_project}
-        text={<span className={classes.dialogText}>
-          {texts.are_you_sure_that_you_want_to_leave_this_project}
-          <br />
-          {texts.you_wont_be_part_of_the_team_anymore}
-          {project?.team?.length === 1 && (
-            <Typography color="error">
-              <b>{texts.you_are_the_only_member_of_this_project}</b>
-            </Typography>
-          )}
-        </span>}
+        text={
+          <span className={classes.dialogText}>
+            {texts.are_you_sure_that_you_want_to_leave_this_project}
+            <br />
+            {texts.you_wont_be_part_of_the_team_anymore}
+            {project?.team?.length === 1 && (
+              <Typography color="error">
+                <b>{texts.you_are_the_only_member_of_this_project}</b>
+              </Typography>
+            )}
+          </span>
+        }
         confirmText={texts.yes}
-        cancelText={texts.no} />
+        cancelText={texts.no}
+      />
       <Tutorial
         fixedPosition
         pointerRefs={{
@@ -586,10 +622,9 @@ export default function ProjectPageRoot({
           projectTabsRef: projectTabsRef,
         }}
         typesByTabValue={typesByTabValue}
-        handleTabChange={handleTabChange} />
-        
-       
-        </>
+        handleTabChange={handleTabChange}
+      />
+    </>
   );
 }
 

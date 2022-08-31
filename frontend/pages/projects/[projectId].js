@@ -36,7 +36,16 @@ const parseComments = (comments) => {
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const projectUrl = encodeURI(ctx.query.projectId);
-  const [project, members, posts, comments, following, liking, hubs, similarProjects] = await Promise.all([
+  const [
+    project,
+    members,
+    posts,
+    comments,
+    following,
+    liking,
+    hubs,
+    similarProjects,
+  ] = await Promise.all([
     getProjectByIdIfExists(projectUrl, auth_token, ctx.locale),
     getProjectMembersByIdIfExists(projectUrl, ctx.locale),
     getPostsByProject(projectUrl, auth_token, ctx.locale),
@@ -55,29 +64,10 @@ export async function getServerSideProps(ctx) {
       following: following,
       liking: liking,
       hubs: hubs,
-      similarProjects: similarProjects
+      similarProjects: similarProjects,
     }),
   };
 }
-const useStyles = makeStyles((theme) => ({
-  leftContent: (props) => ({
-    width: props.showSimilarProjects ? "70%" : "90%",
-    float: "left",
-    height: "100%",
-    padding: "20px",
-    border: "2px solid red",
-  }),
-  rightContent: (props) => ({
-    width: props.showSimilarProjects ? "30%" : "10%",
-    float: "right",
-    height: "100%",
-    padding: "20px",
-    border: "2px solid red",
-    backgroundColor: "#00f000"
-  }),
-
-}));
-
 
 export default function ProjectPage({
   project,
@@ -87,9 +77,8 @@ export default function ProjectPage({
   following,
   liking,
   hubs,
-  similarProjects
+  similarProjects,
 }) {
-  
   const token = new Cookies().get("auth_token");
   const [curComments, setCurComments] = React.useState(parseComments(comments));
   const [message, setMessage] = React.useState({});
@@ -102,14 +91,12 @@ export default function ProjectPage({
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [showSimilarProjects, setShowSimilarProjects] = React.useState(true);
-  const classes = useStyles({
-    showSimilarProjects: showSimilarProjects
-  });
+ 
 
   const handleHideContent = () => {
     console.log("clicked");
     setShowSimilarProjects(!showSimilarProjects);
-  }
+  };
 
   const handleFollow = (userFollows, updateCount, pending) => {
     setIsUserFollowing(userFollows);
@@ -171,52 +158,32 @@ export default function ProjectPage({
       }
       image={getImageUrl(project.image)}
     >
-
-     
       {project ? (
         <>
-          
-        <ProjectPageRoot
-          project={{ ...project, team: members, timeline_posts: posts, comments: curComments }}
-          token={token}
-          setMessage={setMessage}
-          isUserFollowing={isUserFollowing}
-          user={user}
-          setCurComments={setCurComments}
-          followingChangePending={followingChangePending}
-          likingChangePending={likingChangePending}
-          texts={texts}
-          projectAdmin={members?.find((m) => m.permission === ROLE_TYPES.all_type)}
-          isUserLiking={isUserLiking}
-          numberOfLikes={numberOfLikes}
-          numberOfFollowers={numberOfFollowers}
-          handleFollow={handleFollow}
-          handleLike={handleLike}
-          similarProjects={similarProjects}
-          handleHideContent={handleHideContent} 
-        />
-        
-   
-    
-
-      
-            </>
-      ) 
-    
-      : (
+          <ProjectPageRoot
+            project={{ ...project, team: members, timeline_posts: posts, comments: curComments }}
+            token={token}
+            setMessage={setMessage}
+            isUserFollowing={isUserFollowing}
+            user={user}
+            setCurComments={setCurComments}
+            followingChangePending={followingChangePending}
+            likingChangePending={likingChangePending}
+            texts={texts}
+            projectAdmin={members?.find((m) => m.permission === ROLE_TYPES.all_type)}
+            isUserLiking={isUserLiking}
+            numberOfLikes={numberOfLikes}
+            numberOfFollowers={numberOfFollowers}
+            handleFollow={handleFollow}
+            handleLike={handleLike}
+            similarProjects={similarProjects}
+            handleHideContent={handleHideContent}
+            showSimilarProjects={showSimilarProjects}
+          />
+        </>
+      ) : (
         <PageNotFound itemName={texts.project} />
       )}
-      
-      
-     
-      <ProjectSideBar 
-           
-           similarProjects={similarProjects}>
- 
-           </ProjectSideBar>
-
-         
-     
     </WideLayout>
   );
 }
@@ -334,8 +301,8 @@ async function getSimilarProjects(projectUrl, locale) {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/projects/"+projectUrl+"/similar/",
-      locale: locale
+      url: "/api/projects/" + projectUrl + "/similar/",
+      locale: locale,
     });
     if (resp.data.results.length === 0) return null;
     else {

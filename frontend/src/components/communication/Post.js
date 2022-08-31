@@ -110,7 +110,6 @@ export default function Post({
     className: classes.avatar,
   };
 
-  
   return (
     <div className={className}>
       {type === "progresspost" ? (

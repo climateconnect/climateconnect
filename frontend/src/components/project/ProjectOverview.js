@@ -58,16 +58,15 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
     textAlign: "center",
-    
   },
   headerButton: {
-    right : 0,
-    position:"absolute"
+    right: 0,
+    position: "absolute",
   },
 
   headerContainer: {
     display: "flex",
-   
+
     justifyContent: "center",
   },
   goBackButtonContainer: {
@@ -133,10 +132,10 @@ export default function ProjectOverview({
   user,
   handleSetRequestedToJoinProject,
   requestedToJoinProject,
-  handleHideContent
+  handleHideContent,
 }) {
   const classes = useStyles();
-  
+
   const texts = getTexts({ page: "project", locale: locale, project: project });
 
   /**
@@ -231,7 +230,7 @@ export default function ProjectOverview({
           toggleShowFollowers={toggleShowFollowers}
           toggleShowLikes={toggleShowLikes}
           token={token}
-          handleHideContent={handleHideContent} 
+          handleHideContent={handleHideContent}
         />
       )}
 
@@ -388,17 +387,20 @@ function LargeScreenOverview({
   texts,
   toggleShowFollowers,
   toggleShowLikes,
-  handleHideContent 
+  handleHideContent,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
- console.log(typeof(handleHideContent))
+  console.log(typeof handleHideContent);
   return (
-    <> 
-    <div  className={classes.headerContainer}>
-      <Typography component="h1" variant="h4"className={classes.largeScreenHeader}>
-        {project.name}
-      </Typography>
-      <Button className={classes.headerButton} onClick={handleHideContent} > Show </Button>
+    <>
+      <div className={classes.headerContainer}>
+        <Typography component="h1" variant="h4" className={classes.largeScreenHeader}>
+          {project.name}
+        </Typography>
+        <Button className={classes.headerButton} onClick={handleHideContent}>
+          {" "}
+          Show{" "}
+        </Button>
       </div>
       <div className={classes.flexContainer}>
         <img
@@ -474,11 +476,8 @@ function LargeScreenOverview({
                 collapsable={true}
               />
             )}
-            
           </div>
-        
         </div>
-      
       </div>
     </>
   );
