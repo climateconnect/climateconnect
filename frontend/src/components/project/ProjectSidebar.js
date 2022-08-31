@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     marginLeft: theme.spacing(0),
     marginTop: theme.spacing(2),
-    fontSize:20,
+    fontSize: 18,
   },
   buttonText: {
     color: theme.palette.primary.main,
@@ -63,7 +63,7 @@ export default function ProjectSideBar({
   return (
     <>
       <div className={classes.cardContainer}>
-        <Typography className={classes.boxTitle}>Recommended for you!</Typography>
+        <Typography className={classes.boxTitle}>Projects Recommended For You!</Typography>
 
         {similarProjects.map((sp) => (
           <ProjectPreview project={sp} className={classes.projectCard} />

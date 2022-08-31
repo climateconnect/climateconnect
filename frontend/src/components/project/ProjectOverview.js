@@ -132,7 +132,7 @@ export default function ProjectOverview({
   user,
   handleSetRequestedToJoinProject,
   requestedToJoinProject,
-  handleHideContent,
+ 
 }) {
   const classes = useStyles();
 
@@ -230,7 +230,7 @@ export default function ProjectOverview({
           toggleShowFollowers={toggleShowFollowers}
           toggleShowLikes={toggleShowLikes}
           token={token}
-          handleHideContent={handleHideContent}
+        
         />
       )}
 
@@ -397,10 +397,6 @@ function LargeScreenOverview({
         <Typography component="h1" variant="h4" className={classes.largeScreenHeader}>
           {project.name}
         </Typography>
-        <Button className={classes.headerButton} onClick={handleHideContent}>
-          {" "}
-          Show{" "}
-        </Button>
       </div>
       <div className={classes.flexContainer}>
         <img

@@ -1,4 +1,4 @@
-import { Collapse, Container, Tab, Tabs, Typography } from "@material-ui/core";
+import { Button, Container, Tab, Tabs, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Router from "next/router";
@@ -23,15 +23,27 @@ import ProjectInteractionButtons from "./Buttons/ProjectInteractionButtons";
 import ProjectCommentsContent from "./ProjectCommentsContent";
 import ProjectContent from "./ProjectContent";
 import ProjectOverview from "./ProjectOverview";
-import ProjectPreview from "./ProjectPreview";
 import ProjectTeamContent from "./ProjectTeamContent";
 import ProjectSideBar from "./ProjectSidebar";
+import theme from "../../themes/theme";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     textAlign: "center",
     color: theme.palette.grey[800],
-    position: "relative",
+    position: "relative" ,
+  },
+
+  openSimilarProjects: {
+    position: "fixed",
+    bottom: "calc(50vh - 248px)",
+    transform: "rotate(-90deg)",
+    right: -76.5, 
+    zIndex: 10,
+  },
+ 
+  buttonText: {
+    color: theme.palette.primary.main,
   },
 
   tabsContainerWithoutPadding: {
@@ -85,7 +97,7 @@ export default function ProjectPageRoot({
   const visibleFooterHeight = VisibleFooterHeight({});
   const tabContentRef = useRef(null);
   const tabContentContainerSpaceToRight = ElementSpaceToRight({ el: tabContentRef.current });
-  console.log(similarProjects);
+
 
   const classes = useStyles();
   const { locale, pathName } = useContext(UserContext);
@@ -102,6 +114,7 @@ export default function ProjectPageRoot({
     belowSmall: useMediaQuery((theme) => theme.breakpoints.down("sm")),
     belowMedium: useMediaQuery("(max-width:1100px)"),
     belowLarge: useMediaQuery((theme) => theme.breakpoints.down("xl")),
+   
   };
 
   const [hash, setHash] = useState(null);
@@ -464,19 +477,31 @@ export default function ProjectPageRoot({
           user={user}
           requestedToJoinProject={requestedToJoinProject}
           handleSetRequestedToJoinProject={handleSetRequestedToJoinProject}
-          handleHideContent={handleHideContent}
-          showSimilarProjects={showSimilarProjects}
+         
         />
 
-        {showSimilarProjects ? (
+        {(showSimilarProjects && !screenSize.belowSmall ) ? (
           <ProjectSideBar
             handleHideContent={handleHideContent}
             similarProjects={similarProjects}
             showSimilarProjects={showSimilarProjects}
           ></ProjectSideBar>
         ) : (
-          <></>
+          <>
+          {!screenSize.belowSmall && (
+           <Button
+          variant="contained"
+          size="small"
+          classes={{
+            root: classes.openSimilarProjects,
+            label: classes.buttonText,
+          }}
+          onClick={handleHideContent}>
+           Show Similar Projects!
+         </Button>) }</>
         )}
+
+        
 
         <Container className={classes.tabsContainerWithoutPadding}>
           <div ref={projectTabsRef}>
@@ -613,6 +638,7 @@ export default function ProjectPageRoot({
         confirmText={texts.yes}
         cancelText={texts.no}
       />
+     
       <Tutorial
         fixedPosition
         pointerRefs={{
@@ -624,6 +650,7 @@ export default function ProjectPageRoot({
         typesByTabValue={typesByTabValue}
         handleTabChange={handleTabChange}
       />
+      
     </>
   );
 }
