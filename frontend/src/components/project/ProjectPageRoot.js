@@ -25,28 +25,26 @@ import ProjectContent from "./ProjectContent";
 import ProjectOverview from "./ProjectOverview";
 import ProjectTeamContent from "./ProjectTeamContent";
 import ProjectSideBar from "./ProjectSidebar";
-import theme from "../../themes/theme";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     textAlign: "center",
     color: theme.palette.grey[800],
-    position: "relative" ,
+    position: "relative",
   },
 
-  openSimilarProjects: (props) => ( {
+  openSimilarProjects: {
     position: "fixed",
     bottom: "calc(50vh + 40px)",
-    [theme.breakpoints.up('lg')]: {
-      
+    [theme.breakpoints.up("lg")]: {
       bottom: "calc(50vh + 128px)",
     },
     transform: "rotate(-90deg)",
-    right: -85, 
+    right: -85,
     zIndex: 10,
     minWidth: 200,
-  }),
- 
+  },
+
   buttonText: {
     color: theme.palette.primary.main,
   },
@@ -103,9 +101,8 @@ export default function ProjectPageRoot({
   const tabContentRef = useRef(null);
   const tabContentContainerSpaceToRight = ElementSpaceToRight({ el: tabContentRef.current });
 
-
   const classes = useStyles({
-    showSimilarProjects: showSimilarProjects
+    showSimilarProjects: showSimilarProjects,
   });
   const { locale, pathName } = useContext(UserContext);
 
@@ -121,7 +118,6 @@ export default function ProjectPageRoot({
     belowSmall: useMediaQuery((theme) => theme.breakpoints.down("sm")),
     belowMedium: useMediaQuery("(max-width:1100px)"),
     belowLarge: useMediaQuery((theme) => theme.breakpoints.down("xl")),
-   
   };
 
   const [hash, setHash] = useState(null);
@@ -487,31 +483,26 @@ export default function ProjectPageRoot({
           similarProjects={similarProjects}
         />
 
-        {(showSimilarProjects && !screenSize.belowSmall ) && (
-          <ProjectSideBar
-           
-            similarProjects={similarProjects}
-           
-          ></ProjectSideBar>
-        ) }
-          <>
+        {showSimilarProjects && !screenSize.belowSmall && (
+          <ProjectSideBar similarProjects={similarProjects} />
+        )}
+        <>
           {!screenSize.belowSmall && (
-           <Button
-          variant="contained"
-          size="small"
-          classes={{
-            root: classes.openSimilarProjects,
-            label: classes.buttonText,
-          }}
-          onClick={handleHideContent}>
-          {showSimilarProjects ?  "Hide Similar Projects!" : "Show Similar Projects!" }
-         </Button>) }</>
-       
-
-        
+            <Button
+              variant="contained"
+              size="small"
+              classes={{
+                root: classes.openSimilarProjects,
+                label: classes.buttonText,
+              }}
+              onClick={handleHideContent}
+            >
+              {showSimilarProjects ? "Hide Similar Projects!" : "Show Similar Projects!"}
+            </Button>
+          )}
+        </>
 
         <Container className={classes.tabsContainerWithoutPadding}>
-       
           <div ref={projectTabsRef}>
             <Tabs
               variant={screenSize.belowSmall ? "fullWidth" : "standard"}
@@ -646,7 +637,7 @@ export default function ProjectPageRoot({
         confirmText={texts.yes}
         cancelText={texts.no}
       />
-     
+
       <Tutorial
         fixedPosition
         pointerRefs={{
@@ -658,7 +649,6 @@ export default function ProjectPageRoot({
         typesByTabValue={typesByTabValue}
         handleTabChange={handleTabChange}
       />
-      
     </>
   );
 }

@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ProjectsSlider({ projects, showSimilarProjects }) {
   const classes = useStyles({
-    showSimilarProjects: showSimilarProjects
+    showSimilarProjects: showSimilarProjects,
   });
   const under500 = useMediaQuery("(max-width: 500px)");
   const responsive = {

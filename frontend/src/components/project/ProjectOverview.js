@@ -22,7 +22,6 @@ import projectOverviewStyles from "../../../public/styles/projectOverviewStyles"
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import ProjectsSlider from "../climateMatchResults/ProjectsSlider";
 
-
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
   infoBottomBar: (props) => ({
@@ -134,8 +133,7 @@ export default function ProjectOverview({
   user,
   handleSetRequestedToJoinProject,
   requestedToJoinProject,
-  similarProjects
- 
+  similarProjects,
 }) {
   const classes = useStyles();
 
@@ -234,7 +232,6 @@ export default function ProjectOverview({
           toggleShowFollowers={toggleShowFollowers}
           toggleShowLikes={toggleShowLikes}
           token={token}
-        
         />
       )}
 
@@ -279,7 +276,7 @@ function SmallScreenOverview({
   texts,
   toggleShowFollowers,
   token,
-  similarProjects
+  similarProjects,
 }) {
   const classes = useStyles();
 
@@ -319,13 +316,10 @@ function SmallScreenOverview({
         </Typography>
 
         <Typography>{project?.short_description}</Typography>
-        
-          
-        
-     
+
         <div className={classes.projectInfoEl}>
-        <Typography>You may also like these projects!</Typography>
-        <ProjectsSlider projects={similarProjects} showSimilarProjects></ProjectsSlider>
+          <Typography>You may also like these projects!</Typography>
+          <ProjectsSlider projects={similarProjects} showSimilarProjects />
           <Typography>
             <Tooltip title={texts.location}>
               <PlaceIcon color="primary" className={classes.icon} />
@@ -398,10 +392,9 @@ function LargeScreenOverview({
   texts,
   toggleShowFollowers,
   toggleShowLikes,
-  handleHideContent,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
-  console.log(typeof handleHideContent);
+
   return (
     <>
       <div className={classes.headerContainer}>

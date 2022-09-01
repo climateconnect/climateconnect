@@ -11,10 +11,8 @@ import WideLayout from "../../src/components/layouts/WideLayout";
 import ProjectPageRoot from "../../src/components/project/ProjectPageRoot";
 import HubsSubHeader from "../../src/components/indexPage/hubsSubHeader/HubsSubHeader";
 import { getAllHubs } from "../../public/lib/hubOperations.js";
-import { makeStyles, useMediaQuery } from "@material-ui/core";
+import { useMediaQuery } from "@material-ui/core";
 import { getImageUrl } from "../../public/lib/imageOperations";
-import ProjectSideBar from "../../src/components/project/ProjectSidebar";
-import Collapse from "@material-ui/core";
 
 const parseComments = (comments) => {
   return comments
@@ -91,10 +89,8 @@ export default function ProjectPage({
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [showSimilarProjects, setShowSimilarProjects] = React.useState(true);
- 
 
   const handleHideContent = () => {
-    console.log("clicked");
     setShowSimilarProjects(!showSimilarProjects);
   };
 
