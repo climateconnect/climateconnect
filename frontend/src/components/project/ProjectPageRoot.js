@@ -34,13 +34,18 @@ const useStyles = makeStyles((theme) => ({
     position: "relative" ,
   },
 
-  openSimilarProjects: {
+  openSimilarProjects: (props) => ( {
     position: "fixed",
-    bottom: "calc(50vh - 248px)",
+    bottom: "calc(50vh + 40px)",
+    [theme.breakpoints.up('lg')]: {
+      
+      bottom: "calc(50vh + 128px)",
+    },
     transform: "rotate(-90deg)",
-    right: -76.5, 
+    right: -85, 
     zIndex: 10,
-  },
+    minWidth: 200,
+  }),
  
   buttonText: {
     color: theme.palette.primary.main,
@@ -99,7 +104,9 @@ export default function ProjectPageRoot({
   const tabContentContainerSpaceToRight = ElementSpaceToRight({ el: tabContentRef.current });
 
 
-  const classes = useStyles();
+  const classes = useStyles({
+    showSimilarProjects: showSimilarProjects
+  });
   const { locale, pathName } = useContext(UserContext);
 
   const texts = getTexts({
@@ -477,16 +484,16 @@ export default function ProjectPageRoot({
           user={user}
           requestedToJoinProject={requestedToJoinProject}
           handleSetRequestedToJoinProject={handleSetRequestedToJoinProject}
-         
+          similarProjects={similarProjects}
         />
 
-        {(showSimilarProjects && !screenSize.belowSmall ) ? (
+        {(showSimilarProjects && !screenSize.belowSmall ) && (
           <ProjectSideBar
-            handleHideContent={handleHideContent}
+           
             similarProjects={similarProjects}
-            showSimilarProjects={showSimilarProjects}
+           
           ></ProjectSideBar>
-        ) : (
+        ) }
           <>
           {!screenSize.belowSmall && (
            <Button
@@ -497,13 +504,14 @@ export default function ProjectPageRoot({
             label: classes.buttonText,
           }}
           onClick={handleHideContent}>
-           Show Similar Projects!
+          {showSimilarProjects ?  "Hide Similar Projects!" : "Show Similar Projects!" }
          </Button>) }</>
-        )}
+       
 
         
 
         <Container className={classes.tabsContainerWithoutPadding}>
+       
           <div ref={projectTabsRef}>
             <Tabs
               variant={screenSize.belowSmall ? "fullWidth" : "standard"}

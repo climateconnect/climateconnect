@@ -20,6 +20,8 @@ import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
 import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
+import ProjectsSlider from "../climateMatchResults/ProjectsSlider";
+
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
@@ -132,6 +134,7 @@ export default function ProjectOverview({
   user,
   handleSetRequestedToJoinProject,
   requestedToJoinProject,
+  similarProjects
  
 }) {
   const classes = useStyles();
@@ -202,6 +205,7 @@ export default function ProjectOverview({
           project={project}
           texts={texts}
           toggleShowFollowers={toggleShowFollowers}
+          similarProjects={similarProjects}
         />
       ) : (
         <LargeScreenOverview
@@ -275,6 +279,7 @@ function SmallScreenOverview({
   texts,
   toggleShowFollowers,
   token,
+  similarProjects
 }) {
   const classes = useStyles();
 
@@ -314,7 +319,13 @@ function SmallScreenOverview({
         </Typography>
 
         <Typography>{project?.short_description}</Typography>
+        
+          
+        
+     
         <div className={classes.projectInfoEl}>
+        <Typography>You may also like these projects!</Typography>
+        <ProjectsSlider projects={similarProjects} showSimilarProjects></ProjectsSlider>
           <Typography>
             <Tooltip title={texts.location}>
               <PlaceIcon color="primary" className={classes.icon} />

@@ -7,8 +7,8 @@ import ProjectPreview from "../project/ProjectPreview";
 import ClimateMatchSuggestionInfo from "./ClimateMatchSuggestionInfo";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    position: "absolute",
+  root: (props) => ({
+    position: props.showSimilarProjects ? "relative" : "absolute",
     left: 50,
     right: 50,
     border: `1px solid ${theme.palette.secondary.main}`,
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
       left: 0,
       right: 0,
     },
-  },
+  }),
   projectImage: {
     height: 150,
     paddingRight: theme.spacing(2),
@@ -50,8 +50,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProjectsSlider({ projects }) {
-  const classes = useStyles();
+export default function ProjectsSlider({ projects, showSimilarProjects }) {
+  const classes = useStyles({
+    showSimilarProjects: showSimilarProjects
+  });
   const under500 = useMediaQuery("(max-width: 500px)");
   const responsive = {
     all: {
