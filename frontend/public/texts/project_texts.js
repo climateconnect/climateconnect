@@ -966,7 +966,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     hide_recommended_projects: {
       en: "Hide similar projects",
-      de: "Ähnliche Projekte verstecken"
+      de: "Ähnliche Projekte verstecken",
     },
     show_recommended_projects: {
       en: "Show similar projects",
@@ -974,7 +974,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     you_may_also_like_these_projects: {
       en: "You may also like these projects!",
-      de: "Dir könnten diese Projekte auch gefallen!"
+      de: "Dir könnten diese Projekte auch gefallen!",
     },
   };
 }

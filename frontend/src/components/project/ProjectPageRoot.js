@@ -24,7 +24,6 @@ import ProjectCommentsContent from "./ProjectCommentsContent";
 import ProjectContent from "./ProjectContent";
 import ProjectOverview from "./ProjectOverview";
 import ProjectTeamContent from "./ProjectTeamContent";
-import ProjectSideBar from "./ProjectSidebar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -40,9 +39,9 @@ const useStyles = makeStyles((theme) => ({
       bottom: props.locale === "en" ? "calc(50vh + 128px)" : "calc(50vh + 146px)",
     },
     transform: "rotate(-90deg)",
-    right: props.locale === "en" ? -85 :  -102,
+    right: props.locale === "en" ? -85 : -102,
     zIndex: 10,
-    minWidth: props.locale === "en" ? 200 : 235 ,
+    minWidth: props.locale === "en" ? 200 : 235,
   }),
 
   buttonText: {
@@ -105,7 +104,6 @@ export default function ProjectPageRoot({
     showSimilarProjects: showSimilarProjects,
     locale: locale,
   });
-  
 
   const texts = getTexts({
     locale: locale,
@@ -484,9 +482,6 @@ export default function ProjectPageRoot({
           similarProjects={similarProjects}
         />
 
-        {showSimilarProjects && !screenSize.belowSmall && (
-          <ProjectSideBar similarProjects={similarProjects} texts={texts} />
-        )}
         <>
           {!screenSize.belowSmall && (
             <Button
@@ -498,7 +493,9 @@ export default function ProjectPageRoot({
               }}
               onClick={handleHideContent}
             >
-              {showSimilarProjects ? texts.hide_recommended_projects : texts.show_recommended_projects}
+              {showSimilarProjects
+                ? texts.hide_recommended_projects
+                : texts.show_recommended_projects}
             </Button>
           )}
         </>

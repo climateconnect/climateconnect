@@ -13,6 +13,27 @@ import HubsSubHeader from "../../src/components/indexPage/hubsSubHeader/HubsSubH
 import { getAllHubs } from "../../public/lib/hubOperations.js";
 import { useMediaQuery } from "@material-ui/core";
 import { getImageUrl } from "../../public/lib/imageOperations";
+import { makeStyles } from "@material-ui/core/styles";
+import ProjectSideBar from "../../src/components/project/ProjectSidebar";
+
+const useStyles = makeStyles((theme) => ({
+  contentWrapper: {
+    display: "flex",
+  },
+  mainContent: (props) => ({
+    width: props.showSimilarProjects ? "80%" : "100%",
+    marginRight: theme.spacing(1),
+    [theme.breakpoints.down("sm")]: {
+      width: "100%",
+      marginRight: theme.spacing(0),
+    },
+  }),
+  secondaryContent: (props) => ({
+    width: props.showSimilarProjects ? "20%" : "0%",
+    marginTop: theme.spacing(3),
+    marginRight: theme.spacing(5),
+  }),
+}));
 
 const parseComments = (comments) => {
   return comments
@@ -89,10 +110,15 @@ export default function ProjectPage({
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [showSimilarProjects, setShowSimilarProjects] = React.useState(true);
+  const classes = useStyles({
+    showSimilarProjects: showSimilarProjects,
+  });
 
   const handleHideContent = () => {
     setShowSimilarProjects(!showSimilarProjects);
   };
+
+  const smallScreenSize = useMediaQuery((theme) => theme.breakpoints.down("sm"));
 
   const handleFollow = (userFollows, updateCount, pending) => {
     setIsUserFollowing(userFollows);
@@ -155,28 +181,35 @@ export default function ProjectPage({
       image={getImageUrl(project.image)}
     >
       {project ? (
-        <>
-          <ProjectPageRoot
-            project={{ ...project, team: members, timeline_posts: posts, comments: curComments }}
-            token={token}
-            setMessage={setMessage}
-            isUserFollowing={isUserFollowing}
-            user={user}
-            setCurComments={setCurComments}
-            followingChangePending={followingChangePending}
-            likingChangePending={likingChangePending}
-            texts={texts}
-            projectAdmin={members?.find((m) => m.permission === ROLE_TYPES.all_type)}
-            isUserLiking={isUserLiking}
-            numberOfLikes={numberOfLikes}
-            numberOfFollowers={numberOfFollowers}
-            handleFollow={handleFollow}
-            handleLike={handleLike}
-            similarProjects={similarProjects}
-            handleHideContent={handleHideContent}
-            showSimilarProjects={showSimilarProjects}
-          />
-        </>
+        <div className={classes.contentWrapper}>
+          <div className={classes.mainContent}>
+            <ProjectPageRoot
+              project={{ ...project, team: members, timeline_posts: posts, comments: curComments }}
+              token={token}
+              setMessage={setMessage}
+              isUserFollowing={isUserFollowing}
+              user={user}
+              setCurComments={setCurComments}
+              followingChangePending={followingChangePending}
+              likingChangePending={likingChangePending}
+              texts={texts}
+              projectAdmin={members?.find((m) => m.permission === ROLE_TYPES.all_type)}
+              isUserLiking={isUserLiking}
+              numberOfLikes={numberOfLikes}
+              numberOfFollowers={numberOfFollowers}
+              handleFollow={handleFollow}
+              handleLike={handleLike}
+              similarProjects={similarProjects}
+              handleHideContent={handleHideContent}
+              showSimilarProjects={showSimilarProjects}
+            />
+          </div>
+          <div className={classes.secondaryContent}>
+            {showSimilarProjects && !smallScreenSize && (
+              <ProjectSideBar similarProjects={similarProjects} texts={texts} />
+            )}
+          </div>
+        </div>
       ) : (
         <PageNotFound itemName={texts.project} />
       )}
