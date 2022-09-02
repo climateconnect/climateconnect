@@ -64,7 +64,7 @@ export default function ProjectsSlider({ projects, showSimilarProjects }) {
 
   return (
     <div className={classes.root}>
-      <Carousel responsive={responsive} infinite={projects?.length > 1} arrows={!under500}>
+      <Carousel responsive={responsive} infinite={projects?.length > 1} autoPlay={showSimilarProjects} arrows={!under500}>
         {projects.map((p, index) => (
           <CarouselItem key={index} project={p} />
         ))}

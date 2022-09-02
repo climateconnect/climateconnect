@@ -33,17 +33,17 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
   },
 
-  openSimilarProjects: {
+  openSimilarProjects: (props) => ({
     position: "fixed",
-    bottom: "calc(50vh + 40px)",
+    bottom: props.locale === "en" ? "calc(50vh + 40px)" : "calc(50vh + 55px)",
     [theme.breakpoints.up("lg")]: {
-      bottom: "calc(50vh + 128px)",
+      bottom: props.locale === "en" ? "calc(50vh + 128px)" : "calc(50vh + 146px)",
     },
     transform: "rotate(-90deg)",
-    right: -85,
+    right: props.locale === "en" ? -85 :  -102,
     zIndex: 10,
-    minWidth: 200,
-  },
+    minWidth: props.locale === "en" ? 200 : 235 ,
+  }),
 
   buttonText: {
     color: theme.palette.primary.main,
@@ -100,11 +100,12 @@ export default function ProjectPageRoot({
   const visibleFooterHeight = VisibleFooterHeight({});
   const tabContentRef = useRef(null);
   const tabContentContainerSpaceToRight = ElementSpaceToRight({ el: tabContentRef.current });
-
+  const { locale, pathName } = useContext(UserContext);
   const classes = useStyles({
     showSimilarProjects: showSimilarProjects,
+    locale: locale,
   });
-  const { locale, pathName } = useContext(UserContext);
+  
 
   const texts = getTexts({
     locale: locale,
@@ -484,7 +485,7 @@ export default function ProjectPageRoot({
         />
 
         {showSimilarProjects && !screenSize.belowSmall && (
-          <ProjectSideBar similarProjects={similarProjects} />
+          <ProjectSideBar similarProjects={similarProjects} texts={texts} />
         )}
         <>
           {!screenSize.belowSmall && (
@@ -497,7 +498,7 @@ export default function ProjectPageRoot({
               }}
               onClick={handleHideContent}
             >
-              {showSimilarProjects ? "Hide Similar Projects!" : "Show Similar Projects!"}
+              {showSimilarProjects ? texts.hide_recommended_projects : texts.show_recommended_projects}
             </Button>
           )}
         </>

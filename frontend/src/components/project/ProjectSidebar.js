@@ -1,6 +1,7 @@
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import React from "react";
+import getTexts from "../../../public/texts/texts";
 import ProjectPreview from "./ProjectPreview";
 
 const useStyles = makeStyles((theme) => ({
@@ -14,19 +15,19 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
   },
   cardContainer: {
-    overflow: "auto",
+   
     display: "flex",
     flexDirection: "column",
     alignItems: "space-between",
-    height: "70%",
+   
 
     borderRadius: 30,
     backgroundColor: "#f0f2f5",
-    position: "fixed",
+    position: "absolute",
     zIndex: "1",
     right: 45,
 
-    bottom: "calc(15vh - 55px)",
+    top: "calc(15vh - 55px)",
   },
 
   boxTitle: {
@@ -41,13 +42,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProjectSideBar({ similarProjects }) {
+export default function ProjectSideBar({ similarProjects, texts }) {
   const classes = useStyles();
+  
 
   return (
     <>
       <div className={classes.cardContainer}>
-        <Typography className={classes.boxTitle}>Projects Recommended For You!</Typography>
+        <Typography className={classes.boxTitle}>{texts.projects_recommend_for_you}</Typography>
 
         {similarProjects.map((sp, index) => (
           <ProjectPreview project={sp} key={index} className={classes.projectCard} />

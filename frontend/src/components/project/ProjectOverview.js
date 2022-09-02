@@ -318,7 +318,7 @@ function SmallScreenOverview({
         <Typography>{project?.short_description}</Typography>
 
         <div className={classes.projectInfoEl}>
-          <Typography>You may also like these projects!</Typography>
+          <Typography>{texts.you_may_also_like_these_projects}</Typography> 
           <ProjectsSlider projects={similarProjects} showSimilarProjects />
           <Typography>
             <Tooltip title={texts.location}>
