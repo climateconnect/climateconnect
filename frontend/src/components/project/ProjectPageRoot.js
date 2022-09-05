@@ -115,7 +115,9 @@ export default function ProjectPageRoot({
   const screenSize = {
     belowTiny: useMediaQuery((theme) => theme.breakpoints.down("xs")),
     belowSmall: useMediaQuery((theme) => theme.breakpoints.down("sm")),
-    belowMedium: useMediaQuery("(max-width:1100px)"),
+    belowMedium: showSimilarProjects
+      ? useMediaQuery("(max-width:1300px)")
+      : useMediaQuery("(max-width:1100px)"),
     belowLarge: useMediaQuery((theme) => theme.breakpoints.down("xl")),
   };
 

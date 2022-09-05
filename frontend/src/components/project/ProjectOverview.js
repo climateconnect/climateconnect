@@ -85,6 +85,9 @@ const useStyles = makeStyles((theme) => ({
   imageContainer: {
     position: "relative",
   },
+  contactProjectButtonLarge: {
+    height: 40,
+  },
 }));
 
 const componentDecorator = (href, text, key) => (
@@ -465,7 +468,7 @@ function LargeScreenOverview({
               texts={texts}
               toggleShowFollowers={toggleShowFollowers}
             />
-            {!hasAdminPermissions && (
+            {!hasAdminPermissions && !screenSize.belowMedium ? (
               <ContactCreatorButton
                 creator={projectAdmin}
                 contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
@@ -475,6 +478,16 @@ function LargeScreenOverview({
                 withIcons={true}
                 collapsable={true}
               />
+            ) : (
+              <Button
+                className={classes.contactProjectButtonLarge}
+                variant="contained"
+                color="primary"
+                onClick={handleClickContact}
+                ref={contactProjectCreatorButtonRef}
+              >
+                {texts.contact}
+              </Button>
             )}
           </div>
         </div>

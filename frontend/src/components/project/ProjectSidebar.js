@@ -25,10 +25,14 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     marginBottom: theme.spacing(2),
     marginTop: theme.spacing(2),
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
     fontSize: 18,
-    [theme.breakpoints.down(1180)]: {
+    fontWeight: 500,
+    [theme.breakpoints.down(1320)]: {
       width: "100%",
       fontSize: 14,
+      fontWeight: 500,
     },
   },
 }));

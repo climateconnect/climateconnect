@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   secondaryContent: (props) => ({
     width: props.showSimilarProjects ? "20%" : "0%",
     marginTop: theme.spacing(3),
-    marginRight: theme.spacing(5),
+    marginRight: theme.spacing(7),
   }),
 }));
 
