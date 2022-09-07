@@ -13,8 +13,8 @@ const useStyles = makeStyles(() => ({
   },
   wrapper: {
     display: "flex",
-    alignItems: "center"
-  }
+    alignItems: "center",
+  },
 }));
 
 export default function HubLinks({
