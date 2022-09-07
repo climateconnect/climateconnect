@@ -1,12 +1,16 @@
-from climateconnect_api.models.badge import Badge, DonorBadge
+from climateconnect_api.models.badge import Badge, DonorBadge, UserBadge
 from climateconnect_api.models.donation import Donation
 import datetime
 from django.db.models import Q
 
 
 def get_badges(user_profile):
-    all_donations = Donation.objects.filter(user=user_profile.user)
     badges = []
+    all_donations = Donation.objects.filter(user=user_profile.user)
+    user_badges = UserBadge.objects.filter(user=user_profile.user)
+    if user_badges.exists():
+        for badge in user_badges:
+            badges.append(badge.badge)
     if all_donations.exists():
         d = get_oldest_relevant_donation(all_donations)
         if d:
@@ -19,7 +23,7 @@ def get_badges(user_profile):
                     date_first_received__gte=d.date_first_received
                 ).order_by("donation_amount")
                 highest_donation_in_streak = highest_donations_in_streak[0]
-                badge = DonorBadge.objects.filter(
+                badges_for_which_user_qualifies = DonorBadge.objects.filter(
                     (
                         Q(regular_donor_minimum_duration__lte=time_donated)
                         | Q(
@@ -27,8 +31,10 @@ def get_badges(user_profile):
                         )
                     ),
                     is_active=True,
-                ).order_by("-regular_donor_minimum_duration")[0]
-                badges.append(badge)
+                ).order_by("-regular_donor_minimum_duration")
+                # Return the best badge the user qualifies for
+                if badges_for_which_user_qualifies.exists():
+                    badges.append(badges_for_which_user_qualifies[0])
 
     return badges
 
@@ -70,12 +76,3 @@ def get_earliest_donation(donations, current_earliest):
         return get_earliest_donation(donations, earlier_donations[0])
     else:
         return current_earliest
-
-
-def get_badge_name(badge: Badge, language_code: str):
-    lang_translation_attr = "name_{}".format(language_code)
-    if hasattr(badge, lang_translation_attr):
-        translation = getattr(badge, lang_translation_attr)
-        if language_code != "en" and translation is not None:
-            return translation
-    return badge.name

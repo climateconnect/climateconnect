@@ -71,12 +71,12 @@ def get_mentions(text, url_slugs_only):
 def create_comment_mention_notification(entity_type, entity, comment, sender):
     if entity_type == "project":
         notification = Notification.objects.create(
-            notification_type=9, project_comment=comment
+            notification_type=11, project_comment=comment
         )
 
     if entity_type == "idea":
         notification = Notification.objects.create(
-            notification_type=9, idea_comment=comment
+            notification_type=11, idea_comment=comment
         )
     matches = get_mentions(text=comment.content, url_slugs_only=False)
     sender_url_slug = UserProfile.objects.get(user=sender).url_slug

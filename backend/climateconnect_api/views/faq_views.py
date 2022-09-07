@@ -10,3 +10,11 @@ class ListFaqView(ListAPIView):
 
     def get_queryset(self):
         return FaqQuestion.objects.all()
+
+
+class AboutFaqView(ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = FaqQuestionSerializer
+
+    def get_queryset(self):
+        return FaqQuestion.objects.filter(section__is_on_about_page=True)

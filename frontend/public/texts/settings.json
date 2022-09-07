@@ -180,8 +180,8 @@
     "de": "Profilseite bearbeiten"
   },
   "if_you_wish_to_delete_this_account": {
-    "en": "If you wish to delete this account, send an email to contact@climateconnect.earth",
-    "de": "Wenn du das Konto löschen willst, sende eine E-Mail an contact@climateconnect.earth"
+    "en": "If you wish to delete this account, send an email to",
+    "de": "Wenn du das Konto löschen willst, sende eine E-Mail an"
   },
   "old_password": {
     "en": "Old Password",

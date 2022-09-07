@@ -1,7 +1,7 @@
 from climateconnect_api.models import UserProfile
 from climateconnect_api.models.donation import Donation
 from climateconnect_api.models.user import UserProfileTranslation
-from climateconnect_api.serializers.badge import DonorBadgeSerializer
+from climateconnect_api.serializers.badge import BadgeSerializer, DonorBadgeSerializer
 from climateconnect_api.serializers.common import (
     AvailabilitySerializer,
     SkillSerializer,
@@ -65,7 +65,7 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
     def get_badges(self, obj):
         badges = get_badges(obj)
         if len(badges) > 0:
-            serializer = DonorBadgeSerializer(badges, many=True)
+            serializer = BadgeSerializer(badges, many=True)
             return serializer.data
         else:
             return None
@@ -124,7 +124,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_badges(self, obj):
         badges = get_badges(obj)
         if len(badges) > 0:
-            serializer = DonorBadgeSerializer(badges, many=True)
+            serializer = BadgeSerializer(badges, many=True)
             return serializer.data
         else:
             return None
@@ -196,7 +196,7 @@ class UserProfileMinimalSerializer(serializers.ModelSerializer):
     def get_badges(self, obj):
         badges = get_badges(obj)
         if len(badges) > 0:
-            serializer = DonorBadgeSerializer(badges, many=True)
+            serializer = BadgeSerializer(badges, many=True)
             return serializer.data
         else:
             return None
@@ -238,7 +238,7 @@ class UserProfileStubSerializer(serializers.ModelSerializer):
     def get_badges(self, obj):
         badges = get_badges(obj)
         if len(badges) > 0:
-            serializer = DonorBadgeSerializer(badges, many=True)
+            serializer = BadgeSerializer(badges, many=True)
             return serializer.data
         else:
             return None
