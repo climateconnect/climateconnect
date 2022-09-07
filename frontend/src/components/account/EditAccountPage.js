@@ -40,7 +40,6 @@ import SelectDialog from "./../dialogs/SelectDialog";
 import UploadImageDialog from "./../dialogs/UploadImageDialog";
 import SelectField from "./../general/SelectField";
 import DetailledDescriptionInput from "./DetailledDescriptionInput";
-import { apiRequest } from "../../../public/lib/apiOperations";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -251,10 +250,9 @@ export default function EditAccountPage({
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
-  const orgTexts = getTexts({ page: "organization", locale: locale });
   const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });
   const [editedAccount, setEditedAccount] = React.useState({ ...account });
-  const [showNameTaken, setShowNameTaken] = React.useState(false);
+
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles(editedAccount);
@@ -689,28 +687,10 @@ export default function EditAccountPage({
     console.log(type);
   };
 
-  const handleFormSubmit = async (event) => {
+  const handleFormSubmit = (event) => {
     event.preventDefault();
-    
-    // check for existing org name
-    if (isOrganization) {
-      const resp = await apiRequest({
-        method: "get",
-        url: "/api/organizations/?search=" + editedAccount.name,
-        locale: locale,
-      });
-      if (
-        resp.data.results &&
-        resp.data.results.find((r) => r.name.toLowerCase() === editedAccount.name.toLowerCase() && r.url_slug !== editedAccount.url_slug)
-      ) {
-        console.log(editedAccount);
-        setShowNameTaken(true);
-      } else {
-        handleSubmit(editedAccount);
-      }
-    } else {
-      handleSubmit(editedAccount);
-    }
+
+    handleSubmit(editedAccount);
   };
 
   const getDetailledDescription = () => {
@@ -740,17 +720,7 @@ export default function EditAccountPage({
             {errorMessage}
           </Alert>
         )}
-        {showNameTaken && (
-          <Alert
-            severity="error"
-            className={classes.alert}
-            onClose={() => {
-              setShowNameTaken(false);
-            }}
-          >
-             {orgTexts.an_organization_with_this_name_already_exists}
-          </Alert>
-        )}
+
         <div
           className={`${classes.backgroundContainer} ${
             editedAccount.background_image ? classes.backgroundImage : classes.backgroundColor

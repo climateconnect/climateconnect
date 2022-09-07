@@ -15,11 +15,17 @@ import EditAccountPage from "../account/EditAccountPage";
 import UserContext from "../context/UserContext";
 import PageNotFound from "../general/PageNotFound";
 import TranslateTexts from "../general/TranslateTexts";
+import Alert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles((theme) => ({
   headline: {
     textAlign: "center",
     marginTop: theme.spacing(4),
+  },
+  alert: {
+    textAlign: "center",
+    maxWidth: 1280,
+    margin: "0 auto",
   },
 }));
 
@@ -133,6 +139,7 @@ export default function EditOrganizationRoot({
         .catch(function (error) {
           console.log(error);
           if (error) console.log(error.response);
+          if (error?.response?.data?.message) handleSetErrorMessage(error?.response?.data?.message);
         });
     }
   };
@@ -173,9 +180,15 @@ export default function EditOrganizationRoot({
           />
         ) : (
           <>
+            {errorMessage && (
+              <Alert severity="error" className={classes.alert}>
+                {errorMessage}
+              </Alert>
+            )}
             <Typography color="primary" className={classes.headline} component="h1" variant="h4">
               {texts.translate}
             </Typography>
+
             <TranslateTexts
               data={editedOrganization}
               handleSetData={handleSetEditedOrganization}

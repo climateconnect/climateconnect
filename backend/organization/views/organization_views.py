@@ -220,7 +220,15 @@ class CreateOrganizationView(APIView):
                     {"message": "Required parameter missing: {}".format(param)},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-
+        if Organization.objects.filter(name__iexact=request.data["name"]).exists():
+            return Response(
+                {
+                    "message": "Organization with name {} already exists".format(
+                        request.data["name"]
+                    )
+               },
+                status=status.HTTP_400_BAD_REQUEST,
+           )
         texts = {"name": request.data["name"]}
         if "short_description" in request.data:
             texts["short_description"] = request.data["short_description"]
@@ -417,6 +425,16 @@ class OrganizationAPIView(APIView):
             "website",
             "organization_size",
         ]
+        if "name" in request.data:
+            if Organization.objects.filter(name__iexact=request.data["name"]).exists():
+                return Response(
+                {
+                    "message": "Organizatiosn with name {} already exists".format(
+                        request.data["name"]
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+                )
         for param in pass_through_params:
             if param in request.data:
                 setattr(organization, param, request.data[param])

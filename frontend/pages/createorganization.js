@@ -21,11 +21,17 @@ import Layout from "./../src/components/layouts/layout";
 import WideLayout from "./../src/components/layouts/WideLayout";
 import EnterBasicOrganizationInfo from "./../src/components/organization/EnterBasicOrganizationInfo";
 import EnterDetailledOrganizationInfo from "./../src/components/organization/EnterDetailledOrganizationInfo";
+import Alert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles((theme) => ({
   headline: {
     textAlign: "center",
     marginTop: theme.spacing(4),
+  },
+  alert: {
+    textAlign: "center",
+    maxWidth: 1280,
+    margin: "0 auto",
   },
 }));
 
@@ -289,7 +295,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         return;
       });
   };
-
+  console.log(errorMessages.detailledOrganizationInfo);
   if (!user)
     return (
       <WideLayout
@@ -331,6 +337,11 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
   else if (curStep === "checktranslations")
     return (
       <WideLayout title={texts.languages}>
+        {errorMessages.detailledOrganizationInfo && (
+          <Alert severity="error" className={classes.alert}>
+            {errorMessages.detailledOrganizationInfo}
+          </Alert>
+        )}
         <Typography color="primary" className={classes.headline} component="h1" variant="h4">
           {texts.translate}
         </Typography>
