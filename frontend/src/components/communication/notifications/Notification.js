@@ -1,4 +1,4 @@
-import { Link, ListItemIcon, ListItemText, MenuItem, withStyles } from "@material-ui/core";
+import { Link, ListItemText, MenuItem, withStyles } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AlternateEmailIcon from "@material-ui/icons/AlternateEmail";
 import GroupIcon from "@material-ui/icons/Group";
@@ -117,6 +117,7 @@ const JoinProjectRequestNotification = ({ notification }) => {
         image: requester?.thumbnail_image,
       }}
       primaryText={requesterName + " " + texts.wants_to_join_your_project}
+      notification={notification}
     />
   );
 };
@@ -131,6 +132,7 @@ const JoinProjectRequestApprovedNotification = ({ notification }) => {
         icon: GroupIcon,
       }}
       primaryText={texts.project_accepted_you_as_a_member}
+      notification={notification}
     />
   );
 };
@@ -151,6 +153,7 @@ const PersonJoinedIdeaNotification = ({ notification }) => {
         supporter?.first_name + " " + supporter?.last_name + " " + texts.joined_your_idea
       }
       secondaryText={texts.send_a_Message_to_welcome_them_in_the_group_chat}
+      notification={notification}
     />
   );
 };
@@ -168,6 +171,7 @@ const PrivateMessageNotification = ({ notification }) => {
       }}
       primaryText={texts.message_from + " " + sender?.first_name + " " + sender?.last_name}
       secondaryText={notification.last_message.content}
+      notification={notification}
     />
   );
 };
@@ -187,6 +191,7 @@ const GroupMessageNotification = ({ notification }) => {
       secondaryText={
         sender.first_name + " " + sender.last_name + ": " + notification.last_message.content
       }
+      notification={notification}
     />
   );
 };
@@ -210,7 +215,6 @@ const PlaceholderNotification = () => {
 };
 
 const MentionNotification = ({ notification, texts, locale }) => {
-  const classes = useStyles();
   const entityType = notification.project_comment ? "project" : "idea";
   const commentProp = `${entityType}_comment`;
 
@@ -232,29 +236,19 @@ const MentionNotification = ({ notification, texts, locale }) => {
   const previewText = getFragmentsWithMentions(notification[commentProp]?.content, false, locale);
 
   return (
-    <Link href={urlEnding && getLocalePrefix(locale) + urlEnding} underline="none">
-      <StyledMenuItem>
-        <ListItemIcon>
-          <AlternateEmailIcon />
-        </ListItemIcon>
-        <ListItemText
-          primary={
-            sender.first_name +
-            " " +
-            sender.last_name +
-            " " +
-            texts.mentioned_you_in_comment_about_project
-          }
-          secondary={previewText}
-          primaryTypographyProps={{
-            className: classes.messageSender,
-          }}
-          secondaryTypographyProps={{
-            className: classes.notificationText,
-          }}
-        />
-      </StyledMenuItem>
-    </Link>
+    <GenericNotification
+      link={urlEnding && getLocalePrefix(locale) + urlEnding}
+      notificationIcon={{ icon: AlternateEmailIcon }}
+      primaryText={
+        sender.first_name +
+        " " +
+        sender.last_name +
+        " " +
+        texts.mentioned_you_in_comment_about_project
+      }
+      secondaryText={previewText}
+      notification={notification}
+    />
   );
 };
 
@@ -272,6 +266,7 @@ const ProjectFollowerNotification = ({ notification }) => {
       }}
       primaryText={`${followerName} ${texts.now_follows_your_project} "${notification.project.name}"`}
       secondaryText={texts.congratulations}
+      notification={notification}
     />
   );
 };
@@ -290,6 +285,7 @@ const ProjectLikeNotification = ({ notification }) => {
       }}
       primaryText={`${likingUserName} ${texts.liked_your_project}`}
       secondaryText={texts.congratulations}
+      notification={notification}
     />
   );
 };
