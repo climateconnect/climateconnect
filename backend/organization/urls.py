@@ -60,6 +60,11 @@ urlpatterns = [
         organization_views.ListFeaturedOrganizations.as_view(),
         name="featured-organizations-api-view",
     ),
+    path(
+        "look_up_organization/",
+        organization_views.LookUpOrganizationAPIView.as_view(),
+        name="look-up-organization-api-view",
+    ),
     # Project URLs
     path("projects/", project_views.ListProjectsView.as_view(), name="list-projects"),
     path(

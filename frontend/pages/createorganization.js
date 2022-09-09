@@ -151,44 +151,46 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         );
         return;
       }
+      const url = `/api/look_up_organization/?search=${values.organizationname}`;
       const resp = await apiRequest({
         method: "get",
-        url: "/api/organizations/?search=" + values.organizationname,
+        url: url,
         locale: locale,
       });
-      if (
-        resp.data.results &&
-        resp.data.results.find(
-          (r) => r.name.toLowerCase() === values.organizationname.toLowerCase()
-        )
-      ) {
-        const org = resp.data.results.find(
-          (r) => r.name.toLowerCase() === values.organizationname.toLowerCase()
-        );
+      console.log(resp);
+      const location = getLocationValue(values, "location");
+      setOrganizationInfo({
+        ...organizationInfo,
+        name: values.organizationname,
+        parentorganization: values.parentorganizationname,
+        location: parseLocation(location),
+      });
+      /* This is required in the case that the user first inputs a name that is taken 
+      then later submits with a valid name. Should they then edit the name to another taken name in the detailed view (German page)
+      and then go Erstellen it will open up the auto translate screen with the old error message from the basic view.
+      */
+      handleSetErrorMessages({
+        ...errorMessages,
+        basicOrganizationInfo: "",
+      });
+      setCurStep(steps[1]);
+    } catch (err) {
+      console.log(err);
+      if (err?.response?.data?.message) {
         handleSetErrorMessages({
-          errorMessages,
+          ...errorMessages,
           basicOrganizationInfo: (
             <div>
               {texts.an_organization_with_this_name_already_exists}
-              <a href={getLocalePrefix(locale) + "/organizations/" + org.url_slug}>
+              <a href={getLocalePrefix(locale) + "/organizations/" + err?.response?.data?.url}>
                 {texts.click_here}
               </a>{" "}
               {texts.to_see_it}
             </div>
           ),
         });
-      } else {
-        const location = getLocationValue(values, "location");
-        setOrganizationInfo({
-          ...organizationInfo,
-          name: values.organizationname,
-          parentorganization: values.parentorganizationname,
-          location: parseLocation(location),
-        });
-        setCurStep(steps[1]);
       }
-    } catch (err) {
-      console.log(err);
+
       if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
       return null;
     }
@@ -295,7 +297,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         return;
       });
   };
-  console.log(errorMessages.detailledOrganizationInfo);
+
   if (!user)
     return (
       <WideLayout
@@ -340,6 +342,11 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         {errorMessages.detailledOrganizationInfo && (
           <Alert severity="error" className={classes.alert}>
             {errorMessages.detailledOrganizationInfo}
+          </Alert>
+        )}
+        {errorMessages.basicOrganizationInfo && (
+          <Alert severity="error" className={classes.alert}>
+            {errorMessages.basicOrganizationInfo}
           </Alert>
         )}
         <Typography color="primary" className={classes.headline} component="h1" variant="h4">

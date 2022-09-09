@@ -220,15 +220,29 @@ class CreateOrganizationView(APIView):
                     {"message": "Required parameter missing: {}".format(param)},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
+        
         if Organization.objects.filter(name__iexact=request.data["name"]).exists():
             return Response(
                 {
                     "message": "Organization with name {} already exists".format(
                         request.data["name"]
                     )
-               },
+                },
                 status=status.HTTP_400_BAD_REQUEST,
-           )
+            )
+
+        if OrganizationTranslation.objects.filter(
+            name_translation__iexact=request.data["name"]
+        ).exists():
+
+            return Response(
+                {
+                    "message": "Organization with name {} already exists".format(
+                        request.data["name"]
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         texts = {"name": request.data["name"]}
         if "short_description" in request.data:
             texts["short_description"] = request.data["short_description"]
@@ -382,6 +396,40 @@ class CreateOrganizationView(APIView):
             )
 
 
+class LookUpOrganizationAPIView(APIView):
+    def get(self, *args, **kwargs):
+        query = self.request.query_params.get("search")
+        if Organization.objects.filter(name__iexact=query).exists():
+
+            organization = Organization.objects.filter(name__iexact=query)
+
+            return Response(
+                {
+                    "message": "Organization with name {} already exists".format(query),
+                    "url": organization[0].url_slug,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if OrganizationTranslation.objects.filter(
+            name_translation__iexact=query
+        ).exists():
+            organization_translation = OrganizationTranslation.objects.filter(
+                name_translation__iexact=query
+            )
+            return Response(
+                {
+                    "message": "Organization with name {} already exists".format(
+                        query
+                    ),
+                    "url": organization_translation[0].organization.url_slug,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        return Response(
+            status=status.HTTP_200_OK
+        )
+
+
 class OrganizationAPIView(APIView):
     permission_classes = [OrganizationReadWritePermission]
     lookup_field = "url_slug"
@@ -428,12 +476,23 @@ class OrganizationAPIView(APIView):
         if "name" in request.data:
             if Organization.objects.filter(name__iexact=request.data["name"]).exists():
                 return Response(
-                {
-                    "message": "Organizatiosn with name {} already exists".format(
-                        request.data["name"]
-                    )
-                },
-                status=status.HTTP_400_BAD_REQUEST,
+                    {
+                        "message": "Organization with name {} already exists".format(
+                            request.data["name"]
+                        )
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if OrganizationTranslation.objects.filter(
+                name_translation__iexact=request.data["name"]
+            ).exists():
+                return Response(
+                    {
+                        "message": "Organization with name {} already exists".format(
+                            request.data["name"]
+                        )
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
         for param in pass_through_params:
             if param in request.data:
