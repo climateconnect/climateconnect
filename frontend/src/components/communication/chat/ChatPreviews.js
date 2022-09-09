@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function ChatPreviews({ chats, loadFunc, hasMore }) {
+export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabled }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "chat", locale: locale });
@@ -77,12 +77,22 @@ export default function ChatPreviews({ chats, loadFunc, hasMore }) {
       setIsLoading(false);
     }
   };
-  if (chats.length === 0)
+
+  if (chats.length === 0 && !chatSearchEnabled)
     return (
       <>
         <Divider />
         <Typography variant="h6" className={classes.NoChatsMessage}>
           {texts.you_havent_chatted_to_anybody_yet_click_on}
+        </Typography>
+      </>
+    );
+  if (chats.length === 0 && chatSearchEnabled)
+    return (
+      <>
+        <Divider />
+        <Typography variant="h6" className={classes.NoChatsMessage}>
+          {texts.no_chats_found_for_this_search}
         </Typography>
       </>
     );
@@ -124,7 +134,7 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
           alignItems="center"
           className={classes.listItem}
         >
-          {chat.name ? (
+          {!chat.chatting_partner ? (
             <ChatTitle
               chat={chat}
               className={classes.miniProfilePreview}

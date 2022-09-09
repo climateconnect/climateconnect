@@ -4,7 +4,7 @@ import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
 import GenericNotification from "./GenericNotification";
 
-function CommentNotification({ link, object_commented_on, comment_text, is_reply }) {
+function CommentNotification({ link, object_commented_on, comment_text, is_reply, notification }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", locale: locale });
   const primaryText =
@@ -18,6 +18,7 @@ function CommentNotification({ link, object_commented_on, comment_text, is_reply
       primaryText={primaryText}
       secondaryText={comment_text}
       notificationIcon={{ icon: CommentIcon }}
+      notification={notification}
     />
   );
 }
@@ -29,6 +30,7 @@ export const ProjectCommentNotification = ({ notification }) => {
       object_commented_on={notification.project}
       comment_text={notification.project_comment.content}
       is_reply={false}
+      notification={notification}
     />
   );
 };
@@ -40,6 +42,7 @@ export const IdeaCommentNotification = ({ notification }) => {
       object_commented_on={notification.idea}
       comment_text={notification?.idea_comment?.content}
       is_reply={false}
+      notification={notification}
     />
   );
 };
@@ -51,6 +54,7 @@ export const IdeaCommentReplyNotification = ({ notification }) => {
       object_commented_on={notification.idea}
       comment_text={notification?.idea_comment?.content}
       is_reply={true}
+      notification={notification}
     />
   );
 };
@@ -62,6 +66,7 @@ export const ProjectCommentReplyNotification = ({ notification }) => {
       object_commented_on={notification.project}
       comment_text={notification?.project_comment?.content}
       is_reply={true}
+      notification={notification}
     />
   );
 };
