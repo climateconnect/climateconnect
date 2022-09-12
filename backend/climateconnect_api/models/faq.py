@@ -8,6 +8,12 @@ class FaqSection(models.Model):
         max_length=128,
     )
 
+    is_on_about_page = models.BooleanField(
+        help_text="Identifies the section that should be shown on the about page faq section",
+        verbose_name="Is shown on about page",
+        default=False,
+    )
+
     name_de_translation = models.CharField(
         help_text="Translation of name field in deutsch",
         verbose_name="Name DE translation",
@@ -58,6 +64,9 @@ class FaqQuestion(models.Model):
         help_text="The question text",
     )
 
+    # Other language translations need to fit this template field
+    # question_<language code>_translation e.g. question_fr_translation
+    # Same goes for the answer and section name see line 11
     question_de_translation = models.TextField(
         help_text="Deutsch translation of question column",
         verbose_name="Question DE translation",

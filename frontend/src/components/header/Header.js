@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => {
       return {
         zIndex: props.fixedHeader ? 20 : "auto",
         borderBottom:
-          props.transparentHeader || props.isStaticPage
+          props.transparentHeader || props.isStaticPage || props.isHubPage
             ? 0
             : `1px solid ${theme.palette.grey[300]}`,
         position: props.fixedHeader ? "fixed" : "auto",
@@ -124,7 +124,7 @@ const useStyles = makeStyles((theme) => {
     loggedInAvatarMobile: {
       height: 60,
       width: 60,
-      display: "block",
+
       margin: "0 auto",
     },
     loggedInLink: {
@@ -171,6 +171,8 @@ const useStyles = makeStyles((theme) => {
     mobileAvatarContainer: {
       display: "flex",
       justifyContent: "center",
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
     },
   };
 });
@@ -290,13 +292,16 @@ export default function Header({
   fixedHeader,
   transparentHeader,
   background,
+  isHubPage,
 }) {
   const classes = useStyles({
     fixedHeader: fixedHeader,
     transparentHeader: transparentHeader,
     isStaticPage: isStaticPage,
     background: background,
+    isHubPage: isHubPage,
   });
+
   const { user, signOut, notifications, pathName, locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = React.useState(false);
@@ -637,17 +642,19 @@ function NarrowScreenLinks({
                 if (link.avatar)
                   return (
                     <div className={classes.mobileAvatarContainer}>
-                      {loggedInUser?.badges?.length > 0 ? (
-                        <ProfileBadge
-                          badge={loggedInUser?.badges[0]}
-                          size="medium"
-                          className={classes.badge}
-                        >
+                      <Link href={"/profiles/" + loggedInUser.url_slug}>
+                        {loggedInUser?.badges?.length > 0 ? (
+                          <ProfileBadge
+                            badge={loggedInUser?.badges[0]}
+                            size="medium"
+                            className={classes.badge}
+                          >
+                            <Avatar {...avatarProps} />
+                          </ProfileBadge>
+                        ) : (
                           <Avatar {...avatarProps} />
-                        </ProfileBadge>
-                      ) : (
-                        <Avatar {...avatarProps} />
-                      )}
+                        )}
+                      </Link>
                     </div>
                   );
                 else if (link.isLogoutButton)
