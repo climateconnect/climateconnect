@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     },
     position: "relative",
     [theme.breakpoints.up("md")]: {
-      position: props.isLocationHub && !props.loggedOut ? "absolute" : "relative",
+      position: props.isLocationHub ? "absolute" : "relative", // we want to have absolute positioning when its a location hub and user is not logged out
       zIndex: -1,
     },
   }),
@@ -51,13 +51,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function HubHeaderImage({ image, source, fullWidth, isLocationHub }) {
-  const { locale, user } = useContext(UserContext);
+  const { locale } = useContext(UserContext);
+
   const classes = useStyles({
     image: image,
     fullWidth: fullWidth,
     isLocationHub: isLocationHub,
-    loggedOut: !user,
   });
+
   const texts = getTexts({ page: "hub", locale: locale });
   return (
     <>
