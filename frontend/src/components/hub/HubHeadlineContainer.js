@@ -8,12 +8,12 @@ import theme from "../../themes/theme";
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
     minWidth: 300,
-   
+
     background: theme.palette.primary.main,
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-around",
-  
+
     maxWidth: "800px",
     borderRadius: 5,
     border: theme.borders.thick,
@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("sm")]: {
       marginTop: props.isLocationHub ? theme.spacing(-11) : theme.spacing(-11),
     },
-    
+
     ["@media(max-width:960px)"]: {
       maxWidth: 550,
     },
@@ -32,7 +32,6 @@ const useStyles = makeStyles((theme) => ({
   },
 
   headline: {
-
     fontWeight: 700,
     [theme.breakpoints.down("sm")]: {
       fontSize: 25,
@@ -44,8 +43,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
   },
 
-  subHeadlineContainer: (props) =>({
-    
+  subHeadlineContainer: (props) => ({
     background: "#f0f2f5",
     borderRadius: 5,
     padding: theme.spacing(1),
@@ -103,8 +101,7 @@ export default function HubHeadlineContainer({ subHeadline, headline, isLocation
 
         {isLocationHub && (
           <>
-   
-              {!isNarrowScreen && ( <hr />)}
+            {!isNarrowScreen && <hr />}
             <div className={classes.climateMatchButtonContainer}>
               <OpenClimateMatchButton
                 hubUrl={hubUrl}
