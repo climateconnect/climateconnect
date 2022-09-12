@@ -22,6 +22,7 @@ import ProjectStatus from "./ProjectStatus";
 import ROLE_TYPES from "../../../public/data/role_types";
 import UserContext from "../context/UserContext";
 import JoinButton from "./Buttons/JoinButton";
+import ProjectSliderWithTitle from "./ProjectSliderWithTitle";
 
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
@@ -194,6 +195,8 @@ export default function ProjectContent({
   toggleShowRequests,
   handleSendProjectJoinRequest,
   requestedToJoinProject,
+  similarProjects,
+  screenSize,
 }) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
@@ -454,6 +457,14 @@ export default function ProjectContent({
           </div>
         )}
       </div>
+      {screenSize.belowSmall && (
+        <ProjectSliderWithTitle
+          title={texts.you_may_also_like_these_projects}
+          similarProjects={similarProjects}
+        >
+          {" "}
+        </ProjectSliderWithTitle>
+      )}
     </>
   );
 }

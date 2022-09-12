@@ -18,7 +18,7 @@ import ExplainerBox from "../src/components/staticpages/ExplainerBox";
 import FaqSection from "../src/components/staticpages/FaqSection";
 import Quote from "../src/components/staticpages/Quote";
 import StartNowBanner from "../src/components/staticpages/StartNowBanner";
-import Cookies from "next-cookies";
+
 //local components
 import TopSection from "../src/components/staticpages/TopSection";
 
@@ -115,12 +115,12 @@ export default function About({ questionsFromSection }) {
   );
 }
 
-const getQuestionsWithAnswers = async  (locale) => {
+const getQuestionsWithAnswers = async (locale) => {
   try {
     const resp = await apiRequest({
       method: "get",
       url: "/api/about_faq/",
-      
+
       locale: locale,
     });
     if (resp.data.length === 0) {

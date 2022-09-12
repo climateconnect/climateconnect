@@ -1,4 +1,4 @@
-import { Button, Container, Tab, Tabs, Typography } from "@material-ui/core";
+import { Container, Tab, Tabs, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Router from "next/router";
@@ -31,18 +31,6 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.grey[800],
     position: "relative",
   },
-
-  openSimilarProjects: (props) => ({
-    position: "fixed",
-    bottom: props.locale === "en" ? "calc(50vh + 40px)" : "calc(50vh + 55px)",
-    [theme.breakpoints.up("lg")]: {
-      bottom: props.locale === "en" ? "calc(50vh + 128px)" : "calc(50vh + 146px)",
-    },
-    transform: "rotate(-90deg)",
-    right: props.locale === "en" ? -85 : -102,
-    zIndex: 10,
-    minWidth: props.locale === "en" ? 200 : 235,
-  }),
 
   buttonText: {
     color: theme.palette.primary.main,
@@ -93,7 +81,6 @@ export default function ProjectPageRoot({
   handleLike,
   handleFollow,
   similarProjects,
-  handleHideContent,
   showSimilarProjects,
 }) {
   const visibleFooterHeight = VisibleFooterHeight({});
@@ -180,7 +167,7 @@ export default function ProjectPageRoot({
     // and projects/ prefix. For example,
     // "/projects/Anotherproject6?projectId=Anotherproject6" -> "Anotherproject6"
     const projectName = pathName?.split("/")[2].split("?")[0];
-
+    console.log("clicked");
     // Also strip any trailing '#' too.
     const strippedProjectName = projectName.endsWith("#") ? projectName.slice(0, -1) : projectName;
 
@@ -484,24 +471,6 @@ export default function ProjectPageRoot({
           similarProjects={similarProjects}
         />
 
-        <>
-          {!screenSize.belowSmall && (
-            <Button
-              variant="contained"
-              size="small"
-              classes={{
-                root: classes.openSimilarProjects,
-                label: classes.buttonText,
-              }}
-              onClick={handleHideContent}
-            >
-              {showSimilarProjects
-                ? texts.hide_recommended_projects
-                : texts.show_recommended_projects}
-            </Button>
-          )}
-        </>
-
         <Container className={classes.tabsContainerWithoutPadding}>
           <div ref={projectTabsRef}>
             <Tabs
@@ -574,6 +543,8 @@ export default function ProjectPageRoot({
               toggleShowRequests={toggleShowRequests}
               handleSendProjectJoinRequest={handleSendProjectJoinRequest}
               requestedToJoinProject={requestedToJoinProject}
+              similarProjects={similarProjects}
+              screenSize={screenSize}
             />
           </TabContent>
           <TabContent value={tabValue} index={1}>
@@ -581,6 +552,8 @@ export default function ProjectPageRoot({
               project={project}
               handleReadNotifications={handleReadNotifications}
               leaveProject={requestLeaveProject}
+              similarProjects={similarProjects}
+              screenSize={screenSize}
             />
           </TabContent>
           <TabContent value={tabValue} index={2}>
@@ -589,6 +562,8 @@ export default function ProjectPageRoot({
               user={user}
               token={token}
               setCurComments={setCurComments}
+              similarProjects={similarProjects}
+              screenSize={screenSize}
             />
           </TabContent>
         </Container>

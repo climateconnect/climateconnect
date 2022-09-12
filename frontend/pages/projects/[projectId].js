@@ -22,16 +22,24 @@ const useStyles = makeStyles((theme) => ({
   },
   mainContent: (props) => ({
     width: props.showSimilarProjects ? "80%" : "100%",
-    marginRight: theme.spacing(1),
     [theme.breakpoints.down("sm")]: {
       width: "100%",
-      marginRight: theme.spacing(0),
     },
   }),
   secondaryContent: (props) => ({
     width: props.showSimilarProjects ? "20%" : "0%",
-    marginTop: theme.spacing(3),
+    [theme.breakpoints.down("sm")]: {
+      width: "0%",
+      marginTop: theme.spacing(0),
+      marginRight: theme.spacing(0),
+      marginLeft: theme.spacing(0),
+    },
+    marginTop: theme.spacing(2),
     marginRight: theme.spacing(7),
+    marginLeft: theme.spacing(1),
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-end",
   }),
 }));
 
@@ -205,8 +213,14 @@ export default function ProjectPage({
             />
           </div>
           <div className={classes.secondaryContent}>
-            {showSimilarProjects && !smallScreenSize && (
-              <ProjectSideBar similarProjects={similarProjects} texts={texts} />
+            {!smallScreenSize && (
+              <ProjectSideBar
+                similarProjects={similarProjects}
+                handleHideContent={handleHideContent}
+                showSimilarProjects={showSimilarProjects}
+                locale={locale}
+                texts={texts}
+              />
             )}
           </div>
         </div>

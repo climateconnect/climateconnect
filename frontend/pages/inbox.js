@@ -140,7 +140,7 @@ export default function Inbox({ chatData, initialNextPage }) {
   const updateErrorMessage = (e) => {
     setErrorMessage(e);
   };
-  
+
   const resetAlertMessage = () => setErrorMessage("");
 
   const enableChatSearch = () => {

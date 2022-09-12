@@ -20,14 +20,14 @@ import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
 import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
-import ProjectsSlider from "../climateMatchResults/ProjectsSlider";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
   infoBottomBar: (props) => ({
     display: "flex",
     marginTop: theme.spacing(3),
-    justifyContent: props.hasAdminPermissions ? "flex-start" : "space-between",
+    flexGrowth: 1,
+    justifyContent: props.hasAdminPermissions ? "space-evenly" : "space-between",
   }),
   largeScreenButtonContainer: {
     display: "inline-flex",
@@ -67,7 +67,6 @@ const useStyles = makeStyles((theme) => ({
 
   headerContainer: {
     display: "flex",
-
     justifyContent: "center",
   },
   goBackButtonContainer: {
@@ -87,6 +86,7 @@ const useStyles = makeStyles((theme) => ({
   },
   contactProjectButtonLarge: {
     height: 40,
+    minWidth: 120,
   },
 }));
 
@@ -141,7 +141,7 @@ export default function ProjectOverview({
   const classes = useStyles();
 
   const texts = getTexts({ page: "project", locale: locale, project: project });
-
+  console.log(screenSize);
   /**
    * Calls endpoint to return a current list
    * of users that have requested to
@@ -279,7 +279,6 @@ function SmallScreenOverview({
   texts,
   toggleShowFollowers,
   token,
-  similarProjects,
 }) {
   const classes = useStyles();
 
@@ -321,8 +320,6 @@ function SmallScreenOverview({
         <Typography>{project?.short_description}</Typography>
 
         <div className={classes.projectInfoEl}>
-          <Typography>{texts.you_may_also_like_these_projects}</Typography>
-          <ProjectsSlider projects={similarProjects} showSimilarProjects />
           <Typography>
             <Tooltip title={texts.location}>
               <PlaceIcon color="primary" className={classes.icon} />
@@ -468,7 +465,7 @@ function LargeScreenOverview({
               texts={texts}
               toggleShowFollowers={toggleShowFollowers}
             />
-            {!hasAdminPermissions && !screenSize.belowMedium ? (
+            {!hasAdminPermissions && !screenSize.belowMedium && (
               <ContactCreatorButton
                 creator={projectAdmin}
                 contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
@@ -478,7 +475,8 @@ function LargeScreenOverview({
                 withIcons={true}
                 collapsable={true}
               />
-            ) : (
+            )}
+            {!hasAdminPermissions && screenSize.belowMedium && (
               <Button
                 className={classes.contactProjectButtonLarge}
                 variant="contained"

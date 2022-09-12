@@ -976,5 +976,9 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "You may also like these projects!",
       de: "Dir könnten diese Projekte auch gefallen!",
     },
+    view_all_projects: {
+      en: "View all projects",
+      de: "Alle Projekte anzeigen",
+    },
   };
 }

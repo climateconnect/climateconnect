@@ -9,6 +9,7 @@ import getTexts from "../../../public/texts/texts.js";
 import CommentInput from "../communication/CommentInput.js";
 import UserContext from "../context/UserContext.js";
 import Posts from "./../communication/Posts.js";
+import ProjectSliderWithTitle from "./ProjectSliderWithTitle.js";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -19,7 +20,14 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function CommentsContent({ user, project, token, setCurComments }) {
+export default function CommentsContent({
+  user,
+  project,
+  token,
+  setCurComments,
+  screenSize,
+  similarProjects,
+}) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
@@ -95,6 +103,15 @@ export default function CommentsContent({ user, project, token, setCurComments }
           onSendComment={onSendComment}
           onDeletePost={onDeleteComment}
         />
+      )}
+
+      {screenSize.belowSmall && (
+        <ProjectSliderWithTitle
+          title={texts.you_may_also_like_these_projects}
+          similarProjects={similarProjects}
+        >
+          {" "}
+        </ProjectSliderWithTitle>
       )}
     </div>
   );
