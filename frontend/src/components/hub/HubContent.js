@@ -66,7 +66,6 @@ const useStyles = makeStyles((theme) => ({
   quickInfo: {
     fontSize: 17,
     maxWidth: 800,
-    
   },
   marginTop: {
     marginTop: theme.spacing(4),
@@ -80,11 +79,11 @@ const useStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(8),
     },
   },
-  infoBoxContainer: (props) => ({
+  infoBoxContainer: {
     marginTop: theme.spacing(0),
     marginLeft: theme.spacing(2),
     float: "right",
-  }),
+  },
 }));
 
 export default function HubContent({
