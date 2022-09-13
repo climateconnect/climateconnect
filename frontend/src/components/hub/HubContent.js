@@ -56,6 +56,7 @@ const useStyles = makeStyles((theme) => ({
   buttonContainer: (props) => ({
     display: props.isLocationHub ? "none" : "flex",
     justifyContent: "center",
+    maxWidth: 800,
     height: 40,
     marginTop: theme.spacing(2),
     [theme.breakpoints.down("sm")]: {
@@ -64,6 +65,7 @@ const useStyles = makeStyles((theme) => ({
   }),
   quickInfo: {
     fontSize: 17,
+    maxWidth: 800,
   },
   marginTop: {
     marginTop: theme.spacing(4),
@@ -77,11 +79,11 @@ const useStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(8),
     },
   },
-  infoBoxContainer: (props) => ({
-    marginTop: props.loggedOut ? 0 : theme.spacing(6),
+  infoBoxContainer: {
+    marginTop: theme.spacing(0),
     marginLeft: theme.spacing(2),
     float: "right",
-  }),
+  },
 }));
 
 export default function HubContent({
@@ -96,7 +98,6 @@ export default function HubContent({
   hubProjectsButtonRef,
   isLocationHub,
   location,
-  hubName,
   allHubs,
   hubData,
   hubUrl,
@@ -121,7 +122,6 @@ export default function HubContent({
   if (fixed && showMoreVisible) {
     setFixed(false);
   }
-
   return (
     <Container>
       <div className={classes.root}>
@@ -146,7 +146,6 @@ export default function HubContent({
                   <HubHeadlineContainer
                     subHeadline={subHeadline}
                     headline={headline}
-                    hubName={hubName}
                     headlineClassName={classes.h1}
                     isLocationHub={isLocationHub}
                     hubUrl={hubUrl}
@@ -173,7 +172,6 @@ export default function HubContent({
             <HubHeadlineContainer
               subHeadline={subHeadline}
               headline={headline}
-              hubName={hubName}
               headlineClassName={classes.h1}
               isLocationHub={isLocationHub}
               hubUrl={hubUrl}
