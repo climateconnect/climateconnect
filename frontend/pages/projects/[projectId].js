@@ -14,7 +14,7 @@ import { getAllHubs } from "../../public/lib/hubOperations.js";
 import { useMediaQuery } from "@material-ui/core";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { makeStyles } from "@material-ui/core/styles";
-import ProjectSideBar from "../../src/components/project/ProjectSidebar";
+import ProjectSideBar from "../../src/components/project/ProjectSideBar";
 
 const useStyles = makeStyles((theme) => ({
   contentWrapper: {

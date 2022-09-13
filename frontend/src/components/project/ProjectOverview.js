@@ -26,8 +26,7 @@ const useStyles = makeStyles((theme) => ({
   infoBottomBar: (props) => ({
     display: "flex",
     marginTop: theme.spacing(3),
-    flexGrowth: 1,
-    justifyContent: props.hasAdminPermissions ? "space-evenly" : "space-between",
+    justifyContent: props.hasAdminPermissions ? "flex-start" : "space-between",
   }),
   largeScreenButtonContainer: {
     display: "inline-flex",
@@ -136,12 +135,10 @@ export default function ProjectOverview({
   user,
   handleSetRequestedToJoinProject,
   requestedToJoinProject,
-  similarProjects,
 }) {
   const classes = useStyles();
 
   const texts = getTexts({ page: "project", locale: locale, project: project });
-  console.log(screenSize);
   /**
    * Calls endpoint to return a current list
    * of users that have requested to
@@ -206,7 +203,6 @@ export default function ProjectOverview({
           project={project}
           texts={texts}
           toggleShowFollowers={toggleShowFollowers}
-          similarProjects={similarProjects}
         />
       ) : (
         <LargeScreenOverview

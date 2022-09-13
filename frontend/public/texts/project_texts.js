@@ -960,18 +960,6 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Open requests to join project",
       de: "Offene Anfragen zum Mitmachen",
     },
-    projects_recommend_for_you: {
-      en: "Similar Projects For You!",
-      de: "Ähnliche Projekte Für Dich!",
-    },
-    hide_recommended_projects: {
-      en: "Hide similar projects",
-      de: "Ähnliche Projekte verstecken",
-    },
-    show_recommended_projects: {
-      en: "Show similar projects",
-      de: "Ähnliche Projekte anzeigen",
-    },
     you_may_also_like_these_projects: {
       en: "You may also like these projects!",
       de: "Dir könnten diese Projekte auch gefallen!",

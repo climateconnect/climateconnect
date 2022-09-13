@@ -10,7 +10,6 @@ import { NOTIFICATION_TYPES } from "../communication/notifications/Notification"
 import UserContext from "../context/UserContext";
 import LoginNudge from "../general/LoginNudge";
 import ProfilePreviews from "./../profile/ProfilePreviews";
-import ProjectSliderWithTitle from "./ProjectSliderWithTitle";
 
 const useStyles = makeStyles((theme) => ({
   editButton: {
@@ -61,12 +60,7 @@ function getTeamWithAdditionalInfo(team, texts) {
   });
 }
 
-export default function TeamContent({
-  project,
-  handleReadNotifications,
-  screenSize,
-  similarProjects,
-}) {
+export default function TeamContent({ project, handleReadNotifications }) {
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const classes = useStyles();
@@ -104,14 +98,6 @@ export default function TeamContent({
           allowMessage
           showAdditionalInfo={true}
         />
-        {screenSize.belowSmall && (
-          <ProjectSliderWithTitle
-            title={texts.you_may_also_like_these_projects}
-            similarProjects={similarProjects}
-          >
-            {" "}
-          </ProjectSliderWithTitle>
-        )}
       </>
     );
   }

@@ -7,8 +7,8 @@ import ProjectPreview from "../project/ProjectPreview";
 import ClimateMatchSuggestionInfo from "./ClimateMatchSuggestionInfo";
 
 const useStyles = makeStyles((theme) => ({
-  root: (props) => ({
-    position: props.showSimilarProjects ? "relative" : "absolute",
+  root: {
+    position: "absolute",
     left: 50,
     right: 50,
     border: `1px solid ${theme.palette.secondary.main}`,
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
       left: 0,
       right: 0,
     },
-  }),
+  },
   projectImage: {
     height: 150,
     paddingRight: theme.spacing(2),
@@ -50,10 +50,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProjectsSlider({ projects, showSimilarProjects }) {
-  const classes = useStyles({
-    showSimilarProjects: showSimilarProjects,
-  });
+export default function ProjectsSlider({ projects }) {
+  const classes = useStyles();
   const under500 = useMediaQuery("(max-width: 500px)");
   const responsive = {
     all: {
@@ -61,15 +59,9 @@ export default function ProjectsSlider({ projects, showSimilarProjects }) {
       items: 1,
     },
   };
-
   return (
     <div className={classes.root}>
-      <Carousel
-        responsive={responsive}
-        infinite={projects?.length > 1}
-        autoPlay={showSimilarProjects}
-        arrows={!under500}
-      >
+      <Carousel responsive={responsive} infinite={projects?.length > 1} arrows={!under500}>
         {projects.map((p, index) => (
           <CarouselItem key={index} project={p} />
         ))}

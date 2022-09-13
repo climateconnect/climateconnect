@@ -1,4 +1,4 @@
-import { Container, Tab, Tabs, Typography } from "@material-ui/core";
+import { Button, Container, Tab, Tabs, Typography, Divider, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Router from "next/router";
@@ -23,7 +23,11 @@ import ProjectInteractionButtons from "./Buttons/ProjectInteractionButtons";
 import ProjectCommentsContent from "./ProjectCommentsContent";
 import ProjectContent from "./ProjectContent";
 import ProjectOverview from "./ProjectOverview";
+import ProjectPreviews from "./ProjectPreviews";
 import ProjectTeamContent from "./ProjectTeamContent";
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import SearchIcon from "@material-ui/icons/Search";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -63,6 +67,24 @@ const useStyles = makeStyles((theme) => ({
   shareButtonContainer: {
     paddingRight: theme.spacing(4),
   },
+  subHeader: {
+    fontWeight: "bold",
+    paddingBottom: theme.spacing(2),
+  },
+  divider: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+  },
+  similarProjectsContainer: {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+  },
+  showAllProjectsButton: {
+    marginTop: theme.spacing(1),
+    fontSize: 14,
+    width: "100%",
+  },
 }));
 
 export default function ProjectPageRoot({
@@ -82,6 +104,7 @@ export default function ProjectPageRoot({
   handleFollow,
   similarProjects,
   showSimilarProjects,
+  handleHideContent,
 }) {
   const visibleFooterHeight = VisibleFooterHeight({});
   const tabContentRef = useRef(null);
@@ -98,6 +121,8 @@ export default function ProjectPageRoot({
     project: project,
     creator: projectAdmin,
   });
+
+  const link = getLocalePrefix(locale) + "/browse";
 
   const screenSize = {
     belowTiny: useMediaQuery((theme) => theme.breakpoints.down("xs")),
@@ -167,7 +192,6 @@ export default function ProjectPageRoot({
     // and projects/ prefix. For example,
     // "/projects/Anotherproject6?projectId=Anotherproject6" -> "Anotherproject6"
     const projectName = pathName?.split("/")[2].split("?")[0];
-    console.log("clicked");
     // Also strip any trailing '#' too.
     const strippedProjectName = projectName.endsWith("#") ? projectName.slice(0, -1) : projectName;
 
@@ -433,141 +457,163 @@ export default function ProjectPageRoot({
   const latestParentComment = [project.comments[0]];
 
   return (
-    <>
-      <div className={classes.root}>
-        <ProjectOverview
-          apiEndpointShareButton={apiEndpointShareButton}
-          contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
-          dialogTitleShareButton={dialogTitleShareButton}
-          followers={followers}
-          followingChangePending={followingChangePending}
-          handleClickContact={handleClickContact}
-          handleToggleFollowProject={handleToggleFollowProject}
-          handleToggleLikeProject={handleToggleLikeProject}
-          hasAdminPermissions={hasAdminPermissions}
-          initiallyCaughtFollowers={initiallyCaughtFollowers}
-          initiallyCaughtLikes={initiallyCaughtLikes}
-          isUserFollowing={isUserFollowing}
-          isUserLiking={isUserLiking}
-          likes={likes}
-          likingChangePending={likingChangePending}
-          locale={locale}
-          mailBodyShareButton={mailBodyShareButton}
-          messageTitleShareButton={messageTitleShareButton}
-          numberOfFollowers={numberOfFollowers}
-          numberOfLikes={numberOfLikes}
+    <div className={classes.root}>
+      <ProjectOverview
+        apiEndpointShareButton={apiEndpointShareButton}
+        contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
+        dialogTitleShareButton={dialogTitleShareButton}
+        followers={followers}
+        followingChangePending={followingChangePending}
+        handleClickContact={handleClickContact}
+        handleToggleFollowProject={handleToggleFollowProject}
+        handleToggleLikeProject={handleToggleLikeProject}
+        hasAdminPermissions={hasAdminPermissions}
+        initiallyCaughtFollowers={initiallyCaughtFollowers}
+        initiallyCaughtLikes={initiallyCaughtLikes}
+        isUserFollowing={isUserFollowing}
+        isUserLiking={isUserLiking}
+        likes={likes}
+        likingChangePending={likingChangePending}
+        locale={locale}
+        mailBodyShareButton={mailBodyShareButton}
+        messageTitleShareButton={messageTitleShareButton}
+        numberOfFollowers={numberOfFollowers}
+        numberOfLikes={numberOfLikes}
+        project={project}
+        projectAdmin={projectAdmin}
+        projectLinkPath={projectLinkPath}
+        screenSize={screenSize}
+        showFollowers={showFollowers}
+        showLikes={showLikes}
+        toggleShowFollowers={toggleShowFollowers}
+        toggleShowLikes={toggleShowLikes}
+        token={token}
+        user={user}
+        requestedToJoinProject={requestedToJoinProject}
+        handleSetRequestedToJoinProject={handleSetRequestedToJoinProject}
+      />
+
+      <Container className={classes.tabsContainerWithoutPadding}>
+        <div ref={projectTabsRef}>
+          <Tabs
+            variant={screenSize.belowSmall ? "fullWidth" : "standard"}
+            value={tabValue}
+            onChange={handleTabChange}
+            indicatorColor="primary"
+          >
+            <Tab label={texts.project} className={classes.tab} />
+            <Tab label={teamTabLabel()} className={classes.tab} />
+            <Tab label={discussionTabLabel()} className={classes.tab} />
+          </Tabs>
+        </div>
+
+        {!screenSize.belowSmall && (
+          <SocialMediaShareButton
+            containerClassName={classes.shareButtonContainer}
+            contentLinkPath={projectLinkPath}
+            apiEndpoint={apiEndpointShareButton}
+            locale={locale}
+            token={token}
+            messageTitle={messageTitleShareButton}
+            tinyScreen={screenSize.belowTiny}
+            smallScreen={screenSize.belowSmall}
+            mailBody={mailBodyShareButton}
+            texts={texts}
+            dialogTitle={dialogTitleShareButton}
+          />
+        )}
+      </Container>
+      <Container className={classes.projectInteractionButtonContainer}>
+        <ProjectInteractionButtons
+          screenSize={screenSize}
           project={project}
           projectAdmin={projectAdmin}
-          projectLinkPath={projectLinkPath}
-          screenSize={screenSize}
-          showFollowers={showFollowers}
-          showLikes={showLikes}
+          handleClickContact={handleClickContact}
+          hasAdminPermissions={hasAdminPermissions}
+          texts={texts}
+          visibleFooterHeight={visibleFooterHeight}
+          isUserFollowing={isUserFollowing}
+          isUserLiking={isUserLiking}
+          handleToggleFollowProject={handleToggleFollowProject}
+          handleToggleLikeProject={handleToggleLikeProject}
           toggleShowFollowers={toggleShowFollowers}
-          toggleShowLikes={toggleShowLikes}
-          token={token}
-          user={user}
-          requestedToJoinProject={requestedToJoinProject}
-          handleSetRequestedToJoinProject={handleSetRequestedToJoinProject}
-          similarProjects={similarProjects}
+          followingChangePending={followingChangePending}
+          likingChangePending={likingChangePending}
+          messageButtonIsVisible={messageButtonIsVisible}
+          contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
+          tabContentContainerSpaceToRight={tabContentContainerSpaceToRight}
+          numberOfFollowers={numberOfFollowers}
+          numberOfLikes={numberOfLikes}
+          bindLike={bindLike}
+          bindFollow={bindFollow}
         />
+      </Container>
 
-        <Container className={classes.tabsContainerWithoutPadding}>
-          <div ref={projectTabsRef}>
-            <Tabs
-              variant={screenSize.belowSmall ? "fullWidth" : "standard"}
-              value={tabValue}
-              onChange={handleTabChange}
-              indicatorColor="primary"
-            >
-              <Tab label={texts.project} className={classes.tab} />
-              <Tab label={teamTabLabel()} className={classes.tab} />
-              <Tab label={discussionTabLabel()} className={classes.tab} />
-            </Tabs>
-          </div>
-
-          {!screenSize.belowSmall && (
-            <SocialMediaShareButton
-              containerClassName={classes.shareButtonContainer}
-              contentLinkPath={projectLinkPath}
-              apiEndpoint={apiEndpointShareButton}
-              locale={locale}
-              token={token}
-              messageTitle={messageTitleShareButton}
-              tinyScreen={screenSize.belowTiny}
-              smallScreen={screenSize.belowSmall}
-              mailBody={mailBodyShareButton}
-              texts={texts}
-              dialogTitle={dialogTitleShareButton}
-            />
-          )}
-        </Container>
-        <Container className={classes.projectInteractionButtonContainer}>
-          <ProjectInteractionButtons
-            screenSize={screenSize}
+      <Container className={classes.tabContent} ref={tabContentRef}>
+        <TabContent value={tabValue} index={0}>
+          <ProjectContent
             project={project}
-            projectAdmin={projectAdmin}
-            handleClickContact={handleClickContact}
-            hasAdminPermissions={hasAdminPermissions}
-            texts={texts}
-            visibleFooterHeight={visibleFooterHeight}
-            isUserFollowing={isUserFollowing}
-            isUserLiking={isUserLiking}
-            handleToggleFollowProject={handleToggleFollowProject}
-            handleToggleLikeProject={handleToggleLikeProject}
-            toggleShowFollowers={toggleShowFollowers}
-            followingChangePending={followingChangePending}
-            likingChangePending={likingChangePending}
-            messageButtonIsVisible={messageButtonIsVisible}
-            contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
-            tabContentContainerSpaceToRight={tabContentContainerSpaceToRight}
-            numberOfFollowers={numberOfFollowers}
-            numberOfLikes={numberOfLikes}
-            bindLike={bindLike}
-            bindFollow={bindFollow}
+            leaveProject={requestLeaveProject}
+            projectDescriptionRef={projectDescriptionRef}
+            collaborationSectionRef={collaborationSectionRef}
+            discussionTabLabel={discussionTabLabel()}
+            latestParentComment={latestParentComment}
+            handleTabChange={handleTabChange}
+            typesByTabValue={typesByTabValue}
+            projectTabsRef={projectTabsRef}
+            showRequesters={showRequesters}
+            toggleShowRequests={toggleShowRequests}
+            handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+            requestedToJoinProject={requestedToJoinProject}
           />
-        </Container>
+        </TabContent>
+        <TabContent value={tabValue} index={1}>
+          <ProjectTeamContent
+            project={project}
+            handleReadNotifications={handleReadNotifications}
+            leaveProject={requestLeaveProject}
+          />
+        </TabContent>
 
-        <Container className={classes.tabContent} ref={tabContentRef}>
-          <TabContent value={tabValue} index={0}>
-            <ProjectContent
-              project={project}
-              leaveProject={requestLeaveProject}
-              projectDescriptionRef={projectDescriptionRef}
-              collaborationSectionRef={collaborationSectionRef}
-              discussionTabLabel={discussionTabLabel()}
-              latestParentComment={latestParentComment}
-              handleTabChange={handleTabChange}
-              typesByTabValue={typesByTabValue}
-              projectTabsRef={projectTabsRef}
-              showRequesters={showRequesters}
-              toggleShowRequests={toggleShowRequests}
-              handleSendProjectJoinRequest={handleSendProjectJoinRequest}
-              requestedToJoinProject={requestedToJoinProject}
-              similarProjects={similarProjects}
-              screenSize={screenSize}
-            />
-          </TabContent>
-          <TabContent value={tabValue} index={1}>
-            <ProjectTeamContent
-              project={project}
-              handleReadNotifications={handleReadNotifications}
-              leaveProject={requestLeaveProject}
-              similarProjects={similarProjects}
-              screenSize={screenSize}
-            />
-          </TabContent>
-          <TabContent value={tabValue} index={2}>
-            <ProjectCommentsContent
-              project={project}
-              user={user}
-              token={token}
-              setCurComments={setCurComments}
-              similarProjects={similarProjects}
-              screenSize={screenSize}
-            />
-          </TabContent>
-        </Container>
-      </div>
+        <TabContent value={tabValue} index={2}>
+          <ProjectCommentsContent
+            project={project}
+            user={user}
+            token={token}
+            setCurComments={setCurComments}
+          />
+        </TabContent>
+
+        {screenSize.belowSmall && (
+          <>
+            <Divider className={classes.divider} />
+            <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
+              {texts.you_may_also_like_these_projects}
+            </Typography>
+
+            <div className={classes.similarProjectsContainer}>
+              <Button onClick={handleHideContent}>
+                {showSimilarProjects ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </Button>
+              {showSimilarProjects && (
+                <>
+                  <ProjectPreviews projects={similarProjects} />
+                  <Link href={link} className={classes.showAllProjectsButton}>
+                    <Button
+                      color="primary"
+                      variant="outlined"
+                      className={classes.showAllProjectsButton}
+                    >
+                      <SearchIcon />
+                      {texts.view_all_projects}
+                    </Button>
+                  </Link>
+                </>
+              )}
+            </div>
+          </>
+        )}
+      </Container>
 
       <ConfirmDialog
         open={confirmDialogOpen.follow}
@@ -624,7 +670,7 @@ export default function ProjectPageRoot({
         typesByTabValue={typesByTabValue}
         handleTabChange={handleTabChange}
       />
-    </>
+    </div>
   );
 }
 
