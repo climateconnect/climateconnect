@@ -16,7 +16,6 @@ import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import ControlPointIcon from "@material-ui/icons/ControlPoint";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
-import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import Alert from "@material-ui/lab/Alert";
 import React, { useContext } from "react";
 import {
@@ -25,7 +24,6 @@ import {
   getResizedImage,
   whitenTransparentPixels,
 } from "../../../public/lib/imageOperations";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { parseLocation } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -881,30 +879,6 @@ export default function EditAccountPage({
                   {texts.check_translations}
                 </Button>
               )}
-              {isOrganization &&
-                (isNarrowScreen ? (
-                  <IconButton
-                    className={classes.editButton}
-                    variant="contained"
-                    color="primary"
-                    href={
-                      getLocalePrefix(locale) + "/manageOrganizationMembers/" + account.url_slug
-                    }
-                  >
-                    <GroupAddIcon />
-                  </IconButton>
-                ) : (
-                  <Button
-                    className={classes.editButton}
-                    variant="contained"
-                    color="primary"
-                    href={
-                      getLocalePrefix(locale) + "/manageOrganizationMembers/" + account.url_slug
-                    }
-                  >
-                    {texts.manage_members}
-                  </Button>
-                ))}
             </div>
           </Container>
         </Container>
