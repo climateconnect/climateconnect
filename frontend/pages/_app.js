@@ -97,11 +97,12 @@ export default function MyApp({ Component, pageProps = {} }) {
     }
   };
 
-  const hideNotification = (notificationId, notifications) => {
+  const hideNotification = (notificationId) => {
+    const notifications = state.notifications;
     setState({
       ...state,
       notifications: notifications.filter((n) => n.id !== notificationId),
-    });
+    })
   };
 
   const refreshNotifications = async () => {

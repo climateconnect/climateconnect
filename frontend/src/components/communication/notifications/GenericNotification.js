@@ -61,7 +61,6 @@ export default function GenericNotification({
   const token = new Cookies().get("auth_token");
   const {
     locale,
-    notifications,
     setNotificationsRead,
     refreshNotifications,
     hideNotification,
@@ -69,7 +68,7 @@ export default function GenericNotification({
   const classes = useStyles();
 
   const deleteNotification = async () => {
-    hideNotification(notification.id, notifications);
+    hideNotification(notification.id);
     await setNotificationsRead(token, [notification], locale);
     await refreshNotifications();
   };
