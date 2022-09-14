@@ -109,8 +109,6 @@ export default function Post({
       : getImageUrl(post.author_user.thumbnail_image),
     className: classes.avatar,
   };
-
-  console.log(post.author_user.badges);
   return (
     <div className={className}>
       {type === "progresspost" ? (

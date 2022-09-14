@@ -97,6 +97,13 @@ export default function MyApp({ Component, pageProps = {} }) {
     }
   };
 
+  const hideNotification = (notificationId, notifications) => {
+    setState({
+      ...state,
+      notifications: notifications.filter((n) => n.id !== notificationId),
+    });
+  };
+
   const refreshNotifications = async () => {
     const notifications = await getNotifications(cookies.get("auth_token"));
     setState({
@@ -236,6 +243,7 @@ export default function MyApp({ Component, pageProps = {} }) {
     isLoading: isLoading,
     startLoading: startLoading,
     stopLoading: stopLoading,
+    hideNotification: hideNotification,
   };
 
   return (
