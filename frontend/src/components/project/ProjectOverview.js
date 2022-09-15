@@ -203,6 +203,7 @@ export default function ProjectOverview({
           project={project}
           texts={texts}
           toggleShowFollowers={toggleShowFollowers}
+          numberOfFollowers={numberOfFollowers}
         />
       ) : (
         <LargeScreenOverview
@@ -275,6 +276,7 @@ function SmallScreenOverview({
   texts,
   toggleShowFollowers,
   token,
+  numberOfFollowers
 }) {
   const classes = useStyles();
 
@@ -349,7 +351,10 @@ function SmallScreenOverview({
             hasAdminPermissions={hasAdminPermissions}
             toggleShowFollowers={toggleShowFollowers}
             followingChangePending={followingChangePending}
+            numberOfFollowers={numberOfFollowers}
             texts={texts}
+            showStartIcon
+            showNumberInText
           />
 
           {!hasAdminPermissions && (
@@ -460,29 +465,31 @@ function LargeScreenOverview({
               screenSize={screenSize}
               texts={texts}
               toggleShowFollowers={toggleShowFollowers}
+              showStartIcon={!screenSize.belowMedium}
+              showLinkUnderButton
             />
-            {!hasAdminPermissions && !screenSize.belowMedium && (
-              <ContactCreatorButton
-                creator={projectAdmin}
-                contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
-                handleClickContact={handleClickContact}
-                customCardWidth={220}
-                withInfoCard={true}
-                withIcons={true}
-                collapsable={true}
-              />
-            )}
-            {!hasAdminPermissions && screenSize.belowMedium && (
-              <Button
-                className={classes.contactProjectButtonLarge}
-                variant="contained"
-                color="primary"
-                onClick={handleClickContact}
-                ref={contactProjectCreatorButtonRef}
-              >
-                {texts.contact}
-              </Button>
-            )}
+            {!hasAdminPermissions &&
+              (!screenSize.belowMedium ? (
+                <ContactCreatorButton
+                  creator={projectAdmin}
+                  contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
+                  handleClickContact={handleClickContact}
+                  customCardWidth={220}
+                  withInfoCard={true}
+                  withIcons={true}
+                  collapsable={true}
+                />
+              ) : (
+                <Button
+                  className={classes.contactProjectButtonLarge}
+                  variant="contained"
+                  color="primary"
+                  onClick={handleClickContact}
+                  ref={contactProjectCreatorButtonRef}
+                >
+                  {texts.contact}
+                </Button>
+              ))}
           </div>
         </div>
       </div>

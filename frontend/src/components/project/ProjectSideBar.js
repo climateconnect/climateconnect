@@ -1,11 +1,12 @@
 import React from "react";
-import { Button, IconButton, Link } from "@material-ui/core";
+import { Button, IconButton, Typography, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
-import ProjectPreview from "./ProjectPreview";
-import MenuIcon from "@material-ui/icons/Menu";
+import ProjectPreviews from "./ProjectPreviews";
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import SearchIcon from "@material-ui/icons/Search";
-
+import MenuIcon from "@material-ui/icons/Menu";
 
 const useStyles = makeStyles((theme) => ({
   projectCard: {
@@ -13,20 +14,34 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: 320,
   },
 
-  cardContainer: {
+  smallSimilarProjectsContainer: {
     display: "flex",
-    flexDirection: "column",
     alignItems: "center",
+    flexDirection: "column",
+  },
+  subHeader: {
+    fontWeight: "bold",
+    marginBottom: theme.spacing(1),
+  },
+  divider: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+  },
+
+  largeSimilarProjectsContainer: {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
     borderRadius: 10,
-    backgroundColor: "#f0f2f5", //
-    padding: theme.spacing(1),
+    backgroundColor: "#f0f2f5",
     maxWidth: 300,
   },
-  showAllProjectsButton: {
-    marginTop: theme.spacing(1),
-    fontSize: 12,
-    width: "100%",
-  },
+  showAllProjectsButton: (props) => ({
+    marginBottom: props.isSmallScreen ? theme.spacing(0) : theme.spacing(1),
+    marginTop: props.isSmallScreen ? theme.spacing(0) : theme.spacing(1),
+    fontSize: props.isSmallScreen ? 14 : 12,
+    width: props.isSmallScreen ? "100%" : "95%",
+  }),
 }));
 
 export default function ProjectSideBar({
@@ -35,31 +50,62 @@ export default function ProjectSideBar({
   showSimilarProjects,
   locale,
   texts,
+  isSmallScreen,
 }) {
   const classes = useStyles({
     showSimilarProjects: showSimilarProjects,
+    isSmallScreen: isSmallScreen,
   });
 
   const link = getLocalePrefix(locale) + "/browse";
+  const shouldDisplayOneProjectInRow = !isSmallScreen;
 
   return (
     <>
-      <IconButton size="small" onClick={handleHideContent}>
-        <MenuIcon fontSize="medium" />
-      </IconButton>
-      {showSimilarProjects && (
-        <div className={classes.cardContainer}>
-          {similarProjects.map((sp, index) => (
-            <ProjectPreview project={sp} key={index} className={classes.projectCard} />
-          ))}
-          <Link href={link} className={classes.showAllProjectsButton}>
-            <Button color="primary" variant="outlined" className={classes.showAllProjectsButton}>
+      {isSmallScreen ? (
+        <>
+          <Divider className={classes.divider} />
+          <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
+            {texts.you_may_also_like_these_projects}
+          </Typography>
+        </>
+      ) : (
+        <IconButton size="small" onClick={handleHideContent}>
+          <MenuIcon fontSize="medium" />
+        </IconButton>
+      )}
+
+      <div
+        className={
+          isSmallScreen
+            ? classes.smallSimilarProjectsContainer
+            : classes.largeSimilarProjectsContainer
+        }
+      >
+        {isSmallScreen && (
+          <Button onClick={handleHideContent}>
+            {showSimilarProjects ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </Button>
+        )}
+        {showSimilarProjects && (
+          <>
+            <ProjectPreviews
+              displayOnePreviewInRow={shouldDisplayOneProjectInRow}
+              projects={similarProjects}
+            />
+
+            <Button
+              color="primary"
+              variant="outlined"
+              className={classes.showAllProjectsButton}
+              href={link}
+            >
               <SearchIcon />
               {texts.view_all_projects}
             </Button>
-          </Link>
-        </div>
-      )}
+          </>
+        )}
+      </div>
     </>
   );
 }

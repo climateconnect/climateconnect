@@ -66,92 +66,17 @@ export default function FollowButton({
   screenSize,
   numberOfFollowers,
   bindFollow,
+  showStartIcon,
+  showLinkUnderButton,
+  showNumberInText,
 }) {
   const classes = useStyles({
     hasAdminPermissions: hasAdminPermissions,
     followingChangePending: followingChangePending,
     belowSmallScreen: screenSize?.belowSmall,
   });
-
-  if (screenSize?.belowSmall && !screenSize.belowTiny) {
-    // show icon, show number in label, no link, bind follow
-    return (
-      <ButtonWithFeatures
-        {...bindFollow}
-        showStartIcon={true}
-        showNumberInText={true}
-        handleToggleFollowProject={handleToggleFollowProject}
-        isUserFollowing={isUserFollowing}
-        followingChangePending={followingChangePending}
-        texts={texts}
-        numberOfFollowers={numberOfFollowers}
-        toggleShowFollowers={toggleShowFollowers}
-      />
-    );
-  } else if (screenSize?.belowTiny) {
-    // show icon, no number in label, no link, bind follow
-    return (
-      <ButtonWithFeatures
-        {...bindFollow}
-        showStartIcon={true}
-        handleToggleFollowProject={handleToggleFollowProject}
-        isUserFollowing={isUserFollowing}
-        followingChangePending={followingChangePending}
-        texts={texts}
-        numberOfFollowers={numberOfFollowers}
-        toggleShowFollowers={toggleShowFollowers}
-      />
-    );
-  } else if (screenSize?.belowMedium && !screenSize.belowSmall && !hasAdminPermissions) {
-    // no icon, no number in label, show link, bind follow
-    return (
-      <span className={classes.followButtonContainer}>
-        <ButtonWithFeatures
-          {...bindFollow}
-          showLinkUnderButton={true}
-          handleToggleFollowProject={handleToggleFollowProject}
-          isUserFollowing={isUserFollowing}
-          followingChangePending={followingChangePending}
-          texts={texts}
-          numberOfFollowers={numberOfFollowers}
-          toggleShowFollowers={toggleShowFollowers}
-        />
-      </span>
-    );
-  } else {
-    // show icon, no number in label, show link, no bind follow
-    return (
-      <span className={classes.followButtonContainer}>
-        <ButtonWithFeatures
-          showStartIcon={true}
-          showLinkUnderButton={true}
-          handleToggleFollowProject={handleToggleFollowProject}
-          isUserFollowing={isUserFollowing}
-          followingChangePending={followingChangePending}
-          texts={texts}
-          numberOfFollowers={numberOfFollowers}
-          toggleShowFollowers={toggleShowFollowers}
-        />
-      </span>
-    );
-  }
-}
-
-function ButtonWithFeatures({
-  showNumberInText,
-  showStartIcon,
-  showLinkUnderButton,
-  bindFollow,
-  handleToggleFollowProject,
-  isUserFollowing,
-  followingChangePending,
-  texts,
-  numberOfFollowers,
-  toggleShowFollowers,
-}) {
-  const classes = useStyles();
   return (
-    <>
+    <span className={classes.followButtonContainer}>
       <Button
         {...bindFollow}
         onClick={handleToggleFollowProject}
@@ -187,7 +112,7 @@ function ButtonWithFeatures({
           toggleShowFollowers={toggleShowFollowers}
         />
       )}
-    </>
+    </span>
   );
 }
 

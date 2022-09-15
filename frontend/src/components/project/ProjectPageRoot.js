@@ -1,4 +1,4 @@
-import { Button, Container, Tab, Tabs, Typography, Divider, Link } from "@material-ui/core";
+import { Container, Tab, Tabs, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Router from "next/router";
@@ -23,11 +23,8 @@ import ProjectInteractionButtons from "./Buttons/ProjectInteractionButtons";
 import ProjectCommentsContent from "./ProjectCommentsContent";
 import ProjectContent from "./ProjectContent";
 import ProjectOverview from "./ProjectOverview";
-import ProjectPreviews from "./ProjectPreviews";
+import ProjectSideBar from "./ProjectSideBar";
 import ProjectTeamContent from "./ProjectTeamContent";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import SearchIcon from "@material-ui/icons/Search";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -67,19 +64,8 @@ const useStyles = makeStyles((theme) => ({
   shareButtonContainer: {
     paddingRight: theme.spacing(4),
   },
-  subHeader: {
-    fontWeight: "bold",
-    paddingBottom: theme.spacing(2),
-  },
-  divider: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-  },
-  similarProjectsContainer: {
-    display: "flex",
-    alignItems: "center",
-    flexDirection: "column",
-  },
+
+
   showAllProjectsButton: {
     marginTop: theme.spacing(1),
     fontSize: 14,
@@ -121,8 +107,6 @@ export default function ProjectPageRoot({
     project: project,
     creator: projectAdmin,
   });
-
-  const link = getLocalePrefix(locale) + "/browse";
 
   const screenSize = {
     belowTiny: useMediaQuery((theme) => theme.breakpoints.down("xs")),
@@ -583,35 +567,15 @@ export default function ProjectPageRoot({
             setCurComments={setCurComments}
           />
         </TabContent>
-
         {screenSize.belowSmall && (
-          <>
-            <Divider className={classes.divider} />
-            <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
-              {texts.you_may_also_like_these_projects}
-            </Typography>
-
-            <div className={classes.similarProjectsContainer}>
-              <Button onClick={handleHideContent}>
-                {showSimilarProjects ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </Button>
-              {showSimilarProjects && (
-                <>
-                  <ProjectPreviews projects={similarProjects} />
-                  <Link href={link} className={classes.showAllProjectsButton}>
-                    <Button
-                      color="primary"
-                      variant="outlined"
-                      className={classes.showAllProjectsButton}
-                    >
-                      <SearchIcon />
-                      {texts.view_all_projects}
-                    </Button>
-                  </Link>
-                </>
-              )}
-            </div>
-          </>
+          <ProjectSideBar
+            showSimilarProjects={showSimilarProjects}
+            isSmallScreen
+            texts={texts}
+            handleHideContent={handleHideContent}
+            similarProjects={similarProjects}
+            locale={locale}
+          />
         )}
       </Container>
 

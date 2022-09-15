@@ -75,6 +75,8 @@ export default function ProjectInteractionButtons({
             screenSize={screenSize}
             numberOfFollowers={numberOfFollowers}
             bindFollow={bindFollow}
+            showStartIcon={screenSize.belowSmall && !screenSize.belowTiny}
+            showNumberInText={screenSize.belowSmall}
           />
           <LikeButton
             texts={texts}
