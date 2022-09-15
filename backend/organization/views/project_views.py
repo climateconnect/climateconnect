@@ -1356,4 +1356,4 @@ class SimilarProjects(ListAPIView):
     serializer_class = ProjectStubSerializer    
     def get_queryset(self):
         similar_projects_url_slugs = get_similar_projects(url_slug=self.kwargs['url_slug'])
-        return Project.objects.filter(url_slug__in=similar_projects_url_slugs) 
+        return Project.objects.filter(url_slug__in=similar_projects_url_slugs, is_draft=False, rating__gte=49, is_active=True) 
