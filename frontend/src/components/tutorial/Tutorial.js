@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
     bottom: "calc(50vh - 110px)",
     transform: "rotate(-90deg)",
     right: -27.35,
+    zIndex: 10,
   },
   fixedPosition: {
     position: "fixed",
