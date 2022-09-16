@@ -156,10 +156,7 @@ const useStyles = makeStyles((theme) => ({
   miniOrgPreview: {
     display: "flex",
   },
-  hubsContainer: {
-    display: "inline-block",
-    flexDirection: "column",
-  },
+  
   hubButtonsContainer: {
     display: "flex",
     justifyContent: "center",
@@ -273,7 +270,6 @@ export default function AccountPage({
                     {" "}
                     {organizationTexts.organization_is_active_in_these_sectors}{" "}
                   </div>
-                  <div className={classes.hubsContainer}>
                     <MiniHubPreviews hubs={hubsToDisplay} />
                     <div className={classes.hubButtonsContainer}>
                       <Button onClick={handleShowMoreSectors}>
@@ -289,8 +285,7 @@ export default function AccountPage({
                           </>
                         )}
                       </Button>
-                    </div>
-                  </div>
+                    </div> 
                 </>
               );
             }
