@@ -215,7 +215,6 @@ export default function AccountPage({
       .map((key, index) => {
         if (info[key]) {
           const i = getFullInfoElement(infoMetadata, key, info[key]);
-          console.log(i);
           const value = Array.isArray(i.value) ? i.value.join(", ") : i.value;
           const additionalText = i.additionalText ? i.additionalText : "";
           if (key === "parent_organization") {
