@@ -69,8 +69,8 @@ function GridItem({
       item
       xs={12}
       sm={editMode ? 6 : 12}
-      md={8}
-      lg={6}
+      md={editMode ? 6 : 12}
+      lg={editMode ? 6 : 12}
       component="li"
     >
       <MiniHubPreview

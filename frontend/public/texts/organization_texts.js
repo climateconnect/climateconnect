@@ -279,5 +279,9 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: "Skip for now",
       de: "Erstmal überspringen",
     },
+    organization_is_active_in_these_sectors: {
+      en: "This organization is active in these sectors:",
+      de: "Diese Organisation ist in diese Aktivitätsbereiche aktiv:",
+    },
   };
 }

@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
       textDecoration: "none",
     },
   },
-  root: {
+  root: (props) => ({
     display: "flex",
     flexDirection: "column",
     cursor: "pointer",
@@ -22,12 +22,13 @@ const useStyles = makeStyles((theme) => ({
     "-ms-user-select": "none",
     userSelect: "none",
     position: "relative",
-  },
+    width: props.editMode ? "100%" : "66%",
+  }),
   textContainer: {
     boxShadow: "3px 3px 6px #00000017",
     border: "1px solid #E0E0E0",
     padding: theme.spacing(1),
-    height: 60,
+
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
@@ -42,11 +43,11 @@ const useStyles = makeStyles((theme) => ({
       : `url(${getImageUrl(props.thumbnail_image)})`,
     backgroundSize: "cover",
     width: "100%",
-    height: 60,
+    height: 40,
     backgroundPosition: "center",
   }),
   hubName: {
-    fontSize: 19,
+    fontSize: 18,
     fontWeight: 600,
   },
   hubIcon: {
@@ -74,7 +75,11 @@ export default function MiniHubPreview({
   onSelect,
   onClickRemoveHub,
 }) {
-  const classes = useStyles({ createMode: createMode, thumbnail_image: hub?.thumbnail_image });
+  const classes = useStyles({
+    createMode: createMode,
+    thumbnail_image: hub?.thumbnail_image,
+    editMode: editMode,
+  });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
   const handleRemoveHub = (event) => {

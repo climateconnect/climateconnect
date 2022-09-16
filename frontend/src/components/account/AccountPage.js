@@ -7,10 +7,11 @@ import {
   Tooltip,
   Typography,
   Divider,
+  IconButton,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PlaceIcon from "@material-ui/icons/Place";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Linkify from "react-linkify";
 import Cookies from "universal-cookie";
 
@@ -24,7 +25,8 @@ import ProfileBadge from "../profile/ProfileBadge";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import UserContext from "../context/UserContext";
 import EditSharpIcon from "@material-ui/icons/EditSharp";
-import IconButton from "@material-ui/core/IconButton";
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 const useStyles = makeStyles((theme) => ({
   avatarContainer: {
@@ -154,6 +156,15 @@ const useStyles = makeStyles((theme) => ({
   miniOrgPreview: {
     display: "flex",
   },
+  hubsContainer: {
+    display: "inline-block",
+    flexDirection: "column",
+  },
+  hubButtonsContainer: {
+    display: "flex",
+    justifyContent: "center",
+    marginLeft: "-35%",
+  },
 }));
 
 //Generic component to display personal profiles or organization profiles
@@ -192,7 +203,11 @@ export default function AccountPage({
       {text}
     </Link>
   );
+  const [showMoreSectors, setShowMoreSectors] = useState(false);
 
+  const handleShowMoreSectors = () => {
+    setShowMoreSectors(!showMoreSectors);
+  };
   const displayAccountInfo = (info) =>
     Object.keys(info)
       .sort((a, b) => {
@@ -203,6 +218,7 @@ export default function AccountPage({
       .map((key, index) => {
         if (info[key]) {
           const i = getFullInfoElement(infoMetadata, key, info[key]);
+          console.log(i);
           const value = Array.isArray(i.value) ? i.value.join(", ") : i.value;
           const additionalText = i.additionalText ? i.additionalText : "";
           if (key === "parent_organization") {
@@ -248,7 +264,36 @@ export default function AccountPage({
               </div>
             );
           } else if (i.type === "hubs") {
-            return <MiniHubPreviews hubs={i.value} />;
+            if (i.value.length <= 2) return <MiniHubPreviews hubs={i.value} />;
+            else {
+              const hubsToDisplay = showMoreSectors ? i.value : i.value.slice(0, 2);
+              return (
+                <>
+                  <div className={classes.subtitle}>
+                    {" "}
+                    {organizationTexts.organization_is_active_in_these_sectors}{" "}
+                  </div>
+                  <div className={classes.hubsContainer}>
+                    <MiniHubPreviews hubs={hubsToDisplay} />
+                    <div className={classes.hubButtonsContainer}>
+                      <Button onClick={handleShowMoreSectors}>
+                        {showMoreSectors ? (
+                          <>
+                            <ExpandLessIcon />
+                            {texts.show_less}
+                          </>
+                        ) : (
+                          <>
+                            <ExpandMoreIcon />
+                            {texts.show_more}
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </>
+              );
+            }
           } else if (i.type === "select" && value) {
             const textValue = i.options ? i.options.find((o) => o?.key === value).name : value;
             return (
