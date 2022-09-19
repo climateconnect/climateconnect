@@ -25,6 +25,7 @@ import UserContext from "./../../src/components/context/UserContext";
 import IconButton from "@material-ui/core/IconButton";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import ControlPointSharpIcon from "@material-ui/icons/ControlPointSharp";
+import OrganizationPreview from "../../src/components/organization/OrganizationPreview";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -67,18 +68,34 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(4),
     marginBottom: theme.spacing(5),
   },
+  organizationsSection: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+
+    marginTop: theme.spacing(3),
+  },
 }));
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
-  const [organization, projects, members, organizationTypes, rolesOptions] = await Promise.all([
+  const [
+    organization,
+    projects,
+    members,
+    organizationTypes,
+    rolesOptions,
+    childOrganizationInfo,
+  ] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
     getProjectsByOrganization(organizationUrl, auth_token, ctx.locale),
     getMembersByOrganization(organizationUrl, auth_token, ctx.locale),
     getOrganizationTypes(),
     getRolesOptions(auth_token, ctx.locale),
+    getChildOrganizationInfo(organizationUrl, auth_token, ctx.locale),
   ]);
+
   return {
     props: nullifyUndefinedValues({
       organization: organization,
@@ -86,6 +103,10 @@ export async function getServerSideProps(ctx) {
       members: members,
       organizationTypes: organizationTypes,
       rolesOptions: rolesOptions,
+      childOrganizations: childOrganizationInfo?.organizations?.map((o) =>
+        nullifyUndefinedValues(o)
+      ),
+      childProjects: childOrganizationInfo?.projects?.map((o) => nullifyUndefinedValues(o)),
     }),
   };
 }
@@ -96,10 +117,14 @@ export default function OrganizationPage({
   members,
   organizationTypes,
   rolesOptions,
+  childOrganizations,
+  childProjects,
 }) {
   const { user, locale } = useContext(UserContext);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
+  // console.log(childOrganizations);
+  // console.log(childProjects);
   return (
     <WideLayout
       title={organization ? organization.name : texts.not_found_error}
@@ -117,6 +142,8 @@ export default function OrganizationPage({
           texts={texts}
           locale={locale}
           rolesOptions={rolesOptions}
+          childProjects={childProjects}
+          childOrganizations={childOrganizations}
         />
       ) : (
         <PageNotFound itemName={texts.organization} />
@@ -134,10 +161,13 @@ function OrganizationLayout({
   texts,
   locale,
   rolesOptions,
+  childProjects,
+  childOrganizations,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
 
+  const allProjects = projects.concat(childProjects);
   const getRoleName = (permission) => {
     const permission_to_show = permission === "all" ? "read write" : permission;
     return rolesOptions.find((o) => o.role_type === permission_to_show).name;
@@ -186,6 +216,7 @@ function OrganizationLayout({
 
   const isTinyScreen = useMediaQuery(theme.breakpoints.down("xs"));
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
     <AccountPage
       account={organization}
@@ -230,14 +261,32 @@ function OrganizationLayout({
             </Button>
           )}
         </div>
-        {projects && projects.length ? (
-          <ProjectPreviews projects={projects} />
+
+        {allProjects && allProjects.length > 0 ? (
+          <ProjectPreviews projects={allProjects} />
         ) : (
           <Typography className={classes.no_content_yet}>
             {texts.this_organization_has_not_listed_any_projects_yet}
           </Typography>
         )}
       </Container>
+      {childOrganizations && childOrganizations.length > 0 && (
+        <>
+          <Divider className={classes.divider} />
+
+          <Container>
+            <div className={classes.organizationsSection}>
+              <Typography color="primary" className={classes.headline} component="h2">
+                Child Organizations of this Org
+              </Typography>
+
+              {childOrganizations.map((o, index) => (
+                <OrganizationPreview organization={o} key={index} />
+              ))}
+            </div>
+          </Container>
+        </>
+      )}
       <Divider className={classes.divider} />
       <Container>
         <div className={classes.sectionHeadlineWithButtonContainer}>
@@ -306,6 +355,45 @@ async function getProjectsByOrganization(organizationUrl, token, locale) {
     else {
       return parseProjectStubs(resp.data.results);
     }
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
+
+async function getChildOrganizationInfo(organizationUrl, token, locale) {
+  const orgs = await getChildOrganizations(organizationUrl);
+  if (orgs != null) {
+    const projects = await getChildProjects(orgs, token, locale);
+    return {
+      organizations: orgs,
+      projects: projects,
+    };
+  } else {
+    return;
+  }
+}
+
+async function getChildProjects(organizations, token, locale) {
+  const projects = [];
+
+  for (let i = 0; i < organizations.length; i++) {
+    projects.push(await getProjectsByOrganization(organizations[i].url_slug, token, locale));
+  }
+  console.log(projects);
+  return projects.flat();
+}
+async function getChildOrganizations(organizationUrl) {
+  try {
+    const response = await apiRequest({
+      method: "get",
+      url: "/api/child_organizations/" + organizationUrl + "/",
+    });
+    if (!response.data) {
+      return null;
+    }
+    return response.data.results.map((r) => parseOrganization(r));
   } catch (err) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);

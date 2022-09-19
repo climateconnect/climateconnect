@@ -60,6 +60,11 @@ urlpatterns = [
         organization_views.ListFeaturedOrganizations.as_view(),
         name="featured-organizations-api-view",
     ),
+    path(
+        "child_organizations/<str:url_slug>/",
+        organization_views.ListChildOrganizations.as_view(),
+        name="child-organizations-api-view",
+    ),
     # Project URLs
     path("projects/", project_views.ListProjectsView.as_view(), name="list-projects"),
     path(

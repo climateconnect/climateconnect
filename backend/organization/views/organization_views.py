@@ -693,11 +693,12 @@ class ListOrganizationTags(ListAPIView):
 class ListFeaturedOrganizations(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = OrganizationCardSerializer
-
+    
     def get_serializer_context(self):
         return {"language_code": self.request.LANGUAGE_CODE}
 
     def get_queryset(self):
+        print("called")
         return Organization.objects.filter(rating__lte=99)[0:4]
 
 
@@ -721,3 +722,18 @@ class SetOrganisationSharedView(APIView):
             )
         save_content_shared(request, organization)
         return Response(status=status.HTTP_201_CREATED)
+
+
+class ListChildOrganizations(ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = OrganizationSerializer
+    def get_queryset(self):
+        organizations = Organization.objects.filter( parent_organization__url_slug = self.kwargs['url_slug']) 
+        
+        return organizations
+        
+        
+        
+
+   
+    
