@@ -9,7 +9,7 @@ azure-common==1.1.25
 azure-storage-blob==2.1.0
 azure-storage-common==2.1.0
 billiard==3.6.4.0
-black==21.12b0
+black==22.3.0
 cachetools==4.1.0
 celery==5.2.3
 certifi==2020.4.5.1
