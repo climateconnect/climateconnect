@@ -10,6 +10,7 @@ import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import SocialMediaButton from "../general/SocialMediaButton";
 import LargeFooter from "./LargeFooter";
 
 const useStyles = makeStyles((theme) => ({
@@ -147,46 +148,26 @@ const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScroll
           </Box>
         )}
         <Box component="span" className={classes.rightBox}>
-          <a
+          <SocialMediaButton
             href="https://github.com/climateconnect/climateconnect"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={classes.inheritColor}
-          >
-            <GitHubIcon className={classes.socialMediaLink} alt="GitHub" />
-          </a>
-          <a
+            icon={<GitHubIcon alt="GitHub" className={classes.socialMediaLink} />}
+          />
+          <SocialMediaButton
             href="https://twitter.com/ConnectClimate"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={classes.inheritColor}
-          >
-            <TwitterIcon className={classes.socialMediaLink} alt="Twitter" />
-          </a>
-          <a
+            icon={<TwitterIcon className={classes.socialMediaLink} alt="Twitter" />}
+          />
+          <SocialMediaButton
             href="https://www.instagram.com/climate_connect.earth/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={classes.inheritColor}
-          >
-            <InstagramIcon className={classes.socialMediaLink} alt="Instagram" />
-          </a>
-          <a
+            icon={<InstagramIcon className={classes.socialMediaLink} alt="Instagram" />}
+          />
+          <SocialMediaButton
             href="https://www.facebook.com/climateconnect.earth/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={classes.inheritColor}
-          >
-            <FacebookIcon className={classes.socialMediaLink} alt="Facebook" />
-          </a>
-          <a
+            icon={<FacebookIcon className={classes.socialMediaLink} alt="Facebook" />}
+          />
+          <SocialMediaButton
             href="https://www.youtube.com/channel/UC10rPriptUxYilMfvt-8Tkw"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={classes.inheritColor}
-          >
-            <YouTubeIcon className={classes.socialMediaLink} alt="YouTube" />
-          </a>
+            icon={<YouTubeIcon className={classes.socialMediaLink} alt="YouTube" />}
+          />
         </Box>
       </Box>
     </Box>
