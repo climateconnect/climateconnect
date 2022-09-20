@@ -230,8 +230,7 @@ function OrganizationLayout({
             <Typography>{texts.our_local_groups}</Typography>
             <div className={classes.organizationsSection}>
               {childOrganizations.map((o, index) => (
-              
-              <MiniOrganizationPreview organization={o} key={index} size="small" />
+                <MiniOrganizationPreview organization={o} key={index} size="small" />
               ))}
             </div>
           </Container>

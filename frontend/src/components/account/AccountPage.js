@@ -7,6 +7,7 @@ import {
   Tooltip,
   Typography,
   Divider,
+  Box,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PlaceIcon from "@material-ui/icons/Place";
@@ -25,6 +26,10 @@ import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import UserContext from "../context/UserContext";
 import EditSharpIcon from "@material-ui/icons/EditSharp";
 import IconButton from "@material-ui/core/IconButton";
+import InstagramIcon from "@material-ui/icons/Instagram";
+import TwitterIcon from "@material-ui/icons/Twitter";
+import FacebookIcon from "@material-ui/icons/Facebook";
+import LinkedInIcon from "@material-ui/icons/LinkedIn";
 
 const useStyles = makeStyles((theme) => ({
   avatarContainer: {
@@ -67,9 +72,7 @@ const useStyles = makeStyles((theme) => ({
   },
   name: {
     fontWeight: "bold",
-    padding: theme.spacing(1),
-    paddingLeft: 0,
-    paddingRight: 0,
+    marginTop: theme.spacing(1),
   },
   subtitle: {
     color: `${theme.palette.secondary.main}`,
@@ -82,6 +85,9 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(1),
     color: `${theme.palette.secondary.main}`,
     fontSize: 16,
+  },
+  location: {
+    marginBottom: theme.spacing(3),
   },
   noPadding: {
     padding: 0,
@@ -101,8 +107,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
   },
   chip: {
-    marginBottom: theme.spacing(1),
-    marginRight: theme.spacing(1),
+    marginBottom: theme.spacing(0.5),
+    minWidth: 200,
+    borderRadius: 20,
   },
   editButton: {
     position: "relative",
@@ -154,6 +161,21 @@ const useStyles = makeStyles((theme) => ({
   miniOrgPreview: {
     display: "flex",
   },
+  website: {
+    marginTop: theme.spacing(1),
+  },
+  websiteLink: {
+    marginTop: theme.spacing(-0.25),
+    fontStyle: "italic",
+    fontSize: 13,
+  },
+
+  socialMediaLink: {
+    height: 20,
+    marginRight: theme.spacing(1),
+    marginTop: theme.spacing(1),
+    color: theme.palette.primary.main,
+  },
 }));
 
 //Generic component to display personal profiles or organization profiles
@@ -203,6 +225,7 @@ export default function AccountPage({
       .map((key, index) => {
         if (info[key]) {
           const i = getFullInfoElement(infoMetadata, key, info[key]);
+          console.log(i);
           const value = Array.isArray(i.value) ? i.value.join(", ") : i.value;
           const additionalText = i.additionalText ? i.additionalText : "";
           if (key === "parent_organization") {
@@ -232,7 +255,7 @@ export default function AccountPage({
                 </div>
               </div>
             );
-          } else if (i.linkify && value) {
+          } else if (i.linkify && value && isOrganization) {
             return (
               <>
                 <div className={classes.subtitle}>{i.name}:</div>
@@ -296,7 +319,7 @@ export default function AccountPage({
     src: account.image,
     className: classes.avatar,
   };
-
+  console.log(account);
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <div
@@ -346,26 +369,71 @@ export default function AccountPage({
               <Avatar {...avatarProps} />
             )}
           </div>
-          <Typography variant="h5" className={classes.name}>
-            {account.name}
-          </Typography>
-          {location && (
-            <div>
-              <div className={classes.content}>
-                <Tooltip title="Location">
-                  <PlaceIcon color="primary" className={classes.infoIcon} />
-                </Tooltip>
-                {location ? location + locationAdditionalText : location.missingMessage}
-              </div>
+        <Typography variant="h5" className={classes.name}>
+          {account.name}
+        </Typography>
+        {location && (
+          <div>
+            <div className={classes.location}>
+              <Tooltip title="Location">
+                <PlaceIcon color="primary" className={classes.infoIcon} />
+              </Tooltip>
+              {location ? location + locationAdditionalText : location.missingMessage}
             </div>
-          )}
-          {account.types && (
-            <Container className={classes.noPadding}>
-              {account.types.map((type) => (
-                <Chip label={type.name} key={type.key} className={classes.chip} />
-              ))}
-            </Container>
-          )}
+          </div>
+        )}
+        {account.types && (
+          <Container className={classes.noPadding}>
+            {account.types.map((type) => (
+              <Chip label={type.name} key={type.key} className={classes.chip} />
+            ))}
+          </Container>
+        )}
+        {isOrganization && (
+          <div className={classes.website}>
+            <>
+              <Typography variant="caption"> Find us here: </Typography>
+              <Linkify componentDecorator={componentDecorator}>
+                {" "}
+                <Typography className={classes.websiteLink}> {account.info.website}</Typography>
+              </Linkify>
+            </>
+            <Box component="span" className={classes.socialMediaBox}>
+              <a
+                href="https://twitter.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={classes.inheritColor}
+              >
+                <TwitterIcon className={classes.socialMediaLink} alt="Twitter" />
+              </a>
+              <a
+                href="https://www.instagram.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={classes.inheritColor}
+              >
+                <InstagramIcon className={classes.socialMediaLink} alt="Instagram" />
+              </a>
+              <a
+                href="https://www.facebook.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={classes.inheritColor}
+              >
+                <FacebookIcon className={classes.socialMediaLink} alt="Facebook" />
+              </a>
+              <a
+                href="https://www.linkedin.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={classes.inheritColor}
+              >
+                <LinkedInIcon className={classes.socialMediaLink} alt="YouTube" />
+              </a>
+            </Box>
+          </div>
+        )}
         </Container>
         <Container className={classes.accountInfo}>{displayAccountInfo(account.info)}</Container>
         {isOwnAccount && !isSmallScreen && (
