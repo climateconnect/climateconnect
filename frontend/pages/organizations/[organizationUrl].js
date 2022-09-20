@@ -86,14 +86,14 @@ export async function getServerSideProps(ctx) {
     members,
     organizationTypes,
     rolesOptions,
-    childOrganizationInfo,
+    childOrganizations,
   ] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
     getProjectsByOrganization(organizationUrl, auth_token, ctx.locale),
     getMembersByOrganization(organizationUrl, auth_token, ctx.locale),
     getOrganizationTypes(),
     getRolesOptions(auth_token, ctx.locale),
-    getChildOrganizationInfo(organizationUrl, auth_token, ctx.locale),
+    getChildOrganizations(organizationUrl),
   ]);
 
   return {
@@ -103,10 +103,9 @@ export async function getServerSideProps(ctx) {
       members: members,
       organizationTypes: organizationTypes,
       rolesOptions: rolesOptions,
-      childOrganizations: childOrganizationInfo?.organizations?.map((o) =>
+      childOrganizations: childOrganizations?.map((o) =>
         nullifyUndefinedValues(o)
       ),
-      childProjects: childOrganizationInfo?.projects?.map((o) => nullifyUndefinedValues(o)),
     }),
   };
 }
@@ -118,13 +117,13 @@ export default function OrganizationPage({
   organizationTypes,
   rolesOptions,
   childOrganizations,
-  childProjects,
+ 
 }) {
   const { user, locale } = useContext(UserContext);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
-  // console.log(childOrganizations);
-  // console.log(childProjects);
+  //console.log(childOrganizations);
+  console.log(projects);
   return (
     <WideLayout
       title={organization ? organization.name : texts.not_found_error}
@@ -142,7 +141,7 @@ export default function OrganizationPage({
           texts={texts}
           locale={locale}
           rolesOptions={rolesOptions}
-          childProjects={childProjects}
+          
           childOrganizations={childOrganizations}
         />
       ) : (
@@ -161,13 +160,13 @@ function OrganizationLayout({
   texts,
   locale,
   rolesOptions,
-  childProjects,
+ 
   childOrganizations,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
 
-  const allProjects = projects.concat(childProjects);
+  
   const getRoleName = (permission) => {
     const permission_to_show = permission === "all" ? "read write" : permission;
     return rolesOptions.find((o) => o.role_type === permission_to_show).name;
@@ -262,8 +261,8 @@ function OrganizationLayout({
           )}
         </div>
 
-        {allProjects && allProjects.length > 0 ? (
-          <ProjectPreviews projects={allProjects} />
+        {projects && projects.length > 0 ? (
+          <ProjectPreviews projects={projects} />
         ) : (
           <Typography className={classes.no_content_yet}>
             {texts.this_organization_has_not_listed_any_projects_yet}
@@ -353,6 +352,7 @@ async function getProjectsByOrganization(organizationUrl, token, locale) {
     });
     if (!resp.data) return null;
     else {
+      console.log(resp.data.results)
       return parseProjectStubs(resp.data.results);
     }
   } catch (err) {
@@ -362,28 +362,6 @@ async function getProjectsByOrganization(organizationUrl, token, locale) {
   }
 }
 
-async function getChildOrganizationInfo(organizationUrl, token, locale) {
-  const orgs = await getChildOrganizations(organizationUrl);
-  if (orgs != null) {
-    const projects = await getChildProjects(orgs, token, locale);
-    return {
-      organizations: orgs,
-      projects: projects,
-    };
-  } else {
-    return;
-  }
-}
-
-async function getChildProjects(organizations, token, locale) {
-  const projects = [];
-
-  for (let i = 0; i < organizations.length; i++) {
-    projects.push(await getProjectsByOrganization(organizations[i].url_slug, token, locale));
-  }
-  console.log(projects);
-  return projects.flat();
-}
 async function getChildOrganizations(organizationUrl) {
   try {
     const response = await apiRequest({

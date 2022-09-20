@@ -663,10 +663,17 @@ class ListOrganizationProjectsAPIView(ListAPIView):
     serializer_class = ProjectFromProjectParentsSerializer
 
     def get_queryset(self):
+        
+        organization_urls = Organization.objects.filter(
+            parent_organization__url_slug = 
+            self.kwargs['url_slug']).values_list('url_slug', flat=True)
+
         return ProjectParents.objects.filter(
-            parent_organization__url_slug=self.kwargs["url_slug"],
-            project__is_draft=False,
-        ).order_by("id")
+            Q(parent_organization__url_slug=self.kwargs["url_slug"],
+            project__is_draft=False) |
+            Q(parent_organization__url_slug__in=organization_urls,
+            project__is_draft=False)
+        ).order_by("parent_organization")
 
 
 class ListOrganizationMembersAPIView(ListAPIView):
@@ -698,7 +705,6 @@ class ListFeaturedOrganizations(ListAPIView):
         return {"language_code": self.request.LANGUAGE_CODE}
 
     def get_queryset(self):
-        print("called")
         return Organization.objects.filter(rating__lte=99)[0:4]
 
 
@@ -729,7 +735,6 @@ class ListChildOrganizations(ListAPIView):
     serializer_class = OrganizationSerializer
     def get_queryset(self):
         organizations = Organization.objects.filter( parent_organization__url_slug = self.kwargs['url_slug']) 
-        
         return organizations
         
         
