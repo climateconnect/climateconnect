@@ -10,6 +10,7 @@ from climateconnect_api.utility.translation import (
     get_translations,
     translate_text,
 )
+from itertools import chain
 from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.utility.common import create_unique_slug
@@ -668,13 +669,17 @@ class ListOrganizationProjectsAPIView(ListAPIView):
             parent_organization__url_slug = 
             self.kwargs['url_slug']).values_list('url_slug', flat=True)
 
-        return ProjectParents.objects.filter(
-            Q(parent_organization__url_slug=self.kwargs["url_slug"],
-            project__is_draft=False) |
-            Q(parent_organization__url_slug__in=organization_urls,
-            project__is_draft=False)
-        ).order_by("parent_organization")
+        own_project = ProjectParents.objects.filter(
+            parent_organization__url_slug=self.kwargs["url_slug"],
+            project__is_draft=False
+        )
 
+        child_orgs_projects = ProjectParents.objects.filter(
+            parent_organization__url_slug__in=organization_urls,
+            project__is_draft=False
+        )
+
+        return list(chain(own_project, child_orgs_projects))
 
 class ListOrganizationMembersAPIView(ListAPIView):
     permission_classes = [AllowAny]
