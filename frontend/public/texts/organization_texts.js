@@ -281,7 +281,7 @@ export default function getOrganizationTexts({ organization, locale }) {
     },
     organization_is_active_in_these_sectors: {
       en: "This organization is active in these sectors:",
-      de: "Diese Organisation ist in diese Aktivitätsbereiche aktiv:",
+      de: "Diese Organisation ist in diesen Bereichen aktiv:",
     },
   };
 }
