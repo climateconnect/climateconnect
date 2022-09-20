@@ -25,7 +25,7 @@ import UserContext from "./../../src/components/context/UserContext";
 import IconButton from "@material-ui/core/IconButton";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import ControlPointSharpIcon from "@material-ui/icons/ControlPointSharp";
-import OrganizationPreview from "../../src/components/organization/OrganizationPreview";
+import MiniOrganizationPreview from "../../src/components/organization/MiniOrganizationPreview";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -70,10 +70,10 @@ const useStyles = makeStyles((theme) => ({
   },
   organizationsSection: {
     display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-
-    marginTop: theme.spacing(3),
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(2),
   },
 }));
 
@@ -103,8 +103,7 @@ export async function getServerSideProps(ctx) {
       members: members,
       organizationTypes: organizationTypes,
       rolesOptions: rolesOptions,
-      childOrganizations: childOrganizations
-      
+      childOrganizations: childOrganizations,
     }),
   };
 }
@@ -116,7 +115,6 @@ export default function OrganizationPage({
   organizationTypes,
   rolesOptions,
   childOrganizations,
- 
 }) {
   const { user, locale } = useContext(UserContext);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization);
@@ -139,7 +137,6 @@ export default function OrganizationPage({
           texts={texts}
           locale={locale}
           rolesOptions={rolesOptions}
-          
           childOrganizations={childOrganizations}
         />
       ) : (
@@ -158,13 +155,12 @@ function OrganizationLayout({
   texts,
   locale,
   rolesOptions,
- 
+
   childOrganizations,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
 
-  
   const getRoleName = (permission) => {
     const permission_to_show = permission === "all" ? "read write" : permission;
     return rolesOptions.find((o) => o.role_type === permission_to_show).name;
@@ -227,6 +223,19 @@ function OrganizationLayout({
       isTinyScreen={isTinyScreen}
       isSmallScreen={isSmallScreen}
     >
+      {" "}
+      {childOrganizations && childOrganizations.length > 0 && (
+        <>
+          <Container>
+            <Typography>{texts.our_local_groups}</Typography>
+            <div className={classes.organizationsSection}>
+              {childOrganizations.map((o, index) => (
+                <MiniOrganizationPreview organization={o} key={index} size="small" />
+              ))}
+            </div>
+          </Container>
+        </>
+      )}
       {!user && (
         <LoginNudge
           className={classes.loginNudge}
@@ -267,23 +276,6 @@ function OrganizationLayout({
           </Typography>
         )}
       </Container>
-      {childOrganizations && childOrganizations.length > 0 && (
-        <>
-          <Divider className={classes.divider} />
-
-          <Container>
-            <div className={classes.organizationsSection}>
-              <Typography color="primary" className={classes.headline} component="h2">
-                Child Organizations of this Org
-              </Typography>
-
-              {childOrganizations.map((o, index) => (
-                <OrganizationPreview organization={o} key={index} />
-              ))}
-            </div>
-          </Container>
-        </>
-      )}
       <Divider className={classes.divider} />
       <Container>
         <div className={classes.sectionHeadlineWithButtonContainer}>

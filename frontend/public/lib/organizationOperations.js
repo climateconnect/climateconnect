@@ -19,10 +19,10 @@ export function parseOrganization(organization, editMode) {
       hubs: organization.hubs,
     },
   };
-  
+
   if (editMode) {
     org.types = org.types.map((t) => t.key);
-    org.translations =  organization.translations;
+    org.translations = organization.translations;
   }
   const additional_info = organization.types.reduce((additionalInfoArray, t) => {
     const type = t.organization_tag;

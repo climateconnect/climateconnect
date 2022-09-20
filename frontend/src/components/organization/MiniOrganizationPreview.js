@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
   wrapper: {
     display: "inline-flex",
     alignItems: "center",
+    marginRight: theme.spacing(1),
   },
   mediumOrgName: {
     fontSize: 16,
@@ -38,6 +39,7 @@ export default function MiniOrganizationPreview({
   nolink,
 }) {
   const { locale } = useContext(UserContext);
+
   if (!nolink)
     return (
       <Link
