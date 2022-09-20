@@ -174,6 +174,7 @@ const useStyles = makeStyles((theme) => ({
     height: 20,
     marginRight: theme.spacing(1),
     marginTop: theme.spacing(1),
+    marginLeft: theme.spacing(1),
     color: theme.palette.primary.main,
   },
 }));
@@ -320,6 +321,8 @@ export default function AccountPage({
     className: classes.avatar,
   };
   console.log(account);
+
+
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <div
