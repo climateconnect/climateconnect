@@ -103,9 +103,8 @@ export async function getServerSideProps(ctx) {
       members: members,
       organizationTypes: organizationTypes,
       rolesOptions: rolesOptions,
-      childOrganizations: childOrganizations?.map((o) =>
-        nullifyUndefinedValues(o)
-      ),
+      childOrganizations: childOrganizations
+      
     }),
   };
 }
@@ -122,8 +121,7 @@ export default function OrganizationPage({
   const { user, locale } = useContext(UserContext);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
-  //console.log(childOrganizations);
-  console.log(projects);
+
   return (
     <WideLayout
       title={organization ? organization.name : texts.not_found_error}
@@ -352,7 +350,6 @@ async function getProjectsByOrganization(organizationUrl, token, locale) {
     });
     if (!resp.data) return null;
     else {
-      console.log(resp.data.results)
       return parseProjectStubs(resp.data.results);
     }
   } catch (err) {

@@ -9,7 +9,6 @@ export function parseOrganization(organization, editMode) {
     image: getImageUrl(organization.image),
     types: organization.types.map((t) => ({ ...t.organization_tag, key: t.organization_tag.id })),
     language: organization.language,
-    translations: organization.translations,
     hubs: organization.hubs,
     info: {
       location: organization.location,
@@ -20,7 +19,11 @@ export function parseOrganization(organization, editMode) {
       hubs: organization.hubs,
     },
   };
-  if (editMode) org.types = org.types.map((t) => t.key);
+  
+  if (editMode) {
+    org.types = org.types.map((t) => t.key);
+    org.translations =  organization.translations;
+  }
   const additional_info = organization.types.reduce((additionalInfoArray, t) => {
     const type = t.organization_tag;
     if (type.additional_info && type.additional_info.length > 0) {
