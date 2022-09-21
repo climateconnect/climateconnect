@@ -276,7 +276,7 @@ function SmallScreenOverview({
   texts,
   toggleShowFollowers,
   token,
-  numberOfFollowers
+  numberOfFollowers,
 }) {
   const classes = useStyles();
 

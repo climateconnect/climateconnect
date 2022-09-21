@@ -63,15 +63,6 @@ const useStyles = makeStyles((theme) => ({
       marginBottom: theme.spacing(1),
     },
   },
-  socialMediaLink: {
-    height: 20,
-    marginLeft: theme.spacing(1),
-    color: "inherit",
-
-    "&:hover": {
-      color: theme.palette.primary.main,
-    },
-  },
 
   inheritColor: {
     color: "inherit",
@@ -116,6 +107,38 @@ const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScroll
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
+  const socialMediaLinks = [
+    {
+      href: "https://github.com/climateconnect/climateconnect",
+      icon: GitHubIcon,
+      altText: "GitHub",
+      isFooterIcon: true,
+    },
+    {
+      href: "https://twitter.com/ConnectClimate",
+      icon: TwitterIcon,
+      altText: "Twitter",
+      isFooterIcon: true,
+    },
+    {
+      href: "https://www.instagram.com/climate_connect.earth/",
+      icon: InstagramIcon,
+      altText: "Instagram",
+      isFooterIcon: true,
+    },
+    {
+      href: "https://www.facebook.com/climateconnect.earth/",
+      icon: FacebookIcon,
+      altText: "Facebook",
+      isFooterIcon: true,
+    },
+    {
+      href: "https://www.youtube.com/channel/UC10rPriptUxYilMfvt-8Tkw",
+      icon: YouTubeIcon,
+      altText: "Youtube",
+      isFooterIcon: true,
+    },
+  ];
 
   return (
     <Box
@@ -148,26 +171,15 @@ const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScroll
           </Box>
         )}
         <Box component="span" className={classes.rightBox}>
-          <SocialMediaButton
-            href="https://github.com/climateconnect/climateconnect"
-            icon={<GitHubIcon alt="GitHub" className={classes.socialMediaLink} />}
-          />
-          <SocialMediaButton
-            href="https://twitter.com/ConnectClimate"
-            icon={<TwitterIcon className={classes.socialMediaLink} alt="Twitter" />}
-          />
-          <SocialMediaButton
-            href="https://www.instagram.com/climate_connect.earth/"
-            icon={<InstagramIcon className={classes.socialMediaLink} alt="Instagram" />}
-          />
-          <SocialMediaButton
-            href="https://www.facebook.com/climateconnect.earth/"
-            icon={<FacebookIcon className={classes.socialMediaLink} alt="Facebook" />}
-          />
-          <SocialMediaButton
-            href="https://www.youtube.com/channel/UC10rPriptUxYilMfvt-8Tkw"
-            icon={<YouTubeIcon className={classes.socialMediaLink} alt="YouTube" />}
-          />
+          {socialMediaLinks.map((sml, index) => (
+            <SocialMediaButton
+              key={index}
+              href={sml.href}
+              socialMediaIcon={{ icon: sml.icon }}
+              altText={sml.altText}
+              isFooterIcon={sml.isFooterIcon}
+            />
+          ))}
         </Box>
       </Box>
     </Box>
