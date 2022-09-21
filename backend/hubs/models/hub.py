@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 def hub_image_path(instance, filename):
     return "hubs/{}/{}".format(instance.id, filename)
 
+
 class HubStat(models.Model):
     name = models.CharField(
         help_text="Points to stat name", verbose_name="Name", max_length=1024
@@ -212,20 +213,21 @@ class Hub(models.Model):
     def __str__(self):
         return "%s" % (self.name)
 
+
 class LocalAmbassador(models.Model):
     title = models.CharField(
         help_text="Ambassador title",
         verbose_name="Ambassador title",
         max_length=1024,
         null=True,
-        blank=True
+        blank=True,
     )
     title_de = models.CharField(
         help_text="The german translation of the ambassador's title",
         verbose_name="Ambassador title german",
         max_length=1024,
-            null=True,
-            blank=True
+        null=True,
+        blank=True,
     )
     user = models.ForeignKey(
         User,
@@ -234,7 +236,7 @@ class LocalAmbassador(models.Model):
         related_name="ambassador_user",
         null=True,
         blank=True,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
     hub = models.ForeignKey(
         Hub,
@@ -243,12 +245,13 @@ class LocalAmbassador(models.Model):
         related_name="ambassador_hub",
         null=True,
         blank=True,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
 
     class Meta:
         app_label = "hubs"
         verbose_name = "Local Ambassador"
         verbose_name_plural = "Local Ambassadors"
+
     def __str__(self):
         return "is local ambassador for %s" % (self.title)

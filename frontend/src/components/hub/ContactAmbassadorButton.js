@@ -40,7 +40,7 @@ export default function ContactAmbassadorButton({ localAmbassador }) {
   };
 
   return (
-      <Hidden xsDown>
+    <Hidden xsDown>
       {localAmbassador && (
         <div className={classes.root} onClick={handleClickContact}>
           <ContactCreatorButtonInfo

@@ -1,13 +1,18 @@
 from location.models import Location
 from location.serializers import LocationSerializer
 from django.utils.translation import get_language
-from hubs.utility.hub import get_hub_attribute, get_hub_stat_attribute, get_local_ambassador_attribute
+from hubs.utility.hub import (
+    get_hub_attribute,
+    get_hub_stat_attribute,
+    get_local_ambassador_attribute,
+)
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 from hubs.models import Hub, HubStat, LocalAmbassador
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from climateconnect_api.models import UserProfile
 import json
+
 
 class HubSerializer(serializers.ModelSerializer):
     stats = serializers.SerializerMethodField()
@@ -34,10 +39,10 @@ class HubSerializer(serializers.ModelSerializer):
             "segway_text",
             "stat_box_title",
             "image_attribution",
-            'hub_type',
-            'location',
-            'url_slug',
-            'local_ambassador'
+            "hub_type",
+            "location",
+            "url_slug",
+            "local_ambassador",
         )
 
     def get_stats(self, obj):
@@ -73,20 +78,19 @@ class HubSerializer(serializers.ModelSerializer):
         return None
 
     def get_local_ambassador(self, obj):
-            localAmbassador = LocalAmbassador.objects.filter(hub_id=obj.id)
-            if localAmbassador.exists():
-                return LocalAmbassadorSerializer(localAmbassador[0]).data
-            return None
+        localAmbassador = LocalAmbassador.objects.filter(hub_id=obj.id)
+        if localAmbassador.exists():
+            return LocalAmbassadorSerializer(localAmbassador[0]).data
+        return None
+
 
 class LocalAmbassadorSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
+
     class Meta:
         model = LocalAmbassador
-        fields = (
-            "title",
-            "user"
-        )
+        fields = ("title", "user")
 
     def get_title(self, obj):
         return get_local_ambassador_attribute(obj, get_language())
@@ -95,6 +99,7 @@ class LocalAmbassadorSerializer(serializers.ModelSerializer):
         user = UserProfile.objects.filter(id=obj.user.id)
         if user.exists():
             return UserProfileStubSerializer(user[0]).data
+
 
 class HubStubSerializer(serializers.ModelSerializer):
     hub_type = serializers.SerializerMethodField()
