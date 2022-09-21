@@ -263,8 +263,8 @@ def send_email_reminder_for_unread_notifications(
     total_notifications = user_notifications.count()
     language_code = get_user_lang_code(user=user)
     subject_by_language = {
-        "en": f"You have {total_notifications} unread messages",
-        "de": f"Du hast {total_notifications} ungelesene Nachrichten",
+        "en": f"You have {total_notifications} unread {'messages' if total_notifications > 1 else 'message'}",
+        "de": f"Du hast {total_notifications} ungelesene {'Nachrichten' if total_notifications > 1 else 'Nachricht'}",
     }
     subject = subject_by_language.get(language_code, "en")
     website_link_by_language = {
@@ -273,8 +273,8 @@ def send_email_reminder_for_unread_notifications(
     }
     website_link = website_link_by_language.get(language_code, "en")
     email_text_by_language = {
-        "en": f"<p>Dear {user.first_name},</p><p>You have {total_notifications} new messages. Please respond to the people who reached out because we can only limit climate change if we work together and exchange knowledge.</p> <p><a href={website_link}>Click here</a> to check your inbox.</p><p>See you soon,</p><p>The Climate Connect Team</p>",  # NOQA
-        "de": f"<p>Hallo {user.first_name},</p><p>Du hast {total_notifications} ungelesene Nachrichten von anderen Klimaschützer*innen. Bitte beantworte die Nachrichten, denn gemeinsam und durch Zusammenarbeit und Wissensaustausch können wir das 1,5 Grad Ziel erreichen.</p><p><a href={website_link}>Klicke hier</a>, um deinen Posteingang anzusehen.</p><p>Bis bald,</p><p>Deine Climate Connect Team</p>",  # NOQA
+        "en": f"<p>Dear {user.first_name},</p><p>You have {total_notifications} unread {'messages' if total_notifications > 1 else 'message'} from other climate protectors. Please respond to the people who reached out. <br />We can only effectively fight the climate crisis if we work together and exchange knowledge.</p> <p><b><a href={website_link}>Click here</a> to check your inbox.</b></p><p>See you soon,</p><p>The Climate Connect Team</p>",  # NOQA
+        "de": f"<p>Hallo {user.first_name},</p><p>Du hast {total_notifications} ungelesene {'Nachrichten' if total_notifications > 1 else 'Nachricht'} von anderen Klimaschützer*innen. Bitte beantworte die Nachrichten.<br />Nur gemeinsam und durch Zusammenarbeit und Wissensaustausch können wir das 1,5 Grad Ziel erreichen.</p><p><b><a href={website_link}>Klicke hier</a>, um deinen Posteingang anzusehen.</b></p><p>Bis bald,</p><p>Deine Climate Connect Team</p>",  # NOQA
     }
     email_text = email_text_by_language.get(language_code, "en")
     data = {
