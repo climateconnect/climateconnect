@@ -59,7 +59,6 @@ export default function ProjectsSlider({ projects }) {
       items: 1,
     },
   };
-
   return (
     <div className={classes.root}>
       <Carousel responsive={responsive} infinite={projects?.length > 1} arrows={!under500}>
