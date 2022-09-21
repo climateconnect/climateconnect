@@ -5,6 +5,7 @@ from knox.auth import TokenAuthentication
 from channels.sessions import CookieMiddleware
 from rest_framework.exceptions import AuthenticationFailed
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -17,18 +18,23 @@ class TokenAuthMiddleware:
         self.inner = inner
 
     def __call__(self, scope):
-        cookies = dict(scope['cookies'])
-        if 'token' in cookies:
+        cookies = dict(scope["cookies"])
+        if "token" in cookies:
             try:
-                tokenString = cookies['token']
+                tokenString = cookies["token"]
                 knoxAuth = TokenAuthentication()
-                user, auth_token = knoxAuth.authenticate_credentials(tokenString.encode("utf-8"))
-                scope['user'] = user
+                user, auth_token = knoxAuth.authenticate_credentials(
+                    tokenString.encode("utf-8")
+                )
+                scope["user"] = user
             except AuthenticationFailed:
                 logger.error("authentication failed!")
-                scope['user'] = AnonymousUser()
+                scope["user"] = AnonymousUser()
         else:
-            scope['user'] = AnonymousUser()
+            scope["user"] = AnonymousUser()
         return self.inner(scope)
 
-TokenAuthMiddlewareStack = lambda inner: CookieMiddleware(TokenAuthMiddleware(AuthMiddlewareStack(inner)))
+
+TokenAuthMiddlewareStack = lambda inner: CookieMiddleware(
+    TokenAuthMiddleware(AuthMiddlewareStack(inner))
+)

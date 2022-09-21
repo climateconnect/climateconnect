@@ -62,7 +62,7 @@ const FALLBACK_HUB = "test";
 export default function ClimateMatchResultsRoot() {
   const classes = useStyles();
   const cookies = new Cookies();
-  const token = cookies.get("token");
+  const token = cookies.get("auth_token");
   const climatematch_token = cookies.get("climatematch_token");
   const [loading, setLoading] = useState(true);
 
@@ -154,7 +154,7 @@ export default function ClimateMatchResultsRoot() {
                 href={`${getLocalePrefix(locale)}/hubs/${fromHub?.url_slug}`}
               >
                 <ArrowBackIosIcon className={classes.backIcon} />
-                {texts.cityhub} {fromHub?.name}
+                {texts.climatehub} {fromHub?.name}
               </Button>
               <Button
                 className={classes.backButton}

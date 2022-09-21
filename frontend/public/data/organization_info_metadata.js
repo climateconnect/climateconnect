@@ -17,6 +17,7 @@ export default function getOrganizationInfoMetadata(locale, organization) {
       type: "bio",
       weight: 1,
       helptext: texts.how_to_summarize_organization,
+      required: true,
     },
     location: {
       icon: PlaceIcon,
@@ -98,7 +99,7 @@ export default function getOrganizationInfoMetadata(locale, organization) {
         },
         {
           key: 2,
-          name: "51-100",
+          name: "51-250",
         },
         {
           key: 3,

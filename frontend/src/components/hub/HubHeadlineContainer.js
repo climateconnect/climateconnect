@@ -1,30 +1,37 @@
-import { makeStyles, Typography } from "@material-ui/core";
+import { makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import OpenClimateMatchButton from "../climateMatch/OpenClimateMatchButton";
 import UserContext from "../context/UserContext";
+import theme from "../../themes/theme";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
+  root: (props) => ({
+    minWidth: 300,
+
     background: theme.palette.primary.main,
-    padding: theme.spacing(0),
-    marginTop: theme.spacing(-10),
-    maxWidth: 675,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-around",
+
+    maxWidth: "800px",
     borderRadius: 5,
     border: theme.borders.thick,
-    [theme.breakpoints.up("lg")]: {
-      marginTop: theme.spacing(-13),
+    marginTop: props.isLocationHub ? theme.spacing(8) : theme.spacing(-11),
+    [theme.breakpoints.down("sm")]: {
+      marginTop: props.isLocationHub ? theme.spacing(-11) : theme.spacing(-11),
     },
-    ["@media(max-width:1100px)"]: {
+
+    ["@media(max-width:960px)"]: {
       maxWidth: 550,
     },
-  },
+  }),
   headlineContainer: {
     display: "flex",
     alignItems: "center",
   },
+
   headline: {
-    fontSize: 30,
     fontWeight: 700,
     [theme.breakpoints.down("sm")]: {
       fontSize: 25,
@@ -35,78 +42,73 @@ const useStyles = makeStyles((theme) => ({
     color: "white",
     padding: theme.spacing(1),
   },
-  subHeadlineContainer: {
+
+  subHeadlineContainer: (props) => ({
     background: "#f0f2f5",
+    borderRadius: 5,
     padding: theme.spacing(1),
     [theme.breakpoints.up("sm")]: {
       padding: theme.spacing(2),
+      paddingBottom: props.isLocationHub ? theme.spacing(1) : theme.spacing(2),
     },
-  },
-  subHeadline: {
-    color: theme.palette.secondary.main,
-    fontWeight: 600,
-  },
+  }),
+
   highlighted: {
     color: theme.palette.yellow.main,
   },
   climateMatchButtonContainer: {
     display: "flex",
     justifyContent: "right",
+    height: 38,
     marginTop: theme.spacing(1),
     [theme.breakpoints.down("sm")]: {
       display: "none",
     },
   },
+
+  subHeadLineText: {
+    fontWeight: 600,
+  },
+
+  locationSubHeadlineTextContainer: {
+    background: "white",
+    borderRadius: "25px",
+    color: theme.palette.secondary.main,
+    display: "flex",
+    alignItems: "center",
+    width: "100%",
+    padding: theme.spacing(1.5),
+  },
 }));
 
-export default function HubHeadlineContainer({
-  subHeadline,
-  headline,
-  hubName,
-  isLocationHub,
-  hubUrl,
-}) {
-  const classes = useStyles();
+export default function HubHeadlineContainer({ subHeadline, headline, isLocationHub, hubUrl }) {
+  const classes = useStyles({ isLocationHub: isLocationHub });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "climatematch", locale: locale });
-
-  const getColoredHeadlineObject = () => {
-    return headline.split(" ").reduce((arr, word, index) => {
-      const newWordEntry = {
-        //add a space if it's not the last word of the sentence
-        text: index === headline.split(" ") - 1 ? word : `${word} `,
-      };
-      if (hubName.includes(word)) {
-        newWordEntry.isHighlighted = true;
-      }
-      arr.push(newWordEntry);
-      return arr;
-      //add either <span className={classes.yellow}>{word}</span>
-      //or simple <>{word}</> depending on whether the word is
-      //present in the hub name.
-      //if it's not the last word, add " "
-    }, []);
-  };
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <div className={classes.root}>
       <div className={classes.headlineContainer}>
-        <Typography component="h1" className={classes.headline}>
-          {getColoredHeadlineObject().map((word, index) => (
-            <span key={index} className={word.isHighlighted && classes.highlighted}>
-              {word.text}
-            </span>
-          ))}
+        <Typography variant="h4" component="h1" className={classes.headline}>
+          {headline}
         </Typography>
       </div>
       <div className={classes.subHeadlineContainer}>
-        <Typography component="h2" className={classes.subHeadline}>
-          {subHeadline}
-        </Typography>
+        <div className={`${isLocationHub && classes.locationSubHeadlineTextContainer}`}>
+          <Typography className={classes.subHeadLineText}>{subHeadline}</Typography>
+        </div>
+
         {isLocationHub && (
-          <div className={classes.climateMatchButtonContainer}>
-            <OpenClimateMatchButton hubUrl={hubUrl} text={texts.get_active_now_with_climatematch} />
-          </div>
+          <>
+            {!isNarrowScreen && <hr />}
+            <div className={classes.climateMatchButtonContainer}>
+              <OpenClimateMatchButton
+                hubUrl={hubUrl}
+                text={texts.get_active_now_with_climatematch}
+              />
+            </div>
+          </>
         )}
       </div>
     </div>

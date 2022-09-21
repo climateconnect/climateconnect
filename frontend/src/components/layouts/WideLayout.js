@@ -35,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+//Wrapper layout component for pages where the content takes the whole width of the screen
 export default function WideLayout({
   children,
   title,
@@ -55,6 +56,9 @@ export default function WideLayout({
   image,
   useFloodStdFont,
   rootClassName,
+  hideFooter,
+  resetAlertMessage,
+  isHubPage,
 }) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);
@@ -94,6 +98,7 @@ export default function WideLayout({
         transparentHeader={transparentHeader}
         noSpacingBottom={isStaticPage}
         background={headerBackground}
+        isHubPage={isHubPage}
       />
       {isLoading ? (
         <LoadingContainer headerHeight={113} footerHeight={80} />
@@ -114,6 +119,7 @@ export default function WideLayout({
                 }
               }}
               onClose={() => {
+                resetAlertMessage && resetAlertMessage();
                 setAlertOpen(false);
               }}
             >
@@ -129,12 +135,14 @@ export default function WideLayout({
           {children}
         </Container>
       )}
-      <Footer
-        noSpacingTop={noSpaceBottom}
-        noAbsolutePosition={noSpaceBottom}
-        showOnScrollUp={showOnScrollUp}
-        large={isStaticPage || largeFooter}
-      />
+      {!hideFooter && (
+        <Footer
+          noSpacingTop={noSpaceBottom}
+          noAbsolutePosition={noSpaceBottom}
+          showOnScrollUp={showOnScrollUp}
+          large={isStaticPage || largeFooter}
+        />
+      )}
     </LayoutWrapper>
   );
 }

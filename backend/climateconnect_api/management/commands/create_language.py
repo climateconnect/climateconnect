@@ -8,20 +8,14 @@ class Command(BaseCommand):
     help = "Create new languages that we will support"
 
     def add_arguments(self, parser: CommandParser) -> None:
-        parser.add_argument(
-            "--language_code", dest="language_code", type=str
-        )
-        parser.add_argument(
-            "--name", dest="name", type=str
-        )
-        parser.add_argument(
-            "--native_name", dest="native_name", type=str
-        )
+        parser.add_argument("--language_code", dest="language_code", type=str)
+        parser.add_argument("--name", dest="name", type=str)
+        parser.add_argument("--native_name", dest="native_name", type=str)
 
     def handle(self, *args: Any, **options: Any) -> None:
-        language_code = options['language_code']
-        name = options['name']
-        native_name = options['native_name']
+        language_code = options["language_code"]
+        name = options["name"]
+        native_name = options["native_name"]
 
         language, created = Language.objects.get_or_create(
             name=name, native_name=native_name, language_code=language_code

@@ -2,8 +2,12 @@ from location.models import Location
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
-from organization.models import (Organization,)
-from climateconnect_api.models import (Skill,)
+from organization.models import (
+    Organization,
+)
+from climateconnect_api.models import (
+    Skill,
+)
 from climateconnect_api.models.language import Language
 
 
@@ -13,9 +17,7 @@ def project_image_path(instance, filename):
 
 class Project(models.Model):
     name = models.CharField(
-        help_text="Points to project name",
-        verbose_name="Name",
-        max_length=1024
+        help_text="Points to project name", verbose_name="Name", max_length=1024
     )
 
     url_slug = models.CharField(
@@ -24,7 +26,7 @@ class Project(models.Model):
         unique=True,
         max_length=1024,
         null=True,
-        blank=True
+        blank=True,
     )
 
     image = models.ImageField(
@@ -32,7 +34,7 @@ class Project(models.Model):
         verbose_name="Image",
         null=True,
         blank=True,
-        upload_to=project_image_path
+        upload_to=project_image_path,
     )
 
     thumbnail_image = models.ImageField(
@@ -40,29 +42,29 @@ class Project(models.Model):
         verbose_name="Thumbnail image",
         null=True,
         blank=True,
-        upload_to=project_image_path
+        upload_to=project_image_path,
     )
 
     status = models.ForeignKey(
-        'ProjectStatus',
+        "ProjectStatus",
         help_text="Points to project's status",
         verbose_name="Project Status",
         related_name="project_status",
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
     )
 
     start_date = models.DateTimeField(
         help_text="Points to start date of the project",
         verbose_name="Start Date",
         null=True,
-        blank=True
+        blank=True,
     )
 
     end_date = models.DateTimeField(
         help_text="Points to end date of the project",
         verbose_name="End Date",
         null=True,
-        blank=True
+        blank=True,
     )
 
     # created_at value automatically added when new project is created
@@ -70,14 +72,14 @@ class Project(models.Model):
     created_at = models.DateTimeField(
         help_text="Points to creation date of the project",
         verbose_name="Created At",
-        auto_now_add=True
+        auto_now_add=True,
     )
 
     # updated_at value automatically changes every time there is change in project object.
     updated_at = models.DateTimeField(
         help_text="Points to time when project was updated",
         verbose_name="Updated At",
-        auto_now=True
+        auto_now=True,
     )
 
     short_description = models.TextField(
@@ -85,7 +87,7 @@ class Project(models.Model):
         verbose_name="Short Description",
         null=True,
         blank=True,
-        max_length=280
+        max_length=280,
     )
 
     description = models.TextField(
@@ -93,7 +95,7 @@ class Project(models.Model):
         verbose_name="Description",
         null=True,
         blank=True,
-        max_length=4800
+        max_length=4800,
     )
 
     # Field not in use. Keeping temporarily for backwards compatibility
@@ -102,7 +104,7 @@ class Project(models.Model):
         verbose_name="Country",
         max_length=512,
         null=True,
-        blank=True
+        blank=True,
     )
 
     # Field not in use. Keeping temporarily for backwards compatibility
@@ -111,7 +113,7 @@ class Project(models.Model):
         verbose_name="City",
         max_length=512,
         null=True,
-        blank=True
+        blank=True,
     )
 
     loc = models.ForeignKey(
@@ -121,13 +123,13 @@ class Project(models.Model):
         related_name="project_loc",
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
     )
 
     collaborators_welcome = models.BooleanField(
         help_text="If collaborators are welcome or not for the project",
         verbose_name="Collaborators welcome",
-        default=False
+        default=False,
     )
 
     skills = models.ManyToManyField(
@@ -135,20 +137,17 @@ class Project(models.Model):
         related_name="project_skills",
         help_text="Points to all skills project persist or required",
         verbose_name="Skills",
-        blank=True
+        blank=True,
     )
 
     helpful_connections = ArrayField(
-        models.CharField(max_length=264),
-        blank=True,
-        null=True,
-        size=10
+        models.CharField(max_length=264), blank=True, null=True, size=10
     )
 
     is_draft = models.BooleanField(
         help_text="Whether project is public or just a private draft",
         verbose_name="Is Draft?",
-        default=False
+        default=False,
     )
 
     website = models.CharField(
@@ -156,35 +155,38 @@ class Project(models.Model):
         verbose_name="Project's website",
         max_length=256,
         null=True,
-        blank=True
+        blank=True,
     )
 
     rating = models.PositiveSmallIntegerField(
         help_text="The larger the number, the more to the top this project will be displayed",
         verbose_name="Rating (1-100)",
-        default=100
+        default=100,
     )
 
     is_active = models.BooleanField(
         help_text="Flags if the project is still publically active or not",
         verbose_name="Is an Active Project",
         default=True,
-        null=False
+        null=False,
     )
 
     language = models.ForeignKey(
-        Language, related_name="project_language",
+        Language,
+        related_name="project_language",
         help_text="Original project language",
         verbose_name="Language",
-        null=True, blank=True,
-        on_delete=models.SET_NULL
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
     )
 
     class Meta:
         app_label = "organization"
         verbose_name = "Project"
         verbose_name_plural = "Projects"
-        ordering = ['-rating', '-id']
+        ordering = ["-rating", "-id"]
+
     def __str__(self):
         return "(%d) %s" % (self.pk, self.name)
 
@@ -195,7 +197,7 @@ class ProjectParents(models.Model):
         help_text="Points to organizations's project",
         verbose_name="Project",
         related_name="project_parent",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
 
     parent_organization = models.ForeignKey(
@@ -205,33 +207,33 @@ class ProjectParents(models.Model):
         related_name="project_parent_org",
         null=True,
         blank=True,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
 
     parent_user = models.ForeignKey(
-        'auth.User',
+        "auth.User",
         help_text="Points to user who created a project",
         verbose_name="User",
         related_name="project_parent_user",
         null=True,
         blank=True,
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
     )
 
     created_at = models.DateTimeField(
         help_text="Time when project was linked to an organization",
         verbose_name="Created At",
-        auto_now_add=True
+        auto_now_add=True,
     )
 
     updated_at = models.DateTimeField(
         help_text="Time when project was updated. i.e.: Order change etc.",
         verbose_name="Updated At",
-        auto_now=True
+        auto_now=True,
     )
 
     class Meta:
-        app_label = 'organization'
+        app_label = "organization"
         verbose_name_plural = "Project Parents"
 
     def __str__(self):
@@ -244,7 +246,7 @@ class ProjectCollaborators(models.Model):
         help_text="Points to organizations's project",
         verbose_name="Project",
         related_name="project_collaborator",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
 
     collaborating_organization = models.ForeignKey(
@@ -254,23 +256,23 @@ class ProjectCollaborators(models.Model):
         related_name="collaborating_organization",
         null=True,
         blank=True,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
 
     created_at = models.DateTimeField(
         help_text="Time when project was linked to an organization",
         verbose_name="Created At",
-        auto_now_add=True
+        auto_now_add=True,
     )
 
     updated_at = models.DateTimeField(
         help_text="Time when project was updated. i.e.: Order change etc.",
         verbose_name="Updated At",
-        auto_now=True
+        auto_now=True,
     )
 
     class Meta:
-        app_label = 'organization'
+        app_label = "organization"
         verbose_name_plural = "Project Collaborators"
 
     def __str__(self):

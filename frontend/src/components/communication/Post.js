@@ -4,6 +4,7 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import React, { useContext } from "react";
 import Truncate from "react-truncate";
+
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -24,10 +25,8 @@ const useStyles = makeStyles((theme) => ({
     alignItems: props.preview ? "center" : "stretch",
   }),
   messageWithMetaData: {
-    display: "flex",
-    flexDirection: "column",
-    flexWrap: "wrap",
-    flex: 1,
+    minWidth: 0,
+    overflowWrap: "break-word",
   },
   avatar: {
     marginRight: theme.spacing(2),
@@ -111,6 +110,7 @@ export default function Post({
     className: classes.avatar,
   };
 
+  console.log(post.author_user.badges);
   return (
     <div className={className}>
       {type === "progresspost" ? (
@@ -141,8 +141,7 @@ export default function Post({
               {post.author_user.badges?.length > 0 && (
                 <ProfileBadge
                   contentOnly
-                  name={post.author_user.badges[0].name}
-                  image={getImageUrl(post.author_user.badges[0].image)}
+                  badge={post.author_user.badges[0]}
                   size="medium"
                   className={classes.inlineBadge}
                 />
@@ -165,7 +164,7 @@ export default function Post({
             ) : (
               <MessageContent content={post.content} maxLines={maxLines} />
             )}
-            <div>
+            <>
               {type !== "reply" &&
                 type !== "preview" &&
                 (replyInterfaceExpanded ? (
@@ -184,8 +183,8 @@ export default function Post({
               {user && user.id === post.author_user.id && type !== "preview" && (
                 <Button onClick={toggleDeleteDialogOpen}>Delete</Button>
               )}
-            </div>
-            <div>
+            </>
+            <>
               {type !== "reply" && !!post.replies && post.replies.length > 0 && type !== "preview" && (
                 <Link className={classes.toggleReplies} onClick={handleViewRepliesClick}>
                   {!displayReplies ? (
@@ -201,11 +200,11 @@ export default function Post({
                   )}
                 </Link>
               )}
-            </div>
+            </>
           </span>
         </div>
       )}
-      <div>
+      <>
         {post.replies &&
           post.replies.length > 0 &&
           displayReplies &&
@@ -220,7 +219,7 @@ export default function Post({
               infoTextSize={infoTextSize}
             />
           )}
-      </div>
+      </>
       <ConfirmDialog
         open={open}
         onClose={onConfirmDialogClose}

@@ -11,15 +11,15 @@ import PageNotFound from "../../src/components/general/PageNotFound";
 import FixedHeightLayout from "../../src/components/layouts/FixedHeightLayout";
 
 export async function getServerSideProps(ctx) {
-  const { token } = NextCookies(ctx);
+  const { auth_token } = NextCookies(ctx);
   const texts = getTexts({ page: "chat", locale: ctx.locale });
-  if (ctx.req && !token) {
+  if (ctx.req && !auth_token) {
     const message = texts.login_required;
     return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
   }
   const [chat, messages_object, rolesOptions] = await Promise.all([
-    getChat(ctx.query.chatUUID, token, ctx.locale),
-    getChatMessagesByUUID(ctx.query.chatUUID, token, 1, null, ctx.locale),
+    getChat(ctx.query.chatUUID, auth_token, ctx.locale),
+    getChatMessagesByUUID(ctx.query.chatUUID, auth_token, 1, null, ctx.locale),
     getRolesOptions(ctx.locale),
   ]);
   if (!chat) {
@@ -56,7 +56,7 @@ export default function Chat({
   chat_id,
   idea,
 }) {
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
   const { chatSocket, user, socketConnectionState, locale } = useContext(UserContext);
   const [participants, setParticipants] = React.useState(chatParticipants);
   const [state, setState] = React.useState({

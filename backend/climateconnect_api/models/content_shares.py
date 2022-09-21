@@ -4,7 +4,7 @@ from organization.models.organization import Organization
 from ideas.models.ideas import Idea
 from django.contrib.auth.models import User
 
-# Note: Clicking on a specific share button/copying the link or opening a device's native share dialog counts as sharing, 
+# Note: Clicking on a specific share button/copying the link or opening a device's native share dialog counts as sharing,
 # but we don't know whether the user follows through with it.
 class ContentShares(models.Model):
     project = models.ForeignKey(
@@ -14,7 +14,7 @@ class ContentShares(models.Model):
         help_text="Points to a project",
         on_delete=models.CASCADE,
         null=True,
-        blank=True
+        blank=True,
     )
 
     organization = models.ForeignKey(
@@ -24,7 +24,7 @@ class ContentShares(models.Model):
         help_text="Points to an organization",
         on_delete=models.CASCADE,
         null=True,
-        blank=True
+        blank=True,
     )
 
     idea = models.ForeignKey(
@@ -34,7 +34,7 @@ class ContentShares(models.Model):
         help_text="Points to an idea",
         on_delete=models.CASCADE,
         null=True,
-        blank=True
+        blank=True,
     )
 
     user = models.ForeignKey(
@@ -44,7 +44,7 @@ class ContentShares(models.Model):
         help_text="Points to the user who shared the content",
         on_delete=models.CASCADE,
         null=True,
-        blank=True
+        blank=True,
     )
 
     FACEBOOK = 0
@@ -58,29 +58,29 @@ class ContentShares(models.Model):
     LINK = 8
     DEVICE_NATIVE = 9
     SHARE_OPTIONS = (
-        (FACEBOOK, 'facebook'),
-        (FB_MESSENGER, 'fb_messenger'),
-        (TWITTER, 'twitter'),
-        (WHATSAPP, 'whatsapp'),
-        (LINKEDIN, 'linkedin'),
-        (REDDIT, 'reddit'),
-        (TELEGRAM, 'telegram'),
-        (MAIL, 'e_mail'),
-        (LINK, 'link'),
-        (DEVICE_NATIVE, 'native_share_dialog_of_device'),
+        (FACEBOOK, "facebook"),
+        (FB_MESSENGER, "fb_messenger"),
+        (TWITTER, "twitter"),
+        (WHATSAPP, "whatsapp"),
+        (LINKEDIN, "linkedin"),
+        (REDDIT, "reddit"),
+        (TELEGRAM, "telegram"),
+        (MAIL, "e_mail"),
+        (LINK, "link"),
+        (DEVICE_NATIVE, "native_share_dialog_of_device"),
     )
 
     shared_via = models.IntegerField(
         help_text="Way in which the content was shared",
         verbose_name="Shared Via",
         choices=SHARE_OPTIONS,
-        default=LINK
+        default=LINK,
     )
 
     created_at = models.DateTimeField(
         help_text="Time when the user shared the content",
         verbose_name="Created At",
-        auto_now_add=True
+        auto_now_add=True,
     )
 
     class Meta:
@@ -92,8 +92,8 @@ class ContentShares(models.Model):
     def __str__(self):
         if self.project is not None:
             name = self.project.name
-        if self.organization is not None:    
+        if self.organization is not None:
             name = self.organization.name
-        if self.idea is not None:    
+        if self.idea is not None:
             name = self.idea.name
         return "%s shared %s " % (self.user, name)

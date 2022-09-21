@@ -1,6 +1,7 @@
 import { Button, makeStyles } from "@material-ui/core";
-import NextCookies from "next-cookies";
 import React, { useContext, useEffect, useRef, useState } from "react";
+import { IconButton } from "@material-ui/core";
+import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -70,23 +71,22 @@ const useStyles = makeStyles((theme) => ({
   loadingSpinner: {
     marginTop: theme.spacing(2),
   },
-}));
+  scrollToTop: {
+    background: "#207178",
+    color: "#fff",
+    position: "fixed",
+    bottom: "1rem",
+    right: "1.5rem",
+    transition: "all 0.2s linear",
+    zIndex: 999,
 
-export async function getServerSideProps(ctx) {
-  const { token } = NextCookies(ctx);
-  if (ctx.resolvedUrl === "/" && token) {
-    console.log("redirecting!!!");
-    return {
-      redirect: {
-        permanent: false,
-        destination: `${getLocalePrefix(ctx.locale)}/browse`,
-      },
-    };
-  }
-  return {
-    props: {},
-  };
-}
+    "&:hover": {
+      backgroundColor: "#207178",
+      color: "#fff",
+      opacity: "0.8",
+    },
+  },
+}));
 
 export default function Index() {
   const classes = useStyles();
@@ -95,6 +95,7 @@ export default function Index() {
   const [initialized, setInitialized] = useState(false);
   const [pos, setPos] = useState("top");
   const [isLoading, setIsLoading] = useState(true);
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
   //holds projects, organizations and hubs
   const [elements, setElements] = useState({});
   useEffect(() => {
@@ -124,9 +125,20 @@ export default function Index() {
     initialize();
   }, []);
 
+  useEffect(() => {
+    const toggleScrollToTop = () => setShowScrollToTop(window.pageYOffset > 500);
+
+    document.addEventListener("scroll", toggleScrollToTop);
+
+    return () => document.removeEventListener("scroll", toggleScrollToTop);
+  }, []);
+
   const contentRef = useRef(null);
+  const scrollToTopRef = useRef(null);
 
   const scrollToContent = () => contentRef.current.scrollIntoView({ behavior: "smooth" });
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   return (
     <WideLayout
@@ -169,6 +181,16 @@ export default function Index() {
           <OurTeamBox h1ClassName={classes.h1ClassName} />
           <StartNowBanner h1ClassName={classes.h1ClassName} />
         </div>
+        {showScrollToTop && (
+          <IconButton
+            aria-label="scroll to top"
+            className={classes.scrollToTop}
+            onClick={scrollToTop}
+            ref={scrollToTopRef}
+          >
+            <ArrowUpwardIcon />
+          </IconButton>
+        )}
       </div>
     </WideLayout>
   );

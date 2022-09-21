@@ -4,7 +4,7 @@
     "de": "Neue E-Mail Adresse verifizieren"
   },
   "verifying_new_email": {
-    "en": "Verifying your new E-Mail address...",
+    "en": "Verifying your new email address...",
     "de": "Überprüfe deine neuen E-Mail Adresse..."
   },
   "enter_your_new_password": {
@@ -36,16 +36,16 @@
     "de": "Konto verifiziert"
   },
   "send_verification_email_again": {
-    "en": "Send verification E-Mail again",
+    "en": "Send verification email again",
     "de": "Verifizierungs-E-Mail erneut senden"
   },
   "resend_verification_email": {
-    "en": "Resend verification Email",
+    "en": "Resend verification email",
     "de": "Verifizierungs-E-Mail erneut senden"
   },
   "send_password_reset_email": {
     "en": "Send password reset email",
-    "de": "Sende eine Email, um dein Passwort zurückzusetzen"
+    "de": "Sende eine E-Mail, um dein Passwort zurückzusetzen"
   },
   "enter_your_login_email": {
     "en": "Enter your login email",
@@ -99,6 +99,10 @@
     "en": "Get notified when somebody joins an ideas team that you're also part of",
     "de": "Ich möchte benachrichtigt werden, wenn jemand neues bei einer Idee mitmacht, an der ich beteiligt bin"
   },
+  "email_on_join_request_text": {
+    "en": "Get notified when somebody asks to join your project or idea",
+    "de": "Ich möchte benachrichtigt werden, wenn jemand bei meiner Organisation oder Projekt mitmachen will"
+  },
   "accepted_statistics_text": {
     "en": "Enable Statistics cookies to help us improve Climate Connect",
     "de": "Aktiviere Statistik-Cookies, damit wir Climate Connect verbessern können"
@@ -116,7 +120,7 @@
     "de": "Deine neue E-Mail Adresse kann nicht dieselbe wie die alte sein"
   },
   "an_e_mail_to_confirm_this_e_mail_address_change_has_been_sent_to_your_old_e_mail_address": {
-    "en": "An E-Mail to confirm this E-Mail address change has been sent to your old E-Mail address.",
+    "en": "An email to confirm this email address change has been sent to your old email address.",
     "de": "Zur Bestätigung der Adressänderung wurde eine E-Mail an deine alte E-Mail Adresse gesendet"
   },
   "you_havent_made_any_changes": {
@@ -152,7 +156,7 @@
     "de": "E-Mail Adresse ändern"
   },
   "change_email_text": {
-    "en": "Changing your E-Mail will not change the E-Mail you use for Login. It will just change the E-Mail that your E-Mails are delivered to.",
+    "en": "Changing your email will not change the email you use for Login. It will just change the email that your E-Mails are delivered to.",
     "de": "Wenn du deine E-Mail Adresse änderst, ändert sich nicht die E-Mail Adresse, die du zum Anmelden verwendest. Es wird nur die E-Mail Adresse geändert, an die deine E-Mails zugestellt werden"
   },
   "change_email_preferences": {
@@ -176,8 +180,8 @@
     "de": "Profilseite bearbeiten"
   },
   "if_you_wish_to_delete_this_account": {
-    "en": "If you wish to delete this account, send an E-Mail to contact@climateconnect.earth",
-    "de": "Wenn du das Konto löschen willst, sende eine E-Mail an contact@climateconnect.earth"
+    "en": "If you wish to delete this account, send an email to",
+    "de": "Wenn du das Konto löschen willst, sende eine E-Mail an"
   },
   "old_password": {
     "en": "Old Password",

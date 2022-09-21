@@ -11,6 +11,10 @@ const useStyles = makeStyles(() => ({
     justifyContent: "flex-end",
     width: "100%",
   },
+  wrapper: {
+    display: "flex",
+    alignItems: "center",
+  },
 }));
 
 export default function HubLinks({
@@ -22,7 +26,7 @@ export default function HubLinks({
   onlyShowDropDown,
 }) {
   const classes = useStyles();
-  const [open, setOpen] = useState({ sectorHubs: false, cityHubs: false });
+  const [open, setOpen] = useState({ sectorHubs: false, climateHubs: false });
   const texts = getTexts({ page: "navigation", locale: locale });
   const sectorHubs = hubs.filter((h) => h.hub_type === "sector hub");
   const locationHubs = hubs.filter((h) => h.hub_type === "location hub");
@@ -62,14 +66,11 @@ export default function HubLinks({
     setOpen(newOpen);
   };
   return (
-    <div className={isNarrowScreen && classes.spaceAround}>
+    <div className={`${isNarrowScreen && classes.spaceAround} ${classes.wrapper}`}>
       {!isMediumScreen &&
         !onlyShowDropDown &&
         (showAllProjectsButton ? (
-          <Link
-            className={`${classes.link} ${classes.allProjectsLink}`}
-            href={getLocalePrefix(locale) + "/browse"}
-          >
+          <Link className={linkClassName} href={getLocalePrefix(locale) + "/browse"}>
             {texts.all_projects}
           </Link>
         ) : (
@@ -97,12 +98,13 @@ export default function HubLinks({
       {locationHubs?.length > 0 && (
         <HubsDropDown
           hubs={locationHubs}
-          label="CityHubs"
+          label="ClimateHubs"
           isNarrowScreen={isNarrowScreen}
-          onToggleOpen={(e) => handleToggleOpen(e, "cityHubs")}
-          open={open["cityHubs"]}
-          onOpen={(e) => handleOpen(e, "cityHubs")}
-          onClose={() => handleClose("cityHubs")}
+          onToggleOpen={(e) => handleToggleOpen(e, "climateHubs")}
+          open={open["climateHubs"]}
+          onOpen={(e) => handleOpen(e, "climateHubs")}
+          onClose={() => handleClose("climateHubs")}
+          addLocationHubExplainerLink
         />
       )}
     </div>

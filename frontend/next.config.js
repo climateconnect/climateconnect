@@ -31,6 +31,17 @@ module.exports = withBundleAnalyzer({
   async redirects() {
     return [
       {
+        source: "/",
+        destination: "/browse",
+        has: [
+          {
+            type: "cookie",
+            key: "auth_token",
+          },
+        ],
+        permanent: false,
+      },
+      {
         source: "/spenden",
         destination: "/de/donate",
         permanent: true,
@@ -42,8 +53,7 @@ module.exports = withBundleAnalyzer({
       },
       {
         source: "/klimakuechen-erlangen",
-        destination:
-          "/de/projects/Gro%C3%9Fk%C3%BCchenregionalvernetzen-Speisepl%C3%A4neklimafreundlichgestalten244?hubPage=erlangen",
+        destination: "/de/projects/klimakuechen?hubPage=erlangen",
         permanent: true,
       },
       {

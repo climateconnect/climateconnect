@@ -2,10 +2,16 @@ from ideas.serializers.idea import IdeaMinimalSerializer
 from climateconnect_api.serializers.role import RoleSerializer
 from rest_framework import serializers
 from ideas.models import Idea
-from chat_messages.models import Message, MessageParticipants, MessageReceiver, Participant
+from chat_messages.models import (
+    Message,
+    MessageParticipants,
+    MessageReceiver,
+    Participant,
+)
 from climateconnect_api.models import UserProfile, Role
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from django.utils import timezone
+
 
 class MessageSerializer(serializers.ModelSerializer):
     sender = serializers.SerializerMethodField()
@@ -13,14 +19,14 @@ class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = ('id', 'content', 'sent_at', 'read_at', 'updated_at', 'sender')
+        fields = ("id", "content", "sent_at", "read_at", "updated_at", "sender")
 
     def get_sender(self, obj):
         user_profile = UserProfile.objects.filter(user=obj.sender)[0]
         return UserProfileStubSerializer(user_profile).data
 
     def get_read_at(self, obj):
-        request = self.context.get('request', None)
+        request = self.context.get("request", None)
         user = None
         if request:
             user = request.user
@@ -43,17 +49,22 @@ class MessageParticipantSerializer(serializers.ModelSerializer):
         model = MessageParticipants
         # Could use user profile serializer for participant_one and participant_two
         fields = (
-            'id', 'chat_uuid', 'participants', 'is_active', 'last_message', 
-            'unread_count', 'user', 'created_at', 'name', 'related_idea'
+            "id",
+            "chat_uuid",
+            "participants",
+            "is_active",
+            "last_message",
+            "unread_count",
+            "user",
+            "created_at",
+            "name",
+            "related_idea",
         )
 
     def get_last_message(self, obj):
         last_message = Message.objects.filter(message_participant=obj).first()
         if last_message:
-            return {
-                'content': last_message.content,
-                'sent_at': last_message.sent_at
-            }
+            return {"content": last_message.content, "sent_at": last_message.sent_at}
         else:
             return None
 
@@ -62,16 +73,18 @@ class MessageParticipantSerializer(serializers.ModelSerializer):
         return ParticipantSerializer(participants, many=True).data
 
     def get_unread_count(self, obj):
-        user = self.context.get('request', None).user
-        unread_receivers = MessageReceiver.objects.filter(receiver=user, read_at=None).values('message')
+        user = self.context.get("request", None).user
+        unread_receivers = MessageReceiver.objects.filter(
+            receiver=user, read_at=None
+        ).values("message")
         unread_messages = Message.objects.filter(
-            id__in=[(obj['message']) for obj in unread_receivers], 
-            message_participant=obj
+            id__in=[(obj["message"]) for obj in unread_receivers],
+            message_participant=obj,
         ).count()
         return unread_messages
 
     def get_user(self, obj):
-        user = self.context.get('request', None).user
+        user = self.context.get("request", None).user
         user_profile = UserProfile.objects.filter(user=user)[0]
         return UserProfileStubSerializer(user_profile).data
 
@@ -94,9 +107,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Participant
         # Could use user profile serializer for participant_one and participant_two
-        fields = (
-            'participant_id', 'user_profile', 'role', 'created_at'
-        )
+        fields = ("participant_id", "user_profile", "role", "created_at")
 
     def get_user_profile(self, obj):
         user_profile = UserProfile.objects.get(user=obj.user)
@@ -104,11 +115,12 @@ class ParticipantSerializer(serializers.ModelSerializer):
 
     def get_role(self, obj):
         return RoleSerializer(obj.role).data
-    
+
     def get_participant_id(self, obj):
         return obj.id
+
 
 class UpdateParticipateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Participant
-        fields = ('id', 'chat', 'user', 'role')
+        fields = ("id", "chat", "user", "role")

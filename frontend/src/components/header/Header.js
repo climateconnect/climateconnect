@@ -34,7 +34,10 @@ import MenuIcon from "@material-ui/icons/Menu";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import SettingsIcon from "@material-ui/icons/Settings";
 import noop from "lodash/noop";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { getStaticPageLinks } from "../../../public/data/getStaticPageLinks";
+
+// Relative imports
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -45,6 +48,7 @@ import UserContext from "../context/UserContext";
 import ProfileBadge from "../profile/ProfileBadge";
 import DropDownButton from "./DropDownButton";
 import LanguageSelect from "./LanguageSelect";
+import StaticPageLinks from "./StaticPageLinks";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -52,18 +56,24 @@ const useStyles = makeStyles((theme) => {
       return {
         zIndex: props.fixedHeader ? 20 : "auto",
         borderBottom:
-          props.transparentHeader || props.isStaticPage
+          props.transparentHeader || props.isStaticPage || props.isHubPage
             ? 0
             : `1px solid ${theme.palette.grey[300]}`,
         position: props.fixedHeader ? "fixed" : "auto",
         width: props.fixedHeader ? "100%" : "auto",
-        height: props.fixedHeader ? 97 : "auto",
+        // height: props.fixedHeader ? 97 : "auto",
         top: props.fixedHeader ? 0 : "auto",
         background:
           !props.transparentHeader &&
           props.fixedHeader &&
           (props.background ? props.background : "#F8F8F8"),
+        transition: "all 0.25s linear", // use all instead of transform since the background color too is changing at some point. It'll be nice to have a smooth transition.
       };
+    },
+    hideHeader: {
+      [theme.breakpoints.down("md")]: {
+        transform: "translateY(-97px)",
+      },
     },
     spacingBottom: {
       marginBottom: theme.spacing(2),
@@ -75,11 +85,25 @@ const useStyles = makeStyles((theme) => {
       [theme.breakpoints.down("md")]: {
         padding: theme.spacing(2),
       },
+      [theme.breakpoints.down("sm")]: {
+        padding: `${theme.spacing(0.8)}px ${theme.spacing(2)}px`,
+      },
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
     },
+    logoLink: {
+      [theme.breakpoints.down("sm")]: {
+        flex: `0 1 auto`,
+        width: "calc(1.1vw + 1.3em)",
+        maxWidth: "2.3rem",
+        minWidth: "1.3rem",
+      },
+    },
     logo: {
+      [theme.breakpoints.down("sm")]: {
+        height: "auto",
+      },
       height: 60,
     },
     buttonMarginLeft: {
@@ -100,7 +124,7 @@ const useStyles = makeStyles((theme) => {
     loggedInAvatarMobile: {
       height: 60,
       width: 60,
-      display: "block",
+
       margin: "0 auto",
     },
     loggedInLink: {
@@ -130,42 +154,6 @@ const useStyles = makeStyles((theme) => {
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(2),
     },
-    staticPageLinksWrapper: {
-      width: "100%",
-      height: 50,
-      background: theme.palette.primary.main,
-    },
-    staticPageLinksContainer: {
-      width: "100%",
-      maxWidth: 1280,
-      height: "100%",
-    },
-    staticPageLinks: {
-      float: "right",
-      display: "inline-flex",
-      height: "100%",
-      alignItems: "center",
-      [theme.breakpoints.down("xs")]: {
-        width: "100%",
-        justifyContent: "space-between",
-      },
-    },
-    staticPageLink: {
-      paddingLeft: theme.spacing(2),
-      marginLeft: theme.spacing(2),
-      paddingRight: theme.spacing(2),
-      marginRight: theme.spacing(2),
-      fontSize: 16,
-      fontWeight: 600,
-      textDecoration: "inherit",
-      color: "white",
-      [theme.breakpoints.down("xs")]: {
-        padding: 0,
-      },
-    },
-    currentStaticPageLink: {
-      textDecoration: "underline",
-    },
     notificationsHeadline: {
       padding: theme.spacing(2),
       textAlign: "center",
@@ -180,12 +168,11 @@ const useStyles = makeStyles((theme) => {
       fontSize: 20,
       marginRight: theme.spacing(0.25),
     },
-    moreButtonMobile: {
-      color: "white",
-    },
     mobileAvatarContainer: {
       display: "flex",
       justifyContent: "center",
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
     },
   };
 });
@@ -256,41 +243,6 @@ const getLinks = (path_to_redirect, texts) => [
   },
 ];
 
-const getStaticPageLinks = (texts) => [
-  {
-    href: "/about",
-    text: texts.about,
-  },
-  {
-    href: "/donate",
-    text: texts.donate,
-  },
-  {
-    href: "/faq",
-    text: texts.faq,
-  },
-  {
-    href: "/team",
-    text: texts.team,
-  },
-  {
-    href: "/join",
-    text: texts.join,
-  },
-  {
-    href: "/blog",
-    text: texts.blog,
-  },
-  {
-    href: "/press",
-    text: texts.press,
-  },
-  {
-    href: "/donorforest",
-    text: texts.donorforest,
-  },
-];
-
 const getLoggedInLinks = ({ loggedInUser, texts }) => {
   return [
     {
@@ -340,16 +292,19 @@ export default function Header({
   fixedHeader,
   transparentHeader,
   background,
+  isHubPage,
 }) {
   const classes = useStyles({
     fixedHeader: fixedHeader,
     transparentHeader: transparentHeader,
     isStaticPage: isStaticPage,
     background: background,
+    isHubPage: isHubPage,
   });
+
   const { user, signOut, notifications, pathName, locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
-  const [anchorEl, setAnchorEl] = React.useState(false);
+  const [anchorEl, setAnchorEl] = useState(false);
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
   const isMediumScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const LINKS = getLinks(pathName, texts);
@@ -369,14 +324,33 @@ export default function Header({
   };
 
   const logo = getLogo();
+  const [hideHeader, setHideHeader] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setHideHeader(window.scrollY > lastScrollY); // hide when user scrolls down and show when user scrolls up
+
+      // remember last scroll position
+      setLastScrollY(window.scrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [lastScrollY]);
 
   return (
     <Box
       component="header"
-      className={`${classes.root} ${className} ${!noSpacingBottom && classes.spacingBottom}`}
+      className={`${classes.root} ${className} ${!noSpacingBottom && classes.spacingBottom} ${
+        hideHeader ? classes.hideHeader : ""
+      }`}
     >
       <Container className={classes.container}>
-        <Link href={localePrefix + "/"}>
+        <Link href={localePrefix + "/"} className={classes.logoLink}>
           <img src={logo} alt={texts.climate_connect_logo} className={classes.logo} />
         </Link>
         {isNarrowScreen ? (
@@ -412,57 +386,6 @@ export default function Header({
       </Container>
       <div>{isStaticPage && <StaticPageLinks />}</div>
     </Box>
-  );
-}
-
-function StaticPageLinks() {
-  const classes = useStyles();
-  const { locale } = useContext(UserContext);
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
-
-  const texts = getTexts({ page: "navigation", locale: locale });
-  const STATIC_PAGE_LINKS = getStaticPageLinks(texts);
-  const localePrefix = getLocalePrefix(locale);
-
-  const getLinksToShow = () => {
-    if (isNarrowScreen) {
-      return STATIC_PAGE_LINKS.slice(0, 2);
-    } else {
-      return STATIC_PAGE_LINKS;
-    }
-  };
-  return (
-    <div className={classes.staticPageLinksWrapper}>
-      <Container className={classes.staticPageLinksContainer}>
-        <div className={classes.staticPageLinks}>
-          {getLinksToShow().map((link, index) => {
-            return (
-              <Link
-                href={localePrefix + link.href}
-                key={index + "-" + link.text}
-                className={`${classes.staticPageLink} ${
-                  window.location.href.includes(link.href) && classes.currentStaticPageLink
-                }`}
-              >
-                {link.text}
-              </Link>
-            );
-          })}
-          {isNarrowScreen && (
-            <DropDownButton
-              options={STATIC_PAGE_LINKS}
-              buttonProps={{
-                classes: {
-                  root: classes.moreButtonMobile,
-                },
-              }}
-            >
-              {texts.more}
-            </DropDownButton>
-          )}
-        </div>
-      </Container>
-    </div>
   );
 }
 
@@ -719,18 +642,19 @@ function NarrowScreenLinks({
                 if (link.avatar)
                   return (
                     <div className={classes.mobileAvatarContainer}>
-                      {loggedInUser?.badges?.length > 0 ? (
-                        <ProfileBadge
-                          name={loggedInUser?.badges[0].name}
-                          image={getImageUrl(loggedInUser?.badges[0].image)}
-                          size="medium"
-                          className={classes.badge}
-                        >
+                      <Link href={"/profiles/" + loggedInUser.url_slug}>
+                        {loggedInUser?.badges?.length > 0 ? (
+                          <ProfileBadge
+                            badge={loggedInUser?.badges[0]}
+                            size="medium"
+                            className={classes.badge}
+                          >
+                            <Avatar {...avatarProps} />
+                          </ProfileBadge>
+                        ) : (
                           <Avatar {...avatarProps} />
-                        </ProfileBadge>
-                      ) : (
-                        <Avatar {...avatarProps} />
-                      )}
+                        )}
+                      </Link>
                     </div>
                   );
                 else if (link.isLogoutButton)
@@ -792,12 +716,7 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader, texts, 
           ref={anchorRef}
         >
           {loggedInUser?.badges?.length > 0 ? (
-            <ProfileBadge
-              name={loggedInUser?.badges[0].name}
-              image={getImageUrl(loggedInUser?.badges[0].image)}
-              size="small"
-              className={classes.badge}
-            >
+            <ProfileBadge badge={loggedInUser?.badges[0]} size="small" className={classes.badge}>
               <Avatar {...avatarProps} />
             </ProfileBadge>
           ) : (

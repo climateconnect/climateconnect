@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
     top: "auto",
     bottom: props.visibleFooterHeight,
     boxShadow: "-3px -3px 6px #00000029",
-    zIndex: "auto",
+    zIndex: "1",
   }),
   containerButtonsActionBar: {
     display: "flex",
@@ -75,6 +75,8 @@ export default function ProjectInteractionButtons({
             screenSize={screenSize}
             numberOfFollowers={numberOfFollowers}
             bindFollow={bindFollow}
+            showStartIcon={screenSize.belowSmall && !screenSize.belowTiny}
+            showNumberInText={screenSize.belowSmall}
           />
           <LikeButton
             texts={texts}
@@ -88,23 +90,23 @@ export default function ProjectInteractionButtons({
         </Toolbar>
       </AppBar>
     );
-  else
-    return (
-      <Container>
-        {!hasAdminPermissions &&
-          !messageButtonIsVisible &&
-          contactProjectCreatorButtonRef?.current && (
-            <ContactCreatorButton
-              className={classes.largeScreenButton}
-              creator={projectAdmin}
-              handleClickContact={handleClickContact}
-              explanationBackground={"#fff"}
-              customCardWidth={220}
-              withInfoCard={true}
-              withIcons={true}
-              collapsable={true}
-            />
-          )}
-      </Container>
-    );
+
+  return (
+    <Container>
+      {!hasAdminPermissions &&
+        !messageButtonIsVisible &&
+        contactProjectCreatorButtonRef?.current && (
+          <ContactCreatorButton
+            className={classes.largeScreenButton}
+            creator={projectAdmin}
+            handleClickContact={handleClickContact}
+            explanationBackground={"#fff"}
+            customCardWidth={220}
+            withInfoCard={true}
+            withIcons={true}
+            collapsable={true}
+          />
+        )}
+    </Container>
+  );
 }

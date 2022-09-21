@@ -13,9 +13,10 @@ const useStyles = makeStyles((theme) => {
       textOverflow: "ellipsis",
       display: "inline-block",
     },
-    headerWrapper: {
+    headerWrapper: (props) => ({
       justifyContent: "center",
-    },
+      marginTop: props.numOfTypes > 1 ? 0 : 21,
+    }),
     media: {
       height: 80,
       width: 80,
@@ -26,16 +27,21 @@ const useStyles = makeStyles((theme) => {
     chip: {
       height: 20,
       position: "relative",
-      margin: "0px 1px",
+      margin: "1px 1px",
     },
     chipGroup: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
       marginTop: "-15px",
     },
   };
 });
 
 export default function OrganizationPreviewHeader({ organization }) {
-  const classes = useStyles();
+  const classes = useStyles({
+    numOfTypes: organization.types.length,
+  });
 
   return (
     <div>
