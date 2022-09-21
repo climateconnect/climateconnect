@@ -175,7 +175,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("md")]: {
       marginLeft: theme.spacing(-2),
       marginRight: theme.spacing(-4),
-      marginTop: theme.spacing(5),
+      marginTop: theme.spacing(5.5),
     },
   },
   buttonInfoContainer: {
@@ -248,7 +248,6 @@ export default function AccountPage({
       .map((key, index) => {
         if (info[key]) {
           const i = getFullInfoElement(infoMetadata, key, info[key]);
-          console.log(i);
           const value = Array.isArray(i.value) ? i.value.join(", ") : i.value;
           const additionalText = i.additionalText ? i.additionalText : "";
           if (key === "parent_organization") {
@@ -278,7 +277,7 @@ export default function AccountPage({
                 </div>
               </div>
             );
-          } else if (i.linkify && value && isOrganization) {
+          } else if (i.linkify && value) {
             return (
               <>
                 <div className={classes.subtitle}>{i.name}:</div>
@@ -342,7 +341,6 @@ export default function AccountPage({
     src: account.image,
     className: classes.avatar,
   };
-  console.log(account);
 
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
