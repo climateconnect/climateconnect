@@ -33,16 +33,13 @@ import LinkedInIcon from "@material-ui/icons/LinkedIn";
 
 const useStyles = makeStyles((theme) => ({
   avatarContainer: {
-    [theme.breakpoints.up("sm")]: {
-      marginRight: theme.spacing(5),
-      marginLeft: theme.spacing(5),
-    },
+    display: "flex",
+    marginTop: theme.spacing(-15),
+    justifyContent: "center",
   },
   avatar: {
     height: theme.spacing(20),
     width: theme.spacing(20),
-    margin: "0 auto",
-    marginTop: theme.spacing(-15),
     fontSize: 50,
     border: "4px solid white",
     backgroundcolor: "white",
@@ -51,40 +48,18 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "white",
     },
   },
-  avatarWithInfo: {
-    textAlign: "center",
-    width: theme.spacing(40),
-    margin: "0 auto",
-    [theme.breakpoints.up("sm")]: {
-      margin: 0,
-      marginLeft: theme.spacing(-5),
-      display: "inline-block",
-      width: "auto",
-    },
-  },
-  accountInfo: (props) => ({
-    padding: 0,
-    marginTop: theme.spacing(1),
-    marginRight: props.isOwnAccount ? theme.spacing(0.5) : 0,
-  }),
-  editButtonWrapper: {
-    flex: "1 0 auto",
-  },
+
   name: {
     fontWeight: "bold",
-    marginTop: theme.spacing(1),
   },
   subtitle: {
     color: `${theme.palette.secondary.main}`,
     fontWeight: "bold",
-    marginBottom: theme.spacing(1),
-    marginTop: theme.spacing(1),
   },
   content: {
-    paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
     color: `${theme.palette.secondary.main}`,
     fontSize: 16,
+    paddingBottom: theme.spacing(2),
   },
   location: {
     marginBottom: theme.spacing(3),
@@ -92,13 +67,7 @@ const useStyles = makeStyles((theme) => ({
   noPadding: {
     padding: 0,
   },
-  infoContainer: {
-    [theme.breakpoints.up("sm")]: {
-      display: "flex",
-      alignItems: "center",
-    },
-    position: "relative",
-  },
+
   noprofile: {
     textAlign: "center",
     padding: theme.spacing(5),
@@ -106,11 +75,11 @@ const useStyles = makeStyles((theme) => ({
   marginTop: {
     marginTop: theme.spacing(1),
   },
-  chip: {
-    marginBottom: theme.spacing(0.5),
+  chip: (props) => ({
+    marginBottom: props.isOrganization ? theme.spacing(0.5) : theme.spacing(1),
     minWidth: 200,
     borderRadius: 20,
-  },
+  }),
   editButton: {
     position: "relative",
     cursor: "pointer",
@@ -177,6 +146,59 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
     color: theme.palette.primary.main,
   },
+  mainContainer: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  mainInfoContainer: {
+    display: "flex",
+    flexDirection: "column",
+    [theme.breakpoints.up("md")]: {
+      flexDirection: "row",
+      // backgroundColor: "#F7DC6F"
+    },
+  },
+  leftInfoContainer: {
+    display: "flex",
+    flexDirection: "column",
+    textAlign: "center",
+    width: theme.spacing(40),
+
+    [theme.breakpoints.up("md")]: {
+      marginLeft: theme.spacing(-8),
+    },
+  },
+  middleInfoContainer: {
+    display: "flex",
+    flexDirection: "column",
+    // backgroundColor: "#A93226",
+    [theme.breakpoints.up("md")]: {
+      marginLeft: theme.spacing(-2),
+      marginRight: theme.spacing(-4),
+      marginTop: theme.spacing(5),
+    },
+  },
+  buttonInfoContainer: {
+    textAlign: "center",
+
+    [theme.breakpoints.up("md")]: {
+      marginTop: theme.spacing(6),
+      marginRight: theme.spacing(-8),
+      width: theme.spacing(55),
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+
+      //backgroundColor: "#ABEBC6"
+    },
+  },
+  followButton: {
+    marginTop: theme.spacing(1),
+    width: 225,
+  },
+  sideButton: {
+    width: 225,
+  },
 }));
 
 //Generic component to display personal profiles or organization profiles
@@ -196,8 +218,8 @@ export default function AccountPage({
   isTinyScreen,
   isSmallScreen,
 }) {
-  const classes = useStyles({ isOwnAccount: isOwnAccount });
-  const { locale } = useContext(UserContext);
+  const classes = useStyles({ isOwnAccount: isOwnAccount, isOrganization: isOrganization });
+  const { locale, user } = useContext(UserContext);
   const token = new Cookies().get("auth_token");
   const texts = getTexts({ page: "profile", locale: locale });
   const organizationTexts = isOrganization
@@ -322,7 +344,6 @@ export default function AccountPage({
   };
   console.log(account);
 
-
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <div
@@ -361,93 +382,139 @@ export default function AccountPage({
           )}
         </div>
       </div>
-      <Container className={classes.infoContainer}>
-        <Container className={classes.avatarWithInfo}>
-          <div className={classes.avatarContainer}>
-            {account.badges?.length > 0 ? (
-              <ProfileBadge badge={account.badges[0]}>
+
+      <Container className={classes.mainContainer}>
+        <Container className={classes.mainInfoContainer}>
+          <Container className={classes.leftInfoContainer}>
+            <div className={classes.avatarContainer}>
+              {account.badges?.length > 0 ? (
+                <ProfileBadge badge={account.badges[0]}>
+                  <Avatar {...avatarProps} />
+                </ProfileBadge>
+              ) : (
                 <Avatar {...avatarProps} />
-              </ProfileBadge>
-            ) : (
-              <Avatar {...avatarProps} />
-            )}
-          </div>
-        <Typography variant="h5" className={classes.name}>
-          {account.name}
-        </Typography>
-        {location && (
-          <div>
-            <div className={classes.location}>
-              <Tooltip title="Location">
-                <PlaceIcon color="primary" className={classes.infoIcon} />
-              </Tooltip>
-              {location ? location + locationAdditionalText : location.missingMessage}
+              )}
             </div>
-          </div>
-        )}
-        {account.types && (
-          <Container className={classes.noPadding}>
-            {account.types.map((type) => (
-              <Chip label={type.name} key={type.key} className={classes.chip} />
-            ))}
+            <Typography variant="h5" className={classes.name}>
+              {account.name}
+            </Typography>
+            {location && (
+              <div>
+                <div className={classes.location}>
+                  <Tooltip title="Location">
+                    <PlaceIcon color="primary" className={classes.infoIcon} />
+                  </Tooltip>
+                  {location ? location + locationAdditionalText : location.missingMessage}
+                </div>
+              </div>
+            )}
+            {account.types && (
+              <Container className={classes.noPadding}>
+                {account.types.map((type) => (
+                  <Chip label={type.name} key={type.key} className={classes.chip} />
+                ))}
+              </Container>
+            )}
+            {isOrganization && (
+              <div className={classes.website}>
+                <>
+                  <Typography variant="caption"> Find us here: </Typography>
+                  <Linkify componentDecorator={componentDecorator}>
+                    {" "}
+                    <Typography className={classes.websiteLink}> {account.info.website}</Typography>
+                  </Linkify>
+                </>
+                <Box>
+                  {" "}
+                  {/* Replace these with <SocialMediaButton> */}
+                  <a
+                    href="https://twitter.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={classes.inheritColor}
+                  >
+                    <TwitterIcon className={classes.socialMediaLink} alt="Twitter" />
+                  </a>
+                  <a
+                    href="https://www.instagram.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={classes.inheritColor}
+                  >
+                    <InstagramIcon className={classes.socialMediaLink} alt="Instagram" />
+                  </a>
+                  <a
+                    href="https://www.facebook.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={classes.inheritColor}
+                  >
+                    <FacebookIcon className={classes.socialMediaLink} alt="Facebook" />
+                  </a>
+                  <a
+                    href="https://www.linkedin.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={classes.inheritColor}
+                  >
+                    <LinkedInIcon className={classes.socialMediaLink} alt="YouTube" />
+                  </a>
+                </Box>
+              </div>
+            )}
           </Container>
-        )}
-        {isOrganization && (
-          <div className={classes.website}>
-            <>
-              <Typography variant="caption"> Find us here: </Typography>
-              <Linkify componentDecorator={componentDecorator}>
-                {" "}
-                <Typography className={classes.websiteLink}> {account.info.website}</Typography>
-              </Linkify>
-            </>
-            <Box component="span" className={classes.socialMediaBox}>
-              <a
-                href="https://twitter.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={classes.inheritColor}
-              >
-                <TwitterIcon className={classes.socialMediaLink} alt="Twitter" />
-              </a>
-              <a
-                href="https://www.instagram.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={classes.inheritColor}
-              >
-                <InstagramIcon className={classes.socialMediaLink} alt="Instagram" />
-              </a>
-              <a
-                href="https://www.facebook.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={classes.inheritColor}
-              >
-                <FacebookIcon className={classes.socialMediaLink} alt="Facebook" />
-              </a>
-              <a
-                href="https://www.linkedin.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={classes.inheritColor}
-              >
-                <LinkedInIcon className={classes.socialMediaLink} alt="YouTube" />
-              </a>
-            </Box>
-          </div>
-        )}
+          <Container className={classes.middleInfoContainer}>
+            {displayAccountInfo(account.info)}
+          </Container>
+
+          {user && (
+            <div className={classes.buttonInfoContainer}>
+              <>
+                {!isSmallScreen && (
+                  <>
+                    {isOwnAccount ? (
+                      <Button
+                        className={classes.sideButton}
+                        variant="contained"
+                        color="primary"
+                        href={editHref}
+                      >
+                        <EditSharpIcon className={classes.innerIcon} />
+                        {editText ? editText : texts.edit_profile}
+                      </Button>
+                    ) : (
+                      <>
+                        {isOrganization && (
+                          <Button
+                            className={classes.sideButton}
+                            variant="contained"
+                            color="primary"
+                            href={editHref}
+                          >
+                            Request Join
+                          </Button>
+                        )}
+                      </>
+                    )}
+                  </>
+                )}
+
+                {isOrganization && (
+                  <Button
+                    className={classes.followButton}
+                    variant="contained"
+                    color="primary"
+                    href={editHref}
+                  >
+                    Follow
+                  </Button>
+                )}
+              </>
+            </div>
+          )}
         </Container>
-        <Container className={classes.accountInfo}>{displayAccountInfo(account.info)}</Container>
-        {isOwnAccount && !isSmallScreen && (
-          <div className={classes.editButtonWrapper}>
-            <Button variant="contained" color="primary" href={editHref}>
-              <EditSharpIcon className={classes.innerIcon} />
-              {editText ? editText : texts.edit_profile}
-            </Button>
-          </div>
-        )}
       </Container>
+
       <Divider className={classes.marginTop} />
       {detailledDescription?.value && (
         <Container>
