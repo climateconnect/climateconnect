@@ -1,4 +1,4 @@
-import { Avatar, Card, CardHeader } from "@material-ui/core";
+import { Avatar, Card, CardHeader, Typography } from "@material-ui/core";
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -8,6 +8,7 @@ const useStyles = makeStyles({
     justifyContent: "center",
     backgroundColor: "#F8F8F8",
     cursor: "pointer",
+    flexDirection: "column"
   },
   slideInRoot: {
     textAlign: "left",
@@ -22,12 +23,17 @@ const useStyles = makeStyles({
     height: 50,
     width: 50,
   },
+  customMessage:{
+    fontSize: 14,
+    fontStyle: "italic"
+  }
 });
 
 export default function ContactCreatorButtonInfo({
   creatorName,
   creatorImageURL,
   creatorsRoleInProject,
+  customMessage
 }) {
   const classes = useStyles();
 
@@ -41,7 +47,7 @@ export default function ContactCreatorButtonInfo({
         }}
         avatar={<Avatar src={creatorImageURL} className={classes.avatar} />}
         title={creatorName}
-        subheader={creatorsRoleInProject}
+        subheader={creatorsRoleInProject ? creatorsRoleInProject : (<Typography className={classes.customMessage}>"{customMessage}"</Typography>)}
       />
     </Card>
   );

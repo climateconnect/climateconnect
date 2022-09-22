@@ -98,7 +98,7 @@ export default function HubContent({
   hubQuickInfoRef,
   hubProjectsButtonRef,
   isLocationHub,
-  localAmbassador,
+  hubAmbassador,
   location,
   allHubs,
   hubData,
@@ -160,7 +160,7 @@ export default function HubContent({
                   expanded={expanded}
                   handleClickExpand={handleClickExpand}
                   isLocationHub={isLocationHub}
-                  localAmbassador={localAmbassador}
+                  hubAmbassador={hubAmbassador}
                 />
               </div>
               {user && (
@@ -186,7 +186,7 @@ export default function HubContent({
               expanded={expanded}
               handleClickExpand={handleClickExpand}
               isLocationHub={isLocationHub}
-              localAmbassador={localAmbassador}
+              hubAmbassador={hubAmbassador}
             />
           </div>
         )}
@@ -219,7 +219,7 @@ const BottomContent = ({
   quickInfo,
   expanded,
   handleClickExpand,
-  localAmbassador,
+  hubAmbassador,
   isLocationHub,
 }) => {
   const classes = useStyles();
@@ -257,7 +257,7 @@ const BottomContent = ({
           )}
         </Button>
       </div>
-      <ContactAmbassadorButton localAmbassador={localAmbassador} />
+      <ContactAmbassadorButton hubAmbassador={hubAmbassador} />
     </>
   );
 };

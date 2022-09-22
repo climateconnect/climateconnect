@@ -37,7 +37,7 @@ export default function getTexts({
   url_slug,
   user,
   climateMatchQuestion,
-  localAmbassador,
+  hubAmbassador,
   creator,
 }) {
   // These are the multiple text files for various translations. They're
@@ -59,7 +59,7 @@ export default function getTexts({
       locale: locale,
     }),
     general: general_texts,
-    hub: getHubTexts({ hubName: hubName, localAmbassador: localAmbassador }),
+    hub: getHubTexts({ hubName: hubName, hubAmbassador: hubAmbassador }),
     idea: getIdeaTexts({
       idea: idea,
       user: user,
