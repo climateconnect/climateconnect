@@ -1,7 +1,7 @@
 import { getFashionHubDescription } from "./hubDescriptions/fashion";
 import { getFoodHubDescription } from "./hubDescriptions/food";
 
-export default function getHubTexts({ hubName }) {
+export default function getHubTexts({ hubName, hubAmbassador }) {
   const generalHubTexts = {
     search_for_solutions_in_sector: {
       en: "Search for climate solutions in the " + hubName + " sector",
@@ -119,6 +119,14 @@ export default function getHubTexts({ hubName }) {
     add_hubs_in_which_your_organization_is_active: {
       en: "Add Hubs (sectors) in which your organization is active",
       de: "Füge Hubs (Aktivitätsbereiche) hinzu, in denen deine Organisation aktiv ist",
+    },
+    please_create_an_account_or_log_in_to_contact_the_ambassador: {
+      en: `Please sign up to contact ${hubAmbassador?.user?.first_name}.`,
+      de: `Bitte melde dich an, um ${hubAmbassador?.user?.first_name} zu kontaktieren.`,
+    },
+    contact_ambassador: {
+      en: `Contact ${hubAmbassador?.title}`,
+      de: `${hubAmbassador?.title} kontaktieren`,
     },
   };
 

@@ -176,10 +176,9 @@ export default function getOrganizationTexts({ organization, locale }) {
       de: ", um mehr zu erfahren.",
     },
     you_have_successfully_created_an_organization_you_can_add_members: {
-      en:
-        "You have successfully created an organization! You can add members by scrolling down to the members section.",
+      en: "You have successfully created an organization! Now you can add the rest of your team.",
       de:
-        "Du hast erfolgreich eine Organisation erstellt! Du kannst nun Mitglieder hinzufügen, indem du nach unten zum Mitgliederbereich scrollst.",
+        "Du hast erfolgreich eine Organisation erstellt! Jetzt kannst du den Rest deines Teams hinzufügen.",
     },
     to_create_an_organization: {
       en: "to create an organization",
@@ -275,6 +274,10 @@ export default function getOrganizationTexts({ organization, locale }) {
       de: `Hey,
       Ich habe gerade diese spannende Klimaschutzorganisation gefunden: "${organization?.name}". 
       Schau sie dir doch mal an: `,
+    },
+    skip_for_now: {
+      en: "Skip for now",
+      de: "Erstmal überspringen",
     },
     please_log_in_to_follow_an_organization: {
       en: "Please log in to follow an organization.",
