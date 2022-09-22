@@ -214,7 +214,7 @@ class Hub(models.Model):
         return "%s" % (self.name)
 
 
-class LocalAmbassador(models.Model):
+class HubAmbassador(models.Model):
     title = models.CharField(
         help_text="Ambassador title",
         verbose_name="Ambassador title",
@@ -226,6 +226,20 @@ class LocalAmbassador(models.Model):
         help_text="The german translation of the ambassador's title",
         verbose_name="Ambassador title german",
         max_length=1024,
+        null=True,
+        blank=True,
+    )
+    custom_message = models.CharField(
+        help_text="Custom message motivating users to contact the ambassador",
+        verbose_name="Custom message",
+        max_length=240,
+        null=True,
+        blank=True,
+    )
+    custom_message_de = models.CharField(
+        help_text="German translation of the custom message",
+        verbose_name="Custom message german",
+        max_length=240,
         null=True,
         blank=True,
     )
@@ -250,8 +264,8 @@ class LocalAmbassador(models.Model):
 
     class Meta:
         app_label = "hubs"
-        verbose_name = "Local Ambassador"
-        verbose_name_plural = "Local Ambassadors"
+        verbose_name = "Hub Ambassador"
+        verbose_name_plural = "Hub Ambassadors"
 
     def __str__(self):
-        return "is local ambassador for %s" % (self.title)
+        return "%s is ambassador for %s" % (self.user.first_name + " " +  self.user.last_name, self.title)

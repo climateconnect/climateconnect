@@ -5,7 +5,7 @@ from hubs.models import (
     HubStat,
     HubTranslation,
     HubStatTranslation,
-    LocalAmbassador,
+    HubAmbassador,
 )
 
 admin.site.register(Hub, admin.ModelAdmin)
@@ -16,4 +16,4 @@ admin.site.register(HubTranslation, admin.ModelAdmin)
 
 admin.site.register(HubStatTranslation, admin.ModelAdmin)
 
-admin.site.register(LocalAmbassador, admin.ModelAdmin)
+admin.site.register(HubAmbassador, admin.ModelAdmin)
