@@ -279,5 +279,9 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: "Skip for now",
       de: "Erstmal überspringen",
     },
+    get_involved: {
+      en: "How to get involved",
+      de: "Wie engagiere ich mich"
+    }
   };
 }

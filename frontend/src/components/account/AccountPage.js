@@ -235,7 +235,6 @@ export default function AccountPage({
       .map((key, index) => {
         if (info[key]) {
           const i = getFullInfoElement(infoMetadata, key, info[key]);
-          console.log(i);
           const value = Array.isArray(i.value) ? i.value.join(", ") : i.value;
           const additionalText = i.additionalText ? i.additionalText : "";
           if (key === "parent_organization") {
@@ -283,64 +282,50 @@ export default function AccountPage({
           } else if (i.type === "hubs") {
             return <MiniHubPreviews hubs={i.value} />;
           } else if (i.type === "select" && value) {
-            const textValue = i.options ? i.options.find((o) => o?.key === value).name : value;
-            const getInvolvedValue = i.key === "get_involved" ? value : "";
-            console.log(i.key, getInvolvedValue, i.value);
-            if (i.key === "get_involved") {
+            if (isOrganization) {
+              const orgSizeLabel = i.organization_size.name;
+              const orgSize = i.options.find((o) => o?.key === value.organization_size).name;
+              console.log(orgSize, value);
+
+              const getInvolvedLabel = i.get_involved.name;
+              const getInvolvedValue = value.get_involved;
               return (
-                <div key={index}>
-                  <div className={classes.selectContainer}>
-                    {isOrganization && (
-                      <div className={classes.getInvolvedContainer}>
-                        <div className={classes.sizeInvolvementSubtitleContent}>
-                          {" "}
-                          <InsertInvitationIcon fontSize="medium" />
-                          <div className={classes.marginRight} /> {i.name}{" "}
-                        </div>
-                        <div className={classes.content}>
-                          {getInvolvedValue}
-                        </div>
-                      </div>
-                    )}
-  
-                    <div className={classes.sizeContainer}>
-                      <div className={classes.sizeInvolvementSubtitleContent}>
-                        {isOrganization && (
-                          <>
-                            <GroupIcon /> <div className={classes.marginRight} />
-                          </>
-                        )}
-                        {i.name}
-                      </div>
-                      <div className={classes.content}>
-                        {textValue ? textValue + additionalText : i.missingMessage}
-                      </div>
+                <div className={classes.selectContainer}>
+                  <div className={classes.getInvolvedContainer}>
+                    <div className={classes.sizeInvolvementSubtitleContent}>
+                      <InsertInvitationIcon />
+                      <div className={classes.marginRight} /> {getInvolvedLabel}
                     </div>
+                    <div className={classes.content}>{getInvolvedValue}</div>
+                  </div>
+
+                  <div className={classes.sizeContainer}>
+                    <div className={classes.sizeInvolvementSubtitleContent}>
+                      <>
+                        <GroupIcon /> <div className={classes.marginRight} />
+                      </>
+                      {orgSizeLabel}
+                    </div>
+                    <div className={classes.content}>{orgSize}</div>
                   </div>
                 </div>
               );
-            } else{
-              return(
+            } else {
+              const textValue = i.options ? i.options.find((o) => o?.key === value).name : value;
+              return (
                 <div key={index}>
-                   <div className={classes.sizeContainer}>
-                      <div className={classes.sizeInvolvementSubtitleContent}>
-                        {isOrganization && (
-                          <>
-                            <GroupIcon /> <div className={classes.marginRight} />
-                          </>
-                        )}
-                        {i.name}
-                      </div>
-                      <div className={classes.content}>
-                        {textValue ? textValue + additionalText : i.missingMessage}
-                      </div>
-                    </div>
+                  <div className={classes.subtitle}>{i.name}:</div>
+                  <div className={classes.content}>
+                    {textValue ? textValue + additionalText : i.missingMessage}
                   </div>
-              
+                </div>
               );
             }
-            
-          } else if (value && !["detailled_description", "location", "checkbox"].includes(i.type)) {
+          } else if (
+            value &&
+            !["detailled_description", "location", "checkbox"].includes(i.type) &&
+            !isOrganization
+          ) {
             return (
               <div key={index}>
                 <div className={classes.subtitle}>{i.name}:</div>

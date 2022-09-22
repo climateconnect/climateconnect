@@ -84,9 +84,7 @@ export default function getOrganizationInfoMetadata(locale, organization) {
       type: "detailled_description",
       helptext: texts.how_to_describe_organization,
     },
-    organization_size: {
-      name: `${texts.organization_size}`,
-      key: "organization_size",
+    organization_size_and_involvement: {
       type: "select",
       options: [
         {
@@ -122,18 +120,22 @@ export default function getOrganizationInfoMetadata(locale, organization) {
           name: texts.huge_organization_size,
         },
       ],
+
+      organization_size: {
+        name: `${texts.organization_size}`,
+        key: "organization_size",
+      },
+      get_involved: {
+        name: `${texts.get_involved}`,
+        key: "get_involved",
+      },
     },
-    get_involved: {
-      name: "How to get involved",
-      key: "get_involved",
-      type: "select",
-    },
+
     hubs: {
       name: `${texts.sectors_of_activity}`,
       key: "hubs",
       type: "hubs",
       helptext: texts.how_to_select_hubs,
     },
-   
   };
 }

@@ -16,11 +16,11 @@ export function parseOrganization(organization, editMode) {
       short_description: organization.short_description,
       website: organization.website,
       about: organization.about,
-      organization_size: organization.organization_size,
-      get_involved: organization.get_involved,
+      organization_size_and_involvement: {
+        organization_size: organization.organization_size,
+        get_involved: organization.get_involved,
+      },
       hubs: organization.hubs,
-     
-     
     },
   };
   if (editMode) org.types = org.types.map((t) => t.key);
