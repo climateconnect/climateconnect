@@ -25,6 +25,8 @@ import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import UserContext from "../context/UserContext";
 import EditSharpIcon from "@material-ui/icons/EditSharp";
 import IconButton from "@material-ui/core/IconButton";
+import InsertInvitationIcon from "@material-ui/icons/InsertInvitation";
+import GroupIcon from "@material-ui/icons/Group";
 
 const useStyles = makeStyles((theme) => ({
   avatarContainer: {
@@ -100,6 +102,9 @@ const useStyles = makeStyles((theme) => ({
   marginTop: {
     marginTop: theme.spacing(1),
   },
+  marginRight: {
+    marginRight: theme.spacing(0.5),
+  },
   chip: {
     marginBottom: theme.spacing(1),
     marginRight: theme.spacing(1),
@@ -153,6 +158,33 @@ const useStyles = makeStyles((theme) => ({
   },
   miniOrgPreview: {
     display: "flex",
+  },
+  sizeContainer: {
+    display: "flex",
+    //backgroundColor: "#000000",
+    flexDirection: "column",
+
+    width: "100%",
+  },
+  getInvolvedContainer: {
+    display: "flex",
+    justifyContent: "flex-start",
+    flexDirection: "column",
+    width: "100%",
+    marginRight: theme.spacing(1),
+    //backgroundColor: "#A93226",
+  },
+  sizeInvolvementSubtitleContent: {
+    display: "flex",
+    alignItems: "center",
+    color: `${theme.palette.secondary.main}`,
+    fontWeight: "bold",
+  },
+  selectContainer: {
+    //backgroundColor: "#F7DC6F",
+
+    display: "flex",
+    flexDirection: "row",
   },
 }));
 
@@ -253,9 +285,33 @@ export default function AccountPage({
             const textValue = i.options ? i.options.find((o) => o?.key === value).name : value;
             return (
               <div key={index}>
-                <div className={classes.subtitle}>{i.name}:</div>
-                <div className={classes.content}>
-                  {textValue ? textValue + additionalText : i.missingMessage}
+                <div className={classes.selectContainer}>
+                  {isOrganization && (
+                    <div className={classes.getInvolvedContainer}>
+                      <div className={classes.sizeInvolvementSubtitleContent}>
+                        {" "}
+                        <InsertInvitationIcon fontSize="medium" />
+                        <div className={classes.marginRight} /> How to get involved{" "}
+                      </div>
+                      <div className={classes.content}>
+                        Contact the organization admin for more details
+                      </div>
+                    </div>
+                  )}
+
+                  <div className={classes.sizeContainer}>
+                    <div className={classes.sizeInvolvementSubtitleContent}>
+                      {isOrganization && (
+                        <>
+                          <GroupIcon /> <div className={classes.marginRight} />
+                        </>
+                      )}
+                      {i.name}
+                    </div>
+                    <div className={classes.content}>
+                      {textValue ? textValue + additionalText : i.missingMessage}
+                    </div>
+                  </div>
                 </div>
               </div>
             );
