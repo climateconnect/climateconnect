@@ -248,11 +248,11 @@ export default function AccountPage({
               </div>
             );
           } else if (i.type === "hubs") {
-            return (
+            return (    
               <>
                 <div className={classes.subtitle}>
                   {" "}
-                  {organizationTexts.organization_is_active_in_these_sectors}{" "}
+                  {i.name}{" "}
                 </div>
                 {i.value.length <= 2 ? (
                   <MiniHubPreviews hubs={i.value} texts={texts} />

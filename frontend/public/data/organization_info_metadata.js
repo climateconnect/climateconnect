@@ -124,7 +124,7 @@ export default function getOrganizationInfoMetadata(locale, organization) {
       ],
     },
     hubs: {
-      name: `${texts.sectors_of_activity}`,
+      name: `${texts.organization_is_active_in_these_sectors}`,
       key: "hubs",
       type: "hubs",
       helptext: texts.how_to_select_hubs,
