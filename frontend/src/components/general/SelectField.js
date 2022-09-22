@@ -30,17 +30,15 @@ export default function SelectField({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
-
-  if (!defaultValue) {
-    defaultValue = "";
-  }
+  
+  
 
   // If we want to force the checkboxes to be checked
   // based on a persisted query param URL, then
   // we update the value and values here...
   const [value, setValue] = React.useState({
-    name: defaultValue.name,
-    key: defaultValue.key,
+    name: defaultValue?.name,
+    key: defaultValue?.key,
   });
 
   const ITEM_HEIGHT = 48;
