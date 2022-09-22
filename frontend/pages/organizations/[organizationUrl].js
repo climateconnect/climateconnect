@@ -100,6 +100,7 @@ export default function OrganizationPage({
   const { user, locale } = useContext(UserContext);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
+  console.log(organization);
   return (
     <WideLayout
       title={organization ? organization.name : texts.not_found_error}

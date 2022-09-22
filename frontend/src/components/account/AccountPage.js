@@ -235,6 +235,7 @@ export default function AccountPage({
       .map((key, index) => {
         if (info[key]) {
           const i = getFullInfoElement(infoMetadata, key, info[key]);
+          console.log(i);
           const value = Array.isArray(i.value) ? i.value.join(", ") : i.value;
           const additionalText = i.additionalText ? i.additionalText : "";
           if (key === "parent_organization") {
@@ -283,38 +284,62 @@ export default function AccountPage({
             return <MiniHubPreviews hubs={i.value} />;
           } else if (i.type === "select" && value) {
             const textValue = i.options ? i.options.find((o) => o?.key === value).name : value;
-            return (
-              <div key={index}>
-                <div className={classes.selectContainer}>
-                  {isOrganization && (
-                    <div className={classes.getInvolvedContainer}>
+            const getInvolvedValue = i.key === "get_involved" ? value : "";
+            console.log(i.key, getInvolvedValue, i.value);
+            if (i.key === "get_involved") {
+              return (
+                <div key={index}>
+                  <div className={classes.selectContainer}>
+                    {isOrganization && (
+                      <div className={classes.getInvolvedContainer}>
+                        <div className={classes.sizeInvolvementSubtitleContent}>
+                          {" "}
+                          <InsertInvitationIcon fontSize="medium" />
+                          <div className={classes.marginRight} /> {i.name}{" "}
+                        </div>
+                        <div className={classes.content}>
+                          {getInvolvedValue}
+                        </div>
+                      </div>
+                    )}
+  
+                    <div className={classes.sizeContainer}>
                       <div className={classes.sizeInvolvementSubtitleContent}>
-                        {" "}
-                        <InsertInvitationIcon fontSize="medium" />
-                        <div className={classes.marginRight} /> How to get involved{" "}
+                        {isOrganization && (
+                          <>
+                            <GroupIcon /> <div className={classes.marginRight} />
+                          </>
+                        )}
+                        {i.name}
                       </div>
                       <div className={classes.content}>
-                        Contact the organization admin for more details
+                        {textValue ? textValue + additionalText : i.missingMessage}
                       </div>
-                    </div>
-                  )}
-
-                  <div className={classes.sizeContainer}>
-                    <div className={classes.sizeInvolvementSubtitleContent}>
-                      {isOrganization && (
-                        <>
-                          <GroupIcon /> <div className={classes.marginRight} />
-                        </>
-                      )}
-                      {i.name}
-                    </div>
-                    <div className={classes.content}>
-                      {textValue ? textValue + additionalText : i.missingMessage}
                     </div>
                   </div>
                 </div>
-              </div>
-            );
+              );
+            } else{
+              return(
+                <div key={index}>
+                   <div className={classes.sizeContainer}>
+                      <div className={classes.sizeInvolvementSubtitleContent}>
+                        {isOrganization && (
+                          <>
+                            <GroupIcon /> <div className={classes.marginRight} />
+                          </>
+                        )}
+                        {i.name}
+                      </div>
+                      <div className={classes.content}>
+                        {textValue ? textValue + additionalText : i.missingMessage}
+                      </div>
+                    </div>
+                  </div>
+              
+              );
+            }
+            
           } else if (value && !["detailled_description", "location", "checkbox"].includes(i.type)) {
             return (
               <div key={index}>

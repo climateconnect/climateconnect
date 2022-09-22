@@ -123,11 +123,17 @@ export default function getOrganizationInfoMetadata(locale, organization) {
         },
       ],
     },
+    get_involved: {
+      name: "How to get involved",
+      key: "get_involved",
+      type: "select",
+    },
     hubs: {
       name: `${texts.sectors_of_activity}`,
       key: "hubs",
       type: "hubs",
       helptext: texts.how_to_select_hubs,
     },
+   
   };
 }
