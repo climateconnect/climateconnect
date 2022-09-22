@@ -76,12 +76,9 @@ const useStyles = makeStyles((theme) => ({
   subtitle: {
     color: `${theme.palette.secondary.main}`,
     fontWeight: "bold",
-    marginBottom: theme.spacing(1),
-    marginTop: theme.spacing(1),
   },
   content: {
-    paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
+    paddingBottom: theme.spacing(2),
     color: `${theme.palette.secondary.main}`,
     fontSize: 16,
   },
@@ -101,6 +98,9 @@ const useStyles = makeStyles((theme) => ({
   },
   marginTop: {
     marginTop: theme.spacing(1),
+  },
+  marginBottom: {
+    marginBottom: theme.spacing(1),
   },
   marginRight: {
     marginRight: theme.spacing(0.5),
@@ -163,18 +163,16 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     //backgroundColor: "#000000",
     flexDirection: "column",
-
     width: "100%",
   },
   getInvolvedContainer: {
     display: "flex",
-    justifyContent: "flex-start",
     flexDirection: "column",
     width: "100%",
     marginRight: theme.spacing(1),
     //backgroundColor: "#A93226",
   },
-  sizeInvolvementSubtitleContent: {
+  subtitleWithIcon: {
     display: "flex",
     alignItems: "center",
     color: `${theme.palette.secondary.main}`,
@@ -255,7 +253,7 @@ export default function AccountPage({
             return (
               <div key={index} className={classes.infoElement}>
                 <div className={classes.subtitle}>{i.name}:</div>
-                <div className={classes.chipArray}>
+                <div className={classes.marginBottom}>
                   {i && i.value && i.value.length > 0
                     ? i.value.map((entry) => (
                         <Chip size="medium" label={entry} key={entry} className={classes.chip} />
@@ -284,29 +282,28 @@ export default function AccountPage({
           } else if (i.type === "select" && value) {
             if (isOrganization) {
               const orgSizeLabel = i.organization_size.name;
-              const orgSize = i.options.find((o) => o?.key === value.organization_size).name;
-              console.log(orgSize, value);
+              const orgSizeValue = i.options.find((o) => o?.key === value.organization_size).name;
 
               const getInvolvedLabel = i.get_involved.name;
               const getInvolvedValue = value.get_involved;
               return (
-                <div className={classes.selectContainer}>
-                  <div className={classes.getInvolvedContainer}>
-                    <div className={classes.sizeInvolvementSubtitleContent}>
-                      <InsertInvitationIcon />
-                      <div className={classes.marginRight} /> {getInvolvedLabel}
+                <div key={index}>
+                  <div className={classes.selectContainer}>
+                    <div className={classes.getInvolvedContainer}>
+                      <SubTitleWithContent
+                        subTitleIcon={{ icon: InsertInvitationIcon }}
+                        label={getInvolvedLabel}
+                        value={getInvolvedValue}
+                      />
                     </div>
-                    <div className={classes.content}>{getInvolvedValue}</div>
-                  </div>
 
-                  <div className={classes.sizeContainer}>
-                    <div className={classes.sizeInvolvementSubtitleContent}>
-                      <>
-                        <GroupIcon /> <div className={classes.marginRight} />
-                      </>
-                      {orgSizeLabel}
+                    <div className={classes.sizeContainer}>
+                      <SubTitleWithContent
+                        subTitleIcon={{ icon: GroupIcon }}
+                        label={orgSizeLabel}
+                        value={orgSizeValue}
+                      />
                     </div>
-                    <div className={classes.content}>{orgSize}</div>
                   </div>
                 </div>
               );
@@ -314,10 +311,10 @@ export default function AccountPage({
               const textValue = i.options ? i.options.find((o) => o?.key === value).name : value;
               return (
                 <div key={index}>
-                  <div className={classes.subtitle}>{i.name}:</div>
-                  <div className={classes.content}>
-                    {textValue ? textValue + additionalText : i.missingMessage}
-                  </div>
+                  <SubTitleWithContent
+                    label={i.name + ":"}
+                    value={textValue ? textValue + additionalText : i.missingMessage}
+                  />
                 </div>
               );
             }
@@ -328,10 +325,10 @@ export default function AccountPage({
           ) {
             return (
               <div key={index}>
-                <div className={classes.subtitle}>{i.name}:</div>
-                <div className={classes.content}>
-                  {value ? value + additionalText : i.missingMessage}
-                </div>
+                <SubTitleWithContent
+                  label={i.name + ":"}
+                  value={value ? value + additionalText : i.missingMessage}
+                />
               </div>
             );
           }
@@ -461,3 +458,23 @@ export default function AccountPage({
 const getFullInfoElement = (infoMetadata, key, value) => {
   return { ...infoMetadata[key], value: value };
 };
+
+function SubTitleWithContent({ subTitleIcon, label, value }) {
+  const classes = useStyles();
+  return (
+    <>
+      <div className={`${subTitleIcon ? classes.subtitleWithIcon : classes.subtitle}`}>
+        {subTitleIcon?.icon ? (
+          <>
+            <subTitleIcon.icon />
+            <div className={classes.marginRight} />
+            {label}
+          </>
+        ) : (
+          <>{label}</>
+        )}
+      </div>
+      <div className={classes.content}>{value}</div>
+    </>
+  );
+}

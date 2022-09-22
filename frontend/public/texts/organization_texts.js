@@ -281,7 +281,7 @@ export default function getOrganizationTexts({ organization, locale }) {
     },
     get_involved: {
       en: "How to get involved",
-      de: "Wie engagiere ich mich"
-    }
+      de: "Wie engagiere ich mich",
+    },
   };
 }
