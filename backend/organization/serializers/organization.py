@@ -19,6 +19,7 @@ from organization.utility.organization import (
     get_organization_about_section,
     get_organization_name,
     get_organization_short_description,
+    get_organization_get_involved,
 )
 
 
@@ -105,7 +106,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_get_involved(self,obj):
-        return obj.get_involved
+        return get_organization_get_involved(obj, get_language())
 
     def get_creator(self, obj):
         try:
