@@ -10,6 +10,7 @@ import Dashboard from "../dashboard/Dashboard";
 import ElementOnScreen from "../hooks/ElementOnScreen";
 import HubHeadlineContainer from "./HubHeadlineContainer";
 import StatBox from "./StatBox";
+import ContactAmbassadorButton from "./ContactAmbassadorButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -97,6 +98,7 @@ export default function HubContent({
   hubQuickInfoRef,
   hubProjectsButtonRef,
   isLocationHub,
+  hubAmbassador,
   location,
   allHubs,
   hubData,
@@ -158,6 +160,7 @@ export default function HubContent({
                   expanded={expanded}
                   handleClickExpand={handleClickExpand}
                   isLocationHub={isLocationHub}
+                  hubAmbassador={hubAmbassador}
                 />
               </div>
               {user && (
@@ -183,6 +186,7 @@ export default function HubContent({
               expanded={expanded}
               handleClickExpand={handleClickExpand}
               isLocationHub={isLocationHub}
+              hubAmbassador={hubAmbassador}
             />
           </div>
         )}
@@ -215,6 +219,7 @@ const BottomContent = ({
   quickInfo,
   expanded,
   handleClickExpand,
+  hubAmbassador,
   isLocationHub,
 }) => {
   const classes = useStyles();
@@ -252,6 +257,7 @@ const BottomContent = ({
           )}
         </Button>
       </div>
+      <ContactAmbassadorButton hubAmbassador={hubAmbassador} />
     </>
   );
 };

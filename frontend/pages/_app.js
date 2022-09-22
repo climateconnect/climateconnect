@@ -102,7 +102,7 @@ export default function MyApp({ Component, pageProps = {} }) {
     setState({
       ...state,
       notifications: notifications.filter((n) => n.id !== notificationId),
-    })
+    });
   };
 
   const refreshNotifications = async () => {

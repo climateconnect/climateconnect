@@ -65,7 +65,6 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(4),
   },
 
-
   showAllProjectsButton: {
     marginTop: theme.spacing(1),
     fontSize: 14,

@@ -18,8 +18,7 @@ const useStyles = makeStyles((theme) => ({
   },
   alert: (props) => ({
     width: "100%",
-    zIndex: 100,
-    marginTop: !props.donationCampaignRunning && theme.spacing(-2),
+    zIndex: 100
   }),
 }));
 
