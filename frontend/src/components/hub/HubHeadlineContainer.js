@@ -1,4 +1,4 @@
-import { makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { Button, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import OpenClimateMatchButton from "../climateMatch/OpenClimateMatchButton";
@@ -61,9 +61,6 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "right",
     height: 38,
     marginTop: theme.spacing(1),
-    [theme.breakpoints.down("sm")]: {
-      display: "none",
-    },
   },
 
   subHeadLineText: {
@@ -79,6 +76,11 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     padding: theme.spacing(1.5),
   },
+  signUpContainer: {
+    display: "flex",
+    justifyContent: "center",
+    marginTop: theme.spacing(1)
+  }
 }));
 
 export default function HubHeadlineContainer({ subHeadline, headline, isLocationHub, hubUrl }) {
@@ -102,12 +104,19 @@ export default function HubHeadlineContainer({ subHeadline, headline, isLocation
         {isLocationHub && (
           <>
             {!isNarrowScreen && <hr />}
-            <div className={classes.climateMatchButtonContainer}>
-              <OpenClimateMatchButton
-                hubUrl={hubUrl}
-                text={texts.get_active_now_with_climatematch}
-              />
-            </div>
+            
+              {isNarrowScreen ?
+                <div className={classes.signUpContainer}>
+                  <Button variant="contained" color="primary">{texts.sign_up_now}</Button>
+                </div>
+              :
+                <div className={classes.climateMatchButtonContainer}>
+                  <OpenClimateMatchButton
+                    hubUrl={hubUrl}
+                    text={texts.get_active_now_with_climatematch}
+                  />
+                </div>
+              }
           </>
         )}
       </div>
