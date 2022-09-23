@@ -128,6 +128,10 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
       en: `Contact ${hubAmbassador?.title}`,
       de: `${hubAmbassador?.title} kontaktieren`,
     },
+    all_locations: {
+      en: "All Locations",
+      de: "Alle Orte"
+    }
   };
 
   if (hubName === "Fashion") return { ...generalHubTexts, ...getFashionHubDescription() };
