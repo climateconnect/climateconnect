@@ -4,6 +4,7 @@ import getTexts from "../../../public/texts/texts";
 import OpenClimateMatchButton from "../climateMatch/OpenClimateMatchButton";
 import UserContext from "../context/UserContext";
 import theme from "../../themes/theme";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -107,7 +108,7 @@ export default function HubHeadlineContainer({ subHeadline, headline, isLocation
             
               {isNarrowScreen ?
                 <div className={classes.signUpContainer}>
-                  <Button variant="contained" color="primary">{texts.sign_up_now}</Button>
+                  <Button href={getLocalePrefix(locale) + "/signup"} variant="contained" color="primary">{texts.sign_up_now}</Button>
                 </div>
               :
                 <div className={classes.climateMatchButtonContainer}>
