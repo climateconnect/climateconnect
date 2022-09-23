@@ -416,7 +416,9 @@ class OrganizationAPIView(APIView):
             "organ",
             "website",
             "organization_size",
+            "get_involved",
         ]
+        print(request.data)
         for param in pass_through_params:
             if param in request.data:
                 setattr(organization, param, request.data[param])

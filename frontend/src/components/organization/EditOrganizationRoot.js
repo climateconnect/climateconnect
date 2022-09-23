@@ -42,6 +42,7 @@ export default function EditOrganizationRoot({
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
 
   const [editedOrganization, setEditedOrganization] = useState({ ...organization });
+  
   const texts = getTexts({
     page: "organization",
     locale: locale,
@@ -76,6 +77,7 @@ export default function EditOrganizationRoot({
   };
 
   const getChanges = (o, oldO) => {
+  
     const finalProfile = {};
     const org = { ...o, ...o.info };
     delete org.info;
@@ -86,10 +88,12 @@ export default function EditOrganizationRoot({
         if (!arraysEqual(oldOrg[k], org[k])) finalProfile[k] = org[k];
       } else if (oldOrg[k] !== org[k] && !(!oldOrg[k] && !org[k])) finalProfile[k] = org[k];
     });
+    console.log(finalProfile);
     return finalProfile;
   };
 
   const saveChanges = async (editedOrg, isTranslationsStep) => {
+    console.log(editedOrg);
     const error = verifyChanges(editedOrg, texts).error;
     //verify location is valid and notify user if it's not
     if (
@@ -113,7 +117,8 @@ export default function EditOrganizationRoot({
         payload.translations = getTranslationsWithoutRedundantKeys(
           getTranslationsFromObject(initialTranslations, "organization"),
           translations
-        );
+        )
+      console.log(payload);
       apiRequest({
         method: "patch",
         url: "/api/organizations/" + encodeURI(organization.url_slug) + "/",
@@ -215,6 +220,11 @@ const parseForRequest = async (org) => {
   const parsedOrg = {
     ...org,
   };
+  if (org.organization_size_and_involvement) {
+    parsedOrg.organization_size = org.organization_size_and_involvement.organization_size;
+    parsedOrg.get_involved = org.organization_size_and_involvement.get_involved;
+    delete(parsedOrg.organization_size_and_involvement);
+  }
   if (org.short_description) parsedOrg.short_description = org.short_description;
   if (org.parent_organization)
     parsedOrg.parent_organization = org.parent_organization ? org.parent_organization.id : null;
@@ -223,6 +233,7 @@ const parseForRequest = async (org) => {
   if (org.thumbnail_image) parsedOrg.thumbnail_image = await blobFromObjectUrl(org.thumbnail_image);
   if (org.image) parsedOrg.image = await blobFromObjectUrl(org.image);
   if (org.hubs) parsedOrg.hubs = org.hubs.map((h) => h.url_slug);
+  console.log(parsedOrg);
   return parsedOrg;
 };
 

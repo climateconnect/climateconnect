@@ -128,6 +128,7 @@ export default function getOrganizationInfoMetadata(locale, organization) {
       get_involved: {
         name: `${texts.get_involved}`,
         key: "get_involved",
+        helptext: "Give a short summary of how people can get involved with your organization (max 256 characters)"
       },
     },
 
