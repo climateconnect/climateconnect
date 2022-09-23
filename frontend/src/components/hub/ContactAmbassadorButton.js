@@ -1,4 +1,4 @@
-import { Button, Hidden, Typography } from "@material-ui/core";
+import { Avatar, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import { redirect } from "../../../public/lib/apiOperations";
@@ -9,6 +9,8 @@ import getTexts from "../../../public/texts/texts";
 import Cookies from "universal-cookie";
 import ContactCreatorButtonInfo from "../communication/contactcreator/ContactCreatorButtonInfo";
 import { getImageUrl } from "../../../public/lib/imageOperations";
+import SendIcon from "@material-ui/icons/Send";
+import theme from "../../themes/theme";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -18,11 +20,22 @@ const useStyles = makeStyles(() => ({
     right: "1%",
     display: "flex",
     flexDirection: "column",
-    maxWidth: 300
+    maxWidth: 300,
+  },
+  mobileButton: {
+    width: "100%",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+  },
+  mobileAvatar: {
+    margin: 1,
   },
 }));
 
-export default function ContactAmbassadorButton({ hubAmbassador }) {
+export default function ContactAmbassadorButton({ hubAmbassador, mobile }) {
   const classes = useStyles();
   const { locale, user } = useContext(UserContext);
   const cookies = new Cookies();
@@ -42,14 +55,35 @@ export default function ContactAmbassadorButton({ hubAmbassador }) {
     const chat = await startPrivateChat(hubAmbassador?.user, token, locale);
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
+  if (mobile) {
+    return (
+      <>
+        {hubAmbassador && (
+          <Button
+            className={classes.mobileButton}
+            variant="contained"
+            color="primary"
+            onClick={handleClickContact}
+            size="small"
+          >
+            <Avatar
+              className={classes.mobileAvatar}
+              src={getImageUrl(hubAmbassador?.user?.thumbnail_image)}
+            />
+            {texts.contact_ambassador}
+            <SendIcon />
+          </Button>
+        )}
+      </>
+    );
+  }
   return (
-    <Hidden xsDown>
+    <>
       {hubAmbassador && (
         <div className={classes.root} onClick={handleClickContact}>
           <ContactCreatorButtonInfo
             creatorName={`${hubAmbassador?.user?.first_name} ${hubAmbassador?.user?.last_name}`}
             creatorImageURL={getImageUrl(hubAmbassador?.user?.thumbnail_image)}
-            creatorsRoleInProject={hubAmbassador.title_de}
             customMessage={hubAmbassador.custom_message}
           />
           <Button variant="contained" color="primary">
@@ -57,6 +91,6 @@ export default function ContactAmbassadorButton({ hubAmbassador }) {
           </Button>
         </div>
       )}
-    </Hidden>
+    </>
   );
 }
