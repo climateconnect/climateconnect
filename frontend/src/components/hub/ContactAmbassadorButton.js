@@ -39,7 +39,7 @@ export default function ContactAmbassadorButton({ hubAmbassador, mobile }) {
   const classes = useStyles();
   const { locale, user } = useContext(UserContext);
   const cookies = new Cookies();
-  const token = cookies.get("token");
+  const token = cookies.get("auth_token");
   const texts = getTexts({ page: "hub", hubAmbassador: hubAmbassador, locale: locale });
 
   const handleClickContact = async (e) => {
