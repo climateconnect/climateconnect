@@ -161,6 +161,7 @@ export default function HubContent({
                   handleClickExpand={handleClickExpand}
                   isLocationHub={isLocationHub}
                   hubAmbassador={hubAmbassador}
+                  isNarrowScreen={isNarrowScreen}
                 />
               </div>
               {user && (
@@ -187,6 +188,7 @@ export default function HubContent({
               handleClickExpand={handleClickExpand}
               isLocationHub={isLocationHub}
               hubAmbassador={hubAmbassador}
+              isNarrowScreen={isNarrowScreen}
             />
           </div>
         )}
@@ -221,6 +223,7 @@ const BottomContent = ({
   handleClickExpand,
   hubAmbassador,
   isLocationHub,
+  isNarrowScreen,
 }) => {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -257,7 +260,7 @@ const BottomContent = ({
           )}
         </Button>
       </div>
-      <ContactAmbassadorButton hubAmbassador={hubAmbassador} />
+      {!isNarrowScreen && <ContactAmbassadorButton hubAmbassador={hubAmbassador} />}
     </>
   );
 };

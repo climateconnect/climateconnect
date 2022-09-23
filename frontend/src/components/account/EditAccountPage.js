@@ -244,7 +244,6 @@ export default function EditAccountPage({
   loadingSubmit,
   onClickCheckTranslations,
   allHubs,
-  type,
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });

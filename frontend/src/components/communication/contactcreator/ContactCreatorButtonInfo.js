@@ -8,7 +8,7 @@ const useStyles = makeStyles({
     justifyContent: "center",
     backgroundColor: "#F8F8F8",
     cursor: "pointer",
-    flexDirection: "column"
+    flexDirection: "column",
   },
   slideInRoot: {
     textAlign: "left",
@@ -23,20 +23,20 @@ const useStyles = makeStyles({
     height: 50,
     width: 50,
   },
-  customMessage:{
+  customMessage: {
     fontSize: 14,
-    fontStyle: "italic"
-  }
+    fontStyle: "italic",
+  },
 });
 
 export default function ContactCreatorButtonInfo({
   creatorName,
   creatorImageURL,
   creatorsRoleInProject,
-  customMessage
+  customMessage,
 }) {
   const classes = useStyles();
-
+  console.log("customMessage: "+customMessage)
   return (
     <Card className={classes.slideInCard} variant="outlined">
       <CardHeader
@@ -47,7 +47,13 @@ export default function ContactCreatorButtonInfo({
         }}
         avatar={<Avatar src={creatorImageURL} className={classes.avatar} />}
         title={creatorName}
-        subheader={creatorsRoleInProject ? creatorsRoleInProject : (<Typography className={classes.customMessage}>"{customMessage}"</Typography>)}
+        subheader={
+          creatorsRoleInProject ? (
+            creatorsRoleInProject
+          ) : (
+            <Typography className={classes.customMessage}>"{customMessage}"</Typography>
+          )
+        }
       />
     </Card>
   );
