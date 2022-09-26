@@ -8,7 +8,6 @@ import {
 } from "@material-ui/core";
 import _ from "lodash";
 import React, { useContext, useEffect, useState } from "react";
-import de from "react-timeago/lib/language-strings/de";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import { getNestedValue } from "../../../public/lib/generalOperations";
 import getTexts from "../../../public/texts/texts";
@@ -98,8 +97,6 @@ export default function TranslateTexts({
     locale: targetLanguage,
     organization: organization,
   });
-
-  console.log(data.language);
 
   const localeTexts = getTexts({
     page: pageName,
@@ -197,7 +194,7 @@ export default function TranslateTexts({
         else obj[key] = translations[key]?.translated_text;
         return obj;
       }, {});
-
+      console.log(translationsObject);
       handleChangeTranslationContent(targetLanguage, translationsObject);
       setWaitingForTranslation(false);
     } catch (e) {
@@ -283,8 +280,6 @@ export default function TranslateTexts({
                   targetLanguage={targetLanguage}
                   texts={texts}
                   targetLanguageTexts={targetLanguageTexts}
-                  primaryLanguage={data.language}
-                  locale={locale}
                 />
               ));
             } else
@@ -301,8 +296,6 @@ export default function TranslateTexts({
                   targetLanguage={targetLanguage}
                   texts={texts}
                   targetLanguageTexts={targetLanguageTexts}
-                  primaryLanguage={data.language}
-                  locale={locale}
                 />
               );
           })}
@@ -335,8 +328,6 @@ function TranslationBlock({
   noHeadline,
   texts,
   targetLanguageTexts,
-  primaryLanguage,
-  locale,
 }) {
   const classes = useStyles();
   const flatDataKey = dataKey.includes(".")
@@ -352,50 +343,30 @@ function TranslationBlock({
       handleOriginalTextChange(newArrayValue, dataKey, data);
     }
   };
-
-
-  const leftHeadlineText =
-    primaryLanguage === locale ? texts[headlineTextKey] : targetLanguageTexts[headlineTextKey];
-  const rightHeadlineText =
-    primaryLanguage !== locale ? texts[headlineTextKey] : targetLanguageTexts[headlineTextKey];
-
-  const leftBodyText =
-    primaryLanguage === locale
-      ? isInArray
-        ? getNestedValue(data, dataKey)[indexInArray]
-        : getNestedValue(data, dataKey)
-      : translations[targetLanguage] &&
-        (isInArray
-          ? translations[targetLanguage][flatDataKey][indexInArray]
-          : translations[targetLanguage][flatDataKey]);
-
-  const rigthBodyText =
-    primaryLanguage !== locale
-      ? isInArray
-        ? getNestedValue(data, dataKey)[indexInArray]
-        : getNestedValue(data, dataKey)
-      : translations[targetLanguage] &&
-        (isInArray
-          ? translations[targetLanguage][flatDataKey][indexInArray]
-          : translations[targetLanguage][flatDataKey]);
-
   return (
     <div className={classes.translationBlock}>
       <TranslationBlockElement
-        headline={leftHeadlineText}
+        headline={texts[headlineTextKey]}
         noHeadline={noHeadline}
         rows={rows}
-        content={leftBodyText}
+        content={
+          isInArray ? getNestedValue(data, dataKey)[indexInArray] : getNestedValue(data, dataKey)
+        }
         handleContentChange={(event) => {
           changeOriginalText(event.target.value, dataKey);
         }}
       />
       <TranslationBlockElement
-        headline={rightHeadlineText}
+        headline={targetLanguageTexts[headlineTextKey]}
         noHeadline={noHeadline}
         rows={rows}
         isTranslation
-        content={rigthBodyText}
+        content={
+          translations[targetLanguage] &&
+          (isInArray
+            ? translations[targetLanguage][flatDataKey][indexInArray]
+            : translations[targetLanguage][flatDataKey])
+        }
         handleContentChange={(event) => {
           handleTranslationChange(event.target.value, dataKey, indexInArray);
         }}
