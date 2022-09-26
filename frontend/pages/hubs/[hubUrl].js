@@ -1,7 +1,7 @@
 import { makeStyles, Typography } from "@material-ui/core";
 import parseHtml from "html-react-parser";
 import Head from "next/head";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../public/lib/apiOperations";
 import { applyNewFilters, getInitialFilters } from "../../public/lib/filterOperations";
@@ -35,15 +35,13 @@ const useStyles = makeStyles((theme) => ({
       paddingTop: theme.spacing(1),
     },
   },
-  contentUnderHeader: {
-    marginTop: 112,
-  },
   contentRef: {
     position: "absolute",
     top: -90,
   },
   moreInfoSoon: {
     fontWeight: 600,
+    maxWidth: 800,
     marginTop: theme.spacing(2),
     textAlign: "center",
   },
@@ -133,6 +131,7 @@ export default function Hub({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
   const token = new Cookies().get("auth_token");
+  const [hubAmbassador, setHubAmbassador] = useState(null);
 
   // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
   const [filters, setFilters] = useState(
@@ -159,6 +158,11 @@ export default function Hub({
   const resetTabsWhereFiltersWereApplied = () => {
     setTabsWhereFiltersWereApplied([]);
   };
+
+  useEffect(async () => {
+    const retrievedHubAmbassador = await getHubAmbassadorData(hubUrl, locale);
+    setHubAmbassador(retrievedHubAmbassador);
+  }, []);
 
   //Refs and state for tutorial
   const hubQuickInfoRef = useRef(null);
@@ -227,7 +231,7 @@ export default function Hub({
       {hubDescription && hubDescription.headContent && (
         <Head>{parseHtml(hubDescription.headContent)}</Head>
       )}
-      <WideLayout title={headline} fixedHeader headerBackground="#FFF" image={getImageUrl(image)}>
+      <WideLayout title={headline} headerBackground="#FFF" image={getImageUrl(image)} isHubPage>
         <div className={classes.contentUnderHeader}>
           <NavigationSubHeader hubName={name} allHubs={allHubs} isLocationHub={isLocationHub} />
           {<DonationCampaignInformation />}
@@ -242,6 +246,7 @@ export default function Hub({
           <HubContent
             hubQuickInfoRef={hubQuickInfoRef}
             headline={headline}
+            hubAmbassador={hubAmbassador}
             quickInfo={quickInfo}
             statBoxTitle={statBoxTitle}
             stats={stats}
@@ -269,6 +274,7 @@ export default function Hub({
               applyNewFilters={handleApplyNewFilters}
               customSearchBarLabels={customSearchBarLabels}
               errorMessage={errorMessage}
+              hubAmbassador={hubAmbassador}
               filters={filters}
               handleUpdateFilterValues={handleUpdateFilterValues}
               filterChoices={filterChoices}
@@ -324,7 +330,6 @@ const retrieveDescriptionFromWebflow = async (query, locale) => {
 };
 
 const getHubData = async (url_slug, locale) => {
-  console.log("getting data for hub " + url_slug);
   try {
     const resp = await apiRequest({
       method: "get",
@@ -336,6 +341,23 @@ const getHubData = async (url_slug, locale) => {
   } catch (err) {
     if (err.response && err.response.data)
       console.log("Error in getHubData: " + err.response.data.detail);
+    console.log(err);
+    return null;
+  }
+};
+
+const getHubAmbassadorData = async (url_slug, locale) => {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: `/api/hubs/${url_slug}/ambassador/`,
+      locale: locale,
+      shouldThrowError: true,
+    });
+    return resp.data;
+  } catch (err) {
+    if (err.response && err.response.data)
+      console.log("Error in getHubAmbassadorData: " + err.response.data.detail);
     console.log(err);
     return null;
   }

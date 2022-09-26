@@ -55,6 +55,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
+    marginLeft: 15,
   },
   carousel: {
     marginTop: theme.spacing(6),

@@ -16,6 +16,11 @@ logger = logging.getLogger(__name__)
 
 
 @app.task
+def testing_task():
+    logger.info(f"CELERY {5+4}")
+
+
+@app.task
 def schedule_automated_reminder_for_user_notifications():
     # Get all user_ids for people who have not checked their notification
     all_user_ids = list(

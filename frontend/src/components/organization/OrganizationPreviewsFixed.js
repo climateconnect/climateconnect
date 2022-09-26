@@ -9,7 +9,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
   },
   container: {
-    whiteSpace: "nowrap",
     overflow: "auto",
     display: "flex",
     justifyContent: "space-between",

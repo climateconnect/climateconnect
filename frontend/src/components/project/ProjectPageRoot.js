@@ -23,6 +23,7 @@ import ProjectInteractionButtons from "./Buttons/ProjectInteractionButtons";
 import ProjectCommentsContent from "./ProjectCommentsContent";
 import ProjectContent from "./ProjectContent";
 import ProjectOverview from "./ProjectOverview";
+import ProjectSideBar from "./ProjectSideBar";
 import ProjectTeamContent from "./ProjectTeamContent";
 
 const useStyles = makeStyles((theme) => ({
@@ -31,6 +32,11 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.grey[800],
     position: "relative",
   },
+
+  buttonText: {
+    color: theme.palette.primary.main,
+  },
+
   tabsContainerWithoutPadding: {
     padding: 0,
     display: "flex",
@@ -58,6 +64,12 @@ const useStyles = makeStyles((theme) => ({
   shareButtonContainer: {
     paddingRight: theme.spacing(4),
   },
+
+  showAllProjectsButton: {
+    marginTop: theme.spacing(1),
+    fontSize: 14,
+    width: "100%",
+  },
 }));
 
 export default function ProjectPageRoot({
@@ -75,13 +87,18 @@ export default function ProjectPageRoot({
   numberOfFollowers,
   handleLike,
   handleFollow,
+  similarProjects,
+  showSimilarProjects,
+  handleHideContent,
 }) {
   const visibleFooterHeight = VisibleFooterHeight({});
   const tabContentRef = useRef(null);
   const tabContentContainerSpaceToRight = ElementSpaceToRight({ el: tabContentRef.current });
-
-  const classes = useStyles();
   const { locale, pathName } = useContext(UserContext);
+  const classes = useStyles({
+    showSimilarProjects: showSimilarProjects,
+    locale: locale,
+  });
 
   const texts = getTexts({
     locale: locale,
@@ -93,7 +110,9 @@ export default function ProjectPageRoot({
   const screenSize = {
     belowTiny: useMediaQuery((theme) => theme.breakpoints.down("xs")),
     belowSmall: useMediaQuery((theme) => theme.breakpoints.down("sm")),
-    belowMedium: useMediaQuery("(max-width:1100px)"),
+    belowMedium: showSimilarProjects
+      ? useMediaQuery("(max-width:1300px)")
+      : useMediaQuery("(max-width:1100px)"),
     belowLarge: useMediaQuery((theme) => theme.breakpoints.down("xl")),
   };
 
@@ -156,7 +175,6 @@ export default function ProjectPageRoot({
     // and projects/ prefix. For example,
     // "/projects/Anotherproject6?projectId=Anotherproject6" -> "Anotherproject6"
     const projectName = pathName?.split("/")[2].split("?")[0];
-
     // Also strip any trailing '#' too.
     const strippedProjectName = projectName.endsWith("#") ? projectName.slice(0, -1) : projectName;
 
@@ -420,6 +438,7 @@ export default function ProjectPageRoot({
   const dialogTitleShareButton = texts.tell_others_about_this_project;
 
   const latestParentComment = [project.comments[0]];
+
   return (
     <div className={classes.root}>
       <ProjectOverview
@@ -470,6 +489,7 @@ export default function ProjectPageRoot({
             <Tab label={discussionTabLabel()} className={classes.tab} />
           </Tabs>
         </div>
+
         {!screenSize.belowSmall && (
           <SocialMediaShareButton
             containerClassName={classes.shareButtonContainer}
@@ -485,6 +505,31 @@ export default function ProjectPageRoot({
             dialogTitle={dialogTitleShareButton}
           />
         )}
+      </Container>
+      <Container className={classes.projectInteractionButtonContainer}>
+        <ProjectInteractionButtons
+          screenSize={screenSize}
+          project={project}
+          projectAdmin={projectAdmin}
+          handleClickContact={handleClickContact}
+          hasAdminPermissions={hasAdminPermissions}
+          texts={texts}
+          visibleFooterHeight={visibleFooterHeight}
+          isUserFollowing={isUserFollowing}
+          isUserLiking={isUserLiking}
+          handleToggleFollowProject={handleToggleFollowProject}
+          handleToggleLikeProject={handleToggleLikeProject}
+          toggleShowFollowers={toggleShowFollowers}
+          followingChangePending={followingChangePending}
+          likingChangePending={likingChangePending}
+          messageButtonIsVisible={messageButtonIsVisible}
+          contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
+          tabContentContainerSpaceToRight={tabContentContainerSpaceToRight}
+          numberOfFollowers={numberOfFollowers}
+          numberOfLikes={numberOfLikes}
+          bindLike={bindLike}
+          bindFollow={bindFollow}
+        />
       </Container>
 
       <Container className={classes.tabContent} ref={tabContentRef}>
@@ -512,6 +557,7 @@ export default function ProjectPageRoot({
             leaveProject={requestLeaveProject}
           />
         </TabContent>
+
         <TabContent value={tabValue} index={2}>
           <ProjectCommentsContent
             project={project}
@@ -520,32 +566,18 @@ export default function ProjectPageRoot({
             setCurComments={setCurComments}
           />
         </TabContent>
+        {screenSize.belowSmall && (
+          <ProjectSideBar
+            showSimilarProjects={showSimilarProjects}
+            isSmallScreen
+            texts={texts}
+            handleHideContent={handleHideContent}
+            similarProjects={similarProjects}
+            locale={locale}
+          />
+        )}
       </Container>
-      <Container className={classes.projectInteractionButtonContainer}>
-        <ProjectInteractionButtons
-          screenSize={screenSize}
-          project={project}
-          projectAdmin={projectAdmin}
-          handleClickContact={handleClickContact}
-          hasAdminPermissions={hasAdminPermissions}
-          texts={texts}
-          visibleFooterHeight={visibleFooterHeight}
-          isUserFollowing={isUserFollowing}
-          isUserLiking={isUserLiking}
-          handleToggleFollowProject={handleToggleFollowProject}
-          handleToggleLikeProject={handleToggleLikeProject}
-          toggleShowFollowers={toggleShowFollowers}
-          followingChangePending={followingChangePending}
-          likingChangePending={likingChangePending}
-          messageButtonIsVisible={messageButtonIsVisible}
-          contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
-          tabContentContainerSpaceToRight={tabContentContainerSpaceToRight}
-          numberOfFollowers={numberOfFollowers}
-          numberOfLikes={numberOfLikes}
-          bindLike={bindLike}
-          bindFollow={bindFollow}
-        />
-      </Container>
+
       <ConfirmDialog
         open={confirmDialogOpen.follow}
         onClose={onFollowDialogClose}
@@ -589,6 +621,7 @@ export default function ProjectPageRoot({
         confirmText={texts.yes}
         cancelText={texts.no}
       />
+
       <Tutorial
         fixedPosition
         pointerRefs={{

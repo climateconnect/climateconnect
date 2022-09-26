@@ -7,6 +7,7 @@ import { getAllChangedMembers, hasGreaterRole } from "../../../public/lib/manage
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ManageMembers from "../manageMembers/ManageMembers";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -19,6 +20,7 @@ const useStyles = makeStyles((theme) => {
     },
     button: {
       marginRight: theme.spacing(2),
+      marginLeft: theme.spacing(1),
     },
     buttonsContainer: {
       height: 40,
@@ -46,6 +48,9 @@ export default function ManageOrganizationMembers({
   const canEdit = (member) => {
     return member.id === user.id || hasGreaterRole(user_role.role_type, member.role.role_type);
   };
+
+  const router = useRouter();
+  const isCreationStage = router.query.isCreationStage;
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -157,12 +162,11 @@ export default function ManageOrganizationMembers({
         <div className={classes.buttonsContainer}>
           <div className={classes.buttons}>
             <Button
-              className={classes.button}
               href={getLocalePrefix(locale) + "/organizations/" + organization.url_slug}
               variant="contained"
               color="secondary"
             >
-              {texts.cancel}
+              {isCreationStage ? texts.skip_for_now : texts.cancel}
             </Button>
             <Button className={classes.button} variant="contained" color="primary" type="submit">
               {texts.save}

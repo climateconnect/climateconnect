@@ -1,5 +1,6 @@
 import {
   Avatar,
+  IconButton,
   Link,
   ListItemAvatar,
   ListItemIcon,
@@ -11,12 +12,19 @@ import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../../public/lib/imageOperations";
 import UserContext from "../../context/UserContext";
 import { StyledMenuItem } from "./Notification";
+import CloseIcon from "@material-ui/icons/Close";
+import Cookies from "universal-cookie";
 
 const useStyles = makeStyles((theme) => {
   return {
     messageSender: {
       fontWeight: 600,
+      width: "90%",
       whiteSpace: "normal",
+      overflow: "hidden",
+      WebkitBoxOrient: "vertical",
+      display: "-webkit-box",
+      wordBreak: "break-word",
     },
     listItemText: {
       whiteSpace: "normal",
@@ -27,9 +35,17 @@ const useStyles = makeStyles((theme) => {
       marginTop: theme.spacing(1),
     },
     notificationText: {
+      width: "90%",
+      whiteSpace: "normal",
       overflow: "hidden",
-      textOverflow: "ellipsis",
-      whiteSpace: "nowrap",
+      WebkitBoxOrient: "vertical",
+      display: "-webkit-box",
+      WebkitLineClamp: "1",
+      wordBreak: "break-word",
+    },
+    deleteIcon: {
+      position: "absolute",
+      right: 0,
     },
   };
 });
@@ -40,21 +56,32 @@ export default function GenericNotification({
   secondaryText,
   notificationIcon,
   avatar,
+  notification,
 }) {
-  const { locale } = useContext(UserContext);
+  const token = new Cookies().get("auth_token");
+  const { locale, setNotificationsRead, refreshNotifications, hideNotification } = useContext(
+    UserContext
+  );
   const classes = useStyles();
+
+  const deleteNotification = async () => {
+    hideNotification(notification.id);
+    await setNotificationsRead(token, [notification], locale);
+    await refreshNotifications();
+  };
+
   return (
-    <Link href={getLocalePrefix(locale) + link} underline="none">
-      <StyledMenuItem>
-        {avatar ? (
-          <ListItemAvatar>
-            <Avatar alt={avatar.alt} src={getImageUrl(avatar.image)} />
-          </ListItemAvatar>
-        ) : (
-          <ListItemIcon>
-            <notificationIcon.icon />
-          </ListItemIcon>
-        )}
+    <StyledMenuItem>
+      {avatar ? (
+        <ListItemAvatar>
+          <Avatar alt={avatar.alt} src={getImageUrl(avatar.image)} />
+        </ListItemAvatar>
+      ) : (
+        <ListItemIcon>
+          <notificationIcon.icon />
+        </ListItemIcon>
+      )}
+      <Link href={getLocalePrefix(locale) + link} underline="none">
         <ListItemText
           primary={primaryText}
           secondary={secondaryText}
@@ -65,7 +92,10 @@ export default function GenericNotification({
             className: classes.notificationText,
           }}
         />
-      </StyledMenuItem>
-    </Link>
+      </Link>
+      <IconButton onClick={deleteNotification} className={classes.deleteIcon}>
+        <CloseIcon />
+      </IconButton>
+    </StyledMenuItem>
   );
 }

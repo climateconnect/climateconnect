@@ -16,10 +16,9 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     margin: `${theme.spacing(4)}px 0`,
   },
-  alert: (props) => ({
+  alert: () => ({
     width: "100%",
     zIndex: 100,
-    marginTop: !props.donationCampaignRunning && theme.spacing(-2),
   }),
 }));
 
@@ -51,7 +50,7 @@ export default function Layout({
       {isLoading ? (
         <LoadingContainer headerHeight={113} footerHeight={80} />
       ) : (
-        <Container maxWidth="lg" component="main">
+        <>
           {(message || initialMessage) && !(hideAlertMessage === message) && (
             <Alert
               className={classes.alert}
@@ -65,15 +64,17 @@ export default function Layout({
               {getMessageFromUrl(message ? message : initialMessage)}
             </Alert>
           )}
-          <Container maxWidth="sm">
-            {!hideHeadline && (
-              <Typography component="h1" variant="h5" className={classes.mainHeading}>
-                {title}
-              </Typography>
-            )}
+          <Container maxWidth="lg" component="main">
+            <Container maxWidth="sm">
+              {!hideHeadline && (
+                <Typography component="h1" variant="h5" className={classes.mainHeading}>
+                  {title}
+                </Typography>
+              )}
+            </Container>
+            {children}
           </Container>
-          {children}
-        </Container>
+        </>
       )}
       <Footer />
     </LayoutWrapper>
