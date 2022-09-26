@@ -226,7 +226,8 @@ class CreateOrganizationView(APIView):
             texts["short_description"] = request.data["short_description"]
         if "about" in request.data:
             texts["about"] = request.data["about"]
-
+        if "get_involved" in request.data:
+            texts["get_involved"] = request.data["get_involved"]
         try:
             translations = get_translations(
                 texts,
@@ -288,6 +289,8 @@ class CreateOrganizationView(APIView):
                 request.data["organization_size"]
             ):
                 organization.organization_size = request.data["organization_size"]
+            if "get_involved" in request.data:
+                organization.get_involved = request.data["get_involved"]
             if "hubs" in request.data:
                 hubs = []
                 for hub_url_slug in request.data["hubs"]:
@@ -401,6 +404,7 @@ class OrganizationAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, url_slug, format=None):
+        print(request.data)
         try:
             organization = Organization.objects.get(url_slug=str(url_slug))
         except Organization.DoesNotExist:
@@ -418,7 +422,6 @@ class OrganizationAPIView(APIView):
             "organization_size",
             "get_involved",
         ]
-        print(request.data)
         for param in pass_through_params:
             if param in request.data:
                 setattr(organization, param, request.data[param])
@@ -480,6 +483,7 @@ class OrganizationAPIView(APIView):
             {"key": "about", "translation_key": "about_translation"},
             {"key": "school", "translation_key": "school_translation"},
             {"key": "organ", "translation_key": "organ_translation"},
+            {"key": "get_involved", "translation_key": "get_involved_translation"}
         ]
 
         edit_translations(

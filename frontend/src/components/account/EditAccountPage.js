@@ -498,8 +498,10 @@ export default function EditAccountPage({
         return displayInfoArrayData(key, i);
       } else if (i.type === "select") {
         if (isOrganization) {
-         
           console.log(i);
+          const valuesThatDisableField = [1,3]; // we can manually set which types we don't want to have this feature for
+          const truthValues = (valuesThatDisableField.map( val => (editedAccount.types.includes(val))));      
+          const shouldTextFieldBeDisabled = truthValues.includes(true) || editedAccount.types.length === 0;     
           return (<>
             <div key={key} className={classes.infoElement}>
             <SelectField
@@ -510,7 +512,7 @@ export default function EditAccountPage({
               onChange={handleChange}
             />
           </div>
-                
+          
                  <Typography className={classes.subtitle}>
                    {i.get_involved.name}
                    {i.get_involved.helptext && (
@@ -522,6 +524,7 @@ export default function EditAccountPage({
                    )}
                  </Typography>
                  <TextField
+                   disabled={shouldTextFieldBeDisabled}
                    required={i.required}
                    fullWidth
                    value={i.value.get_involved}
@@ -530,6 +533,7 @@ export default function EditAccountPage({
                    onChange={(event) =>handleTextFieldChange("organization_size_and_involvement", event.target.value)}
                  />
                  <div className={classes.marginBottom}/>
+                
              </>
           );
         }

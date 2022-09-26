@@ -93,7 +93,6 @@ export default function EditOrganizationRoot({
   };
 
   const saveChanges = async (editedOrg, isTranslationsStep) => {
-    console.log(editedOrg);
     const error = verifyChanges(editedOrg, texts).error;
     //verify location is valid and notify user if it's not
     if (
@@ -204,6 +203,11 @@ export default function EditOrganizationRoot({
                   rows: 9,
                   headlineTextKey: "about",
                 },
+                {
+                  textKey: "info.organization_size_and_involvement.get_involved",
+                  rows: 5,
+                  headlineTextKey: "get_involved"
+                },
               ]}
               changeTranslationLanguages={changeTranslationLanguages}
             />
@@ -233,7 +237,7 @@ const parseForRequest = async (org) => {
   if (org.thumbnail_image) parsedOrg.thumbnail_image = await blobFromObjectUrl(org.thumbnail_image);
   if (org.image) parsedOrg.image = await blobFromObjectUrl(org.image);
   if (org.hubs) parsedOrg.hubs = org.hubs.map((h) => h.url_slug);
-  console.log(parsedOrg);
+ 
   return parsedOrg;
 };
 

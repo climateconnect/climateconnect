@@ -59,8 +59,18 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
     setErrorMessages(newErrorMessages);
     window.scrollTo(0, 0);
   };
+  const { user, locale, locales } = useContext(UserContext);
+  const texts = getTexts({ page: "organization", locale: locale });
+  const steps = ["basicorganizationinfo", "detailledorganizationinfo", "checktranslations"];
+  const [curStep, setCurStep] = useState(steps[0]);
+  const locationInputRef = useRef(null);
+  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
+  const [translations, setTranslations] = useState({});
+  const [sourceLanguage, setSourceLanguage] = useState(locale);
+  const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== locale));
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
 
-  const [organizationInfo, setOrganizationInfo] = React.useState({
+  const [organizationInfo, setOrganizationInfo] = useState({
     name: "",
     hasparentorganization: false,
     parentorganization: "",
@@ -72,21 +82,14 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       short_description: "",
       website: "",
       about: "",
-      organization_size: "",
+      organization_size_and_involvement: {
+        get_involved: "",
+        organization_size: 0,
+      } ,
       hubs: [],
     },
     types: [],
   });
-  const { user, locale, locales } = useContext(UserContext);
-  const texts = getTexts({ page: "organization", locale: locale });
-  const steps = ["basicorganizationinfo", "detailledorganizationinfo", "checktranslations"];
-  const [curStep, setCurStep] = React.useState(steps[0]);
-  const locationInputRef = useRef(null);
-  const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
-  const [translations, setTranslations] = React.useState({});
-  const [sourceLanguage, setSourceLanguage] = useState(locale);
-  const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== locale));
-  const [loadingSubmit, setLoadingSubmit] = useState(false);
 
   const changeTranslationLanguages = ({ newLanguagesObject }) => {
     if (newLanguagesObject.sourceLanguage) setSourceLanguage(newLanguagesObject.sourceLanguage);
@@ -123,7 +126,17 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
     });
   };
 
+  const assignTagTypeToID = (values) => {
+    const tagName = values['orgtypes'];
+    const location = tagOptions.map(option => option.name===tagName); 
+    const tagId = [(location.findIndex(loc => loc === true)) +1 ]; // +1 because id's start at 1 
+    return tagId;
+  } 
+
   const handleBasicInfoSubmit = async (event, values) => {
+
+    values.orgtypes = assignTagTypeToID(values);
+    console.log(values);
     event.preventDefault();
     try {
       //Short circuit if there is no parent organization
@@ -166,11 +179,13 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         });
       } else {
         const location = getLocationValue(values, "location");
+       
         setOrganizationInfo({
           ...organizationInfo,
           name: values.organizationname,
           parentorganization: values.parentorganizationname,
           location: parseLocation(location),
+          types: values.orgtypes,
         });
         setCurStep(steps[1]);
       }
@@ -194,6 +209,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
 
   const handleDetailledInfoSubmit = async (account) => {
     //If the language is not language, short circuit and allow users to check the english translations for their texts
+    console.log(account);
     const organizationToSubmit = await parseOrganizationForRequest(
       account,
       user,
@@ -201,6 +217,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       translations,
       sourceLanguage
     );
+    console.log(account);
     if (!legacyModeEnabled && !isLocationValid(organizationToSubmit.location)) {
       indicateWrongLocation(
         locationInputRef,
@@ -303,6 +320,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
           locationInputRef={locationInputRef}
           locationOptionsOpen={locationOptionsOpen}
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+          tagOptions={tagOptions}
         />
       </Layout>
     );
@@ -341,6 +359,11 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
           introTextKey="translate_organization_intro"
           textsToTranslate={[
             {
+              textKey: "name",
+              rows: 2,
+              headlineTextKey: "organization_name",
+            },
+            {
               textKey: "info.short_description",
               rows: 5,
               headlineTextKey: "short_description",
@@ -350,6 +373,12 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
               rows: 10,
               headlineTextKey: "about",
             },
+            {
+              textKey: "info.organization_size_and_involvement.get_involved",
+              rows: 5,
+              headlineTextKey: "get_involved"
+            },
+           
           ]}
           organization={organizationInfo}
           changeTranslationLanguages={changeTranslationLanguages}
@@ -413,7 +442,8 @@ const parseOrganizationForRequest = async (o, user, rolesOptions, translations, 
     location: o.info.location,
     website: o.info.website,
     short_description: o.info.short_description,
-    organization_size: o.info.organization_size,
+    organization_size:  o.info.organization_size_and_involvement.organization_size,
+    get_involved: o.info.organization_size_and_involvement.get_involved,
     hubs: o.info.hubs.map((h) => h.url_slug),
     about: o.info.about,
     organization_tags: o.types,

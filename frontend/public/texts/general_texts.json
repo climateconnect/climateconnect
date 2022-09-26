@@ -695,6 +695,10 @@
     "en": "280 characters max",
     "de": "Maximal 280 Zeichen"
   },
+  "twohundred_fifty_six_chars_max": {
+    "en": "256 characters max",
+    "de": "Maximal 256 Zeichen"
+  },
   "make_this_user_the_creator": {
     "en": "Make this user the Super Admin",
     "de": "Zum Super Admin machen"

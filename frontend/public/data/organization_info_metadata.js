@@ -6,7 +6,7 @@ import SchoolIcon from "@material-ui/icons/School";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import getTexts from "../texts/texts";
 
-export default function getOrganizationInfoMetadata(locale, organization) {
+export default function getOrganizationInfoMetadata(locale, organization, isEditing) {
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   return {
     short_description: {
@@ -126,9 +126,9 @@ export default function getOrganizationInfoMetadata(locale, organization) {
         key: "organization_size",
       },
       get_involved: {
-        name: `${texts.get_involved}`,
+        name: isEditing ? `${texts.get_involved} (${texts.twohundred_fifty_six_chars_max})` : texts.get_involved ,
         key: "get_involved",
-        helptext: "Give a short summary of how people can get involved with your organization (max 256 characters)"
+        helptext: texts.get_involved_helptext,
       },
     },
 
