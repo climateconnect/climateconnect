@@ -318,6 +318,7 @@ export default function EditProjectRoot({
             textsToTranslate={textsToTranslate}
             pageName="project"
             introTextKey="translate_project_intro"
+            submitButtonText={texts.save}
           />
         </>
       )}
