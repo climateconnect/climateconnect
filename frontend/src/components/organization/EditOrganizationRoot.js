@@ -42,7 +42,7 @@ export default function EditOrganizationRoot({
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
 
   const [editedOrganization, setEditedOrganization] = useState({ ...organization });
-  
+
   const texts = getTexts({
     page: "organization",
     locale: locale,
@@ -77,7 +77,6 @@ export default function EditOrganizationRoot({
   };
 
   const getChanges = (o, oldO) => {
-  
     const finalProfile = {};
     const org = { ...o, ...o.info };
     delete org.info;
@@ -116,7 +115,7 @@ export default function EditOrganizationRoot({
         payload.translations = getTranslationsWithoutRedundantKeys(
           getTranslationsFromObject(initialTranslations, "organization"),
           translations
-        )
+        );
       console.log(payload);
       apiRequest({
         method: "patch",
@@ -206,7 +205,7 @@ export default function EditOrganizationRoot({
                 {
                   textKey: "info.organization_size_and_involvement.get_involved",
                   rows: 5,
-                  headlineTextKey: "get_involved"
+                  headlineTextKey: "get_involved",
                 },
               ]}
               changeTranslationLanguages={changeTranslationLanguages}
@@ -227,7 +226,7 @@ const parseForRequest = async (org) => {
   if (org.organization_size_and_involvement) {
     parsedOrg.organization_size = org.organization_size_and_involvement.organization_size;
     parsedOrg.get_involved = org.organization_size_and_involvement.get_involved;
-    delete(parsedOrg.organization_size_and_involvement);
+    delete parsedOrg.organization_size_and_involvement;
   }
   if (org.short_description) parsedOrg.short_description = org.short_description;
   if (org.parent_organization)
@@ -237,7 +236,7 @@ const parseForRequest = async (org) => {
   if (org.thumbnail_image) parsedOrg.thumbnail_image = await blobFromObjectUrl(org.thumbnail_image);
   if (org.image) parsedOrg.image = await blobFromObjectUrl(org.image);
   if (org.hubs) parsedOrg.hubs = org.hubs.map((h) => h.url_slug);
- 
+
   return parsedOrg;
 };
 

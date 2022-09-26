@@ -281,28 +281,28 @@ export default function AccountPage({
             return <MiniHubPreviews hubs={i.value} />;
           } else if (i.type === "select" && value) {
             if (isOrganization) {
-              const valuesThatHideGetInvolved = [1,3]; // we can manually set which types we don't want to have this feature for
-              const truthValues = (valuesThatHideGetInvolved.map( val => (account.types.includes(val))));      
-              const hideGetInvolvedField = truthValues.includes(true) || account.types.length === 0;     
-              console.log(hideGetInvolvedField);
+              const tagIdsThatHideGetInvolved = [1, 3]; // we can manually set which types we don't want to have this feature for
+              const tagIds = checkForIdsThatHideField(tagIdsThatHideGetInvolved, account.types);
+              const hideGetInvolvedField = containsValue(tagIds) || account.types.length === 0;
+
               const orgSizeLabel = i.organization_size.name;
               const orgSizeValue = i.options.find((o) => o?.key === value.organization_size).name;
 
               const getInvolvedLabel = i.get_involved.name;
               const getInvolvedValue = value.get_involved;
               return (
-                
                 <div key={index}>
                   <div className={classes.selectContainer}>
-                {!hideGetInvolvedField && (   <div className={classes.getInvolvedContainer}>
-                    <SubTitleWithContent
-                        subTitleIcon={{ icon: InsertInvitationIcon }}
-                        label={getInvolvedLabel}
-                        value={getInvolvedValue}
-                      />
-                    </div>
-) }
-                 
+                    {!hideGetInvolvedField && (
+                      <div className={classes.getInvolvedContainer}>
+                        <SubTitleWithContent
+                          subTitleIcon={{ icon: InsertInvitationIcon }}
+                          label={getInvolvedLabel}
+                          value={getInvolvedValue}
+                        />
+                      </div>
+                    )}
+
                     <div className={classes.sizeContainer}>
                       <SubTitleWithContent
                         subTitleIcon={{ icon: GroupIcon }}
@@ -483,4 +483,12 @@ function SubTitleWithContent({ subTitleIcon, label, value }) {
       <div className={classes.content}>{value}</div>
     </>
   );
+}
+
+function containsValue(arr) {
+  return arr.some((element) => element !== undefined);
+}
+
+function checkForIdsThatHideField(arr, orgTypes) {
+  return arr.map((id) => orgTypes.find((type) => type.id === id));
 }

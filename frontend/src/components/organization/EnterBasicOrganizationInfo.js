@@ -24,7 +24,7 @@ export default function EnterBasicOrganizationInfo({
   locationInputRef,
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
-  tagOptions
+  tagOptions,
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
@@ -82,7 +82,6 @@ export default function EnterBasicOrganizationInfo({
         defaultValue: tagOptions[0].name,
       },
       key: "orgtypes",
-    
     },
     {
       required: true,

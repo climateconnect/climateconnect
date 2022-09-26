@@ -284,9 +284,10 @@ export default function getOrganizationTexts({ organization, locale }) {
       de: "Wie engagiere ich mich",
     },
     get_involved_helptext: {
-      en: "Give a short summary of how people can get involved with your organization. This option is only available to certain types of organizations.",
-      de: "Beschreibe kurz wie man sich mit deiner Organisation eingagieren kann. Dieser Option wird nur bei bestimmten Organisationstypen verfügbar sein.",
-    }
-   
+      en:
+        "Give a short summary of how people can get involved with your organization. This option is only available to certain types of organizations.",
+      de:
+        "Beschreibe kurz wie man sich mit deiner Organisation eingagieren kann. Dieser Option wird nur bei bestimmten Organisationstypen verfügbar sein.",
+    },
   };
 }

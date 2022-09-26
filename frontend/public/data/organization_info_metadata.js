@@ -126,7 +126,9 @@ export default function getOrganizationInfoMetadata(locale, organization, isEdit
         key: "organization_size",
       },
       get_involved: {
-        name: isEditing ? `${texts.get_involved} (${texts.twohundred_fifty_six_chars_max})` : texts.get_involved ,
+        name: isEditing
+          ? `${texts.get_involved} (${texts.twohundred_fifty_six_chars_max})`
+          : texts.get_involved,
         key: "get_involved",
         helptext: texts.get_involved_helptext,
       },

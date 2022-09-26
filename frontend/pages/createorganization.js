@@ -85,7 +85,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       organization_size_and_involvement: {
         get_involved: "",
         organization_size: 0,
-      } ,
+      },
       hubs: [],
     },
     types: [],
@@ -127,14 +127,13 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
   };
 
   const assignTagTypeToID = (values) => {
-    const tagName = values['orgtypes'];
-    const location = tagOptions.map(option => option.name===tagName); 
-    const tagId = [(location.findIndex(loc => loc === true)) +1 ]; // +1 because id's start at 1 
+    const tagName = values["orgtypes"];
+    const location = tagOptions.map((option) => option.name === tagName);
+    const tagId = [location.findIndex((loc) => loc === true) + 1]; // +1 because id's start at 1
     return tagId;
-  } 
+  };
 
   const handleBasicInfoSubmit = async (event, values) => {
-
     values.orgtypes = assignTagTypeToID(values);
     console.log(values);
     event.preventDefault();
@@ -179,7 +178,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         });
       } else {
         const location = getLocationValue(values, "location");
-       
+
         setOrganizationInfo({
           ...organizationInfo,
           name: values.organizationname,
@@ -376,9 +375,8 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
             {
               textKey: "info.organization_size_and_involvement.get_involved",
               rows: 5,
-              headlineTextKey: "get_involved"
+              headlineTextKey: "get_involved",
             },
-           
           ]}
           organization={organizationInfo}
           changeTranslationLanguages={changeTranslationLanguages}
@@ -442,7 +440,7 @@ const parseOrganizationForRequest = async (o, user, rolesOptions, translations, 
     location: o.info.location,
     website: o.info.website,
     short_description: o.info.short_description,
-    organization_size:  o.info.organization_size_and_involvement.organization_size,
+    organization_size: o.info.organization_size_and_involvement.organization_size,
     get_involved: o.info.organization_size_and_involvement.get_involved,
     hubs: o.info.hubs.map((h) => h.url_slug),
     about: o.info.about,
