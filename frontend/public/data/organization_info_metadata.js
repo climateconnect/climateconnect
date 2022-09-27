@@ -85,7 +85,7 @@ export default function getOrganizationInfoMetadata(locale, organization, isEdit
       helptext: texts.how_to_describe_organization,
     },
     organization_size_and_involvement: {
-      type: "select",
+      type: "selectwithtext",
       options: [
         {
           key: 0,
@@ -127,7 +127,7 @@ export default function getOrganizationInfoMetadata(locale, organization, isEdit
       },
       get_involved: {
         name: isEditing
-          ? `${texts.get_involved} (${texts.twohundred_fifty_six_chars_max})`
+          ? `${texts.get_involved} (${texts.twohundred_fifty_chars_max})`
           : texts.get_involved,
         key: "get_involved",
         helptext: texts.get_involved_helptext,

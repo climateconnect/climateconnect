@@ -111,6 +111,7 @@ export default function Form({
   const [values, setValues] = React.useState(
     fields.reduce((obj, field) => {
       if (field.select) obj[field.key] = field.select.defaultValue ? field.select.defaultValue : "";
+      else if (field.multiselect) obj[field.key] = field.selectedValues ? field.selectedValues : [];
       else if (field.value) obj[field.key] = field.value;
       else if (field.type === "checkbox" || field.type === "switch")
         obj[field.key] = field.checked ? field.checked : false;
@@ -206,12 +207,32 @@ export default function Form({
                 <SelectField
                   controlledValue={{ name: values[field.key] }}
                   controlled
+                  multiple={field.multiple}
                   required={field.required}
                   options={options}
                   label={field.label}
                   className={`${classes.blockElement} ${fieldClassName}`}
                   key={field.label + fields.indexOf(field)}
                   onChange={() => handleValueChange(event, field.key, field.type, true)}
+                />
+                {field.bottomLink && field.bottomLink}
+              </React.Fragment>
+            );
+          } else if (field.multiselect) {
+            const options = field.multiselect.values;
+            return (
+              <React.Fragment key={field.key}>
+                <SelectField
+                  multiple={field.multiple}
+                  required={field.required}
+                  options={options}
+                  label={field.label}
+                  className={`${classes.blockElement} ${fieldClassName}`}
+                  key={field.label + fields.indexOf(field)}
+                  onChange={(event) => {
+                    field.multiSelectProps.onChange(event.target.value);
+                  }}
+                  values={field.selectedValues}
                 />
                 {field.bottomLink && field.bottomLink}
               </React.Fragment>

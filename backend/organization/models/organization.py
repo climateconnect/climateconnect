@@ -169,10 +169,9 @@ class Organization(models.Model):
     get_involved = models.CharField(
         help_text="How to get involved textfield",
         verbose_name="How to get involved",
-        max_length=256,
         null=True,
         blank=True,
-        default="Contact an organization adminstrator for more details."
+        max_length=250,
     )
 
     VERY_SMALL_ORGANIZATION_SIZE = 0

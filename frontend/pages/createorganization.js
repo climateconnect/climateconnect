@@ -126,16 +126,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
     });
   };
 
-  const assignTagTypeToID = (values) => {
-    const tagName = values["orgtypes"];
-    const location = tagOptions.map((option) => option.name === tagName);
-    const tagId = [location.findIndex((loc) => loc === true) + 1]; // +1 because id's start at 1
-    return tagId;
-  };
-
   const handleBasicInfoSubmit = async (event, values) => {
-    values.orgtypes = assignTagTypeToID(values);
-    console.log(values);
     event.preventDefault();
     try {
       //Short circuit if there is no parent organization
@@ -208,7 +199,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
 
   const handleDetailledInfoSubmit = async (account) => {
     //If the language is not language, short circuit and allow users to check the english translations for their texts
-    console.log(account);
+
     const organizationToSubmit = await parseOrganizationForRequest(
       account,
       user,
@@ -216,7 +207,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       translations,
       sourceLanguage
     );
-    console.log(account);
+
     if (!legacyModeEnabled && !isLocationValid(organizationToSubmit.location)) {
       indicateWrongLocation(
         locationInputRef,
@@ -239,7 +230,6 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       }
     }
     if (locale !== "en") {
-      console.log(account);
       setOrganizationInfo({
         ...account,
         parentorganization: organizationInfo.parentorganization,

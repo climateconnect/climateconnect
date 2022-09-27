@@ -289,5 +289,9 @@ export default function getOrganizationTexts({ organization, locale }) {
       de:
         "Beschreibe kurz wie man sich mit deiner Organisation eingagieren kann. Dieser Option wird nur bei bestimmten Organisationstypen verfügbar sein.",
     },
+    add_up_to_two_types: {
+      en: "Add up to 2 organization types",
+      de: "Füge bis zu 2 Organisationstypen hinzu",
+    },
   };
 }

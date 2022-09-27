@@ -256,6 +256,7 @@ export default function EditAccountPage({
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles(editedAccount);
+
   const isOrganization = type === "organization";
   //used for previewing images in UploadImageDialog
   const [tempImages, setTempImages] = React.useState({
@@ -308,7 +309,6 @@ export default function EditAccountPage({
 
   const handleTextFieldChange = (key, newValue, isInfoElement) => {
     if (key === "organization_size_and_involvement") {
-      console.log(key, newValue, isInfoElement);
       setEditedAccount({
         ...editedAccount,
         info: {
@@ -424,21 +424,23 @@ export default function EditAccountPage({
 
         if (i.type === "select") {
           //On select fields, use the key as the new value since the text can have multiple languages
-          if (key === "organization_size_and_involvement") {
-            newValue = i.options.find((o) => o.name === event.target.value).key;
+          newValue = i.options.find((o) => o.name === event.target.value).key;
+        }
 
-            setEditedAccount({
-              ...editedAccount,
-              info: {
-                ...editedAccount.info,
-                [key]: {
-                  ...editedAccount.info[key],
-                  organization_size: newValue,
-                },
+        if (i.type === "selectwithtext") {
+          newValue = i.options.find((o) => o.name === event.target.value).key;
+
+          setEditedAccount({
+            ...editedAccount,
+            info: {
+              ...editedAccount.info,
+              [key]: {
+                ...editedAccount.info[key],
+                organization_size: newValue,
               },
-            });
-            return;
-          } else newValue = i.options.find((o) => o.name === event.target.value).key;
+            },
+          });
+          return;
         }
 
         setEditedAccount({
@@ -492,66 +494,61 @@ export default function EditAccountPage({
       if (i.type === "array") {
         return displayInfoArrayData(key, i);
       } else if (i.type === "select") {
-        if (isOrganization) {
-          console.log(i);
-          const valuesThatDisableField = [1, 3]; // we can manually set which types we don't want to have this feature for
-          const truthValues = valuesThatDisableField.map((val) =>
-            editedAccount.types.includes(val)
-          );
-          const shouldTextFieldBeDisabled =
-            truthValues.includes(true) || editedAccount.types.length === 0;
-          return (
-            <>
-              <div key={key} className={classes.infoElement}>
-                <SelectField
-                  className={classes.selectOption}
-                  options={i.options}
-                  label={i.organization_size.name}
-                  defaultValue={{
-                    name: i.options[i.value.organization_size].name,
-                    key: i.options[i.value.organization_size].name,
-                  }}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <Typography className={classes.subtitle}>
-                {i.get_involved.name}
-                {i.get_involved.helptext && (
-                  <Tooltip title={i.get_involved.helptext}>
-                    <IconButton>
-                      <HelpOutlineIcon className={classes.helpIcon} />
-                    </IconButton>
-                  </Tooltip>
-                )}
-              </Typography>
-              <TextField
-                disabled={shouldTextFieldBeDisabled}
-                required={i.required}
-                fullWidth
-                value={i.value.get_involved}
-                multiline
-                inputProps={{ maxLength: 256 }}
-                onChange={(event) =>
-                  handleTextFieldChange("organization_size_and_involvement", event.target.value)
-                }
-              />
-              <div className={classes.marginBottom} />
-            </>
-          );
-        } else {
-          return (
+        return (
+          <div key={key} className={classes.infoElement}>
+            <SelectField
+              className={classes.selectOption}
+              options={i.options}
+              label={i.name}
+              defaultValue={{ name: i.value, key: i.value }}
+              onChange={handleChange}
+            />
+          </div>
+        );
+      } else if (i.type === "selectwithtext") {
+        const valuesThatDisableField = [1, 3]; // we can manually set which types we don't want to have this feature for
+        const truthValues = valuesThatDisableField.map((val) => editedAccount.types.includes(val));
+        const shouldTextFieldBeDisabled =
+          truthValues.includes(true) || editedAccount.types.length === 0;
+        return (
+          <>
             <div key={key} className={classes.infoElement}>
               <SelectField
                 className={classes.selectOption}
                 options={i.options}
-                label={i.name}
-                defaultValue={{ name: i.value, key: i.value }}
+                label={i.organization_size.name}
+                defaultValue={{
+                  name: i.options[i.value.organization_size]?.name,
+                  key: i.options[i.value.organization_size]?.name,
+                }}
                 onChange={handleChange}
               />
             </div>
-          );
-        }
+
+            <Typography className={classes.subtitle}>
+              {i.get_involved.name}
+              {i.get_involved.helptext && (
+                <Tooltip title={i.get_involved.helptext}>
+                  <IconButton>
+                    <HelpOutlineIcon className={classes.helpIcon} />
+                  </IconButton>
+                </Tooltip>
+              )}
+            </Typography>
+            <TextField
+              disabled={shouldTextFieldBeDisabled}
+              required={i.required}
+              fullWidth
+              value={i.value.get_involved}
+              multiline
+              inputProps={{ maxLength: 250 }}
+              onChange={(event) =>
+                handleTextFieldChange("organization_size_and_involvement", event.target.value)
+              }
+            />
+            <div className={classes.marginBottom} />
+          </>
+        );
       } else if (i.type === "checkbox") {
         return (
           <div className={classes.checkbox} key={i.key}>

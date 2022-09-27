@@ -249,6 +249,40 @@ export default function AccountPage({
                   />
                 </div>
               );
+          } else if (i.type === "selectwithtext" && value) {
+            const tagIdsThatHideGetInvolved = [1, 3]; // we can manually set which types we don't want to have this feature for
+            const tagIds = checkForIdsThatHideField(tagIdsThatHideGetInvolved, account.types);
+            const hideGetInvolvedField = containsValue(tagIds) || account.types.length === 0;
+
+            const orgSizeValue = i.options.find((o) => o?.key === i.value?.organization_size)?.name;
+            const orgSizeLabel = i?.organization_size?.name;
+
+            const getInvolvedLabel = i?.get_involved.name;
+            const getInvolvedValue = i?.value.get_involved;
+            return (
+              <div key={index}>
+                <div className={classes.selectContainer}>
+                  {!hideGetInvolvedField && (
+                    <div className={classes.getInvolvedContainer}>
+                      <SubTitleWithContent
+                        subTitleIcon={{ icon: InsertInvitationIcon }}
+                        label={getInvolvedLabel}
+                        value={getInvolvedValue}
+                      />
+                    </div>
+                  )}
+                  {orgSizeValue && (
+                    <div className={classes.sizeContainer}>
+                      <SubTitleWithContent
+                        subTitleIcon={{ icon: GroupIcon }}
+                        label={orgSizeLabel}
+                        value={orgSizeValue}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
           } else if (i.type === "array" && i?.value?.length > 0) {
             return (
               <div key={index} className={classes.infoElement}>
@@ -280,50 +314,15 @@ export default function AccountPage({
           } else if (i.type === "hubs") {
             return <MiniHubPreviews hubs={i.value} />;
           } else if (i.type === "select" && value) {
-            if (isOrganization) {
-              const tagIdsThatHideGetInvolved = [1, 3]; // we can manually set which types we don't want to have this feature for
-              const tagIds = checkForIdsThatHideField(tagIdsThatHideGetInvolved, account.types);
-              const hideGetInvolvedField = containsValue(tagIds) || account.types.length === 0;
-
-              const orgSizeLabel = i.organization_size.name;
-              const orgSizeValue = i.options.find((o) => o?.key === value.organization_size).name;
-
-              const getInvolvedLabel = i.get_involved.name;
-              const getInvolvedValue = value.get_involved;
-              return (
-                <div key={index}>
-                  <div className={classes.selectContainer}>
-                    {!hideGetInvolvedField && (
-                      <div className={classes.getInvolvedContainer}>
-                        <SubTitleWithContent
-                          subTitleIcon={{ icon: InsertInvitationIcon }}
-                          label={getInvolvedLabel}
-                          value={getInvolvedValue}
-                        />
-                      </div>
-                    )}
-
-                    <div className={classes.sizeContainer}>
-                      <SubTitleWithContent
-                        subTitleIcon={{ icon: GroupIcon }}
-                        label={orgSizeLabel}
-                        value={orgSizeValue}
-                      />
-                    </div>
-                  </div>
-                </div>
-              );
-            } else {
-              const textValue = i.options ? i.options.find((o) => o?.key === value).name : value;
-              return (
-                <div key={index}>
-                  <SubTitleWithContent
-                    label={i.name + ":"}
-                    value={textValue ? textValue + additionalText : i.missingMessage}
-                  />
-                </div>
-              );
-            }
+            const textValue = i.options ? i.options.find((o) => o?.key === value).name : value;
+            return (
+              <div key={index}>
+                <SubTitleWithContent
+                  label={i.name + ":"}
+                  value={textValue ? textValue + additionalText : i.missingMessage}
+                />
+              </div>
+            );
           } else if (
             value &&
             !["detailled_description", "location", "checkbox"].includes(i.type) &&

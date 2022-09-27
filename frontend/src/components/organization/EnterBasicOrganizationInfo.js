@@ -1,4 +1,4 @@
-import { IconButton } from "@material-ui/core";
+import { IconButton, makeStyles, Chip } from "@material-ui/core";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import React, { useContext } from "react";
 import { getLocationFields } from "../../../public/lib/locationOperations";
@@ -17,6 +17,28 @@ const renderSearchOption = (option) => {
   );
 };
 
+const useStyles = makeStyles((theme) => ({
+  selectedTypes: {
+    marginTop: theme.spacing(1),
+    display: "flex",
+    justifyContent: "space-evenly",
+
+    [theme.breakpoints.down("xs")]: {
+      flexDirection: "column",
+      marginTop: theme.spacing(0),
+      alignItems: "center",
+    },
+  },
+  chip: {
+    height: 30,
+    width: 200,
+
+    [theme.breakpoints.down("sm")]: {
+      marginTop: theme.spacing(1),
+    },
+  },
+}));
+
 export default function EnterBasicOrganizationInfo({
   errorMessage,
   handleSubmit,
@@ -26,9 +48,18 @@ export default function EnterBasicOrganizationInfo({
   handleSetLocationOptionsOpen,
   tagOptions,
 }) {
+  const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
   const [parentOrganization, setParentOrganization] = React.useState(null);
+  const [selectedTypes, setSelectedTypes] = React.useState([]);
+
+  const handleChangeTypes = (newValue) => {
+    setSelectedTypes(newValue);
+  };
+  const handleRemoveType = (item) => {
+    setSelectedTypes(selectedTypes.filter((value) => value !== item));
+  };
   const onUnselect = () => {
     if (parentOrganization) setParentOrganization(null);
   };
@@ -76,12 +107,30 @@ export default function EnterBasicOrganizationInfo({
     }),
     {
       required: true,
-      label: "Add you organization type(s)",
-      select: {
+      label: texts.add_up_to_two_types,
+      multiselect: {
         values: tagOptions,
-        defaultValue: tagOptions[0].name,
       },
+      selectedValues: selectedTypes,
+      multiSelectProps: {
+        onChange: handleChangeTypes,
+        renderValue: "",
+      },
+
+      multiple: true,
       key: "orgtypes",
+      bottomLink: (
+        <div className={classes.selectedTypes}>
+          {selectedTypes.map((selectedType, index) => (
+            <Chip
+              className={classes.chip}
+              label={selectedType}
+              onDelete={() => handleRemoveType(selectedType)}
+              key={index}
+            />
+          ))}
+        </div>
+      ),
     },
     {
       required: true,
@@ -102,9 +151,19 @@ export default function EnterBasicOrganizationInfo({
       messages={messages}
       usePercentage={false}
       onSubmit={(event, account) =>
-        handleSubmit(event, { ...account, parentOrganization: parentOrganization })
+        handleSubmit(event, {
+          ...account,
+          parentOrganization: parentOrganization,
+          orgtypes: convertTypeNamesToInt(selectedTypes, tagOptions),
+        })
       }
       errorMessage={errorMessage}
     />
   );
+}
+
+function convertTypeNamesToInt(selectedTypesArr, types) {
+  const intersectingTypes = types.filter((type) => selectedTypesArr.includes(type.name));
+  const convertedList = intersectingTypes.map((type) => type.id);
+  return convertedList;
 }
