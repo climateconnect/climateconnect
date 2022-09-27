@@ -157,6 +157,43 @@ export default function EditOrganizationRoot({
     await saveChanges(editedOrganization, true);
   };
 
+  const standardTextsToTranslate = [
+    {
+      textKey: "name",
+      rows: 2,
+      headlineTextKey: "organization_name",
+    },
+    {
+      textKey: "info.short_description",
+      rows: 5,
+      headlineTextKey: "short_description",
+    },
+    {
+      textKey: "info.about",
+      rows: 9,
+      headlineTextKey: "about",
+    },
+  ];
+
+  const getInvolvedText = [
+    {
+      textKey: "info.organization_size_and_involvement.get_involved",
+      rows: 5,
+      headlineTextKey: "get_involved",
+    },
+  ];
+
+  const tagIdsThatHideGetInvolved = [1, 3]; // we can manually set which types we don't want to have this feature for
+
+  const tagIds = checkForIdsThatHideField(tagIdsThatHideGetInvolved, editedOrganization.types);
+
+  const hideGetInvolvedField = containsValue(tagIds) || editedOrganization.types.length === 0;
+  console.log(hideGetInvolvedField);
+
+  const textsToTranslate = hideGetInvolvedField
+    ? standardTextsToTranslate
+    : standardTextsToTranslate.concat(getInvolvedText);
+
   return (
     <>
       {organization ? (
@@ -191,23 +228,7 @@ export default function EditOrganizationRoot({
               pageName="organization"
               introTextKey="translate_organization_intro"
               submitButtonText={texts.save}
-              textsToTranslate={[
-                {
-                  textKey: "info.short_description",
-                  rows: 5,
-                  headlineTextKey: "short_description",
-                },
-                {
-                  textKey: "info.about",
-                  rows: 9,
-                  headlineTextKey: "about",
-                },
-                {
-                  textKey: "info.organization_size_and_involvement.get_involved",
-                  rows: 5,
-                  headlineTextKey: "get_involved",
-                },
-              ]}
+              textsToTranslate={textsToTranslate}
               changeTranslationLanguages={changeTranslationLanguages}
             />
           </>
@@ -265,3 +286,12 @@ const verifyChanges = (newOrg, texts) => {
   }
   return true;
 };
+
+function containsValue(arr) {
+  return arr.length > 0;
+}
+
+function checkForIdsThatHideField(typesThatHide, orgTypes) {
+  // checks for intersection of the 2 arrays
+  return typesThatHide.filter((typeThatHides) => orgTypes.includes(typeThatHides));
+}

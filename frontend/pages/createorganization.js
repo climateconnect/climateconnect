@@ -329,7 +329,41 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         />
       </WideLayout>
     );
-  else if (curStep === "checktranslations")
+  else if (curStep === "checktranslations") {
+    const tagIdsThatHideGetInvolved = [1, 3]; // we can manually set which types we don't want to have this feature for
+    const tagIds = checkForIdsThatHideField(tagIdsThatHideGetInvolved, organizationInfo.types);
+    const hideGetInvolvedField = containsValue(tagIds) || organizationInfo.types.length === 0;
+
+    const standardTextsToTranslate = [
+      {
+        textKey: "name",
+        rows: 2,
+        headlineTextKey: "organization_name",
+      },
+      {
+        textKey: "info.short_description",
+        rows: 5,
+        headlineTextKey: "short_description",
+      },
+      {
+        textKey: "info.about",
+        rows: 9,
+        headlineTextKey: "about",
+      },
+    ];
+
+    const getInvolvedText = [
+      {
+        textKey: "info.organization_size_and_involvement.get_involved",
+        rows: 5,
+        headlineTextKey: "get_involved",
+      },
+    ];
+
+    const textsToTranslate = hideGetInvolvedField
+      ? standardTextsToTranslate
+      : standardTextsToTranslate.concat(getInvolvedText);
+
     return (
       <WideLayout title={texts.languages}>
         <Typography color="primary" className={classes.headline} component="h1" variant="h4">
@@ -346,33 +380,13 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
           handleChangeTranslationContent={handleChangeTranslationContent}
           goToPreviousStep={goToPreviousStep}
           introTextKey="translate_organization_intro"
-          textsToTranslate={[
-            {
-              textKey: "name",
-              rows: 2,
-              headlineTextKey: "organization_name",
-            },
-            {
-              textKey: "info.short_description",
-              rows: 5,
-              headlineTextKey: "short_description",
-            },
-            {
-              textKey: "info.about",
-              rows: 10,
-              headlineTextKey: "about",
-            },
-            {
-              textKey: "info.organization_size_and_involvement.get_involved",
-              rows: 5,
-              headlineTextKey: "get_involved",
-            },
-          ]}
+          textsToTranslate={textsToTranslate}
           organization={organizationInfo}
           changeTranslationLanguages={changeTranslationLanguages}
         />
       </WideLayout>
     );
+  }
 }
 
 const getRolesOptions = async (token, locale) => {
@@ -448,3 +462,12 @@ const parseOrganizationForRequest = async (o, user, rolesOptions, translations, 
   if (o.info.school) organization.school = o.info.school;
   return organization;
 };
+
+function containsValue(arr) {
+  return arr.length > 0;
+}
+
+function checkForIdsThatHideField(typesThatHide, orgTypes) {
+  // checks for intersection of the 2 arrays
+  return typesThatHide.filter((typeThatHides) => orgTypes.includes(typeThatHides));
+}

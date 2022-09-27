@@ -252,6 +252,7 @@ export default function AccountPage({
           } else if (i.type === "selectwithtext" && value) {
             const tagIdsThatHideGetInvolved = [1, 3]; // we can manually set which types we don't want to have this feature for
             const tagIds = checkForIdsThatHideField(tagIdsThatHideGetInvolved, account.types);
+
             const hideGetInvolvedField = containsValue(tagIds) || account.types.length === 0;
 
             const orgSizeValue = i.options.find((o) => o?.key === i.value?.organization_size)?.name;
@@ -488,6 +489,6 @@ function containsValue(arr) {
   return arr.some((element) => element !== undefined);
 }
 
-function checkForIdsThatHideField(arr, orgTypes) {
-  return arr.map((id) => orgTypes.find((type) => type.id === id));
+function checkForIdsThatHideField(typesThatHide, orgTypes) {
+  return typesThatHide.map((id) => orgTypes.find((type) => type.id === id));
 }

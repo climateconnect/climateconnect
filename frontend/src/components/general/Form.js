@@ -223,6 +223,7 @@ export default function Form({
             return (
               <React.Fragment key={field.key}>
                 <SelectField
+                  disabled={field.selectedValues.length > 1}
                   multiple={field.multiple}
                   required={field.required}
                   options={options}

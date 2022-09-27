@@ -510,6 +510,7 @@ export default function EditAccountPage({
         const truthValues = valuesThatDisableField.map((val) => editedAccount.types.includes(val));
         const shouldTextFieldBeDisabled =
           truthValues.includes(true) || editedAccount.types.length === 0;
+
         return (
           <>
             <div key={key} className={classes.infoElement}>
