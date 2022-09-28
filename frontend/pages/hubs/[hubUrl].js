@@ -49,8 +49,16 @@ const useStyles = makeStyles((theme) => ({
 
 const DESCRIPTION_WEBFLOW_LINKS = {
   energy: {
-    en: "energy-hub",
+    en: "energy-en",
   },
+  mobility: {
+    de: "mobilitat-de",
+    en: "mobility-en"
+  },
+  biodiversity: {
+    de: "biodiversitat",
+    en: "biodiversity-en"
+  }
 };
 
 //potentially switch back to getinitialprops here?!
@@ -314,7 +322,7 @@ const HubDescription = ({ hub, texts }) => {
   );
 };
 
-const WEBFLOW_BASE_LINK = "https://climateconnect.webflow.io/";
+const WEBFLOW_BASE_LINK = "https://climateconnect.webflow.io/hub-texts/";
 
 const retrieveDescriptionFromWebflow = async (query, locale) => {
   if (
