@@ -281,7 +281,7 @@ export default function getOrganizationTexts({ organization, locale }) {
     },
     please_log_in_to_follow_an_organization: {
       en: "Please log in to follow an organization.",
-      de: "Bitte logge dich ein, um eine Organisation zu folgen.",
+      de: "Bitte logge dich ein, um einer Organisation zu folgen.",
     },
     do_you_really_want_to_unfollow: {
       en: "Do you really want to unfollow?",
