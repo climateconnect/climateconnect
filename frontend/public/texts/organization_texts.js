@@ -297,7 +297,7 @@ export default function getOrganizationTexts({ organization, locale }) {
       ),
       de: (
         <>
-          Bist du sicher, dass du diese Organisation nicht folgen willst?
+          Bist du sicher, dass du dieser Organisation nicht mehr folgen willst?
           <br />
           Du wirst keine Updates mehr davon erhalten
         </>
