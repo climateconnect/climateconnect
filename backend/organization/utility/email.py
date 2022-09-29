@@ -259,7 +259,7 @@ def send_org_project_published_email(user, org_project_published, notification):
         "en": "Hey {}! A new project exists for this organization on Climate Connect!".format(
             followerName
         ),
-        "de": "Hallo {}! Es gibt ein neues Projekt für diese Organisation auf Climate Connect!1".format(
+        "de": "Hallo {}! Es gibt ein neues Projekt für diese Organisation auf Climate Connect!".format(
             followerName
         ),
     }
