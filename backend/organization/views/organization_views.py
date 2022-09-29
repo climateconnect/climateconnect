@@ -1,5 +1,4 @@
 import logging
-from xml.dom import ValidationErr
 from organization.utility.follow import (
     check_if_user_follows,
     get_list_of_followers,
