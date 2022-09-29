@@ -338,7 +338,7 @@ export default function getOrganizationTexts({ organization, locale }) {
     },
     follow_this_organization_for_updates: {
       en: "Follow this organization to receive updates!",
-      de: "Folge diese Organisation um updates zu bekommen!",
+      de: "Folge dieser Organisation, um Updates zu bekommen!",
     },
   };
 }
