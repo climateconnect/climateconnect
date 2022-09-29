@@ -47,7 +47,7 @@ def send_email_notifications(self, user_ids: List):
             continue
 
         unread_user_notifications = UserNotification.objects.filter(
-            user__id=u_id,
+            user=user,
             read_at__isnull=True,
             notification__notification_type=Notification.PRIVATE_MESSAGE,
         )
