@@ -223,7 +223,7 @@ def send_organization_follower_email(user, organization_follower, notification):
         "en": "{} now follows your Organization on Climate Connect".format(
             follower_name
         ),
-        "de": "{} folgt jetzt deine Organisation auf Climate Connect".format(
+        "de": "{} folgt jetzt deiner Organisation auf Climate Connect".format(
             follower_name
         ),
     }
