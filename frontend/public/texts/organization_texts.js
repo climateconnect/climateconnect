@@ -299,7 +299,7 @@ export default function getOrganizationTexts({ organization, locale }) {
         <>
           Bist du sicher, dass du dieser Organisation nicht mehr folgen willst?
           <br />
-          Du wirst keine Updates mehr davon erhalten
+          Du wirst keine Updates mehr erhalten
         </>
       ),
     },
