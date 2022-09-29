@@ -8,6 +8,8 @@ from chat_messages.utility.email import (
     send_group_chat_message_notification_email,
     send_private_chat_message_notification_email,
 )
+
+from climateconnect_api.serializers.user import UserProfileStubSerializer
 from climateconnect_api.models.notification import Notification, UserNotification
 from climateconnect_api.models.user import UserProfile
 from django.contrib.auth.models import User
@@ -56,6 +58,7 @@ def create_follower_notification(
     for member in team:
         if not member["user"] == follower_type_user_id:
             user = User.objects.filter(id=member["user"])[0]
+            print("called create follower noti")
             create_user_notification(user, notification)
             create_follower_email(user, obj_field_name, follower_type, notification)
 
@@ -226,3 +229,9 @@ def send_comment_email_notification(
         sender,
         notification,
     )
+
+
+def get_following_user(user):
+    follower_user = UserProfile.objects.filter(user=user)
+    serializer = UserProfileStubSerializer(follower_user[0])
+    return serializer.data

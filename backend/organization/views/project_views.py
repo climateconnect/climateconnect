@@ -1,5 +1,4 @@
 import logging
-from re import T
 import traceback
 from organization.utility.follow import (
     check_if_user_follows,

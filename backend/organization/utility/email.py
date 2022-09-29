@@ -214,20 +214,24 @@ def send_project_follower_email(user, project_follower, notification):
 def send_organization_follower_email(user, organization_follower, notification):
     lang_code = get_user_lang_code(user)
 
-    follower_name = (
+    following_user_full_name = (
         organization_follower.user.first_name
         + " "
         + organization_follower.user.last_name
     )
+    print(user.first_name)
+    print(following_user_full_name)
+    print(organization_follower.organization.name)
+
     subjects_by_language = {
-        "en": "{} now follows your Organization on Climate Connect".format(
-            follower_name
+        "en": "{} now follows {} on Climate Connect".format(
+            following_user_full_name, organization_follower.organization.name
         ),
-        "de": "{} folgt jetzt deiner Organisation auf Climate Connect".format(
-            follower_name
+        "de": "{} folgt jetzt {} auf Climate Connect".format(
+            following_user_full_name, organization_follower.organization.name
         ),
     }
-
+   
     base_url = settings.FRONTEND_URL
     url_ending = (
         "/organizations/"
@@ -236,8 +240,8 @@ def send_organization_follower_email(user, organization_follower, notification):
     )
 
     variables = {
-        "FollowerName": follower_name,
-        "FirstName": user.first_name,
+        "RecipientFirstName": user.first_name,
+        "FollowingUserFullName": following_user_full_name,
         "OrganizationName": organization_follower.organization.name,
         "url": base_url + get_user_lang_url(lang_code) + url_ending,
     }
@@ -254,13 +258,14 @@ def send_organization_follower_email(user, organization_follower, notification):
 def send_org_project_published_email(user, org_project_published, notification):
     lang_code = get_user_lang_code(user)
 
-    followerName = user.first_name + " " + user.last_name
+    organization_name = org_project_published.organization.name
+    project_name = org_project_published.project.name
     subjects_by_language = {
-        "en": "Hey {}! A new project exists for this organization on Climate Connect!".format(
-            followerName
+        "en": "New climate project from {}: {}".format(
+            organization_name, project_name
         ),
-        "de": "Hallo {}! Es gibt ein neues Projekt für diese Organisation auf Climate Connect!".format(
-            followerName
+        "de": "Neues Klimaprojekt von {} : {}".format(
+             organization_name, project_name
         ),
     }
 
@@ -268,11 +273,10 @@ def send_org_project_published_email(user, org_project_published, notification):
     url_ending = "/projects/" + org_project_published.project.url_slug
 
     variables = {
-        "FollowerName": followerName,
         "FirstName": user.first_name,
-        "OrganizationName": org_project_published.organization.name,
+        "OrganizationName": organization_name,
         "url": base_url + get_user_lang_url(lang_code) + url_ending,
-        "ProjectName": org_project_published.project.name,
+        "ProjectName": project_name,
     }
 
     send_email(

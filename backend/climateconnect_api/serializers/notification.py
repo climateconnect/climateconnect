@@ -1,4 +1,4 @@
-from climateconnect_api.utility.follower import get_following_user
+from climateconnect_api.utility.notification import get_following_user
 from organization.serializers.project import ProjectSerializer
 from organization.utility.email import linkify_mentions
 from ideas.serializers.comment import IdeaCommentSerializer

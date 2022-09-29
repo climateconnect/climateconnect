@@ -311,6 +311,7 @@ const OrganizationFollowerNotification = ({ notification }) => {
       }}
       primaryText={`${followerName} ${texts.now_follows_your_organization} "${notification.organization.name}"`}
       secondaryText={texts.congratulations}
+      notification={notification}
     />
   );
 };
@@ -327,6 +328,7 @@ const OrgProjectSharedNotification = ({ notification }) => {
       }}
       primaryText={`${notification.organization.org_name} ${texts.just_shared_project} "${notification.organization.proj.name}"`}
       secondaryText={texts.go_check_it_out}
+      notification={notification}
     />
   );
 };
