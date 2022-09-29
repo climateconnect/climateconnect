@@ -869,7 +869,7 @@ class SetFollowView(APIView):
             "Project not found.",
             "You're already following this project.",
             "You are now following this project. You will be notified when they post an update!",
-            "Du folgst jetzt dieses Projekt. Dir wird mitgeteilt, wenn es Updates gibt!",
+            "Du folgst jetzt diesem Projekt. Dir wird mitgeteilt, wenn es Updates gibt!",
             "You weren't following this project.",
             "You are not following this project anymore.",
             "Du folgst diesem Projekt nicht mehr.",
