@@ -285,7 +285,7 @@ export default function getOrganizationTexts({ organization, locale }) {
     },
     do_you_really_want_to_unfollow: {
       en: "Do you really want to unfollow?",
-      de: "Möchtest du diese Organisation wirklich nicht mehr folgen? ",
+      de: "Möchtest du dieser Organisation wirklich nicht mehr folgen? ",
     },
     are_you_sure_that_you_want_to_unfollow_this_organization: {
       en: (
