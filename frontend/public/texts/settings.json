@@ -197,7 +197,7 @@
   },
   "email_on_new_org_follower_text": {
     "en": "Get notified when somebody follows an organization you're part of",
-    "de": "Ich möchte benachrichtigt werden, wenn jemand eine Organisation folgt, an dem ich beteiligt bin"
+    "de": "Ich möchte benachrichtigt werden, wenn jemand einer Organisation folgt, von der ich Teil bin."
   },
   "email_on_new_org_project_text": {
     "en": "Get notified when an organization you follow posts an update",
