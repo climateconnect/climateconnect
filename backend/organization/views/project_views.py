@@ -872,7 +872,7 @@ class SetFollowView(APIView):
             "Du folgst jetzt dieses Projekt. Dir wird mitgeteilt, wenn es Updates gibt!",
             "You weren't following this project.",
             "You are not following this project anymore.",
-            "Du folgst jetzt dieses Projekt nicht mehr.",
+            "Du folgst diesem Projekt nicht mehr.",
         ]
         return set_user_following(
             request.data,
