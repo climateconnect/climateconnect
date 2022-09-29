@@ -41,13 +41,13 @@ def schedule_automated_reminder_for_user_notifications():
 def send_email_notifications(self, user_ids: List):
     for u_id in user_ids:
         try:
-            user = User.objects.get(user_id=u_id)
+            user = User.objects.get(id=u_id)
         except User.DoesNotExist:
             logger.info(f"User profile does not exists for user {u_id}")
             continue
 
         unread_user_notifications = UserNotification.objects.filter(
-            user_id=u_id,
+            user__id=u_id,
             read_at__isnull=True,
             notification__notification_type=Notification.PRIVATE_MESSAGE,
         )
