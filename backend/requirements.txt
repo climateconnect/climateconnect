@@ -23,7 +23,7 @@ click-didyoumean==0.0.3
 click-plugins==1.1.1
 click-repl==0.2.0
 constantly==15.1.0
-cryptography==3.3.2
+cryptography==38.0.1
 daphne==3.0.2
 decorator==5.1.1
 Django==3.2.15
@@ -67,7 +67,7 @@ pycodestyle==2.8.0
 pycparser==2.20
 pyflakes==2.4.0
 PyHamcrest==2.0.4
-pyOpenSSL==19.1.0
+pyOpenSSL==22.1.0
 python-dateutil==2.8.1
 python-dotenv==0.20.0
 python-http-client==3.2.7
