@@ -24,7 +24,6 @@ export default function Settings({ settings }) {
   const [currentSettings, setCurrentSettings] = React.useState(settings);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "settings", locale: locale });
-  console.log(settings)
   if (user)
     return (
       <Layout title={texts.settings} message={message} noSpacingBottom>

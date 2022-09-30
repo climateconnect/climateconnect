@@ -1,3 +1,6 @@
+from organization.models.organization import Organization
+from organization.models.followers import OrganizationFollower, ProjectFollower
+from organization.models.project import Project
 from organization.utility.notification import (
     create_organization_follower_notification,
     create_project_follower_notification,
@@ -9,14 +12,37 @@ from django.utils.translation import get_language
 from rest_framework.exceptions import ValidationError
 
 
-#  IsUserFollowing View function
+#  IsUserFollowing View functions
+def check_if_user_follows_project(user, url_slug, ):
+    return check_if_user_follows(
+        user = user,
+        url_slug = url_slug,
+        entity_model_being_checked = Project,
+        follower_model = ProjectFollower,
+        look_up_field_name = "project",
+        error_msg = "Project not found",
+    )
+
+
+def check_if_user_follows_organization(user, url_slug):
+    return check_if_user_follows(
+        user = user,
+        url_slug = url_slug,
+        entity_model_being_checked = Organization,
+        follower_model = OrganizationFollower,
+        look_up_field_name = "organization",
+        error_msg = "Organization not found",
+    )
+
+
 def check_if_user_follows(
     user, 
     url_slug, 
     entity_model_being_checked, # type of model being checked for if it is followed by the user (Organization/Project)
     follower_model, # type of follower model (OrganizationFollower/ProjectFollower)
     look_up_field_name, # the name of the field that is to be looked up
-    error_msg):
+    error_msg
+):
     try:
         entity_model = entity_model_being_checked.objects.get(url_slug=url_slug) 
     except entity_model_being_checked.DoesNotExist:
@@ -29,7 +55,31 @@ def check_if_user_follows(
     return Response({"is_following": is_following}, status=status.HTTP_200_OK)
 
 
-# SetFollow View function
+
+# SetFollow View functions
+def set_user_following_project(request, url_slug, messages):
+    return set_user_following(
+        request_data = request.data,
+        user = request.user,
+        entity_model_to_follow = Project,
+        url_slug = url_slug,
+        follower_model = ProjectFollower,
+        lookup_up_field_name = "project",
+        msgs = messages,
+    )
+
+def set_user_following_organization(request, url_slug, messages):
+    return set_user_following(
+        request_data = request.data,
+        user = request.user,
+        entity_model_to_follow = Organization,
+        url_slug = url_slug,
+        follower_model = OrganizationFollower,
+        lookup_up_field_name = "organization",
+        msgs = messages,
+    )
+
+
 def set_user_following(
     request_data, 
     user, 
@@ -101,7 +151,31 @@ def set_user_following(
         )
 
 
-# ListFollowerView function
+# ListFollowerView functions
+def get_list_of_organization_followers(self):  
+    
+    return (
+        get_list_of_followers(
+            list_of_followers_for_entity_model = Organization, 
+            follower_model = OrganizationFollower, 
+            look_up_field_name = "organization", 
+            self = self
+        )
+    )
+
+
+def get_list_of_project_followers(self):  
+   
+    return (
+        get_list_of_followers(
+            list_of_followers_for_entity_model = Project, 
+            follower_model = ProjectFollower, 
+            look_up_field_name = "project", 
+            self = self
+        )
+    )
+
+
 def get_list_of_followers(
     list_of_followers_for_entity_model, # for which model should this list be for?
     follower_model, 

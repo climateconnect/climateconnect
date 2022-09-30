@@ -1,8 +1,8 @@
 import logging
 from organization.utility.follow import (
-    check_if_user_follows,
-    get_list_of_followers,
-    set_user_following,
+    check_if_user_follows_organization,
+    get_list_of_organization_followers,
+    set_user_following_organization,
 )
 
 # Backend app imports
@@ -94,26 +94,14 @@ class ListOrganizationFollowersView(ListAPIView):
     serializer_class = OrganizationFollowerSerializer
 
     def get_queryset(self):
-        return get_list_of_followers(
-            list_of_followers_for_entity_model = Organization, 
-            follower_model = OrganizationFollower, 
-            look_up_field_name = "organization", 
-            self = self
-        )
+        return get_list_of_organization_followers(self)
 
 
 class IsUserFollowing(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, url_slug):
-        return check_if_user_follows(
-            user = request.user,
-            url_slug = url_slug,
-            entity_model_being_checked = Organization,
-            follower_model = OrganizationFollower,
-            look_up_field_name = "organization",
-            error_msg = "Organization not found",
-        )
+        return check_if_user_follows_organization(request.user, url_slug)
 
 
 class SetFollowView(APIView):
@@ -130,15 +118,7 @@ class SetFollowView(APIView):
             "You are not following this organization anymore.",
             "Du folgst jetzt diese Organisation nicht mehr.",
         ]
-        return set_user_following(
-            request_data = request.data,
-            user = request.user,
-            entity_model_to_follow = Organization,
-            url_slug = url_slug,
-            follower_model = OrganizationFollower,
-            lookup_up_field_name = "organization",
-            msgs = messages,
-        )
+        return set_user_following_organization(request, url_slug, messages)
 
 
 class ListOrganizationsAPIView(ListAPIView):

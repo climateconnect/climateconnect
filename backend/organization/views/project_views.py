@@ -1,9 +1,10 @@
 import logging
 import traceback
 from organization.utility.follow import (
-    check_if_user_follows,
-    get_list_of_followers,
-    set_user_following,
+
+    check_if_user_follows_project,
+    get_list_of_project_followers,
+    set_user_following_project,
 )
 from climateconnect_api.models.notification import Notification
 from organization.utility.email import send_organization_follower_email
@@ -457,7 +458,6 @@ class CreateProjectView(APIView):
             followers_of_org = OrganizationFollower.objects.filter(
                 organization__name=organization.name
             )
-            print(followers_of_org, "followers")
 
             create_organization_project_published_notification(
                 followers_of_org, organization, project
@@ -868,15 +868,8 @@ class SetFollowView(APIView):
             "You are not following this project anymore.",
             "Du folgst diesem Projekt nicht mehr.",
         ]
-        return set_user_following(
-            request_data = request.data,
-            user = request.user,
-            entity_model_to_follow = Project,
-            url_slug = url_slug,
-            follower_model = ProjectFollower,
-            lookup_up_field_name = "project",
-            msgs = messages,
-        )
+        return set_user_following_project(request, url_slug, messages)
+         
 
 
 class SetLikeView(APIView):
@@ -931,14 +924,7 @@ class IsUserFollowing(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, url_slug):
-        return check_if_user_follows(
-            user = request.user,
-            url_slug = url_slug,
-            entity_model_being_checked = Project,
-            follower_model = ProjectFollower,
-            look_up_field_name = "project",
-            error_msg = "Project not found",
-        )
+        return check_if_user_follows_project(request.user, url_slug)
 
 
 class IsUserLiking(APIView):
@@ -1061,12 +1047,7 @@ class ListProjectFollowersView(ListAPIView):
     serializer_class = ProjectFollowerSerializer
 
     def get_queryset(self):
-        return get_list_of_followers(
-            list_of_followers_for_entity_model = Project, 
-            follower_model = ProjectFollower, 
-            look_up_field_name = "project", 
-            self = self
-            )
+        return get_list_of_project_followers(self)
 
 
 class ListProjectRequestersView(ListAPIView):
