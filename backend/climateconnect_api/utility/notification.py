@@ -45,27 +45,28 @@ async def send_out_live_notification(user_id):
 
 def create_follower_notification(
     notif_type_number, # Integer value of the notification type
-    follower_type_field_name,
-    obj_field_name,
-    member_model,
-    follower_type,
-    follower_type_obj,
-    follower_type_user_id,
+    look_up_follower_type_field_name, # name of the field being looked up based on the follower type
+    look_up_entitiy_type_field_name, # name of the field being looked up based on the model type
+    member_type_model, # type of team to be looked at when getting their members (e.g project or org team)
+    follower_type, # type of follower e.g project or org
+    follower_type_entity, # type of entity being followed e.g. org or project
+    follower_type_user_id, # user id of the follower who is a certain type (project/org)
 ):
-    notif_query = {follower_type_field_name: follower_type}
+    
+    lookup_up_field_input_notifications = {look_up_follower_type_field_name: follower_type}
     notification = Notification.objects.create(
-        notification_type=notif_type_number, **notif_query
+        notification_type=notif_type_number, **lookup_up_field_input_notifications
     )
-    # obj_field_name means project/organization
-    team_query = {obj_field_name: follower_type_obj}
 
-    team = member_model.objects.filter(**team_query).values("user")
-    for member in team:
+    look_up_field_input_team = {look_up_entitiy_type_field_name: follower_type_entity} 
+
+    team_members_of_entity = member_type_model.objects.filter(**look_up_field_input_team).values("user")
+    
+    for member in team_members_of_entity:
         if not member["user"] == follower_type_user_id:
             user = User.objects.filter(id=member["user"])[0]
-            print("called create follower noti")
             create_user_notification(user, notification)
-            create_follower_email(user, obj_field_name, follower_type, notification)
+            create_follower_email(user, look_up_entitiy_type_field_name, follower_type, notification)
 
 
 def create_follower_email(user, obj_field_name, follower_type, notification):
