@@ -95,7 +95,6 @@ from organization.utility.notification import (
     create_organization_project_published_notification,
     create_project_comment_notification,
     create_project_comment_reply_notification,
-    create_project_follower_notification,
     create_project_join_request_approval_notification,
     create_project_join_request_notification,
     create_project_like_notification,
@@ -463,7 +462,6 @@ class CreateProjectView(APIView):
             create_organization_project_published_notification(
                 followers_of_org, organization, project
             )
-            # send_organization_follower_email(request.user, follower, notification)
 
         return Response(
             {
@@ -856,9 +854,6 @@ class ListProjectStatus(ListAPIView):
         return ProjectStatus.objects.all()
 
 
-1
-
-
 class SetFollowView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -874,13 +869,13 @@ class SetFollowView(APIView):
             "Du folgst diesem Projekt nicht mehr.",
         ]
         return set_user_following(
-            request.data,
-            request.user,
-            Project,
-            url_slug,
-            ProjectFollower,
-            "project",
-            messages,
+            request_data = request.data,
+            user = request.user,
+            entity_model_to_follow = Project,
+            url_slug = url_slug,
+            follower_model = ProjectFollower,
+            lookup_up_field_name = "project",
+            msgs = messages,
         )
 
 
@@ -937,12 +932,12 @@ class IsUserFollowing(APIView):
 
     def get(self, request, url_slug):
         return check_if_user_follows(
-            request.user,
-            url_slug,
-            Project,
-            ProjectFollower,
-            "project",
-            "Project not found",
+            user = request.user,
+            url_slug = url_slug,
+            entity_model_being_checked = Project,
+            follower_model = ProjectFollower,
+            look_up_field_name = "project",
+            error_msg = "Project not found",
         )
 
 
@@ -1066,7 +1061,12 @@ class ListProjectFollowersView(ListAPIView):
     serializer_class = ProjectFollowerSerializer
 
     def get_queryset(self):
-        return get_list_of_followers(Project, ProjectFollower, "project", self)
+        return get_list_of_followers(
+            list_of_followers_for_entity_model = Project, 
+            follower_model = ProjectFollower, 
+            look_up_field_name = "project", 
+            self = self
+            )
 
 
 class ListProjectRequestersView(ListAPIView):

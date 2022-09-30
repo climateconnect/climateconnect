@@ -27,9 +27,6 @@ from climateconnect_api.utility.notification import (
     send_out_live_notification,
 )
 
-from organization.utility.notification import (
-    create_organization_follower_notification,
-)
 
 # Django imports
 from django.contrib.auth.models import User
@@ -98,7 +95,10 @@ class ListOrganizationFollowersView(ListAPIView):
 
     def get_queryset(self):
         return get_list_of_followers(
-            Organization, OrganizationFollower, "organization", self
+            list_of_followers_for_entity_model = Organization, 
+            follower_model = OrganizationFollower, 
+            look_up_field_name = "organization", 
+            self = self
         )
 
 
@@ -107,12 +107,12 @@ class IsUserFollowing(APIView):
 
     def get(self, request, url_slug):
         return check_if_user_follows(
-            request.user,
-            url_slug,
-            Organization,
-            OrganizationFollower,
-            "organization",
-            "Organization not found",
+            user = request.user,
+            url_slug = url_slug,
+            entity_model_being_checked = Organization,
+            follower_model = OrganizationFollower,
+            look_up_field_name = "organization",
+            error_msg = "Organization not found",
         )
 
 
@@ -131,13 +131,13 @@ class SetFollowView(APIView):
             "Du folgst jetzt diese Organisation nicht mehr.",
         ]
         return set_user_following(
-            request.data,
-            request.user,
-            Organization,
-            url_slug,
-            OrganizationFollower,
-            "organization",
-            messages,
+            request_data = request.data,
+            user = request.user,
+            entity_model_to_follow = Organization,
+            url_slug = url_slug,
+            follower_model = OrganizationFollower,
+            lookup_up_field_name = "organization",
+            msgs = messages,
         )
 
 
