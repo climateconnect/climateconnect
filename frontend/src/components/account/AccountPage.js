@@ -267,6 +267,7 @@ export default function AccountPage({
   const [initiallyCaughtFollowers, setInitiallyCaughtFollowers] = useState(false);
   const [followers, setFollowers] = useState([]);
   const [showFollowers, setShowFollowers] = useState(false);
+  
   const toggleShowFollowers = async () => {
     setShowFollowers(!showFollowers);
     if (!initiallyCaughtFollowers) {
@@ -478,6 +479,7 @@ export default function AccountPage({
                 shouldBeFullWidth={true}
                 followingChangePending={followingChangePending}
                 isLoggedIn={user}
+                showLinkUnderButton
               />
 
               <Typography className={classes.followInfo}>
