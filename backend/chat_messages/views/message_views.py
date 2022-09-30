@@ -192,9 +192,11 @@ class GetSearchedChat(ListAPIView):
             user=self.request.user, is_active=True
         ).values_list("chat", flat=True)
 
-        participants_matching_query = Participant.objects.annotate(
-            full_name=Concat("user__first_name", V(" "), "user__last_name")
-        ).filter(chat__in=chat_ids, full_name__icontains=query, is_active=True)
+        participants_matching_query = Participant.objects.filter(
+            chat__in=chat_ids,
+            user__user_profile__name__icontains=query,
+            is_active=True
+        )
         chats = MessageParticipants.objects.filter(
             Q(participant_participants__in=participants_matching_query)
             | Q(name__icontains=query, id__in=chat_ids)
