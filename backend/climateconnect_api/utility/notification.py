@@ -1,7 +1,13 @@
 from datetime import datetime, timedelta
 from typing import List
 
+from yaml import serialize
+
 from asgiref.sync import async_to_sync
+from organization.models.project import Project
+from organization.serializers.project import ProjectNotificationSerializer
+from organization.models.organization import Organization
+from organization.serializers.organization import OrganizationNotificationSerializer
 from channels.layers import get_channel_layer
 from chat_messages.models import Participant
 from chat_messages.utility.email import (
@@ -38,7 +44,7 @@ async def send_out_live_notification(user_id):
 
 
 def create_follower_notification(
-    notif_type_number,
+    notif_type_number, # Integer value of the notification type
     follower_type_field_name,
     obj_field_name,
     member_model,
@@ -46,7 +52,6 @@ def create_follower_notification(
     follower_type_obj,
     follower_type_user_id,
 ):
-    print("called create follower noti")
     notif_query = {follower_type_field_name: follower_type}
     notification = Notification.objects.create(
         notification_type=notif_type_number, **notif_query
@@ -235,3 +240,16 @@ def get_following_user(user):
     follower_user = UserProfile.objects.filter(user=user)
     serializer = UserProfileStubSerializer(follower_user[0])
     return serializer.data
+
+
+def get_organization_info(organization):
+    organization = Organization.objects.get(name=organization.name)
+    serializer = OrganizationNotificationSerializer(organization)
+    return(serializer.data)
+
+
+def get_project_info(project):
+    project = Project.objects.get(name=project.name)
+    serializer= ProjectNotificationSerializer(project)
+    return(serializer.data)
+    

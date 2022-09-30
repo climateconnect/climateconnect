@@ -276,3 +276,13 @@ class OrganizationSitemapEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = ("url_slug", "updated_at")
+
+
+class OrganizationNotificationSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+    class Meta:
+        model = Organization
+        fields = ("name", "url_slug")
+        
+    def get_name(self, obj):
+        return get_organization_name(obj, get_language())
