@@ -17,7 +17,8 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     "schedule_automated_email_reminder_for_notifications": {
         "task": "climateconnect_api.tasks.schedule_automated_reminder_for_user_notifications",
-        "schedule": crontab(minute=0, hour=0),
+        # 0-6 = Sunday to Saturday
+        "schedule": crontab(day_of_week=4, minute=0, hour=0),
     },
     "testing_task": {
         "task": "climateconnect_api.tasks.testing_task",
