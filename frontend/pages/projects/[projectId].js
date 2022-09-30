@@ -135,7 +135,7 @@ export default function ProjectPage({
     const notification_to_set_read = notifications.filter(
       (n) =>
         n.notification_type === notificationType &&
-        n.organization.proj.url_slug === project.url_slug
+        n.project.url_slug === project.url_slug
     );
     await setNotificationsRead(token, notification_to_set_read, locale);
     await refreshNotifications();

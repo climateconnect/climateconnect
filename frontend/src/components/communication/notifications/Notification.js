@@ -318,15 +318,17 @@ const OrganizationFollowerNotification = ({ notification }) => {
 const OrgProjectSharedNotification = ({ notification }) => {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", locale: locale });
-  const projectName = notification.organization.proj.name;
+  
+  const projectName = notification.project.name;
+  
   return (
     <GenericNotification
-      link={`/projects/${notification.organization.proj.url_slug}`}
+      link={`/projects/${notification.project.url_slug}`}
       avatar={{
         alt: projectName,
-        image: notification.organization.proj.image,
+        image: notification.project.image,
       }}
-      primaryText={`${notification.organization.org_name} ${texts.just_shared_project} "${notification.organization.proj.name}"`}
+      primaryText={`${notification.organization.name} ${texts.just_shared_project} "${projectName}"`}
       secondaryText={texts.go_check_it_out}
       notification={notification}
     />
