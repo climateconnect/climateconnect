@@ -219,9 +219,6 @@ def send_organization_follower_email(user, organization_follower, notification):
         + " "
         + organization_follower.user.last_name
     )
-    print(user.first_name)
-    print(following_user_full_name)
-    print(organization_follower.organization.name)
 
     subjects_by_language = {
         "en": "{} now follows {} on Climate Connect".format(
