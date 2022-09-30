@@ -21,7 +21,7 @@ def get_template_id(template_key, lang_code):
     if not lang_code == "en":
         return getattr(
             settings, template_key + "_" + lang_code.upper()
-        )  # not sure this works
+        )
     else:
         return getattr(settings, template_key)
 
@@ -46,11 +46,7 @@ def send_email(
      #   return
 
     if should_send_email_setting:
-        print("trying to send email")
-        print(user.email)
-        print(user.first_name)
-        print(user.last_name)
-        print(template_key)
+      
         try:
             user_profile = UserProfile.objects.get(user=user)
             # short circuit if the user has changed his settings to not
@@ -62,9 +58,7 @@ def send_email(
     lang_code = get_user_lang_code(user)
     subject = subjects_by_language[lang_code]
     template_id = get_template_id(template_key=template_key, lang_code=lang_code)
-    print(variables)
-    print(template_id)
-    print(subject)
+
     data = {
         "Messages": [
             {
@@ -92,12 +86,12 @@ def send_email(
 
     try:
         mail = mailjet_send_api.send.create(data=data)
-        print(mail)
+        
         if notification:
             EmailNotification.objects.create(
                 user=user, created_at=datetime.now(), notification=notification
             )
-        print("here")
+      
         return mail
     except Exception as ex:
         logger.error("%s: Error sending email: %s" % (send_email.__name__, ex))
@@ -217,7 +211,7 @@ def send_feedback_email(email, message, send_response):
             }
         ]
     }
-    print(data)
+ 
 
     try:
         mailjet_send_api.send.create(data=data)
