@@ -10,14 +10,23 @@ from django.utils import timezone
 from climateconnect_api.models import UserNotification, Notification
 from climateconnect_api.utility.email_setup import (
     send_email_reminder_for_unread_notifications,
+    send_test_mail_to_engineering_email,
 )
 
 logger = logging.getLogger(__name__)
 
 
 @app.task
-def testing_task():
-    logger.info(f"CELERY {5+4}")
+def testing_task_1():
+    send_test_mail_to_engineering_email("task 1", "test")
+
+@app.task
+def testing_task_2():
+    send_test_mail_to_engineering_email("task 2", "test2")
+
+@app.task
+def testing_task_3():
+    send_test_mail_to_engineering_email("task 3", "test3")
 
 
 @app.task
