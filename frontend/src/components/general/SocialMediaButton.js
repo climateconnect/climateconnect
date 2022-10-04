@@ -18,7 +18,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SocialMediaButton({ href, socialMediaIcon, altText, isFooterIcon }) {
   const classes = useStyles({ isFooterIcon: isFooterIcon });
-  console.log("Hi");
   return (
     <a href={href} target="_blank" rel="noopener noreferrer" className={classes.inheritColor}>
       <socialMediaIcon.icon className={classes.socialMediaLink} alt={altText} />
