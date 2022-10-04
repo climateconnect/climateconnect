@@ -109,16 +109,8 @@ class SetFollowView(APIView):
 
     def post(self, request, url_slug):
         # probably a better way -> .mo / po files todo
-        messages = [
-            "Organization not found.",
-            "You're already following this organization.",
-            "You are now following this organization. You will be notified when they post an update!",
-            "Du folgst jetzt diese Organisation. Dir wird mitgeteilt, wenn es Updates gibt!",
-            "You weren't following this organization.",
-            "You are not following this organization anymore.",
-            "Du folgst jetzt diese Organisation nicht mehr.",
-        ]
-        return set_user_following_organization(request, url_slug, messages)
+    
+        return set_user_following_organization(request, url_slug)
 
 
 class ListOrganizationsAPIView(ListAPIView):

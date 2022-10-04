@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from django.utils.translation import get_language
 from rest_framework.exceptions import ValidationError
 
+from django.utils.translation import gettext as _
 
 #  IsUserFollowing View functions
 def check_if_user_follows_project(user, url_slug, ):
@@ -57,7 +58,8 @@ def check_if_user_follows(
 
 
 # SetFollow View functions
-def set_user_following_project(request, url_slug, messages):
+def set_user_following_project(request, url_slug):
+   
     return set_user_following(
         request_data = request.data,
         user = request.user,
@@ -65,18 +67,17 @@ def set_user_following_project(request, url_slug, messages):
         url_slug = url_slug,
         follower_model = ProjectFollower,
         lookup_up_field_name = "project",
-        msgs = messages,
     )
 
-def set_user_following_organization(request, url_slug, messages):
+def set_user_following_organization(request, url_slug):
+
     return set_user_following(
         request_data = request.data,
         user = request.user,
         entity_model_to_follow = Organization,
         url_slug = url_slug,
         follower_model = OrganizationFollower,
-        lookup_up_field_name = "organization",
-        msgs = messages,
+        lookup_up_field_name = "organization",   
     )
 
 
@@ -87,9 +88,10 @@ def set_user_following(
     url_slug, 
     follower_model, # type of follower model (organization/project)
     lookup_up_field_name, # the name of the field being looked up
-    msgs
 ):
     lang_code = get_language()
+    # what is a good way to make these different messages generic for this shared function?
+    # messages are either for project or organization and differ from eachother
     if "following" not in request_data:
         return Response(
             {"message": "Missing required parameters"},
@@ -98,11 +100,13 @@ def set_user_following(
     try:
         entity_model = entity_model_to_follow.objects.get(url_slug=url_slug)
     except entity_model_to_follow.DoesNotExist:
-        raise NotFound(detail=msgs[0], code=status.HTTP_404_NOT_FOUND)
+        message = _("Organization not found.") if lookup_up_field_name == "organization" else _("Project not found.")
+        raise NotFound(detail=message, code=status.HTTP_404_NOT_FOUND)
     field_look_up_input = {lookup_up_field_name: entity_model} # this syntax is used for field_name=value in the .filter(s) lookup below 
     if request_data["following"] == True:
         if follower_model.objects.filter(user=user, **field_look_up_input).exists():
-            raise ValidationError(msgs[1])
+            message = _("You're already following this organization.") if lookup_up_field_name == "organization" else _("You're already following this project.")
+            raise ValidationError(message)
         else:
             entity_model_follower = follower_model.objects.create(
                 user=user, **field_look_up_input
@@ -112,11 +116,7 @@ def set_user_following(
             elif lookup_up_field_name == "organization":
                 create_organization_follower_notification(entity_model_follower)
             
-            if lang_code == "en":
-                message = msgs[2]
-            else:
-                message = msgs[3]
-
+            message = _("You are now following this organization. You will be notified when they post an update!") if lookup_up_field_name == "organization" else _("You are now following this project. You will be notified when they post an update!")
             return Response(
                 {
                     "message": message,
@@ -128,15 +128,13 @@ def set_user_following(
         try:
             follower_object = follower_model.objects.get(user=user, **field_look_up_input)
         except follower_model.DoesNotExist:
+            message = _("You weren't following this organization.") if lookup_up_field_name == "organization" else _("You weren't following this project.")
             raise NotFound(
-                detail=msgs[4],
+                detail=message,
                 code=status.HTTP_404_NOT_FOUND,
             )
         follower_object.delete()
-        if lang_code == "en":
-            message = msgs[5]
-        else:
-            message = msgs[6]
+        message = _("You are not following this organization anymore.") if lookup_up_field_name == "organization" else _("You are not following this project anymore.")
         return Response(
             {
                 "message": message,

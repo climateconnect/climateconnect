@@ -859,16 +859,8 @@ class SetFollowView(APIView):
 
     def post(self, request, url_slug):
         # probably a better way -> .mo / po files todo
-        messages = [
-            "Project not found.",
-            "You're already following this project.",
-            "You are now following this project. You will be notified when they post an update!",
-            "Du folgst jetzt diesem Projekt. Dir wird mitgeteilt, wenn es Updates gibt!",
-            "You weren't following this project.",
-            "You are not following this project anymore.",
-            "Du folgst diesem Projekt nicht mehr.",
-        ]
-        return set_user_following_project(request, url_slug, messages)
+       
+        return set_user_following_project(request, url_slug)
          
 
 

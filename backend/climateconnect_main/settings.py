@@ -272,7 +272,7 @@ CHANNEL_LAYERS = {
                 {
                     "address": (env("REDIS_HOST"), env("REDIS_PORT", 6379)),
                     "password": env("REDIS_PASSWORD"),
-                    "ssl": True,
+                    "ssl": False,
                 }
             ]
         },

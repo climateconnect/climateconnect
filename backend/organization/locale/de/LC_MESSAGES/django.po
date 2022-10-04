@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-08 12:03+0100\n"
+"POT-Creation-Date: 2022-10-04 10:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,19 +18,68 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: organization/views/organization_views.py:283
-#: organization/views/organization_views.py:300
+#: organization/utility/follow.py:118
+#, fuzzy
+#| msgid "Organization not found:"
+msgid "Organization not found."
+msgstr "Organisation nicht gefunden:"
+
+#: organization/utility/follow.py:118
+msgid "Project not found."
+msgstr ""
+
+#: organization/utility/follow.py:123
+msgid "You're already following this organization."
+msgstr ""
+
+#: organization/utility/follow.py:123
+msgid "You're already following this project."
+msgstr ""
+
+#: organization/utility/follow.py:134
+msgid ""
+"You are now following this organization. You will be notified when they post "
+"an update!"
+msgstr "Du folgst jetzt diese Organisation. Dir wird mitgeteilt, wenn es Updates gibt!"
+
+#: organization/utility/follow.py:134
+msgid ""
+"You are now following this project. You will be notified when they post an "
+"update!"
+msgstr "Du folgst jetzt diesem Projekt. Dir wird mitgeteilt, wenn es Updates gibt!"
+
+#: organization/utility/follow.py:146
+msgid "You weren't following this organization."
+msgstr ""
+
+#: organization/utility/follow.py:146
+msgid "You weren't following this project."
+msgstr ""
+
+#: organization/utility/follow.py:152
+msgid "You are not following this organization anymore."
+msgstr "Du folgst jetzt diese Organisation nicht mehr."
+
+#: organization/utility/follow.py:152
+msgid "You are not following this project anymore."
+msgstr "Du folgst diesem Projekt nicht mehr."
+
+#: organization/views/organization_views.py:428
+#: organization/views/organization_views.py:450
 msgid "Organization not found:"
 msgstr "Organisation nicht gefunden:"
 
-#: organization/views/organization_views.py:337
+#: organization/views/organization_views.py:506
 msgid "Parent organization not found for organization"
 msgstr "Mutterorganisation der Organisation nicht gefunden"
 
-#: organization/views/organization_views.py:389
+#: organization/views/organization_views.py:552
 msgid "Passed organization tag id does not exists: "
 msgstr "Dieser Organisationstyp existiert nicht: "
 
-#: organization/views/organization_views.py:392
+#: organization/views/organization_views.py:557
 msgid "Successfully updated organization."
 msgstr "Organisation erfolgreich bearbeitet"
+
+#~ msgid "hello"
+#~ msgstr "hallo"
