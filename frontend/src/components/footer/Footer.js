@@ -10,6 +10,7 @@ import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import SocialMediaButton from "../general/SocialMediaButton";
 import LargeFooter from "./LargeFooter";
 
 const useStyles = makeStyles((theme) => ({
@@ -62,15 +63,6 @@ const useStyles = makeStyles((theme) => ({
       marginBottom: theme.spacing(1),
     },
   },
-  socialMediaLink: {
-    height: 20,
-    marginLeft: theme.spacing(1),
-    color: "inherit",
-
-    "&:hover": {
-      color: theme.palette.primary.main,
-    },
-  },
 
   inheritColor: {
     color: "inherit",
@@ -115,6 +107,38 @@ const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScroll
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
+  const socialMediaLinks = [
+    {
+      href: "https://github.com/climateconnect/climateconnect",
+      icon: GitHubIcon,
+      altText: "GitHub",
+      isFooterIcon: true,
+    },
+    {
+      href: "https://twitter.com/ConnectClimate",
+      icon: TwitterIcon,
+      altText: "Twitter",
+      isFooterIcon: true,
+    },
+    {
+      href: "https://www.instagram.com/climate_connect.earth/",
+      icon: InstagramIcon,
+      altText: "Instagram",
+      isFooterIcon: true,
+    },
+    {
+      href: "https://www.facebook.com/climateconnect.earth/",
+      icon: FacebookIcon,
+      altText: "Facebook",
+      isFooterIcon: true,
+    },
+    {
+      href: "https://www.youtube.com/channel/UC10rPriptUxYilMfvt-8Tkw",
+      icon: YouTubeIcon,
+      altText: "Youtube",
+      isFooterIcon: true,
+    },
+  ];
 
   return (
     <Box
@@ -147,46 +171,15 @@ const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScroll
           </Box>
         )}
         <Box component="span" className={classes.rightBox}>
-          <a
-            href="https://github.com/climateconnect/climateconnect"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={classes.inheritColor}
-          >
-            <GitHubIcon className={classes.socialMediaLink} alt="GitHub" />
-          </a>
-          <a
-            href="https://twitter.com/ConnectClimate"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={classes.inheritColor}
-          >
-            <TwitterIcon className={classes.socialMediaLink} alt="Twitter" />
-          </a>
-          <a
-            href="https://www.instagram.com/climate_connect.earth/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={classes.inheritColor}
-          >
-            <InstagramIcon className={classes.socialMediaLink} alt="Instagram" />
-          </a>
-          <a
-            href="https://www.facebook.com/climateconnect.earth/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={classes.inheritColor}
-          >
-            <FacebookIcon className={classes.socialMediaLink} alt="Facebook" />
-          </a>
-          <a
-            href="https://www.youtube.com/channel/UC10rPriptUxYilMfvt-8Tkw"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={classes.inheritColor}
-          >
-            <YouTubeIcon className={classes.socialMediaLink} alt="YouTube" />
-          </a>
+          {socialMediaLinks.map((sml, index) => (
+            <SocialMediaButton
+              key={index}
+              href={sml.href}
+              socialMediaIcon={{ icon: sml.icon }}
+              altText={sml.altText}
+              isFooterIcon={sml.isFooterIcon}
+            />
+          ))}
         </Box>
       </Box>
     </Box>
