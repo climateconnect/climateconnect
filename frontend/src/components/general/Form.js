@@ -207,7 +207,6 @@ export default function Form({
                 <SelectField
                   controlledValue={{ name: values[field.key] }}
                   controlled
-                  multiple={field.multiple}
                   required={field.required}
                   options={options}
                   label={field.label}
@@ -223,7 +222,7 @@ export default function Form({
             return (
               <React.Fragment key={field.key}>
                 <SelectField
-                  disabled={field.selectedValues.length > 1}
+                  disabled={field.selectedValues.length >= field.maxOptions}
                   multiple={field.multiple}
                   required={field.required}
                   options={options}

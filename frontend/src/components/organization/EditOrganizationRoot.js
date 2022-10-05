@@ -87,7 +87,6 @@ export default function EditOrganizationRoot({
         if (!arraysEqual(oldOrg[k], org[k])) finalProfile[k] = org[k];
       } else if (oldOrg[k] !== org[k] && !(!oldOrg[k] && !org[k])) finalProfile[k] = org[k];
     });
-    console.log(finalProfile);
     return finalProfile;
   };
 
@@ -116,7 +115,6 @@ export default function EditOrganizationRoot({
           getTranslationsFromObject(initialTranslations, "organization"),
           translations
         );
-      console.log(payload);
       apiRequest({
         method: "patch",
         url: "/api/organizations/" + encodeURI(organization.url_slug) + "/",
@@ -177,18 +175,15 @@ export default function EditOrganizationRoot({
 
   const getInvolvedText = [
     {
-      textKey: "info.organization_size_and_involvement.get_involved",
+      textKey: "info.get_involved",
       rows: 5,
       headlineTextKey: "get_involved",
     },
   ];
 
-  const tagIdsThatHideGetInvolved = [1, 3]; // we can manually set which types we don't want to have this feature for
-
-  const tagIds = checkForIdsThatHideField(tagIdsThatHideGetInvolved, editedOrganization.types);
-
-  const hideGetInvolvedField = containsValue(tagIds) || editedOrganization.types.length === 0;
-  console.log(hideGetInvolvedField);
+  const hideGetInvolvedField =
+    editedOrganization.types.map((type) => type.hide_get_involved).includes(true) ||
+    editedOrganization.types.length === 0;
 
   const textsToTranslate = hideGetInvolvedField
     ? standardTextsToTranslate
@@ -244,11 +239,8 @@ const parseForRequest = async (org) => {
   const parsedOrg = {
     ...org,
   };
-  if (org.organization_size_and_involvement) {
-    parsedOrg.organization_size = org.organization_size_and_involvement.organization_size;
-    parsedOrg.get_involved = org.organization_size_and_involvement.get_involved;
-    delete parsedOrg.organization_size_and_involvement;
-  }
+  if (org.organization_size) parsedOrg.organization_size = org.organization_size;
+  if (org.get_involved) parsedOrg.get_involved = org.get_involved;
   if (org.short_description) parsedOrg.short_description = org.short_description;
   if (org.parent_organization)
     parsedOrg.parent_organization = org.parent_organization ? org.parent_organization.id : null;
@@ -257,7 +249,6 @@ const parseForRequest = async (org) => {
   if (org.thumbnail_image) parsedOrg.thumbnail_image = await blobFromObjectUrl(org.thumbnail_image);
   if (org.image) parsedOrg.image = await blobFromObjectUrl(org.image);
   if (org.hubs) parsedOrg.hubs = org.hubs.map((h) => h.url_slug);
-
   return parsedOrg;
 };
 
@@ -286,12 +277,3 @@ const verifyChanges = (newOrg, texts) => {
   }
   return true;
 };
-
-function containsValue(arr) {
-  return arr.length > 0;
-}
-
-function checkForIdsThatHideField(typesThatHide, orgTypes) {
-  // checks for intersection of the 2 arrays
-  return typesThatHide.filter((typeThatHides) => orgTypes.includes(typeThatHides));
-}

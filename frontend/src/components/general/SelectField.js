@@ -31,21 +31,16 @@ export default function SelectField({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
 
-  /* removing this statement allows for organization size to be loaded properly on first render 
-     Why does the default value go from defined to undefined?
-     Does removing this have any side effects?
-  */
-  // console.log(defaultValue);
-  // if (!defaultValue) {
-  //  defaultValue = "";
-  //}
+  if (!defaultValue) {
+    defaultValue = "";
+  }
 
   // If we want to force the checkboxes to be checked
   // based on a persisted query param URL, then
   // we update the value and values here...
   const [value, setValue] = React.useState({
-    name: defaultValue?.name,
-    key: defaultValue?.key,
+    name: defaultValue.name,
+    key: defaultValue.key,
   });
 
   const ITEM_HEIGHT = 48;

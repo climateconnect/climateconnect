@@ -56,6 +56,7 @@ def get_organization_short_description(
 
     return organization.short_description
 
+
 def get_organization_get_involved(
     organization: Organization, language_code: str
 ) -> str:

@@ -16,14 +16,19 @@ export function parseOrganization(organization, editMode) {
       short_description: organization.short_description,
       website: organization.website,
       about: organization.about,
-      organization_size_and_involvement: {
-        organization_size: organization.organization_size,
-        get_involved: organization.get_involved,
-      },
+      ...(!editMode && {
+        organization_size_and_involvement: {
+          organization_size: organization.organization_size,
+          get_involved: organization.get_involved,
+        },
+      }),
+      ...(editMode && { organization_size: organization.organization_size }),
+      ...(editMode && { get_involved: organization.get_involved }),
       hubs: organization.hubs,
     },
   };
-  if (editMode) org.types = org.types.map((t) => t.key);
+  if (editMode)
+    org.types = org.types.map((t) => ({ key: t.key, hide_get_involved: t.hide_get_involved }));
   const additional_info = organization.types.reduce((additionalInfoArray, t) => {
     const type = t.organization_tag;
     if (type.additional_info && type.additional_info.length > 0) {

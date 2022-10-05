@@ -72,7 +72,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
             "organization_size",
             "hubs",
             "creator",
-            "get_involved"
+            "get_involved",
         )
 
     def get_name(self, obj):
@@ -105,7 +105,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
         serializer = HubStubSerializer(obj.hubs, many=True)
         return serializer.data
 
-    def get_get_involved(self,obj):
+    def get_get_involved(self, obj):
         return get_organization_get_involved(obj, get_language())
 
     def get_creator(self, obj):

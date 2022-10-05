@@ -82,10 +82,8 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       short_description: "",
       website: "",
       about: "",
-      organization_size_and_involvement: {
-        get_involved: "",
-        organization_size: 0,
-      },
+      organization_size: 0,
+      get_involved: "",
       hubs: [],
     },
     types: [],
@@ -330,9 +328,9 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       </WideLayout>
     );
   else if (curStep === "checktranslations") {
-    const tagIdsThatHideGetInvolved = [1, 3]; // we can manually set which types we don't want to have this feature for
-    const tagIds = checkForIdsThatHideField(tagIdsThatHideGetInvolved, organizationInfo.types);
-    const hideGetInvolvedField = containsValue(tagIds) || organizationInfo.types.length === 0;
+    const hideGetInvolvedField =
+      organizationInfo.types.map((type) => type.hide_get_involved).includes(true) ||
+      organizationInfo.types.length === 0;
 
     const standardTextsToTranslate = [
       {
@@ -354,7 +352,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
 
     const getInvolvedText = [
       {
-        textKey: "info.organization_size_and_involvement.get_involved",
+        textKey: "info.get_involved",
         rows: 5,
         headlineTextKey: "get_involved",
       },
@@ -444,8 +442,8 @@ const parseOrganizationForRequest = async (o, user, rolesOptions, translations, 
     location: o.info.location,
     website: o.info.website,
     short_description: o.info.short_description,
-    organization_size: o.info.organization_size_and_involvement.organization_size,
-    get_involved: o.info.organization_size_and_involvement.get_involved,
+    organization_size: o.info.organization_size,
+    get_involved: o.info.get_involved,
     hubs: o.info.hubs.map((h) => h.url_slug),
     about: o.info.about,
     organization_tags: o.types,
@@ -462,12 +460,3 @@ const parseOrganizationForRequest = async (o, user, rolesOptions, translations, 
   if (o.info.school) organization.school = o.info.school;
   return organization;
 };
-
-function containsValue(arr) {
-  return arr.length > 0;
-}
-
-function checkForIdsThatHideField(typesThatHide, orgTypes) {
-  // checks for intersection of the 2 arrays
-  return typesThatHide.filter((typeThatHides) => orgTypes.includes(typeThatHides));
-}

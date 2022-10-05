@@ -222,7 +222,7 @@ export default function AccountPage({
       {text}
     </Link>
   );
-
+ 
   const displayAccountInfo = (info) =>
     Object.keys(info)
       .sort((a, b) => {
@@ -232,7 +232,9 @@ export default function AccountPage({
       })
       .map((key, index) => {
         if (info[key]) {
+
           const i = getFullInfoElement(infoMetadata, key, info[key]);
+
           const value = Array.isArray(i.value) ? i.value.join(", ") : i.value;
           const additionalText = i.additionalText ? i.additionalText : "";
           if (key === "parent_organization") {
@@ -250,10 +252,9 @@ export default function AccountPage({
                 </div>
               );
           } else if (i.type === "selectwithtext" && value) {
-            const tagIdsThatHideGetInvolved = [1, 3]; // we can manually set which types we don't want to have this feature for
-            const tagIds = checkForIdsThatHideField(tagIdsThatHideGetInvolved, account.types);
-
-            const hideGetInvolvedField = containsValue(tagIds) || account.types.length === 0;
+            const hideGetInvolvedField =
+              account.types.map((type) => type.hide_get_involved).includes(true) ||
+              account.types.length === 0;
 
             const orgSizeValue = i.options.find((o) => o?.key === i.value?.organization_size)?.name;
             const orgSizeLabel = i?.organization_size?.name;
@@ -483,12 +484,4 @@ function SubTitleWithContent({ subTitleIcon, label, value }) {
       <div className={classes.content}>{value}</div>
     </>
   );
-}
-
-function containsValue(arr) {
-  return arr.some((element) => element !== undefined);
-}
-
-function checkForIdsThatHideField(typesThatHide, orgTypes) {
-  return typesThatHide.map((id) => orgTypes.find((type) => type.id === id));
 }

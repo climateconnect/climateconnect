@@ -166,7 +166,7 @@ class OrganizationTranslation(models.Model):
         blank=True,
     )
 
-    get_involved_translation =  models.CharField(
+    get_involved_translation = models.CharField(
         help_text="Translation of get involved textfield",
         verbose_name="How to get involved translation",
         null=True,

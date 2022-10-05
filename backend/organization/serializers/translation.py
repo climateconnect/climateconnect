@@ -17,7 +17,7 @@ class OrganizationTranslationSerializer(serializers.ModelSerializer):
             "school_translation",
             "organ_translation",
             "about_translation",
-            "get_involved_translation"
+            "get_involved_translation",
         )
 
     def get_language(self, obj):

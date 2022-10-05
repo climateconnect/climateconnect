@@ -284,10 +284,8 @@ export default function getOrganizationTexts({ organization, locale }) {
       de: "Wie man sich einbringen kann",
     },
     get_involved_helptext: {
-      en:
-        "Give a short summary of how people can get involved with your organization. This option is only available to certain types of organizations.",
-      de:
-        "Beschreibe kurz, wie man bei deiner Organisation mitmachen kann.",
+      en: "Give a short summary of how people can get involved with your organization.",
+      de: "Beschreibe kurz, wie man bei deiner Organisation mitmachen kann.",
     },
     add_up_to_two_types: {
       en: "Add up to 2 organization types",
