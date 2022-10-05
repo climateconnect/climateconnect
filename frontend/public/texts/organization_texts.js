@@ -287,7 +287,7 @@ export default function getOrganizationTexts({ organization, locale }) {
       en:
         "Give a short summary of how people can get involved with your organization. This option is only available to certain types of organizations.",
       de:
-        "Beschreibe kurz wie man sich mit deiner Organisation eingagieren kann. Dieser Option wird nur bei bestimmten Organisationstypen verfügbar sein.",
+        "Beschreibe kurz, wie man bei deiner Organisation mitmachen kann.",
     },
     add_up_to_two_types: {
       en: "Add up to 2 organization types",
