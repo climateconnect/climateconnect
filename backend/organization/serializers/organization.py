@@ -13,7 +13,7 @@ from organization.models import (
     OrganizationTranslation,
 )
 from organization.models.project import Project, ProjectParents
-from organization.serializers.tags import OrganizationTaggingSerializer
+from organization.serializers.tags import OrganizationSocialMediaLinkSerializer, OrganizationTaggingSerializer
 from organization.serializers.translation import OrganizationTranslationSerializer
 from organization.utility.organization import (
     get_organization_about_section,
@@ -49,6 +49,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
     language = serializers.SerializerMethodField()
     hubs = serializers.SerializerMethodField()
     creator = serializers.SerializerMethodField()
+    social_medias = serializers.SerializerMethodField()
 
     class Meta:
         model = Organization
@@ -70,6 +71,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
             "organization_size",
             "hubs",
             "creator",
+            "social_medias"
         )
 
     def get_name(self, obj):
@@ -84,6 +86,10 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
     def get_parent_organization(self, obj):
         serializer = OrganizationStubSerializer(obj.parent_organization)
+        return serializer.data
+
+    def get_social_medias(self, obj):
+        serializer = OrganizationSocialMediaLinkSerializer(obj.social_media_link_to_organization, many=True)
         return serializer.data
 
     def get_location(self, obj):
