@@ -607,7 +607,7 @@ export default function EditAccountPage({
             ? editedAccount.types.map((type) => type.hide_get_involved).includes(true) ||
               editedAccount.types.length === 0
             : false;
-       
+
         return (
           <>
             {!hideGetInvolvedField && (
@@ -725,10 +725,6 @@ export default function EditAccountPage({
       info: { ...editedAccount.info, [key]: event.target.value },
     });
   };
-
-
-  
-  
 
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
@@ -947,8 +943,9 @@ export default function EditAccountPage({
           onClose={handleAddTypeClose}
           open={open.addTypeDialog}
           title={texts.add_type}
-          values={getTypes(possibleAccountTypes, infoMetadata).filter(value => 
-            !editedAccount.types.some(val => val.key === value.key))}
+          values={getTypes(possibleAccountTypes, infoMetadata).filter(
+            (value) => !editedAccount.types.some((val) => val.key === value.key)
+          )}
           label={texts.choose_type}
           supportAdditionalInfo={true}
           className={classes.dialogWidth}
@@ -967,7 +964,6 @@ export default function EditAccountPage({
 }
 
 const getTypes = (possibleAccountTypes, infoMetadata) => {
-  
   return possibleAccountTypes.map((type) => {
     return {
       ...type,

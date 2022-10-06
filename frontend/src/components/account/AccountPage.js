@@ -222,7 +222,7 @@ export default function AccountPage({
       {text}
     </Link>
   );
- 
+
   const displayAccountInfo = (info) =>
     Object.keys(info)
       .sort((a, b) => {
@@ -232,7 +232,6 @@ export default function AccountPage({
       })
       .map((key, index) => {
         if (info[key]) {
-
           const i = getFullInfoElement(infoMetadata, key, info[key]);
 
           const value = Array.isArray(i.value) ? i.value.join(", ") : i.value;
