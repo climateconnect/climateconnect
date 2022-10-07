@@ -7,6 +7,7 @@ class SocialMediaChannel(models.Model):
         help_text="Points to name of the social media",
         verbose_name="Social Media Channel",
         max_length=256,
+        default="",
     )   
 
     class Meta:

@@ -221,6 +221,25 @@ const useStyles = makeStyles((theme) => ({
   detailledDescriptionContainer: {
     marginTop: theme.spacing(5),
   },
+  socialMediaIcons: {
+    height: 40,
+    marginLeft: theme.spacing(1),
+    color:  theme.palette.primary.main,
+
+    "&:hover": {
+      color: theme.palette.primary.main,
+    },
+  },
+  socialMediaCheckboxesContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  socialMediaCheckBox: {
+    display: "flex",
+    alignItems: "center",
+   
+  }
 }));
 
 //Generic page for editing your personal profile or organization profile
@@ -468,7 +487,33 @@ export default function EditAccountPage({
           </div>
         );
       } else if (i.type === "checkbox") {
-        return (
+        console.log(i.options);
+        return i.multiple ? (
+          <>
+            <Typography className={`${classes.subtitle} ${classes.infoElement}`}>
+              {i.name}:
+            </Typography>
+            <div className={classes.socialMediaCheckboxesContainer}>
+            {i.options.map((option) => (
+              <>
+              <div className={classes.socialMediaCheckBox}>
+                <Checkbox
+                  id={"checkbox" + option.key}
+                  checked={option.value}
+                  className={classes.inlineBlockElement}
+                  color="primary"
+                  size="small"
+                  onChange={(e) => handleChange({ target: { value: e.target.checked } })}
+                />
+                
+                <label htmlFor={"checkbox" + option.key}>{option.label}</label>
+                <option.icon className={classes.socialMediaIcons}/>
+                </div>
+              </>
+            ))}
+            </div>
+          </>
+        ) : (
           <div className={classes.checkbox} key={i.key}>
             <Checkbox
               id={"checkbox" + i.key}
@@ -489,6 +534,8 @@ export default function EditAccountPage({
         const renderSearchOption = (option) => {
           return <React.Fragment>{option.name}</React.Fragment>;
         };
+        console.log(i);
+        console.log(!i.show_if_ticked, editedAccount.info[i.show_if_ticked]);
         return (
           <div className={classes.infoElement}>
             {i.value && (

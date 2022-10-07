@@ -5,6 +5,11 @@ import PlaceIcon from "@material-ui/icons/Place";
 import SchoolIcon from "@material-ui/icons/School";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import getTexts from "../texts/texts";
+import InstagramIcon from "@material-ui/icons/Instagram";
+import TwitterIcon from "@material-ui/icons/Twitter";
+import YouTubeIcon from "@material-ui/icons/YouTube";
+import FacebookIcon from "@material-ui/icons/Facebook";
+import LinkedInIcon from "@material-ui/icons/LinkedIn";
 
 export default function getOrganizationInfoMetadata(locale, organization) {
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
@@ -63,9 +68,50 @@ export default function getOrganizationInfoMetadata(locale, organization) {
       maxLength: 240,
       linkify: true,
     },
+   
+    socials: {
+      type: "checkbox",
+      label: "social medias",
+      name: "Add social media",
+      multiple: true,
+      options: [
+        {
+          icon: TwitterIcon ,
+          key: 0,
+          label: "Twitter",
+          value: false
+        },
+        {
+          icon: YouTubeIcon,
+          key: 1,
+          label: "Youtube",
+          value: false
+        },
+        {
+          icon: LinkedInIcon,
+          key: 2,
+          label: "LinkedIn",
+          value: false
+        },
+        {
+          icon: InstagramIcon,
+          key: 3,
+          label: "Instagram",
+          value: false
+        },
+        {
+          icon: FacebookIcon,
+          key: 3,
+          label: "LinkedIn",
+          value: false
+        },
+      ],
+    },
+    
     has_parent_organization: {
       type: "checkbox",
       label: texts.we_are_a_suborganization,
+      multiple: false,
     },
     parent_organization: {
       icon: AccountBalanceIcon,

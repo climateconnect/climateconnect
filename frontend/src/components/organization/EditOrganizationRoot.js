@@ -153,7 +153,7 @@ export default function EditOrganizationRoot({
     event.preventDefault();
     await saveChanges(editedOrganization, true);
   };
-
+  console.log(infoMetadata);
   return (
     <>
       {organization ? (

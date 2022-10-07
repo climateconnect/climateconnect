@@ -6,7 +6,7 @@ const useStyles = makeStyles((theme) => ({
     color: "inherit",
   },
   socialMediaLink: (props) => ({
-    height: 20,
+    height: props.isFooterIcon ? 20 : 40,
     marginLeft: theme.spacing(1),
     color: props.isFooterIcon ? "inherit" : theme.palette.primary.main,
 

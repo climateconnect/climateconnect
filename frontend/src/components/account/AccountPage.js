@@ -25,6 +25,12 @@ import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import UserContext from "../context/UserContext";
 import EditSharpIcon from "@material-ui/icons/EditSharp";
 import IconButton from "@material-ui/core/IconButton";
+import SocialMediaButton from "../general/SocialMediaButton";
+import InstagramIcon from "@material-ui/icons/Instagram";
+import TwitterIcon from "@material-ui/icons/Twitter";
+import YouTubeIcon from "@material-ui/icons/YouTube";
+import FacebookIcon from "@material-ui/icons/Facebook";
+import LinkedInIcon from "@material-ui/icons/LinkedIn";
 
 const useStyles = makeStyles((theme) => ({
   avatarContainer: {
@@ -192,6 +198,7 @@ export default function AccountPage({
       {text}
     </Link>
   );
+  console.log(infoMetadata);
 
   const displayAccountInfo = (info) =>
     Object.keys(info)
@@ -366,6 +373,20 @@ export default function AccountPage({
               ))}
             </Container>
           )}
+
+          {account.info.socials && (
+            <div className={classes.marginTop}>
+              {getSocialMediaButtons(parseSocials(account.info.socials)).map((socialMedia, index) => (
+                <SocialMediaButton
+                  key={index}
+                  href={socialMedia.href}
+                  socialMediaIcon={{ icon: socialMedia.icon }}
+                  altText={socialMedia.altText}
+                  isFooterIcon={socialMedia.isFooterIcon}
+                />
+              ))}
+            </div>
+          )}
         </Container>
         <Container className={classes.accountInfo}>{displayAccountInfo(account.info)}</Container>
         {isOwnAccount && !isSmallScreen && (
@@ -395,3 +416,74 @@ export default function AccountPage({
 const getFullInfoElement = (infoMetadata, key, value) => {
   return { ...infoMetadata[key], value: value };
 };
+
+function parseSocials(socials) {
+  console.log(socials);
+  if (typeof socials === "undefined") return;
+  const existingSocials = socials.filter(
+    (social) =>
+      social.social_media_name.toLowerCase().includes("youtube.com") ||
+      social.social_media_name.toLowerCase().includes("linkedin.com") ||
+      social.social_media_name.toLowerCase().includes("twitter.com") ||
+      social.social_media_name.toLowerCase().includes("instagram.com") ||
+      social.social_media_name.toLowerCase().includes("facebook.com")
+  );
+  const socialsLinks = existingSocials.map((social) => social.social_media_name);
+  return socialsLinks;
+}
+
+function getSocialMediaButtons(socialLinks) {
+  const socialMediaLinks = [];
+  socialLinks.map((social) =>
+    social.toLowerCase().includes("youtube.com")
+      ? socialMediaLinks.push(addYoutubeIconButton(social))
+      : "" || social.toLowerCase().includes("linkedin.com")
+      ? socialMediaLinks.push(addLinkedInIconButton(social))
+      : "" || social.toLowerCase().includes("facebook.com")
+      ? socialMediaLinks.push(addFacebookIconButton(social))
+      : "" || social.toLowerCase().includes("twitter.com")
+      ? socialMediaLinks.push(addTwitterIconButton(social))
+      : "" || social.toLowerCase().includes("instagram.com")
+      ? socialMediaLinks.push(addInstagramIconButton(social))
+      : ""
+  );
+  return socialMediaLinks;
+}
+
+function addTwitterIconButton(link) {
+  return {
+    href: link,
+    icon: TwitterIcon,
+    altText: "Twitter",
+  };
+}
+
+function addLinkedInIconButton(link) {
+  return {
+    href: link,
+    icon: LinkedInIcon,
+    altText: "LinkedIn",
+  };
+}
+
+function addYoutubeIconButton(link) {
+  return {
+    href: link,
+    icon: YouTubeIcon,
+    altText: "Youtube",
+  };
+}
+function addFacebookIconButton(link) {
+  return {
+    href: link,
+    icon: FacebookIcon,
+    altText: "Facebook",
+  };
+}
+function addInstagramIconButton(link) {
+  return {
+    href: link,
+    icon: InstagramIcon,
+    altText: "Instagram",
+  };
+}

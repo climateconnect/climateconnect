@@ -2,14 +2,12 @@ import { apiRequest } from "./apiOperations";
 import { getImageUrl } from "./imageOperations";
 
 export function parseOrganization(organization, editMode) {
-  
   const org = {
     url_slug: organization.url_slug,
     background_image: getImageUrl(organization.background_image),
     name: organization.name,
     image: getImageUrl(organization.image),
     types: organization.types.map((t) => ({ ...t.organization_tag, key: t.organization_tag.id })),
-    socials: organization.social_medias.map((sm) => ({...sm.social_media_channel, key: sm.social_media_channel.id})),
     language: organization.language,
     translations: organization.translations,
     hubs: organization.hubs,
@@ -19,11 +17,18 @@ export function parseOrganization(organization, editMode) {
       website: organization.website,
       about: organization.about,
       organization_size: organization.organization_size,
+      socials: organization.social_medias.map((sm) => ({
+        ...sm.social_media_channel,
+        key: sm.social_media_channel.id})),
       hubs: organization.hubs,
     },
+   
   };
- 
-  if (editMode) org.types = org.types.map((t) => t.key);
+  
+  if (editMode) {
+    org.types = org.types.map((t) => t.key);
+  
+  };
   const additional_info = organization.types.reduce((additionalInfoArray, t) => {
     const type = t.organization_tag;
     if (type.additional_info && type.additional_info.length > 0) {

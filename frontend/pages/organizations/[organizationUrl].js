@@ -72,13 +72,17 @@ const useStyles = makeStyles((theme) => ({
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
-  const [organization, projects, members, 
-   // organizationTypes, 
-    rolesOptions] = await Promise.all([
+  const [
+    organization,
+    projects,
+    members,
+    // organizationTypes,
+    rolesOptions,
+  ] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
     getProjectsByOrganization(organizationUrl, auth_token, ctx.locale),
     getMembersByOrganization(organizationUrl, auth_token, ctx.locale),
-   // getOrganizationTypes(),
+    // getOrganizationTypes(),
     getRolesOptions(auth_token, ctx.locale),
   ]);
   return {
@@ -96,12 +100,13 @@ export default function OrganizationPage({
   organization,
   projects,
   members,
- // organizationTypes,
+  // organizationTypes, // i dont think types is used.
   rolesOptions,
 }) {
   console.log(organization);
   const { user, locale } = useContext(UserContext);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization);
+  console.log(infoMetadata);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   return (
     <WideLayout
@@ -114,7 +119,7 @@ export default function OrganizationPage({
           organization={organization}
           projects={projects}
           members={members}
-        //  organizationTypes={organizationTypes} // does this do anything?
+          //  organizationTypes={organizationTypes} // does this do anything?
           infoMetadata={infoMetadata}
           user={user}
           texts={texts}

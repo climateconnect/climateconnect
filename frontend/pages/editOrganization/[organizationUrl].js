@@ -38,6 +38,7 @@ export default function EditOrganizationPage({ organization, tagOptions, allHubs
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
   const organization_info_metadata = getOrganizationInfoMetadata(locale, organization);
+
   const [errorMessage, setErrorMessage] = useState("");
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
