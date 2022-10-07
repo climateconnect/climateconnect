@@ -68,47 +68,42 @@ export default function getOrganizationInfoMetadata(locale, organization) {
       maxLength: 240,
       linkify: true,
     },
-   
-    socials: {
+
+    social_options: {
       type: "checkbox",
       label: "social medias",
       name: "Add social media",
       multiple: true,
       options: [
         {
-          icon: TwitterIcon ,
+          icon: TwitterIcon,
           key: 0,
           label: "Twitter",
-          value: false
         },
         {
           icon: YouTubeIcon,
           key: 1,
           label: "Youtube",
-          value: false
         },
         {
           icon: LinkedInIcon,
           key: 2,
           label: "LinkedIn",
-          value: false
         },
         {
           icon: InstagramIcon,
           key: 3,
           label: "Instagram",
-          value: false
         },
         {
           icon: FacebookIcon,
-          key: 3,
-          label: "LinkedIn",
-          value: false
+          key: 4,
+          label: "Facebook",
         },
       ],
     },
-    
-    has_parent_organization: {
+
+   /* has_parent_organization: {
       type: "checkbox",
       label: texts.we_are_a_suborganization,
       multiple: false,
@@ -123,7 +118,7 @@ export default function getOrganizationInfoMetadata(locale, organization) {
       show_if_ticked: "has_parent_organization",
       baseUrl: "/api/organizations/?search=",
       helperText: texts.edit_parent_organization_helper_text,
-    },
+    },*/
     about: {
       name: `${texts.about}`,
       key: "about",

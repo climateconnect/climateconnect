@@ -198,7 +198,7 @@ export default function AccountPage({
       {text}
     </Link>
   );
-  console.log(infoMetadata);
+  console.log(account);
 
   const displayAccountInfo = (info) =>
     Object.keys(info)
@@ -374,17 +374,19 @@ export default function AccountPage({
             </Container>
           )}
 
-          {account.info.socials && (
+          {account.info.social_options && (
             <div className={classes.marginTop}>
-              {getSocialMediaButtons(parseSocials(account.info.socials)).map((socialMedia, index) => (
-                <SocialMediaButton
-                  key={index}
-                  href={socialMedia.href}
-                  socialMediaIcon={{ icon: socialMedia.icon }}
-                  altText={socialMedia.altText}
-                  isFooterIcon={socialMedia.isFooterIcon}
-                />
-              ))}
+              {getSocialMediaButtons(parseSocials(account.info.social_options)).map(
+                (socialMedia, index) => (
+                  <SocialMediaButton
+                    key={index}
+                    href={socialMedia.href}
+                    socialMediaIcon={{ icon: socialMedia.icon }}
+                    altText={socialMedia.altText}
+                    isFooterIcon={socialMedia.isFooterIcon}
+                  />
+                )
+              )}
             </div>
           )}
         </Container>
@@ -418,13 +420,11 @@ const getFullInfoElement = (infoMetadata, key, value) => {
 };
 
 function parseSocials(socials) {
-  console.log(socials);
-  if (typeof socials === "undefined") return;
   const existingSocials = socials.filter(
     (social) =>
+      social.social_media_name.toLowerCase().includes("twitter.com") ||
       social.social_media_name.toLowerCase().includes("youtube.com") ||
       social.social_media_name.toLowerCase().includes("linkedin.com") ||
-      social.social_media_name.toLowerCase().includes("twitter.com") ||
       social.social_media_name.toLowerCase().includes("instagram.com") ||
       social.social_media_name.toLowerCase().includes("facebook.com")
   );
@@ -435,16 +435,16 @@ function parseSocials(socials) {
 function getSocialMediaButtons(socialLinks) {
   const socialMediaLinks = [];
   socialLinks.map((social) =>
-    social.toLowerCase().includes("youtube.com")
+    social.toLowerCase().includes("twitter.com")
+      ? socialMediaLinks.push(addTwitterIconButton(social))
+      : "" || social.toLowerCase().includes("youtube.com")
       ? socialMediaLinks.push(addYoutubeIconButton(social))
       : "" || social.toLowerCase().includes("linkedin.com")
       ? socialMediaLinks.push(addLinkedInIconButton(social))
-      : "" || social.toLowerCase().includes("facebook.com")
-      ? socialMediaLinks.push(addFacebookIconButton(social))
-      : "" || social.toLowerCase().includes("twitter.com")
-      ? socialMediaLinks.push(addTwitterIconButton(social))
       : "" || social.toLowerCase().includes("instagram.com")
       ? socialMediaLinks.push(addInstagramIconButton(social))
+      : "" || social.toLowerCase().includes("facebook.com")
+      ? socialMediaLinks.push(addFacebookIconButton(social))
       : ""
   );
   return socialMediaLinks;

@@ -224,22 +224,19 @@ const useStyles = makeStyles((theme) => ({
   socialMediaIcons: {
     height: 40,
     marginLeft: theme.spacing(1),
-    color:  theme.palette.primary.main,
-
+    color: theme.palette.primary.main,
     "&:hover": {
       color: theme.palette.primary.main,
     },
   },
-  socialMediaCheckboxesContainer: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
+  socialLink: {
+    marginTop: theme.spacing(0.5),
+    marginBottom: theme.spacing(2),
   },
   socialMediaCheckBox: {
     display: "flex",
     alignItems: "center",
-   
-  }
+  },
 }));
 
 //Generic page for editing your personal profile or organization profile
@@ -321,6 +318,8 @@ export default function EditAccountPage({
   };
 
   const handleTextFieldChange = (key, newValue, isInfoElement) => {
+    console.log(newValue);
+    console.log(key);
     if (isInfoElement)
       setEditedAccount({ ...editedAccount, info: { ...editedAccount.info, [key]: newValue } });
     setEditedAccount({ ...editedAccount, [key]: newValue });
@@ -413,6 +412,7 @@ export default function EditAccountPage({
   /* Since this component is generic and is used for both personal profiles and organizations 
     we pass an info element to it. 
   */
+
   const displayAccountInfo = (info) => {
     //For each info object we want to return the correct input so users can change this info
     return Object.keys(info).map((key) => {
@@ -420,6 +420,7 @@ export default function EditAccountPage({
 
       const handleChange = (event) => {
         let newValue = event.target.value;
+
         if (i.type === "select") {
           //On select fields, use the key as the new value since the text can have multiple languages
           newValue = i.options.find((o) => o.name === event.target.value).key;
@@ -447,6 +448,75 @@ export default function EditAccountPage({
           },
         });
       };
+
+      const handleChangeSocialCheckBox = (event) => {
+      
+        const social_media_option_added = {
+          key: event.index,
+          is_checked: event.target.value,
+          social_media_name: event.social,
+        }
+        const social_media_option_removed = editedAccount.info.social_options.filter(
+          option => option.key !== event.index
+        );
+        
+     
+        const adding = event.target.value === true ;
+      
+
+        if (adding) {
+       
+          setEditedAccount( {
+            ...editedAccount, 
+            info: {
+              ...editedAccount.info,
+              social_options : [
+                ...editedAccount.info.social_options,
+                social_media_option_added,
+            ]
+          }
+          
+        });
+        }
+       
+        // removing 
+        else {
+        
+          setEditedAccount({
+            ...editedAccount,
+            info: {
+              ...editedAccount.info,
+              social_options : social_media_option_removed
+  
+            },
+          });  
+        }
+     
+      };
+     
+
+      const handleChangeSocialLink = (index, newValue) => {
+        console.log(newValue);
+        console.log(index);
+        
+        editedAccount.info.social_options[index].social_media_name = newValue,
+        
+        console.log([
+
+          editedAccount.info.social_options
+        ]);
+        setEditedAccount({ 
+           ...editedAccount, 
+           info: {
+            ...editedAccount.info,
+            social_options: 
+              editedAccount.info.social_options
+            
+              
+            
+           }
+          });  
+      }
 
       const handleChangeLegacyLocation = (key, event) => {
         setEditedAccount({
@@ -487,31 +557,47 @@ export default function EditAccountPage({
           </div>
         );
       } else if (i.type === "checkbox") {
-        console.log(i.options);
+        
+        console.log(i);
+    
         return i.multiple ? (
           <>
             <Typography className={`${classes.subtitle} ${classes.infoElement}`}>
               {i.name}:
             </Typography>
-            <div className={classes.socialMediaCheckboxesContainer}>
-            {i.options.map((option) => (
+          
+            {i.options.map((option, index) => (
+              
               <>
-              <div className={classes.socialMediaCheckBox}>
-                <Checkbox
-                  id={"checkbox" + option.key}
-                  checked={option.value}
-                  className={classes.inlineBlockElement}
-                  color="primary"
-                  size="small"
-                  onChange={(e) => handleChange({ target: { value: e.target.checked } })}
-                />
-                
-                <label htmlFor={"checkbox" + option.key}>{option.label}</label>
-                <option.icon className={classes.socialMediaIcons}/>
+                <div className={classes.socialMediaCheckBox}>
+                  <Checkbox
+                    id={"checkbox" + option.key}
+                    checked={option.value}
+                    className={classes.inlineBlockElement}
+                    color="primary"
+                    onChange={(e) =>
+                      handleChangeSocialCheckBox({
+                        target: { value: e.target.checked },
+                        social: option.label,
+                        index: index,
+                      })
+                    }
+                  />
+
+                  <label htmlFor={"checkbox" + option.key}>{option.label}</label>
+                  <option.icon className={classes.socialMediaIcons} />
                 </div>
+                { ( i.value[i.value.findIndex(val => val.key === option.key)]?.is_checked) && ( // find index where i.value.key === option. key
+                  <TextField
+                    className={classes.socialLink}
+                    fullWidth
+                    value={i.value.length > 0 ? i.value[i.value.findIndex(val => val.key === option.key)]?.social_media_name  : "" }
+                    onChange={(event) => handleChangeSocialLink(i.value[i.value.findIndex(val => val.key === option.key)].key, event.target.value)}
+                    label={option.label}
+                  />
+                )}
               </>
             ))}
-            </div>
           </>
         ) : (
           <div className={classes.checkbox} key={i.key}>
