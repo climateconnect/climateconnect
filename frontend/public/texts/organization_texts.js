@@ -279,5 +279,9 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: "Skip for now",
       de: "Erstmal überspringen",
     },
+    find_us_here: {
+      en: "Find us here:",
+      de: "Find uns unter:",
+    }
   };
 }

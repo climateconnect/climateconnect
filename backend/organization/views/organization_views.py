@@ -493,7 +493,7 @@ class OrganizationAPIView(APIView):
         print(old_social_media_links,"old")
       
         if "social_options" in request.data:
-            print(request.data["social_options"])
+            print(request.data["social_options"], "hi")
             for option in old_social_media_links:
                 if not option["social_media_channel"] in request.data["social_options"]:
                     option_to_delete = SocialMediaChannel.objects.get(

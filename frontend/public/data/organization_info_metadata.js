@@ -70,10 +70,8 @@ export default function getOrganizationInfoMetadata(locale, organization) {
     },
 
     social_options: {
-      type: "checkbox",
-      label: "social medias",
+      type: "social_media",
       name: "Add social media",
-      multiple: true,
       options: [
         {
           icon: TwitterIcon,
@@ -103,10 +101,10 @@ export default function getOrganizationInfoMetadata(locale, organization) {
       ],
     },
 
-   /* has_parent_organization: {
+    has_parent_organization: {
       type: "checkbox",
       label: texts.we_are_a_suborganization,
-      multiple: false,
+  
     },
     parent_organization: {
       icon: AccountBalanceIcon,
@@ -118,7 +116,7 @@ export default function getOrganizationInfoMetadata(locale, organization) {
       show_if_ticked: "has_parent_organization",
       baseUrl: "/api/organizations/?search=",
       helperText: texts.edit_parent_organization_helper_text,
-    },*/
+    },
     about: {
       name: `${texts.about}`,
       key: "about",

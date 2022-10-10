@@ -286,6 +286,7 @@ export default function EditAccountPage({
   const handleDialogClickOpen = (dialogKey) => {
     setOpen({ ...open, [dialogKey]: true });
   };
+  console.log(editedAccount);
 
   const handleBackgroundClose = (image) => {
     setOpen({ ...open, backgroundDialog: false });
@@ -318,7 +319,6 @@ export default function EditAccountPage({
   };
 
   const handleTextFieldChange = (key, newValue, isInfoElement) => {
-   
     if (isInfoElement)
       setEditedAccount({ ...editedAccount, info: { ...editedAccount.info, [key]: newValue } });
     setEditedAccount({ ...editedAccount, [key]: newValue });
@@ -449,74 +449,60 @@ export default function EditAccountPage({
       };
 
       const handleChangeSocialCheckBox = (event) => {
+        console.log(editedAccount.info.social_options);
         console.log(event);
+
         const social_media_option_added = {
+          social_media_name: event.social,
           key: event.index,
           is_checked: event.target.value,
-          social_media_name: event.social,
-        }
+        };
         const social_media_option_removed = editedAccount.info.social_options.filter(
-          option => option.key !== event.index
+          (option) => option.key !== event.index
         );
-        
-     
-        const adding = event.target.value === true ;
-      
+
+        const adding = event.target.value === true;
 
         if (adding) {
-       
-          setEditedAccount( {
-            ...editedAccount, 
-            info: {
-              ...editedAccount.info,
-              social_options : [
-                ...editedAccount.info.social_options,
-                social_media_option_added,
-            ]
-          }
-          
-        });
-        }
-       
-        // removing 
-        else {
-        
           setEditedAccount({
             ...editedAccount,
             info: {
               ...editedAccount.info,
-              social_options : social_media_option_removed
-  
+              social_options: [...editedAccount.info.social_options, social_media_option_added],
             },
-          });  
+          });
         }
-     
+
+        // removing
+        else {
+          setEditedAccount({
+            ...editedAccount,
+            info: {
+              ...editedAccount.info,
+              social_options: social_media_option_removed,
+            },
+          });
+        }
       };
-     
 
-      const handleChangeSocialLink = (index, newValue) => {
-        //console.log(newValue);
-        //console.log(index);
+      const handleChangeSocialLink = (key, newValue) => {
+        console.log(newValue);
+        console.log(key);
         // need to do validation
-        
-        editedAccount.info.social_options[index].social_media_name = newValue,
-        
-        console.log([
 
-          editedAccount.info.social_options
-        ]);
-        setEditedAccount({ 
-           ...editedAccount, 
-           info: {
+        const indexThatIsBeingEdited = editedAccount.info.social_options.findIndex((sm) => sm.key === key);
+        console.log(indexThatIsBeingEdited);
+
+        (editedAccount.info.social_options[indexThatIsBeingEdited].social_media_name = newValue),
+          console.log([editedAccount.info.social_options]);
+        setEditedAccount({
+          ...editedAccount,
+          info: {
             ...editedAccount.info,
-            social_options: 
-              editedAccount.info.social_options
-            
-              
-            
-           }
-          });  
-      }
+            social_options: editedAccount.info.social_options,
+          },
+        });
+      };
 
       const handleChangeLegacyLocation = (key, event) => {
         setEditedAccount({
@@ -557,49 +543,7 @@ export default function EditAccountPage({
           </div>
         );
       } else if (i.type === "checkbox") {
-        
-        console.log(i);
-    
-        return i.multiple ? (
-          <>
-            <Typography className={`${classes.subtitle} ${classes.infoElement}`}>
-              {i.name}:
-            </Typography>
-          
-            {i.options.map((option, index) => (
-              
-              <>
-                <div className={classes.socialMediaCheckBox}>
-                  <Checkbox
-                    id={"checkbox" + option.key}
-                    checked={ i.value[i.value.findIndex(val => val.key === option.key)]?.is_checked}
-                    className={classes.inlineBlockElement}
-                    color="primary"
-                    onChange={(e) =>
-                      handleChangeSocialCheckBox({
-                        target: { value: e.target.checked },
-                        social: i.value[i.value.findIndex(val => val.key === option.key)]?.social_media_name,
-                        index: index,
-                      })
-                    }
-                  />
-                  <label htmlFor={"checkbox" + option.key}>{option.label}</label>
-                  <option.icon className={classes.socialMediaIcons} />
-                </div>
-                { ( i.value[i.value.findIndex(val => val.key === option.key)]?.is_checked) && ( // find index where i.value.key === option. key
-                  <TextField
-                    className={classes.socialLink}
-                    fullWidth
-                    required
-                    value={i.value.length > 0 ? i.value[i.value.findIndex(val => val.key === option.key)]?.social_media_name  : "" }
-                    onChange={(event) => handleChangeSocialLink(i.value[i.value.findIndex(val => val.key === option.key)].key, event.target.value)}
-                    label={option.label}
-                  />
-                )}
-              </>
-            ))}
-          </>
-        ) : (
+      return (
           <div className={classes.checkbox} key={i.key}>
             <Checkbox
               id={"checkbox" + i.key}
@@ -612,6 +556,59 @@ export default function EditAccountPage({
             <label htmlFor={"checkbox" + i.key}>{i.label}</label>
           </div>
         );
+      } else if (i.type==="social_media") {
+        console.log(i.value);
+
+        return (
+          <>
+            <Typography className={`${classes.subtitle} ${classes.infoElement}`}>
+              {i.name}:
+            </Typography>
+
+            {i.options.map((option, index) => (
+              <>
+                <div className={classes.socialMediaCheckBox}>
+                  <Checkbox
+                    id={"checkbox" + option.key}
+                    checked={
+                      i.value[i.value.findIndex((val) => val.key === option.key)]?.is_checked
+                    }
+                    className={classes.inlineBlockElement}
+                    color="primary"
+                    onChange={(e) =>
+                      handleChangeSocialCheckBox({
+                        target: { value: e.target.checked },
+                        social:
+                          i.value[i.value.findIndex((val) => val.key === option.key)]
+                            ?.social_media_name,
+                        index: index,
+                      })
+                    }
+                  />
+                  <label htmlFor={"checkbox" + option.key}>{option.label}</label>
+                  <option.icon className={classes.socialMediaIcons} />
+                </div>
+                {i.value[i.value.findIndex((val) => val.key === option.key)]?.is_checked && (
+                  <TextField
+                    className={classes.socialLink}
+                    fullWidth
+                    required
+                    value={
+                      i.value[i.value.findIndex((val) => val.key === option.key)].social_media_name
+                    } // find the index at which the value key is the same as the option
+                    onChange={(event) =>
+                      handleChangeSocialLink(
+                        i.value[i.value.findIndex((val) => val.key === option.key)].key,
+                        event.target.value
+                      )
+                    }
+                    label={option.label}
+                  />
+                )}
+              </>
+            ))}
+          </>
+        )
       } else if (
         i.type === "auto_complete_searchbar" &&
         i.key === "parent_organization" &&
@@ -620,7 +617,7 @@ export default function EditAccountPage({
         const renderSearchOption = (option) => {
           return <React.Fragment>{option.name}</React.Fragment>;
         };
-      
+
         return (
           <div className={classes.infoElement}>
             {i.value && (
@@ -1095,4 +1092,3 @@ const getTypesOfAccount = (account, possibleAccountTypes, infoMetadata) => {
 const getFullInfoElement = (infoMetadata, key, value) => {
   return { ...infoMetadata[key], value: value };
 };
-

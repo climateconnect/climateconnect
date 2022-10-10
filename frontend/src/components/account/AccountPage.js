@@ -198,7 +198,7 @@ export default function AccountPage({
       {text}
     </Link>
   );
-  //console.log(account);
+  console.log(account);
 
   const displayAccountInfo = (info) =>
     Object.keys(info)
@@ -240,6 +240,7 @@ export default function AccountPage({
               </div>
             );
           } else if (i.linkify && value) {
+            if (isOrganization) return;
             return (
               <>
                 <div className={classes.subtitle}>{i.name}:</div>
@@ -266,7 +267,7 @@ export default function AccountPage({
                 </div>
               </div>
             );
-          } else if (value && !["detailled_description", "location", "checkbox"].includes(i.type)) {
+          } else if (value && !["detailled_description", "location", "checkbox", "social_media"].includes(i.type)) {
             return (
               <div key={index}>
                 <div className={classes.subtitle}>{i.name}:</div>
@@ -373,7 +374,18 @@ export default function AccountPage({
               ))}
             </Container>
           )}
-
+          {isOrganization && (
+             <>
+              <div className={classes.website}>
+               
+                  <Typography variant="caption"> {organizationTexts.find_us_here} </Typography>
+                  <Linkify componentDecorator={componentDecorator}>
+                    {" "}
+                    <Typography className={classes.websiteLink}> {account.info.website}</Typography>
+                  </Linkify>
+                </div>
+            </>
+          )}
           {account.info.social_options && (
             <div className={classes.marginTop}>
               {getSocialMediaButtons(parseSocials(account.info.social_options)).map(
@@ -435,19 +447,19 @@ function parseSocials(socials) {
 function getSocialMediaButtons(socialLinks) {
   const socialMediaLinks = [];
   socialLinks.map((social) =>
-    social.toLowerCase().includes("twitter".toLocaleLowerCase())
+    social.toLowerCase().includes("https://www.twitter".toLocaleLowerCase())
       ? socialMediaLinks.push(addTwitterIconButton(social))
-      : "" || social.toLowerCase().includes("youtube.com")
+      : "" || social.toLowerCase().includes("https://www.youtube")
       ? socialMediaLinks.push(addYoutubeIconButton(social))
-      : "" || social.toLowerCase().includes("linkedin.com")
+      : "" || social.toLowerCase().includes("https://www.linkedin")
       ? socialMediaLinks.push(addLinkedInIconButton(social))
-      : "" || social.toLowerCase().includes("instagram.com")
+      : "" || social.toLowerCase().includes("https://www.instagram")
       ? socialMediaLinks.push(addInstagramIconButton(social))
-      : "" || social.toLowerCase().includes("facebook.com")
+      : "" || social.toLowerCase().includes("https://www.facebook")
       ? socialMediaLinks.push(addFacebookIconButton(social))
       : ""
   );
- 
+
   return socialMediaLinks;
 }
 

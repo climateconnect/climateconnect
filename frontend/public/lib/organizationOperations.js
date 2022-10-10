@@ -17,14 +17,7 @@ export function parseOrganization(organization, editMode) {
       website: organization.website,
       about: organization.about,
       organization_size: organization.organization_size,
-    /*  social_options: organization.social_medias.map((sm) => ({
-        ...sm.social_media_channel,
-        key: sm.social_media_channel.id,
-        is_checked: true
-      })), */
-      social_options: 
-        parseSocialLinks(organization.social_medias),
-      
+      social_options: parseSocialLinks(organization.social_medias),
       hubs: organization.hubs,
     },
   };
@@ -72,57 +65,49 @@ export async function getUserOrganizations(token, locale) {
   }
 }
 
-function parseSocialLinks (socials) {
-  console.log(socials,"bofore");
-  console.log(socials.length);
-  const parsedLinks =  [];
+function parseSocialLinks(socials) {
+  // goal is to add keys to each different type of social media (in this case its only 5)
+  const parsedLinks = [];
 
   socials.map((sm) => {
-    if (sm.social_media_channel.social_media_name.toLowerCase().includes("twitter")) {
+    if (sm.social_media_channel.social_media_name.toLowerCase().includes("https://www.twitter")) {
       parsedLinks.push({
         ...sm.social_media_channel,
         key: 0,
-        is_checked: true
-      })
+        is_checked: true,
+      });
     }
-    if (sm.social_media_channel.social_media_name.toLowerCase().includes("youtube")) {
-      console.log("yt")
+    if (sm.social_media_channel.social_media_name.toLowerCase().includes("https://www.youtube")) {
+      console.log("yt");
       parsedLinks.push({
         ...sm.social_media_channel,
         key: 1,
-        is_checked: true
-      })
-       
+        is_checked: true,
+      });
     }
-    if (sm.social_media_channel.social_media_name.toLowerCase().includes("linkedin")) {
+    if (sm.social_media_channel.social_media_name.toLowerCase().includes("https://www.linkedin")) {
       parsedLinks.push({
         ...sm.social_media_channel,
         key: 2,
-        is_checked: true
-      })
-      
+        is_checked: true,
+      });
     }
-    if (sm.social_media_channel.social_media_name.toLowerCase().includes("instagram")) {
+    if (sm.social_media_channel.social_media_name.toLowerCase().includes("https://www.instagram")) {
       parsedLinks.push({
         ...sm.social_media_channel,
         key: 3,
-        is_checked: true
-      })
-      
+        is_checked: true,
+      });
     }
-    if (sm.social_media_channel.social_media_name.toLowerCase().includes("facebook")) {
+    if (sm.social_media_channel.social_media_name.toLowerCase().includes("https://www.facebook")) {
       parsedLinks.push({
         ...sm.social_media_channel,
         key: 4,
-        is_checked: true
-      })
-      
+        is_checked: true,
+      });
     }
-  }
-   
-  );
+  });
 
-  
   console.log(parsedLinks);
   return parsedLinks;
 }

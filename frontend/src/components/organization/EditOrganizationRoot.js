@@ -15,6 +15,7 @@ import EditAccountPage from "../account/EditAccountPage";
 import UserContext from "../context/UserContext";
 import PageNotFound from "../general/PageNotFound";
 import TranslateTexts from "../general/TranslateTexts";
+import { parseOrganization } from "../../../public/lib/organizationOperations";
 
 const useStyles = makeStyles((theme) => ({
   headline: {
@@ -76,11 +77,13 @@ export default function EditOrganizationRoot({
   };
 
   const getChanges = (o, oldO) => {
+   // console.log(o.info, oldO.info);
     const finalProfile = {};
     const org = { ...o, ...o.info };
     delete org.info;
     const oldOrg = { ...oldO, ...oldO.info };
     delete oldOrg.info;
+   // console.log(o, oldO);
     Object.keys(org).map((k) => {
       if (oldOrg[k] && org[k] && Array.isArray(oldOrg[k]) && Array.isArray(org[k])) {
         if (!arraysEqual(oldOrg[k], org[k])) finalProfile[k] = org[k];
@@ -110,7 +113,10 @@ export default function EditOrganizationRoot({
       handleSetErrorMessage(error);
     } else {
       editedOrg.language = sourceLanguage;
-      const payload = await parseForRequest(getChanges(editedOrg, organization));
+      const oldOrg = await getOrganizationByUrlIfExists(organization.url_slug, token, locale);
+      /*for the getChanges function if you want tocheck for changes within an attribute in an object such as translations or social media name
+       we need to get the old org via api request otherwise no changes will be noticed  see PR #1046 for more info */ 
+      const payload = await parseForRequest(getChanges(editedOrg, oldOrg));
       console.log(payload);
       if (isTranslationsStep)
         payload.translations = getTranslationsWithoutRedundantKeys(
@@ -255,3 +261,20 @@ const verifyChanges = (newOrg, texts) => {
   }
   return true;
 };
+
+
+async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/organizations/" + organizationUrl + "/",
+      token: token,
+      locale: locale,
+    });
+    return parseOrganization(resp.data, true);
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
