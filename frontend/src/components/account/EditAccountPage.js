@@ -318,8 +318,7 @@ export default function EditAccountPage({
   };
 
   const handleTextFieldChange = (key, newValue, isInfoElement) => {
-    console.log(newValue);
-    console.log(key);
+   
     if (isInfoElement)
       setEditedAccount({ ...editedAccount, info: { ...editedAccount.info, [key]: newValue } });
     setEditedAccount({ ...editedAccount, [key]: newValue });
@@ -450,7 +449,7 @@ export default function EditAccountPage({
       };
 
       const handleChangeSocialCheckBox = (event) => {
-      
+        console.log(event);
         const social_media_option_added = {
           key: event.index,
           is_checked: event.target.value,
@@ -496,8 +495,9 @@ export default function EditAccountPage({
      
 
       const handleChangeSocialLink = (index, newValue) => {
-        console.log(newValue);
-        console.log(index);
+        //console.log(newValue);
+        //console.log(index);
+        // need to do validation
         
         editedAccount.info.social_options[index].social_media_name = newValue,
         
@@ -572,18 +572,17 @@ export default function EditAccountPage({
                 <div className={classes.socialMediaCheckBox}>
                   <Checkbox
                     id={"checkbox" + option.key}
-                    checked={option.value}
+                    checked={ i.value[i.value.findIndex(val => val.key === option.key)]?.is_checked}
                     className={classes.inlineBlockElement}
                     color="primary"
                     onChange={(e) =>
                       handleChangeSocialCheckBox({
                         target: { value: e.target.checked },
-                        social: option.label,
+                        social: i.value[i.value.findIndex(val => val.key === option.key)]?.social_media_name,
                         index: index,
                       })
                     }
                   />
-
                   <label htmlFor={"checkbox" + option.key}>{option.label}</label>
                   <option.icon className={classes.socialMediaIcons} />
                 </div>
@@ -591,6 +590,7 @@ export default function EditAccountPage({
                   <TextField
                     className={classes.socialLink}
                     fullWidth
+                    required
                     value={i.value.length > 0 ? i.value[i.value.findIndex(val => val.key === option.key)]?.social_media_name  : "" }
                     onChange={(event) => handleChangeSocialLink(i.value[i.value.findIndex(val => val.key === option.key)].key, event.target.value)}
                     label={option.label}
@@ -620,8 +620,7 @@ export default function EditAccountPage({
         const renderSearchOption = (option) => {
           return <React.Fragment>{option.name}</React.Fragment>;
         };
-        console.log(i);
-        console.log(!i.show_if_ticked, editedAccount.info[i.show_if_ticked]);
+      
         return (
           <div className={classes.infoElement}>
             {i.value && (
@@ -1096,3 +1095,4 @@ const getTypesOfAccount = (account, possibleAccountTypes, infoMetadata) => {
 const getFullInfoElement = (infoMetadata, key, value) => {
   return { ...infoMetadata[key], value: value };
 };
+

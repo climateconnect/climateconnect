@@ -86,12 +86,14 @@ export default function EditOrganizationRoot({
         if (!arraysEqual(oldOrg[k], org[k])) finalProfile[k] = org[k];
       } else if (oldOrg[k] !== org[k] && !(!oldOrg[k] && !org[k])) finalProfile[k] = org[k];
     });
+    console.log(finalProfile);
     return finalProfile;
   };
 
   const saveChanges = async (editedOrg, isTranslationsStep) => {
     const error = verifyChanges(editedOrg, texts).error;
     //verify location is valid and notify user if it's not
+    console.log(editedOrg);
     if (
       editedOrg?.info?.location !== organization?.info?.location &&
       !isLocationValid(editedOrg?.info?.location) &&
@@ -109,6 +111,7 @@ export default function EditOrganizationRoot({
     } else {
       editedOrg.language = sourceLanguage;
       const payload = await parseForRequest(getChanges(editedOrg, organization));
+      console.log(payload);
       if (isTranslationsStep)
         payload.translations = getTranslationsWithoutRedundantKeys(
           getTranslationsFromObject(initialTranslations, "organization"),
@@ -223,6 +226,7 @@ const parseForRequest = async (org) => {
   if (org.thumbnail_image) parsedOrg.thumbnail_image = await blobFromObjectUrl(org.thumbnail_image);
   if (org.image) parsedOrg.image = await blobFromObjectUrl(org.image);
   if (org.hubs) parsedOrg.hubs = org.hubs.map((h) => h.url_slug);
+  console.log(parsedOrg);
   return parsedOrg;
 };
 

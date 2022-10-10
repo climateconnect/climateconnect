@@ -17,11 +17,14 @@ export function parseOrganization(organization, editMode) {
       website: organization.website,
       about: organization.about,
       organization_size: organization.organization_size,
-      social_options: organization.social_medias.map((sm) => ({
+    /*  social_options: organization.social_medias.map((sm) => ({
         ...sm.social_media_channel,
         key: sm.social_media_channel.id,
         is_checked: true
-      })),
+      })), */
+      social_options: 
+        parseSocialLinks(organization.social_medias),
+      
       hubs: organization.hubs,
     },
   };
@@ -67,4 +70,59 @@ export async function getUserOrganizations(token, locale) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
+}
+
+function parseSocialLinks (socials) {
+  console.log(socials,"bofore");
+  console.log(socials.length);
+  const parsedLinks =  [];
+
+  socials.map((sm) => {
+    if (sm.social_media_channel.social_media_name.toLowerCase().includes("twitter")) {
+      parsedLinks.push({
+        ...sm.social_media_channel,
+        key: 0,
+        is_checked: true
+      })
+    }
+    if (sm.social_media_channel.social_media_name.toLowerCase().includes("youtube")) {
+      console.log("yt")
+      parsedLinks.push({
+        ...sm.social_media_channel,
+        key: 1,
+        is_checked: true
+      })
+       
+    }
+    if (sm.social_media_channel.social_media_name.toLowerCase().includes("linkedin")) {
+      parsedLinks.push({
+        ...sm.social_media_channel,
+        key: 2,
+        is_checked: true
+      })
+      
+    }
+    if (sm.social_media_channel.social_media_name.toLowerCase().includes("instagram")) {
+      parsedLinks.push({
+        ...sm.social_media_channel,
+        key: 3,
+        is_checked: true
+      })
+      
+    }
+    if (sm.social_media_channel.social_media_name.toLowerCase().includes("facebook")) {
+      parsedLinks.push({
+        ...sm.social_media_channel,
+        key: 4,
+        is_checked: true
+      })
+      
+    }
+  }
+   
+  );
+
+  
+  console.log(parsedLinks);
+  return parsedLinks;
 }
