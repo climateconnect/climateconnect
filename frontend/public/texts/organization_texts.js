@@ -32,9 +32,9 @@ export default function getOrganizationTexts({ organization, locale }) {
     },
     how_to_summarize_organization: {
       en:
-        "Give a short summary or what your organization is doing. This text will be displayed on your organization card.",
+        "Give a short summary or what your organization is doing. Below you'll have more space to describe it.",
       de:
-        "Beschreibe kurz deine Organisation und ihre Aktivitäten. Dieser Text wird auf der Organisationskarte deiner Organisation angezeigt werden.",
+        "Fasse deine Organisation und ihre Aktivitäten kurz zusammen. Unten hast du Platz, sie genauer zu beschreiben.",
     },
     how_to_describe_organization: {
       en:
@@ -284,12 +284,12 @@ export default function getOrganizationTexts({ organization, locale }) {
       de: "Wie man sich einbringen kann",
     },
     get_involved_helptext: {
-      en: "Give a short summary of how people can get involved with your organization.",
-      de: "Beschreibe kurz, wie man bei deiner Organisation mitmachen kann.",
+      en: "e.g. Open online meeting every Wednesday at 6pm. New people always welcome!",
+      de: "z.B. \"Offenes Treffen jeden Mittwoch um 18 Uhr im Café Margareta. Interessierte sind immer willkommen!\"",
     },
     add_up_to_two_types: {
-      en: "Add up to 2 organization types",
-      de: "Füge bis zu 2 Organisationstypen hinzu",
+      en: "Organization Type (Up to 2)",
+      de: "Organisationsart (Bis zu 2)",
     },
   };
 }

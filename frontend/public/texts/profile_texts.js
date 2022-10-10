@@ -21,9 +21,13 @@ export default function getProfileTexts({ profile, locale }) {
       en: "This user hasn't added any skills yet.",
       de: "Diese(r) Benutzer*in hat seine/ihre Fähigkeiten noch nicht angegeben.",
     },
-    bio: {
-      en: "Bio",
-      de: "Bio",
+    enter_profile_bio: {
+      en: "About You (Bio)",
+      de: "Über dich (Bio)",
+    },
+    enter_profile_bio_helptext: {
+      en: "What got you interested in climate action? What do you do? What are you looking for and/or offering?",
+      de: "Was hat dein Interesse an Klimaschutz geweckt? Was machst du beruflich? Suchst du nach etwas bestimmten?"
     },
     bio_user_profile_missing_message: {
       en: "This user hasn't added a bio yet.",

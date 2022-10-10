@@ -73,6 +73,7 @@ function getShortDescriptionField(texts) {
     key: "short_description",
     type: "bio",
     weight: 1,
+    rows: 4,
     helptext: texts.how_to_summarize_organization,
     required: true,
     maxLength: 280,
@@ -216,6 +217,7 @@ function getGetInvolved(texts, isEditing) {
     type: "text",
     helptext: texts.get_involved_helptext,
     maxLength: 250,
+    rows: 4
   };
 }
 
@@ -265,7 +267,6 @@ function getOrganizationSizeAndInvolvement(texts, isEditing) {
         name: texts.huge_organization_size,
       },
     ],
-
     organization_size: {
       name: `${texts.organization_size}`,
       key: "organization_size",
@@ -276,6 +277,7 @@ function getOrganizationSizeAndInvolvement(texts, isEditing) {
         : texts.get_involved,
       key: "get_involved",
       helptext: texts.get_involved_helptext,
+      placeholder: "get involved",
       maxLength: 250,
     },
   };
