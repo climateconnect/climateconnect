@@ -77,26 +77,26 @@ export default function EditOrganizationRoot({
   };
 
   const getChanges = (o, oldO) => {
-   // console.log(o.info, oldO.info);
+  
     const finalProfile = {};
     const org = { ...o, ...o.info };
     delete org.info;
     const oldOrg = { ...oldO, ...oldO.info };
     delete oldOrg.info;
-   // console.log(o, oldO);
+  
     Object.keys(org).map((k) => {
       if (oldOrg[k] && org[k] && Array.isArray(oldOrg[k]) && Array.isArray(org[k])) {
         if (!arraysEqual(oldOrg[k], org[k])) finalProfile[k] = org[k];
       } else if (oldOrg[k] !== org[k] && !(!oldOrg[k] && !org[k])) finalProfile[k] = org[k];
     });
-    console.log(finalProfile);
+  
     return finalProfile;
   };
 
   const saveChanges = async (editedOrg, isTranslationsStep) => {
     const error = verifyChanges(editedOrg, texts).error;
     //verify location is valid and notify user if it's not
-    console.log(editedOrg);
+ 
     if (
       editedOrg?.info?.location !== organization?.info?.location &&
       !isLocationValid(editedOrg?.info?.location) &&
@@ -117,7 +117,7 @@ export default function EditOrganizationRoot({
       /*for the getChanges function if you want tocheck for changes within an attribute in an object such as translations or social media name
        we need to get the old org via api request otherwise no changes will be noticed  see PR #1046 for more info */ 
       const payload = await parseForRequest(getChanges(editedOrg, oldOrg));
-      console.log(payload);
+     
       if (isTranslationsStep)
         payload.translations = getTranslationsWithoutRedundantKeys(
           getTranslationsFromObject(initialTranslations, "organization"),
@@ -162,7 +162,7 @@ export default function EditOrganizationRoot({
     event.preventDefault();
     await saveChanges(editedOrganization, true);
   };
-  console.log(infoMetadata);
+
   return (
     <>
       {organization ? (
@@ -232,7 +232,7 @@ const parseForRequest = async (org) => {
   if (org.thumbnail_image) parsedOrg.thumbnail_image = await blobFromObjectUrl(org.thumbnail_image);
   if (org.image) parsedOrg.image = await blobFromObjectUrl(org.image);
   if (org.hubs) parsedOrg.hubs = org.hubs.map((h) => h.url_slug);
-  console.log(parsedOrg);
+
   return parsedOrg;
 };
 

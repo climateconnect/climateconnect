@@ -38,6 +38,7 @@ import SelectDialog from "./../dialogs/SelectDialog";
 import UploadImageDialog from "./../dialogs/UploadImageDialog";
 import SelectField from "./../general/SelectField";
 import DetailledDescriptionInput from "./DetailledDescriptionInput";
+import SocialMediaInputs from "./SocialMediaInputs";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -286,7 +287,7 @@ export default function EditAccountPage({
   const handleDialogClickOpen = (dialogKey) => {
     setOpen({ ...open, [dialogKey]: true });
   };
-  console.log(editedAccount);
+ 
 
   const handleBackgroundClose = (image) => {
     setOpen({ ...open, backgroundDialog: false });
@@ -449,9 +450,7 @@ export default function EditAccountPage({
       };
 
       const handleChangeSocialCheckBox = (event) => {
-        console.log(editedAccount.info.social_options);
-        console.log(event);
-
+      
         const social_media_option_added = {
           social_media_name: event.social,
           key: event.index,
@@ -461,9 +460,9 @@ export default function EditAccountPage({
           (option) => option.key !== event.index
         );
 
-        const adding = event.target.value === true;
+        const addingSocialMedia = event.target.value === true;
 
-        if (adding) {
+        if (addingSocialMedia) {
           setEditedAccount({
             ...editedAccount,
             info: {
@@ -486,15 +485,14 @@ export default function EditAccountPage({
       };
 
       const handleChangeSocialLink = (key, newValue) => {
-        console.log(newValue);
-        console.log(key);
+     
         // need to do validation
 
         const indexThatIsBeingEdited = editedAccount.info.social_options.findIndex((sm) => sm.key === key);
-        console.log(indexThatIsBeingEdited);
+      
 
         (editedAccount.info.social_options[indexThatIsBeingEdited].social_media_name = newValue),
-          console.log([editedAccount.info.social_options]);
+        
         setEditedAccount({
           ...editedAccount,
           info: {
@@ -557,57 +555,13 @@ export default function EditAccountPage({
           </div>
         );
       } else if (i.type==="social_media") {
-        console.log(i.value);
-
         return (
-          <>
-            <Typography className={`${classes.subtitle} ${classes.infoElement}`}>
-              {i.name}:
-            </Typography>
-
-            {i.options.map((option, index) => (
-              <>
-                <div className={classes.socialMediaCheckBox}>
-                  <Checkbox
-                    id={"checkbox" + option.key}
-                    checked={
-                      i.value[i.value.findIndex((val) => val.key === option.key)]?.is_checked
-                    }
-                    className={classes.inlineBlockElement}
-                    color="primary"
-                    onChange={(e) =>
-                      handleChangeSocialCheckBox({
-                        target: { value: e.target.checked },
-                        social:
-                          i.value[i.value.findIndex((val) => val.key === option.key)]
-                            ?.social_media_name,
-                        index: index,
-                      })
-                    }
-                  />
-                  <label htmlFor={"checkbox" + option.key}>{option.label}</label>
-                  <option.icon className={classes.socialMediaIcons} />
-                </div>
-                {i.value[i.value.findIndex((val) => val.key === option.key)]?.is_checked && (
-                  <TextField
-                    className={classes.socialLink}
-                    fullWidth
-                    required
-                    value={
-                      i.value[i.value.findIndex((val) => val.key === option.key)].social_media_name
-                    } // find the index at which the value key is the same as the option
-                    onChange={(event) =>
-                      handleChangeSocialLink(
-                        i.value[i.value.findIndex((val) => val.key === option.key)].key,
-                        event.target.value
-                      )
-                    }
-                    label={option.label}
-                  />
-                )}
-              </>
-            ))}
-          </>
+          <SocialMediaInputs
+            socials={i}
+            handleChangeSocialCheckBox={handleChangeSocialCheckBox}
+            handleChangeSocialLink={handleChangeSocialLink}
+          />
+          
         )
       } else if (
         i.type === "auto_complete_searchbar" &&

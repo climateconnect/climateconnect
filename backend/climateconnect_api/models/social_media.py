@@ -1,14 +1,15 @@
+from tabnanny import verbose
 from django.db import models
 
 from organization.models.organization import Organization
 
 class SocialMediaChannel(models.Model):
     social_media_name= models.CharField(
-        help_text="Points to name of the social media",
+        help_text="Link of the social media",
         verbose_name="Social Media Channel",
         max_length=256,
         default="",
-    )   
+    )
 
     class Meta:
         app_label = "climateconnect_api"
@@ -25,7 +26,7 @@ class SocialMediaLink(models.Model):
         Organization,
         related_name="social_media_link_to_organization",
         verbose_name="Organization for social media",
-        help_text="Points to the social media link",
+        help_text="Points to the organization",
         on_delete=models.CASCADE,
         
     )
@@ -33,7 +34,7 @@ class SocialMediaLink(models.Model):
         SocialMediaChannel,
         related_name="social_media_link_to_channel",
         verbose_name="Social Media Channel",
-        help_text="Points to the social media link",
+        help_text="Points to the social media channel",
         on_delete=models.CASCADE,
     )
 

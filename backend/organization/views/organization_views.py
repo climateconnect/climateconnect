@@ -333,6 +333,17 @@ class CreateOrganizationView(APIView):
                     )
                     logger.info("Organization member created {}".format(user.id))
 
+            if "social_options" in request.data:
+                for option in request.data["social_options"]:
+                    social_media_name = option['social_media_name']
+                    social_media_channel = SocialMediaChannel.objects.create(
+                        social_media_name = social_media_name
+                    )
+                    SocialMediaLink.objects.create(
+                     organization =organization, social_media_channel = social_media_channel
+                    )
+
+
             if "organization_tags" in request.data:
                 for organization_tag_id in request.data["organization_tags"]:
                     try:
@@ -489,22 +500,19 @@ class OrganizationAPIView(APIView):
         old_social_media_links = SocialMediaLink.objects.filter(
             organization=organization
         ).values("social_media_channel")
-
-        print(old_social_media_links,"old")
       
         if "social_options" in request.data:
-            print(request.data["social_options"], "hi")
+
             for option in old_social_media_links:
                 if not option["social_media_channel"] in request.data["social_options"]:
-                    option_to_delete = SocialMediaChannel.objects.get(
-                        id =option["social_media_channel"]
+                    SocialMediaChannel.objects.get(
+                        id = option["social_media_channel"]
                     ).delete()
-                    print("delete", option_to_delete)
+                 
                
 
             for option in request.data["social_options"]:
-                print("hi")
-                print(option)
+              
                 social_media_name = option['social_media_name']
                 social_media_channel = SocialMediaChannel.objects.create(
                     social_media_name = social_media_name

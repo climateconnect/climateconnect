@@ -73,6 +73,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       website: "",
       about: "",
       organization_size: "",
+      social_options: [],
       hubs: [],
     },
     types: [],
@@ -201,6 +202,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       translations,
       sourceLanguage
     );
+    
     if (!legacyModeEnabled && !isLocationValid(organizationToSubmit.location)) {
       indicateWrongLocation(
         locationInputRef,
@@ -223,15 +225,15 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       }
     }
     if (locale !== "en") {
-      console.log(account);
       setOrganizationInfo({
         ...account,
         parentorganization: organizationInfo.parentorganization,
       });
       setCurStep(steps[2]);
       return;
-    }
-    setLoadingSubmit(true);
+    } 
+   
+    setLoadingSubmit(false);
     await makeCreateOrganizationRequest(organizationToSubmit);
   };
 
@@ -399,6 +401,7 @@ async function getTags(token, locale) {
 }
 
 const parseOrganizationForRequest = async (o, user, rolesOptions, translations, sourceLanguage) => {
+
   const organization = {
     team_members: [
       {
@@ -415,6 +418,7 @@ const parseOrganizationForRequest = async (o, user, rolesOptions, translations, 
     short_description: o.info.short_description,
     organization_size: o.info.organization_size,
     hubs: o.info.hubs.map((h) => h.url_slug),
+    social_options: o.info.social_options,
     about: o.info.about,
     organization_tags: o.types,
     translations: {

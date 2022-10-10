@@ -2,6 +2,7 @@ import { apiRequest } from "./apiOperations";
 import { getImageUrl } from "./imageOperations";
 
 export function parseOrganization(organization, editMode) {
+
   const org = {
     url_slug: organization.url_slug,
     background_image: getImageUrl(organization.background_image),
@@ -17,14 +18,13 @@ export function parseOrganization(organization, editMode) {
       website: organization.website,
       about: organization.about,
       organization_size: organization.organization_size,
-      social_options: parseSocialLinks(organization.social_medias),
+      social_options: assignKeys(organization.social_medias),
       hubs: organization.hubs,
     },
   };
 
-  if (editMode) {
-    org.types = org.types.map((t) => t.key);
-  }
+  if (editMode) org.types = org.types.map((t) => t.key);
+
   const additional_info = organization.types.reduce((additionalInfoArray, t) => {
     const type = t.organization_tag;
     if (type.additional_info && type.additional_info.length > 0) {
@@ -65,49 +65,51 @@ export async function getUserOrganizations(token, locale) {
   }
 }
 
-function parseSocialLinks(socials) {
+function assignKeys(socials) {
   // goal is to add keys to each different type of social media (in this case its only 5)
-  const parsedLinks = [];
-
+  const keyedSocials = [];
+  console.log(socials);
+ 
   socials.map((sm) => {
-    if (sm.social_media_channel.social_media_name.toLowerCase().includes("https://www.twitter")) {
-      parsedLinks.push({
+   
+    if (sm.social_media_channel.social_media_name.toLowerCase().includes("https://twitter.com")) {
+
+      keyedSocials.push({
         ...sm.social_media_channel,
         key: 0,
         is_checked: true,
       });
     }
     if (sm.social_media_channel.social_media_name.toLowerCase().includes("https://www.youtube")) {
-      console.log("yt");
-      parsedLinks.push({
+      keyedSocials.push({
         ...sm.social_media_channel,
         key: 1,
         is_checked: true,
       });
     }
     if (sm.social_media_channel.social_media_name.toLowerCase().includes("https://www.linkedin")) {
-      parsedLinks.push({
+      keyedSocials.push({
         ...sm.social_media_channel,
         key: 2,
+
         is_checked: true,
       });
     }
     if (sm.social_media_channel.social_media_name.toLowerCase().includes("https://www.instagram")) {
-      parsedLinks.push({
+      keyedSocials.push({
         ...sm.social_media_channel,
         key: 3,
         is_checked: true,
       });
     }
     if (sm.social_media_channel.social_media_name.toLowerCase().includes("https://www.facebook")) {
-      parsedLinks.push({
+      keyedSocials.push({
         ...sm.social_media_channel,
         key: 4,
         is_checked: true,
       });
     }
   });
-
-  console.log(parsedLinks);
-  return parsedLinks;
+  
+  return keyedSocials;
 }

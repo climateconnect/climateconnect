@@ -198,7 +198,7 @@ export default function AccountPage({
       {text}
     </Link>
   );
-  console.log(account);
+ 
 
   const displayAccountInfo = (info) =>
     Object.keys(info)
@@ -374,7 +374,7 @@ export default function AccountPage({
               ))}
             </Container>
           )}
-          {isOrganization && (
+          {(isOrganization && account.info.website) &&(
              <>
               <div className={classes.website}>
                
@@ -388,7 +388,7 @@ export default function AccountPage({
           )}
           {account.info.social_options && (
             <div className={classes.marginTop}>
-              {getSocialMediaButtons(parseSocials(account.info.social_options)).map(
+              {getSocialMediaButtons(account.info.social_options).map(
                 (socialMedia, index) => (
                   <SocialMediaButton
                     key={index}
@@ -431,37 +431,35 @@ const getFullInfoElement = (infoMetadata, key, value) => {
   return { ...infoMetadata[key], value: value };
 };
 
-function parseSocials(socials) {
-  const existingSocials = socials.filter(
-    (social) =>
-      social.social_media_name.toLowerCase().includes("twitter.com".toLocaleLowerCase()) ||
-      social.social_media_name.toLowerCase().includes("youtube.com".toLocaleLowerCase()) ||
-      social.social_media_name.toLowerCase().includes("linkedin.com".toLocaleLowerCase()) ||
-      social.social_media_name.toLowerCase().includes("instagram.com".toLocaleLowerCase()) ||
-      social.social_media_name.toLowerCase().includes("facebook.com".toLocaleLowerCase())
-  );
-  const socialsLinks = existingSocials.map((social) => social.social_media_name);
-  return socialsLinks;
-}
-
 function getSocialMediaButtons(socialLinks) {
-  const socialMediaLinks = [];
-  socialLinks.map((social) =>
-    social.toLowerCase().includes("https://www.twitter".toLocaleLowerCase())
-      ? socialMediaLinks.push(addTwitterIconButton(social))
-      : "" || social.toLowerCase().includes("https://www.youtube")
-      ? socialMediaLinks.push(addYoutubeIconButton(social))
-      : "" || social.toLowerCase().includes("https://www.linkedin")
-      ? socialMediaLinks.push(addLinkedInIconButton(social))
-      : "" || social.toLowerCase().includes("https://www.instagram")
-      ? socialMediaLinks.push(addInstagramIconButton(social))
-      : "" || social.toLowerCase().includes("https://www.facebook")
-      ? socialMediaLinks.push(addFacebookIconButton(social))
-      : ""
-  );
 
+  const socialMediaLinks = [];
+  socialLinks.map((social) => {
+    switch (social.key) {
+      case 0:
+        socialMediaLinks.push(addTwitterIconButton(social.social_media_name));
+        break;
+      case 1:
+        socialMediaLinks.push(addYoutubeIconButton(social.social_media_name));
+        break;
+      case 2:
+        socialMediaLinks.push(addLinkedInIconButton(social.social_media_name));
+        break;
+      case 3:
+        socialMediaLinks.push(addInstagramIconButton(social.social_media_name));
+        break;
+      case 4:
+        socialMediaLinks.push(addFacebookIconButton(social.social_media_name));
+        break;
+      default:
+        break;
+    }
+  
+  })
   return socialMediaLinks;
 }
+ 
+
 
 function addTwitterIconButton(link) {
   return {
