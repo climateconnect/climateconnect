@@ -131,7 +131,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   infoElement: {
-    marginBottom: theme.spacing(1),
+    marginBottom: theme.spacing(2),
+    marginTop: theme.spacing(1)
   },
   marginBottom: {
     marginBottom: theme.spacing(1),
@@ -612,23 +613,17 @@ export default function EditAccountPage({
           <>
             {!hideGetInvolvedField && (
               <div key={key} className={classes.infoElement}>
-                <Typography className={classes.subtitle}>
-                  {i.name}
-                  {i.helptext && (
-                    <Tooltip title={i.helptext}>
-                      <IconButton>
-                        <HelpOutlineIcon className={classes.helpIcon} />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                </Typography>
                 <TextField
                   required={i.required}
+                  label={i.name}
                   fullWidth
                   inputProps={{ maxLength: i.maxLength }}
                   value={i.value}
                   multiline
+                  rows={i.rows}
                   onChange={handleChange}
+                  helperText={i.helptext}
+                  variant="outlined"
                 />
               </div>
             )}
