@@ -77,26 +77,25 @@ export default function EditOrganizationRoot({
   };
 
   const getChanges = (o, oldO) => {
-  
     const finalProfile = {};
     const org = { ...o, ...o.info };
     delete org.info;
     const oldOrg = { ...oldO, ...oldO.info };
     delete oldOrg.info;
-  
+
     Object.keys(org).map((k) => {
       if (oldOrg[k] && org[k] && Array.isArray(oldOrg[k]) && Array.isArray(org[k])) {
         if (!arraysEqual(oldOrg[k], org[k])) finalProfile[k] = org[k];
       } else if (oldOrg[k] !== org[k] && !(!oldOrg[k] && !org[k])) finalProfile[k] = org[k];
     });
-  
+
     return finalProfile;
   };
 
   const saveChanges = async (editedOrg, isTranslationsStep) => {
     const error = verifyChanges(editedOrg, texts).error;
     //verify location is valid and notify user if it's not
- 
+
     if (
       editedOrg?.info?.location !== organization?.info?.location &&
       !isLocationValid(editedOrg?.info?.location) &&
@@ -115,9 +114,9 @@ export default function EditOrganizationRoot({
       editedOrg.language = sourceLanguage;
       const oldOrg = await getOrganizationByUrlIfExists(organization.url_slug, token, locale);
       /*for the getChanges function if you want tocheck for changes within an attribute in an object such as translations or social media name
-       we need to get the old org via api request otherwise no changes will be noticed  see PR #1046 for more info */ 
+       we need to get the old org via api request otherwise no changes will be noticed  see PR #1046 for more info */
       const payload = await parseForRequest(getChanges(editedOrg, oldOrg));
-     
+
       if (isTranslationsStep)
         payload.translations = getTranslationsWithoutRedundantKeys(
           getTranslationsFromObject(initialTranslations, "organization"),
@@ -236,7 +235,22 @@ const parseForRequest = async (org) => {
   return parsedOrg;
 };
 
-const verifyChanges = (newOrg, texts) => {
+
+
+const verifyChanges = (newOrg, texts, handleSetErrorMessage) => {
+  console.log(newOrg);
+     // need to do validation i.e. twitter.com link needs to match a certain regex? so the assignKeys function works properly in organizationOperations
+        /* if key === 0 then match (https://*twitter.com/*) 
+              key === 1 -> (https://*yt.com/c/*)
+              key === 2 -> (https://*linkedin.com/*)
+              key === 3 -> (https://*instagram.com/*)
+              key === 4 -> (https://*facebook.com/*)
+        */
+  if ( newOrg.info.social_options[0].key === 0 && !newOrg.info.social_options[0].social_media_name.includes("twitter.com".toLocaleLowerCase())) {
+    return {
+      error: "must match format *twitter.com*"
+    };
+  }
   const requiredPropErrors = {
     image: texts.image_required_error,
     types: texts.type_required_errror,
@@ -261,7 +275,6 @@ const verifyChanges = (newOrg, texts) => {
   }
   return true;
 };
-
 
 async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
   try {

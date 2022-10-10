@@ -103,10 +103,8 @@ export default function OrganizationPage({
   // organizationTypes, // i dont think types is used.
   rolesOptions,
 }) {
-  // console.log(organization);
   const { user, locale } = useContext(UserContext);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization);
-  // console.log(infoMetadata);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   return (
     <WideLayout

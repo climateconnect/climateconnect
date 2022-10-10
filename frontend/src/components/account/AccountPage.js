@@ -198,7 +198,6 @@ export default function AccountPage({
       {text}
     </Link>
   );
- 
 
   const displayAccountInfo = (info) =>
     Object.keys(info)
@@ -267,7 +266,10 @@ export default function AccountPage({
                 </div>
               </div>
             );
-          } else if (value && !["detailled_description", "location", "checkbox", "social_media"].includes(i.type)) {
+          } else if (
+            value &&
+            !["detailled_description", "location", "checkbox", "social_media"].includes(i.type)
+          ) {
             return (
               <div key={index}>
                 <div className={classes.subtitle}>{i.name}:</div>
@@ -374,31 +376,28 @@ export default function AccountPage({
               ))}
             </Container>
           )}
-          {(isOrganization && account.info.website) &&(
-             <>
+          {isOrganization && account.info.website && (
+            <>
               <div className={classes.website}>
-               
-                  <Typography variant="caption"> {organizationTexts.find_us_here} </Typography>
-                  <Linkify componentDecorator={componentDecorator}>
-                    {" "}
-                    <Typography className={classes.websiteLink}> {account.info.website}</Typography>
-                  </Linkify>
-                </div>
+                <Typography variant="caption"> {organizationTexts.find_us_here} </Typography>
+                <Linkify componentDecorator={componentDecorator}>
+                  {" "}
+                  <Typography className={classes.websiteLink}> {account.info.website}</Typography>
+                </Linkify>
+              </div>
             </>
           )}
           {account.info.social_options && (
             <div className={classes.marginTop}>
-              {getSocialMediaButtons(account.info.social_options).map(
-                (socialMedia, index) => (
-                  <SocialMediaButton
-                    key={index}
-                    href={socialMedia.href}
-                    socialMediaIcon={{ icon: socialMedia.icon }}
-                    altText={socialMedia.altText}
-                    isFooterIcon={socialMedia.isFooterIcon}
-                  />
-                )
-              )}
+              {getSocialMediaButtons(account.info.social_options).map((socialMedia, index) => (
+                <SocialMediaButton
+                  key={index}
+                  href={socialMedia.href}
+                  socialMediaIcon={{ icon: socialMedia.icon }}
+                  altText={socialMedia.altText}
+                  isFooterIcon={socialMedia.isFooterIcon}
+                />
+              ))}
             </div>
           )}
         </Container>
@@ -432,7 +431,6 @@ const getFullInfoElement = (infoMetadata, key, value) => {
 };
 
 function getSocialMediaButtons(socialLinks) {
-
   const socialMediaLinks = [];
   socialLinks.map((social) => {
     switch (social.key) {
@@ -454,12 +452,9 @@ function getSocialMediaButtons(socialLinks) {
       default:
         break;
     }
-  
-  })
+  });
   return socialMediaLinks;
 }
- 
-
 
 function addTwitterIconButton(link) {
   return {

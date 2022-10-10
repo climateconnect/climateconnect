@@ -57,8 +57,6 @@ export default function EditOrganizationPage({ organization, tagOptions, allHubs
     },
   };
 
-
-
   const handleSetErrorMessage = (msg) => {
     setErrorMessage(msg);
     window.scrollTo(0, 0);

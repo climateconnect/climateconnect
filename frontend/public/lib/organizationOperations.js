@@ -2,7 +2,6 @@ import { apiRequest } from "./apiOperations";
 import { getImageUrl } from "./imageOperations";
 
 export function parseOrganization(organization, editMode) {
-
   const org = {
     url_slug: organization.url_slug,
     background_image: getImageUrl(organization.background_image),
@@ -68,12 +67,12 @@ export async function getUserOrganizations(token, locale) {
 function assignKeys(socials) {
   // goal is to add keys to each different type of social media (in this case its only 5)
   const keyedSocials = [];
-  console.log(socials);
- 
-  socials.map((sm) => {
-   
-    if (sm.social_media_channel.social_media_name.toLowerCase().includes("https://twitter.com")) {
 
+  // I need a better way than just .includes something bc links can look different e.g. if you copy a twitter link it wont have "www" in it
+  // german linked in doesn't have www.  but instead .de.linkedin....
+
+  socials.map((sm) => {
+    if (sm.social_media_channel.social_media_name.toLowerCase().includes("https://twitter.com")) {
       keyedSocials.push({
         ...sm.social_media_channel,
         key: 0,
@@ -110,6 +109,6 @@ function assignKeys(socials) {
       });
     }
   });
-  
+
   return keyedSocials;
 }

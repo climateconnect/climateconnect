@@ -282,6 +282,6 @@ export default function getOrganizationTexts({ organization, locale }) {
     find_us_here: {
       en: "Find us here:",
       de: "Find uns unter:",
-    }
+    },
   };
 }

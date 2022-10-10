@@ -222,22 +222,6 @@ const useStyles = makeStyles((theme) => ({
   detailledDescriptionContainer: {
     marginTop: theme.spacing(5),
   },
-  socialMediaIcons: {
-    height: 40,
-    marginLeft: theme.spacing(1),
-    color: theme.palette.primary.main,
-    "&:hover": {
-      color: theme.palette.primary.main,
-    },
-  },
-  socialLink: {
-    marginTop: theme.spacing(0.5),
-    marginBottom: theme.spacing(2),
-  },
-  socialMediaCheckBox: {
-    display: "flex",
-    alignItems: "center",
-  },
 }));
 
 //Generic page for editing your personal profile or organization profile
@@ -287,7 +271,6 @@ export default function EditAccountPage({
   const handleDialogClickOpen = (dialogKey) => {
     setOpen({ ...open, [dialogKey]: true });
   };
- 
 
   const handleBackgroundClose = (image) => {
     setOpen({ ...open, backgroundDialog: false });
@@ -450,7 +433,6 @@ export default function EditAccountPage({
       };
 
       const handleChangeSocialCheckBox = (event) => {
-      
         const social_media_option_added = {
           social_media_name: event.social,
           key: event.index,
@@ -485,21 +467,18 @@ export default function EditAccountPage({
       };
 
       const handleChangeSocialLink = (key, newValue) => {
-     
-        // need to do validation
-
-        const indexThatIsBeingEdited = editedAccount.info.social_options.findIndex((sm) => sm.key === key);
-      
+        const indexThatIsBeingEdited = editedAccount.info.social_options.findIndex(
+          (sm) => sm.key === key
+        );
 
         (editedAccount.info.social_options[indexThatIsBeingEdited].social_media_name = newValue),
-        
-        setEditedAccount({
-          ...editedAccount,
-          info: {
-            ...editedAccount.info,
-            social_options: editedAccount.info.social_options,
-          },
-        });
+          setEditedAccount({
+            ...editedAccount,
+            info: {
+              ...editedAccount.info,
+              social_options: editedAccount.info.social_options,
+            },
+          });
       };
 
       const handleChangeLegacyLocation = (key, event) => {
@@ -541,7 +520,7 @@ export default function EditAccountPage({
           </div>
         );
       } else if (i.type === "checkbox") {
-      return (
+        return (
           <div className={classes.checkbox} key={i.key}>
             <Checkbox
               id={"checkbox" + i.key}
@@ -554,15 +533,14 @@ export default function EditAccountPage({
             <label htmlFor={"checkbox" + i.key}>{i.label}</label>
           </div>
         );
-      } else if (i.type==="social_media") {
+      } else if (i.type === "social_media") {
         return (
           <SocialMediaInputs
             socials={i}
             handleChangeSocialCheckBox={handleChangeSocialCheckBox}
             handleChangeSocialLink={handleChangeSocialLink}
           />
-          
-        )
+        );
       } else if (
         i.type === "auto_complete_searchbar" &&
         i.key === "parent_organization" &&

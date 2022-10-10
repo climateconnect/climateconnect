@@ -104,7 +104,6 @@ export default function getOrganizationInfoMetadata(locale, organization) {
     has_parent_organization: {
       type: "checkbox",
       label: texts.we_are_a_suborganization,
-  
     },
     parent_organization: {
       icon: AccountBalanceIcon,

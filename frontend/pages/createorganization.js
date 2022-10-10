@@ -202,7 +202,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       translations,
       sourceLanguage
     );
-    
+
     if (!legacyModeEnabled && !isLocationValid(organizationToSubmit.location)) {
       indicateWrongLocation(
         locationInputRef,
@@ -231,8 +231,8 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       });
       setCurStep(steps[2]);
       return;
-    } 
-   
+    }
+
     setLoadingSubmit(false);
     await makeCreateOrganizationRequest(organizationToSubmit);
   };
@@ -401,7 +401,6 @@ async function getTags(token, locale) {
 }
 
 const parseOrganizationForRequest = async (o, user, rolesOptions, translations, sourceLanguage) => {
-
   const organization = {
     team_members: [
       {
