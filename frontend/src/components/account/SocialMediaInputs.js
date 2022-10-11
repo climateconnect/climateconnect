@@ -19,6 +19,10 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
   },
+  subtitle: {
+    color: `${theme.palette.secondary.main}`,
+    fontWeight: "bold",
+  },
 }));
 
 export default function SocialMediaInputs({
@@ -29,9 +33,7 @@ export default function SocialMediaInputs({
   const classes = useStyles();
   return (
     <>
-      <Typography className={`${classes.subtitle} ${classes.infoElement}`}>
-        {socials.name}:
-      </Typography>
+      <Typography className={classes.subtitle}>{socials.name}</Typography>
 
       {socials.options.map((option, index) => (
         <>

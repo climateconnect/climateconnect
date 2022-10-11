@@ -71,7 +71,7 @@ export default function getOrganizationInfoMetadata(locale, organization) {
 
     social_options: {
       type: "social_media",
-      name: "Add social media",
+      name: texts.add_social_media,
       options: [
         {
           icon: TwitterIcon,

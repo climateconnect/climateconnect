@@ -335,14 +335,14 @@ class CreateOrganizationView(APIView):
 
             if "social_options" in request.data:
                 for option in request.data["social_options"]:
-                    social_media_name = option['social_media_name']
+                    social_media_name = option["social_media_name"]
                     social_media_channel = SocialMediaChannel.objects.create(
-                        social_media_name = social_media_name
+                        social_media_name=social_media_name
                     )
                     SocialMediaLink.objects.create(
-                     organization =organization, social_media_channel = social_media_channel
+                        organization=organization,
+                        social_media_channel=social_media_channel,
                     )
-
 
             if "organization_tags" in request.data:
                 for organization_tag_id in request.data["organization_tags"]:
@@ -500,31 +500,29 @@ class OrganizationAPIView(APIView):
         old_social_media_links = SocialMediaLink.objects.filter(
             organization=organization
         ).values("social_media_channel")
-      
+
         if "social_options" in request.data:
 
             for option in old_social_media_links:
                 if not option["social_media_channel"] in request.data["social_options"]:
                     SocialMediaChannel.objects.get(
-                        id = option["social_media_channel"]
+                        id=option["social_media_channel"]
                     ).delete()
-                 
-               
 
             for option in request.data["social_options"]:
-              
-                social_media_name = option['social_media_name']
+
+                social_media_name = option["social_media_name"]
                 social_media_channel = SocialMediaChannel.objects.create(
-                    social_media_name = social_media_name
+                    social_media_name=social_media_name
                 )
                 SocialMediaLink.objects.create(
-                    organization =organization, social_media_channel = social_media_channel
+                    organization=organization, social_media_channel=social_media_channel
                 )
 
         old_organization_taggings = OrganizationTagging.objects.filter(
             organization=organization
         ).values("organization_tag")
-        
+
         if "types" in request.data:
             for tag in old_organization_taggings:
                 if not tag["organization_tag"] in request.data["types"]:

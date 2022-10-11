@@ -3,8 +3,9 @@ from django.db import models
 
 from organization.models.organization import Organization
 
+
 class SocialMediaChannel(models.Model):
-    social_media_name= models.CharField(
+    social_media_name = models.CharField(
         help_text="Link of the social media",
         verbose_name="Social Media Channel",
         max_length=256,
@@ -19,7 +20,7 @@ class SocialMediaChannel(models.Model):
 
     def __str__(self):
         return "%s (%d)" % (self.social_media_name, self.pk)
-   
+
 
 class SocialMediaLink(models.Model):
     organization = models.ForeignKey(
@@ -28,7 +29,6 @@ class SocialMediaLink(models.Model):
         verbose_name="Organization for social media",
         help_text="Points to the organization",
         on_delete=models.CASCADE,
-        
     )
     social_media_channel = models.ForeignKey(
         SocialMediaChannel,
@@ -37,7 +37,6 @@ class SocialMediaLink(models.Model):
         help_text="Points to the social media channel",
         on_delete=models.CASCADE,
     )
-
 
     created_at = models.DateTimeField(
         help_text="Time when social media link was created",
@@ -50,6 +49,7 @@ class SocialMediaLink(models.Model):
         verbose_name="Updated At",
         auto_now=True,
     )
+
     class Meta:
         app_label = "climateconnect_api"
         verbose_name = "Social Media Link"
@@ -57,4 +57,7 @@ class SocialMediaLink(models.Model):
         unique_together = ("organization", "social_media_channel")
 
     def __str__(self):
-        return "%s => %s" % (self.social_media_channel.social_media_name, self.organization.name)
+        return "%s => %s" % (
+            self.social_media_channel.social_media_name,
+            self.organization.name,
+        )

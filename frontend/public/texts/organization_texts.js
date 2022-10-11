@@ -279,6 +279,10 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: "Skip for now",
       de: "Erstmal überspringen",
     },
+    add_social_media: {
+      en: "Add Social Media:",
+      de: "Soziale Medien hinzufügen:",
+    },
     find_us_here: {
       en: "Find us here:",
       de: "Finde uns unter:",

@@ -268,4 +268,7 @@ class HubAmbassador(models.Model):
         verbose_name_plural = "Hub Ambassadors"
 
     def __str__(self):
-        return "%s is ambassador for %s" % (self.user.first_name + " " +  self.user.last_name, self.title)
+        return "%s is ambassador for %s" % (
+            self.user.first_name + " " + self.user.last_name,
+            self.title,
+        )
