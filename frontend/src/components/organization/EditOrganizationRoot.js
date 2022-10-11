@@ -113,7 +113,7 @@ export default function EditOrganizationRoot({
     } else {
       editedOrg.language = sourceLanguage;
       const oldOrg = await getOrganizationByUrlIfExists(organization.url_slug, token, locale);
-      /*for the getChanges function if you want tocheck for changes within an attribute in an object such as translations or social media name
+      /*for the getChanges function if you want to check for changes within an attribute in an object such as translations or social media name
        we need to get the old org via api request otherwise no changes will be noticed  see PR #1046 for more info */
       const payload = await parseForRequest(getChanges(editedOrg, oldOrg));
 
@@ -235,22 +235,7 @@ const parseForRequest = async (org) => {
   return parsedOrg;
 };
 
-
-
-const verifyChanges = (newOrg, texts, handleSetErrorMessage) => {
-  console.log(newOrg);
-     // need to do validation i.e. twitter.com link needs to match a certain regex? so the assignKeys function works properly in organizationOperations
-        /* if key === 0 then match (https://*twitter.com/*) 
-              key === 1 -> (https://*yt.com/c/*)
-              key === 2 -> (https://*linkedin.com/*)
-              key === 3 -> (https://*instagram.com/*)
-              key === 4 -> (https://*facebook.com/*)
-        */
-  if ( newOrg.info.social_options[0].key === 0 && !newOrg.info.social_options[0].social_media_name.includes("twitter.com".toLocaleLowerCase())) {
-    return {
-      error: "must match format *twitter.com*"
-    };
-  }
+const verifyChanges = (newOrg, texts) => {
   const requiredPropErrors = {
     image: texts.image_required_error,
     types: texts.type_required_errror,
@@ -273,6 +258,16 @@ const verifyChanges = (newOrg, texts, handleSetErrorMessage) => {
       };
     }
   }
+  const socialMediaError = verifySocialMediaLinks(newOrg.info.social_options, texts);
+
+  for (const prop of Object.keys(socialMediaError)) {
+    if (socialMediaError[prop] !== null) {
+      return {
+        error: socialMediaError[prop],
+      };
+    }
+  }
+
   return true;
 };
 
@@ -290,4 +285,50 @@ async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
+}
+
+function verifySocialMediaLinks(socialOptions, texts) {
+  const err = {};
+
+  // matches http://, https:// , https://www. ,http://www.
+  const regexPrefix = "^(http)(?:s)?(://)(?:www.)?";
+
+  // matches.com/ anything
+  const regexSuffix = ".com/.+$";
+  let regex;
+  let matches = false;
+
+  socialOptions.map((so) => {
+    switch (so.key) {
+      case 0: // twitter
+        regex = new RegExp(regexPrefix + "twitter" + regexSuffix);
+        matches = regex.test(so.social_media_name);
+        err.twitterErr = matches ? null : texts.does_not_comply_twitter;
+        break;
+      case 1: // youtube
+        regex = new RegExp(regexPrefix + "youtube" + regexSuffix);
+        matches = regex.test(so.social_media_name);
+        err.youtubeErr = matches ? null : texts.does_not_comply_youtube;
+        break;
+      case 2: // linkedIn
+        regex = new RegExp(regexPrefix + "linkedin" + regexSuffix);
+        matches = regex.test(so.social_media_name);
+        err.linkedInErr = matches ? null : texts.does_not_comply_linkedin;
+        break;
+      case 3: // instagram
+        regex = new RegExp(regexPrefix + "instagram" + regexSuffix);
+        matches = regex.test(so.social_media_name);
+        err.instagramErr = matches ? null : texts.does_not_comply_instagram;
+        break;
+      case 4: // facebook
+        regex = new RegExp(regexPrefix + "facebook" + regexSuffix);
+        matches = regex.test(so.social_media_name);
+        err.facebookErr = matches ? null : texts.does_not_comply_facebook;
+        break;
+      default:
+        break;
+    }
+  });
+
+  return err;
 }

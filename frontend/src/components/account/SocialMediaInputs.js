@@ -46,7 +46,7 @@ export default function SocialMediaInputs({
               onChange={(e) =>
                 handleChangeSocialCheckBox({
                   target: { value: e.target.checked },
-                  social:
+                  social_media_name:
                     socials.value[socials.value.findIndex((val) => val.key === option.key)]
                       ?.social_media_name,
                   index: index,
@@ -57,22 +57,25 @@ export default function SocialMediaInputs({
             <option.icon className={classes.socialMediaIcons} />
           </div>
           {socials.value[socials.value.findIndex((val) => val.key === option.key)]?.is_checked && (
-            <TextField
-              className={classes.socialLink}
-              fullWidth
-              required
-              value={
-                socials.value[socials.value.findIndex((val) => val.key === option.key)]
-                  ?.social_media_name
-              } // find the index at which the value key is the same as the option
-              onChange={(event) =>
-                handleChangeSocialLink(
-                  socials.value[socials.value.findIndex((val) => val.key === option.key)]?.key,
-                  event.target.value
-                )
-              }
-              label={option.label}
-            />
+            <>
+              <TextField
+                className={classes.socialLink}
+                fullWidth
+                required
+                multiline
+                value={
+                  socials.value[socials.value.findIndex((val) => val.key === option.key)]
+                    ?.social_media_name
+                } // find the index at which the value key's is the same as the option
+                onChange={(event) =>
+                  handleChangeSocialLink(
+                    socials.value[socials.value.findIndex((val) => val.key === option.key)]?.key,
+                    event.target.value
+                  )
+                }
+                label={option.label}
+              />
+            </>
           )}
         </>
       ))}

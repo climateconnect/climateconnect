@@ -281,7 +281,27 @@ export default function getOrganizationTexts({ organization, locale }) {
     },
     find_us_here: {
       en: "Find us here:",
-      de: "Find uns unter:",
+      de: "Finde uns unter:",
+    },
+    does_not_comply_twitter: {
+      en: "Does not comply with a valid Twitter URL",
+      de: "Entspricht nicht einer gültigen Twitter-URL",
+    },
+    does_not_comply_youtube: {
+      en: "Does not comply with a valid Youtube URL",
+      de: "Entspricht nicht einer gültigen Youtube-URL",
+    },
+    does_not_comply_linkedin: {
+      en: "Does not comply with a valid LinkedIn URL",
+      de: "Entspricht nicht einer gültigen LinkedIn-URL",
+    },
+    does_not_comply_instagram: {
+      en: "Does not comply with a valid Instagram URL",
+      de: "Entspricht nicht einer gültigen Instagram-URL",
+    },
+    does_not_comply_facebook: {
+      en: "Does not comply with a valid Facebook URL",
+      de: "Entspricht nicht einer gültigen Facebook-URL",
     },
   };
 }

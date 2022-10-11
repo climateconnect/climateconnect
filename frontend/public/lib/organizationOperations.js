@@ -64,51 +64,62 @@ export async function getUserOrganizations(token, locale) {
   }
 }
 
+// goal is to add keys to each different type of social media (in this case its only 5)
 function assignKeys(socials) {
-  // goal is to add keys to each different type of social media (in this case its only 5)
   const keyedSocials = [];
 
-  // I need a better way than just .includes something bc links can look different e.g. if you copy a twitter link it wont have "www" in it
-  // german linked in doesn't have www.  but instead .de.linkedin....
+  // matches http://, https:// , https://www. ,http://www.
+  const regexPrefix = "^(http)(?:s)?(://)(?:www.)?";
+
+  // matches.com/ anything
+  const regexSuffix = ".com/.+$";
+
+  const twitterRegex = new RegExp(regexPrefix + "twitter" + regexSuffix);
+  const youtubeRegex = new RegExp(regexPrefix + "youtube" + regexSuffix);
+  const linkedInRegex = new RegExp(regexPrefix + "linkedin" + regexSuffix);
+  const instagramRegex = new RegExp(regexPrefix + "instagram" + regexSuffix);
+  const facebookRegex = new RegExp(regexPrefix + "facebook" + regexSuffix);
 
   socials.map((sm) => {
-    if (sm.social_media_channel.social_media_name.toLowerCase().includes("https://twitter.com")) {
+    // check for twitter
+    const socialMediaChannel = {
+      ...sm.social_media_channel,
+      is_checked: true,
+    };
+    if (twitterRegex.test(sm.social_media_channel.social_media_name)) {
       keyedSocials.push({
-        ...sm.social_media_channel,
+        ...socialMediaChannel,
         key: 0,
-        is_checked: true,
       });
     }
-    if (sm.social_media_channel.social_media_name.toLowerCase().includes("https://www.youtube")) {
+    // check for youtube
+    if (youtubeRegex.test(sm.social_media_channel.social_media_name)) {
       keyedSocials.push({
-        ...sm.social_media_channel,
+        ...socialMediaChannel,
         key: 1,
-        is_checked: true,
       });
     }
-    if (sm.social_media_channel.social_media_name.toLowerCase().includes("https://www.linkedin")) {
+    // check for linkedIn
+    if (linkedInRegex.test(sm.social_media_channel.social_media_name)) {
       keyedSocials.push({
-        ...sm.social_media_channel,
+        ...socialMediaChannel,
         key: 2,
-
-        is_checked: true,
       });
     }
-    if (sm.social_media_channel.social_media_name.toLowerCase().includes("https://www.instagram")) {
+    // check for instagram
+    if (instagramRegex.test(sm.social_media_channel.social_media_name)) {
       keyedSocials.push({
-        ...sm.social_media_channel,
+        ...socialMediaChannel,
         key: 3,
-        is_checked: true,
       });
     }
-    if (sm.social_media_channel.social_media_name.toLowerCase().includes("https://www.facebook")) {
+    // check for facebook
+    if (facebookRegex.test(sm.social_media_channel.social_media_name)) {
       keyedSocials.push({
-        ...sm.social_media_channel,
+        ...socialMediaChannel,
         key: 4,
-        is_checked: true,
       });
     }
   });
-
   return keyedSocials;
 }

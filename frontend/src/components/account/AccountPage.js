@@ -376,19 +376,21 @@ export default function AccountPage({
               ))}
             </Container>
           )}
-          {isOrganization && account.info.website && (
+          {isOrganization && account.info.social_options.length > 0 && (
             <>
               <div className={classes.website}>
                 <Typography variant="caption"> {organizationTexts.find_us_here} </Typography>
-                <Linkify componentDecorator={componentDecorator}>
-                  {" "}
-                  <Typography className={classes.websiteLink}> {account.info.website}</Typography>
-                </Linkify>
+                {account.info.website && (
+                  <Linkify componentDecorator={componentDecorator}>
+                    {" "}
+                    <Typography className={classes.websiteLink}> {account.info.website}</Typography>
+                  </Linkify>
+                )}
               </div>
             </>
           )}
           {account.info.social_options && (
-            <div className={classes.marginTop}>
+            <>
               {getSocialMediaButtons(account.info.social_options).map((socialMedia, index) => (
                 <SocialMediaButton
                   key={index}
@@ -398,7 +400,7 @@ export default function AccountPage({
                   isFooterIcon={socialMedia.isFooterIcon}
                 />
               ))}
-            </div>
+            </>
           )}
         </Container>
         <Container className={classes.accountInfo}>{displayAccountInfo(account.info)}</Container>
@@ -434,20 +436,20 @@ function getSocialMediaButtons(socialLinks) {
   const socialMediaLinks = [];
   socialLinks.map((social) => {
     switch (social.key) {
-      case 0:
-        socialMediaLinks.push(addTwitterIconButton(social.social_media_name));
+      case 0: // twitter
+        socialMediaLinks.push(createSocialMediaIconButton(social));
         break;
-      case 1:
-        socialMediaLinks.push(addYoutubeIconButton(social.social_media_name));
+      case 1: // youtube
+        socialMediaLinks.push(createSocialMediaIconButton(social));
         break;
-      case 2:
-        socialMediaLinks.push(addLinkedInIconButton(social.social_media_name));
+      case 2: // linkedin
+        socialMediaLinks.push(createSocialMediaIconButton(social));
         break;
-      case 3:
-        socialMediaLinks.push(addInstagramIconButton(social.social_media_name));
+      case 3: // instagram
+        socialMediaLinks.push(createSocialMediaIconButton(social));
         break;
-      case 4:
-        socialMediaLinks.push(addFacebookIconButton(social.social_media_name));
+      case 4: // facebook
+        socialMediaLinks.push(createSocialMediaIconButton(social));
         break;
       default:
         break;
@@ -456,40 +458,40 @@ function getSocialMediaButtons(socialLinks) {
   return socialMediaLinks;
 }
 
-function addTwitterIconButton(link) {
-  return {
-    href: link,
-    icon: TwitterIcon,
-    altText: "Twitter",
-  };
-}
-
-function addLinkedInIconButton(link) {
-  return {
-    href: link,
-    icon: LinkedInIcon,
-    altText: "LinkedIn",
-  };
-}
-
-function addYoutubeIconButton(link) {
-  return {
-    href: link,
-    icon: YouTubeIcon,
-    altText: "Youtube",
-  };
-}
-function addFacebookIconButton(link) {
-  return {
-    href: link,
-    icon: FacebookIcon,
-    altText: "Facebook",
-  };
-}
-function addInstagramIconButton(link) {
-  return {
-    href: link,
-    icon: InstagramIcon,
-    altText: "Instagram",
-  };
+function createSocialMediaIconButton(social) {
+  const link = social.social_media_name;
+  switch (social.key) {
+    case 0:
+      return {
+        href: link,
+        icon: TwitterIcon,
+        altText: "Twitter",
+      };
+    case 1:
+      return {
+        href: link,
+        icon: YouTubeIcon,
+        altText: "Youtube",
+      };
+    case 2:
+      return {
+        href: link,
+        icon: LinkedInIcon,
+        altText: "LinkedIn",
+      };
+    case 3:
+      return {
+        href: link,
+        icon: InstagramIcon,
+        altText: "Instagram",
+      };
+    case 4:
+      return {
+        href: link,
+        icon: FacebookIcon,
+        altText: "Facebook",
+      };
+    default:
+      break;
+  }
 }

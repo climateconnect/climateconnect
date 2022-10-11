@@ -434,9 +434,9 @@ export default function EditAccountPage({
 
       const handleChangeSocialCheckBox = (event) => {
         const social_media_option_added = {
-          social_media_name: event.social,
-          key: event.index,
+          social_media_name: event.social_media_name,
           is_checked: event.target.value,
+          key: event.index,
         };
         const social_media_option_removed = editedAccount.info.social_options.filter(
           (option) => option.key !== event.index
