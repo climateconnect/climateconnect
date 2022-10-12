@@ -13,6 +13,7 @@ import {
   isLocationValid,
   parseLocation,
 } from "../public/lib/locationOperations";
+import { verifySocialMediaLinks } from "../public/lib/socialMediaOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import LoginNudge from "../src/components/general/LoginNudge";
@@ -212,15 +213,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       );
       return;
     }
-    const socialMediaError = verifySocialMediaLinks(organizationToSubmit.social_options, texts);
-    console.log(socialMediaError);
-    for (const prop of Object.keys(socialMediaError)) {
-      if (socialMediaError[prop] !== null) {
-        handleSetDetailledErrorMessage (
-          socialMediaError[prop],
-        );
-      }
-    }
+
     for (const prop of Object.keys(requiredPropErrors)) {
       if (
         !organizationToSubmit[prop] ||
@@ -233,6 +226,19 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         return;
       }
     }
+
+    const socialMediaError = verifySocialMediaLinks(organizationToSubmit.social_options, texts);
+    
+    for (const prop of Object.keys(socialMediaError)) {
+      if (socialMediaError[prop] !== null) {
+        handleSetErrorMessages({
+          errorMessages,
+          detailledOrganizationInfo: socialMediaError[prop],
+        });
+        return;
+      }
+    }
+
     if (locale !== "en") {
       setOrganizationInfo({
         ...account,
@@ -442,50 +448,3 @@ const parseOrganizationForRequest = async (o, user, rolesOptions, translations, 
   if (o.info.school) organization.school = o.info.school;
   return organization;
 };
-
-function verifySocialMediaLinks(socialOptions, texts) {
-  const err = {};
-
-  // matches http://, https:// , https://www. ,http://www.
-  const regexPrefix = "^(http)(?:s)?(://)(?:www.)?";
-
-  // matches.com/ anything
-  const regexSuffix = ".com/.+$";
-  let regex;
-  let matches = false;
-
-  socialOptions.map((so) => {
-    switch (so.key) {
-      case 0: // twitter
-        regex = new RegExp(regexPrefix + "twitter" + regexSuffix);
-        matches = regex.test(so.social_media_name);
-        err.twitterErr = matches ? null : texts.does_not_comply_twitter;
-        break;
-      case 1: // youtube
-        regex = new RegExp(regexPrefix + "youtube" + regexSuffix);
-        matches = regex.test(so.social_media_name);
-        err.youtubeErr = matches ? null : texts.does_not_comply_youtube;
-        break;
-      case 2: // linkedIn
-        console.log("here");
-        regex = new RegExp(regexPrefix + "linkedin" + regexSuffix);
-        matches = regex.test(so.social_media_name);
-        err.linkedInErr = matches ? null : texts.does_not_comply_linkedin;
-        break;
-      case 3: // instagram
-        regex = new RegExp(regexPrefix + "instagram" + regexSuffix);
-        matches = regex.test(so.social_media_name);
-        err.instagramErr = matches ? null : texts.does_not_comply_instagram;
-        break;
-      case 4: // facebook
-        regex = new RegExp(regexPrefix + "facebook" + regexSuffix);
-        matches = regex.test(so.social_media_name);
-        err.facebookErr = matches ? null : texts.does_not_comply_facebook;
-        break;
-      default:
-        break;
-    }
-  });
-
-  return err;
-}

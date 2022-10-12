@@ -1,5 +1,6 @@
 import { apiRequest } from "./apiOperations";
 import { getImageUrl } from "./imageOperations";
+import { assignKeys } from "./socialMediaOperations";
 
 export function parseOrganization(organization, editMode) {
   const org = {
@@ -62,64 +63,4 @@ export async function getUserOrganizations(token, locale) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
-}
-
-// goal is to add keys to each different type of social media (in this case its only 5)
-function assignKeys(socials) {
-  const keyedSocials = [];
-
-  // matches http://, https:// , https://www. ,http://www.
-  const regexPrefix = "^(http)(?:s)?(://)(?:www.)?";
-
-  // matches.com/ anything
-  const regexSuffix = ".com/.+$";
-
-  const twitterRegex = new RegExp(regexPrefix + "twitter" + regexSuffix);
-  const youtubeRegex = new RegExp(regexPrefix + "youtube" + regexSuffix);
-  const linkedInRegex = new RegExp(regexPrefix + "linkedin" + regexSuffix);
-  const instagramRegex = new RegExp(regexPrefix + "instagram" + regexSuffix);
-  const facebookRegex = new RegExp(regexPrefix + "facebook" + regexSuffix);
-
-  socials.map((sm) => {
-    // check for twitter
-    const socialMediaChannel = {
-      ...sm.social_media_channel,
-      is_checked: true,
-    };
-    if (twitterRegex.test(sm.social_media_channel.social_media_name)) {
-      keyedSocials.push({
-        ...socialMediaChannel,
-        key: 0,
-      });
-    }
-    // check for youtube
-    if (youtubeRegex.test(sm.social_media_channel.social_media_name)) {
-      keyedSocials.push({
-        ...socialMediaChannel,
-        key: 1,
-      });
-    }
-    // check for linkedIn
-    if (linkedInRegex.test(sm.social_media_channel.social_media_name)) {
-      keyedSocials.push({
-        ...socialMediaChannel,
-        key: 2,
-      });
-    }
-    // check for instagram
-    if (instagramRegex.test(sm.social_media_channel.social_media_name)) {
-      keyedSocials.push({
-        ...socialMediaChannel,
-        key: 3,
-      });
-    }
-    // check for facebook
-    if (facebookRegex.test(sm.social_media_channel.social_media_name)) {
-      keyedSocials.push({
-        ...socialMediaChannel,
-        key: 4,
-      });
-    }
-  });
-  return keyedSocials;
 }

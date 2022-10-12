@@ -25,12 +25,8 @@ import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import UserContext from "../context/UserContext";
 import EditSharpIcon from "@material-ui/icons/EditSharp";
 import IconButton from "@material-ui/core/IconButton";
+import { getSocialMediaButtons } from "../../../public/lib/socialMediaOperations";
 import SocialMediaButton from "../general/SocialMediaButton";
-import InstagramIcon from "@material-ui/icons/Instagram";
-import TwitterIcon from "@material-ui/icons/Twitter";
-import YouTubeIcon from "@material-ui/icons/YouTube";
-import FacebookIcon from "@material-ui/icons/Facebook";
-import LinkedInIcon from "@material-ui/icons/LinkedIn";
 
 const useStyles = makeStyles((theme) => ({
   avatarContainer: {
@@ -431,67 +427,3 @@ export default function AccountPage({
 const getFullInfoElement = (infoMetadata, key, value) => {
   return { ...infoMetadata[key], value: value };
 };
-
-function getSocialMediaButtons(socialLinks) {
-  const socialMediaLinks = [];
-  socialLinks.map((social) => {
-    switch (social.key) {
-      case 0: // twitter
-        socialMediaLinks.push(createSocialMediaIconButton(social));
-        break;
-      case 1: // youtube
-        socialMediaLinks.push(createSocialMediaIconButton(social));
-        break;
-      case 2: // linkedin
-        socialMediaLinks.push(createSocialMediaIconButton(social));
-        break;
-      case 3: // instagram
-        socialMediaLinks.push(createSocialMediaIconButton(social));
-        break;
-      case 4: // facebook
-        socialMediaLinks.push(createSocialMediaIconButton(social));
-        break;
-      default:
-        break;
-    }
-  });
-  return socialMediaLinks;
-}
-
-function createSocialMediaIconButton(social) {
-  const link = social.social_media_name;
-  switch (social.key) {
-    case 0:
-      return {
-        href: link,
-        icon: TwitterIcon,
-        altText: "Twitter",
-      };
-    case 1:
-      return {
-        href: link,
-        icon: YouTubeIcon,
-        altText: "Youtube",
-      };
-    case 2:
-      return {
-        href: link,
-        icon: LinkedInIcon,
-        altText: "LinkedIn",
-      };
-    case 3:
-      return {
-        href: link,
-        icon: InstagramIcon,
-        altText: "Instagram",
-      };
-    case 4:
-      return {
-        href: link,
-        icon: FacebookIcon,
-        altText: "Facebook",
-      };
-    default:
-      break;
-  }
-}
