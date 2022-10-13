@@ -70,6 +70,7 @@ LIBRARY_APPS = [
     "channels",
     "django_filters",
     "django.contrib.gis",
+    "django_celery_beat"
 ]
 
 DEBUG_APPS = []
