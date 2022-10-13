@@ -194,7 +194,7 @@ export default function AccountPage({
       {text}
     </Link>
   );
-
+  console.log(account);
   const displayAccountInfo = (info) =>
     Object.keys(info)
       .sort((a, b) => {

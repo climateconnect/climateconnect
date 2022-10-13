@@ -4,69 +4,63 @@ import YouTubeIcon from "@material-ui/icons/YouTube";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
 
+import { apiRequest } from "./apiOperations";
+
 // goal is to add keys to each different type of social media (in this case its only 5)
 export function assignKeys(socials) {
   const keyedSocials = [];
 
-  // matches http://, https:// , https://www. ,http://www.
-  const regexPrefix = "^(http)(?:s)?(://)(?:www.)?";
-
-  // matches.com/ anything
-  const regexSuffix = ".com/.+$";
-
-  const twitterRegex = new RegExp(regexPrefix + "twitter" + regexSuffix);
-  const youtubeRegex = new RegExp(regexPrefix + "youtube" + regexSuffix);
-  const linkedInRegex = new RegExp(regexPrefix + "linkedin" + regexSuffix);
-  const instagramRegex = new RegExp(regexPrefix + "instagram" + regexSuffix);
-  const facebookRegex = new RegExp(regexPrefix + "facebook" + regexSuffix);
-
+  /* this could be done via id instantly and this check owuldnt be necessary but my id's are ranging in 200s from earlier
+     if id = 1 - 5 this keying wouldn't be necessary and in a real world we would never need to change/ delete the social media channels
+  */
   socials.map((sm) => {
     // check for twitter
-    const socialMediaChannel = {
-      ...sm.social_media_channel,
+    const socialMediaInfo = {
+      ...sm,
       is_checked: true,
     };
-    if (twitterRegex.test(sm.social_media_channel.social_media_name)) {
+    if (sm.social_media_channel.social_media_name === "Twitter") {
       keyedSocials.push({
-        ...socialMediaChannel,
+        ...socialMediaInfo,
         key: 0,
       });
     }
     // check for youtube
-    if (youtubeRegex.test(sm.social_media_channel.social_media_name)) {
+    if (sm.social_media_channel.social_media_name === "Youtube") {
       keyedSocials.push({
-        ...socialMediaChannel,
+        ...socialMediaInfo,
         key: 1,
       });
     }
     // check for linkedIn
-    if (linkedInRegex.test(sm.social_media_channel.social_media_name)) {
+    if (sm.social_media_channel.social_media_name === "LinkedIn") {
       keyedSocials.push({
-        ...socialMediaChannel,
+        ...socialMediaInfo,
         key: 2,
       });
     }
     // check for instagram
-    if (instagramRegex.test(sm.social_media_channel.social_media_name)) {
+    if (sm.social_media_channel.social_media_name === "Instagram") {
       keyedSocials.push({
-        ...socialMediaChannel,
+        ...socialMediaInfo,
         key: 3,
       });
     }
     // check for facebook
-    if (facebookRegex.test(sm.social_media_channel.social_media_name)) {
+    if (sm.social_media_channel.social_media_name === "Facebook") {
       keyedSocials.push({
-        ...socialMediaChannel,
+        ...socialMediaInfo,
         key: 4,
       });
     }
   });
+  console.log(keyedSocials);
   return keyedSocials;
 }
 
 export function verifySocialMediaLinks(socialOptions, texts) {
   const err = {};
-
+  console.log(socialOptions);
   // matches http://, https:// , https://www. ,http://www.
   const regexPrefix = "^(http)(?:s)?(://)(?:www.)?";
 
@@ -76,15 +70,15 @@ export function verifySocialMediaLinks(socialOptions, texts) {
   let matches = false;
 
   socialOptions.map((so) => {
-    switch (so.key) {
-      case 0: // twitter
+    switch (so.social_media_channel.social_media_name) {
+      case "Twitter": // twitter
         regex = new RegExp(regexPrefix + "twitter" + regexSuffix);
-        matches = regex.test(so.social_media_name);
+        matches = regex.test(so.url);
         err.twitterErr = matches ? null : texts.does_not_comply_twitter;
         break;
-      case 1: // youtube
+      case "Youtube": // youtube
         regex = new RegExp(regexPrefix + "youtube" + regexSuffix);
-        matches = regex.test(so.social_media_name);
+        matches = regex.test(so.url);
         err.youtubeErr = matches ? null : texts.does_not_comply_youtube;
         break;
       case 2: // linkedIn
@@ -113,20 +107,20 @@ export function verifySocialMediaLinks(socialOptions, texts) {
 export function getSocialMediaButtons(socialLinks) {
   const socialMediaLinks = [];
   socialLinks.map((social) => {
-    switch (social.key) {
-      case 0: // twitter
+    switch (social.social_media_channel.social_media_name) {
+      case "Twitter": // twitter
         socialMediaLinks.push(createSocialMediaIconButton(social));
         break;
-      case 1: // youtube
+      case "Youtube": // youtube
         socialMediaLinks.push(createSocialMediaIconButton(social));
         break;
-      case 2: // linkedin
+      case "LinkedIn": // linkedin
         socialMediaLinks.push(createSocialMediaIconButton(social));
         break;
-      case 3: // instagram
+      case "Instagram": // instagram
         socialMediaLinks.push(createSocialMediaIconButton(social));
         break;
-      case 4: // facebook
+      case "Facebook": // facebook
         socialMediaLinks.push(createSocialMediaIconButton(social));
         break;
       default:
@@ -137,33 +131,33 @@ export function getSocialMediaButtons(socialLinks) {
 }
 
 function createSocialMediaIconButton(social) {
-  const link = social.social_media_name;
-  switch (social.key) {
-    case 0:
+  const link = social.url;
+  switch (social.social_media_channel.social_media_name) {
+    case "Twitter":
       return {
         href: link,
         icon: TwitterIcon,
         altText: "Twitter",
       };
-    case 1:
+    case "Youtube":
       return {
         href: link,
         icon: YouTubeIcon,
         altText: "Youtube",
       };
-    case 2:
+    case "LinkedIn":
       return {
         href: link,
         icon: LinkedInIcon,
         altText: "LinkedIn",
       };
-    case 3:
+    case "Instagram":
       return {
         href: link,
         icon: InstagramIcon,
         altText: "Instagram",
       };
-    case 4:
+    case "Facebook":
       return {
         href: link,
         icon: FacebookIcon,
@@ -171,5 +165,48 @@ function createSocialMediaIconButton(social) {
       };
     default:
       break;
+  }
+}
+
+export async function getSocialMediaChannels(locale) {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/social_media_channels/",
+      locale: locale,
+    });
+
+    if (resp.data.results.length === 0) return null;
+    else {
+      return resp.data.results.map((t) => {
+        return {
+          name: t.social_media_name,
+          ask_for_full_website: t.ask_for_full_website,
+          base_url: t.base_url,
+        };
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
+
+function assignKey(name) {
+  if (name === "Twitter") {
+    return 0;
+  }
+  if (name === "Youtube") {
+    return 1;
+  }
+  if (name === "LinkedIn") {
+    return 2;
+  }
+  if (name === "Instagram") {
+    return 3;
+  }
+  if (name === "Facebook") {
+    return 4;
   }
 }

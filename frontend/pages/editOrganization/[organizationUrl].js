@@ -5,6 +5,7 @@ import { apiRequest, sendToLogin } from "../../public/lib/apiOperations";
 import { getAllHubs } from "../../public/lib/hubOperations.js";
 import { parseOrganization } from "../../public/lib/organizationOperations.js";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations.js";
+import { getSocialMediaChannels } from "../../public/lib/socialMediaOperations.js";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
 import WideLayout from "../../src/components/layouts/WideLayout";
@@ -19,22 +20,29 @@ export async function getServerSideProps(ctx) {
     return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
   }
   const url = encodeURI(ctx.query.organizationUrl);
-  const [organization, tagOptions, allHubs] = await Promise.all([
+  const [organization, tagOptions, allHubs, socialMediaChannels] = await Promise.all([
     getOrganizationByUrlIfExists(url, auth_token, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getAllHubs(ctx.locale, true),
+    getSocialMediaChannels(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
       organization: organization,
       tagOptions: tagOptions,
       allHubs: allHubs,
+      socialMediaChannels: socialMediaChannels,
     }),
   };
 }
 
 //This route should only be accessible to admins of the organization
-export default function EditOrganizationPage({ organization, tagOptions, allHubs }) {
+export default function EditOrganizationPage({
+  organization,
+  tagOptions,
+  allHubs,
+  socialMediaChannels,
+}) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
   const organization_info_metadata = getOrganizationInfoMetadata(locale, organization);
@@ -42,11 +50,15 @@ export default function EditOrganizationPage({ organization, tagOptions, allHubs
   const [errorMessage, setErrorMessage] = useState("");
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
-
   const handleSetLocationOptionsOpen = (newValue) => {
     setLocationOptionsOpen(newValue);
   };
-
+  console.log(socialMediaChannels);
+  /*(socialMediaChannels.sort((a,b) => {
+    console.log(a > b);
+    a.key > b.key
+  }
+    )); */
   const infoMetadata = {
     ...organization_info_metadata,
     location: {
@@ -74,6 +86,7 @@ export default function EditOrganizationPage({ organization, tagOptions, allHubs
         errorMessage={errorMessage}
         initialTranslations={organization.translations}
         allHubs={allHubs}
+        socialMediaChannels={socialMediaChannels}
       />
     </WideLayout>
   );

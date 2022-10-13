@@ -35,10 +35,12 @@ import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 import LocationSearchBar from "../search/LocationSearchBar";
 import ConfirmDialog from "./../dialogs/ConfirmDialog";
 import SelectDialog from "./../dialogs/SelectDialog";
+import SocialMediaSelectDialog from "../dialogs/SocialMediaSelectDialog";
 import UploadImageDialog from "./../dialogs/UploadImageDialog";
 import SelectField from "./../general/SelectField";
 import DetailledDescriptionInput from "./DetailledDescriptionInput";
 import SocialMediaInputs from "./SocialMediaInputs";
+import { verifySocialMediaLinks } from "../../../public/lib/socialMediaOperations";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -245,6 +247,7 @@ export default function EditAccountPage({
   loadingSubmit,
   onClickCheckTranslations,
   allHubs,
+  socialMediaChannels,
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
@@ -260,12 +263,15 @@ export default function EditAccountPage({
       ? editedAccount.background_image
       : DEFAULT_BACKGROUND_IMAGE,
   });
+  console.log(editedAccount.info);
+  console.log(socialMediaChannels);
 
   const [open, setOpen] = React.useState({
     backgroundDialog: false,
     avatarDialog: false,
     addTypeDialog: false,
     confirmExitDialog: false,
+    addSocialMediaDialog: false,
   });
 
   const handleDialogClickOpen = (dialogKey) => {
@@ -307,6 +313,20 @@ export default function EditAccountPage({
       setEditedAccount({ ...editedAccount, info: { ...editedAccount.info, [key]: newValue } });
     setEditedAccount({ ...editedAccount, [key]: newValue });
   };
+
+  const handleAddSocialMediaClose = (socialMediaInfo, texts) => {
+ 
+    if (socialMediaInfo === undefined ) {
+      setOpen({ ...open, addSocialMediaDialog: false });
+    } else {
+      
+      setOpen({ ...open, addSocialMediaDialog: false });
+      const tempAccount = editedAccount;
+      tempAccount.info.social_options = socialMediaInfo;
+      setEditedAccount(tempAccount);
+    }
+}
+  
 
   const handleAddTypeClose = (type, additionalInfo) => {
     setOpen({ ...open, addTypeDialog: false });
@@ -432,55 +452,6 @@ export default function EditAccountPage({
         });
       };
 
-      const handleChangeSocialCheckBox = (event) => {
-        const social_media_option_added = {
-          social_media_name: event.social_media_name,
-          is_checked: event.target.value,
-          key: event.index,
-        };
-        const social_media_option_removed = editedAccount.info.social_options.filter(
-          (option) => option.key !== event.index
-        );
-
-        const addingSocialMedia = event.target.value === true;
-
-        if (addingSocialMedia) {
-          setEditedAccount({
-            ...editedAccount,
-            info: {
-              ...editedAccount.info,
-              social_options: [...editedAccount.info.social_options, social_media_option_added],
-            },
-          });
-        }
-
-        // removing
-        else {
-          setEditedAccount({
-            ...editedAccount,
-            info: {
-              ...editedAccount.info,
-              social_options: social_media_option_removed,
-            },
-          });
-        }
-      };
-
-      const handleChangeSocialLink = (key, newValue) => {
-        const indexThatIsBeingEdited = editedAccount.info.social_options.findIndex(
-          (sm) => sm.key === key
-        );
-
-        (editedAccount.info.social_options[indexThatIsBeingEdited].social_media_name = newValue),
-          setEditedAccount({
-            ...editedAccount,
-            info: {
-              ...editedAccount.info,
-              social_options: editedAccount.info.social_options,
-            },
-          });
-      };
-
       const handleChangeLegacyLocation = (key, event) => {
         setEditedAccount({
           ...editedAccount,
@@ -534,13 +505,7 @@ export default function EditAccountPage({
           </div>
         );
       } else if (i.type === "social_media") {
-        return (
-          <SocialMediaInputs
-            socials={i}
-            handleChangeSocialCheckBox={handleChangeSocialCheckBox}
-            handleChangeSocialLink={handleChangeSocialLink}
-          />
-        );
+        return <></>;
       } else if (
         i.type === "auto_complete_searchbar" &&
         i.key === "parent_organization" &&
@@ -698,6 +663,68 @@ export default function EditAccountPage({
     } catch (error) {
       console.log(error);
     }
+  };
+  const handleChangeSocialCheckBox = (event) => {
+    const socialMediaChannel = socialMediaChannels.filter((channel) => channel.key === event.index);
+    const social_media_option_added = {
+      social_media_channel: socialMediaChannel[0],
+      handle: "",
+      url: "",
+      is_checked: event.target.value,
+      key: event.index,
+    };
+    const social_media_option_removed = editedAccount.info.social_options.filter(
+      (option) => option.key !== event.index
+    );
+
+    const addingSocialMedia = event.target.value === true;
+
+    if (addingSocialMedia) {
+      setEditedAccount({
+        ...editedAccount,
+        info: {
+          ...editedAccount.info,
+          social_options: [...editedAccount.info.social_options, social_media_option_added],
+        },
+      });
+    }
+
+    // removing
+    else {
+      setEditedAccount({
+        ...editedAccount,
+        info: {
+          ...editedAccount.info,
+          social_options: social_media_option_removed,
+        },
+      });
+    }
+  };
+
+  const handleChangeSocialLink = (key, newValue) => {
+    const indexThatIsBeingEdited = editedAccount.info.social_options.findIndex(
+      (sm) => sm.key === key
+    );
+
+    if (
+      editedAccount.info.social_options[indexThatIsBeingEdited].social_media_channel
+        .ask_for_full_website === true
+    ) {
+      editedAccount.info.social_options[indexThatIsBeingEdited].url = newValue;
+    } else {
+      editedAccount.info.social_options[indexThatIsBeingEdited].handle = newValue;
+      editedAccount.info.social_options[indexThatIsBeingEdited].url =
+        editedAccount.info.social_options[indexThatIsBeingEdited].social_media_channel.base_url +
+        editedAccount.info.social_options[indexThatIsBeingEdited].handle;
+    }
+
+    setEditedAccount({
+      ...editedAccount,
+      info: {
+        ...editedAccount.info,
+        social_options: editedAccount.info.social_options,
+      },
+    });
   };
 
   const onAvatarChange = async (avatarEvent) => {
@@ -924,6 +951,15 @@ export default function EditAccountPage({
                   )}
               </Container>
             )}
+            <div className={classes.marginTop} />
+            {socialMediaChannels && (
+              <Chip
+                label={"add social"}
+                color={editedAccount.types && editedAccount.types.length ? "default" : "primary"}
+                icon={<ControlPointIcon />}
+                onClick={() => handleDialogClickOpen("addSocialMediaDialog")}
+              />
+            )}
           </Container>
           <Container className={classes.accountInfo}>
             {/*Contains all the possible info a user can put about their account e.g. website, location, summary, bio, ...*/}
@@ -979,8 +1015,33 @@ export default function EditAccountPage({
         height={isNarrowScreen ? getImageDialogHeight(window.innerWidth) : 200}
         ratio={1}
       />
+      {socialMediaChannels && (
+        <SocialMediaSelectDialog
+          onClose={handleAddSocialMediaClose}
+          open={open.addSocialMediaDialog}
+          title={"add socials"}
+          isSocial
+          values={socialMediaChannels}
+          className={classes.dialogWidth}
+          label={"choose a social"}
+          socials={editedAccount.info.social_options}
+        />
+        /*<SocialMediaInputs
+            socials={i}
+            title={i.name}
+            open={open.addSocialMediaDialog}
+            handleChangeSocialCheckBox={
+              
+
+            }
+            handleChangeSocialLink={handleChangeSocialLink}
+            onClose={handleAddSocialMediaClose}
+    />*/
+      )}
+
       {possibleAccountTypes && (
         <SelectDialog
+          supportAdditionalInfo={true}
           onClose={handleAddTypeClose}
           open={open.addTypeDialog}
           title={texts.add_type}
@@ -988,7 +1049,6 @@ export default function EditAccountPage({
             (type) => editedAccount.types && !editedAccount.types.includes(type.key)
           )}
           label={texts.choose_type}
-          supportAdditionalInfo={true}
           className={classes.dialogWidth}
         />
       )}

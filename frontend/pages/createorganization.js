@@ -22,6 +22,7 @@ import Layout from "./../src/components/layouts/layout";
 import WideLayout from "./../src/components/layouts/WideLayout";
 import EnterBasicOrganizationInfo from "./../src/components/organization/EnterBasicOrganizationInfo";
 import EnterDetailledOrganizationInfo from "./../src/components/organization/EnterDetailledOrganizationInfo";
+import { getSocialMediaChannels } from "../public/lib/socialMediaOperations";
 
 const useStyles = makeStyles((theme) => ({
   headline: {
@@ -32,21 +33,28 @@ const useStyles = makeStyles((theme) => ({
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
-  const [tagOptions, rolesOptions, allHubs] = await Promise.all([
+  const [tagOptions, rolesOptions, allHubs, socialMediaChannels] = await Promise.all([
     await getTags(auth_token, ctx.locale),
     await getRolesOptions(auth_token, ctx.locale),
     getAllHubs(ctx.locale, true),
+    getSocialMediaChannels(ctx.locale),
   ]);
   return {
     props: {
       tagOptions: tagOptions,
       rolesOptions: rolesOptions,
       allHubs: allHubs,
+      socialMediaChannels: socialMediaChannels,
     },
   };
 }
 
-export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }) {
+export default function CreateOrganization({
+  tagOptions,
+  rolesOptions,
+  allHubs,
+  socialMediaChannels,
+}) {
   const token = new Cookies().get("auth_token");
   const classes = useStyles();
   const [errorMessages, setErrorMessages] = React.useState({
@@ -228,7 +236,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
     }
 
     const socialMediaError = verifySocialMediaLinks(organizationToSubmit.social_options, texts);
-    
+
     for (const prop of Object.keys(socialMediaError)) {
       if (socialMediaError[prop] !== null) {
         handleSetErrorMessages({
@@ -336,6 +344,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           loadingSubmit={loadingSubmit}
           allHubs={allHubs}
+          socialMediaChannels={socialMediaChannels}
         />
       </WideLayout>
     );

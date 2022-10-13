@@ -501,23 +501,29 @@ class OrganizationAPIView(APIView):
             organization=organization
         ).values("social_media_channel")
 
+        print(old_social_media_links, "old")
         if "social_options" in request.data:
-
-            for option in old_social_media_links:
-                if not option["social_media_channel"] in request.data["social_options"]:
-                    SocialMediaChannel.objects.get(
-                        id=option["social_media_channel"]
+            print(request.data['social_options'])
+            
+            for social_channel in old_social_media_links:
+                if not social_channel["social_media_channel"] in request.data['social_options']:
+                    print(social_channel["social_media_channel"])
+                    social_to_delete = SocialMediaChannel.objects.get(
+                        id=social_channel["social_media_channel"]
+                    )
+                    SocialMediaLink.objects.filter(
+                        organization=organization, social_media_channel = social_to_delete
                     ).delete()
-
-            for option in request.data["social_options"]:
-
-                social_media_name = option["social_media_name"]
-                social_media_channel = SocialMediaChannel.objects.create(
-                    social_media_name=social_media_name
-                )
+                    
+            for social_channel in request.data['social_options']:
+                
+                channel = SocialMediaChannel.objects.get(social_media_name = social_channel['social_media_channel']['social_media_name'])
+                print(channel, "channel")
+                print(social_channel['url'], "Url")
                 SocialMediaLink.objects.create(
-                    organization=organization, social_media_channel=social_media_channel
+                    organization=organization, social_media_channel = channel, handle = "", url = social_channel['url']
                 )
+           
 
         old_organization_taggings = OrganizationTagging.objects.filter(
             organization=organization

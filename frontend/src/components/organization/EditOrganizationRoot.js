@@ -35,6 +35,7 @@ export default function EditOrganizationRoot({
   errorMessage,
   initialTranslations,
   allHubs,
+  socialMediaChannels,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
@@ -179,6 +180,7 @@ export default function EditOrganizationRoot({
             errorMessage={errorMessage}
             onClickCheckTranslations={onClickCheckTranslations}
             allHubs={allHubs}
+            socialMediaChannels={socialMediaChannels}
           />
         ) : (
           <>
@@ -260,7 +262,7 @@ const verifyChanges = (newOrg, texts) => {
     }
   }
   const socialMediaError = verifySocialMediaLinks(newOrg.info.social_options, texts);
-
+  console.log(socialMediaError);
   for (const prop of Object.keys(socialMediaError)) {
     if (socialMediaError[prop] !== null) {
       return {
