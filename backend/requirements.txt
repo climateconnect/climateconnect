@@ -28,7 +28,7 @@ daphne==3.0.2
 decorator==5.1.1
 Django==3.2.15
 django-cors-headers==3.11.0
-django-celery-beat==2.3.0
+django-celery-beat==2.2.1
 django-debug-toolbar==3.5.0
 django-filter==2.4.0
 django-redis==5.1.0
