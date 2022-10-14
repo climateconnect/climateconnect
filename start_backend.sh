@@ -1,5 +1,5 @@
 #enter virtual environment
-source pythonenv3.7/bin/activate
+source pythonenv3.8/bin/activate
 
 #install spatial dependencies
 apt-get update -qq && apt-get install binutils libproj-dev gdal-bin -yqq
