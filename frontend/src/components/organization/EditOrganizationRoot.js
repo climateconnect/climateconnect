@@ -16,7 +16,7 @@ import UserContext from "../context/UserContext";
 import PageNotFound from "../general/PageNotFound";
 import TranslateTexts from "../general/TranslateTexts";
 import { parseOrganization } from "../../../public/lib/organizationOperations";
-import { verifySocialMediaLinks } from "../../../public/lib/socialMediaOperations";
+
 
 const useStyles = makeStyles((theme) => ({
   headline: {
@@ -261,16 +261,6 @@ const verifyChanges = (newOrg, texts) => {
       };
     }
   }
-  const socialMediaError = verifySocialMediaLinks(newOrg.info.social_options, texts);
-  console.log(socialMediaError);
-  for (const prop of Object.keys(socialMediaError)) {
-    if (socialMediaError[prop] !== null) {
-      return {
-        error: socialMediaError[prop],
-      };
-    }
-  }
-
   return true;
 };
 

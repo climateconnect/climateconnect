@@ -13,7 +13,6 @@ import {
   isLocationValid,
   parseLocation,
 } from "../public/lib/locationOperations";
-import { verifySocialMediaLinks } from "../public/lib/socialMediaOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import LoginNudge from "../src/components/general/LoginNudge";
@@ -230,18 +229,6 @@ export default function CreateOrganization({
         handleSetErrorMessages({
           errorMessages,
           detailledOrganizationInfo: requiredPropErrors[prop],
-        });
-        return;
-      }
-    }
-
-    const socialMediaError = verifySocialMediaLinks(organizationToSubmit.social_options, texts);
-
-    for (const prop of Object.keys(socialMediaError)) {
-      if (socialMediaError[prop] !== null) {
-        handleSetErrorMessages({
-          errorMessages,
-          detailledOrganizationInfo: socialMediaError[prop],
         });
         return;
       }

@@ -45,7 +45,6 @@ import SelectField from "./../general/SelectField";
 import DetailledDescriptionInput from "./DetailledDescriptionInput";
 import SocialMediaInputs from "./SocialMediaInputs";
 import SocialMediaButton from "../general/SocialMediaButton";
-import { verifySocialMediaLinks } from "../../../public/lib/socialMediaOperations";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -518,7 +517,7 @@ export default function EditAccountPage({
         return (
           <>
             <Container className={classes.noPadding}>
-              {true && (
+              {i.value.length < socialMediaChannels.length && (
                 <div>
                   <Chip
                     label={i.name}

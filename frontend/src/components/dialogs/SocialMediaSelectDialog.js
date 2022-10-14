@@ -2,7 +2,7 @@ import { Button, FormControlLabel, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { verifySocialMediaLinks } from "../../../public/lib/socialMediaOperations";
+import { verifySocialMediaLink, verifySocialMediaLinks } from "../../../public/lib/socialMediaOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import SelectField from "./../general/SelectField";
@@ -48,7 +48,8 @@ export default function SocialMediaSelectDialog({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
   const orgTexts = getTexts({ page: "organization", locale: locale });
-
+  const [isValidUrl, setIsValidUrl] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
  
   const isMounted = useRef(false);
   console.log(socials, "socials");
@@ -109,7 +110,14 @@ export default function SocialMediaSelectDialog({
    
     
     tempSocialMediaInfo[indexThatIsBeingEdited].url = newValue;
-   
+    if ("" !== verifySocialMediaLink(tempSocialMediaInfo[indexThatIsBeingEdited], orgTexts)) {
+      setIsValidUrl(false);
+      setErrorMessage(verifySocialMediaLink(tempSocialMediaInfo[indexThatIsBeingEdited], orgTexts));
+    } else {
+      setIsValidUrl(true);
+      setErrorMessage("");
+    }
+
     setSocialMediaInfo([...tempSocialMediaInfo]);
     
   };
@@ -128,6 +136,8 @@ export default function SocialMediaSelectDialog({
           {isSocial && element !== null && (
             <TextField
               required
+              error={!isValidUrl}
+              helperText={errorMessage}
               variant="outlined"
               type="text"
               label={getLabel(values[values.findIndex((val) => val.name === element[0].name)])}
@@ -152,7 +162,7 @@ export default function SocialMediaSelectDialog({
             />
           )}
 
-          <Button variant="contained" color="primary" className={classes.applyButton} type="submit">
+          <Button disabled={!isValidUrl} variant="contained" color="primary" className={classes.applyButton} type="submit">
             {texts.add}
           </Button>
         </form>
