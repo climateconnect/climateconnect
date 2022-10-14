@@ -17,6 +17,11 @@ from datetime import timedelta
 from dotenv import find_dotenv, load_dotenv
 
 from climateconnect_main.utility.general import get_allowed_hosts
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.redis import RedisIntegration
+from sentry_sdk.integrations.celery import CeleryIntegration
+
 
 load_dotenv(find_dotenv(".backend_env"))
 
@@ -308,3 +313,35 @@ CACHES = {
 DEFAULT_CACHE_TIMEOUT = 2 * 24 * 3600
 
 USER_CHUNK_SIZE = env("USER_CHUNK_SIZE", 100)
+
+# SENTRY setup
+SENTRY_DSN = env("SENTRY_DSN")
+SENTRY_ENVIRONMENT = env("SENTRY_ENVIRONMENT")
+
+sentry_sdk.init(
+    dsn=SENTRY_DSN,
+    integrations=[
+        DjangoIntegration(),
+        CeleryIntegration(),
+        RedisIntegration()
+    ],
+
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production,
+    traces_sample_rate=1.0,
+
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True,
+
+    # By default the SDK will try to use the SENTRY_RELEASE
+    # environment variable, or infer a git commit
+    # SHA as release, however you may want to set
+    # something more human-readable.
+    # release="myapp@1.0.0",
+
+    # SENTRY ENVIRONMENT for local env is "development"
+    # and for prod env is "production"
+    environment=SENTRY_ENVIRONMENT
+)
