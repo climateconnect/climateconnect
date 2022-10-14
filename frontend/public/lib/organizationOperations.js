@@ -1,7 +1,6 @@
 import { apiRequest } from "./apiOperations";
 import { getImageUrl } from "./imageOperations";
 
-
 export function parseOrganization(organization, editMode) {
   const org = {
     url_slug: organization.url_slug,

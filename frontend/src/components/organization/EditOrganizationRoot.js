@@ -17,7 +17,6 @@ import PageNotFound from "../general/PageNotFound";
 import TranslateTexts from "../general/TranslateTexts";
 import { parseOrganization } from "../../../public/lib/organizationOperations";
 
-
 const useStyles = makeStyles((theme) => ({
   headline: {
     textAlign: "center",
@@ -181,6 +180,7 @@ export default function EditOrganizationRoot({
             onClickCheckTranslations={onClickCheckTranslations}
             allHubs={allHubs}
             socialMediaChannels={socialMediaChannels}
+            isCreationStep={false}
           />
         ) : (
           <>

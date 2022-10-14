@@ -333,15 +333,13 @@ class CreateOrganizationView(APIView):
                     )
                     logger.info("Organization member created {}".format(user.id))
 
-            if "social_options" in request.data:
-                for option in request.data["social_options"]:
-                    social_media_name = option["social_media_name"]
-                    social_media_channel = SocialMediaChannel.objects.create(
-                        social_media_name=social_media_name
-                    )
+    
+
+            if "social_options" in request.data:      
+                 for social_channel in request.data['social_options']:
+                    channel = SocialMediaChannel.objects.get(social_media_name = social_channel['social_media_channel']['social_media_name'])
                     SocialMediaLink.objects.create(
-                        organization=organization,
-                        social_media_channel=social_media_channel,
+                    organization=organization, social_media_channel = channel, handle = "", url = social_channel['url']
                     )
 
             if "organization_tags" in request.data:

@@ -5,11 +5,6 @@ import PlaceIcon from "@material-ui/icons/Place";
 import SchoolIcon from "@material-ui/icons/School";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import getTexts from "../texts/texts";
-import InstagramIcon from "@material-ui/icons/Instagram";
-import TwitterIcon from "@material-ui/icons/Twitter";
-import YouTubeIcon from "@material-ui/icons/YouTube";
-import FacebookIcon from "@material-ui/icons/Facebook";
-import LinkedInIcon from "@material-ui/icons/LinkedIn";
 
 export default function getOrganizationInfoMetadata(locale, organization) {
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });

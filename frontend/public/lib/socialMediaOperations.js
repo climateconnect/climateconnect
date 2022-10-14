@@ -6,46 +6,48 @@ import LinkedInIcon from "@material-ui/icons/LinkedIn";
 
 import { apiRequest } from "./apiOperations";
 
-
-export function verifySocialMediaLink(socialOption, texts) {
+export function verifySocialMediaLink(socialChannel, url, texts) {
   let error = "";
   // matches http://, https:// , https://www. ,http://www.
   const regexPrefix = "^(http)(?:s)?(://)(?:www.)?";
-
+  console.log(socialChannel, url);
   // matches.com/ anything
   const regexSuffix = ".com/.+$";
   let regex;
   let matches = false;
 
-  switch (socialOption.social_media_channel.social_media_name) {
-      case "Twitter": // twitter
-        regex = new RegExp(regexPrefix + "twitter" + regexSuffix);
-        matches = regex.test(socialOption.url);
-        error = matches ? "" : texts.does_not_comply_twitter + ". Link must match with https://twitter.com/<your handle>";
-        break;
-      case "Youtube": // youtube
-        regex = new RegExp(regexPrefix + "youtube" + regexSuffix);
-        matches = regex.test(socialOption.url);
-        error = matches ? ""  : texts.does_not_comply_youtube;
-        break;
-      case "LinkedIn": // linkedIn
-        regex = new RegExp(regexPrefix + "linkedin" + regexSuffix);
-        matches = regex.test(socialOption.url);
-        error = matches ? ""  : texts.does_not_comply_linkedin;
-        break;
-      case "Instagram": // instagram
-        regex = new RegExp(regexPrefix + "instagram" + regexSuffix);
-        matches = regex.test(socialOption.url);
-        error = matches ? ""  : texts.does_not_comply_instagram;
-        break;
-      case "Facebook": // facebook
-        regex = new RegExp(regexPrefix + "facebook" + regexSuffix);
-        matches = regex.test(socialOption.url);
-        error = matches ? ""  : texts.does_not_comply_facebook;
-        break;
-      default:
-        break;
-    }
+  switch (socialChannel.name) {
+    case "Twitter": // twitter
+      regex = new RegExp(regexPrefix + "twitter" + regexSuffix);
+      matches = regex.test(url);
+      error = matches
+        ? ""
+        : texts.does_not_comply_twitter +
+          ". Link must match with https://twitter.com/<your handle>";
+      break;
+    case "Youtube": // youtube
+      regex = new RegExp(regexPrefix + "youtube" + regexSuffix);
+      matches = regex.test(url);
+      error = matches ? "" : texts.does_not_comply_youtube;
+      break;
+    case "LinkedIn": // linkedIn
+      regex = new RegExp(regexPrefix + "linkedin" + regexSuffix);
+      matches = regex.test(url);
+      error = matches ? "" : texts.does_not_comply_linkedin;
+      break;
+    case "Instagram": // instagram
+      regex = new RegExp(regexPrefix + "instagram" + regexSuffix);
+      matches = regex.test(url);
+      error = matches ? "" : texts.does_not_comply_instagram;
+      break;
+    case "Facebook": // facebook
+      regex = new RegExp(regexPrefix + "facebook" + regexSuffix);
+      matches = regex.test(url);
+      error = matches ? "" : texts.does_not_comply_facebook;
+      break;
+    default:
+      break;
+  }
   return error;
 }
 
@@ -128,6 +130,7 @@ export async function getSocialMediaChannels(locale) {
           name: t.social_media_name, // need to refactor name for the selectfield component to work
           ask_for_full_website: t.ask_for_full_website,
           base_url: t.base_url,
+          additionalInfo: [{}], // need for selectdialog component to work
         };
       });
     }
