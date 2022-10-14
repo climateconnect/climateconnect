@@ -58,9 +58,9 @@ export default function SelectDialog({
     setElement(values.filter((x) => x.name === event.target.value)[0]?.key);
     if (supportAdditionalInfo) {
       const value = values.filter((val) => val.name === event.target.value)[0];
-      if (value.additionalInfo.length > 0) {
+      if (value?.additionalInfo.length > 0) { // would crashed when going from tag with additional info to the "empty" selection
         setAdditionalInfo(
-          value.additionalInfo.map((x) => {
+          value?.additionalInfo.map((x) => {
             return { ...x, value: "" };
           })
         );
@@ -75,7 +75,6 @@ export default function SelectDialog({
     tempAdditionalInfo.filter((x) => x.key === key)[0].value = event.target.value;
     setAdditionalInfo(tempAdditionalInfo);
   };
-
   return (
     <GenericDialog onClose={handleClose} open={open} title={title}>
       <form className={className} onSubmit={applyElement}>

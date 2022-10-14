@@ -43,7 +43,7 @@ export default function SocialMediaSelectDialog({
   socials,
 }) {
   const classes = useStyles();
-  const [element, setElement] = useState(null);
+  const [socialMediaChannel, setSocialMediaChannel] = useState(null);
   const [socialMediaInfo, setSocialMediaInfo] = useState(socials);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
@@ -56,25 +56,25 @@ export default function SocialMediaSelectDialog({
   console.log(socialMediaInfo, "smi");
 
   const handleClose = () => {
-    setElement(null); // clears latest selection if not saved
+    setSocialMediaChannel(null); // clears latest selection if not saved
     onClose();
   };
 
   const applySocialElement = (event) => {
     event.preventDefault();
-    setElement(null); // clears latest selection
-    console.log(element, socialMediaInfo);
+    setSocialMediaChannel(null); // clears latest selection
+    console.log(socialMediaChannel, socialMediaInfo);
     const socialToSend = socialMediaInfo.filter(
-      (smi) => smi.social_media_channel.social_media_name === element[0].name
+      (smi) => smi.social_media_channel.social_media_name === socialMediaChannel[0].name
     )
     onClose(socialToSend, orgTexts);
   };
 
   useEffect(() => {
     if (isMounted.current) {
-      if (element !== null) {
+      if (socialMediaChannel !== null) {
         const existingSocial = socialMediaInfo.filter(
-          (smi) => smi.social_media_channel.social_media_name === element[0].name
+          (smi) => smi.social_media_channel.social_media_name === socialMediaChannel[0]?.name
         );
         const doesSocialExist = existingSocial.length !== 0 ? true : false;
       
@@ -82,9 +82,9 @@ export default function SocialMediaSelectDialog({
         if (!doesSocialExist) {
           const social_media_option_new = {
             social_media_channel: {
-              social_media_name: element[0].name,
-              ask_for_full_website: element[0].ask_for_full_website,
-              base_url: element[0].base_url,
+              social_media_name: socialMediaChannel[0]?.name, // renames name back to social_media_name
+              ask_for_full_website: socialMediaChannel[0]?.ask_for_full_website,
+              base_url: socialMediaChannel[0]?.base_url,
             },
             handle: "",
             url: "",
@@ -96,10 +96,10 @@ export default function SocialMediaSelectDialog({
     } else {
       isMounted.current = true;
     }
-  }, [element]);
+  }, [socialMediaChannel]);
 
   const handleSelectChange = (event) => {
-    setElement(values.filter((x) => x.name === event.target.value));
+    setSocialMediaChannel(values.filter((x) => x.name === event.target.value));
   };
 
   const handleSocialMediaInfoChange = (newValue, socialName) => {
@@ -121,7 +121,7 @@ export default function SocialMediaSelectDialog({
     setSocialMediaInfo([...tempSocialMediaInfo]);
     
   };
- 
+ console.log(socialMediaChannel);
   return (
     <>
       <GenericDialog onClose={handleClose} open={open} title={title}>
@@ -133,18 +133,18 @@ export default function SocialMediaSelectDialog({
             label={label}
             options={values}
           />
-          {isSocial && element !== null && (
+          {isSocial && socialMediaChannel !== null && socialMediaChannel.length > 0 && (
             <TextField
               required
               error={!isValidUrl}
               helperText={errorMessage}
               variant="outlined"
               type="text"
-              label={getLabel(values[values.findIndex((val) => val.name === element[0].name)])}
+              label={getLabel(values[values.findIndex((val) => val.name === socialMediaChannel[0]?.name)])}
               value={getValue(
                 socialMediaInfo[
                   socialMediaInfo.findIndex(
-                    (val) => val.social_media_channel.social_media_name === element[0].name
+                    (val) => val.social_media_channel.social_media_name === socialMediaChannel[0]?.name
                   )
                 ]
               )}
@@ -154,7 +154,7 @@ export default function SocialMediaSelectDialog({
                   event.target.value,
                   socialMediaInfo[
                     socialMediaInfo.findIndex(
-                      (val) => val.social_media_channel.social_media_name === element[0].name
+                      (val) => val.social_media_channel.social_media_name === socialMediaChannel[0]?.name
                     )
                   ].social_media_channel.social_media_name
                 )
@@ -180,10 +180,6 @@ SocialMediaSelectDialog.propTypes = {
   className: PropTypes.string,
 };
 
-function getInitialValue(arr) {
-  return [...arr];
-}
-
 function getLabel(value) {
   if (value === undefined) {
     return "";
@@ -193,6 +189,7 @@ function getLabel(value) {
 function getValue(socialMediaInfo) {
  
   if (socialMediaInfo === undefined) {
+    console.log("here");
     return "";
   }
 

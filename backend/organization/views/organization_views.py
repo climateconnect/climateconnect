@@ -497,17 +497,14 @@ class OrganizationAPIView(APIView):
             items_to_translate, request.data, organization, "organization"
         )
 
+
         old_social_media_links = SocialMediaLink.objects.filter(
             organization=organization
         ).values("social_media_channel")
 
-        print(old_social_media_links, "old")
-        if "social_options" in request.data:
-            print(request.data['social_options'])
-            
+        if "social_options" in request.data:      
             for social_channel in old_social_media_links:
                 if not social_channel["social_media_channel"] in request.data['social_options']:
-                    print(social_channel["social_media_channel"])
                     social_to_delete = SocialMediaChannel.objects.get(
                         id=social_channel["social_media_channel"]
                     )
@@ -516,7 +513,6 @@ class OrganizationAPIView(APIView):
                     ).delete()
                     
             for social_channel in request.data['social_options']:
-                
                 channel = SocialMediaChannel.objects.get(social_media_name = social_channel['social_media_channel']['social_media_name'])
                 SocialMediaLink.objects.create(
                     organization=organization, social_media_channel = channel, handle = "", url = social_channel['url']

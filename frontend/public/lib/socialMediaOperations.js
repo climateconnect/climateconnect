@@ -9,7 +9,6 @@ import { apiRequest } from "./apiOperations";
 
 export function verifySocialMediaLink(socialOption, texts) {
   let error = "";
-  console.log(socialOption);
   // matches http://, https:// , https://www. ,http://www.
   const regexPrefix = "^(http)(?:s)?(://)(?:www.)?";
 
@@ -22,7 +21,7 @@ export function verifySocialMediaLink(socialOption, texts) {
       case "Twitter": // twitter
         regex = new RegExp(regexPrefix + "twitter" + regexSuffix);
         matches = regex.test(socialOption.url);
-        error = matches ? "" : texts.does_not_comply_twitter;
+        error = matches ? "" : texts.does_not_comply_twitter + ". Link must match with https://twitter.com/<your handle>";
         break;
       case "Youtube": // youtube
         regex = new RegExp(regexPrefix + "youtube" + regexSuffix);
@@ -77,7 +76,6 @@ export function getSocialMediaButtons(socialLinks) {
 }
 
 export function createSocialMediaIconButton(social) {
-  console.log(social);
   const link = social.url;
   switch (social.social_media_channel.social_media_name) {
     case "Twitter":
@@ -127,7 +125,7 @@ export async function getSocialMediaChannels(locale) {
     else {
       return resp.data.results.map((t) => {
         return {
-          name: t.social_media_name,
+          name: t.social_media_name, // need to refactor name for the selectfield component to work
           ask_for_full_website: t.ask_for_full_website,
           base_url: t.base_url,
         };

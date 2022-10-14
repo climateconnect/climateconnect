@@ -324,10 +324,7 @@ export default function EditAccountPage({
     console.log(socialMediaInfo); 
     setOpen({ ...open, addSocialMediaDialog: false });
     
-    if (socialMediaInfo === undefined) {
-    } 
-    else {
-      console.log("not here");
+    if (socialMediaInfo !== undefined) {
       setOpen({ ...open, addSocialMediaDialog: false });
       const tempAccount = editedAccount;
       tempAccount.info.social_options = [...tempAccount.info.social_options, socialMediaInfo[0]];
