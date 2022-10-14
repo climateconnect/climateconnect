@@ -518,8 +518,6 @@ class OrganizationAPIView(APIView):
             for social_channel in request.data['social_options']:
                 
                 channel = SocialMediaChannel.objects.get(social_media_name = social_channel['social_media_channel']['social_media_name'])
-                print(channel, "channel")
-                print(social_channel['url'], "Url")
                 SocialMediaLink.objects.create(
                     organization=organization, social_media_channel = channel, handle = "", url = social_channel['url']
                 )

@@ -1,16 +1,14 @@
 import { Button, FormControlLabel, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { verifySocialMediaLinks } from "../../../public/lib/socialMediaOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import SelectField from "./../general/SelectField";
 import GenericDialog from "./GenericDialog";
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
-
-
+import Alert from "@material-ui/lab/Alert";
+import AlertTitle from "@material-ui/lab/AlertTitle";
 
 const useStyles = makeStyles((theme) => ({
   textField: {
@@ -45,40 +43,41 @@ export default function SocialMediaSelectDialog({
   socials,
 }) {
   const classes = useStyles();
-  const [element, setElement] = React.useState(null);
-  const [socialMediaInfo, setSocialMediaInfo] = React.useState(socials);
+  const [element, setElement] = useState(null);
+  const [socialMediaInfo, setSocialMediaInfo] = useState(socials);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
   const orgTexts = getTexts({ page: "organization", locale: locale });
+
  
   const isMounted = useRef(false);
+  console.log(socials, "socials");
+  console.log(socialMediaInfo, "smi");
 
   const handleClose = () => {
-    setSocialMediaInfo([...socials]); // don't save added selections
     setElement(null); // clears latest selection if not saved
     onClose();
   };
 
-
   const applySocialElement = (event) => {
     event.preventDefault();
     setElement(null); // clears latest selection
-    onClose(socialMediaInfo, orgTexts);   
-  
-  
+    console.log(element, socialMediaInfo);
+    const socialToSend = socialMediaInfo.filter(
+      (smi) => smi.social_media_channel.social_media_name === element[0].name
+    )
+    onClose(socialToSend, orgTexts);
   };
 
   useEffect(() => {
-
-
     if (isMounted.current) {
       if (element !== null) {
         const existingSocial = socialMediaInfo.filter(
           (smi) => smi.social_media_channel.social_media_name === element[0].name
         );
         const doesSocialExist = existingSocial.length !== 0 ? true : false;
-        console.log(doesSocialExist);
-  
+      
+
         if (!doesSocialExist) {
           const social_media_option_new = {
             social_media_channel: {
@@ -89,20 +88,15 @@ export default function SocialMediaSelectDialog({
             handle: "",
             url: "",
           };
-          console.log(social_media_option_new);
+          
           setSocialMediaInfo([...socialMediaInfo, social_media_option_new]);
         }
       }
-     
     } else {
       isMounted.current = true;
     }
-   
-   
-    
-    
   }, [element]);
-  
+
   const handleSelectChange = (event) => {
     setElement(values.filter((x) => x.name === event.target.value));
   };
@@ -112,13 +106,14 @@ export default function SocialMediaSelectDialog({
     const indexThatIsBeingEdited = tempSocialMediaInfo.findIndex(
       (tsmi) => tsmi.social_media_channel.social_media_name === socialName
     );
-  
+   
+    
     tempSocialMediaInfo[indexThatIsBeingEdited].url = newValue;
-
-  
+   
     setSocialMediaInfo([...tempSocialMediaInfo]);
+    
   };
-  console.log(element);
+ 
   return (
     <>
       <GenericDialog onClose={handleClose} open={open} title={title}>
@@ -130,7 +125,7 @@ export default function SocialMediaSelectDialog({
             label={label}
             options={values}
           />
-          {(isSocial && (element !== null)) && (
+          {isSocial && element !== null && (
             <TextField
               required
               variant="outlined"
@@ -175,6 +170,10 @@ SocialMediaSelectDialog.propTypes = {
   className: PropTypes.string,
 };
 
+function getInitialValue(arr) {
+  return [...arr];
+}
+
 function getLabel(value) {
   if (value === undefined) {
     return "";
@@ -182,12 +181,10 @@ function getLabel(value) {
   return value.name;
 }
 function getValue(socialMediaInfo) {
-  console.log(socialMediaInfo);
+ 
   if (socialMediaInfo === undefined) {
     return "";
   }
 
   return socialMediaInfo.url;
-
 }
-

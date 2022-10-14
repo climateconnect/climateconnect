@@ -81,19 +81,19 @@ export function verifySocialMediaLinks(socialOptions, texts) {
         matches = regex.test(so.url);
         err.youtubeErr = matches ? null : texts.does_not_comply_youtube;
         break;
-      case 2: // linkedIn
+      case "LinkedIn": // linkedIn
         regex = new RegExp(regexPrefix + "linkedin" + regexSuffix);
-        matches = regex.test(so.social_media_name);
+        matches = regex.test(so.url);
         err.linkedInErr = matches ? null : texts.does_not_comply_linkedin;
         break;
-      case 3: // instagram
+      case "Instagram": // instagram
         regex = new RegExp(regexPrefix + "instagram" + regexSuffix);
-        matches = regex.test(so.social_media_name);
+        matches = regex.test(so.url);
         err.instagramErr = matches ? null : texts.does_not_comply_instagram;
         break;
-      case 4: // facebook
+      case "Facebook": // facebook
         regex = new RegExp(regexPrefix + "facebook" + regexSuffix);
-        matches = regex.test(so.social_media_name);
+        matches = regex.test(so.url);
         err.facebookErr = matches ? null : texts.does_not_comply_facebook;
         break;
       default:
@@ -130,7 +130,8 @@ export function getSocialMediaButtons(socialLinks) {
   return socialMediaLinks;
 }
 
-function createSocialMediaIconButton(social) {
+export function createSocialMediaIconButton(social) {
+  console.log(social);
   const link = social.url;
   switch (social.social_media_channel.social_media_name) {
     case "Twitter":

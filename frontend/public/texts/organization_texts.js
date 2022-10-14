@@ -280,8 +280,8 @@ export default function getOrganizationTexts({ organization, locale }) {
       de: "Erstmal überspringen",
     },
     add_social_media: {
-      en: "Add Social Media:",
-      de: "Soziale Medien hinzufügen:",
+      en: "Add Social Media",
+      de: "Soziale Medien hinzufügen",
     },
     find_us_here: {
       en: "Find us here:",

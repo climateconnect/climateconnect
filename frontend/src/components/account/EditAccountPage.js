@@ -19,6 +19,10 @@ import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import Alert from "@material-ui/lab/Alert";
 import React, { useContext } from "react";
 import {
+  getSocialMediaButtons,
+  createSocialMediaIconButton,
+} from "../../../public/lib/socialMediaOperations";
+import {
   getCompressedJPG,
   getImageDialogHeight,
   getResizedImage,
@@ -40,6 +44,7 @@ import UploadImageDialog from "./../dialogs/UploadImageDialog";
 import SelectField from "./../general/SelectField";
 import DetailledDescriptionInput from "./DetailledDescriptionInput";
 import SocialMediaInputs from "./SocialMediaInputs";
+import SocialMediaButton from "../general/SocialMediaButton";
 import { verifySocialMediaLinks } from "../../../public/lib/socialMediaOperations";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
@@ -158,6 +163,10 @@ const useStyles = makeStyles((theme) => ({
   marginTop: {
     marginTop: theme.spacing(1),
   },
+  socialMediaChip: {
+    marginRight: theme.spacing(0.5),
+    marginBottom: theme.spacing(0.5),
+  },
   chip: {
     margin: theme.spacing(0.5),
   },
@@ -263,9 +272,7 @@ export default function EditAccountPage({
       ? editedAccount.background_image
       : DEFAULT_BACKGROUND_IMAGE,
   });
-  console.log(editedAccount.info);
-  console.log(socialMediaChannels);
-
+ 
   const [open, setOpen] = React.useState({
     backgroundDialog: false,
     avatarDialog: false,
@@ -315,21 +322,23 @@ export default function EditAccountPage({
   };
 
   const handleAddSocialMediaClose = (socialMediaInfo, texts) => {
- 
-    if (socialMediaInfo === undefined ) {
-      setOpen({ ...open, addSocialMediaDialog: false });
-    } else {
-      
+    console.log(socialMediaInfo); 
+    setOpen({ ...open, addSocialMediaDialog: false });
+    
+    if (socialMediaInfo === undefined) {
+    } 
+    else {
+      console.log("not here");
       setOpen({ ...open, addSocialMediaDialog: false });
       const tempAccount = editedAccount;
-      tempAccount.info.social_options = socialMediaInfo;
+      tempAccount.info.social_options = [...tempAccount.info.social_options, socialMediaInfo[0]];
       setEditedAccount(tempAccount);
     }
-}
-  
+  };
 
   const handleAddTypeClose = (type, additionalInfo) => {
     setOpen({ ...open, addTypeDialog: false });
+    console.log(type);
     const tempAccount = editedAccount;
     if (additionalInfo && additionalInfo !== undefined) {
       for (const info of additionalInfo) {
@@ -410,11 +419,11 @@ export default function EditAccountPage({
       </div>
     );
   };
-
   /*Generates all the possible info a user can put about their account e.g. website, location, summary, bio, ...*/
   /* Since this component is generic and is used for both personal profiles and organizations 
     we pass an info element to it. 
   */
+  console.log(editedAccount);
 
   const displayAccountInfo = (info) => {
     //For each info object we want to return the correct input so users can change this info
@@ -505,7 +514,49 @@ export default function EditAccountPage({
           </div>
         );
       } else if (i.type === "social_media") {
-        return <></>;
+        console.log(i.value);
+        return (
+          <>
+            <Container className={classes.noPadding}>
+              {true && (
+                <div>
+                  <Chip
+                    label={i.name}
+                    className={classes.socialMediaChip}
+                    color={
+                      i.value && i.value.length ? "default" : "primary"
+                    }
+                    icon={<ControlPointIcon />}
+                    onClick={() => handleDialogClickOpen("addSocialMediaDialog")}
+                  />
+                </div>
+              )}
+              
+              {i.value && (
+                <>
+                  {i.value.map((option, index) => (
+                    <Tooltip arrow title={option.url} placement="top">
+                    <Chip
+                      label={option.social_media_channel.social_media_name}
+                      key={index}
+                      className={classes.socialMediaChip}
+                      onDelete={() =>
+                        handleDeleteSocialMedia(option.social_media_channel.social_media_name)
+                      }
+                      icon={
+                        <SocialMediaButton
+                          socialMediaIcon={createSocialMediaIconButton(option)}
+                          isEditPage
+                        ></SocialMediaButton>
+                      }
+                    />
+                    </Tooltip>
+                  ))}
+                </>
+              )}
+            </Container>
+          </>
+        );
       } else if (
         i.type === "auto_complete_searchbar" &&
         i.key === "parent_organization" &&
@@ -645,6 +696,7 @@ export default function EditAccountPage({
     });
   };
 
+  
   const onBackgroundChange = async (backgroundEvent) => {
     const file = backgroundEvent.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
@@ -664,7 +716,7 @@ export default function EditAccountPage({
       console.log(error);
     }
   };
-  const handleChangeSocialCheckBox = (event) => {
+  /* const handleChangeSocialCheckBox = (event) => {
     const socialMediaChannel = socialMediaChannels.filter((channel) => channel.key === event.index);
     const social_media_option_added = {
       social_media_channel: socialMediaChannel[0],
@@ -725,7 +777,7 @@ export default function EditAccountPage({
         social_options: editedAccount.info.social_options,
       },
     });
-  };
+  }; */
 
   const onAvatarChange = async (avatarEvent) => {
     const file = avatarEvent.target.files[0];
@@ -744,6 +796,16 @@ export default function EditAccountPage({
     } catch (error) {
       console.log(error);
     }
+  };
+  const handleDeleteSocialMedia = (socialToDelete) => {
+   
+    const tempEditedAccount = { ...editedAccount };
+    
+    tempEditedAccount.info.social_options = tempEditedAccount.info.social_options.filter(
+      (option) => option.social_media_channel.social_media_name !== socialToDelete
+    );
+   
+    setEditedAccount(tempEditedAccount);
   };
 
   const handleTypeDelete = (typeToDelete) => {
@@ -952,14 +1014,6 @@ export default function EditAccountPage({
               </Container>
             )}
             <div className={classes.marginTop} />
-            {socialMediaChannels && (
-              <Chip
-                label={"add social"}
-                color={editedAccount.types && editedAccount.types.length ? "default" : "primary"}
-                icon={<ControlPointIcon />}
-                onClick={() => handleDialogClickOpen("addSocialMediaDialog")}
-              />
-            )}
           </Container>
           <Container className={classes.accountInfo}>
             {/*Contains all the possible info a user can put about their account e.g. website, location, summary, bio, ...*/}
@@ -1021,22 +1075,11 @@ export default function EditAccountPage({
           open={open.addSocialMediaDialog}
           title={"add socials"}
           isSocial
-          values={socialMediaChannels}
+          values={getUnselectedSocials(editedAccount,socialMediaChannels)}
           className={classes.dialogWidth}
           label={"choose a social"}
           socials={editedAccount.info.social_options}
         />
-        /*<SocialMediaInputs
-            socials={i}
-            title={i.name}
-            open={open.addSocialMediaDialog}
-            handleChangeSocialCheckBox={
-              
-
-            }
-            handleChangeSocialLink={handleChangeSocialLink}
-            onClose={handleAddSocialMediaClose}
-    />*/
       )}
 
       {possibleAccountTypes && (
@@ -1064,6 +1107,12 @@ export default function EditAccountPage({
   );
 }
 
+const getSocials = (account, socialMediaChannels, infoMetadata) => {
+  return socialMediaChannels.filter((channel) =>
+    account.info.social_options.includes(channel.name)
+  );
+};
+
 const getTypes = (possibleAccountTypes, infoMetadata) => {
   return possibleAccountTypes.map((type) => {
     return {
@@ -1084,3 +1133,13 @@ const getTypesOfAccount = (account, possibleAccountTypes, infoMetadata) => {
 const getFullInfoElement = (infoMetadata, key, value) => {
   return { ...infoMetadata[key], value: value };
 };
+
+const getUnselectedSocials = (account, socialMediaChannels) => {
+
+  const socialChannels =  account.info.social_options.map(
+    option => option.social_media_channel.social_media_name 
+  )
+ 
+  // get names that aren't selected
+  return socialMediaChannels.filter(channel => !socialChannels.includes(channel.name));
+}

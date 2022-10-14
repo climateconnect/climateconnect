@@ -72,33 +72,6 @@ export default function getOrganizationInfoMetadata(locale, organization) {
     social_options: {
       type: "social_media",
       name: texts.add_social_media,
-      options: [
-        {
-          icon: TwitterIcon,
-          key: 0,
-          label: "Twitter",
-        },
-        {
-          icon: YouTubeIcon,
-          key: 1,
-          label: "Youtube",
-        },
-        {
-          icon: LinkedInIcon,
-          key: 2,
-          label: "LinkedIn",
-        },
-        {
-          icon: InstagramIcon,
-          key: 3,
-          label: "Instagram",
-        },
-        {
-          icon: FacebookIcon,
-          key: 4,
-          label: "Facebook",
-        },
-      ],
     },
 
     has_parent_organization: {

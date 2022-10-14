@@ -48,7 +48,7 @@ export default function SelectDialog({
   const handleClose = () => {
     onClose();
   };
-
+  
   const applyElement = (event) => {
     event.preventDefault();
     onClose(element, additionalInfo);
