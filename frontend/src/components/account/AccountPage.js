@@ -289,8 +289,8 @@ export default function AccountPage({
             return (
               <div key={index}>
                 <SubTitleWithContent
-                  label={i.name + ":"}
-                  value={textValue ? textValue + additionalText : i.missingMessage}
+                  subtitle={i.name + ":"}
+                  content={textValue ? textValue + additionalText : i.missingMessage}
                 />
               </div>
             );
