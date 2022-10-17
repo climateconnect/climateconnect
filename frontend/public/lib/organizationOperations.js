@@ -17,6 +17,7 @@ export function parseOrganization(organization, editMode) {
       website: organization.website,
       about: organization.about,
       organization_size: organization.organization_size,
+      social_options: organization.social_medias,
       hubs: organization.hubs,
     },
   };

@@ -63,6 +63,10 @@ export default function getOrganizationInfoMetadata(locale, organization) {
       maxLength: 240,
       linkify: true,
     },
+    social_options: {
+      type: "social_media",
+      name: texts.add_social_media,
+    },
     has_parent_organization: {
       type: "checkbox",
       label: texts.we_are_a_suborganization,

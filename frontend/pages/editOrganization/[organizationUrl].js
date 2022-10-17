@@ -10,6 +10,7 @@ import UserContext from "../../src/components/context/UserContext";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import EditOrganizationRoot from "../../src/components/organization/EditOrganizationRoot.js";
 import { getOrganizationTagsOptions } from "./../../public/lib/getOptions";
+import { getSocialMediaChannels } from "../../public/lib/socialMediaOperations.js";
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
@@ -19,22 +20,29 @@ export async function getServerSideProps(ctx) {
     return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
   }
   const url = encodeURI(ctx.query.organizationUrl);
-  const [organization, tagOptions, allHubs] = await Promise.all([
+  const [organization, tagOptions, allHubs, socialMediaChannels] = await Promise.all([
     getOrganizationByUrlIfExists(url, auth_token, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getAllHubs(ctx.locale, true),
+    getSocialMediaChannels(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
       organization: organization,
       tagOptions: tagOptions,
       allHubs: allHubs,
+      socialMediaChannels: socialMediaChannels,
     }),
   };
 }
 
 //This route should only be accessible to admins of the organization
-export default function EditOrganizationPage({ organization, tagOptions, allHubs }) {
+export default function EditOrganizationPage({
+  organization,
+  tagOptions,
+  allHubs,
+  socialMediaChannels,
+}) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
   const organization_info_metadata = getOrganizationInfoMetadata(locale, organization);
@@ -73,6 +81,7 @@ export default function EditOrganizationPage({ organization, tagOptions, allHubs
         errorMessage={errorMessage}
         initialTranslations={organization.translations}
         allHubs={allHubs}
+        socialMediaChannels={socialMediaChannels}
       />
     </WideLayout>
   );

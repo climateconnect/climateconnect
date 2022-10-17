@@ -76,7 +76,7 @@ export async function getServerSideProps(ctx) {
     getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
     getProjectsByOrganization(organizationUrl, auth_token, ctx.locale),
     getMembersByOrganization(organizationUrl, auth_token, ctx.locale),
-    getOrganizationTypes(),
+    getOrganizationTypes(), // not sure this does anything
     getRolesOptions(auth_token, ctx.locale),
   ]);
   return {
@@ -84,7 +84,7 @@ export async function getServerSideProps(ctx) {
       organization: organization,
       projects: projects,
       members: members,
-      organizationTypes: organizationTypes,
+      organizationTypes: organizationTypes, // not sure this does anything
       rolesOptions: rolesOptions,
     }),
   };
@@ -94,7 +94,7 @@ export default function OrganizationPage({
   organization,
   projects,
   members,
-  organizationTypes,
+  organizationTypes, // not sure this does anything
   rolesOptions,
 }) {
   const { user, locale } = useContext(UserContext);
@@ -111,7 +111,7 @@ export default function OrganizationPage({
           organization={organization}
           projects={projects}
           members={members}
-          organizationTypes={organizationTypes}
+          organizationTypes={organizationTypes} // not sure this does anything (not used in organization layout props)
           infoMetadata={infoMetadata}
           user={user}
           texts={texts}
