@@ -227,14 +227,16 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         return;
       }
     }
-    if (locale !== "en") {
+
+    /*if (locale !== "en") {
+      console.log(account);
       setOrganizationInfo({
         ...account,
         parentorganization: organizationInfo.parentorganization,
       });
       setCurStep(steps[2]);
       return;
-    }
+    }*/
     setLoadingSubmit(true);
     await makeCreateOrganizationRequest(organizationToSubmit);
   };
