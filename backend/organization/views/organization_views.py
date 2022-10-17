@@ -1,5 +1,7 @@
 import logging
 
+from climateconnect_api.models.social_media import SocialMediaLink, SocialMediaChannel
+
 # Backend app imports
 from climateconnect_api.models import Role, UserProfile, ContentShares
 from climateconnect_api.models.language import Language
@@ -331,6 +333,15 @@ class CreateOrganizationView(APIView):
                     )
                     logger.info("Organization member created {}".format(user.id))
 
+    
+
+            if "social_options" in request.data:      
+                 for social_channel in request.data['social_options']:
+                    channel = SocialMediaChannel.objects.get(social_media_name = social_channel['social_media_channel']['social_media_name'])
+                    SocialMediaLink.objects.create(
+                    organization=organization, social_media_channel = channel, handle = "", url = social_channel['url']
+                    )
+
             if "organization_tags" in request.data:
                 for organization_tag_id in request.data["organization_tags"]:
                     try:
@@ -484,9 +495,32 @@ class OrganizationAPIView(APIView):
             items_to_translate, request.data, organization, "organization"
         )
 
+
+        old_social_media_links = SocialMediaLink.objects.filter(
+            organization=organization
+        ).values("social_media_channel")
+
+        if "social_options" in request.data:      
+            for social_channel in old_social_media_links:
+                if not social_channel["social_media_channel"] in request.data['social_options']:
+                    social_to_delete = SocialMediaChannel.objects.get(
+                        id=social_channel["social_media_channel"]
+                    )
+                    SocialMediaLink.objects.filter(
+                        organization=organization, social_media_channel = social_to_delete
+                    ).delete()
+                    
+            for social_channel in request.data['social_options']:
+                channel = SocialMediaChannel.objects.get(social_media_name = social_channel['social_media_channel']['social_media_name'])
+                SocialMediaLink.objects.create(
+                    organization=organization, social_media_channel = channel, handle = "", url = social_channel['url']
+                )
+           
+
         old_organization_taggings = OrganizationTagging.objects.filter(
             organization=organization
         ).values("organization_tag")
+
         if "types" in request.data:
             for tag in old_organization_taggings:
                 if not tag["organization_tag"] in request.data["types"]:

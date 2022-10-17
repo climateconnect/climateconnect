@@ -72,11 +72,17 @@ const useStyles = makeStyles((theme) => ({
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
-  const [organization, projects, members, organizationTypes, rolesOptions] = await Promise.all([
+  const [
+    organization,
+    projects,
+    members,
+    // organizationTypes,
+    rolesOptions,
+  ] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
     getProjectsByOrganization(organizationUrl, auth_token, ctx.locale),
     getMembersByOrganization(organizationUrl, auth_token, ctx.locale),
-    getOrganizationTypes(),
+    // getOrganizationTypes(),
     getRolesOptions(auth_token, ctx.locale),
   ]);
   return {
@@ -84,7 +90,7 @@ export async function getServerSideProps(ctx) {
       organization: organization,
       projects: projects,
       members: members,
-      organizationTypes: organizationTypes,
+      //organizationTypes: organizationTypes,
       rolesOptions: rolesOptions,
     }),
   };
@@ -94,7 +100,7 @@ export default function OrganizationPage({
   organization,
   projects,
   members,
-  organizationTypes,
+  // organizationTypes, // i dont think types is used.
   rolesOptions,
 }) {
   const { user, locale } = useContext(UserContext);
@@ -111,7 +117,7 @@ export default function OrganizationPage({
           organization={organization}
           projects={projects}
           members={members}
-          organizationTypes={organizationTypes}
+          //  organizationTypes={organizationTypes} // does this do anything?
           infoMetadata={infoMetadata}
           user={user}
           texts={texts}

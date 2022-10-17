@@ -26,6 +26,7 @@ from climateconnect_api.views import (
     notifications_views,
     donation_views,
     translation_views,
+    social_media_views
 )
 from knox import views as knox_views
 from django.conf import settings
@@ -160,6 +161,11 @@ urls = [
         "api/donor_badges/",
         badge_views.getDonorBadges.as_view(),
         name="get-possible-donor-badges",
+    ),
+    path(
+        "api/social_media_channels/",
+        social_media_views.ListSocialMediaChannels.as_view(),
+        name="get-social-media-channels",
     ),
     # Organization views
     path("api/", include("organization.urls")),

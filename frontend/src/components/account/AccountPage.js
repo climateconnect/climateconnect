@@ -25,6 +25,8 @@ import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import UserContext from "../context/UserContext";
 import EditSharpIcon from "@material-ui/icons/EditSharp";
 import IconButton from "@material-ui/core/IconButton";
+import { getSocialMediaButtons } from "../../../public/lib/socialMediaOperations";
+import SocialMediaButton from "../general/SocialMediaButton";
 
 const useStyles = makeStyles((theme) => ({
   avatarContainer: {
@@ -192,7 +194,6 @@ export default function AccountPage({
       {text}
     </Link>
   );
-
   const displayAccountInfo = (info) =>
     Object.keys(info)
       .sort((a, b) => {
@@ -233,6 +234,7 @@ export default function AccountPage({
               </div>
             );
           } else if (i.linkify && value) {
+            if (isOrganization) return;
             return (
               <>
                 <div className={classes.subtitle}>{i.name}:</div>
@@ -259,7 +261,10 @@ export default function AccountPage({
                 </div>
               </div>
             );
-          } else if (value && !["detailled_description", "location", "checkbox"].includes(i.type)) {
+          } else if (
+            value &&
+            !["detailled_description", "location", "checkbox", "social_media"].includes(i.type)
+          ) {
             return (
               <div key={index}>
                 <div className={classes.subtitle}>{i.name}:</div>
@@ -365,6 +370,32 @@ export default function AccountPage({
                 <Chip label={type.name} key={type.key} className={classes.chip} />
               ))}
             </Container>
+          )}
+          {isOrganization && account.info.social_options.length > 0 && (
+            <>
+              <div className={classes.website}>
+                <Typography variant="caption"> {organizationTexts.find_us_here} </Typography>
+                {account.info.website && (
+                  <Linkify componentDecorator={componentDecorator}>
+                    {" "}
+                    <Typography className={classes.websiteLink}> {account.info.website}</Typography>
+                  </Linkify>
+                )}
+              </div>
+            </>
+          )}
+          {account.info.social_options && (
+            <>
+              {getSocialMediaButtons(account.info.social_options).map((socialMedia, index) => (
+                <SocialMediaButton
+                  key={index}
+                  href={socialMedia.href}
+                  socialMediaIcon={{ icon: socialMedia.icon }}
+                  altText={socialMedia.altText}
+                  isFooterIcon={socialMedia.isFooterIcon}
+                />
+              ))}
+            </>
           )}
         </Container>
         <Container className={classes.accountInfo}>{displayAccountInfo(account.info)}</Container>

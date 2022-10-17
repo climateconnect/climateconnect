@@ -460,7 +460,7 @@ export default function Privacy() {
       For the provision of our website we use the services of the third-party providers listed
       below. These third-party tools belong to the categories of the cookies described above and
       help us provide our services on our website or to promote our products and services over the
-      internet. We share or allow YouTube and Google Analytics to collect information
+      internet. We share or allow YouTube, Google Fonts, and Google Analytics to collect information
       about your use of our website over time. The information we share is only provided through
       cookies or similar web tracking technologies that recognize the device you are using to
       collect information, including click stream information, browser type, time and date you
@@ -544,8 +544,16 @@ export default function Privacy() {
       the bearer of the pseudonym. If you do not agree with the storage and evaluation of these data
       from your visit, you can object to the storage and use of these data at any time by using the
       banner that that appears when twingle is used.
+      <h4>12.5.3 Google Fonts</h4>
+      On our internet pages we use external provided fonts, Google fonts. Google Fonts is a service
+      of Google Inc. (“Google”). The integration of these fonts is done by a server call, usually a
+      Google server in the USA. This transfers to the server which of our internet pages you have
+      visited. The IP address of the browser of the end device of the visitor is also stored by
+      Google. You will find more detailed information in the Google data protection information,
+      which you can access here:
+      <div>https://fonts.google.com/about</div>
       <div>https://policies.google.com/privacy</div>
-      <h4>12.5.3 YouTube</h4>
+      <h4>12.5.4 YouTube</h4>
       On our internet pages we use the services of the video portal YouTube LLC, 901 Cherry Ave.,
       94066 San Bruno, CA, USA, (“YouTube”) for the integration of videos. In connection with the
       provision of YouTube, we use the “Extended Privacy Mode” which is intended to ensure that data
@@ -569,8 +577,7 @@ export default function Privacy() {
       </a>
       .<h4>Mailjet SAS</h4>
       On our internet pages we use the services of the cloud communications platform Twilio Inc.,
-      375 Beale Street, Suite 300, San Francisco, CA 94105 for sending automatic emails. 
-      <a href="https://www.twilio.com/legal/privacy/privacy-august-2020" target_="_blank" rel="noreferrer">Link</a>
+      375 Beale Street, Suite 300, San Francisco, CA 94105 for sending automatic emails. Link
       <h2 id="security-measures">13. Technical security measures</h2>
       For security reasons and to protect the transmission of confidential information that you send
       to us as the website provider, we use SSL or TLS encryption. You can recognize an encrypted
