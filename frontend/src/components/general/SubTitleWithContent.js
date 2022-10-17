@@ -8,7 +8,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     color: `${theme.palette.secondary.main}`,
     fontWeight: "bold",
-    minWidth: 150,
+    minWidth: 200,
    
   },
   subtitle: {
