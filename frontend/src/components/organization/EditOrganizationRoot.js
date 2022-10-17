@@ -15,7 +15,6 @@ import EditAccountPage from "../account/EditAccountPage";
 import UserContext from "../context/UserContext";
 import PageNotFound from "../general/PageNotFound";
 import TranslateTexts from "../general/TranslateTexts";
-import { parseOrganization } from "../../../public/lib/organizationOperations";
 
 const useStyles = makeStyles((theme) => ({
   headline: {
@@ -34,7 +33,6 @@ export default function EditOrganizationRoot({
   errorMessage,
   initialTranslations,
   allHubs,
-  socialMediaChannels,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
@@ -83,20 +81,17 @@ export default function EditOrganizationRoot({
     delete org.info;
     const oldOrg = { ...oldO, ...oldO.info };
     delete oldOrg.info;
-
     Object.keys(org).map((k) => {
       if (oldOrg[k] && org[k] && Array.isArray(oldOrg[k]) && Array.isArray(org[k])) {
         if (!arraysEqual(oldOrg[k], org[k])) finalProfile[k] = org[k];
       } else if (oldOrg[k] !== org[k] && !(!oldOrg[k] && !org[k])) finalProfile[k] = org[k];
     });
-
     return finalProfile;
   };
 
   const saveChanges = async (editedOrg, isTranslationsStep) => {
     const error = verifyChanges(editedOrg, texts).error;
     //verify location is valid and notify user if it's not
-
     if (
       editedOrg?.info?.location !== organization?.info?.location &&
       !isLocationValid(editedOrg?.info?.location) &&
@@ -113,11 +108,7 @@ export default function EditOrganizationRoot({
       handleSetErrorMessage(error);
     } else {
       editedOrg.language = sourceLanguage;
-      const oldOrg = await getOrganizationByUrlIfExists(organization.url_slug, token, locale);
-      /*for the getChanges function if you want to check for changes within an attribute in an object such as translations or social media name
-       we need to get the old org via api request otherwise no changes will be noticed  see PR #1046 for more info */
-      const payload = await parseForRequest(getChanges(editedOrg, oldOrg));
-
+      const payload = await parseForRequest(getChanges(editedOrg, organization));
       if (isTranslationsStep)
         payload.translations = getTranslationsWithoutRedundantKeys(
           getTranslationsFromObject(initialTranslations, "organization"),
@@ -179,8 +170,6 @@ export default function EditOrganizationRoot({
             errorMessage={errorMessage}
             onClickCheckTranslations={onClickCheckTranslations}
             allHubs={allHubs}
-            socialMediaChannels={socialMediaChannels}
-            isCreationStep={false}
           />
         ) : (
           <>
@@ -234,7 +223,6 @@ const parseForRequest = async (org) => {
   if (org.thumbnail_image) parsedOrg.thumbnail_image = await blobFromObjectUrl(org.thumbnail_image);
   if (org.image) parsedOrg.image = await blobFromObjectUrl(org.image);
   if (org.hubs) parsedOrg.hubs = org.hubs.map((h) => h.url_slug);
-
   return parsedOrg;
 };
 
@@ -263,19 +251,3 @@ const verifyChanges = (newOrg, texts) => {
   }
   return true;
 };
-
-async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: "/api/organizations/" + organizationUrl + "/",
-      token: token,
-      locale: locale,
-    });
-    return parseOrganization(resp.data, true);
-  } catch (err) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-}

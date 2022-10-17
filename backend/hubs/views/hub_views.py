@@ -1,9 +1,5 @@
 from rest_framework.generics import ListAPIView
-from hubs.serializers.hub import (
-    HubAmbassadorSerializer,
-    HubSerializer,
-    HubStubSerializer,
-)
+from hubs.serializers.hub import HubAmbassadorSerializer, HubSerializer, HubStubSerializer
 from hubs.models.hub import Hub, HubAmbassador
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
@@ -25,7 +21,6 @@ class HubAPIView(APIView):
         serializer = HubSerializer(hub, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
 class HubAmbassadorAPIView(APIView):
     permission_classes = [AllowAny]
 
@@ -43,7 +38,6 @@ class HubAmbassadorAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(None, status=status.HTTP_404_NOT_FOUND)
-
 
 class ListHubsView(ListAPIView):
     permission_classes = [AllowAny]

@@ -24,7 +24,7 @@ export default function HubLinks({
   isNarrowScreen,
   showAllProjectsButton,
   onlyShowDropDown,
-  isLocationHub,
+  isLocationHub
 }) {
   const classes = useStyles();
   const [open, setOpen] = useState({ sectorHubs: false, climateHubs: false });

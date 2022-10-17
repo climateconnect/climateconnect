@@ -17,13 +17,10 @@ export function parseOrganization(organization, editMode) {
       website: organization.website,
       about: organization.about,
       organization_size: organization.organization_size,
-      social_options: organization.social_medias,
       hubs: organization.hubs,
     },
   };
-
   if (editMode) org.types = org.types.map((t) => t.key);
-
   const additional_info = organization.types.reduce((additionalInfoArray, t) => {
     const type = t.organization_tag;
     if (type.additional_info && type.additional_info.length > 0) {

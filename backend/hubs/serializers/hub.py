@@ -2,7 +2,10 @@ from climateconnect_api.utility.translation import get_attribute_in_correct_lang
 from location.models import Location
 from location.serializers import LocationSerializer
 from django.utils.translation import get_language
-from hubs.utility.hub import get_hub_attribute, get_hub_stat_attribute
+from hubs.utility.hub import (
+    get_hub_attribute,
+    get_hub_stat_attribute
+)
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 from hubs.models import Hub, HubStat, HubAmbassador

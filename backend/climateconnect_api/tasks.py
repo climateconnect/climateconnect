@@ -20,11 +20,9 @@ logger = logging.getLogger(__name__)
 def testing_task_1():
     send_test_mail_to_engineering_email("task 1", "test")
 
-
 @app.task
 def testing_task_2():
     send_test_mail_to_engineering_email("task 2", "test2")
-
 
 @app.task
 def testing_task_3():
