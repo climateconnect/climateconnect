@@ -233,16 +233,17 @@ export default function CreateOrganization({
         return;
       }
     }
-    /*if (locale !== "en") {
-      console.log(account);
+
+    if (locale !== "en") {
       setOrganizationInfo({
         ...account,
         parentorganization: organizationInfo.parentorganization,
       });
       setCurStep(steps[2]);
       return;
-    }*/
-    setLoadingSubmit(true);
+    }
+
+    setLoadingSubmit(false);
     await makeCreateOrganizationRequest(organizationToSubmit);
   };
 
