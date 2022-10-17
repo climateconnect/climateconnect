@@ -147,10 +147,10 @@ class EditOrganizationSerializer(OrganizationSerializer):
             return {}
 
     def get_short_description(self, obj):
-        return obj.short_description
+        return get_organization_short_description(obj, get_language())
 
     def get_about(self, obj):
-        return obj.about
+         return get_organization_about_section(obj, get_language())
 
     def get_organ(self, obj):
         return obj.organ
@@ -159,7 +159,7 @@ class EditOrganizationSerializer(OrganizationSerializer):
         return obj.school
 
     def get_name(self, obj):
-        return obj.name
+        return get_organization_name(obj, get_language())
 
     class Meta(OrganizationSerializer.Meta):
         fields = OrganizationSerializer.Meta.fields + ("location", "translations")
