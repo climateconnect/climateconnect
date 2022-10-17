@@ -25,8 +25,9 @@ import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import UserContext from "../context/UserContext";
 import EditSharpIcon from "@material-ui/icons/EditSharp";
 import IconButton from "@material-ui/core/IconButton";
-import InsertInvitationIcon from "@material-ui/icons/InsertInvitation";
-import GroupIcon from "@material-ui/icons/Group";
+
+import SelectWithText from "./SelectWithText";
+import SubTitleWithContent from "../general/SubTitleWithContent";
 
 const useStyles = makeStyles((theme) => ({
   avatarContainer: {
@@ -161,7 +162,6 @@ const useStyles = makeStyles((theme) => ({
   },
   sizeContainer: {
     display: "flex",
-    //backgroundColor: "#000000",
     flexDirection: "column",
     width: "100%",
   },
@@ -170,7 +170,6 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     width: "100%",
     marginRight: theme.spacing(1),
-    //backgroundColor: "#A93226",
   },
   subtitleWithIcon: {
     display: "flex",
@@ -179,8 +178,6 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
   },
   selectContainer: {
-    //backgroundColor: "#F7DC6F",
-
     display: "flex",
     flexDirection: "row",
   },
@@ -222,7 +219,6 @@ export default function AccountPage({
       {text}
     </Link>
   );
-
   const displayAccountInfo = (info) =>
     Object.keys(info)
       .sort((a, b) => {
@@ -251,39 +247,7 @@ export default function AccountPage({
                 </div>
               );
           } else if (i.type === "selectwithtext" && value) {
-            const hideGetInvolvedField =
-              account.types.map((type) => type.hide_get_involved).includes(true) ||
-              account.types.length === 0;
-
-            const orgSizeValue = i.options.find((o) => o?.key === i.value?.organization_size)?.name;
-            const orgSizeLabel = i?.organization_size?.name;
-
-            const getInvolvedLabel = i?.get_involved.name;
-            const getInvolvedValue = i?.value.get_involved;
-            return (
-              <div key={index}>
-                <div className={classes.selectContainer}>
-                  {!hideGetInvolvedField && (
-                    <div className={classes.getInvolvedContainer}>
-                      <SubTitleWithContent
-                        subTitleIcon={{ icon: InsertInvitationIcon }}
-                        label={getInvolvedLabel}
-                        value={getInvolvedValue}
-                      />
-                    </div>
-                  )}
-                  {orgSizeValue && (
-                    <div className={classes.sizeContainer}>
-                      <SubTitleWithContent
-                        subTitleIcon={{ icon: GroupIcon }}
-                        label={orgSizeLabel}
-                        value={orgSizeValue}
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
+            return <SelectWithText types={account.types} info={i} key={index} />;
           } else if (i.type === "array" && i?.value?.length > 0) {
             return (
               <div key={index} className={classes.infoElement}>
@@ -313,7 +277,13 @@ export default function AccountPage({
               </div>
             );
           } else if (i.type === "hubs") {
-            return <MiniHubPreviews hubs={i.value} />;
+           
+            return (
+              <>
+              {i.value.length > 0 && ( <div className={classes.subtitle}>{i.name}:</div>)}
+             
+              <MiniHubPreviews hubs={i.value} /></>)
+            ;
           } else if (i.type === "select" && value) {
             const textValue = i.options ? i.options.find((o) => o?.key === value).name : value;
             return (
@@ -332,8 +302,8 @@ export default function AccountPage({
             return (
               <div key={index}>
                 <SubTitleWithContent
-                  label={i.name + ":"}
-                  value={value ? value + additionalText : i.missingMessage}
+                  subtitle={i.name + ":"}
+                  content={value ? value + additionalText : i.missingMessage}
                 />
               </div>
             );
@@ -464,23 +434,3 @@ export default function AccountPage({
 const getFullInfoElement = (infoMetadata, key, value) => {
   return { ...infoMetadata[key], value: value };
 };
-
-function SubTitleWithContent({ subTitleIcon, label, value }) {
-  const classes = useStyles();
-  return (
-    <>
-      <div className={`${subTitleIcon ? classes.subtitleWithIcon : classes.subtitle}`}>
-        {subTitleIcon?.icon ? (
-          <>
-            <subTitleIcon.icon />
-            <div className={classes.marginRight} />
-            {label}
-          </>
-        ) : (
-          <>{label}</>
-        )}
-      </div>
-      <div className={classes.content}>{value}</div>
-    </>
-  );
-}

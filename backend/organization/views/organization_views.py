@@ -204,7 +204,6 @@ class CreateOrganizationView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        print(request.data["organization_tags"])
         required_params = [
             "name",
             "team_members",
@@ -242,7 +241,6 @@ class CreateOrganizationView(APIView):
         organization, created = Organization.objects.get_or_create(
             name=request.data["name"]
         )
-        print(organization)
         if created:
             organization.url_slug = create_unique_slug(
                 organization.name, organization.id, Organization.objects
@@ -338,7 +336,6 @@ class CreateOrganizationView(APIView):
             if "organization_tags" in request.data:
 
                 for organization_tag in request.data["organization_tags"]:
-                    print(organization_tag)
 
                     try:
                         organization_tag = OrganizationTags.objects.get(

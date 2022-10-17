@@ -131,6 +131,7 @@ function getWebsite(texts) {
     name: texts.website,
     type: "text",
     key: "website",
+    helptext: texts.enter_org_website,
     maxLength: 240,
     linkify: true,
   };
@@ -217,16 +218,15 @@ function getGetInvolved(texts, isEditing) {
     type: "text",
     helptext: texts.get_involved_helptext,
     maxLength: 250,
-    rows: 4
+    rows: 4,
   };
 }
 
 function getHubs(texts) {
   return {
-    name: `${texts.sectors_of_activity}`, // this needs a value
+    name: `${texts.organization_is_active_in_these_sectors}`,
     key: "hubs",
     type: "hubs",
-    helptext: texts.how_to_select_hubs,
   };
 }
 

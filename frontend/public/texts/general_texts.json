@@ -691,6 +691,10 @@
     "en": "Summary",
     "de": "Kurzbeschreibung"
   },
+  "characters": {
+    "en": "characters",
+    "de": "Zeichen"
+  },
   "twohundred_eighty_chars_max": {
     "en": "280 characters max",
     "de": "Maximal 280 Zeichen"

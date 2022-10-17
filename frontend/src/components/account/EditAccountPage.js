@@ -4,9 +4,7 @@ import {
   Checkbox,
   Chip,
   Container,
-  IconButton,
   TextField,
-  Tooltip,
   Typography,
   useMediaQuery,
   Link,
@@ -14,7 +12,6 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import ControlPointIcon from "@material-ui/icons/ControlPoint";
-import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import Alert from "@material-ui/lab/Alert";
 import React, { useContext, useState } from "react";
@@ -132,7 +129,7 @@ const useStyles = makeStyles((theme) => ({
   },
   infoElement: {
     marginBottom: theme.spacing(2),
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   marginBottom: {
     marginBottom: theme.spacing(1),
@@ -248,7 +245,6 @@ export default function EditAccountPage({
   loadingSubmit,
   onClickCheckTranslations,
   allHubs,
-  type,
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
@@ -257,8 +253,6 @@ export default function EditAccountPage({
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles(editedAccount);
-
-  const isOrganization = type === "organization";
   //used for previewing images in UploadImageDialog
   const [tempImages, setTempImages] = React.useState({
     image: editedAccount.image ? editedAccount.image : DEFAULT_AVATAR_IMAGE,
@@ -273,7 +267,6 @@ export default function EditAccountPage({
     addTypeDialog: false,
     confirmExitDialog: false,
   });
-
   const handleDialogClickOpen = (dialogKey) => {
     setOpen({ ...open, [dialogKey]: true });
   };
@@ -601,14 +594,16 @@ export default function EditAccountPage({
             onSelectNewHub={onSelectNewHub}
           />
         );
-      } else if (key != "parent_organization" && ["text", "bio"].includes(i.type)) {
         //This is the fallback for normal textfields
+      } else if (key != "parent_organization" && ["text", "bio"].includes(i.type)) {
+        /* By checking the attribute of the types assigned to an organization, determine if the textfield should be displayed on
+        the edit account page. Should any of the type's attribute "hide get involved" be true or no type is selected, we hide the field. 
+        */
         const hideGetInvolvedField =
           i.key === "get_involved"
             ? editedAccount.types.map((type) => type.hide_get_involved).includes(true) ||
               editedAccount.types.length === 0
             : false;
-
         return (
           <>
             {!hideGetInvolvedField && (
@@ -622,7 +617,15 @@ export default function EditAccountPage({
                   multiline
                   rows={i.rows}
                   onChange={handleChange}
-                  helperText={i.helptext}
+                  helperText={
+                    i.helptext +
+                    (editedAccount.info[i.key] ? editedAccount.info[i.key].length : 0) +
+                    " / " +
+                    i.maxLength +
+                    " " +
+                    texts.characters +
+                    ")"
+                  }
                   variant="outlined"
                 />
               </div>

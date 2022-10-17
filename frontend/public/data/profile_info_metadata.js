@@ -8,7 +8,7 @@ export default function getProfileInfoMetadata(locale) {
       name: texts.availability,
       key: "availability",
       type: "select",
-      missingMessage: texts.availability_user_profile_missing_message
+      missingMessage: texts.availability_user_profile_missing_message,
     },
     skills: {
       name: texts.skills,
@@ -26,12 +26,13 @@ export default function getProfileInfoMetadata(locale) {
       maxLength: 280,
       weight: 1,
       rows: 4,
-      helptext: texts.enter_profile_bio_helptext
+      helptext: texts.enter_profile_bio_helptext,
     },
     website: {
       name: texts.website,
       type: "text",
-      key: "bio",
+      key: "website",
+      helptext: texts.enter_your_website_helptext,
       maxLength: 240,
       linkify: true,
     },
