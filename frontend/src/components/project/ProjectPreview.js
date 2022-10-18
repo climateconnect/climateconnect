@@ -108,6 +108,7 @@ export default function ProjectPreview({ project, projectRef, hubUrl, className 
   const handleMouseLeave = () => {
     setHovering(false);
   };
+
   const queryString = hubUrl ? "?hubPage=" + hubUrl : "";
   return (
     <Link

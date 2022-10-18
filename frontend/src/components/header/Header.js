@@ -304,7 +304,7 @@ export default function Header({
 
   const { user, signOut, notifications, pathName, locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
-  const [anchorEl, setAnchorEl] = React.useState(false);
+  const [anchorEl, setAnchorEl] = useState(false);
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
   const isMediumScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const LINKS = getLinks(pathName, texts);

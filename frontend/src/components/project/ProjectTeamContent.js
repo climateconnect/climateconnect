@@ -16,7 +16,6 @@ const useStyles = makeStyles((theme) => ({
     float: "right",
     marginBottom: theme.spacing(1),
   },
-
   leaveProjectButton: {
     float: "right",
     background: theme.palette.error.main,
