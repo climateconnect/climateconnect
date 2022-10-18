@@ -237,7 +237,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         return;
       }
     }
-    if (locale !== "en") {
+    /*if (locale !== "en") {
       console.log(account);
       setOrganizationInfo({
         ...account,
@@ -245,7 +245,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       });
       setCurStep(steps[2]);
       return;
-    }
+    }*/
     setLoadingSubmit(true);
     await makeCreateOrganizationRequest(organizationToSubmit);
   };
@@ -278,9 +278,10 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       .then(function (response) {
         setLoadingSubmit(false);
         Router.push({
-          pathname: "/organizations/" + response.data.url_slug,
+          pathname: "/manageOrganizationMembers/" + response.data.url_slug,
           query: {
             message: texts.you_have_successfully_created_an_organization_you_can_add_members,
+            isCreationStage: true,
           },
         });
         return;

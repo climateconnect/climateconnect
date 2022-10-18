@@ -59,6 +59,15 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(4),
     textAlign: "center",
   },
+  headerButton: {
+    right: 0,
+    position: "absolute",
+  },
+
+  headerContainer: {
+    display: "flex",
+    justifyContent: "center",
+  },
   goBackButtonContainer: {
     position: "absolute",
     marginLeft: theme.spacing(1),
@@ -73,6 +82,10 @@ const useStyles = makeStyles((theme) => ({
   },
   imageContainer: {
     position: "relative",
+  },
+  contactProjectButtonLarge: {
+    height: 40,
+    minWidth: 120,
   },
 }));
 
@@ -126,7 +139,6 @@ export default function ProjectOverview({
   const classes = useStyles();
 
   const texts = getTexts({ page: "project", locale: locale, project: project });
-
   /**
    * Calls endpoint to return a current list
    * of users that have requested to
@@ -191,6 +203,7 @@ export default function ProjectOverview({
           project={project}
           texts={texts}
           toggleShowFollowers={toggleShowFollowers}
+          numberOfFollowers={numberOfFollowers}
         />
       ) : (
         <LargeScreenOverview
@@ -263,6 +276,7 @@ function SmallScreenOverview({
   texts,
   toggleShowFollowers,
   token,
+  numberOfFollowers,
 }) {
   const classes = useStyles();
 
@@ -302,6 +316,7 @@ function SmallScreenOverview({
         </Typography>
 
         <Typography>{project?.short_description}</Typography>
+
         <div className={classes.projectInfoEl}>
           <Typography>
             <Tooltip title={texts.location}>
@@ -336,7 +351,10 @@ function SmallScreenOverview({
             hasAdminPermissions={hasAdminPermissions}
             toggleShowFollowers={toggleShowFollowers}
             followingChangePending={followingChangePending}
+            numberOfFollowers={numberOfFollowers}
             texts={texts}
+            showStartIcon
+            showNumberInText
           />
 
           {!hasAdminPermissions && (
@@ -380,9 +398,11 @@ function LargeScreenOverview({
 
   return (
     <>
-      <Typography component="h1" variant="h4" className={classes.largeScreenHeader}>
-        {project.name}
-      </Typography>
+      <div className={classes.headerContainer}>
+        <Typography component="h1" variant="h4" className={classes.largeScreenHeader}>
+          {project.name}
+        </Typography>
+      </div>
       <div className={classes.flexContainer}>
         <img
           className={classes.inlineImage}
@@ -445,18 +465,31 @@ function LargeScreenOverview({
               screenSize={screenSize}
               texts={texts}
               toggleShowFollowers={toggleShowFollowers}
+              showStartIcon={!screenSize.belowMedium}
+              showLinkUnderButton
             />
-            {!hasAdminPermissions && (
-              <ContactCreatorButton
-                creator={projectAdmin}
-                contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
-                handleClickContact={handleClickContact}
-                customCardWidth={220}
-                withInfoCard={true}
-                withIcons={true}
-                collapsable={true}
-              />
-            )}
+            {!hasAdminPermissions &&
+              (!screenSize.belowMedium ? (
+                <ContactCreatorButton
+                  creator={projectAdmin}
+                  contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
+                  handleClickContact={handleClickContact}
+                  customCardWidth={220}
+                  withInfoCard={true}
+                  withIcons={true}
+                  collapsable={true}
+                />
+              ) : (
+                <Button
+                  className={classes.contactProjectButtonLarge}
+                  variant="contained"
+                  color="primary"
+                  onClick={handleClickContact}
+                  ref={contactProjectCreatorButtonRef}
+                >
+                  {texts.contact}
+                </Button>
+              ))}
           </div>
         </div>
       </div>

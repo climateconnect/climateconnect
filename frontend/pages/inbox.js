@@ -3,9 +3,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import SearchIcon from "@material-ui/icons/Search";
 import NextCookies from "next-cookies";
-import React from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Cookies from "universal-cookie";
-import { apiRequest, sendToLogin } from "../public/lib/apiOperations";
+import { apiRequest, sendToLogin, redirect } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import ChatPreviews from "../src/components/communication/chat/ChatPreviews";
 import UserContext from "../src/components/context/UserContext";
@@ -70,25 +70,26 @@ export async function getServerSideProps(ctx) {
 export default function Inbox({ chatData, initialNextPage }) {
   const token = new Cookies().get("auth_token");
   const classes = useStyles();
-  const { user, locale } = React.useContext(UserContext);
+  const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "chat", locale: locale });
-  const [userSearchEnabled, setUserSearchEnabled] = React.useState(false);
-  const [chatSearchEnabled, setChatSearchEnabled] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState("");
-  const [chatsState, setChatsState] = React.useState({
+  const [userSearchEnabled, setUserSearchEnabled] = useState(false);
+  const [chatSearchEnabled, setChatSearchEnabled] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [chatsState, setChatsState] = useState({
     chats: parseChats(chatData, texts),
     nextPage: initialNextPage,
   });
 
 
-  const [searchedChatsState, setSearchedChatsState] = React.useState({
+  const [searchedChatsState, setSearchedChatsState] = useState({
+
     chats: [],
     nextPage: 0,
   });
 
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [searchingOpen, setSearchingOpen] = React.useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchingOpen, setSearchingOpen] = useState(false);
 
   const applyFilterToChats = async (filter) => {
     setSearchingOpen(true);
@@ -173,6 +174,14 @@ export default function Inbox({ chatData, initialNextPage }) {
       chats: [...chatsState.chats, ...parseChats(newChats, texts)],
     });
   };
+
+  useEffect(() => {
+    if (!user)
+      redirect("/signin", {
+        redirect: window.location.pathname + window.location.search,
+        message: texts.login_required,
+      });
+  }, [user]);
 
   return (
     <div>
@@ -259,17 +268,13 @@ export default function Inbox({ chatData, initialNextPage }) {
                     >
                       {texts.find_a_chat}
                     </Button>
-                    {user ? (
-                      <ChatPreviews
-                        chatSearchEnabled={chatSearchEnabled}
-                        loadFunc={loadMoreChats}
-                        chats={chatsState.chats}
-                        user={user}
-                        hasMore={!!chatsState.nextPage}
-                      />
-                    ) : (
-                      <LoadingSpinner isLoading />
-                    )}
+                    <ChatPreviews
+                      chatSearchEnabled={chatSearchEnabled}
+                      loadFunc={loadMoreChats}
+                      chats={chatsState.chats}
+                      user={user}
+                      hasMore={!!chatsState.nextPage}
+                    />
                   </span>
                 );
             })()}

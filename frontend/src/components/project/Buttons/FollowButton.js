@@ -66,21 +66,27 @@ export default function FollowButton({
   screenSize,
   numberOfFollowers,
   bindFollow,
+  showStartIcon,
+  showLinkUnderButton,
+  showNumberInText,
 }) {
   const classes = useStyles({
     hasAdminPermissions: hasAdminPermissions,
     followingChangePending: followingChangePending,
     belowSmallScreen: screenSize?.belowSmall,
   });
-
-  if (screenSize?.belowSmall && !screenSize.belowTiny) {
-    return (
+  return (
+    <span className={classes.followButtonContainer}>
       <Button
         {...bindFollow}
         onClick={handleToggleFollowProject}
         variant="contained"
         startIcon={
-          <ButtonIcon icon="follow" size={27} color={isUserFollowing ? "earth" : "white"} />
+          showStartIcon ? (
+            <ButtonIcon icon="follow" size={27} color={isUserFollowing ? "earth" : "white"} />
+          ) : (
+            <></>
+          )
         }
         color={isUserFollowing ? "secondary" : "primary"}
         disabled={followingChangePending}
@@ -93,70 +99,36 @@ export default function FollowButton({
           />
           <div className={classes.buttonText}>
             {isUserFollowing ? texts.following : texts.follow}
-            {!followingChangePending && numberOfFollowers > 0 ? " • " + numberOfFollowers : ""}
+            {showNumberInText && !followingChangePending && numberOfFollowers > 0
+              ? " • " + numberOfFollowers
+              : ""}
           </div>
         </div>
       </Button>
-    );
-  } else if (screenSize?.belowTiny) {
-    return (
-      <Button
-        {...bindFollow}
-        onClick={handleToggleFollowProject}
-        variant="contained"
-        color={isUserFollowing ? "secondary" : "primary"}
-        disabled={followingChangePending}
-        className={classes.followingButton}
-      >
-        <div className={classes.buttonLabel}>
-          <CircularProgress
-            size={20}
-            className={`${classes.fabProgress} ${!followingChangePending && classes.hidden}`}
-          />
-          <div className={classes.buttonText}>
-            {isUserFollowing ? texts.following : texts.follow}
-            {!followingChangePending && numberOfFollowers > 0 ? " • " + numberOfFollowers : ""}
-          </div>
-        </div>
-      </Button>
-    );
-  } else {
-    return (
-      <span className={classes.followButtonContainer}>
-        <Button
-          onClick={handleToggleFollowProject}
-          variant="contained"
-          startIcon={
-            <ButtonIcon icon="follow" size={27} color={isUserFollowing ? "earth" : "white"} />
-          }
-          color={isUserFollowing ? "secondary" : "primary"}
-          disabled={followingChangePending}
-          className={classes.followingButton}
-        >
-          <div className={classes.buttonLabel}>
-            <CircularProgress
-              size={20}
-              className={`${classes.fabProgress} ${!followingChangePending && classes.hidden}`}
-            />
-            <div className={classes.buttonText}>
-              {isUserFollowing ? texts.following : texts.follow}
-            </div>
-          </div>
-        </Button>
-        {numberOfFollowers > 0 && (
-          <Link
-            color="secondary"
-            underline="none"
-            className={classes.followersLink}
-            onClick={toggleShowFollowers}
-          >
-            <Typography className={classes.followersText}>
-              <span className={classes.followerNumber}>{numberOfFollowers} </span>
-              {numberOfFollowers > 1 ? texts.followers : texts.follower}
-            </Typography>
-          </Link>
-        )}
-      </span>
-    );
-  }
+      {showLinkUnderButton && numberOfFollowers > 0 && (
+        <LinkWithText
+          numberOfFollowers={numberOfFollowers}
+          texts={texts}
+          toggleShowFollowers={toggleShowFollowers}
+        />
+      )}
+    </span>
+  );
+}
+
+function LinkWithText({ numberOfFollowers, texts, toggleShowFollowers }) {
+  const classes = useStyles();
+  return (
+    <Link
+      color="secondary"
+      underline="none"
+      className={classes.followersLink}
+      onClick={toggleShowFollowers}
+    >
+      <Typography className={classes.followersText}>
+        <span className={classes.followerNumber}>{numberOfFollowers} </span>
+        {numberOfFollowers > 1 ? texts.followers : texts.follower}
+      </Typography>
+    </Link>
+  );
 }

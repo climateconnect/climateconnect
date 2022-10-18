@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, CardHeader, Collapse, Fade, Typography } from "@material-ui/core";
+import { Avatar, Button, Collapse, Fade, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import SendIcon from "@material-ui/icons/Send";
 import React, { useContext, useState } from "react";
@@ -6,6 +6,7 @@ import { getImageUrl } from "../../../../public/lib/imageOperations";
 import getTexts from "../../../../public/texts/texts";
 import theme from "../../../themes/theme";
 import UserContext from "../../context/UserContext";
+import ContactCreatorButtonInfo from "../../communication/contactcreator/ContactCreatorButtonInfo";
 
 const useStyles = makeStyles({
   root: (props) => ({
@@ -122,14 +123,14 @@ export default function ContactCreatorButton({
         {withInfoCard &&
           (collapsable ? (
             <Collapse in={hoveringButton} timeout={550}>
-              <DetailledContactCreatorInfo
+              <ContactCreatorButtonInfo
                 creatorName={creatorName}
                 creatorImageURL={creatorImageURL}
                 creatorsRoleInProject={creatorsRoleInProject}
               />
             </Collapse>
           ) : (
-            <DetailledContactCreatorInfo
+            <ContactCreatorButtonInfo
               creatorName={creatorName}
               creatorImageURL={creatorImageURL}
               creatorsRoleInProject={creatorsRoleInProject}
@@ -158,23 +159,3 @@ export default function ContactCreatorButton({
     </div>
   );
 }
-
-const DetailledContactCreatorInfo = ({ creatorName, creatorImageURL, creatorsRoleInProject }) => {
-  const classes = useStyles();
-
-  return (
-    <Card className={classes.slideInCard} variant="outlined">
-      <CardHeader
-        classes={{
-          root: classes.slideInRoot,
-          content: classes.textContainer,
-          subheader: `${classes.slideInSubheader} ${classes.preventTextOverflow}`,
-          title: `${classes.slideInTitle} ${classes.preventTextOverflow}`,
-        }}
-        avatar={<Avatar src={creatorImageURL} className={classes.avatar} />}
-        title={creatorName}
-        subheader={creatorsRoleInProject}
-      />
-    </Card>
-  );
-};
