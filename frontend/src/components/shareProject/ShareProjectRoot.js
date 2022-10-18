@@ -53,14 +53,14 @@ const getSteps = (texts, sourceLocale) => {
       headline: texts.add_your_team,
     },
   ];
-  if (sourceLocale === "de") {
+  /*if (sourceLocale === "de") {
     steps.push({
       key: "translate",
       text: texts.languages,
       headline: texts.translate,
       sourceLocale: ["de"],
-    });
-  }
+    })
+  }*/
   return steps;
 };
 
