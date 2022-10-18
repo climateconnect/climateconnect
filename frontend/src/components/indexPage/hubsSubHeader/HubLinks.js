@@ -24,6 +24,7 @@ export default function HubLinks({
   isNarrowScreen,
   showAllProjectsButton,
   onlyShowDropDown,
+  isLocationHub
 }) {
   const classes = useStyles();
   const [open, setOpen] = useState({ sectorHubs: false, climateHubs: false });
@@ -84,7 +85,7 @@ export default function HubLinks({
             </Link>
           ))
         ))}
-      {sectorHubs?.length > (onlyShowDropDown ? 0 : 3) && (
+      {!(isLocationHub && isNarrowScreen) && sectorHubs?.length > (onlyShowDropDown ? 0 : 3) && (
         <HubsDropDown
           hubs={sectorHubs}
           label="SectorHubs"

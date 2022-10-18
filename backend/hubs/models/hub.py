@@ -2,6 +2,7 @@ from climateconnect_api.models.language import Language
 from location.models import Location
 from organization.models.tags import ProjectTags
 from django.db import models
+from django.contrib.auth.models import User
 
 
 def hub_image_path(instance, filename):
@@ -211,3 +212,60 @@ class Hub(models.Model):
 
     def __str__(self):
         return "%s" % (self.name)
+
+
+class HubAmbassador(models.Model):
+    title = models.CharField(
+        help_text="Ambassador title",
+        verbose_name="Ambassador title",
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    title_de = models.CharField(
+        help_text="The german translation of the ambassador's title",
+        verbose_name="Ambassador title german",
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    custom_message = models.CharField(
+        help_text="Custom message motivating users to contact the ambassador",
+        verbose_name="Custom message",
+        max_length=240,
+        null=True,
+        blank=True,
+    )
+    custom_message_de = models.CharField(
+        help_text="German translation of the custom message",
+        verbose_name="Custom message german",
+        max_length=240,
+        null=True,
+        blank=True,
+    )
+    user = models.ForeignKey(
+        User,
+        help_text="Points to user who is ambassador of the hub",
+        verbose_name="User",
+        related_name="ambassador_user",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
+    hub = models.ForeignKey(
+        Hub,
+        help_text="Points to hub the user is ambassador of",
+        verbose_name="Hub",
+        related_name="ambassador_hub",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        app_label = "hubs"
+        verbose_name = "Hub Ambassador"
+        verbose_name_plural = "Hub Ambassadors"
+
+    def __str__(self):
+        return "%s is ambassador for %s" % (self.user.first_name + " " +  self.user.last_name, self.title)

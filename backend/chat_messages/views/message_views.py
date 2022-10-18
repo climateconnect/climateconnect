@@ -16,7 +16,7 @@ from rest_framework import status
 from rest_framework.exceptions import NotFound
 from rest_framework.filters import SearchFilter
 from django.db.models import Value as V
-from django.db.models.functions import Concat  
+from django.db.models.functions import Concat
 
 from uuid import uuid4
 
@@ -144,11 +144,7 @@ class StartGroupChatView(APIView):
         for participant in participants:
             Participant.objects.create(user=participant, chat=chat, role=member_role)
         Participant.objects.create(user=user, chat=chat, role=creator_role)
-        return Response({
-            'chat_uuid': chat.chat_uuid,
-            'name': chat.name
-        })
-
+        return Response({"chat_uuid": chat.chat_uuid, "name": chat.name})
 
 
 class GetChatsView(ListAPIView):
@@ -157,16 +153,13 @@ class GetChatsView(ListAPIView):
     pagination_class = ChatsPagination
 
     def get_queryset(self):
-      
+
         chat_ids = Participant.objects.filter(
             user=self.request.user, is_active=True
-        ).values_list('chat', flat=True)
-        
-        chats = MessageParticipants.objects.filter(
-            id__in=chat_ids
-        )   
-        
-    
+        ).values_list("chat", flat=True)
+
+        chats = MessageParticipants.objects.filter(id__in=chat_ids)
+
         if chats.exists():
             filtered_chats = chats
             for chat in chats:
@@ -179,40 +172,35 @@ class GetChatsView(ListAPIView):
                     and number_of_participants == 2
                 ):
                     filtered_chats = filtered_chats.exclude(id=chat.id)
-               
+
             return filtered_chats
         else:
             return []
 
 
-
 class GetSearchedChat(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = MessageParticipantSerializer
-    
+
     pagination_class = ChatsPagination
-    
+
     def get_queryset(self):
-        
-        query = self.request.query_params.get('search')
+
+        query = self.request.query_params.get("search")
 
         chat_ids = Participant.objects.filter(
             user=self.request.user, is_active=True
-        ).values_list('chat', flat=True)
-        
+        ).values_list("chat", flat=True)
+
         participants_matching_query = Participant.objects.annotate(
-            full_name=Concat('user__first_name', V(' '), 'user__last_name')
-        ).filter(
-            chat__in=chat_ids, full_name__icontains=query, is_active=True
-        )
+            full_name=Concat("user__first_name", V(" "), "user__last_name")
+        ).filter(chat__in=chat_ids, full_name__icontains=query, is_active=True)
         chats = MessageParticipants.objects.filter(
             Q(participant_participants__in=participants_matching_query)
-            |
-            Q(name__icontains=query, id__in=chat_ids)
+            | Q(name__icontains=query, id__in=chat_ids)
         ).distinct()
         return chats
 
-      
 
 class GetChatMessages(ListAPIView):
     permission_classes = [IsAuthenticated]

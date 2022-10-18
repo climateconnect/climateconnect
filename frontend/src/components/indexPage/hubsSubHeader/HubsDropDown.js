@@ -54,8 +54,8 @@ export default function HubsDropDown({
     ? [
         ...dropDownHubItems,
         {
-          href: `/climatehubs`,
-          text: texts.more_info,
+          href: `/browse`,
+          text: texts.all_locations,
         },
       ]
     : [...dropDownHubItems];

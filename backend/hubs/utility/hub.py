@@ -1,5 +1,4 @@
-from hubs.models import Hub
-from hubs.models.hub import HubStat
+from hubs.models import Hub, HubStat
 
 
 def get_hub_attribute(hub: Hub, attribute_name, language_code: str) -> str:
