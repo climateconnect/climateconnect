@@ -960,5 +960,13 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Open requests to join project",
       de: "Offene Anfragen zum Mitmachen",
     },
+    you_may_also_like_these_projects: {
+      en: "You may also like these projects!",
+      de: "Dir könnten diese Projekte auch gefallen!",
+    },
+    view_all_projects: {
+      en: "View all projects",
+      de: "Alle Projekte anzeigen",
+    },
   };
 }

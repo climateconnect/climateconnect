@@ -10,6 +10,7 @@ import Dashboard from "../dashboard/Dashboard";
 import ElementOnScreen from "../hooks/ElementOnScreen";
 import HubHeadlineContainer from "./HubHeadlineContainer";
 import StatBox from "./StatBox";
+import ContactAmbassadorButton from "./ContactAmbassadorButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,7 +67,6 @@ const useStyles = makeStyles((theme) => ({
   quickInfo: {
     fontSize: 17,
     maxWidth: 800,
-    
   },
   marginTop: {
     marginTop: theme.spacing(4),
@@ -80,11 +80,11 @@ const useStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(8),
     },
   },
-  infoBoxContainer: (props) => ({
+  infoBoxContainer: {
     marginTop: theme.spacing(0),
     marginLeft: theme.spacing(2),
     float: "right",
-  }),
+  },
 }));
 
 export default function HubContent({
@@ -98,6 +98,7 @@ export default function HubContent({
   hubQuickInfoRef,
   hubProjectsButtonRef,
   isLocationHub,
+  hubAmbassador,
   location,
   allHubs,
   hubData,
@@ -159,6 +160,8 @@ export default function HubContent({
                   expanded={expanded}
                   handleClickExpand={handleClickExpand}
                   isLocationHub={isLocationHub}
+                  hubAmbassador={hubAmbassador}
+                  isNarrowScreen={isNarrowScreen}
                 />
               </div>
               {user && (
@@ -184,6 +187,8 @@ export default function HubContent({
               expanded={expanded}
               handleClickExpand={handleClickExpand}
               isLocationHub={isLocationHub}
+              hubAmbassador={hubAmbassador}
+              isNarrowScreen={isNarrowScreen}
             />
           </div>
         )}
@@ -216,7 +221,9 @@ const BottomContent = ({
   quickInfo,
   expanded,
   handleClickExpand,
+  hubAmbassador,
   isLocationHub,
+  isNarrowScreen,
 }) => {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -253,6 +260,7 @@ const BottomContent = ({
           )}
         </Button>
       </div>
+      {!isNarrowScreen && <ContactAmbassadorButton hubAmbassador={hubAmbassador} />}
     </>
   );
 };

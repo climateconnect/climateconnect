@@ -1,19 +1,20 @@
-import { makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { Button, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import OpenClimateMatchButton from "../climateMatch/OpenClimateMatchButton";
 import UserContext from "../context/UserContext";
 import theme from "../../themes/theme";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
     minWidth: 300,
-   
+
     background: theme.palette.primary.main,
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-around",
-  
+
     maxWidth: "800px",
     borderRadius: 5,
     border: theme.borders.thick,
@@ -21,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("sm")]: {
       marginTop: props.isLocationHub ? theme.spacing(-11) : theme.spacing(-11),
     },
-    
+
     ["@media(max-width:960px)"]: {
       maxWidth: 550,
     },
@@ -32,7 +33,6 @@ const useStyles = makeStyles((theme) => ({
   },
 
   headline: {
-
     fontWeight: 700,
     [theme.breakpoints.down("sm")]: {
       fontSize: 25,
@@ -44,8 +44,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
   },
 
-  subHeadlineContainer: (props) =>({
-    
+  subHeadlineContainer: (props) => ({
     background: "#f0f2f5",
     borderRadius: 5,
     padding: theme.spacing(1),
@@ -63,9 +62,6 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "right",
     height: 38,
     marginTop: theme.spacing(1),
-    [theme.breakpoints.down("sm")]: {
-      display: "none",
-    },
   },
 
   subHeadLineText: {
@@ -81,6 +77,11 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     padding: theme.spacing(1.5),
   },
+  signUpContainer: {
+    display: "flex",
+    justifyContent: "center",
+    marginTop: theme.spacing(1)
+  }
 }));
 
 export default function HubHeadlineContainer({ subHeadline, headline, isLocationHub, hubUrl }) {
@@ -103,14 +104,20 @@ export default function HubHeadlineContainer({ subHeadline, headline, isLocation
 
         {isLocationHub && (
           <>
-   
-              {!isNarrowScreen && ( <hr />)}
-            <div className={classes.climateMatchButtonContainer}>
-              <OpenClimateMatchButton
-                hubUrl={hubUrl}
-                text={texts.get_active_now_with_climatematch}
-              />
-            </div>
+            {!isNarrowScreen && <hr />}
+            
+              {isNarrowScreen ?
+                <div className={classes.signUpContainer}>
+                  <Button href={getLocalePrefix(locale) + "/signup"} variant="contained" color="primary">{texts.sign_up_now}</Button>
+                </div>
+              :
+                <div className={classes.climateMatchButtonContainer}>
+                  <OpenClimateMatchButton
+                    hubUrl={hubUrl}
+                    text={texts.get_active_now_with_climatematch}
+                  />
+                </div>
+              }
           </>
         )}
       </div>

@@ -24,6 +24,7 @@ export default function ProjectPreviews({
   projects,
   firstProjectCardRef,
   hubUrl,
+  displayOnePreviewInRow,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -36,6 +37,7 @@ export default function ProjectPreviews({
         isFirstProject={projects.indexOf(p) === 0}
         firstProjectCardRef={firstProjectCardRef}
         hubUrl={hubUrl}
+        displayOnePreviewInRow={displayOnePreviewInRow}
       />
     ));
 
@@ -87,15 +89,37 @@ export default function ProjectPreviews({
   );
 }
 
-function GridItem({ project, isFirstProject, firstProjectCardRef, hubUrl }) {
+function GridItem({
+  project,
+  isFirstProject,
+  firstProjectCardRef,
+  hubUrl,
+  displayOnePreviewInRow,
+}) {
   const projectPreviewProps = {
     project: project,
   };
   if (isFirstProject) {
     projectPreviewProps.projectRef = firstProjectCardRef;
   }
+
+  const columnValuesFromBreakpoint = {
+    xsValue: 12,
+    smValue: displayOnePreviewInRow ? 12 : 6,
+    mdValue: displayOnePreviewInRow ? 12 : 4,
+    lgValue: displayOnePreviewInRow ? 12 : 3,
+  };
+
   return (
-    <Grid key={project.url_slug} item xs={12} sm={6} md={4} lg={3} component="li">
+    <Grid
+      key={project.url_slug}
+      item
+      xs={columnValuesFromBreakpoint.xsValue}
+      sm={columnValuesFromBreakpoint.smValue}
+      md={columnValuesFromBreakpoint.mdValue}
+      lg={columnValuesFromBreakpoint.lgValue}
+      component="li"
+    >
       <ProjectPreview {...projectPreviewProps} hubUrl={hubUrl} />
     </Grid>
   );

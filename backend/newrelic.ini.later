@@ -27,6 +27,7 @@
 # You must specify the license key associated with your New
 # Relic account. This key binds the Python Agent's data to your
 # account in the New Relic service. license_key will in environment file
+#license_key = None
 
 # The application name. Set this to be the name of your
 # application as you would like it to show up in New Relic UI.
@@ -55,7 +56,7 @@ monitor_mode = true
 # write out a log file, it is also possible to say "stderr" and
 # output to standard error output. This would normally result in
 # output appearing in your web server log.
-#log_file = /tmp/newrelic-python-agent.log
+log_file = /tmp/newrelic-python-agent.log
 
 # Sets the level of detail of messages sent to the log file, if
 # a log file location has been provided. Possible values, in
