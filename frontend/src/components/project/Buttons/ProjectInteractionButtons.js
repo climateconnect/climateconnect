@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
     top: "auto",
     bottom: props.visibleFooterHeight,
     boxShadow: "-3px -3px 6px #00000029",
-    zIndex: "auto",
+    zIndex: "1",
   }),
   containerButtonsActionBar: {
     display: "flex",
@@ -75,6 +75,8 @@ export default function ProjectInteractionButtons({
             screenSize={screenSize}
             numberOfFollowers={numberOfFollowers}
             bindFollow={bindFollow}
+            showStartIcon={screenSize.belowSmall && !screenSize.belowTiny}
+            showNumberInText={screenSize.belowSmall}
           />
           <LikeButton
             texts={texts}

@@ -186,13 +186,10 @@ class GetSearchedChat(ListAPIView):
     pagination_class = ChatsPagination
 
     def get_queryset(self):
-
         query = self.request.query_params.get("search")
-
         current_user_full_name = (
             self.request.user.first_name + " " + self.request.user.last_name
         )
-
 
         chat_ids = Participant.objects.select_related('chat').filter(user=self.request.user, is_active=True
         ).values_list("chat", flat=True)

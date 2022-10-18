@@ -222,7 +222,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         return;
       }
     }
-    if (locale !== "en") {
+    /*if (locale !== "en") {
       console.log(account);
       setOrganizationInfo({
         ...account,
@@ -230,7 +230,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       });
       setCurStep(steps[2]);
       return;
-    }
+    }*/
     setLoadingSubmit(true);
     await makeCreateOrganizationRequest(organizationToSubmit);
   };
