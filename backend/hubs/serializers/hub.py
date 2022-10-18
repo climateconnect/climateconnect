@@ -1,10 +1,17 @@
+from climateconnect_api.utility.translation import get_attribute_in_correct_language
 from location.models import Location
 from location.serializers import LocationSerializer
 from django.utils.translation import get_language
-from hubs.utility.hub import get_hub_attribute, get_hub_stat_attribute
+from hubs.utility.hub import (
+    get_hub_attribute,
+    get_hub_stat_attribute
+)
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
-from hubs.models import Hub, HubStat
+from hubs.models import Hub, HubStat, HubAmbassador
+from climateconnect_api.serializers.user import UserProfileStubSerializer
+from climateconnect_api.models import UserProfile
+import json
 
 
 class HubSerializer(serializers.ModelSerializer):
@@ -67,6 +74,27 @@ class HubSerializer(serializers.ModelSerializer):
         if obj.location:
             return LocationSerializer(obj.location.all(), many=True).data
         return None
+
+
+class HubAmbassadorSerializer(serializers.ModelSerializer):
+    title = serializers.SerializerMethodField()
+    custom_message = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
+
+    class Meta:
+        model = HubAmbassador
+        fields = ("title", "custom_message", "user")
+
+    def get_title(self, obj):
+        return get_attribute_in_correct_language(obj, "title", get_language())
+
+    def get_custom_message(self, obj):
+        return get_attribute_in_correct_language(obj, "custom_message", get_language())
+
+    def get_user(self, obj):
+        user = UserProfile.objects.filter(user_id=obj.user.id)
+        if user.exists():
+            return UserProfileStubSerializer(user[0]).data
 
 
 class HubStubSerializer(serializers.ModelSerializer):

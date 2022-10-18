@@ -24,6 +24,7 @@ import FeedbackContext from "../context/FeedbackContext";
 import LoadingContext from "../context/LoadingContext";
 import UserContext from "../context/UserContext";
 import LoadingSpinner from "../general/LoadingSpinner";
+import MobileBottomMenu from "./MobileBottomMenu";
 
 const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
 const IdeasBoard = React.lazy(() => import("../ideas/IdeasBoard"));
@@ -80,6 +81,7 @@ export default function BrowseContent({
   initialLocationFilter,
   resetTabsWhereFiltersWereApplied,
   hubUrl,
+  hubAmbassador,
 }) {
   const initialState = {
     items: {
@@ -508,30 +510,43 @@ export default function BrowseContent({
             hideFilterButton={tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas")}
           />
         </Suspense>
-        <Tabs
-          variant={isNarrowScreen ? "fullWidth" : "standard"}
-          value={tabValue}
-          onChange={handleTabChange}
-          indicatorColor="primary"
-          textColor="primary"
-          centered={true}
-        >
-          {TYPES_BY_TAB_VALUE.map((t, index) => {
-            const tabProps = {
-              label: type_names[t],
-              className: classes.tab,
-            };
-            if (index === TYPES_BY_TAB_VALUE.indexOf("ideas")) {
-              tabProps.label = (
-                <div className={classes.ideasTabLabel}>
-                  <EmojiObjectsIcon className={classes.ideasIcon} /> {type_names[t]}
-                </div>
-              );
-            }
-            if (index === 1) tabProps.ref = organizationsTabRef;
-            return <Tab {...tabProps} key={index} />;
-          })}
-        </Tabs>
+        {/* Desktop screens: show tabs under the search bar */}
+        {/* Mobile screens: show tabs fixed to the bottom of the screen */}
+        {!isNarrowScreen ? (
+          <Tabs
+            variant={isNarrowScreen ? "fullWidth" : "standard"}
+            value={tabValue}
+            onChange={handleTabChange}
+            indicatorColor="primary"
+            textColor="primary"
+            centered={true}
+          >
+            {TYPES_BY_TAB_VALUE.map((t, index) => {
+              const tabProps = {
+                label: type_names[t],
+                className: classes.tab,
+              };
+              if (index === TYPES_BY_TAB_VALUE.indexOf("ideas")) {
+                tabProps.label = (
+                  <div className={classes.ideasTabLabel}>
+                    <EmojiObjectsIcon className={classes.ideasIcon} /> {type_names[t]}
+                  </div>
+                );
+              }
+              if (index === 1) tabProps.ref = organizationsTabRef;
+              return <Tab {...tabProps} key={index} />;
+            })}
+          </Tabs>
+        ) : (
+          <MobileBottomMenu
+            tabValue={tabValue}
+            handleTabChange={handleTabChange}
+            TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
+            type_names={type_names}
+            organizationsTabRef={organizationsTabRef}
+            hubAmbassador={hubAmbassador}
+          />
+        )}
 
         <Divider className={classes.mainContentDivider} />
 
