@@ -107,7 +107,7 @@ export default function IdeasBoard({
       const filterOutReplies = [
         ...idea.comments[parentCommentIndex].replies.filter((pc) => pc.id !== c.id),
       ];
-      idea.comments[parentCommentIndex].replies = filterOutReplies;
+      setIdea({...idea, comments: [...idea.comments.filter((pc) => pc.id !== c.id, {...c, c.replies.filter((pc) => pc.id !== c.id)}]}
 
       setIdea({
         ...idea,
