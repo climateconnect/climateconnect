@@ -171,12 +171,6 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     marginRight: theme.spacing(1),
   },
-  subtitleWithIcon: {
-    display: "flex",
-    alignItems: "center",
-    color: `${theme.palette.secondary.main}`,
-    fontWeight: "bold",
-  },
   selectContainer: {
     display: "flex",
     flexDirection: "row",
