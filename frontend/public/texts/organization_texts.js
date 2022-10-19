@@ -252,8 +252,8 @@ export default function getOrganizationTexts({ organization, locale }) {
       de: "Über 50.000",
     },
     organization_size: {
-      en: "Organization size",
-      de: "Größe der Organisation",
+      en: "Members",
+      de: "Mitglieder",
     },
     people: {
       en: "people",
@@ -293,8 +293,8 @@ export default function getOrganizationTexts({ organization, locale }) {
       de: "Organisationsart (Bis zu 2)",
     },
     organization_is_active_in_these_sectors: {
-      en: "This organization is active in these sectors",
-      de: "Diese Organisation ist in diesen Bereichen aktiv",
+      en: `${organization?.name} is active in these sectors`,
+      de: `${organization?.name} ist in diesen Bereichen aktiv`,
     },
   };
 }
