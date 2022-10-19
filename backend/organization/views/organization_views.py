@@ -226,7 +226,8 @@ class CreateOrganizationView(APIView):
             texts["short_description"] = request.data["short_description"]
         if "about" in request.data:
             texts["about"] = request.data["about"]
-
+        if "get_involved" in request.data:
+            texts["get_involved"] = request.data["get_involved"]
         try:
             translations = get_translations(
                 texts,
@@ -240,7 +241,6 @@ class CreateOrganizationView(APIView):
         organization, created = Organization.objects.get_or_create(
             name=request.data["name"]
         )
-
         if created:
             organization.url_slug = create_unique_slug(
                 organization.name, organization.id, Organization.objects
@@ -288,6 +288,8 @@ class CreateOrganizationView(APIView):
                 request.data["organization_size"]
             ):
                 organization.organization_size = request.data["organization_size"]
+            if "get_involved" in request.data:
+                organization.get_involved = request.data["get_involved"]
             if "hubs" in request.data:
                 hubs = []
                 for hub_url_slug in request.data["hubs"]:
@@ -332,15 +334,17 @@ class CreateOrganizationView(APIView):
                     logger.info("Organization member created {}".format(user.id))
 
             if "organization_tags" in request.data:
-                for organization_tag_id in request.data["organization_tags"]:
+
+                for organization_tag in request.data["organization_tags"]:
+
                     try:
                         organization_tag = OrganizationTags.objects.get(
-                            id=int(organization_tag_id)
+                            id=int(organization_tag["key"])
                         )
                     except OrganizationTags.DoesNotExist:
                         logger.error(
                             "Passed organization tag ID {} does not exists".format(
-                                organization_tag_id
+                                organization_tag
                             )
                         )
                         continue
@@ -416,6 +420,7 @@ class OrganizationAPIView(APIView):
             "organ",
             "website",
             "organization_size",
+            "get_involved",
         ]
         for param in pass_through_params:
             if param in request.data:
@@ -478,6 +483,7 @@ class OrganizationAPIView(APIView):
             {"key": "about", "translation_key": "about_translation"},
             {"key": "school", "translation_key": "school_translation"},
             {"key": "organ", "translation_key": "organ_translation"},
+            {"key": "get_involved", "translation_key": "get_involved_translation"},
         ]
 
         edit_translations(
@@ -496,18 +502,19 @@ class OrganizationAPIView(APIView):
                     OrganizationTagging.objects.filter(
                         organization=organization, organization_tag=tag_to_delete
                     ).delete()
-            for tag_id in request.data["types"]:
+            for tag in request.data["types"]:
                 if not old_organization_taggings.filter(
-                    organization_tag=tag_id
+                    organization_tag=tag["key"]
                 ).exists():
                     try:
-                        tag = OrganizationTags.objects.get(id=tag_id)
+                        tag = OrganizationTags.objects.get(id=tag["key"])
                         OrganizationTagging.objects.create(
                             organization_tag=tag, organization=organization
                         )
                     except OrganizationTags.DoesNotExist:
                         logger.error(
-                            _("Passed organization tag id does not exists: ") + tag_id
+                            _("Passed organization tag id does not exists: ")
+                            + tag["key"]
                         )
 
         organization.save()

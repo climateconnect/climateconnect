@@ -4,9 +4,7 @@ import {
   Checkbox,
   Chip,
   Container,
-  IconButton,
   TextField,
-  Tooltip,
   Typography,
   useMediaQuery,
   Link,
@@ -14,10 +12,9 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import ControlPointIcon from "@material-ui/icons/ControlPoint";
-import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import Alert from "@material-ui/lab/Alert";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import {
   getCompressedJPG,
   getImageDialogHeight,
@@ -131,6 +128,10 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   infoElement: {
+    marginBottom: theme.spacing(2),
+    marginTop: theme.spacing(1),
+  },
+  marginBottom: {
     marginBottom: theme.spacing(1),
   },
   name: {
@@ -260,13 +261,12 @@ export default function EditAccountPage({
       : DEFAULT_BACKGROUND_IMAGE,
   });
 
-  const [open, setOpen] = React.useState({
+  const [open, setOpen] = useState({
     backgroundDialog: false,
     avatarDialog: false,
     addTypeDialog: false,
     confirmExitDialog: false,
   });
-
   const handleDialogClickOpen = (dialogKey) => {
     setOpen({ ...open, [dialogKey]: true });
   };
@@ -401,10 +401,12 @@ export default function EditAccountPage({
 
       const handleChange = (event) => {
         let newValue = event.target.value;
+
         if (i.type === "select") {
           //On select fields, use the key as the new value since the text can have multiple languages
           newValue = i.options.find((o) => o.name === event.target.value).key;
         }
+
         setEditedAccount({
           ...editedAccount,
           info: { ...editedAccount.info, [key]: newValue },
@@ -592,28 +594,43 @@ export default function EditAccountPage({
             onSelectNewHub={onSelectNewHub}
           />
         );
-      } else if (key != "parent_organization" && ["text", "bio"].includes(i.type)) {
         //This is the fallback for normal textfields
+      } else if (key != "parent_organization" && ["text", "bio"].includes(i.type)) {
+        /* By checking the attribute of the types assigned to an organization, determine if the textfield should be displayed on
+        the edit account page. Should any of the type's attribute "hide get involved" be true or no type is selected, we hide the field. 
+        */
+        const hideGetInvolvedField =
+          i.key === "get_involved"
+            ? editedAccount.types.map((type) => type.hide_get_involved).includes(true) ||
+              editedAccount.types.length === 0
+            : false;
         return (
-          <div key={key} className={classes.infoElement}>
-            <Typography className={classes.subtitle}>
-              {i.name}
-              {i.helptext && (
-                <Tooltip title={i.helptext}>
-                  <IconButton>
-                    <HelpOutlineIcon className={classes.helpIcon} />
-                  </IconButton>
-                </Tooltip>
-              )}
-            </Typography>
-            <TextField
-              required={i.required}
-              fullWidth
-              value={i.value}
-              multiline
-              onChange={handleChange}
-            />
-          </div>
+          <>
+            {!hideGetInvolvedField && (
+              <div key={key} className={classes.infoElement}>
+                <TextField
+                  required={i.required}
+                  label={i.name}
+                  fullWidth
+                  inputProps={{ maxLength: i.maxLength }}
+                  value={i.value}
+                  multiline
+                  rows={i.rows}
+                  onChange={handleChange}
+                  helperText={ i.showCharacterCounter ? 
+                    i.helptext +
+                    (editedAccount.info[i.key] ? editedAccount.info[i.key].length : 0) +
+                    " / " +
+                    i.maxLength +
+                    " " +
+                    texts.characters +
+                    ")" : ""
+                  }
+                  variant="outlined"
+                />
+              </div>
+            )}
+          </>
         );
       }
     });
@@ -669,7 +686,8 @@ export default function EditAccountPage({
         delete tempEditedAccount.info[info.key];
       }
     }
-    tempEditedAccount.types = tempEditedAccount.types.filter((t) => t !== typeToDelete);
+
+    tempEditedAccount.types = tempEditedAccount.types.filter((t) => t.key !== typeToDelete);
     setEditedAccount(tempEditedAccount);
   };
 
@@ -924,7 +942,7 @@ export default function EditAccountPage({
           open={open.addTypeDialog}
           title={texts.add_type}
           values={getTypes(possibleAccountTypes, infoMetadata).filter(
-            (type) => editedAccount.types && !editedAccount.types.includes(type.key)
+            (value) => !editedAccount.types.some((val) => val.key === value.key)
           )}
           label={texts.choose_type}
           supportAdditionalInfo={true}
@@ -956,7 +974,7 @@ const getTypes = (possibleAccountTypes, infoMetadata) => {
 
 const getTypesOfAccount = (account, possibleAccountTypes, infoMetadata) => {
   return getTypes(possibleAccountTypes, infoMetadata).filter((type) =>
-    account.types.includes(type.key)
+    account.types.find((thisType) => thisType.key === type.key)
   );
 };
 
