@@ -31,10 +31,6 @@ export default function getProfileTexts({ profile, locale }) {
       de:
         "Was hat dein Interesse an Klimaschutz geweckt? Was machst du beruflich? Suchst du nach etwas bestimmten? (",
     },
-    enter_your_website_helptext: {
-      en: "Enter your website. (",
-      de: "Gebe deine Webseite ein. (",
-    },
     bio_user_profile_missing_message: {
       en: "This user hasn't added a bio yet.",
       de: "Diese(r) Benutzer*in hat noch keine Bio hinzugefügt.",

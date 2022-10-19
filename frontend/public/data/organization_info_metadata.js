@@ -77,6 +77,7 @@ function getShortDescriptionField(texts) {
     helptext: texts.how_to_summarize_organization,
     required: true,
     maxLength: 280,
+    showCharacterCounter: true,
   };
 }
 
@@ -131,7 +132,6 @@ function getWebsite(texts) {
     name: texts.website,
     type: "text",
     key: "website",
-    helptext: texts.enter_org_website,
     maxLength: 240,
     linkify: true,
   };
@@ -219,6 +219,7 @@ function getGetInvolved(texts, isEditing) {
     helptext: texts.get_involved_helptext,
     maxLength: 250,
     rows: 4,
+    showCharacterCounter: true,
   };
 }
 

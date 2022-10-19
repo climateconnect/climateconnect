@@ -292,10 +292,6 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: "Organization Type (Up to 2)",
       de: "Organisationsart (Bis zu 2)",
     },
-    enter_org_website: {
-      en: "Enter your organization's website (",
-      de: "Gebe die Website Deiner Organisation ein (",
-    },
     organization_is_active_in_these_sectors: {
       en: "This organization is active in these sectors",
       de: "Diese Organisation ist in diesen Bereichen aktiv",
