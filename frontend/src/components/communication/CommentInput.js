@@ -17,16 +17,14 @@ const useStyles = makeStyles((theme) => {
       alignItems: "center",
       marginTop: theme.spacing(1.5),
     },
-
     cancelButton: {
       float: "right",
-      marginTop: theme.spacing(1),
+      marginTop: theme.spacing(0.5),
       marginRight: theme.spacing(1),
-      marginLeft: theme.spacing(1),
     },
     commentButton: {
       float: "right",
-      marginTop: theme.spacing(1),
+      marginTop: theme.spacing(0.5),
     },
     commentButtonContainer: {
       height: 60,
@@ -35,6 +33,7 @@ const useStyles = makeStyles((theme) => {
       float: "left",
       marginLeft: theme.spacing(8.5),
       fontSize: 13,
+      width: "100%",
     },
   };
 });
@@ -54,7 +53,6 @@ function CommentInput({
   hasComments,
   infoTextSize,
   useIconButton,
-  defaultProjectCommentInput,
 }) {
   const classes = useStyles();
   const [curComment, setCurComment] = React.useState("");
@@ -117,7 +115,7 @@ function CommentInput({
     return (
       <div>
         <form onSubmit={onSendComment}>
-          <div className={`${classes.flexBox} ${defaultProjectCommentInput}`}>
+          <div className={classes.flexBox}>
             {user?.badges?.length > 0 ? (
               <ProfileBadge badge={user?.badges[0]} size="small">
                 <Avatar {...avatarProps} />
@@ -154,9 +152,11 @@ function CommentInput({
                 </IconButton>
               </Tooltip>
             )}
+           
           </div>
-          <div className={classes.commentButtonContainer}>
-            <Typography className={classes.explanation}>{getInfoText()}</Typography>
+          <Typography className={classes.explanation}>{getInfoText()}</Typography>
+          
+            <div className={classes.commentButtonContainer}>
             {!useIconButton && (
               <Button
                 color="primary"
@@ -172,7 +172,7 @@ function CommentInput({
                 {texts.cancel}
               </Button>
             )}
-          </div>
+            </div>
         </form>
       </div>
     );

@@ -16,9 +16,6 @@ const useStyles = makeStyles((theme) => {
       marginTop: theme.spacing(1),
       marginBottom: theme.spacing(1),
     },
-    defaultProjectCommentInput: {
-      marginTop: theme.spacing(0),
-    },
   };
 });
 
@@ -101,7 +98,6 @@ export default function CommentsContent({ user, project, token, setCurComments }
   return (
     <div>
       <CommentInput
-        className={classes.defaultProjectCommentInput}
         user={user}
         onSendComment={onSendComment}
         hasComments={comments.length > 0}
