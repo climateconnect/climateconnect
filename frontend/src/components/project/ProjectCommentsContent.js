@@ -32,14 +32,15 @@ export default function CommentsContent({ user, project, token, setCurComments }
 
       // remove a comment that has a parent comment
     } else {
-      const parentCommentIndex = project.comments.findIndex(
+      const tempProjectComments = project.comments;
+      const parentCommentIndex = tempProjectComments.findIndex(
         (comment) => comment.id === c.parent_comment_id
       );
       const filterOutReplies = [
-        ...project.comments[parentCommentIndex].replies.filter((pc) => pc.id !== c.id),
+        ...tempProjectComments[parentCommentIndex].replies.filter((pc) => pc.id !== c.id),
       ];
-      project.comments[parentCommentIndex].replies = filterOutReplies;
-      setCurComments([...project.comments]);
+      tempProjectComments[parentCommentIndex].replies = filterOutReplies;
+      setCurComments([...tempProjectComments]);
     }
   };
 
@@ -97,11 +98,7 @@ export default function CommentsContent({ user, project, token, setCurComments }
 
   return (
     <div>
-      <CommentInput
-        user={user}
-        onSendComment={onSendComment}
-        hasComments={comments.length > 0}
-      />
+      <CommentInput user={user} onSendComment={onSendComment} hasComments={comments.length > 0} />
       <Typography>{comments.length + " " + texts.comments}</Typography>
       <Divider className={classes.divider} />
       {comments && comments.length > 0 && (

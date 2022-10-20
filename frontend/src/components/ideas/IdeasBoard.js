@@ -101,17 +101,19 @@ export default function IdeasBoard({
       });
       // remove a reply comment
     } else {
-      const parentCommentIndex = idea.comments.findIndex(
+      const tempIdeaComments = idea.comments;
+      const parentCommentIndex = tempIdeaComments.findIndex(
         (comment) => comment.id === c.parent_comment_id
       );
+
       const filterOutReplies = [
-        ...idea.comments[parentCommentIndex].replies.filter((pc) => pc.id !== c.id),
+        ...tempIdeaComments[parentCommentIndex].replies.filter((pc) => pc.id !== c.id),
       ];
-      setIdea({...idea, comments: [...idea.comments.filter((pc) => pc.id !== c.id, {...c, c.replies.filter((pc) => pc.id !== c.id)}]}
+      tempIdeaComments[parentCommentIndex].replies = filterOutReplies;
 
       setIdea({
         ...idea,
-        comments: [...idea.comments],
+        comments: tempIdeaComments,
       });
     }
   };

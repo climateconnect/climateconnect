@@ -1,18 +1,9 @@
-import {
-  Avatar,
-  Button,
-  CircularProgress,
-  Link,
-  Tooltip,
-  Typography,
-  Box,
-} from "@material-ui/core";
+import { Avatar, Button, CircularProgress, Link, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Truncate from "react-truncate";
-
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -72,16 +63,9 @@ const useStyles = makeStyles((theme) => ({
   inlineBadge: {
     marginRight: theme.spacing(0.5),
   },
-  hideFullComment: {
-    display: "inline-block",
-  },
   commentBox: {
-    overflow: "hidden",
-    WebkitBoxOrient: "vertical",
-    display: "-webkit-box",
-    WebkitLineClamp: "3",
+    display: "flex",
   },
-  showAllText: {},
 }));
 
 export default function Post({
@@ -97,17 +81,12 @@ export default function Post({
   noLink,
 }) {
   const classes = useStyles({ preview: type === "preview" });
-  const classNames = {
-    commentBox: classes.commentBox,
-    showAllText: classes.showAllText,
-  };
 
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "communication", locale: locale });
-  const [open, setOpen] = React.useState(false);
-  const [displayReplies, setDisplayReplies] = React.useState(true);
-
-  const [replyInterfaceExpanded, setInterfaceExpanded] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [displayReplies, setDisplayReplies] = useState(true);
+  const [replyInterfaceExpanded, setInterfaceExpanded] = useState(false);
   const expandReplyInterface = () => setInterfaceExpanded(true);
   const unexpandReplyInterface = () => setInterfaceExpanded(false);
 
@@ -117,6 +96,22 @@ export default function Post({
 
   const handleSendComment = (curComment, parent_comment, clearInput) => {
     onSendComment(curComment, parent_comment, clearInput, setDisplayReplies);
+  };
+
+  const [isTextExpanded, setIsTextExpanded] = useState(false);
+  const [isTextTruncated, setisTextTruncated] = useState(false);
+
+  const handleExpandText = () => {
+    setIsTextExpanded(!isTextExpanded);
+  };
+
+  const handleTruncate = (truncated) => {
+    if (isTextTruncated === true) {
+      // keeps the button for comments that had originally been truncated.
+      //Pressing show more will cause
+      return; // a rerender and unmarks them as untruncated
+    }
+    setisTextTruncated(truncated);
   };
 
   const toggleDeleteDialogOpen = () => setOpen(!open);
@@ -133,51 +128,6 @@ export default function Post({
       : getImageUrl(post.author_user.thumbnail_image),
     className: classes.avatar,
   };
-
-
-  const ShownComment = () => {
-    const [clamped, setClamped] = React.useState(true);
-    const [showButton, setShowButton] = React.useState(true);
-    const containerRef = React.useRef(null);
-    const handleClick = () => {
-      setClamped(!clamped);
-    };
-
-    React.useEffect(() => {
-      const hasClamping = (element) => {
-        const { clientHeight, scrollHeight } = element;
-        return clientHeight !== scrollHeight;
-      };
-
-      const checkButtonAvailability = () => {
-        if (containerRef.current) {
-          const hadClampClass = containerRef.current.classList.contains("commentBox");
-          if (!hadClampClass) containerRef.current.classList.add("commentBox");
-          setShowButton(hasClamping(containerRef.current));
-          if (!hadClampClass) containerRef.current.classList.remove("commentBox");
-        }
-      };
-
-      checkButtonAvailability();
-    }, [containerRef]);
-
-    return (
-      <>
-        <Box className={classNames[("showAllText", clamped && "commentBox")]} ref={containerRef}>
-          <Typography>
-            <MessageContent content={post.content} maxLines={maxLines} />
-          </Typography>
-        </Box>
-        {showButton && (
-          <Link className={classes.toggleReplies} onClick={handleClick}>
-            {clamped ? texts.read_more : texts.read_less}
-          </Link>
-        )}
-      </>
-    );
-  };
-
-
 
   return (
     <div className={className}>
@@ -230,9 +180,23 @@ export default function Post({
                 </Truncate>
               </Typography>
             ) : (
-              <>
-                <ShownComment />
-              </>
+              <div>
+                <Typography>
+                  <Truncate
+                    lines={!isTextExpanded && 3}
+                    ellipsis={"..."}
+                    onTruncate={handleTruncate}
+                  >
+                    <MessageContent content={post.content} maxLines={maxLines} />
+                  </Truncate>
+                </Typography>
+
+                {isTextTruncated && (
+                  <Link className={classes.toggleReplies} onClick={handleExpandText}>
+                    {!isTextExpanded ? texts.read_more : texts.read_less}
+                  </Link>
+                )}
+              </div>
             )}
             <>
               {type !== "reply" &&

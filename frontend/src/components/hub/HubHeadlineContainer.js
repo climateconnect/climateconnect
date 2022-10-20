@@ -80,8 +80,8 @@ const useStyles = makeStyles((theme) => ({
   signUpContainer: {
     display: "flex",
     justifyContent: "center",
-    marginTop: theme.spacing(1)
-  }
+    marginTop: theme.spacing(1),
+  },
 }));
 
 export default function HubHeadlineContainer({ subHeadline, headline, isLocationHub, hubUrl }) {
@@ -105,19 +105,25 @@ export default function HubHeadlineContainer({ subHeadline, headline, isLocation
         {isLocationHub && (
           <>
             {!isNarrowScreen && <hr />}
-            
-              {isNarrowScreen ?
-                <div className={classes.signUpContainer}>
-                  <Button href={getLocalePrefix(locale) + "/signup"} variant="contained" color="primary">{texts.sign_up_now}</Button>
-                </div>
-              :
-                <div className={classes.climateMatchButtonContainer}>
-                  <OpenClimateMatchButton
-                    hubUrl={hubUrl}
-                    text={texts.get_active_now_with_climatematch}
-                  />
-                </div>
-              }
+
+            {isNarrowScreen ? (
+              <div className={classes.signUpContainer}>
+                <Button
+                  href={getLocalePrefix(locale) + "/signup"}
+                  variant="contained"
+                  color="primary"
+                >
+                  {texts.sign_up_now}
+                </Button>
+              </div>
+            ) : (
+              <div className={classes.climateMatchButtonContainer}>
+                <OpenClimateMatchButton
+                  hubUrl={hubUrl}
+                  text={texts.get_active_now_with_climatematch}
+                />
+              </div>
+            )}
           </>
         )}
       </div>

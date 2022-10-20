@@ -152,11 +152,10 @@ function CommentInput({
                 </IconButton>
               </Tooltip>
             )}
-           
           </div>
           <Typography className={classes.explanation}>{getInfoText()}</Typography>
-          
-            <div className={classes.commentButtonContainer}>
+
+          <div className={classes.commentButtonContainer}>
             {!useIconButton && (
               <Button
                 color="primary"
@@ -172,7 +171,7 @@ function CommentInput({
                 {texts.cancel}
               </Button>
             )}
-            </div>
+          </div>
         </form>
       </div>
     );
