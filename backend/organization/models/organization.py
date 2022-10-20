@@ -166,6 +166,14 @@ class Organization(models.Model):
         on_delete=models.SET_NULL,
     )
 
+    get_involved = models.CharField(
+        help_text="How to get involved textfield",
+        verbose_name="How to get involved",
+        null=True,
+        blank=True,
+        max_length=250,
+    )
+
     VERY_SMALL_ORGANIZATION_SIZE = 0
     SMALL_ORGANIZATION_SIZE = 1
     SMALL_MEDIUM_ORGANIZATION_SIZE = 2
