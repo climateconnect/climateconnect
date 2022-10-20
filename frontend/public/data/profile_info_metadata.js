@@ -27,7 +27,7 @@ export default function getProfileInfoMetadata(locale) {
       weight: 1,
       rows: 4,
       helptext: texts.enter_profile_bio_helptext,
-      showCharacterCounter: true
+      showCharacterCounter: true,
     },
     website: {
       name: texts.website,
