@@ -460,12 +460,12 @@ export default function Privacy() {
       For the provision of our website we use the services of the third-party providers listed
       below. These third-party tools belong to the categories of the cookies described above and
       help us provide our services on our website or to promote our products and services over the
-      internet. We share or allow YouTube and Google Analytics to collect information
-      about your use of our website over time. The information we share is only provided through
-      cookies or similar web tracking technologies that recognize the device you are using to
-      collect information, including click stream information, browser type, time and date you
-      visited the site, whether you logged into your account for our services, or otherwise worked
-      with us. The following provides additional information about these third parties:
+      internet. We share or allow YouTube and Google Analytics to collect information about your use
+      of our website over time. The information we share is only provided through cookies or similar
+      web tracking technologies that recognize the device you are using to collect information,
+      including click stream information, browser type, time and date you visited the site, whether
+      you logged into your account for our services, or otherwise worked with us. The following
+      provides additional information about these third parties:
       <h4>12.5.1 Google Analytics</h4>
       If you have given your consent to allow statistical cookies, this website uses Google
       Analytics, a web analysis service of Google LLC. The responsible service provider in the EU is
@@ -569,8 +569,14 @@ export default function Privacy() {
       </a>
       .<h4>Mailjet SAS</h4>
       On our internet pages we use the services of the cloud communications platform Twilio Inc.,
-      375 Beale Street, Suite 300, San Francisco, CA 94105 for sending automatic emails. 
-      <a href="https://www.twilio.com/legal/privacy/privacy-august-2020" target_="_blank" rel="noreferrer">Link</a>
+      375 Beale Street, Suite 300, San Francisco, CA 94105 for sending automatic emails.
+      <a
+        href="https://www.twilio.com/legal/privacy/privacy-august-2020"
+        target_="_blank"
+        rel="noreferrer"
+      >
+        Link
+      </a>
       <h2 id="security-measures">13. Technical security measures</h2>
       For security reasons and to protect the transmission of confidential information that you send
       to us as the website provider, we use SSL or TLS encryption. You can recognize an encrypted

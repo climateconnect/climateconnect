@@ -19,6 +19,7 @@ from organization.utility.organization import (
     get_organization_about_section,
     get_organization_name,
     get_organization_short_description,
+    get_organization_get_involved,
 )
 
 
@@ -49,6 +50,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
     language = serializers.SerializerMethodField()
     hubs = serializers.SerializerMethodField()
     creator = serializers.SerializerMethodField()
+    get_involved = serializers.SerializerMethodField()
 
     class Meta:
         model = Organization
@@ -70,6 +72,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
             "organization_size",
             "hubs",
             "creator",
+            "get_involved",
         )
 
     def get_name(self, obj):
@@ -101,6 +104,9 @@ class OrganizationSerializer(serializers.ModelSerializer):
     def get_hubs(self, obj):
         serializer = HubStubSerializer(obj.hubs, many=True)
         return serializer.data
+
+    def get_get_involved(self, obj):
+        return get_organization_get_involved(obj, get_language())
 
     def get_creator(self, obj):
         try:
@@ -141,10 +147,10 @@ class EditOrganizationSerializer(OrganizationSerializer):
             return {}
 
     def get_short_description(self, obj):
-        return obj.short_description
+        return get_organization_short_description(obj, get_language())
 
     def get_about(self, obj):
-        return obj.about
+         return get_organization_about_section(obj, get_language())
 
     def get_organ(self, obj):
         return obj.organ
@@ -153,7 +159,7 @@ class EditOrganizationSerializer(OrganizationSerializer):
         return obj.school
 
     def get_name(self, obj):
-        return obj.name
+        return get_organization_name(obj, get_language())
 
     class Meta(OrganizationSerializer.Meta):
         fields = OrganizationSerializer.Meta.fields + ("location", "translations")

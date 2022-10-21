@@ -166,6 +166,14 @@ class OrganizationTranslation(models.Model):
         blank=True,
     )
 
+    get_involved_translation = models.CharField(
+        help_text="Translation of get involved textfield",
+        verbose_name="How to get involved translation",
+        null=True,
+        blank=True,
+        max_length=250,
+    )
+
     class Meta:
         verbose_name = "Organization translation"
         verbose_name_plural = "Organization translations"
