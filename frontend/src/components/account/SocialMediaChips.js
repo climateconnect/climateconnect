@@ -6,9 +6,15 @@ import ControlPointIcon from "@material-ui/icons/ControlPoint";
 import SocialMediaButton from "../general/SocialMediaButton";
 
 const useStyles = makeStyles((theme) => ({
-  socialMediaChip: {
+  socialMediaChip: (props) => ({
     marginRight: theme.spacing(0.5),
-    marginBottom: theme.spacing(0.5),
+    marginBottom: theme.spacing(1),
+    marginTop: props.allSelected ? theme.spacing(-0.5): theme.spacing(0),
+  }),
+  addSocialMediaChip: {
+    marginRight: theme.spacing(0.5),
+    marginBottom: theme.spacing(1),
+    marginTop: theme.spacing(-0.5)
   },
   noPadding: {
     padding: 0,
@@ -20,17 +26,16 @@ export default function SocialMediaChips({
   handleDialogClickOpen,
   handleDeleteSocialMedia,
   maxNumOfSocials,
-  isCreationStep,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({allSelected: socials.length < maxNumOfSocials ? false : true});
   return (
     <>
       <Container className={classes.noPadding}>
-        {(socials.value.length < maxNumOfSocials || isCreationStep) && (
+        {(socials.value.length < maxNumOfSocials) && (
           <div>
             <Chip
               label={socials.name}
-              className={classes.socialMediaChip}
+              className={classes.addSocialMediaChip}
               color={socials.value && socials.value.length ? "default" : "primary"}
               icon={<ControlPointIcon />}
               onClick={() => handleDialogClickOpen("addSocialMediaDialog")}
