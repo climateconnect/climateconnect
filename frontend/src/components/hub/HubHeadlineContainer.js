@@ -106,7 +106,6 @@ export default function HubHeadlineContainer({ subHeadline, headline, isLocation
         {isLocationHub && (
           <>
             {!isNarrowScreen && <hr />}
-
             {isNarrowScreen && !user ? (
               <div className={classes.signUpContainer}>
                 <Button
