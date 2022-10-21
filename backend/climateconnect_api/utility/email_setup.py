@@ -257,11 +257,8 @@ def remove_contact_from_list(contact_id, list_id):
     mailjet_api.contact_managecontactslists.create(id=contact_id, data=data)
 
 
-#sends an email to our own engineering email for testing purposes
-def send_test_mail_to_engineering_email(
-    subject,
-    text_body
-):
+# sends an email to our own engineering email for testing purposes
+def send_test_mail_to_engineering_email(subject, text_body):
     data = {
         "Messages": [
             {
@@ -270,7 +267,10 @@ def send_test_mail_to_engineering_email(
                     "Name": "Climate Connect",
                 },
                 "To": [
-                    {"Email": "engineering@climateconnect.earth", "Name": f"Engineering"}
+                    {
+                        "Email": "engineering@climateconnect.earth",
+                        "Name": f"Engineering",
+                    }
                 ],
                 "Subject": subject,
                 "HTMLPart": text_body,
@@ -285,6 +285,7 @@ def send_test_mail_to_engineering_email(
 
     if mail.status_code != 200:
         logger.error(f"EmailFailure: Error sending email -> {mail.text}")
+
 
 def send_email_reminder_for_unread_notifications(
     user: User, user_notifications: List[UserNotification]
