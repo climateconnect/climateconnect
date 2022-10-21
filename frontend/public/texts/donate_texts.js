@@ -217,8 +217,8 @@ export default function getDonateTexts({ classes, goal }) {
       ),
       de: (
         <>
-          Hier findest Du ein Dokument, das einen vereinfachten Zuwendungsnachweis und die Bestätigung
-          unseres Gemeinnützigkeitsstatus erklärt{" "}
+          Hier findest Du ein Dokument, das einen vereinfachten Zuwendungsnachweis und die
+          Bestätigung unseres Gemeinnützigkeitsstatus erklärt{" "}
           <Link target="_blank" href="/documents/nonprofit_status_confirmation.pdf">
             hier
           </Link>

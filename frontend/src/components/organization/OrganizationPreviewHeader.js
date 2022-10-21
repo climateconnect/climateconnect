@@ -2,16 +2,14 @@ import React from "react";
 import { Avatar, Box, Chip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { getImageUrl } from "../../../public/lib/imageOperations";
+import Truncate from "react-truncate";
 
 const useStyles = makeStyles((theme) => {
   return {
     header: {
       fontWeight: "bold",
       margin: "5px",
-      maxWidth: "220px",
       overflow: "hidden",
-      textOverflow: "ellipsis",
-      display: "inline-block",
     },
     headerWrapper: (props) => ({
       justifyContent: "center",
@@ -67,7 +65,7 @@ export default function OrganizationPreviewHeader({ organization }) {
       )}
       <Box className={classes.headerWrapper}>
         <Typography variant="h6" component="h2" className={classes.header}>
-          {organization.name}
+          <Truncate lines={2}>{organization.name}</Truncate>
         </Typography>
       </Box>
     </div>

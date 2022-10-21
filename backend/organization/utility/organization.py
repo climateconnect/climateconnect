@@ -57,6 +57,25 @@ def get_organization_short_description(
     return organization.short_description
 
 
+def get_organization_get_involved(
+    organization: Organization, language_code: str
+) -> str:
+    if (
+        organization.language
+        and language_code != organization.language.language_code
+        and organization.translation_org.filter(
+            language__language_code=language_code
+        ).exists()
+    ):
+        return (
+            organization.translation_org.filter(language__language_code=language_code)
+            .first()
+            .get_involved_translation
+        )
+
+    return organization.get_involved
+
+
 def get_organization_about_section(
     organization: Organization, language_code: str
 ) -> str:

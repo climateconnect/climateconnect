@@ -28,6 +28,12 @@ class OrganizationTags(models.Model):
         blank=True,
     )
 
+    hide_get_involved = models.BooleanField(
+        help_text="Indicates whether or not this type should hide the get involved field",
+        verbose_name="Hide Get Involved field",
+        default=False,
+    )
+
     parent_tag = models.ForeignKey(
         "self",
         related_name="organization_tag_parent",
