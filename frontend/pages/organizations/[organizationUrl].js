@@ -108,8 +108,9 @@ export default function OrganizationPage({
   following,
 }) {
   const { user, locale } = useContext(UserContext);
-  const infoMetadata = getOrganizationInfoMetadata(locale, organization);
+  const infoMetadata = getOrganizationInfoMetadata(locale, organization, false);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
+
 
   // l. 105-137 handles following Organizations
   const [numberOfFollowers, setNumberOfFollowers] = React.useState(
@@ -144,6 +145,7 @@ export default function OrganizationPage({
       window.removeEventListener("beforeunload", handleWindowClose);
     };
   });
+
 
   return (
     <WideLayout

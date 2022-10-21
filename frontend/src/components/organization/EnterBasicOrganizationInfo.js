@@ -1,6 +1,6 @@
-import { IconButton } from "@material-ui/core";
+import { IconButton, makeStyles, Chip, Tooltip } from "@material-ui/core";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { getLocationFields } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -17,6 +17,36 @@ const renderSearchOption = (option) => {
   );
 };
 
+const useStyles = makeStyles((theme) => ({
+  selectedTypes: {
+    marginTop: theme.spacing(1),
+    display: "flex",
+    justifyContent: "space-evenly",
+
+    [theme.breakpoints.down("xs")]: {
+      flexDirection: "column",
+      marginTop: theme.spacing(0),
+      alignItems: "center",
+    },
+  },
+  chip: {
+    height: 30,
+    width: "100%",
+
+    [theme.breakpoints.down("sm")]: {
+      marginTop: theme.spacing(1),
+    },
+  },
+  lastChip: {
+    height: 30,
+    width: "100%",
+    marginLeft: theme.spacing(0.5),
+    [theme.breakpoints.down("sm")]: {
+      marginTop: theme.spacing(1),
+    },
+  },
+}));
+
 export default function EnterBasicOrganizationInfo({
   errorMessage,
   handleSubmit,
@@ -24,10 +54,20 @@ export default function EnterBasicOrganizationInfo({
   locationInputRef,
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
+  tagOptions,
 }) {
+  const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
-  const [parentOrganization, setParentOrganization] = React.useState(null);
+  const [parentOrganization, setParentOrganization] = useState(null);
+  const [selectedTypes, setSelectedTypes] = useState([]);
+
+  const handleChangeTypes = (newValue) => {
+    setSelectedTypes(newValue);
+  };
+  const handleRemoveType = (item) => {
+    setSelectedTypes(selectedTypes.filter((value) => value !== item));
+  };
   const onUnselect = () => {
     if (parentOrganization) setParentOrganization(null);
   };
@@ -75,6 +115,35 @@ export default function EnterBasicOrganizationInfo({
     }),
     {
       required: true,
+      label: texts.add_up_to_two_types,
+      multiselect: {
+        values: tagOptions,
+      },
+      selectedValues: selectedTypes,
+      multiSelectProps: {
+        onChange: handleChangeTypes,
+        renderValue: "",
+      },
+      maxOptions: 2,
+      multiple: true,
+      key: "orgtypes",
+      bottomLink: (
+        <div className={classes.selectedTypes}>
+          {selectedTypes.map((selectedType, index) => (
+            <Tooltip placement="top" arrow title={selectedType} key={index}>
+              <Chip
+                className={index === 1 ? classes.lastChip : classes.chip}
+                label={selectedType}
+                onDelete={() => handleRemoveType(selectedType)}
+                key={index}
+              />
+            </Tooltip>
+          ))}
+        </div>
+      ),
+    },
+    {
+      required: true,
       label: texts.i_verify_that_i_am_an_authorized_representative_of_this_organization,
       key: "verified",
       type: "checkbox",
@@ -92,9 +161,22 @@ export default function EnterBasicOrganizationInfo({
       messages={messages}
       usePercentage={false}
       onSubmit={(event, account) =>
-        handleSubmit(event, { ...account, parentOrganization: parentOrganization })
+        handleSubmit(event, {
+          ...account,
+          parentOrganization: parentOrganization,
+          orgtypes: convertTypeNamesToObject(selectedTypes, tagOptions),
+        })
       }
       errorMessage={errorMessage}
     />
   );
+}
+
+function convertTypeNamesToObject(selectedTypesArr, types) {
+  const intersectingTypes = types.filter((type) => selectedTypesArr.includes(type.name));
+  const convertedList = intersectingTypes.map((type) => ({
+    key: type.key,
+    hide_get_involved: type.hide_get_involved,
+  }));
+  return convertedList;
 }

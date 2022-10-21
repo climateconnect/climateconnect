@@ -56,7 +56,14 @@ class OrganizationTagsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrganizationTags
-        fields = ("id", "name", "original_name", "parent_tag", "additional_info")
+        fields = (
+            "id",
+            "name",
+            "hide_get_involved",
+            "original_name",
+            "parent_tag",
+            "additional_info",
+        )
 
     def get_name(self, obj):
         return get_organizationtag_name(obj, get_language())

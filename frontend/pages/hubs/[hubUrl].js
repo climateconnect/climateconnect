@@ -35,9 +35,6 @@ const useStyles = makeStyles((theme) => ({
       paddingTop: theme.spacing(1),
     },
   },
-  contentUnderHeader: {
-    marginTop: 112,
-  },
   contentRef: {
     position: "absolute",
     top: -90,
@@ -52,7 +49,15 @@ const useStyles = makeStyles((theme) => ({
 
 const DESCRIPTION_WEBFLOW_LINKS = {
   energy: {
-    en: "energy-hub",
+    en: "energy-en",
+  },
+  mobility: {
+    de: "mobilitat-de",
+    en: "mobility-en",
+  },
+  biodiversity: {
+    de: "biodiversitat",
+    en: "biodiversity-en",
   },
 };
 
@@ -134,7 +139,7 @@ export default function Hub({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
   const token = new Cookies().get("auth_token");
-  const [hubAmbassador, setHubAmbassador] = useState(null)
+  const [hubAmbassador, setHubAmbassador] = useState(null);
 
   // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
   const [filters, setFilters] = useState(
@@ -163,9 +168,9 @@ export default function Hub({
   };
 
   useEffect(async () => {
-    const retrievedHubAmbassador = await getHubAmbassadorData(hubUrl, locale)
-    setHubAmbassador(retrievedHubAmbassador)
-  }, [])
+    const retrievedHubAmbassador = await getHubAmbassadorData(hubUrl, locale);
+    setHubAmbassador(retrievedHubAmbassador);
+  }, []);
 
   //Refs and state for tutorial
   const hubQuickInfoRef = useRef(null);
@@ -234,13 +239,7 @@ export default function Hub({
       {hubDescription && hubDescription.headContent && (
         <Head>{parseHtml(hubDescription.headContent)}</Head>
       )}
-      <WideLayout
-        title={headline}
-        fixedHeader
-        headerBackground="#FFF"
-        image={getImageUrl(image)}
-        isHubPage
-      >
+      <WideLayout title={headline} headerBackground="#FFF" image={getImageUrl(image)} isHubPage>
         <div className={classes.contentUnderHeader}>
           <NavigationSubHeader hubName={name} allHubs={allHubs} isLocationHub={isLocationHub} />
           {<DonationCampaignInformation />}
@@ -283,6 +282,7 @@ export default function Hub({
               applyNewFilters={handleApplyNewFilters}
               customSearchBarLabels={customSearchBarLabels}
               errorMessage={errorMessage}
+              hubAmbassador={hubAmbassador}
               filters={filters}
               handleUpdateFilterValues={handleUpdateFilterValues}
               filterChoices={filterChoices}
@@ -322,7 +322,7 @@ const HubDescription = ({ hub, texts }) => {
   );
 };
 
-const WEBFLOW_BASE_LINK = "https://climateconnect.webflow.io/";
+const WEBFLOW_BASE_LINK = "https://climateconnect.webflow.io/hub-texts/";
 
 const retrieveDescriptionFromWebflow = async (query, locale) => {
   if (
@@ -369,4 +369,4 @@ const getHubAmbassadorData = async (url_slug, locale) => {
     console.log(err);
     return null;
   }
-}
+};

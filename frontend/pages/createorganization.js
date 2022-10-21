@@ -59,8 +59,18 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
     setErrorMessages(newErrorMessages);
     window.scrollTo(0, 0);
   };
+  const { user, locale, locales } = useContext(UserContext);
+  const texts = getTexts({ page: "organization", locale: locale });
+  const steps = ["basicorganizationinfo", "detailledorganizationinfo", "checktranslations"];
+  const [curStep, setCurStep] = useState(steps[0]);
+  const locationInputRef = useRef(null);
+  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
+  const [translations, setTranslations] = useState({});
+  const [sourceLanguage, setSourceLanguage] = useState(locale);
+  const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== locale));
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
 
-  const [organizationInfo, setOrganizationInfo] = React.useState({
+  const [organizationInfo, setOrganizationInfo] = useState({
     name: "",
     hasparentorganization: false,
     parentorganization: "",
@@ -70,23 +80,14 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
     info: {
       location: {},
       short_description: "",
-      website: "",
       about: "",
-      organization_size: "",
+      get_involved: "",
+      organization_size: 0,
+      website: "",
       hubs: [],
     },
     types: [],
   });
-  const { user, locale, locales } = useContext(UserContext);
-  const texts = getTexts({ page: "organization", locale: locale });
-  const steps = ["basicorganizationinfo", "detailledorganizationinfo", "checktranslations"];
-  const [curStep, setCurStep] = React.useState(steps[0]);
-  const locationInputRef = useRef(null);
-  const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
-  const [translations, setTranslations] = React.useState({});
-  const [sourceLanguage, setSourceLanguage] = useState(locale);
-  const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== locale));
-  const [loadingSubmit, setLoadingSubmit] = useState(false);
 
   const changeTranslationLanguages = ({ newLanguagesObject }) => {
     if (newLanguagesObject.sourceLanguage) setSourceLanguage(newLanguagesObject.sourceLanguage);
@@ -166,11 +167,13 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         });
       } else {
         const location = getLocationValue(values, "location");
+
         setOrganizationInfo({
           ...organizationInfo,
           name: values.organizationname,
           parentorganization: values.parentorganizationname,
           location: parseLocation(location),
+          types: values.orgtypes,
         });
         setCurStep(steps[1]);
       }
@@ -194,6 +197,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
 
   const handleDetailledInfoSubmit = async (account) => {
     //If the language is not language, short circuit and allow users to check the english translations for their texts
+
     const organizationToSubmit = await parseOrganizationForRequest(
       account,
       user,
@@ -201,6 +205,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       translations,
       sourceLanguage
     );
+
     if (!legacyModeEnabled && !isLocationValid(organizationToSubmit.location)) {
       indicateWrongLocation(
         locationInputRef,
@@ -222,7 +227,8 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         return;
       }
     }
-    if (locale !== "en") {
+
+    /*if (locale !== "en") {
       console.log(account);
       setOrganizationInfo({
         ...account,
@@ -230,7 +236,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       });
       setCurStep(steps[2]);
       return;
-    }
+    }*/
     setLoadingSubmit(true);
     await makeCreateOrganizationRequest(organizationToSubmit);
   };
@@ -303,6 +309,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
           locationInputRef={locationInputRef}
           locationOptionsOpen={locationOptionsOpen}
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+          tagOptions={tagOptions}
         />
       </Layout>
     );
@@ -322,7 +329,41 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         />
       </WideLayout>
     );
-  else if (curStep === "checktranslations")
+  else if (curStep === "checktranslations") {
+    const hideGetInvolvedField =
+      organizationInfo.types.map((type) => type.hide_get_involved).includes(true) ||
+      organizationInfo.types.length === 0;
+
+    const standardTextsToTranslate = [
+      {
+        textKey: "name",
+        rows: 2,
+        headlineTextKey: "organization_name",
+      },
+      {
+        textKey: "info.short_description",
+        rows: 5,
+        headlineTextKey: "short_description",
+      },
+      {
+        textKey: "info.about",
+        rows: 9,
+        headlineTextKey: "about",
+      },
+    ];
+
+    const getInvolvedText = [
+      {
+        textKey: "info.get_involved",
+        rows: 5,
+        headlineTextKey: "get_involved",
+      },
+    ];
+
+    const textsToTranslate = hideGetInvolvedField
+      ? standardTextsToTranslate
+      : standardTextsToTranslate.concat(getInvolvedText);
+
     return (
       <WideLayout title={texts.languages}>
         <Typography color="primary" className={classes.headline} component="h1" variant="h4">
@@ -339,23 +380,13 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
           handleChangeTranslationContent={handleChangeTranslationContent}
           goToPreviousStep={goToPreviousStep}
           introTextKey="translate_organization_intro"
-          textsToTranslate={[
-            {
-              textKey: "info.short_description",
-              rows: 5,
-              headlineTextKey: "short_description",
-            },
-            {
-              textKey: "info.about",
-              rows: 10,
-              headlineTextKey: "about",
-            },
-          ]}
+          textsToTranslate={textsToTranslate}
           organization={organizationInfo}
           changeTranslationLanguages={changeTranslationLanguages}
         />
       </WideLayout>
     );
+  }
 }
 
 const getRolesOptions = async (token, locale) => {
@@ -411,9 +442,10 @@ const parseOrganizationForRequest = async (o, user, rolesOptions, translations, 
     image: o.image,
     thumbnail_image: o.thumbnail_image,
     location: o.info.location,
-    website: o.info.website,
     short_description: o.info.short_description,
+    get_involved: o.info.get_involved,
     organization_size: o.info.organization_size,
+    website: o.info.website,
     hubs: o.info.hubs.map((h) => h.url_slug),
     about: o.info.about,
     organization_tags: o.types,

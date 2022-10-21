@@ -111,6 +111,7 @@ export default function Form({
   const [values, setValues] = React.useState(
     fields.reduce((obj, field) => {
       if (field.select) obj[field.key] = field.select.defaultValue ? field.select.defaultValue : "";
+      else if (field.multiselect) obj[field.key] = field.selectedValues ? field.selectedValues : [];
       else if (field.value) obj[field.key] = field.value;
       else if (field.type === "checkbox" || field.type === "switch")
         obj[field.key] = field.checked ? field.checked : false;
@@ -212,6 +213,37 @@ export default function Form({
                   className={`${classes.blockElement} ${fieldClassName}`}
                   key={field.label + fields.indexOf(field)}
                   onChange={() => handleValueChange(event, field.key, field.type, true)}
+                />
+                {field.bottomLink && field.bottomLink}
+              </React.Fragment>
+            );
+          } else if (field.multiselect) {
+            const options = field.multiselect.values;
+            return (
+              <React.Fragment key={field.key}>
+                <SelectField
+                  disabled={field.selectedValues.length === field.maxOptions}
+                  multiple={field.multiple}
+                  required={field.required}
+                  options={options}
+                  label={field.label}
+                  className={`${classes.blockElement} ${fieldClassName}`}
+                  key={field.label + fields.indexOf(field)}
+                  onChange={(event) => {
+                    // we first check if we are reached limit of selected values
+                    if (field.selectedValues.length === field.maxOptions) {
+                      const isUnselectingValue =
+                        field.selectedValues.length >= event.target.value.length;
+                      // if we are at limit but want to make a change by removing an item we need to allow user to unselect
+
+                      if (isUnselectingValue) field.multiSelectProps.onChange(event.target.value);
+                      // otherwise we just return and don't allow changes to the selectedValues
+                      return;
+                    }
+                    // make changes as usual when user is not at limit
+                    field.multiSelectProps.onChange(event.target.value);
+                  }}
+                  values={field.selectedValues}
                 />
                 {field.bottomLink && field.bottomLink}
               </React.Fragment>
