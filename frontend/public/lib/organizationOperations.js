@@ -10,20 +10,13 @@ export function parseOrganization(organization, editMode) {
     types: organization.types.map((t) => ({ ...t.organization_tag, key: t.organization_tag.id })),
     language: organization.language,
     hubs: organization.hubs,
-    info: {
-      location: organization.location,
-      short_description: organization.short_description,
-      website: organization.website,
-      about: organization.about,
-      organization_size: organization.organization_size,
-      hubs: organization.hubs,
-    },
+    info: getOrganizationInfo(organization, editMode),
   };
 
-  if (editMode) {
-    org.types = org.types.map((t) => t.key);
-    org.translations = organization.translations;
-  }
+
+  if (editMode)
+    org.types = org.types.map((t) => ({ key: t.key, hide_get_involved: t.hide_get_involved }));
+
   const additional_info = organization.types.reduce((additionalInfoArray, t) => {
     const type = t.organization_tag;
     if (type.additional_info && type.additional_info.length > 0) {
@@ -61,5 +54,42 @@ export async function getUserOrganizations(token, locale) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
+  }
+}
+
+function getOrganizationInfo(organization, editMode) {
+  const info = {
+    location: organization.location,
+    short_description: organization.short_description,
+    website: organization.website,
+    about: organization.about,
+  };
+
+  const hubs = {
+    hubs: organization.hubs,
+  };
+
+  const orgSizeAndInvolvement = {
+    organization_size: organization.organization_size,
+    get_involved: organization.get_involved,
+  };
+  /* For organization sizes and involvement we must differ between editing and non editing attribute for this object. 
+         When editing, it is required to have the attributes separate in order to use the generic functions to modify the fields in EditAccountPage.js
+         When displaying the Org page outside of editing we want to have the info be contained inside the same attribute to display them side by side.
+ */
+  if (editMode) {
+    return {
+      ...info,
+      ...orgSizeAndInvolvement,
+      ...hubs,
+    };
+  } else {
+    return {
+      ...info,
+      organization_size_and_involvement: {
+        ...orgSizeAndInvolvement,
+      },
+      ...hubs,
+    };
   }
 }

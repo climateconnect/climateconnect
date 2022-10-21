@@ -32,13 +32,13 @@ export default function getOrganizationTexts({ organization, locale }) {
     },
     how_to_summarize_organization: {
       en:
-        "Give a short summary or what your organization is doing. This text will be displayed on your organization card.",
+        "Give a short summary or what your organization is doing. Below you'll have more space to describe it. (",
       de:
-        "Beschreibe kurz deine Organisation und ihre Aktivitäten. Dieser Text wird auf der Organisationskarte deiner Organisation angezeigt werden.",
+        "Fasse deine Organisation und ihre Aktivitäten kurz zusammen. Unten hast du Platz, sie genauer zu beschreiben. (",
     },
     how_to_describe_organization: {
       en:
-        "Describe what your organization is doing, how you work and what impact you have on climate change. Please only use english!",
+        "Describe what your organization is doing, how you work and what impact you have on climate change. Please only use English!",
       de:
         "Beschreibe, was deine Organisation macht, wie ihr arbeitet und welchen Einfluss ihr auf den Klimawandel habt.",
     },
@@ -252,8 +252,8 @@ export default function getOrganizationTexts({ organization, locale }) {
       de: "Über 50.000",
     },
     organization_size: {
-      en: "Organization size",
-      de: "Größe der Organisation",
+      en: "Members",
+      de: "Mitglieder",
     },
     people: {
       en: "people",
@@ -282,6 +282,23 @@ export default function getOrganizationTexts({ organization, locale }) {
     our_local_groups: {
       en: "Our local groups:",
       de: "Unsere lokalen Gruppen:",
+
+    get_involved: {
+      en: "How to get involved",
+      de: "Wie man sich einbringen kann",
+    },
+    get_involved_helptext: {
+      en: "e.g. Open online meeting every Wednesday at 6pm. New people always welcome! (",
+      de:
+        'z.B. "Offenes Treffen jeden Mittwoch um 18 Uhr im Café Margareta. Interessierte sind immer willkommen!" (',
+    },
+    add_up_to_two_types: {
+      en: "Organization Type (Up to 2)",
+      de: "Organisationsart (Bis zu 2)",
+    },
+    organization_is_active_in_these_sectors: {
+      en: `${organization?.name} is active in these sectors`,
+      de: `${organization?.name} ist in diesen Bereichen aktiv`,
     },
   };
 }
