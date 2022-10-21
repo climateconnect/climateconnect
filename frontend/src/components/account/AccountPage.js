@@ -28,6 +28,9 @@ import IconButton from "@material-ui/core/IconButton";
 import { getSocialMediaButtons } from "../../../public/lib/socialMediaOperations";
 import SocialMediaButton from "../general/SocialMediaButton";
 
+import SelectWithText from "./SelectWithText";
+import SubTitleWithContent from "../general/SubTitleWithContent";
+
 const useStyles = makeStyles((theme) => ({
   avatarContainer: {
     [theme.breakpoints.up("sm")]: {
@@ -76,12 +79,9 @@ const useStyles = makeStyles((theme) => ({
   subtitle: {
     color: `${theme.palette.secondary.main}`,
     fontWeight: "bold",
-    marginBottom: theme.spacing(1),
-    marginTop: theme.spacing(1),
   },
   content: {
-    paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
+    paddingBottom: theme.spacing(2),
     color: `${theme.palette.secondary.main}`,
     fontSize: 16,
   },
@@ -101,6 +101,12 @@ const useStyles = makeStyles((theme) => ({
   },
   marginTop: {
     marginTop: theme.spacing(1),
+  },
+  marginBottom: {
+    marginBottom: theme.spacing(1),
+  },
+  marginRight: {
+    marginRight: theme.spacing(0.5),
   },
   chip: {
     marginBottom: theme.spacing(1),
@@ -156,6 +162,21 @@ const useStyles = makeStyles((theme) => ({
   miniOrgPreview: {
     display: "flex",
   },
+  sizeContainer: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+  },
+  getInvolvedContainer: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    marginRight: theme.spacing(1),
+  },
+  selectContainer: {
+    display: "flex",
+    flexDirection: "row",
+  },
 }));
 
 //Generic component to display personal profiles or organization profiles
@@ -194,7 +215,6 @@ export default function AccountPage({
       {text}
     </Link>
   );
-
   const displayAccountInfo = (info) =>
     Object.keys(info)
       .sort((a, b) => {
@@ -205,6 +225,7 @@ export default function AccountPage({
       .map((key, index) => {
         if (info[key]) {
           const i = getFullInfoElement(infoMetadata, key, info[key]);
+
           const value = Array.isArray(i.value) ? i.value.join(", ") : i.value;
           const additionalText = i.additionalText ? i.additionalText : "";
           if (key === "parent_organization") {
@@ -221,11 +242,13 @@ export default function AccountPage({
                   />
                 </div>
               );
+          } else if (i.type === "selectwithtext" && value) {
+            return <SelectWithText types={account.types} info={i} key={index} />;
           } else if (i.type === "array" && i?.value?.length > 0) {
             return (
               <div key={index} className={classes.infoElement}>
                 <div className={classes.subtitle}>{i.name}:</div>
-                <div className={classes.chipArray}>
+                <div className={classes.marginBottom}>
                   {i && i.value && i.value.length > 0
                     ? i.value.map((entry) => (
                         <Chip size="medium" label={entry} key={entry} className={classes.chip} />
@@ -251,27 +274,34 @@ export default function AccountPage({
               </div>
             );
           } else if (i.type === "hubs") {
-            return <MiniHubPreviews hubs={i.value} />;
+            return (
+              <>
+                {i.value.length > 0 && <div className={classes.subtitle}>{i.name}:</div>}
+
+                <MiniHubPreviews hubs={i.value} />
+              </>
+            );
           } else if (i.type === "select" && value) {
             const textValue = i.options ? i.options.find((o) => o?.key === value).name : value;
             return (
               <div key={index}>
-                <div className={classes.subtitle}>{i.name}:</div>
-                <div className={classes.content}>
-                  {textValue ? textValue + additionalText : i.missingMessage}
-                </div>
+                <SubTitleWithContent
+                  subtitle={i.name + ":"}
+                  content={textValue ? textValue + additionalText : i.missingMessage}
+                />
               </div>
             );
           } else if (
             value &&
-            !["detailled_description", "location", "checkbox", "social_media"].includes(i.type)
+            !["detailled_description", "location", "checkbox", "social_media"].includes(i.type) &&
+            !isOrganization
           ) {
             return (
               <div key={index}>
-                <div className={classes.subtitle}>{i.name}:</div>
-                <div className={classes.content}>
-                  {value ? value + additionalText : i.missingMessage}
-                </div>
+                <SubTitleWithContent
+                  subtitle={i.name + ":"}
+                  content={value ? value + additionalText : i.missingMessage}
+                />
               </div>
             );
           }

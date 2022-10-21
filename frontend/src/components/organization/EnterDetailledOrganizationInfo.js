@@ -41,7 +41,7 @@ export default function EnterDetailledOrganizationInfo({
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
-  const organization_info_metadata = getOrganizationInfoMetadata(locale, organizationInfo);
+  const organization_info_metadata = getOrganizationInfoMetadata(locale, organizationInfo, true);
   const organization = parseOrganizationInfo(organizationInfo, organization_info_metadata);
   const infoMetadata = {
     ...organization_info_metadata,
@@ -53,7 +53,6 @@ export default function EnterDetailledOrganizationInfo({
     },
   };
   const classes = useStyles();
-
   const handleCancel = () => {
     Router.push("/browse");
   };

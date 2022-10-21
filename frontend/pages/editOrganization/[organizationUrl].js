@@ -45,7 +45,7 @@ export default function EditOrganizationPage({
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
-  const organization_info_metadata = getOrganizationInfoMetadata(locale, organization);
+  const organization_info_metadata = getOrganizationInfoMetadata(locale, organization, true);
   const [errorMessage, setErrorMessage] = useState("");
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
