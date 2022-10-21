@@ -271,13 +271,13 @@ export default function AccountPage({
               </div>
             );
           } else if (i.type === "hubs") {
-           
             return (
               <>
-              {i.value.length > 0 && ( <div className={classes.subtitle}>{i.name}:</div>)}
-             
-              <MiniHubPreviews hubs={i.value} /></>)
-            ;
+                {i.value.length > 0 && <div className={classes.subtitle}>{i.name}:</div>}
+
+                <MiniHubPreviews hubs={i.value} />
+              </>
+            );
           } else if (i.type === "select" && value) {
             const textValue = i.options ? i.options.find((o) => o?.key === value).name : value;
             return (
