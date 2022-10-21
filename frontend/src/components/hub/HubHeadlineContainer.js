@@ -86,7 +86,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function HubHeadlineContainer({ subHeadline, headline, isLocationHub, hubUrl }) {
   const classes = useStyles({ isLocationHub: isLocationHub });
-  const { locale } = useContext(UserContext);
+  const { locale, user } = useContext(UserContext);
+
   const texts = getTexts({ page: "climatematch", locale: locale });
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -105,8 +106,7 @@ export default function HubHeadlineContainer({ subHeadline, headline, isLocation
         {isLocationHub && (
           <>
             {!isNarrowScreen && <hr />}
-
-            {isNarrowScreen ? (
+            {isNarrowScreen && !user ? (
               <div className={classes.signUpContainer}>
                 <Button
                   href={getLocalePrefix(locale) + "/signup"}
@@ -116,7 +116,8 @@ export default function HubHeadlineContainer({ subHeadline, headline, isLocation
                   {texts.sign_up_now}
                 </Button>
               </div>
-            ) : (
+            ) : ( // not sure to add this button or have nothing here since there is this climatematch button on the headerbar
+                  // for small screen sizes
               <div className={classes.climateMatchButtonContainer}>
                 <OpenClimateMatchButton
                   hubUrl={hubUrl}
