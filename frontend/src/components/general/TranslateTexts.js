@@ -78,8 +78,8 @@ const useStyles = makeStyles((theme) => ({
   translateButton: {
     marginRight: theme.spacing(1),
     marginLeft: theme.spacing(1),
-    [theme.breakpoints.down("xs")]: {
-      marginBottom: theme.spacing(1),
+    [theme.breakpoints.down("sm")]: {
+     
       minWidth: 100,
     },
     width: 265,
@@ -106,6 +106,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-around",
   },
   backButton: {
+
     border: `1px solid #000000`,
   },
 }));
