@@ -5,6 +5,9 @@ import {
   makeStyles,
   TextField,
   Typography,
+  AppBar,
+  Toolbar,
+  Tooltip,
 } from "@material-ui/core";
 import _ from "lodash";
 import React, { useContext, useEffect, useState } from "react";
@@ -13,6 +16,10 @@ import { getNestedValue } from "../../../public/lib/generalOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import VisibleFooterHeight from "../hooks/VisibleFooterHeight";
+import SaveIcon from "@material-ui/icons/Save";
+import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,7 +32,12 @@ const useStyles = makeStyles((theme) => ({
   sectionHeader: {
     fontSize: 22,
     fontWeight: "bold",
-    marginBottom: theme.spacing(1.5),
+    marginTop: theme.spacing(1.5),
+    overflowWrap: "break-word",
+  },
+  divider: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
   },
   translationBlocksHeader: {
     marginTop: theme.spacing(3),
@@ -34,9 +46,24 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     marginBottom: theme.spacing(2),
+
+    [theme.breakpoints.down("sm")]: {
+      flexDirection: "column",
+      alignItems: "center",
+      border: `1px solid ${theme.palette.grey[500]}`,
+      borderRadius: 15,
+      padding: theme.spacing(1),
+    },
   },
   translationBlockElement: {
-    flexGrow: 0.48,
+    [theme.breakpoints.up("md")]: {
+      flexGrow: 0.48,
+      flexBasis: 400,
+    },
+    [theme.breakpoints.down("sm")]: {
+      flexGrow: 0.48,
+      width: "100%",
+    },
   },
   topButtonRow: {
     display: "inline-flex",
@@ -44,10 +71,17 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     justifyContent: "center",
     marginTop: theme.spacing(2),
+    [theme.breakpoints.down("sm")]: {
+      marginTop: theme.spacing(0),
+    },
   },
   translateButton: {
     marginRight: theme.spacing(1),
     marginLeft: theme.spacing(1),
+    [theme.breakpoints.down("xs")]: {
+      marginBottom: theme.spacing(1),
+      minWidth: 100,
+    },
     width: 265,
   },
   translationLoader: {
@@ -59,6 +93,20 @@ const useStyles = makeStyles((theme) => ({
   },
   saveAsDraftButton: {
     marginTop: theme.spacing(1),
+  },
+  actionBar: (props) => ({
+    backgroundColor: "#ECECEC",
+    top: "auto",
+    bottom: props.visibleFooterHeight,
+    boxShadow: "-3px -3px 6px #00000029",
+    zIndex: "1",
+  }),
+  containerButtonsActionBar: {
+    display: "flex",
+    justifyContent: "space-around",
+  },
+  backButton: {
+    border: `1px solid #000000`,
   },
 }));
 
@@ -82,7 +130,9 @@ export default function TranslateTexts({
   loadingSubmitDraft,
   organization,
 }) {
-  const classes = useStyles();
+  const visibleFooterHeight = VisibleFooterHeight({});
+  const classes = useStyles({ visibleFooterHeight: visibleFooterHeight });
+
   const { locale } = useContext(UserContext);
   //For the organization page, we need to retrieve the organization name to get the german text.
   //Therefore we pass organization even it this might not make sense in most cases.
@@ -98,6 +148,7 @@ export default function TranslateTexts({
   });
   const [waitingForTranslation, setWaitingForTranslation] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const belowSmall = useMediaQuery((theme) => theme.breakpoints.down("sm"));
 
   useEffect(() => {
     initializeTranslationsObject();
@@ -207,54 +258,18 @@ export default function TranslateTexts({
         <Typography className={classes.explanation} color="secondary">
           {introTextKey && texts[introTextKey]}
         </Typography>
-        <div className={classes.topButtonRow}>
-          <Button onClick={goToPreviousStep} variant="contained">
-            {texts.back}
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            className={classes.translateButton}
-            onClick={() => automaticallyTranslateTexts()}
-            disabled={waitingForTranslation}
-          >
-            {waitingForTranslation ? (
-              <CircularProgress className={classes.translationLoader} size={23} />
-            ) : (
-              texts.automatically_translate
-            )}
-          </Button>
-          <div className={classes.submitOptions}>
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              disabled={loadingSubmit || loadingSubmitDraft}
-            >
-              {loadingSubmit ? (
-                <CircularProgress className={classes.translationLoader} size={23} />
-              ) : submitButtonText ? (
-                submitButtonText
-              ) : (
-                texts.skip_and_publish
-              )}
-            </Button>
-            {saveAsDraft && (
-              <Button
-                variant="contained"
-                disabled={loadingSubmit || loadingSubmitDraft}
-                onClick={saveAsDraft}
-                className={classes.saveAsDraftButton}
-              >
-                {loadingSubmitDraft ? (
-                  <CircularProgress className={classes.translationLoader} size={23} />
-                ) : (
-                  texts.save_as_draft
-                )}
-              </Button>
-            )}
-          </div>
-        </div>
+        <TranslationActionButtonBar
+          belowSmall={belowSmall}
+          waitingForTranslation={waitingForTranslation}
+          automaticallyTranslateTexts={automaticallyTranslateTexts}
+          goToPreviousStep={goToPreviousStep}
+          texts={texts}
+          loadingSubmit={loadingSubmit}
+          loadingSubmitDraft={loadingSubmitDraft}
+          submitButtonText={submitButtonText}
+          saveAsDraft={saveAsDraft}
+          visibleFooterHeight={visibleFooterHeight}
+        />
         <div className={classes.translationBlocksHeader}>
           {textsToTranslate.map((textObj, index) => {
             if (textObj.isArray) {
@@ -289,6 +304,8 @@ export default function TranslateTexts({
                   targetLanguage={targetLanguage}
                   texts={texts}
                   targetLanguageTexts={targetLanguageTexts}
+                  maxCharacters={textObj.maxCharacters}
+                  showCharacterCounter={textObj.showCharacterCounter}
                 />
               );
           })}
@@ -321,6 +338,8 @@ function TranslationBlock({
   noHeadline,
   texts,
   targetLanguageTexts,
+  maxCharacters,
+  showCharacterCounter,
 }) {
   const classes = useStyles();
   const flatDataKey = dataKey.includes(".")
@@ -348,6 +367,9 @@ function TranslationBlock({
         handleContentChange={(event) => {
           changeOriginalText(event.target.value, dataKey);
         }}
+        maxCharacters={maxCharacters}
+        characterText={texts.characters}
+        showCharacterCounter={showCharacterCounter}
       />
       <TranslationBlockElement
         headline={targetLanguageTexts[headlineTextKey]}
@@ -363,12 +385,24 @@ function TranslationBlock({
         handleContentChange={(event) => {
           handleTranslationChange(event.target.value, dataKey, indexInArray);
         }}
+        maxCharacters={maxCharacters}
+        characterText={texts.characters}
+        showCharacterCounter={showCharacterCounter}
       />
     </div>
   );
 }
 
-function TranslationBlockElement({ headline, rows, content, handleContentChange, noHeadline }) {
+function TranslationBlockElement({
+  headline,
+  rows,
+  content,
+  handleContentChange,
+  noHeadline,
+  showCharacterCounter,
+  maxCharacters,
+  characterText,
+}) {
   const classes = useStyles();
   return (
     <div className={classes.translationBlockElement}>
@@ -377,15 +411,167 @@ function TranslationBlockElement({ headline, rows, content, handleContentChange,
           {headline}
         </Typography>
       )}
+
       <TextField
         rows={rows}
         rowsMax={50}
         variant="outlined"
         fullWidth
         multiline
+        inputProps={{ maxLength: maxCharacters }}
+        helperText={
+          showCharacterCounter &&
+          "( " + content.length + " / " + maxCharacters + " " + characterText + " ) "
+        }
         value={content}
         onChange={handleContentChange}
       />
     </div>
+  );
+}
+
+function TranslationActionButtonBar({
+  belowSmall,
+  waitingForTranslation,
+  automaticallyTranslateTexts,
+  goToPreviousStep,
+  texts,
+  loadingSubmit,
+  loadingSubmitDraft,
+  submitButtonText,
+  saveAsDraft,
+  visibleFooterHeight,
+}) {
+  const classes = useStyles({ visibleFooterHeight: visibleFooterHeight });
+
+  return (
+    <>
+      {!belowSmall ? (
+        <div className={classes.topButtonRow}>
+          <BackButton
+            goToPreviousStep={goToPreviousStep}
+            label={{ label: texts.back }}
+            texts={texts}
+          />
+          <TranslateButton
+            automaticallyTranslateTexts={automaticallyTranslateTexts}
+            waitingForTranslation={waitingForTranslation}
+            label={texts.automatically_translate}
+          />
+          <div className={classes.submitOptions}>
+            <SaveButtons
+              loadingSubmit={loadingSubmit}
+              loadingSubmitDraft={loadingSubmitDraft}
+              texts={texts}
+              label={{ label: submitButtonText }}
+              saveAsDraft={saveAsDraft}
+            />
+          </div>
+        </div>
+      ) : (
+        <AppBar className={classes.actionBar} position="fixed" elevation={0}>
+          <Toolbar className={classes.containerButtonsActionBar} variant="dense">
+            {" "}
+            <div className={classes.topButtonRow}>
+              <BackButton
+                goToPreviousStep={goToPreviousStep}
+                label={{ icon: KeyboardBackspaceIcon }}
+                texts={texts}
+              />
+              <TranslateButton
+                automaticallyTranslateTexts={automaticallyTranslateTexts}
+                waitingForTranslation={waitingForTranslation}
+                label={texts.translate}
+              />
+              <div className={classes.submitOptions}>
+                <SaveButtons
+                  loadingSubmit={loadingSubmit}
+                  loadingSubmitDraft={loadingSubmitDraft}
+                  texts={texts}
+                  label={{ icon: SaveIcon }}
+                  saveAsDraft={saveAsDraft}
+                />
+              </div>
+            </div>
+          </Toolbar>
+        </AppBar>
+      )}
+    </>
+  );
+}
+
+function BackButton({ goToPreviousStep, label, texts }) {
+  const classes = useStyles();
+  return (
+    <Button onClick={goToPreviousStep} className={classes.backButton} variant="contained">
+      {label.icon ? (
+        <Tooltip arrow placement="top" title={texts.back}>
+          <label.icon />
+        </Tooltip>
+      ) : (
+        label.label
+      )}
+    </Button>
+  );
+}
+
+function TranslateButton({ automaticallyTranslateTexts, waitingForTranslation, label }) {
+  const classes = useStyles();
+  return (
+    <Button
+      variant="contained"
+      color="primary"
+      className={classes.translateButton}
+      onClick={() => automaticallyTranslateTexts()}
+      disabled={waitingForTranslation}
+    >
+      {waitingForTranslation ? (
+        <CircularProgress className={classes.translationLoader} size={23} />
+      ) : (
+        label
+      )}
+    </Button>
+  );
+}
+
+function SaveButtons({ loadingSubmit, loadingSubmitDraft, texts, label, saveAsDraft }) {
+  const classes = useStyles();
+  return (
+    <>
+      <Button
+        variant="contained"
+        color="primary"
+        type="submit"
+        disabled={loadingSubmit || loadingSubmitDraft}
+      >
+        {loadingSubmit ? (
+          <CircularProgress className={classes.translationLoader} size={23} />
+        ) : label ? (
+          label.icon ? (
+            <Tooltip arrow placement="top" title={texts.save}>
+              <label.icon />
+            </Tooltip>
+          ) : (
+            label.label
+          )
+        ) : (
+          texts.skip_and_publish
+        )}
+      </Button>
+      {saveAsDraft && (
+        <Button
+          variant="contained"
+          disabled={loadingSubmit || loadingSubmitDraft}
+          onClick={saveAsDraft}
+          className={classes.saveAsDraftButton}
+        >
+          {loadingSubmitDraft ? (
+            <CircularProgress className={classes.translationLoader} size={23} />
+          ) : (
+            texts.save_as_draft
+          )}
+        </Button>
+      )}
+    </>
   );
 }
