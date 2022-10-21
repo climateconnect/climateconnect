@@ -31,5 +31,5 @@ app.conf.beat_schedule = {
     "testing_task_3": {
         "task": "climateconnect_api.tasks.testing_task_3",
         "schedule": crontab(hour=1, minute=0, day_of_week=2),
-    }
+    },
 }
