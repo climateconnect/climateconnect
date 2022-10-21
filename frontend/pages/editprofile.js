@@ -55,7 +55,6 @@ export default function EditProfilePage({ skillsOptions, availabilityOptions, us
     },
   };
   const profile = user ? parseProfile(user, true) : null;
-  console.log(profile);
   if (!profile)
     return (
       <WideLayout
