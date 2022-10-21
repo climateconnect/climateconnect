@@ -282,7 +282,7 @@ export default function getOrganizationTexts({ organization, locale }) {
     our_local_groups: {
       en: "Our local groups:",
       de: "Unsere lokalen Gruppen:",
-
+    },
     get_involved: {
       en: "How to get involved",
       de: "Wie man sich einbringen kann",
@@ -300,5 +300,9 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: `${organization?.name} is active in these sectors`,
       de: `${organization?.name} ist in diesen Bereichen aktiv`,
     },
+    find_us_here: {
+      en: "Find us here:",
+      de: "FInde uns unter:"
+    }
   };
 }

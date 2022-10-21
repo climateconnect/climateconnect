@@ -166,7 +166,6 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     [theme.breakpoints.up("md")]: {
       flexDirection: "row",
-      // backgroundColor: "#F7DC6F"
     },
   },
   leftInfoContainer: {
@@ -182,7 +181,6 @@ const useStyles = makeStyles((theme) => ({
   middleInfoContainer: {
     display: "flex",
     flexDirection: "column",
-    // backgroundColor: "#A93226",
     [theme.breakpoints.up("md")]: {
       marginLeft: theme.spacing(-2),
       marginRight: theme.spacing(-4),
@@ -199,8 +197,6 @@ const useStyles = makeStyles((theme) => ({
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-
-      //backgroundColor: "#ABEBC6"
     },
   },
   followButton: {
@@ -209,6 +205,8 @@ const useStyles = makeStyles((theme) => ({
   },
   sideButton: {
     width: 225,
+
+  },
   sizeContainer: {
     display: "flex",
     flexDirection: "column",
@@ -303,7 +301,7 @@ export default function AccountPage({
                 </div>
               </div>
             );
-          } else if (i.linkify && value) {
+          } else if (i.linkify && value && !isOrganization) {
             return (
               <>
                 <div className={classes.subtitle}>{i.name}:</div>
@@ -450,50 +448,12 @@ export default function AccountPage({
               </Container>
             )}
             {isOrganization && (
-              <div className={classes.website}>
-                <>
-                  <Typography variant="caption"> Find us here: </Typography>
+              <div className={classes.website}>           
+                  <Typography variant="caption"> {organizationTexts.find_us_here} </Typography>
                   <Linkify componentDecorator={componentDecorator}>
                     {" "}
                     <Typography className={classes.websiteLink}> {account.info.website}</Typography>
                   </Linkify>
-                </>
-                <Box>
-                  {" "}
-                  {/* Replace these with <SocialMediaButton> */}
-                  <a
-                    href="https://twitter.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={classes.inheritColor}
-                  >
-                    <TwitterIcon className={classes.socialMediaLink} alt="Twitter" />
-                  </a>
-                  <a
-                    href="https://www.instagram.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={classes.inheritColor}
-                  >
-                    <InstagramIcon className={classes.socialMediaLink} alt="Instagram" />
-                  </a>
-                  <a
-                    href="https://www.facebook.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={classes.inheritColor}
-                  >
-                    <FacebookIcon className={classes.socialMediaLink} alt="Facebook" />
-                  </a>
-                  <a
-                    href="https://www.linkedin.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={classes.inheritColor}
-                  >
-                    <LinkedInIcon className={classes.socialMediaLink} alt="YouTube" />
-                  </a>
-                </Box>
               </div>
             )}
           </Container>
@@ -503,10 +463,10 @@ export default function AccountPage({
 
           {user && (
             <div className={classes.buttonInfoContainer}>
-              <>
-                {!isSmallScreen && (
+              
+                {!isSmallScreen &&  isOwnAccount && (
                   <>
-                    {isOwnAccount ? (
+                    
                       <Button
                         className={classes.sideButton}
                         variant="contained"
@@ -516,34 +476,9 @@ export default function AccountPage({
                         <EditSharpIcon className={classes.innerIcon} />
                         {editText ? editText : texts.edit_profile}
                       </Button>
-                    ) : (
-                      <>
-                        {isOrganization && (
-                          <Button
-                            className={classes.sideButton}
-                            variant="contained"
-                            color="primary"
-                            href={editHref}
-                          >
-                            Request Join
-                          </Button>
-                        )}
-                      </>
-                    )}
-                  </>
-                )}
-
-                {isOrganization && (
-                  <Button
-                    className={classes.followButton}
-                    variant="contained"
-                    color="primary"
-                    href={editHref}
-                  >
-                    Follow
-                  </Button>
-                )}
+                    
               </>
+)}
             </div>
           )}
         </Container>
