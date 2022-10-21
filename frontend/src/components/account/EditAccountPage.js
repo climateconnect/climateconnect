@@ -617,14 +617,16 @@ export default function EditAccountPage({
                   multiline
                   rows={i.rows}
                   onChange={handleChange}
-                  helperText={ i.showCharacterCounter ? 
-                    i.helptext +
-                    (editedAccount.info[i.key] ? editedAccount.info[i.key].length : 0) +
-                    " / " +
-                    i.maxLength +
-                    " " +
-                    texts.characters +
-                    ")" : ""
+                  helperText={
+                    i.showCharacterCounter
+                      ? i.helptext +
+                        (editedAccount.info[i.key] ? editedAccount.info[i.key].length : 0) +
+                        " / " +
+                        i.maxLength +
+                        " " +
+                        texts.characters +
+                        ")"
+                      : ""
                   }
                   variant="outlined"
                 />

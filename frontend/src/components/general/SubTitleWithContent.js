@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme) => ({
     color: `${theme.palette.secondary.main}`,
     fontWeight: 700,
     minWidth: 200,
-    fontSize: 15
+    fontSize: 15,
   },
   subtitle: {
     color: `${theme.palette.secondary.main}`,
@@ -26,8 +26,8 @@ const useStyles = makeStyles((theme) => ({
   iconAndTitleWrapper: {
     display: "flex",
     alignItems: "center",
-    marginBottom: theme.spacing(0.5)
-  }
+    marginBottom: theme.spacing(0.5),
+  },
 }));
 
 export default function SubTitleWithContent({ subTitleIcon, subtitle, content }) {

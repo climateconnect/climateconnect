@@ -53,12 +53,12 @@ const DESCRIPTION_WEBFLOW_LINKS = {
   },
   mobility: {
     de: "mobilitat-de",
-    en: "mobility-en"
+    en: "mobility-en",
   },
   biodiversity: {
     de: "biodiversitat",
-    en: "biodiversity-en"
-  }
+    en: "biodiversity-en",
+  },
 };
 
 //potentially switch back to getinitialprops here?!

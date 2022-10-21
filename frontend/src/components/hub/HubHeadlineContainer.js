@@ -80,13 +80,14 @@ const useStyles = makeStyles((theme) => ({
   signUpContainer: {
     display: "flex",
     justifyContent: "center",
-    marginTop: theme.spacing(1)
-  }
+    marginTop: theme.spacing(1),
+  },
 }));
 
 export default function HubHeadlineContainer({ subHeadline, headline, isLocationHub, hubUrl }) {
   const classes = useStyles({ isLocationHub: isLocationHub });
-  const { locale } = useContext(UserContext);
+  const { locale, user } = useContext(UserContext);
+
   const texts = getTexts({ page: "climatematch", locale: locale });
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -105,19 +106,26 @@ export default function HubHeadlineContainer({ subHeadline, headline, isLocation
         {isLocationHub && (
           <>
             {!isNarrowScreen && <hr />}
-            
-              {isNarrowScreen ?
-                <div className={classes.signUpContainer}>
-                  <Button href={getLocalePrefix(locale) + "/signup"} variant="contained" color="primary">{texts.sign_up_now}</Button>
-                </div>
-              :
-                <div className={classes.climateMatchButtonContainer}>
-                  <OpenClimateMatchButton
-                    hubUrl={hubUrl}
-                    text={texts.get_active_now_with_climatematch}
-                  />
-                </div>
-              }
+
+            {isNarrowScreen && !user ? (
+              <div className={classes.signUpContainer}>
+                <Button
+                  href={getLocalePrefix(locale) + "/signup"}
+                  variant="contained"
+                  color="primary"
+                >
+                  {texts.sign_up_now}
+                </Button>
+              </div>
+            ) : ( // not sure to add this button or have nothing here since there is this climatematch button on the headerbar
+                  // for small screen sizes
+              <div className={classes.climateMatchButtonContainer}>
+                <OpenClimateMatchButton
+                  hubUrl={hubUrl}
+                  text={texts.get_active_now_with_climatematch}
+                />
+              </div>
+            )}
           </>
         )}
       </div>
