@@ -68,22 +68,23 @@ export default function MiniHubPreviews({
           />
         )}
       </Grid>
-      {!editMode && ( <div className={classes.hubButtonsContainer}>
-        <Button onClick={handleShowMoreSectors}>
-          {showMoreSectors ? (
-            <>
-              <ExpandLessIcon />
-              {texts.show_less}
-            </>
-          ) : (
-            <>
-              <ExpandMoreIcon />
-              {texts.show_more}
-            </>
-          )}
-        </Button>
-      </div>)}
-     
+      {!editMode && hubs.length > maxHubsToShow && (
+        <div className={classes.hubButtonsContainer}>
+          <Button onClick={handleShowMoreSectors}>
+            {showMoreSectors ? (
+              <>
+                <ExpandLessIcon />
+                {texts.show_less}
+              </>
+            ) : (
+              <>
+                <ExpandMoreIcon />
+                {texts.show_more}
+              </>
+            )}
+          </Button>
+        </div>
+      )}
     </>
   );
 }

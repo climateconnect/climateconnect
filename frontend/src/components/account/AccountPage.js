@@ -271,15 +271,16 @@ export default function AccountPage({
               </div>
             );
           } else if (i.type === "hubs") {
-            return (    
+            const maxHubsToShow = 2;
+            return (
               <>
-               {i.value.length > 0 && <div className={classes.subtitle}>{i.name}:</div>}
-                {i.value.length <= 2 ? (
+                {i.value.length > 0 && <div className={classes.subtitle}>{i.name}:</div>}
+                {i.value.length > 0 && i.value.length <= maxHubsToShow && (
                   <MiniHubPreviews hubs={i.value} texts={texts} />
-                ) : (
-                  <MiniHubPreviews hubs={i.value} maxHubsToShow={2} texts={texts} />
                 )}
-
+                {i.value.length > maxHubsToShow && (
+                  <MiniHubPreviews hubs={i.value} maxHubsToShow={maxHubsToShow} texts={texts} />
+                )}
               </>
             );
           } else if (i.type === "select" && value) {
