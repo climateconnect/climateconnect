@@ -136,10 +136,7 @@ export default function LayoutWrapper({
     <>
       <Head>
         <title>{title ? title + " | Climate Connect" : "Climate Connect"}</title>
-        <link
-          href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700,800"
-          rel="stylesheet"
-        />
+        <link href="/fonts/openSans.css" rel="stylesheet" />
         {useFloodStdFont && <link rel="stylesheet" href="https://use.typekit.net/hoy3dgi.css" />}
         <meta
           name="viewport"

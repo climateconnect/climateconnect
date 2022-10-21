@@ -117,7 +117,7 @@ export default function OrganizationPage({
   childOrganizations,
 }) {
   const { user, locale } = useContext(UserContext);
-  const infoMetadata = getOrganizationInfoMetadata(locale, organization);
+  const infoMetadata = getOrganizationInfoMetadata(locale, organization, false);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
 
   return (

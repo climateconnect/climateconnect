@@ -42,6 +42,7 @@ export default function EditOrganizationRoot({
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
 
   const [editedOrganization, setEditedOrganization] = useState({ ...organization });
+
   const texts = getTexts({
     page: "organization",
     locale: locale,
@@ -154,6 +155,40 @@ export default function EditOrganizationRoot({
     await saveChanges(editedOrganization, true);
   };
 
+  const standardTextsToTranslate = [
+    {
+      textKey: "name",
+      rows: 2,
+      headlineTextKey: "organization_name",
+    },
+    {
+      textKey: "info.short_description",
+      rows: 5,
+      headlineTextKey: "short_description",
+    },
+    {
+      textKey: "info.about",
+      rows: 9,
+      headlineTextKey: "about",
+    },
+  ];
+
+  const getInvolvedText = [
+    {
+      textKey: "info.get_involved",
+      rows: 5,
+      headlineTextKey: "get_involved",
+    },
+  ];
+
+  const hideGetInvolvedField =
+    editedOrganization.types.map((type) => type.hide_get_involved).includes(true) ||
+    editedOrganization.types.length === 0;
+
+  const textsToTranslate = hideGetInvolvedField
+    ? standardTextsToTranslate
+    : standardTextsToTranslate.concat(getInvolvedText);
+
   return (
     <>
       {organization ? (
@@ -188,18 +223,7 @@ export default function EditOrganizationRoot({
               pageName="organization"
               introTextKey="translate_organization_intro"
               submitButtonText={texts.save}
-              textsToTranslate={[
-                {
-                  textKey: "info.short_description",
-                  rows: 5,
-                  headlineTextKey: "short_description",
-                },
-                {
-                  textKey: "info.about",
-                  rows: 9,
-                  headlineTextKey: "about",
-                },
-              ]}
+              textsToTranslate={textsToTranslate}
               changeTranslationLanguages={changeTranslationLanguages}
             />
           </>
@@ -215,6 +239,8 @@ const parseForRequest = async (org) => {
   const parsedOrg = {
     ...org,
   };
+  if (org.organization_size) parsedOrg.organization_size = org.organization_size;
+  if (org.get_involved) parsedOrg.get_involved = org.get_involved;
   if (org.short_description) parsedOrg.short_description = org.short_description;
   if (org.parent_organization)
     parsedOrg.parent_organization = org.parent_organization ? org.parent_organization.id : null;

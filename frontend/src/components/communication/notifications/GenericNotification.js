@@ -12,7 +12,6 @@ import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../../public/lib/imageOperations";
 import UserContext from "../../context/UserContext";
 import { StyledMenuItem } from "./Notification";
-
 import CloseIcon from "@material-ui/icons/Close";
 import Cookies from "universal-cookie";
 
@@ -60,12 +59,14 @@ export default function GenericNotification({
   notification,
 }) {
   const token = new Cookies().get("auth_token");
-  const { locale } = useContext(UserContext);
+  const { locale, setNotificationsRead, refreshNotifications, hideNotification } = useContext(
+    UserContext
+  );
   const classes = useStyles();
-  const { setNotificationsRead, refreshNotifications } = useContext(UserContext);
+
   const deleteNotification = async () => {
-    const notificationAsArr = [notification];
-    await setNotificationsRead(token, notificationAsArr, locale);
+    hideNotification(notification.id);
+    await setNotificationsRead(token, [notification], locale);
     await refreshNotifications();
   };
 
