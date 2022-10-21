@@ -162,7 +162,7 @@ class EditOrganizationSerializer(OrganizationSerializer):
         return get_organization_short_description(obj, get_language())
 
     def get_about(self, obj):
-         return get_organization_about_section(obj, get_language())
+        return get_organization_about_section(obj, get_language())
 
     def get_organ(self, obj):
         return obj.organ

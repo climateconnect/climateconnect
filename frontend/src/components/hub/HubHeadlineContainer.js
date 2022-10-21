@@ -117,9 +117,9 @@ export default function HubHeadlineContainer({ subHeadline, headline, isLocation
                   {texts.sign_up_now}
                 </Button>
               </div>
-
-            ) : ( // not sure to add this button or have nothing here since there is this climatematch button on the headerbar
-                  // for small screen sizes
+            ) : (
+              // not sure to add this button or have nothing here since there is this climatematch button on the headerbar
+              // for small screen sizes
               <div className={classes.climateMatchButtonContainer}>
                 <OpenClimateMatchButton
                   hubUrl={hubUrl}
