@@ -100,7 +100,7 @@ NORMAL_MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-if env("DEBUG") == "True":
+if env("DEBUG"):
     INSTALLED_APPS = CUSTOM_APPS + LIBRARY_APPS + DEBUG_APPS
     MIDDLEWARE = SECURITY_MIDDLEWARE + DEBUG_MIDDLEWARE + NORMAL_MIDDLEWARE
 else:
