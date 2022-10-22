@@ -99,7 +99,7 @@ class ListOrganizationsAPIView(ListAPIView):
                 url_slug=self.request.query_params["hub"]
             )
             if hub.exists():
-                if hub[0].hub_type == Hub.SECTOR_HUB_TYPE:
+                if hub.first().hub_type == Hub.SECTOR_HUB_TYPE:
                     project_category = hub.first().filter_parent_tags.all()
                     project_category_ids = list(map(lambda c: c.id, project_category))
                     project_tags = ProjectTags.objects.filter(
