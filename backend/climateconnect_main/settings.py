@@ -38,7 +38,6 @@ SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG") == "True"
-# DEBUG = True
 
 ALLOWED_HOSTS = get_allowed_hosts(env("ALLOWED_HOSTS"))
 
@@ -75,21 +74,20 @@ LIBRARY_APPS = [
     "channels",
     "django_filters",
     "django.contrib.gis",
-    "django_celery_beat",
+    "django_celery_beat"
 ]
 
-DEBUG_APPS = []
-
-if env("DEBUG") == "True":
-    INSTALLED_APPS = CUSTOM_APPS + LIBRARY_APPS + DEBUG_APPS
-else:
-    INSTALLED_APPS = CUSTOM_APPS + LIBRARY_APPS
+DEBUG_APPS = [
+    "debug_toolbar"
+]
 
 SECURITY_MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
 ]
 
-DEBUG_MIDDLEWARE = []
+DEBUG_MIDDLEWARE = [
+    "debug_toolbar.middleware.DebugToolbarMiddleware"
+]
 
 NORMAL_MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -103,8 +101,10 @@ NORMAL_MIDDLEWARE = [
 ]
 
 if env("DEBUG") == "True":
+    INSTALLED_APPS = CUSTOM_APPS + LIBRARY_APPS + DEBUG_APPS
     MIDDLEWARE = SECURITY_MIDDLEWARE + DEBUG_MIDDLEWARE + NORMAL_MIDDLEWARE
 else:
+    INSTALLED_APPS = CUSTOM_APPS + LIBRARY_APPS
     MIDDLEWARE = SECURITY_MIDDLEWARE + NORMAL_MIDDLEWARE
 
 CORS_ORIGIN_WHITELIST = [
