@@ -263,7 +263,7 @@ class CreateOrganizationView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-        texts = {"name": request.data["name"]}
+        texts = {"name": request.data["name"].strip()} # remove leading and trailing spaces
         if "short_description" in request.data:
             texts["short_description"] = request.data["short_description"]
         if "about" in request.data:
@@ -281,7 +281,7 @@ class CreateOrganizationView(APIView):
             translations = None
             logger.error("TranslationFailed: Error translating texts, {}".format(ve))
         organization, created = Organization.objects.get_or_create(
-            name=request.data["name"]
+            name=request.data["name"].strip() ## remove leading and trailing spaces
         )
         if created:
             organization.url_slug = create_unique_slug(
