@@ -31,7 +31,7 @@ from climateconnect_api.utility.notification import (
 # Django imports
 from django.contrib.auth.models import User
 from django.contrib.gis.db.models.functions import Distance
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 from django.utils.translation import gettext as _
 from django_filters.rest_framework import DjangoFilterBackend
 from hubs.models.hub import Hub
@@ -126,15 +126,23 @@ class ListOrganizationsAPIView(ListAPIView):
         return {"language_code": self.request.LANGUAGE_CODE}
 
     def get_queryset(self):
-        organizations = Organization.objects.all()
+        organizations = Organization.objects.all().prefetch_related(
+            Prefetch(
+                'tag_organization',
+                queryset=OrganizationTagging.objects.select_related(
+                    'organization_tag'
+                )
+            ),
+            'organization_member'
+        ).select_related('language', 'location')
 
         if "hub" in self.request.query_params:
-            hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
+            hub = Hub.objects.filter(
+                url_slug=self.request.query_params["hub"]
+            )
             if hub.exists():
-                if hub[0].hub_type == Hub.SECTOR_HUB_TYPE:
-                    project_category = Hub.objects.get(
-                        url_slug=self.request.query_params.get("hub")
-                    ).filter_parent_tags.all()
+                if hub.first().hub_type == Hub.SECTOR_HUB_TYPE:
+                    project_category = hub.first().filter_parent_tags.all()
                     project_category_ids = list(map(lambda c: c.id, project_category))
                     project_tags = ProjectTags.objects.filter(
                         id__in=project_category_ids
@@ -150,8 +158,8 @@ class ListOrganizationsAPIView(ListAPIView):
                             field_tag_organization__field_tag__in=project_tags_with_children
                         )
                     ).distinct()
-                elif hub[0].hub_type == Hub.LOCATION_HUB_TYPE:
-                    location = hub[0].location.all()[0]
+                elif hub.first().hub_type == Hub.LOCATION_HUB_TYPE:
+                    location = hub.first().location.first()
                     organizations = organizations.filter(
                         Q(location__country=location.country)
                         & (
@@ -215,29 +223,26 @@ class ListOrganizationsAPIView(ListAPIView):
             )
 
         if "country" and "city" in self.request.query_params:
-            location_ids = Location.objects.filter(
-                country=self.request.query_params.get("country"),
-                city=self.request.query_params.get("city"),
+            organizations = organizations.filter(
+                location__country=self.request.query_params.get("country"),
+                location__city=self.request.query_params.get("city")
             )
-            organizations = organizations.filter(location__in=location_ids)
 
         if (
             "city" in self.request.query_params
             and not "country" in self.request.query_params
         ):
-            location_ids = Location.objects.filter(
-                city=self.request.query_params.get("city")
+            organizations = organizations.filter(
+                location__city=self.request.query_params.get("city")
             )
-            organizations = organizations.filter(location__in=location_ids)
 
         if (
             "country" in self.request.query_params
             and not "city" in self.request.query_params
         ):
-            location_ids = Location.objects.filter(
-                country=self.request.query_params.get("country")
+            organizations = organizations.filter(
+                location__country=self.request.query_params.get("country")
             )
-            organizations = organizations.filter(location__in=location_ids)
 
         return organizations
 
@@ -263,7 +268,7 @@ class CreateOrganizationView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-        texts = {"name": request.data["name"]}
+        texts = {"name": request.data["name"].strip()} # remove leading and trailing spaces
         if "short_description" in request.data:
             texts["short_description"] = request.data["short_description"]
         if "about" in request.data:
@@ -281,7 +286,7 @@ class CreateOrganizationView(APIView):
             translations = None
             logger.error("TranslationFailed: Error translating texts, {}".format(ve))
         organization, created = Organization.objects.get_or_create(
-            name=request.data["name"]
+            name=request.data["name"].strip() ## remove leading and trailing spaces
         )
         if created:
             organization.url_slug = create_unique_slug(
