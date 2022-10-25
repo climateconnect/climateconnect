@@ -386,7 +386,7 @@ function TranslationBlock({
         handleContentChange={(event) => {
           handleTranslationChange(event.target.value, dataKey, indexInArray);
         }}
-        maxCharacters={maxCharacters}
+        maxCharacters={maxCharacters*1.20}
         characterText={texts.characters}
         showCharacterCounter={showCharacterCounter}
       />
@@ -405,6 +405,8 @@ function TranslationBlockElement({
   characterText,
 }) {
   const classes = useStyles();
+
+
   return (
     <div className={classes.translationBlockElement}>
       {!noHeadline && (
