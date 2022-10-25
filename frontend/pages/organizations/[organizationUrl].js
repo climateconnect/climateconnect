@@ -72,11 +72,10 @@ const useStyles = makeStyles((theme) => ({
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
-  const [organization, projects, members, organizationTypes, rolesOptions] = await Promise.all([
+  const [organization, projects, members, rolesOptions] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
     getProjectsByOrganization(organizationUrl, auth_token, ctx.locale),
     getMembersByOrganization(organizationUrl, auth_token, ctx.locale),
-    getOrganizationTypes(), // not sure this does anything
     getRolesOptions(auth_token, ctx.locale),
   ]);
   return {
@@ -84,7 +83,6 @@ export async function getServerSideProps(ctx) {
       organization: organization,
       projects: projects,
       members: members,
-      organizationTypes: organizationTypes, // not sure this does anything
       rolesOptions: rolesOptions,
     }),
   };
@@ -94,7 +92,6 @@ export default function OrganizationPage({
   organization,
   projects,
   members,
-  organizationTypes, // not sure this does anything
   rolesOptions,
 }) {
   const { user, locale } = useContext(UserContext);
@@ -112,7 +109,6 @@ export default function OrganizationPage({
           organization={organization}
           projects={projects}
           members={members}
-          organizationTypes={organizationTypes} // not sure this does anything (not used in organization layout props)
           infoMetadata={infoMetadata}
           user={user}
           texts={texts}
@@ -331,10 +327,6 @@ async function getMembersByOrganization(organizationUrl, token, locale) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
-}
-
-async function getOrganizationTypes() {
-  return [];
 }
 
 function parseProjectStubs(projects) {
