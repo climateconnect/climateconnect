@@ -34,6 +34,7 @@ from django.conf.urls.static import static
 
 
 urls = [
+    path('__debug__/', include('debug_toolbar.urls')),
     path("admin/", admin.site.urls),
     path("ping/", status_views.PingPongView.as_view(), name="ping-pong-api"),
     # User views
