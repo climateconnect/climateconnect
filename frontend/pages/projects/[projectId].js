@@ -129,7 +129,7 @@ export default function ProjectPage({
 
   const smallScreenSize = useMediaQuery((theme) => theme.breakpoints.down("sm"));
 
-  // l 83-100 handle getting rid of the bell icon notif
+  // Handle remove bell icon notification
   const { notifications, setNotificationsRead, refreshNotifications } = useContext(UserContext);
   const handleReadNotifications = async (notificationType) => {
     const notification_to_set_read = notifications.filter(
@@ -143,7 +143,9 @@ export default function ProjectPage({
 
   useEffect(async () => {
     await handleReadNotifications(NOTIFICATION_TYPES.indexOf("org_project_published"));
-  }, [notifications.length !== 0]); // probably need a better way of getting rid of the  bell notification
+  }, [notifications.length !== 0]); /* end of removing bell icon notification
+                                    probably need a better way of getting rid of the  bell notification */
+ 
 
   const handleFollow = (userFollows, updateCount, pending) => {
     setIsUserFollowing(userFollows);

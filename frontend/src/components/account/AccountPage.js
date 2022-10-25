@@ -231,7 +231,7 @@ export default function AccountPage({
     </Link>
   );
 
-  // Lines 210 - 300 handle follow button for organizations
+  // Following codeblock handles follow button for organizations
   const [confirmDialogOpen, setConfirmDialogOpen] = useState({
     follow: false,
   });
@@ -315,7 +315,8 @@ export default function AccountPage({
 
   const bindFollow = useLongPress(() => {
     toggleShowFollowers();
-  });
+  });  // end of follow organizations codeblock
+ 
 
   const displayAccountInfo = (info) =>
     Object.keys(info)
