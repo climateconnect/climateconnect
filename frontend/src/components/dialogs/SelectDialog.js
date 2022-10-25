@@ -47,6 +47,7 @@ export default function SelectDialog({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
   const orgTexts = getTexts({ page: "organization", locale: locale });
+  const social_media_texts = getTexts({page: "social_media", locale: locale});
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [textLabel, setTextLabel] = useState("");
@@ -64,12 +65,10 @@ export default function SelectDialog({
     event.preventDefault();
 
     if (isSocial) {
-      const url = element.ask_for_full_website
-        ? additionalInfo[0].value
-        : element.base_url + additionalInfo[0];
+      const url = element.base_url + additionalInfo[0].value;
       if ("" !== verifySocialMediaLink(element, url, orgTexts)) {
         setHasError(true);
-        setErrorMessage(verifySocialMediaLink(element, additionalInfo, orgTexts));
+        setErrorMessage(verifySocialMediaLink(element, url, orgTexts));
       } else {
         // restore defaults before closing
         setHasError(false);
@@ -104,7 +103,7 @@ export default function SelectDialog({
       const value = values.filter((val) => val.name === event.target.value)[0];
       if (isSocial) {
         setTextLabel(
-          value?.ask_for_full_website ? value?.name : "Please enter your " + value?.name + " handle"
+          social_media_texts.please_enter_your + " " + value?.name + " " + social_media_texts.url
         );
       } else {
         setTextLabel(value?.name);
@@ -159,7 +158,7 @@ export default function SelectDialog({
                 {additionalInfo[i].value}
               </TextField>
 
-              {!element?.ask_for_full_website && isSocial && (
+              {isSocial && (
                 <TextField
                   disabled
                   variant="outlined"

@@ -191,7 +191,8 @@ const useStyles = makeStyles((theme) => ({
     width: 250,
   },
   dialogWidth: {
-    width: 400,
+    width: 500,
+    display: "flex,"
   },
   alert: {
     textAlign: "center",
@@ -317,15 +318,13 @@ export default function EditAccountPage({
     if (socialMediaChannel !== undefined && additionalInfo !== undefined) {
       const tempAccount = editedAccount;
       const socialMedaLink = {
-        handle: socialMediaChannel.ask_for_full_website ? "" : additionalInfo[0].value,
+        handle: additionalInfo[0].value,
         social_media_channel: {
           social_media_name: socialMediaChannel.name,
           ask_for_full_website: socialMediaChannel.ask_for_full_website,
           base_url: socialMediaChannel.base_url,
         },
-        url: socialMediaChannel.ask_for_full_website
-          ? additionalInfo[0].value
-          : socialMediaChannel.base_url + additionalInfo[0].value,
+        url: socialMediaChannel.base_url + additionalInfo[0].value,
       };
       tempAccount.info.social_options = [...tempAccount.info.social_options, socialMedaLink];
       setEditedAccount(tempAccount);

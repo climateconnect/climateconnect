@@ -26,7 +26,7 @@ import UserContext from "../context/UserContext";
 import EditSharpIcon from "@material-ui/icons/EditSharp";
 import IconButton from "@material-ui/core/IconButton";
 import { getSocialMediaButtons } from "../../../public/lib/socialMediaOperations";
-import SocialMediaButton from "../general/SocialMediaButton";
+import SocialMediaIconButton from "../general/SocialMediaIconButton";
 
 import SelectWithText from "./SelectWithText";
 import SubTitleWithContent from "../general/SubTitleWithContent";
@@ -177,6 +177,10 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
   },
+  websiteLink: {
+    fontStyle: "italic",
+    fontSize: 13,
+  }
 }));
 
 //Generic component to display personal profiles or organization profiles
@@ -402,23 +406,24 @@ export default function AccountPage({
               ))}
             </Container>
           )}
-          {isOrganization && account.info.social_options.length > 0 && (
+          {/* only display this text if we have either a website or social media links to display*/}
+          {isOrganization && (account.info.social_options.length > 0 || account.info.website) && (
             <>
-              <div className={classes.website}>
-                <Typography variant="caption"> {organizationTexts.find_us_here} </Typography>
+              
+                <Typography className={classes.websiteLink} > {organizationTexts.find_us_here} </Typography>
                 {account.info.website && (
                   <Linkify componentDecorator={componentDecorator}>
                     {" "}
-                    <Typography className={classes.websiteLink}> {account.info.website}</Typography>
+                    <Typography> {account.info.website}</Typography>
                   </Linkify>
                 )}
-              </div>
+              
             </>
           )}
           {account.info.social_options && (
             <>
               {getSocialMediaButtons(account.info.social_options).map((socialMedia, index) => (
-                <SocialMediaButton
+                <SocialMediaIconButton
                   key={index}
                   href={socialMedia.href}
                   socialMediaIcon={{ icon: socialMedia.icon }}

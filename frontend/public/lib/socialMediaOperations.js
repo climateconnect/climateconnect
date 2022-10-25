@@ -6,66 +6,72 @@ import LinkedInIcon from "@material-ui/icons/LinkedIn";
 
 import { apiRequest } from "./apiOperations";
 
-export function verifySocialMediaLink(socialChannel, url, texts) {
-  let error = "";
-  // matches http://, https:// , https://www. ,http://www.
-  const regexPrefix = "^(http)(?:s)?(://)(?:www.)?";
-  // matches.com/ anything
-  const regexSuffix = ".com/.+$";
-  let regex;
-  let matches = false;
+export function verifySocialMediaLink(socialMediaChannel, url, texts) {
+  const baseUrl = socialMediaChannel.base_url;
+  const verfiedSocialMediaLinks = {
+    "Twitter": verficationOfInput(baseUrl, url, texts.does_not_comply_twitter),
+    "Youtube": verficationOfInput(baseUrl, url, texts.does_not_comply_youtube),
+    "LinkedIn": verficationOfInput(baseUrl, url, texts.does_not_comply_linkedin),
+    "Instagram": verficationOfInput(baseUrl, url, texts.does_not_comply_instagram),
+    "Facebook": verficationOfInput(baseUrl, url, texts.does_not_comply_facebook),
 
-  switch (socialChannel.name) {
-    case "Twitter": // twitter
-      regex = new RegExp(regexPrefix + "twitter" + regexSuffix);
-      matches = regex.test(url);
-      error = matches ? "" : texts.does_not_comply_twitter;
-      break;
-    case "Youtube": // youtube
-      regex = new RegExp(regexPrefix + "youtube" + regexSuffix);
-      matches = regex.test(url);
-      error = matches ? "" : texts.does_not_comply_youtube;
-      break;
-    case "LinkedIn": // linkedIn
-      regex = new RegExp(regexPrefix + "linkedin" + regexSuffix);
-      matches = regex.test(url);
-      error = matches ? "" : texts.does_not_comply_linkedin;
-      break;
-    case "Instagram": // instagram
-      regex = new RegExp(regexPrefix + "instagram" + regexSuffix);
-      matches = regex.test(url);
-      error = matches ? "" : texts.does_not_comply_instagram;
-      break;
-    case "Facebook": // facebook
-      regex = new RegExp(regexPrefix + "facebook" + regexSuffix);
-      matches = regex.test(url);
-      error = matches ? "" : texts.does_not_comply_facebook;
-      break;
-    default:
-      break;
   }
+  return(verfiedSocialMediaLinks[socialMediaChannel.name]);
+
+}
+
+function verficationOfInput(baseUrl, url, errorMessage) {
+  // matches.com/ anything
+  const regexSuffix = ".+$";
+ 
+  const regex = new RegExp(baseUrl + regexSuffix);
+  const matches = regex.test(url);
+  const error = matches ? "" : errorMessage;
   return error;
+
 }
 
 export function getSocialMediaButtons(socialLinks) {
   const socialMediaLinks = [];
   socialLinks.map((social) => {
+    const link = social.url;
     switch (social.social_media_channel.social_media_name) {
       case "Twitter": // twitter
-        socialMediaLinks.push(createSocialMediaIconButton(social));
+        socialMediaLinks.push({
+          href: link,
+          icon: TwitterIcon,
+          altText: "Twitter",
+        });
         break;
       case "Youtube": // youtube
-        socialMediaLinks.push(createSocialMediaIconButton(social));
+        socialMediaLinks.push({
+          href: link,
+          icon: YouTubeIcon,
+          altText: "Youtube",
+        });
         break;
       case "LinkedIn": // linkedin
-        socialMediaLinks.push(createSocialMediaIconButton(social));
+        socialMediaLinks.push({
+          href: link,
+          icon: LinkedInIcon,
+          altText: "LinkedIn",
+        });
         break;
       case "Instagram": // instagram
-        socialMediaLinks.push(createSocialMediaIconButton(social));
+        socialMediaLinks.push( {
+          href: link,
+          icon: InstagramIcon,
+          altText: "Instagram",
+        });
         break;
       case "Facebook": // facebook
-        socialMediaLinks.push(createSocialMediaIconButton(social));
+        socialMediaLinks.push({
+          href: link,
+          icon: FacebookIcon,
+          altText: "Facebook",
+        });
         break;
+
       default:
         break;
     }
@@ -73,43 +79,29 @@ export function getSocialMediaButtons(socialLinks) {
   return socialMediaLinks;
 }
 
-export function createSocialMediaIconButton(social) {
-  const link = social.url;
-  switch (social.social_media_channel.social_media_name) {
-    case "Twitter":
-      return {
-        href: link,
-        icon: TwitterIcon,
-        altText: "Twitter",
-      };
-    case "Youtube":
-      return {
-        href: link,
-        icon: YouTubeIcon,
-        altText: "Youtube",
-      };
-    case "LinkedIn":
-      return {
-        href: link,
-        icon: LinkedInIcon,
-        altText: "LinkedIn",
-      };
-    case "Instagram":
-      return {
-        href: link,
-        icon: InstagramIcon,
-        altText: "Instagram",
-      };
-    case "Facebook":
-      return {
-        href: link,
-        icon: FacebookIcon,
-        altText: "Facebook",
-      };
-    default:
-      break;
-  }
+export function createSocialMediaIconButton (socialChannel) {
+  const socialChannels = {
+    "Twitter": {
+      icon: TwitterIcon,
+    },
+    "Youtube": {
+      icon: YouTubeIcon,
+    },
+    "LinkedIn": {
+      icon: LinkedInIcon,
+    },
+    "Instagram": {
+      icon: InstagramIcon,
+    },
+    "Facebook": {
+      icon: FacebookIcon,
+    },
+  };
+
+  return socialChannels[socialChannel];
 }
+
+
 
 export async function getSocialMediaChannels(locale) {
   try {

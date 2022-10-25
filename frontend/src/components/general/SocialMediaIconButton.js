@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
   }),
 }));
 
-export default function SocialMediaButton({
+export default function SocialMediaIconButton({
   href,
   socialMediaIcon,
   altText,

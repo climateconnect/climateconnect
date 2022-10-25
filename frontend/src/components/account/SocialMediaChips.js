@@ -1,9 +1,10 @@
 import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
-import { createSocialMediaIconButton } from "../../../public/lib/socialMediaOperations";
+
 import { Container, Chip, Tooltip } from "@material-ui/core";
 import ControlPointIcon from "@material-ui/icons/ControlPoint";
-import SocialMediaButton from "../general/SocialMediaButton";
+import SocialMediaIconButton from "../general/SocialMediaIconButton";
+import { createSocialMediaIconButton } from "../../../public/lib/socialMediaOperations";
 
 const useStyles = makeStyles((theme) => ({
   socialMediaChip: (props) => ({
@@ -55,8 +56,8 @@ export default function SocialMediaChips({
                     handleDeleteSocialMedia(option.social_media_channel.social_media_name)
                   }
                   icon={
-                    <SocialMediaButton
-                      socialMediaIcon={createSocialMediaIconButton(option)}
+                    <SocialMediaIconButton
+                      socialMediaIcon={createSocialMediaIconButton(option.social_media_channel.social_media_name)}
                       isEditPage
                     />
                   }
@@ -69,3 +70,5 @@ export default function SocialMediaChips({
     </>
   );
 }
+
+
