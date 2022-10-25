@@ -293,8 +293,8 @@ export default function getOrganizationTexts({ organization, locale }) {
       de: "Finde uns unter:",
     },
     does_not_comply_twitter: {
-      en: "Does not comply with a valid Twitter URL",
-      de: "Entspricht nicht einer gültigen Twitter-URL",
+      en: "This is not a valid Twitter URL",
+      de: "Das ist keine gültige Twitter-URL",
     },
     does_not_comply_youtube: {
       en: "Does not comply with a valid Youtube URL",
