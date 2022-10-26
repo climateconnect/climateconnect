@@ -7,6 +7,7 @@ import LinkedInIcon from "@material-ui/icons/LinkedIn";
 import { apiRequest } from "./apiOperations";
 
 export function verifySocialMediaLink(socialMediaChannel, inputUrl, texts) {
+  
   const verfiedSocialMediaLinks = {
     Twitter: verficationOfInput(socialMediaChannel, inputUrl, texts.does_not_comply_twitter),
     Youtube: verficationOfInput(socialMediaChannel, inputUrl, texts.does_not_comply_youtube),
@@ -36,51 +37,47 @@ function verficationOfInput(socialMediaChannel, inputUrl, errorMessage) {
 }
 
 export function getSocialMediaButtons(socialLinks) {
-  const socialMediaLinks = [];
-  socialLinks.map((social) => {
-    const link = social.url;
-    switch (social.social_media_channel.social_media_name) {
-      case "Twitter": // twitter
-        socialMediaLinks.push({
-          href: link,
-          icon: TwitterIcon,
-          altText: "Twitter",
-        });
-        break;
-      case "Youtube": // youtube
-        socialMediaLinks.push({
-          href: link,
-          icon: YouTubeIcon,
-          altText: "Youtube",
-        });
-        break;
-      case "LinkedIn": // linkedin
-        socialMediaLinks.push({
-          href: link,
-          icon: LinkedInIcon,
-          altText: "LinkedIn",
-        });
-        break;
-      case "Instagram": // instagram
-        socialMediaLinks.push({
-          href: link,
-          icon: InstagramIcon,
-          altText: "Instagram",
-        });
-        break;
-      case "Facebook": // facebook
-        socialMediaLinks.push({
-          href: link,
-          icon: FacebookIcon,
-          altText: "Facebook",
-        });
-        break;
 
-      default:
-        break;
-    }
+  const socialMediaLinks = [];
+  const socialMediaTypes =
+  {
+    Twitter: {
+      href: getUrl(socialLinks, "Twitter"),
+      icon: TwitterIcon,
+      altText: "Twitter",
+    },
+    Youtube: {
+      href: getUrl(socialLinks, "Youtube"),
+      icon: YouTubeIcon,
+      altText: "Youtube",
+    },
+    LinkedIn:{
+      href: getUrl(socialLinks, "LinkedIn"),
+      icon: LinkedInIcon,
+      altText: "LinkedIn",
+    },
+    Instagram: {
+      href: getUrl(socialLinks, "Instagram"),
+      icon: InstagramIcon,
+      altText: "Instagram",
+    },
+    Facebook: {
+      href: getUrl(socialLinks, "Facebook"),
+      icon: FacebookIcon,
+      altText: "Facebook",
+    },
+  }
+
+  socialLinks.map((social) => {
+    socialMediaLinks.push(socialMediaTypes[social.social_media_channel.social_media_name])
   });
+
   return socialMediaLinks;
+}
+
+function getUrl(socialLinks, type) {
+  const indexOfSearchedType = socialLinks.findIndex(social => social.social_media_channel.social_media_name === type);
+  return socialLinks[indexOfSearchedType].url;
 }
 
 export function createSocialMediaIconButton(socialChannel) {
