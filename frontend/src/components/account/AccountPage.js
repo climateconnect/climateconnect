@@ -73,6 +73,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
     paddingLeft: 0,
     paddingRight: 0,
+    wordBreak: "break-all",
   },
   subtitle: {
     color: `${theme.palette.secondary.main}`,
