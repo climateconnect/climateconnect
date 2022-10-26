@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme) => ({
   },
   orgName: {
     display: "inline-block",
+    wordBreak: "break-word"
   },
   wrapper: {
     display: "inline-flex",
@@ -24,6 +25,7 @@ const useStyles = makeStyles((theme) => ({
   },
   mediumOrgName: {
     fontSize: 16,
+    wordBreak: "break-word"
   },
   mediumOrgImage: {
     height: 30,
