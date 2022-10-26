@@ -37,34 +37,41 @@ function verficationOfInput(socialMediaChannel, inputUrl, errorMessage) {
 }
 
 export function getSocialMediaButtons(socialLinks) {
-
+  
+  const socialMediaStrings = {
+    Twitter: "Twitter",
+    Youtube: "Youtube",
+    LinkedIn: "LinkedIn",
+    Instagram: "Instagram",
+    Facebook: "Facebook"
+  }
   const socialMediaLinks = [];
   const socialMediaTypes =
   {
     Twitter: {
-      href: getUrl(socialLinks, "Twitter"),
+      href: getUrl(socialLinks, socialMediaStrings.Twitter),
       icon: TwitterIcon,
-      altText: "Twitter",
+      altText: socialMediaStrings.Twitter,
     },
     Youtube: {
-      href: getUrl(socialLinks, "Youtube"),
+      href: getUrl(socialLinks, socialMediaStrings.Youtube),
       icon: YouTubeIcon,
-      altText: "Youtube",
+      altText: socialMediaStrings.Youtube,
     },
     LinkedIn:{
-      href: getUrl(socialLinks, "LinkedIn"),
+      href: getUrl(socialLinks, socialMediaStrings.LinkedIn),
       icon: LinkedInIcon,
-      altText: "LinkedIn",
+      altText: socialMediaStrings.LinkedIn,
     },
     Instagram: {
-      href: getUrl(socialLinks, "Instagram"),
+      href: getUrl(socialLinks, socialMediaStrings.Instagram),
       icon: InstagramIcon,
-      altText: "Instagram",
+      altText: socialMediaStrings.Instagram,
     },
     Facebook: {
-      href: getUrl(socialLinks, "Facebook"),
+      href: getUrl(socialLinks, socialMediaStrings.Facebook),
       icon: FacebookIcon,
-      altText: "Facebook",
+      altText: socialMediaStrings.Facebook,
     },
   }
 
