@@ -47,7 +47,7 @@ export default function SelectDialog({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
   const orgTexts = getTexts({ page: "organization", locale: locale });
-  const social_media_texts = getTexts({page: "social_media", locale: locale});
+  const social_media_texts = getTexts({ page: "social_media", locale: locale });
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [textLabel, setTextLabel] = useState("");
@@ -65,7 +65,9 @@ export default function SelectDialog({
     event.preventDefault();
 
     if (isSocial) {
-      const url = element.base_url + additionalInfo[0].value;
+      const url = element.ask_for_full_website
+        ? "https://" + additionalInfo[0].value
+        : element.base_url + additionalInfo[0].value;
       if ("" !== verifySocialMediaLink(element, url, orgTexts)) {
         setHasError(true);
         setErrorMessage(verifySocialMediaLink(element, url, orgTexts));
@@ -84,19 +86,18 @@ export default function SelectDialog({
   };
 
   const handleSelectChange = (event) => {
-
     setHasError(false);
     setErrorMessage("");
 
     if (isSocial) {
       setElement(values.filter((val) => val.name === event.target.value)[0]);
     } else {
-       const type = values.filter((x) => x.name === event.target.value)[0];
-       const typeAsRequired = {
-           key: type.key,
-            hide_get_involved: type.hide_get_involved,
-       };
-       setElement(typeAsRequired);
+      const type = values.filter((x) => x.name === event.target.value)[0];
+      const typeAsRequired = {
+        key: type.key,
+        hide_get_involved: type.hide_get_involved,
+      };
+      setElement(typeAsRequired);
     }
 
     if (supportAdditionalInfo) {
@@ -163,8 +164,11 @@ export default function SelectDialog({
                   disabled
                   variant="outlined"
                   type="text"
-                  key={i}
-                  label={element?.base_url + additionalInfo[0].value}
+                  label={
+                    element?.ask_for_full_website
+                      ? "https://" + additionalInfo[0].value
+                      : element?.base_url + additionalInfo[0].value
+                  }
                   className={`${classes.textField} ${classes.marginTop}`}
                 />
               )}

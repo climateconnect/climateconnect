@@ -10,12 +10,12 @@ const useStyles = makeStyles((theme) => ({
   socialMediaChip: (props) => ({
     marginRight: theme.spacing(0.5),
     marginBottom: theme.spacing(1),
-    marginTop: props.allSelected ? theme.spacing(-0.5): theme.spacing(0),
+    marginTop: props.allSelected ? theme.spacing(-0.5) : theme.spacing(0),
   }),
   addSocialMediaChip: {
     marginRight: theme.spacing(0.5),
     marginBottom: theme.spacing(1),
-    marginTop: theme.spacing(-0.5)
+    marginTop: theme.spacing(-0.5),
   },
   noPadding: {
     padding: 0,
@@ -28,11 +28,11 @@ export default function SocialMediaChips({
   handleDeleteSocialMedia,
   maxNumOfSocials,
 }) {
-  const classes = useStyles({allSelected: socials.length < maxNumOfSocials ? false : true});
+  const classes = useStyles({ allSelected: socials.length < maxNumOfSocials ? false : true });
   return (
     <>
       <Container className={classes.noPadding}>
-        {(socials.value.length < maxNumOfSocials) && (
+        {socials.value.length < maxNumOfSocials && (
           <div>
             <Chip
               label={socials.name}
@@ -57,7 +57,9 @@ export default function SocialMediaChips({
                   }
                   icon={
                     <SocialMediaIconButton
-                      socialMediaIcon={createSocialMediaIconButton(option.social_media_channel.social_media_name)}
+                      socialMediaIcon={createSocialMediaIconButton(
+                        option.social_media_channel.social_media_name
+                      )}
                       isEditPage
                     />
                   }
@@ -70,5 +72,3 @@ export default function SocialMediaChips({
     </>
   );
 }
-
-

@@ -1,10 +1,10 @@
 {
-    "url": {
-        "en": "URL",
-        "de": "URL ein"
-    },
-    "please_enter_your": {
-        "en": "Please enter your",
-        "de": "Bitte gib deine "
-    }
+  "url": {
+    "en": "URL",
+    "de": "URL ein"
+  },
+  "please_enter_your": {
+    "en": "Please enter your",
+    "de": "Bitte gib deine "
+  }
 }

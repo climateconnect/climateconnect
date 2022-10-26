@@ -12,7 +12,6 @@ export function parseOrganization(organization, editMode) {
     translations: organization.translations,
     hubs: organization.hubs,
     info: getOrganizationInfo(organization, editMode),
-
   };
 
   if (editMode)

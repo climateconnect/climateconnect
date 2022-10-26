@@ -6,29 +6,33 @@ import LinkedInIcon from "@material-ui/icons/LinkedIn";
 
 import { apiRequest } from "./apiOperations";
 
-export function verifySocialMediaLink(socialMediaChannel, url, texts) {
-  const baseUrl = socialMediaChannel.base_url;
+export function verifySocialMediaLink(socialMediaChannel, inputUrl, texts) {
   const verfiedSocialMediaLinks = {
-    "Twitter": verficationOfInput(baseUrl, url, texts.does_not_comply_twitter),
-    "Youtube": verficationOfInput(baseUrl, url, texts.does_not_comply_youtube),
-    "LinkedIn": verficationOfInput(baseUrl, url, texts.does_not_comply_linkedin),
-    "Instagram": verficationOfInput(baseUrl, url, texts.does_not_comply_instagram),
-    "Facebook": verficationOfInput(baseUrl, url, texts.does_not_comply_facebook),
-
-  }
-  return(verfiedSocialMediaLinks[socialMediaChannel.name]);
-
+    Twitter: verficationOfInput(socialMediaChannel, inputUrl, texts.does_not_comply_twitter),
+    Youtube: verficationOfInput(socialMediaChannel, inputUrl, texts.does_not_comply_youtube),
+    LinkedIn: verficationOfInput(socialMediaChannel, inputUrl, texts.does_not_comply_linkedin),
+    Instagram: verficationOfInput(socialMediaChannel, inputUrl, texts.does_not_comply_instagram),
+    Facebook: verficationOfInput(socialMediaChannel, inputUrl, texts.does_not_comply_facebook),
+  };
+  return verfiedSocialMediaLinks[socialMediaChannel.name];
 }
 
-function verficationOfInput(baseUrl, url, errorMessage) {
+function verficationOfInput(socialMediaChannel, inputUrl, errorMessage) {
+  const baseUrl = socialMediaChannel.base_url;
+  const askForFullWebsite = socialMediaChannel.ask_for_full_website;
+  const socialMediaName = socialMediaChannel.name;
+
+  // matches http://, https:// , https://www. ,http://www.
+  const regexPrefix = "^(http)(?:s)?(://)(?:www.)?";
   // matches.com/ anything
-  const regexSuffix = ".+$";
- 
-  const regex = new RegExp(baseUrl + regexSuffix);
-  const matches = regex.test(url);
+  const regexSuffix = askForFullWebsite ? ".com/.+$" : ".+$";
+
+  const regex = askForFullWebsite
+    ? new RegExp(regexPrefix + socialMediaName.toLowerCase() + regexSuffix)
+    : new RegExp(baseUrl + regexSuffix);
+  const matches = regex.test(inputUrl);
   const error = matches ? "" : errorMessage;
   return error;
-
 }
 
 export function getSocialMediaButtons(socialLinks) {
@@ -58,7 +62,7 @@ export function getSocialMediaButtons(socialLinks) {
         });
         break;
       case "Instagram": // instagram
-        socialMediaLinks.push( {
+        socialMediaLinks.push({
           href: link,
           icon: InstagramIcon,
           altText: "Instagram",
@@ -79,29 +83,27 @@ export function getSocialMediaButtons(socialLinks) {
   return socialMediaLinks;
 }
 
-export function createSocialMediaIconButton (socialChannel) {
+export function createSocialMediaIconButton(socialChannel) {
   const socialChannels = {
-    "Twitter": {
+    Twitter: {
       icon: TwitterIcon,
     },
-    "Youtube": {
+    Youtube: {
       icon: YouTubeIcon,
     },
-    "LinkedIn": {
+    LinkedIn: {
       icon: LinkedInIcon,
     },
-    "Instagram": {
+    Instagram: {
       icon: InstagramIcon,
     },
-    "Facebook": {
+    Facebook: {
       icon: FacebookIcon,
     },
   };
 
   return socialChannels[socialChannel];
 }
-
-
 
 export async function getSocialMediaChannels(locale) {
   try {

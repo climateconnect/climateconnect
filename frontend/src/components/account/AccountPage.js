@@ -180,7 +180,7 @@ const useStyles = makeStyles((theme) => ({
   websiteLink: {
     fontStyle: "italic",
     fontSize: 13,
-  }
+  },
 }));
 
 //Generic component to display personal profiles or organization profiles
@@ -409,15 +409,16 @@ export default function AccountPage({
           {/* only display this text if we have either a website or social media links to display*/}
           {isOrganization && (account.info.social_options.length > 0 || account.info.website) && (
             <>
-              
-                <Typography className={classes.websiteLink} > {organizationTexts.find_us_here} </Typography>
-                {account.info.website && (
-                  <Linkify componentDecorator={componentDecorator}>
-                    {" "}
-                    <Typography> {account.info.website}</Typography>
-                  </Linkify>
-                )}
-              
+              <Typography className={classes.websiteLink}>
+                {" "}
+                {organizationTexts.find_us_here}{" "}
+              </Typography>
+              {account.info.website && (
+                <Linkify componentDecorator={componentDecorator}>
+                  {" "}
+                  <Typography> {account.info.website}</Typography>
+                </Linkify>
+              )}
             </>
           )}
           {account.info.social_options && (

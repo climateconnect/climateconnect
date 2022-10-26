@@ -88,12 +88,7 @@ export async function getServerSideProps(ctx) {
   };
 }
 
-export default function OrganizationPage({
-  organization,
-  projects,
-  members,
-  rolesOptions,
-}) {
+export default function OrganizationPage({ organization, projects, members, rolesOptions }) {
   const { user, locale } = useContext(UserContext);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization, false);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
