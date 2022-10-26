@@ -15,6 +15,9 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
     marginBottom: -5,
   },
+  creator: {
+    wordBreak: "break-word",
+  },
   cardIcon: {
     verticalAlign: "bottom",
     marginBottom: -2,
