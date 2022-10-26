@@ -168,7 +168,7 @@ class Organization(models.Model):
         on_delete=models.SET_NULL,
     )
 
-    get_involved = models.CharField(
+    get_involved = models.TextField(
         help_text="How to get involved textfield",
         verbose_name="How to get involved",
         null=True,

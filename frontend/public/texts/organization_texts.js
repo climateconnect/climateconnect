@@ -233,7 +233,7 @@ export default function getOrganizationTexts({ organization, locale }) {
     },
     about: {
       en: `About`,
-      de: `Über ${organization?.name}`,
+      de: `Über uns`,
     },
     large_medium_organization_size: {
       en: "501-1,000",
