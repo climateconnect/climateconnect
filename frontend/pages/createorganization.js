@@ -354,6 +354,8 @@ export default function CreateOrganization({
         textKey: "info.short_description",
         rows: 5,
         headlineTextKey: "short_description",
+        maxCharacters: 280,
+        showCharacterCounter: true,
       },
       {
         textKey: "info.about",
@@ -367,6 +369,8 @@ export default function CreateOrganization({
         textKey: "info.get_involved",
         rows: 5,
         headlineTextKey: "get_involved",
+        maxCharacters: 250,
+        showCharacterCounter: true,
       },
     ];
 
