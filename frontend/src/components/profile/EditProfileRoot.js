@@ -175,6 +175,8 @@ export default function EditAccountRoot({
                   textKey: "info.bio",
                   rows: 5,
                   headlineTextKey: "bio",
+                  maxCharacters: 280,
+                  showCharacterCounter: true,
                 },
               ]}
               changeTranslationLanguages={changeTranslationLanguages}
