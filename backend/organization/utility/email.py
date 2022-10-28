@@ -1,6 +1,9 @@
 import logging
 import re
 
+
+from organization.models.translations import OrganizationTranslation, ProjectTranslation
+
 from climateconnect_api.models.user import UserProfile
 from climateconnect_api.utility.email_setup import get_template_id, send_email
 from climateconnect_api.utility.translation import get_user_lang_code, get_user_lang_url
@@ -219,16 +222,23 @@ def send_organization_follower_email(user, organization_follower, notification):
         + " "
         + organization_follower.user.last_name
     )
+    org_language = organization_follower.organization.language.language_code
+               
+    if lang_code == org_language:
+        org_name = organization_follower.organization.name
+    else:
+        org_name = OrganizationTranslation.objects.get(organization=organization_follower.organization).name_translation    
+
 
     subjects_by_language = {
         "en": "{} now follows {} on Climate Connect".format(
-            following_user_full_name, organization_follower.organization.name
+            following_user_full_name, org_name
         ),
         "de": "{} folgt jetzt {} auf Climate Connect".format(
-            following_user_full_name, organization_follower.organization.name
+            following_user_full_name, org_name
         ),
     }
-   
+
     base_url = settings.FRONTEND_URL
     url_ending = (
         "/organizations/"
@@ -239,7 +249,7 @@ def send_organization_follower_email(user, organization_follower, notification):
     variables = {
         "RecipientFirstName": user.first_name,
         "FollowingUserFullName": following_user_full_name,
-        "OrganizationName": organization_follower.organization.name,
+        "OrganizationName": org_name,
         "url": base_url + get_user_lang_url(lang_code) + url_ending,
     }
     send_email(
@@ -255,8 +265,19 @@ def send_organization_follower_email(user, organization_follower, notification):
 def send_org_project_published_email(user, org_project_published, notification):
     lang_code = get_user_lang_code(user)
 
-    organization_name = org_project_published.organization.name
-    project_name = org_project_published.project.name
+    org_language = org_project_published.organization.language.language_code
+    project_language = org_project_published.project.language.language_code
+
+    if (org_language == lang_code): 
+        organization_name = org_project_published.organization.name  
+    else:
+        organization_name = OrganizationTranslation.objects.get(organization=org_project_published.organization).name_translation    
+    
+    if (project_language == lang_code):
+        project_name = org_project_published.project.name  
+    else:
+        project_name = ProjectTranslation.objects.get(project=org_project_published.project).name_translation    
+
     subjects_by_language = {
         "en": "New climate project from {}: {}".format(
             organization_name, project_name

@@ -99,7 +99,7 @@ def set_user_following(
     # messages are either for project or organization and differ from eachother
     if "following" not in request_data:
         return Response(
-            {"message": "Missing required parameters"},
+            {"message": _("Missing required parameters")},
             status=status.HTTP_400_BAD_REQUEST,
         )
     try:
@@ -177,7 +177,7 @@ def set_user_following(
         )
     else:
         return Response(
-            {"message": 'Invalid value for variable "following"'},
+            {"message": _('Invalid value for variable "following"')},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
