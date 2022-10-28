@@ -220,6 +220,8 @@ export default function ShareProjectRoot({
       textKey: "short_description",
       rows: 5,
       headlineTextKey: "short_description",
+      maxCharacters: 280,
+      showCharacterCounter: true,
     },
     {
       textKey: "description",
