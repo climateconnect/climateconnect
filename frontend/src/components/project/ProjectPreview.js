@@ -45,6 +45,7 @@ const useStyles = makeStyles((theme) => {
       ["&span"]: {
         whiteSpace: "nowrap",
       },
+      wordBreak: "break-word",
     },
     button: {
       marginTop: theme.spacing(1),

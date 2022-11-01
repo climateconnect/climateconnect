@@ -37,8 +37,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env("DEBUG") == "True"
-# DEBUG = True
+DEBUG = env("DEBUG", False)
 
 ALLOWED_HOSTS = get_allowed_hosts(env("ALLOWED_HOSTS"))
 
@@ -78,18 +77,17 @@ LIBRARY_APPS = [
     "django_celery_beat"
 ]
 
-DEBUG_APPS = []
-
-if env("DEBUG") == "True":
-    INSTALLED_APPS = CUSTOM_APPS + LIBRARY_APPS + DEBUG_APPS
-else:
-    INSTALLED_APPS = CUSTOM_APPS + LIBRARY_APPS
+DEBUG_APPS = [
+    "debug_toolbar"
+]
 
 SECURITY_MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
 ]
 
-DEBUG_MIDDLEWARE = []
+DEBUG_MIDDLEWARE = [
+    "debug_toolbar.middleware.DebugToolbarMiddleware"
+]
 
 NORMAL_MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -102,9 +100,11 @@ NORMAL_MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-if env("DEBUG") == "True":
+if env("DEBUG"):
+    INSTALLED_APPS = CUSTOM_APPS + LIBRARY_APPS + DEBUG_APPS
     MIDDLEWARE = SECURITY_MIDDLEWARE + DEBUG_MIDDLEWARE + NORMAL_MIDDLEWARE
 else:
+    INSTALLED_APPS = CUSTOM_APPS + LIBRARY_APPS
     MIDDLEWARE = SECURITY_MIDDLEWARE + NORMAL_MIDDLEWARE
 
 CORS_ORIGIN_WHITELIST = [
@@ -320,28 +320,20 @@ SENTRY_ENVIRONMENT = env("SENTRY_ENVIRONMENT")
 
 sentry_sdk.init(
     dsn=SENTRY_DSN,
-    integrations=[
-        DjangoIntegration(),
-        CeleryIntegration(),
-        RedisIntegration()
-    ],
-
+    integrations=[DjangoIntegration(), CeleryIntegration(), RedisIntegration()],
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for performance monitoring.
     # We recommend adjusting this value in production,
     traces_sample_rate=1.0,
-
     # If you wish to associate users to errors (assuming you are using
     # django.contrib.auth) you may enable sending PII data.
     send_default_pii=True,
-
     # By default the SDK will try to use the SENTRY_RELEASE
     # environment variable, or infer a git commit
     # SHA as release, however you may want to set
     # something more human-readable.
     # release="myapp@1.0.0",
-
     # SENTRY ENVIRONMENT for local env is "development"
     # and for prod env is "production"
-    environment=SENTRY_ENVIRONMENT
+    environment=SENTRY_ENVIRONMENT,
 )

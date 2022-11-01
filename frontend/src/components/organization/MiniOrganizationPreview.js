@@ -6,6 +6,8 @@ import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
+import Truncate from "react-truncate";
+
 
 const useStyles = makeStyles((theme) => ({
   orgImage: {
@@ -17,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
   },
   orgName: {
     display: "inline-block",
+    wordBreak: "break-word"
   },
   wrapper: {
     display: "inline-flex",
@@ -24,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
   },
   mediumOrgName: {
     fontSize: 16,
+    wordBreak: "break-word"
   },
   mediumOrgImage: {
     height: 30,
@@ -71,7 +75,9 @@ function Content({ organization, size, onDelete }) {
         alt={texts.organizations_logo}
       />
       {size === "small" ? (
-        <>{organization.name}</>
+        <Truncate lines={2}>
+        <Typography>{organization.name}</Typography>
+        </Truncate>
       ) : size === "medium" ? (
         <Typography className={classes.mediumOrgName}>{organization.name}</Typography>
       ) : (
