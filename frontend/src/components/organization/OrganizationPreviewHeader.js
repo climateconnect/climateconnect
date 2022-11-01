@@ -10,10 +10,11 @@ const useStyles = makeStyles((theme) => {
       fontWeight: "bold",
       margin: "5px",
       overflow: "hidden",
-      lineHeight: 1.3
+      wordBreak: "break-word",
+      lineHeight: 1.3,
     },
     headerWrapper: (props) => ({
-      justifyContent: "center",  
+      justifyContent: "center",
     }),
     media: {
       height: 80,
