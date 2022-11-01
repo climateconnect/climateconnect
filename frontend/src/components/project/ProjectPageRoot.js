@@ -57,6 +57,9 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
     width: 145,
+    [theme.breakpoints.down("xs")]: {
+      width: 125,
+    },
   },
   projectInteractionButtonContainer: {
     position: "relative",
