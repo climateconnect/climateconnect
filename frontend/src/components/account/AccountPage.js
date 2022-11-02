@@ -63,13 +63,12 @@ const useStyles = makeStyles((theme) => ({
     color: `${theme.palette.secondary.main}`,
     fontWeight: "bold",
     wordBreak: "break-word",
-   
   },
   content: {
     color: `${theme.palette.secondary.main}`,
     fontSize: 16,
     paddingBottom: theme.spacing(2),
-    wordBreak: "break-word"
+    wordBreak: "break-word",
   },
   location: {
     marginBottom: theme.spacing(2),
@@ -213,7 +212,6 @@ const useStyles = makeStyles((theme) => ({
   },
   sideButton: {
     width: 225,
-
   },
   sizeContainer: {
     display: "flex",
@@ -456,12 +454,12 @@ export default function AccountPage({
               </Container>
             )}
             {isOrganization && (
-              <div className={classes.website}>           
-                  <Typography variant="caption"> {organizationTexts.find_us_here} </Typography>
-                  <Linkify componentDecorator={componentDecorator}>
-                    {" "}
-                    <Typography className={classes.websiteLink}> {account.info.website}</Typography>
-                  </Linkify>
+              <div className={classes.website}>
+                <Typography variant="caption"> {organizationTexts.find_us_here} </Typography>
+                <Linkify componentDecorator={componentDecorator}>
+                  {" "}
+                  <Typography className={classes.websiteLink}> {account.info.website}</Typography>
+                </Linkify>
               </div>
             )}
           </Container>
@@ -471,22 +469,19 @@ export default function AccountPage({
 
           {user && (
             <div className={classes.buttonInfoContainer}>
-              
-                {!isSmallScreen &&  isOwnAccount && (
-                  <>
-                    
-                      <Button
-                        className={classes.sideButton}
-                        variant="contained"
-                        color="primary"
-                        href={editHref}
-                      >
-                        <EditSharpIcon className={classes.innerIcon} />
-                        {editText ? editText : texts.edit_profile}
-                      </Button>
-                    
-              </>
-)}
+              {!isSmallScreen && isOwnAccount && (
+                <>
+                  <Button
+                    className={classes.sideButton}
+                    variant="contained"
+                    color="primary"
+                    href={editHref}
+                  >
+                    <EditSharpIcon className={classes.innerIcon} />
+                    {editText ? editText : texts.edit_profile}
+                  </Button>
+                </>
+              )}
             </div>
           )}
         </Container>

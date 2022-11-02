@@ -13,7 +13,6 @@ export function parseOrganization(organization, editMode) {
     info: getOrganizationInfo(organization, editMode),
   };
 
-
   if (editMode)
     org.types = org.types.map((t) => ({ key: t.key, hide_get_involved: t.hide_get_involved }));
 

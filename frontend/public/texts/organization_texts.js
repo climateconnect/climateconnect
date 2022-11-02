@@ -302,7 +302,7 @@ export default function getOrganizationTexts({ organization, locale }) {
     },
     find_us_here: {
       en: "Find us here:",
-      de: "FInde uns unter:"
-    }
+      de: "FInde uns unter:",
+    },
   };
 }
