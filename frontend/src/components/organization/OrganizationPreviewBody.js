@@ -39,6 +39,7 @@ const useStyles = makeStyles((theme) => {
       overflow: "hidden",
       WebkitBoxOrient: "vertical",
       display: "-webkit-box",
+      lineHeight: 1.25,
     },
     summaryBox: {
       overflow: "hidden",

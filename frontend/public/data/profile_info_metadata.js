@@ -19,7 +19,7 @@ export default function getProfileInfoMetadata(locale) {
       maxEntries: 8,
     },
     bio: {
-      name: texts.enter_profile_bio,
+      name: texts.bio,
       type: "bio",
       key: "bio",
       missingMessage: texts.bio_user_profile_missing_message,
