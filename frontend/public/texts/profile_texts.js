@@ -21,7 +21,7 @@ export default function getProfileTexts({ profile, locale }) {
       en: "This user hasn't added any skills yet.",
       de: "Diese(r) Benutzer*in hat seine/ihre Fähigkeiten noch nicht angegeben.",
     },
-    enter_profile_bio: {
+    bio: {
       en: "About You (Bio)",
       de: "Über dich (Bio)",
     },
