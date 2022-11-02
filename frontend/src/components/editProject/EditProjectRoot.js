@@ -256,6 +256,8 @@ export default function EditProjectRoot({
       textKey: "short_description",
       rows: 5,
       headlineTextKey: "summary",
+      maxCharacters: 280,
+      showCharacterCounter: true,
     },
     {
       textKey: "description",
