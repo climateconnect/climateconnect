@@ -6,10 +6,13 @@ import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
+import Truncate from "react-truncate";
+
 
 const useStyles = makeStyles((theme) => ({
   orgName: {
     display: "inline-block",
+    wordBreak: "break-word"
   },
   smallAvatar: (props) => ({
     height: 20,
@@ -25,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
     display: "inline-block",
     verticalAlign: "middle",
     marginRight: theme.spacing(1),
+    wordBreak: "break-word"
   },
   wrapper: {
     display: "inline-flex",
@@ -32,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
   },
   mediumOrgName: {
     fontSize: 16,
+    wordBreak: "break-word"
   },
 }));
 
@@ -92,7 +97,9 @@ function Content({ organization, size, onDelete, doNotShowName }) {
       {!doNotShowName && (
         <>
           {size === "small" ? (
-            <> {organization.name} </>
+               <Truncate lines={2}>
+               <Typography>{organization.name}</Typography>
+               </Truncate>
           ) : size === "medium" ? (
             <Typography className={classes.mediumOrgName}>{organization.name}</Typography>
           ) : (

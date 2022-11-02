@@ -10,6 +10,7 @@ const useStyles = makeStyles((theme) => {
       fontWeight: "bold",
       margin: "5px",
       overflow: "hidden",
+      wordBreak: "break-word",
       lineHeight: 1.3,
     },
     headerWrapper: (props) => ({
