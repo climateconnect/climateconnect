@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
   },
   cardIcon: {
     verticalAlign: "bottom",
-    
+
     marginRight: theme.spacing(0.5),
     marginLeft: theme.spacing(-0.25),
     fontSize: "default",
@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
   involvedOrganizationsContainer: {
     display: "flex",
     flexDirection: "row",
-    marginBottom:theme.spacing(0.5)
+    marginBottom: theme.spacing(0.5),
   },
   horizontalSpacing: {
     marginLeft: theme.spacing(1),

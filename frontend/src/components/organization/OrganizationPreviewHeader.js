@@ -13,9 +13,9 @@ const useStyles = makeStyles((theme) => {
       wordBreak: "break-word",
       lineHeight: 1.3,
     },
-    headerWrapper: (props) => ({
+    headerWrapper: {
       justifyContent: "center",
-    }),
+    },
     media: {
       height: 80,
       width: 80,
