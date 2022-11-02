@@ -112,7 +112,6 @@ const WithDescription = ({ className, project_parent, hovering, project, main_pr
       <Container className={classes.wrapper}>
         <CreatorAndCollaboratorPreviews
           collaborating_organization={project.collaborating_organizations}
-          parent_organization={project_parent.parent_organization}
           project_parent={project_parent}
         />
         <Box>
@@ -156,7 +155,6 @@ const WithOutDescription = ({ className, project_parent, project, main_project_t
       <Container className={classes.wrapper}>
         <CreatorAndCollaboratorPreviews
           collaborating_organization={project.collaborating_organizations}
-          parent_organization={project_parent.parent_organization}
           project_parent={project_parent}
         />
         <Box>
@@ -176,7 +174,7 @@ const WithOutDescription = ({ className, project_parent, project, main_project_t
   );
 };
 
-const CreatorAndCollaboratorPreviews = ({ collaborating_organization, parent_organization, project_parent }) => {
+const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_parent }) => {
   const collaborating_organizations = collaborating_organization.slice(0, 2); // only show 2 collaborating orgs
   const classes = useStyles();
   return (
@@ -185,7 +183,7 @@ const CreatorAndCollaboratorPreviews = ({ collaborating_organization, parent_org
         <div className={classes.involvedOrganizationsContainer}>
           <MiniOrganizationPreview
             className={classes.creator}
-            organization={parent_organization}
+            organization={project_parent.parent_organization}
             size="small"
             nolink
           />
