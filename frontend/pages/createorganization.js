@@ -158,7 +158,6 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         url: url,
         locale: locale,
       });
-      console.log(resp);
       const location = getLocationValue(values, "location");
       setOrganizationInfo({
         ...organizationInfo,
@@ -176,13 +175,12 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       });
       setCurStep(steps[1]);
     } catch (err) {
-      console.log(err);
       if (err?.response?.data?.message) {
         handleSetErrorMessages({
           ...errorMessages,
           basicOrganizationInfo: (
             <div>
-              {texts.an_organization_with_this_name_already_exists}
+              {texts.an_organization_with_this_name_already_exists}{" "}
               <a href={getLocalePrefix(locale) + "/organizations/" + err?.response?.data?.url}>
                 {texts.click_here}
               </a>{" "}

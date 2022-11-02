@@ -8,7 +8,9 @@ from organization.models import (
     OrganizationMember,
 )
 from organization.models.tags import OrganizationTags
-
+from rest_framework.response import Response
+from rest_framework import status
+from django.utils.translation import gettext as _
 
 def check_organization(organization_id: str) -> Organization:
     try:
@@ -138,3 +140,40 @@ def add_organization_member(organization, user, user_role, role_in_organization)
     )
 
     return
+
+
+def check_edit_exisiting_name(organization, name): 
+    # allows an org to change capitilization of their name
+    if (Organization.objects.filter(name__iexact=name).exclude(id=organization.id).exists()):
+        return True
+
+    if (OrganizationTranslation.objects.filter(
+                name_translation__iexact=name
+            ).exclude(organization=organization)):
+        return True
+
+    return False
+
+
+def check_create_existing_name(name):
+    if check_existing_name(name) or check_existing_name_translation(name):
+        return True
+    return False
+
+
+def check_existing_name(name):
+    if Organization.objects.filter(name__iexact=name).exists():
+            return True
+    return False
+
+
+def check_existing_name_translation(name):
+    if OrganizationTranslation.objects.filter(
+            name_translation__iexact=name
+        ).exists():
+            return True
+    return False
+
+
+def get_existing_name_message(name):
+    return _("The name {} is already in use. Please use another name.").format(name)
