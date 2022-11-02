@@ -54,18 +54,25 @@ const useStyles = makeStyles((theme) => ({
 
   name: {
     fontWeight: "bold",
+    padding: theme.spacing(1),
+    paddingLeft: 0,
+    paddingRight: 0,
+    wordBreak: "break-word",
   },
   subtitle: {
     color: `${theme.palette.secondary.main}`,
     fontWeight: "bold",
+    wordBreak: "break-word",
+   
   },
   content: {
     color: `${theme.palette.secondary.main}`,
     fontSize: 16,
     paddingBottom: theme.spacing(2),
+    wordBreak: "break-word"
   },
   location: {
-    marginBottom: theme.spacing(3),
+    marginBottom: theme.spacing(2),
   },
   noPadding: {
     padding: 0,
@@ -148,6 +155,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(-0.25),
     fontStyle: "italic",
     fontSize: 13,
+    wordBreak: "break-word",
   },
 
   socialMediaLink: {

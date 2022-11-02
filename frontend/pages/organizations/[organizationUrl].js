@@ -57,6 +57,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 23,
     fontWeight: "bold",
     marginBottom: theme.spacing(1),
+    wordBreak: "break-word",
   },
   sectionHeadlineWithButtonContainer: {
     display: "flex",

@@ -256,6 +256,8 @@ export default function EditProjectRoot({
       textKey: "short_description",
       rows: 5,
       headlineTextKey: "summary",
+      maxCharacters: 280,
+      showCharacterCounter: true,
     },
     {
       textKey: "description",
@@ -318,6 +320,7 @@ export default function EditProjectRoot({
             textsToTranslate={textsToTranslate}
             pageName="project"
             introTextKey="translate_project_intro"
+            submitButtonText={texts.save}
           />
         </>
       )}
