@@ -152,7 +152,7 @@ export default function ProfileRoot({
       )}
       <Container className={classes.container} ref={projectsRef}>
         <div className={classes.sectionHeadlineWithButtonContainer}>
-          <h2>{isOwnAccount ? texts.your_projects + ":" : texts.this_users_projects + ":"}</h2>
+          <h2>{isOwnAccount ? texts.your_projects : texts.this_users_projects}</h2>
           {isTinyScreen ? (
             <IconButton href={getLocalePrefix(locale) + "/share"}>
               <ControlPointSharpIcon
