@@ -161,6 +161,14 @@ const useStyles = makeStyles((theme) => ({
   projectDescription: {
     wordBreak: "break-word",
   },
+  projectParentContainer: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  collaborationContainer: {
+    display: "flex",
+    flexDirection: "row",
+  }
 }));
 
 /**
@@ -318,6 +326,7 @@ export default function ProjectContent({
             {texts.created}: <DateDisplay date={new Date(project.creation_date)} />
           </Typography>
           <div>
+            <div className={classes.projectParentContainer}>
             <Typography component="span">
               {texts.started + " "}
               <TimeAgo
@@ -348,8 +357,9 @@ export default function ProjectContent({
                 />{" "}
               </Typography>
             )}
+            </div>
             {project.collaborating_organizations && project.collaborating_organizations.length > 0 && (
-              <div>
+              <div className={classes.collaborationContainer}>
                 <span> {texts.in_collaboration_with}</span>
                 {project.collaborating_organizations.map((o) => (
                   <MiniOrganizationPreview
