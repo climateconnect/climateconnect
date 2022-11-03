@@ -23,11 +23,10 @@ all: docker start
 # Note: this should be in sync with out CI GitHub action that lints too. See
 # those files under .github/workflows
 lint:
-	flake8 backend --count --select=E9,F6,F7,F8 --show-source --statistics
+	flake8 . --count --select=E9,F6,F7,F8 --show-source --statistics
 
 format:
 	black
-
 
 # Database migrations and test data creation:
 migrate:
