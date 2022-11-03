@@ -92,22 +92,22 @@ export default function IdeasBoard({
     });
   };
 
-  const handleRemoveComment = (c) => {
+  const handleRemoveComment = (comment) => {
     // remove a top comment
-    if (c.parent_comment_id === null) {
+    if (comment.parent_comment_id === null) {
       setIdea({
         ...idea,
-        comments: [...idea.comments.filter((pc) => pc.id !== c.id)],
+        comments: [...idea.comments.filter((pc) => pc.id !== comment.id)],
       });
       // remove a reply comment
     } else {
       const tempIdeaComments = idea.comments;
       const parentCommentIndex = tempIdeaComments.findIndex(
-        (comment) => comment.id === c.parent_comment_id
+        (c) => c.id === comment.parent_comment_id
       );
 
       const filterOutReplies = [
-        ...tempIdeaComments[parentCommentIndex].replies.filter((pc) => pc.id !== c.id),
+        ...tempIdeaComments[parentCommentIndex].replies.filter((pc) => pc.id !== comment.id),
       ];
       tempIdeaComments[parentCommentIndex].replies = filterOutReplies;
 
