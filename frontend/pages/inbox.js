@@ -115,7 +115,7 @@ export default function Inbox({ chatData, initialNextPage }) {
   };
 
   const loadMoreFilteredChats = async () => {
-    handleSetIsLoading(true);
+   
     const url = `/api/chat/?page=${searchedChatsState.nextPage}&search=${searchTerm}`;
     const response = await apiRequest({
       token: token,
@@ -132,7 +132,7 @@ export default function Inbox({ chatData, initialNextPage }) {
       chats: [...searchedChatsState.chats, ...parsedChats],
     });
 
-    handleSetIsLoading(false);
+    
   };
 
   const handleSetIsLoading = (newValue) => {

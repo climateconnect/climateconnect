@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(1),
     color: theme.palette.grey[800],
     cursor: "pointer",
-    breakWord: "break-word"
+    breakWord: "break-word",
   },
   creatorImage: {
     height: 24,
@@ -160,7 +160,7 @@ const useStyles = makeStyles((theme) => ({
   },
   projectDescription: {
     wordBreak: "break-word",
-  }
+  },
 }));
 
 /**

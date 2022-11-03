@@ -7,7 +7,7 @@ import UserContext from "../context/UserContext";
 const useStyles = makeStyles((theme) => ({
   categories: (props) => ({
     display: "flex",
-    marginTop: theme.spacing(0.5),
+    marginBottom: theme.spacing(0.75),
     background: props.hovering ? "#e1e1e147" : "auto",
     padding: props.hovering ? theme.spacing(2) : 0,
     paddingTop: props.hovering ? theme.spacing(1) : 0,
