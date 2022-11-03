@@ -79,7 +79,6 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
     marginLeft: theme.spacing(1),
     [theme.breakpoints.down("sm")]: {
-     
       minWidth: 100,
     },
     width: 265,
@@ -106,7 +105,6 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-around",
   },
   backButton: {
-
     border: `1px solid #000000`,
   },
 }));
@@ -386,7 +384,7 @@ function TranslationBlock({
         handleContentChange={(event) => {
           handleTranslationChange(event.target.value, dataKey, indexInArray);
         }}
-        maxCharacters={maxCharacters*1.20}
+        maxCharacters={maxCharacters * 1.2}
         characterText={texts.characters}
         showCharacterCounter={showCharacterCounter}
       />
@@ -405,7 +403,6 @@ function TranslationBlockElement({
   characterText,
 }) {
   const classes = useStyles();
-
 
   return (
     <div className={classes.translationBlockElement}>
