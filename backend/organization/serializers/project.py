@@ -242,6 +242,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     short_description = serializers.SerializerMethodField()
     number_of_comments = serializers.SerializerMethodField()
     number_of_likes = serializers.SerializerMethodField()
+    collaborating_organizations = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -258,6 +259,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             "short_description",
             "number_of_comments",
             "number_of_likes",
+            "collaborating_organizations",
         )
 
     def get_name(self, obj):
@@ -316,6 +318,11 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     def get_number_of_likes(self, obj):
         return ProjectLike.objects.filter(project=obj).count()
 
+    def get_collaborating_organizations(self, obj):
+        serializer = ProjectCollaboratorsSerializer(obj.project_collaborator, many=True)
+        return serializer.data
+
+          
 
 class ProjectSuggestionSerializer(ProjectStubSerializer):
     project_creator = serializers.SerializerMethodField()

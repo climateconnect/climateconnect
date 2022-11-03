@@ -21,7 +21,8 @@ const useStyles = makeStyles((theme) => {
       userSelect: "none",
       backgroundColor: theme.palette.background.default,
       borderRadius: 3,
-      border: `1px solid #EEE`,
+      boxShadow: "3px 3px 8px #E0E0E0",
+
       position: "relative",
       height: "100%",
       display: "flex",
