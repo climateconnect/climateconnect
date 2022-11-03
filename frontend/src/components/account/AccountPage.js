@@ -67,6 +67,7 @@ const useStyles = makeStyles((theme) => ({
   },
   location: {
     marginBottom: theme.spacing(2),
+
   },
   noPadding: {
     padding: 0,

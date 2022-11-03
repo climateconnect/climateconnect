@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import NotFound
 from rest_framework.filters import SearchFilter
+from django.db.models import Prefetch
 from django.db.models import Value as V
 from django.db.models.functions import Concat
 
@@ -183,20 +184,34 @@ class GetSearchedChat(ListAPIView):
     pagination_class = ChatsPagination
 
     def get_queryset(self):
-
         query = self.request.query_params.get("search")
+        current_user_full_name = (
+            self.request.user.first_name + " " + self.request.user.last_name
+        )
 
-        chat_ids = Participant.objects.filter(
-            user=self.request.user, is_active=True
+        chat_ids = Participant.objects.select_related('chat').filter(user=self.request.user, is_active=True
         ).values_list("chat", flat=True)
+    
 
-        participants_matching_query = Participant.objects.annotate(
-            full_name=Concat("user__first_name", V(" "), "user__last_name")
-        ).filter(chat__in=chat_ids, full_name__icontains=query, is_active=True)
         chats = MessageParticipants.objects.filter(
-            Q(participant_participants__in=participants_matching_query)
+            Q(
+                participant_participants__in=Participant.objects.select_related(
+                    "chat"
+                )
+                .filter(
+                    chat__in=chat_ids,
+                    user__user_profile__name__icontains=query,
+                    is_active=True,
+                )
+                .exclude(
+                    chat__in=chat_ids,
+                    user__user_profile__name=current_user_full_name,
+                    is_active=True,
+                )
+            )
             | Q(name__icontains=query, id__in=chat_ids)
         ).distinct()
+
         return chats
 
 
