@@ -10,11 +10,12 @@ const useStyles = makeStyles((theme) => {
       fontWeight: "bold",
       margin: "5px",
       overflow: "hidden",
+      wordBreak: "break-word",
+      lineHeight: 1.3,
     },
-    headerWrapper: (props) => ({
+    headerWrapper: {
       justifyContent: "center",
-      marginTop: props.numOfTypes > 1 ? 0 : 21,
-    }),
+    },
     media: {
       height: 80,
       width: 80,
@@ -37,9 +38,7 @@ const useStyles = makeStyles((theme) => {
 });
 
 export default function OrganizationPreviewHeader({ organization }) {
-  const classes = useStyles({
-    numOfTypes: organization.types.length,
-  });
+  const classes = useStyles();
 
   return (
     <div>
