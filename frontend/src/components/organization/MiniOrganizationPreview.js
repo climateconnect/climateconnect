@@ -27,12 +27,10 @@ const useStyles = makeStyles((theme) => ({
     display: "inline-block",
     verticalAlign: "middle",
     marginRight: theme.spacing(1),
-    wordBreak: "break-word",
   },
   wrapper: {
     display: "inline-flex",
     alignItems: "center",
-    marginRight: theme.spacing(1),
   },
   mediumOrgName: {
     fontSize: 16,
