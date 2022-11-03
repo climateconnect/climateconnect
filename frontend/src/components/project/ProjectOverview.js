@@ -50,7 +50,6 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "flex-start",
     cursor: "pointer",
     marginRight: theme.spacing(1),
-
   },
   linkIcon: {
     marginRight: theme.spacing(1),
@@ -60,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
     textAlign: "center",
-    wordBreak: "break-word"
+    wordBreak: "break-word",
   },
   headerButton: {
     right: 0,
@@ -90,9 +89,9 @@ const useStyles = makeStyles((theme) => ({
     height: 40,
     minWidth: 120,
   },
-  shortDescription:{
-    wordBreak: "break-word"
-  }
+  shortDescription: {
+    wordBreak: "break-word",
+  },
 }));
 
 const componentDecorator = (href, text, key) => (
