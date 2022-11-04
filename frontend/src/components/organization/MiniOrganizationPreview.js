@@ -46,6 +46,7 @@ export default function MiniOrganizationPreview({
   onDelete,
   nolink,
   doNotShowName,
+  showBorder,
 }) {
   const { locale } = useContext(UserContext);
   if (!nolink)
@@ -72,15 +73,16 @@ export default function MiniOrganizationPreview({
           size={size}
           onDelete={onDelete}
           doNotShowName={doNotShowName}
+          showBorder={showBorder}
         />
       </div>
     );
 }
 
-function Content({ organization, size, onDelete, doNotShowName }) {
+function Content({ organization, size, onDelete, doNotShowName, showBorder }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
-  const classes = useStyles({ showBorder: doNotShowName });
+  const classes = useStyles({ showBorder: showBorder });
   const avatarProps = {
     alt: texts.organizations_logo,
     src: getImageUrl(organization.thumbnail_image),

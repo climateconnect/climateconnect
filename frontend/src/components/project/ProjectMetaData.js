@@ -203,6 +203,7 @@ const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_pa
                   size="small"
                   nolink
                   doNotShowName
+                  showBorder
                 />
               ))}
             </>

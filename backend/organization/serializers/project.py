@@ -322,7 +322,6 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         serializer = ProjectCollaboratorsSerializer(obj.project_collaborator, many=True)
         return serializer.data
 
-          
 
 class ProjectSuggestionSerializer(ProjectStubSerializer):
     project_creator = serializers.SerializerMethodField()
