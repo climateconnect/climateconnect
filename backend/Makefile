@@ -7,7 +7,7 @@ start:
 	python3 manage.py runserver
 
 install:
-	pip install -r requirements.txt
+	pip3 install -r requirements.txt
 
 test:
 	python3 manage.py test
