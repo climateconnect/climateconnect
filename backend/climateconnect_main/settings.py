@@ -25,6 +25,7 @@ from sentry_sdk.integrations.celery import CeleryIntegration
 
 load_dotenv(find_dotenv(".backend_env"))
 
+
 env = os.environ.get
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -46,6 +47,7 @@ INTERNAL_IPS = [
     "127.0.0.1",
     # ...
 ]
+
 
 AUTO_VERIFY = True if env("AUTO_VERIFY") in ["True", "true", "TRUE"] else False
 
@@ -124,6 +126,7 @@ APPEND_SLASH = False
 
 ROOT_URLCONF = "climateconnect_main.urls"
 
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -194,15 +197,18 @@ if env("ENVIRONMENT") not in ("development", "test"):
     AZURE_ACCOUNT_KEY = env("AZURE_ACCOUNT_KEY")
     AZURE_CONTAINER = env("AZURE_CONTAINER")
 
+
+print("💜")
+
 STATIC_URL = (
-    "/static/"
-    if env("ENVIRONMENT") in ("development", "test")
-    else "https://"
+    "/static/" if env("ENVIRONMENT") in ("development", "test") else "https://"
     + env("AZURE_ACCOUNT_NAME")
     + "."
     + env("AZURE_HOST")
     + "/{}/".format(env("AZURE_CONTAINER"))
 )
+
+
 STATIC_ROOT = (
     env("STATIC_ROOT") if env("ENVIRONMENT") in ("development", "test") else "static/"
 )
@@ -210,6 +216,11 @@ MEDIA_ROOT = env("MEDIA_ROOT")
 MEDIA_URL = "/media/"
 
 REST_KNOX = {"TOKEN_TTL": timedelta(days=120)}
+
+# https://stackoverflow.com/questions/70572345/django-could-not-find-the-gdal-library-osx
+# ???
+GDAL_LIBRARY_PATH = '/opt/homebrew/opt/gdal/lib/libgdal.dylib'
+GEOS_LIBRARY_PATH = '/opt/homebrew/opt/geos/lib/libgeos_c.dylib'
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [

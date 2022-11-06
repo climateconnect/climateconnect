@@ -15,6 +15,8 @@ def main():
             "forget to activate a virtual environment?"
         )
 
+    # print("💜")
+    # print(sys.argv)
     execute_from_command_line(sys.argv)
 
 
