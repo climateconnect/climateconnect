@@ -39,12 +39,14 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(1),
     color: theme.palette.grey[800],
     cursor: "pointer",
+    wordBreak: "break-word",
   },
   collaboratingOrganization: {
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1),
     color: theme.palette.grey[800],
     cursor: "pointer",
+    breakWord: "break-word",
   },
   creatorImage: {
     height: 24,
@@ -155,6 +157,9 @@ const useStyles = makeStyles((theme) => ({
   },
   joinButton: {
     float: "right",
+  },
+  projectDescription: {
+    wordBreak: "break-word",
   },
 }));
 
@@ -385,7 +390,7 @@ export default function ProjectContent({
         >
           {texts.project_description}
         </Typography>
-        <Typography component="div">
+        <Typography className={classes.projectDescription} component="div">
           {project.description ? (
             showFullDescription || project.description.length <= maxDisplayedDescriptionLength ? (
               <MessageContent content={project.description} renderYoutubeVideos={1} />

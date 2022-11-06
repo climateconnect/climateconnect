@@ -73,15 +73,18 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
     paddingLeft: 0,
     paddingRight: 0,
+    wordBreak: "break-word",
   },
   subtitle: {
     color: `${theme.palette.secondary.main}`,
     fontWeight: "bold",
+    wordBreak: "break-word",
   },
   content: {
     paddingBottom: theme.spacing(2),
     color: `${theme.palette.secondary.main}`,
     fontSize: 16,
+    wordBreak: "break-word",
   },
   noPadding: {
     padding: 0,
