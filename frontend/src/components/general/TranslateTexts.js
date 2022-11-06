@@ -428,7 +428,7 @@ function TranslationBlockElement({
         inputProps={{ maxLength: maxCharacters }}
         helperText={
           showCharacterCounter &&
-          "( " + content.length + " / " + maxCharacters + " " + characterText + " ) "
+          "( " + content?.length + " / " + maxCharacters + " " + characterText + " ) "
         }
         value={content}
         onChange={handleContentChange}
