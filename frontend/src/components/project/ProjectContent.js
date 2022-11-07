@@ -344,9 +344,9 @@ export default function ProjectContent({
                 />
               ) : (
                 <MiniOrganizationPreview
-                  size="small"
                   className={classes.creator}
                   organization={project.creator}
+                  size="small"
                 />
               )}
               {project.end_date && (
