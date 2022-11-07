@@ -85,9 +85,13 @@ export default function Inbox({ chatData, initialNextPage }) {
     nextPage: 0,
   });
 
+
+  const resetAlertMessage = () => setErrorMessage("");
+
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [searchingOpen, setSearchingOpen] = useState(false);
+
 
   const applyFilterToChats = async (filter) => {
     setSearchingOpen(true);

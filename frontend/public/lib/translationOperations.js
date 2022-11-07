@@ -32,6 +32,7 @@ export function getOrganizationTranslationObject(translation) {
     organ: translation.organ_translation,
     about: translation.about_translation,
     get_involved: translation.get_involved_translation,
+
   };
 }
 
