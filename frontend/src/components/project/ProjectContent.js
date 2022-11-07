@@ -209,7 +209,7 @@ export default function ProjectContent({
   handleSendProjectJoinRequest,
   requestedToJoinProject,
 }) {
-  const classes = useStyles({isPersonalProject: project.isPersonalProject});
+  const classes = useStyles({ isPersonalProject: project.isPersonalProject });
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
 
