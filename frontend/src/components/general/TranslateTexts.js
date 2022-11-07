@@ -263,7 +263,7 @@ export default function TranslateTexts({
         <Typography className={classes.explanation} color="secondary">
           {introTextKey && localeTexts[introTextKey]}
         </Typography>
-     
+
         <TranslationActionButtonBar
           belowSmall={belowSmall}
           waitingForTranslation={waitingForTranslation}
