@@ -142,8 +142,6 @@ export default function Inbox({ chatData, initialNextPage }) {
     setErrorMessage(e);
   };
 
-  const resetAlertMessage = () => setErrorMessage("");
-
   const enableChatSearch = () => {
     setChatSearchEnabled(true);
   };

@@ -5,45 +5,45 @@ import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 
 export default function EditCollaboratingOrganizations({
-  texts,
   baseUrl,
-  searchBarClass,
   handleAddCollaboratingOrg,
-  organizationPreviewsContainerClass,
-  organizationPreviewClass,
-  selectedCollaboratingOrgs,
   handleDeleteCollaboratingOrg,
+  organizationPreviewClass,
+  organizationPreviewsContainerClass,
+  searchBarClass,
+  selectedCollaboratingOrgs,
+  texts,
 }) {
   const renderSearchOption = (option) => {
-    return <React.Fragment>{option.name}</React.Fragment>;
+    return <>{option.name}</>;
   };
 
   return (
     <>
-      {/* Currently allows any org to be added, maybe needs some verification on selected orgs part*/}
+      {/* TODO: Currently allows any org to be added, maybe needs some verification on selected orgs part*/}
       <AutoCompleteSearchBar
-        label={texts.select_collaborating_organizations}
-        className={searchBarClass}
         baseUrl={baseUrl}
-        freeSolo
+        className={searchBarClass}
         clearOnSelect
-        onSelect={handleAddCollaboratingOrg}
-        renderOption={renderSearchOption}
+        freeSolo
         getOptionLabel={(option) => option.name}
         helperText={texts.search_collaborating_organization_name}
+        label={texts.select_collaborating_organizations}
+        onSelect={handleAddCollaboratingOrg}
+        renderOption={renderSearchOption}
       />
 
       {selectedCollaboratingOrgs && (
         <List className={organizationPreviewsContainerClass}>
           {selectedCollaboratingOrgs.map((sco, index) => (
             <MiniOrganizationPreview
-              key={index}
-              size={"small"}
-              organization={sco.collaborating_organization}
-              nolink
               className={organizationPreviewClass}
-              showBorder
+              key={index}
+              nolink
               onDelete={() => handleDeleteCollaboratingOrg(sco.collaborating_organization)}
+              organization={sco.collaborating_organization}
+              showBorder
+              size={"small"}
             />
           ))}
         </List>
