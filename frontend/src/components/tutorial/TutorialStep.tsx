@@ -120,7 +120,7 @@ export default function TutorialStep({
   nextStepTriggeredBy,
   curStepRef,
   hubName,
-}) {
+}): JSX.Element {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "tutorial", locale: locale });

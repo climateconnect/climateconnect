@@ -79,12 +79,12 @@ export async function sendToLogin(ctx, message, locale, relativePath) {
   return;
 }
 
-export function getLocalePrefix(locale) {
+export function getLocalePrefix(locale: string) {
   if (locale === "en") return "";
   else return `/${locale}`;
 }
 
-export async function getRolesOptions(token, locale) {
+export async function getRolesOptions(token: string | undefined, locale: any) {
   try {
     const resp = await apiRequest({
       method: "get",

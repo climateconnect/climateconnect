@@ -1,7 +1,7 @@
 import axios from "axios";
 import cheerio from "cheerio";
 
-const retrievePage = async (url) => {
+const retrievePage = async (url: string) => {
   const res = await axios.get(url).catch((err) => {
     console.error(err);
   });

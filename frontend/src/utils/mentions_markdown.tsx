@@ -2,13 +2,13 @@ import { Link } from "@material-ui/core";
 import React from "react";
 import { getLocalePrefix } from "../../public/lib/apiOperations";
 
-const displayedMention = (locale, id, display) => (
+const displayedMention = (locale: any, id: string, display: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined) => (
   <Link href={getLocalePrefix(locale) + "/profiles/" + id} target="_blank">
     @{display}
   </Link>
 );
 
-const getFragmentsWithMentions = (content, linkify, locale) => {
+const getFragmentsWithMentions = (content: string, linkify: boolean, locale: any) => {
   if (!content) {
     return null;
   }

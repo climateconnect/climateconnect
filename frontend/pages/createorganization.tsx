@@ -412,7 +412,7 @@ const getRolesOptions = async (token, locale) => {
   }
 };
 
-async function getTags(token, locale) {
+async function getTags(token: string | undefined, locale: any) {
   try {
     const resp = await apiRequest({
       method: "get",

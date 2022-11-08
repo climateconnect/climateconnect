@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export async function getServerSideProps(ctx) {
+export async function getServerSideProps(ctx: { locale: any; }) {
   return {
     props: {
       hubs: await getAllHubs(ctx.locale),

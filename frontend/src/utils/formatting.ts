@@ -27,14 +27,14 @@ const germanYearAndDayFormatter = (
 };
 
 const yearAndDayFormatter = (
-  value,
-  unit,
-  suffix,
-  elapsedMilliseconds,
+  value: number,
+  unit: string,
+  suffix: string,
+  elapsedMilliseconds: number,
   /* eslint-disable-next-line no-unused-vars */
-  defaultFormatter,
-  now,
-  locale
+  defaultFormatter: any,
+  now: () => number,
+  locale: string
 ) => {
   const units_de = {
     year: {
@@ -91,7 +91,7 @@ const yearAndDayFormatter = (
     }
 
     // Case: plural "years" and "days"
-    const pluralizeUnit = (value, unit) => {
+    const pluralizeUnit = (value: number, unit: string) => {
       if (locale === "de")
         return value !== 1 ? `${units_de[unit].plural}` : units_de[unit].singular;
       return value !== 1 ? `${unit}s` : unit;
