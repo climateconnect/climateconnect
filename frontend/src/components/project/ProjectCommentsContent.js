@@ -25,8 +25,23 @@ export default function CommentsContent({ user, project, token, setCurComments }
   const texts = getTexts({ page: "project", locale: locale });
   const comments = project.comments;
 
-  const handleRemoveComment = (c) => {
-    setCurComments([...project.comments.filter((pc) => pc.id !== c.id)]);
+  const handleRemoveComment = (comment) => {
+    // removing a top comment
+    if (comment.parent_comment_id === null) {
+      setCurComments([...project.comments.filter((pc) => pc.id !== comment.id)]);
+
+      // remove a comment that has a parent comment
+    } else {
+      const tempProjectComments = project.comments;
+      const parentCommentIndex = tempProjectComments.findIndex(
+        (c) => c.id === comment.parent_comment_id
+      );
+      const filterOutReplies = [
+        ...tempProjectComments[parentCommentIndex].replies.filter((pc) => pc.id !== comment.id),
+      ];
+      tempProjectComments[parentCommentIndex].replies = filterOutReplies;
+      setCurComments([...tempProjectComments]);
+    }
   };
 
   const handleAddComment = (c) => {
