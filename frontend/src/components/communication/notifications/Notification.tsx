@@ -69,7 +69,13 @@ const NOTIFICATION_TYPES = [
 ];
 
 //component for rendering the notifications that are shown when clicking on the bell on the right side of the header
-export default function Notification({ notification, isPlaceholder }) {
+export default function Notification({
+  notification,
+  isPlaceholder,
+}: {
+  notification?: any;
+  isPlaceholder?: boolean;
+}) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", locale: locale, idea: notification?.idea });
   if (isPlaceholder) {

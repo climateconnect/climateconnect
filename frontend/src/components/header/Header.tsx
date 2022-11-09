@@ -19,7 +19,7 @@ import {
   SwipeableDrawer,
   Typography,
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, Theme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
@@ -50,7 +50,15 @@ import DropDownButton from "./DropDownButton";
 import LanguageSelect from "./LanguageSelect";
 import StaticPageLinks from "./StaticPageLinks";
 
-const useStyles = makeStyles((theme) => {
+type Props = {
+  transparentHeader: boolean;
+  fixedHeader: boolean;
+  background?: string;
+  isStaticPage: boolean;
+  isHubPage: boolean;
+};
+
+const useStyles = makeStyles<Theme, Props>((theme: Theme) => {
   return {
     root: (props) => {
       return {
@@ -59,14 +67,15 @@ const useStyles = makeStyles((theme) => {
           props.transparentHeader || props.isStaticPage || props.isHubPage
             ? 0
             : `1px solid ${theme.palette.grey[300]}`,
-        position: props.fixedHeader ? "fixed" : "auto",
+        position: props.fixedHeader ? "fixed" : ("auto" as "inherit"),
         width: props.fixedHeader ? "100%" : "auto",
         // height: props.fixedHeader ? 97 : "auto",
         top: props.fixedHeader ? 0 : "auto",
         background:
-          !props.transparentHeader &&
-          props.fixedHeader &&
-          (props.background ? props.background : "#F8F8F8"),
+          (!props.transparentHeader &&
+            props.fixedHeader &&
+            (props.background ? props.background : "#F8F8F8")) ||
+          undefined,
         transition: "all 0.25s linear", // use all instead of transform since the background color too is changing at some point. It'll be nice to have a smooth transition.
       };
     },

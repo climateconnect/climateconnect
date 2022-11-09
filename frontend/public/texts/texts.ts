@@ -1,3 +1,4 @@
+import { User, CcLocale } from "../../src/types";
 import getAboutTexts from "./about_texts";
 import account_texts from "./account_texts.json";
 import activate_email from "./activate_email.json";
@@ -21,7 +22,49 @@ import getProjectTexts from "./project_texts";
 import settings_texts from "./settings.json";
 import getTutorialTexts from "./tutorial_texts";
 
-export default function getTexts({
+type Page =
+  | "about"
+  | "account"
+  | "activate_email"
+  | "chat"
+  | "climatematch"
+  | "cookie"
+  | "communication"
+  | "dashboard"
+  | "donate"
+  | "faq"
+  | "filter_and_search"
+  | "general"
+  | "hub"
+  | "idea"
+  | "landing_page"
+  | "navigation"
+  | "notification"
+  | "organization"
+  | "profile"
+  | "project"
+  | "settings"
+  | "tutorial";
+type Args<P extends Page> = {
+  classes?: string;
+  filterType?: string;
+  goal?: string;
+  hubName?: string;
+  idea?: string;
+  isNarrowScreen?: string;
+  locale: CcLocale;
+  location?: string;
+  organization?: string;
+  page: P;
+  profile?: string;
+  project?: string;
+  url_slug?: string;
+  user?: User;
+  climateMatchQuestion?: string;
+  hubAmbassador?: string;
+  creator?: string;
+};
+export default function getTexts<P extends Page>({
   classes,
   filterType,
   goal,
@@ -39,7 +82,7 @@ export default function getTexts({
   climateMatchQuestion,
   hubAmbassador,
   creator,
-}) {
+}: Args<P>) {
   // These are the multiple text files for various translations. They're
   // split up to reduce the amount of work required to download
   const texts = {
@@ -51,7 +94,7 @@ export default function getTexts({
     cookie: cookie_texts,
     communication: getCommunicationTexts(),
     dashboard: getDashboardTexts({ user: user, location: location }),
-    donate: getDonateTexts({ classes: classes, goal: goal, locale: locale }),
+    donate: getDonateTexts({ classes: classes, goal: goal /*locale*/ }),
     faq: getFaqTexts({ classes: classes, locale: locale }),
     filter_and_search: getFilterAndSearchTexts({
       filterType: filterType,
@@ -62,9 +105,9 @@ export default function getTexts({
     hub: getHubTexts({ hubName: hubName, hubAmbassador: hubAmbassador }),
     idea: getIdeaTexts({
       idea: idea,
-      user: user,
-      url_slug: url_slug,
-      locale: locale,
+      // user: user,
+      // url_slug: url_slug,
+      // locale: locale,
       creator: creator,
     }),
     landing_page: getLandingPageTexts({ classes: classes, isNarrowScreen: isNarrowScreen }),
@@ -86,9 +129,11 @@ export default function getTexts({
   const text = { ...texts[page], ...general_texts };
   const defaultLocale = "en";
 
+  const result = {} as Record<string, string>
+
   return Object.keys(text).reduce((obj, curKey) => {
     if (text[curKey][locale]) obj[curKey] = text[curKey][locale];
     else obj[curKey] = text[curKey][defaultLocale];
     return obj;
-  }, {});
+  }, result);
 }

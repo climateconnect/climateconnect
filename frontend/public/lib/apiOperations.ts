@@ -1,7 +1,17 @@
 import axios from "axios";
 import Router from "next/router";
+import { CcLocale } from "../../src/types";
 import tokenConfig from "../config/tokenConfig";
 
+type Args = {
+  method: string;
+  url: string;
+  token?: string;
+  payload?: string;
+  shouldThrowError?: boolean;
+  locale: CcLocale;
+  headers?: object;
+};
 export async function apiRequest({
   method,
   url,
@@ -10,7 +20,7 @@ export async function apiRequest({
   shouldThrowError = true,
   locale,
   headers,
-}) {
+}: Args) {
   const acceptLanguageHeadersByLocale = {
     de: "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
     en: "en-US,en;q=0.9,de-DE;q=0.8,de;q=0.7",
@@ -24,7 +34,7 @@ export async function apiRequest({
     try {
       const response = await axios[method](process.env.API_URL + url, payload, config);
       return response;
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       console.log(error?.response);
       if (shouldThrowError) throw error;
@@ -33,7 +43,7 @@ export async function apiRequest({
     try {
       const response = axios[method](process.env.API_URL + url, config);
       return response;
-    } catch (error) {
+    } catch (error: any) {
       console.log(error?.response);
       if (shouldThrowError) throw error;
     }
@@ -64,6 +74,7 @@ export async function redirect(url, messages, hash) {
     pathname: url,
     query: messages,
     forceRedirect: true,
+    hash: undefined
   };
   if (hash) payload.hash = hash;
   Router.push(payload);
@@ -96,7 +107,7 @@ export async function getRolesOptions(token: string | undefined, locale: any) {
     else {
       return resp.data.results;
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;

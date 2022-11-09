@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export async function getServerSideProps(ctx) {
+export async function getServerSideProps(ctx: { locale?: any; req?: { headers: { cookie?: string | undefined; }; } | undefined; }) {
   const { auth_token } = NextCookies(ctx);
   const [tagOptions, rolesOptions, allHubs] = await Promise.all([
     await getTags(auth_token, ctx.locale),
