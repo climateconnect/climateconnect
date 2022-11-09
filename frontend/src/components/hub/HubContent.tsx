@@ -107,7 +107,7 @@ export default function HubContent({
   const { locale, user } = useContext(UserContext);
   const classes = useStyles({ isLocationHub: isLocationHub, loggedOut: !user });
   const texts = getTexts({ page: "hub", locale: locale });
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const [expanded, setExpanded] = React.useState(false);
   const handleClickExpand = () => {
     if (expanded === false) {

@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
 export default function StaticPageLinks() {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
 
   const texts = getTexts({ page: "navigation", locale: locale });
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts);

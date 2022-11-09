@@ -120,7 +120,7 @@ export default function ClimateMatchResult({ suggestion, pos }) {
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
   const texts = getTexts({ page: "climatematch", locale: locale });
-  const displayContactButtonBelow = useMediaQuery("(max-width:1100px)");
+  const displayContactButtonBelow = useMediaQuery<Theme>("(max-width:1100px)");
   const creator = parseCreator(suggestion, texts);
   const handleClickContact = async (e) => {
     e.preventDefault();

@@ -68,7 +68,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabl
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "chat", locale: locale });
   const [isLoading, setIsLoading] = React.useState(false);
-  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("xs"));
   const loadMore = async () => {
     //sometimes InfiniteScroll calls loadMore twice really fast. Therefore we're using isLoading to make sure it doesn't catch 2 pages at once
     if (!isLoading) {

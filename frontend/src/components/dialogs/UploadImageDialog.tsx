@@ -43,9 +43,9 @@ export default function UploadImageDialog({
   const classes = useStyles();
   const theme = useTheme();
   const defaultValue = 25;
-  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const mediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const smallScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const fullScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const mediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const smallScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
 
   const [scale, setScale] = React.useState(1);
   const [editor, setEditor] = React.useState(null);

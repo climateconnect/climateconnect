@@ -50,7 +50,7 @@ export default function IdeasBoard({
   const [ideaContainerEl, setIdeaContainerEl] = useState(null);
   const containerOffsetTop = ElementSpaceToTop({ el: ideaContainerEl });
   const classes = useStyles({ ideaOpen: idea !== null });
-  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   useEffect(
     function () {
       if (idea && ideas.filter((i) => i.url_slug === idea.url_slug).length === 1) {

@@ -13,10 +13,13 @@ import HubsSubHeader from "../../src/components/indexPage/hubsSubHeader/HubsSubH
 import { getAllHubs } from "../../public/lib/hubOperations.js";
 import { useMediaQuery } from "@material-ui/core";
 import { getImageUrl } from "../../public/lib/imageOperations";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, Theme } from "@material-ui/core/styles";
 import ProjectSideBar from "../../src/components/project/ProjectSideBar";
 
-const useStyles = makeStyles((theme) => ({
+type StyleProps = {
+  showSimilarProjects: boolean 
+}
+const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
   contentWrapper: {
     display: "flex",
   },
@@ -54,7 +57,7 @@ const parseComments = (comments) => {
         replies: comments
           .filter((r) => r.parent_comment_id === c.id)
           .sort((a, b) => {
-            return new Date(a.created_at) - new Date(b.created_at);
+            return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
           }),
       };
     });
@@ -126,7 +129,7 @@ export default function ProjectPage({
     setShowSimilarProjects(!showSimilarProjects);
   };
 
-  const smallScreenSize = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  const smallScreenSize = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
 
   const handleFollow = (userFollows, updateCount, pending) => {
     setIsUserFollowing(userFollows);

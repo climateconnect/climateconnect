@@ -184,8 +184,8 @@ export default function LandingTopBox() {
     classes: classes,
     isNarrowScreen: isNarrowScreen,
   });
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
-  const isVeryLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
+  const isVeryLargeScreen = useMediaQuery<Theme>(theme.breakpoints.up("lg"));
   const imageSource = isNarrowScreen
     ? "landing_image_small.jpg"
     : isVeryLargeScreen

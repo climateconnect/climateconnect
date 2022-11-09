@@ -89,7 +89,7 @@ export default function HubHeadlineContainer({ subHeadline, headline, isLocation
   const { locale, user } = useContext(UserContext);
 
   const texts = getTexts({ page: "climatematch", locale: locale });
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
 
   return (
     <div className={classes.root}>

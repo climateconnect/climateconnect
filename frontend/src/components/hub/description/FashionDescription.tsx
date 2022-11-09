@@ -35,8 +35,8 @@ export default function FashionDescription() {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale, hubName: "Fashion" });
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
-  const isMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   return (
     <ThemeProvider theme={hubTheme}>
       <div>

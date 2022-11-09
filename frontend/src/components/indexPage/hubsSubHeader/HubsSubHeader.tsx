@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function HubsSubHeader({ hubs, subHeaderRef, onlyShowDropDown }) {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   return (

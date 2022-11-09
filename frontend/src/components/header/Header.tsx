@@ -302,7 +302,7 @@ export default function Header({
   transparentHeader,
   background,
   isHubPage,
-}) {
+}: any) {
   const classes = useStyles({
     fixedHeader: fixedHeader,
     transparentHeader: transparentHeader,
@@ -314,8 +314,8 @@ export default function Header({
   const { user, signOut, notifications, pathName, locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = useState(false);
-  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
-  const isMediumScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("xs"));
+  const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const LINKS = getLinks(pathName, texts);
   const toggleShowNotifications = (event) => {
     if (!anchorEl) setAnchorEl(event.currentTarget);
@@ -413,8 +413,8 @@ function NormalScreenLinks({
   isStaticPage,
 }) {
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
-  const isSmallMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts);
   return (
     <Box className={classes.linkContainer}>

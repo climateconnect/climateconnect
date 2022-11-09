@@ -48,8 +48,8 @@ export default function SubscribeToNewsletterDialog({ onClose, open }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "communication", locale: locale });
   const [emailAddress, setEmailAddress] = React.useState("");
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
-  const isMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const [loading, setLoading] = React.useState(false);
   const handleSubscribe = async (e) => {
     e.preventDefault();

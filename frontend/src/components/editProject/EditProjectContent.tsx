@@ -82,7 +82,7 @@ export default function EditProjectContent({
   const [selectedItems, setSelectedItems] = React.useState(
     project.skills ? [...project.skills] : []
   );
-  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("xs"));
   const [open, setOpen] = React.useState({ skills: false, connections: false, delete: false });
   const statusesWithStartDate = statusOptions.filter((s) => s.has_start_date).map((s) => s.id);
   const statusesWithEndDate = statusOptions.filter((s) => s.has_end_date).map((s) => s.id);

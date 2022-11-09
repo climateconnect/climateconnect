@@ -138,7 +138,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function JoinCommunityBox({ h1ClassName }) {
   const classes = useStyles();
-  const isMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "landing_page", locale: locale, classes: classes });
   return (

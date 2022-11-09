@@ -24,7 +24,7 @@ export default function IdeaJoinButton({ idea, has_joined, chat_uuid, onJoinIdea
   const texts = getTexts({ page: "idea", locale: locale });
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
   const onClickJoinButton = (e) => {
     e.preventDefault();

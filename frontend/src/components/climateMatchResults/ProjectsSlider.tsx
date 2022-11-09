@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ProjectsSlider({ projects }) {
   const classes = useStyles();
-  const under500 = useMediaQuery("(max-width: 500px)");
+  const under500 = useMediaQuery<Theme>("(max-width: 500px)");
   const responsive = {
     all: {
       breakpoint: { max: 10000, min: 0 },
@@ -72,7 +72,7 @@ export default function ProjectsSlider({ projects }) {
 
 const CarouselItem = ({ project }) => {
   const { locale } = useContext(UserContext);
-  const isSmallOrMediumScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  const isSmallOrMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const classes = useStyles();
   return (
     <Link

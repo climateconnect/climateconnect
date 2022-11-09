@@ -74,7 +74,7 @@ export default function CookieBanner({ closeBanner }) {
   const texts = getTexts({ page: "cookie", locale: locale });
   const [checked, setChecked] = React.useState({ necessary: true, statistics: false });
   const cookies = new Cookies();
-  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const onStatisticsChange = () => {
     setChecked({ ...checked, statistics: !checked.statistics });
   };

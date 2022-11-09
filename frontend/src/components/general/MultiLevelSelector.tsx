@@ -215,7 +215,7 @@ export default function MultiLevelSelector({
     setSelected(ret);
   };
 
-  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   return (
     <>
       <div className={classes.wrapper}>

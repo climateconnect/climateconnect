@@ -250,7 +250,7 @@ export default function EditAccountPage({
   const texts = getTexts({ page: "account", locale: locale });
   const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });
   const [editedAccount, setEditedAccount] = React.useState({ ...account });
-  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles(editedAccount);
 

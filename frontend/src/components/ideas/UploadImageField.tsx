@@ -57,7 +57,7 @@ export default function UploadImageField({ image, className, updateImages }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
   const inputRef = useRef(null);
-  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
 
   const handleClickInput = () => {
     setSelectedFile("");

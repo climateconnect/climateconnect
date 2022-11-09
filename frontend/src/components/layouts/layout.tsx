@@ -30,7 +30,7 @@ export default function Layout({
   messageType,
   isLoading,
   isStaticPage,
-}) {
+}: any) {
   const classes = useStyles({ donationCampaignRunning: process.env.DONATION_CAMPAIGN_RUNNING });
   const [hideAlertMessage, setHideAlertMessage] = React.useState(false);
   const [initialMessageType, setInitialMessageType] = React.useState(null);

@@ -67,7 +67,7 @@ export default function OptionalQuestionTypeBody({ question, handleForwardClick,
     image: getImageUrl(question.image),
   });
   const answers = question.answers;
-  const isSmallerThanSm = useMediaQuery(theme.breakpoints.down("sm"));
+  const isSmallerThanSm = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
 
   const handleSelectAnswer = (a) => {
     handleForwardClick(a);

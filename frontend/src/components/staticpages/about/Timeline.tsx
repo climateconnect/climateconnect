@@ -56,9 +56,9 @@ export default function Timeline({ headlineClass }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "about", locale: locale });
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
-  const isMediumScreen = useMediaQuery(theme.breakpoints.only("md"));
-  const useCarousel = useMediaQuery(theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.only("md"));
+  const useCarousel = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const responsive = {
     all: {
       breakpoint: { max: 10000, min: 0 },

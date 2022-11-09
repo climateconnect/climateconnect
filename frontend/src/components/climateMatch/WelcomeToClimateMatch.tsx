@@ -1,4 +1,4 @@
-import { Button, Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { Button, Container, makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
 import RestoreIcon from "@material-ui/icons/Restore";
 import React, { useContext, useRef } from "react";
 import { capitalizeFirstLetter } from "../../../public/lib/parsingOperations";
@@ -9,14 +9,14 @@ import ElementOnScreen from "../hooks/ElementOnScreen";
 import ClimateMatchButton from "./ClimateMatchButton";
 import ClimateMatchHeadline from "./ClimateMatchHeadline";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { unfixButtonBar: boolean; isLoading: boolean }>((theme) => ({
   root: (props) => ({
     position: "relative",
     paddingBottom: theme.spacing(4),
     [theme.breakpoints.down("xs")]: {
       paddingBottom: theme.spacing(2),
     },
-    visibility: props.isLoading && "hidden",
+    visibility: props.isLoading ? "hidden" : undefined,
   }),
   nonImageContent: {
     paddingTop: theme.spacing(4),
@@ -83,7 +83,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   buttonBarPlaceholder: (props) => ({
-    height: !props.unfixButtonBar && 55,
+    height: !props.unfixButtonBar ? 55 : undefined,
   }),
   lastResultButton: {
     color: "white",
@@ -107,7 +107,7 @@ export default function WelcomeToClimateMatch({
   });
   const classes = useStyles({ unfixButtonBar: unfixButtonBar, isLoading: isLoading });
   const { locale } = useContext(UserContext);
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
 
   const texts = getTexts({
     page: "climatematch",

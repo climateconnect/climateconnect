@@ -2,27 +2,37 @@ import {
   Container,
   LinearProgress,
   makeStyles,
+  Theme,
   Typography,
   useMediaQuery,
 } from "@material-ui/core";
+import { String } from "lodash";
 import React, { useContext } from "react";
 import getTexts from "../../../../public/texts/texts";
 import theme from "../../../themes/theme";
 import UserContext from "../../context/UserContext";
 
-const useStyles = makeStyles((theme) => ({
+type StyleProps = {
+  embedded: boolean;
+  barOnly: boolean;
+  textBackground?: string;
+  isInWidget: boolean;
+  barColor?: string;
+  small: boolean;
+};
+const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
   root: (props) => ({
     paddingTop: props.embedded || props.barOnly ? 0 : theme.spacing(1),
     paddingBottom: props.embedded || props.barOnly ? 0 : theme.spacing(1.5),
     background: props.embedded ? "transparent" : "#DFDFDF",
-    position: props.embedded ? "auto" : "absolute",
+    position: props.embedded ? undefined : "absolute",
     top: -90,
     zIndex: 3,
     left: 0,
     width: "100%",
     height: props.embedded ? "auto" : 95,
     [theme.breakpoints.down("sm")]: {
-      position: props.embedded ? "auto" : "fixed",
+      position: props.embedded ? undefined : "fixed",
       top: "auto",
       bottom: 42,
     },
@@ -40,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     color: props.embedded ? "white" : theme.palette.secondary.main,
     marginBottom: theme.spacing(1),
     background: props.textBackground ? props.textBackground : "auto",
-    position: props.textBackground ? "relative" : "auto",
+    position: props.textBackground ? "relative" : undefined,
   }),
   amount: (props) => ({
     fontSize: props.embedded ? "auto" : 22,
@@ -80,7 +90,7 @@ export default function DonationGoal({
     isInWidget: isInWidget,
   });
   const { locale } = useContext(UserContext);
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
   const texts = getTexts({ page: "donate", locale: locale, classes: classes, goal: goal });
   return (
     <div className={`${className} ${classes.root}`}>

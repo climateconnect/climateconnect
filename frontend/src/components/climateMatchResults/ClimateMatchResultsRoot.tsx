@@ -1,4 +1,4 @@
-import { Button, Container, makeStyles, useMediaQuery } from "@material-ui/core";
+import { Button, Container, makeStyles, Theme, useMediaQuery } from "@material-ui/core";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import SettingsBackupRestoreIcon from "@material-ui/icons/SettingsBackupRestore";
 import Router from "next/router";
@@ -77,8 +77,8 @@ export default function ClimateMatchResultsRoot() {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "climatematch", locale: locale });
   const headerContainerRef = useRef(null);
-  const screenIsSmallerThanMd = useMediaQuery((theme) => theme.breakpoints.down("md"));
-  const screenIsSmallerThanSm = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  const screenIsSmallerThanMd = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+  const screenIsSmallerThanSm = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   useEffect(async () => {
     try {
       setIsFetchingMore(true);

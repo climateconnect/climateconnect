@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function OurTeamBox({ h1ClassName }) {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
   const { locale } = useContext(UserContext);
   const link_to_team_page = getLocalePrefix(locale) + "/team";
   const link_to_about_page = getLocalePrefix(locale) + "/about";

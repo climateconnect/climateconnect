@@ -104,7 +104,7 @@ export default function Footer({
 
 const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScrollUp }) => {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("xs"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   const socialMediaLinks = [

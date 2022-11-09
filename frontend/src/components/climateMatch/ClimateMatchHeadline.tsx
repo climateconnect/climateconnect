@@ -11,7 +11,7 @@ const useStyles = makeStyles(() => ({
   }),
 }));
 
-export default function ClimateMatchHeadline({ children, className, size }) {
+export default function ClimateMatchHeadline({ children, className, size }: any) {
   const classes = useStyles({ size: size });
   return (
     <Typography

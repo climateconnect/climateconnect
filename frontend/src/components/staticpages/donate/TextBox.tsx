@@ -26,7 +26,7 @@ export default function TextBox({
   subHeadlineClass,
 }) {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
   return (
     <Container className={`${className} ${classes.root}`}>
       {!isNarrowScreen && <IconWrapper src={icon} />}

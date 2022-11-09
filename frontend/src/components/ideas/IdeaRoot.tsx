@@ -133,9 +133,9 @@ export default function IdeaRoot({
     UserContext
   );
   const { showFeedbackMessage } = useContext(FeedbackContext);
-  const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTinyScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
+  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isTinyScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
   const handleIdeaClose = (e) => {
     onIdeaClose(e);
   };
@@ -151,7 +151,7 @@ export default function IdeaRoot({
     };
   }, []);
 
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const [loading, setLoading] = useState(!!token);
   const [userRating, setUserRating] = useState({
     rating_score: 0,

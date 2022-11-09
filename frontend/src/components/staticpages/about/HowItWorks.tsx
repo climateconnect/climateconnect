@@ -96,7 +96,7 @@ const responsive = {
 
 export default function HowItWorks({ headlineClass }) {
   const classes = useStyles();
-  const isSmallerScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const isSmallerScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "about", locale: locale });
   const pitch_elements = getPitchElements(texts);

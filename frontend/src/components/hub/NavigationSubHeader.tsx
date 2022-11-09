@@ -51,8 +51,8 @@ export default function NavigationSubHeader({ hubName, allHubs, isLocationHub })
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
-  const isSmallMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
+  const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   return (
     <div className={classes.root}>
       <Container className={classes.flexContainer}>

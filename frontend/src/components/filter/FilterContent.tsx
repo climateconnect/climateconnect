@@ -98,8 +98,8 @@ export default function FilterContent({
   handleUpdateFilters,
   nonFilterParams,
 }) {
-  const isMediumScreen = useMediaQuery(theme.breakpoints.between("xs", "md"));
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.between("xs", "md"));
+  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
 
   const possibleFiltersFirstHalf = possibleFilters.slice(0, Math.ceil(possibleFilters.length / 2));
   const possibleFiltersSecondHalf = possibleFilters.slice(

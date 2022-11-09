@@ -57,7 +57,7 @@ function CommentInput({
   const [curComment, setCurComment] = React.useState("");
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "communication", locale: locale });
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const [showSendHelper, setShowSendHelper] = useState(false);
 
   const onCurCommentChange = (e) => {

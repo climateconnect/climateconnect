@@ -111,8 +111,8 @@ export default function ProfileRoot({
   const scrollDownSmooth = (ref) => {
     ref.current.scrollIntoView({ behavior: "smooth" });
   };
-  const isTinyScreen = useMediaQuery(theme.breakpoints.down("xs"));
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTinyScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
+  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     const URL = window.location.href;

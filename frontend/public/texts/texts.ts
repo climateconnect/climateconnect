@@ -1,3 +1,4 @@
+import { ClassNameMap } from "@material-ui/core/styles/withStyles";
 import { User, CcLocale } from "../../src/types";
 import getAboutTexts from "./about_texts";
 import account_texts from "./account_texts.json";
@@ -46,7 +47,7 @@ type Page =
   | "settings"
   | "tutorial";
 type Args<P extends Page> = {
-  classes?: string;
+  classes?: ClassNameMap;
   filterType?: string;
   goal?: string;
   hubName?: string;

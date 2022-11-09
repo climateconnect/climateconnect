@@ -31,7 +31,7 @@ export default function HubLinks({
   const texts = getTexts({ page: "navigation", locale: locale });
   const sectorHubs = hubs.filter((h) => h.hub_type === "sector hub");
   const locationHubs = hubs.filter((h) => h.hub_type === "location hub");
-  const isMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
 
   const handleOpen = (e, type) => {
     e.preventDefault();

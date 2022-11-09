@@ -42,7 +42,7 @@ export default function Tutorial({
   pointerRefs,
   typesByTabValue,
 }) {
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const classes = useStyles();
   const cookies = new Cookies();
   const tutorialCookie = cookies.get("finishedTutorialSteps");

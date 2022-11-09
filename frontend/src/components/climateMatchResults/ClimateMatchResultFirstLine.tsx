@@ -57,7 +57,7 @@ export default function ClimateMatchResultFirstLine({ pos, suggestion }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "climatematch", locale: locale });
-  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("xs"));
   return (
     <div className={classes.rankAndTypeContainer}>
       <div className={classes.rankNumber}>{pos + 1}</div>

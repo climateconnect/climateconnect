@@ -154,7 +154,7 @@ export default function PitchBox({ h1ClassName, className }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "about", locale: locale });
   const pitch_elements = getPitchElements(texts);
-  const isMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   return (
     <div className={`${classes.root} ${className}`}>
       {!isMediumScreen && (

@@ -107,7 +107,7 @@ export default function EditIdeaRoot({ idea, cancelEdit, userOrganizations, allH
             locale: locale,
           });
           window.location.reload();
-        } catch (e) {
+        } catch (e: any) {
           setWaitingForRequest(false);
           console.log(e);
           console.log(e.response);

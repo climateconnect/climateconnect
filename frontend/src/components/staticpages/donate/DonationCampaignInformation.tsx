@@ -104,7 +104,7 @@ export default function DonationCampaignInformation() {
   const [open, setOpen] = React.useState(!cookies.get("hideDonationCampaign"));
   const [expanded, setExpanded] = React.useState(false);
   const { donationGoal, locale } = useContext(UserContext);
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
   const texts = getTexts({ page: "donate", locale: locale, classes: classes });
 
   const handleClose = () => {

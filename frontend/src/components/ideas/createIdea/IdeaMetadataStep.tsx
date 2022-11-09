@@ -55,10 +55,10 @@ export default function IdeaMetadataStep({
   errorMessage,
 }) {
   const classes = useStyles();
-  const isTinyScreen = useMediaQuery("(max-width:400px");
+  const isTinyScreen = useMediaQuery<Theme>("(max-width:400px");
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale });
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   return (
     <form onSubmit={onSubmitIdea}>
       <Typography className={classes.motivationText}>

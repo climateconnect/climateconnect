@@ -56,11 +56,11 @@ export default function LayoutWrapper({
   children,
   theme,
   fixedHeight,
-  noFeedbackButton,
-  noSpaceForFooter,
-  description,
-  image,
-  useFloodStdFont,
+  noFeedbackButton ,
+  noSpaceForFooter ,
+  description ,
+  image ,
+  useFloodStdFont ,
 }) {
   const [snackbarProps, setSnackbarProps] = useState({
     open: false,
@@ -70,7 +70,7 @@ export default function LayoutWrapper({
   });
   const classes = useStyles();
   const [initialized, setInitialized] = React.useState(false);
-  const isSmallerThanMediumScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
+  const isSmallerThanMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const [loading, setLoading] = React.useState(true);
   const [bannerOpen, setBannerOpen] = React.useState(true);
   const { acceptedNecessary, locale, isLoading } = useContext(UserContext);

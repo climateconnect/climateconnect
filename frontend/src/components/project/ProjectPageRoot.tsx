@@ -111,12 +111,12 @@ export default function ProjectPageRoot({
   });
 
   const screenSize = {
-    belowTiny: useMediaQuery((theme) => theme.breakpoints.down("xs")),
-    belowSmall: useMediaQuery((theme) => theme.breakpoints.down("sm")),
+    belowTiny: useMediaQuery<Theme>((theme) => theme.breakpoints.down("xs")),
+    belowSmall: useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm")),
     belowMedium: showSimilarProjects
-      ? useMediaQuery("(max-width:1300px)")
-      : useMediaQuery("(max-width:1100px)"),
-    belowLarge: useMediaQuery((theme) => theme.breakpoints.down("xl")),
+      ? useMediaQuery<Theme>("(max-width:1300px)")
+      : useMediaQuery<Theme>("(max-width:1100px)"),
+    belowLarge: useMediaQuery<Theme>((theme) => theme.breakpoints.down("xl")),
   };
 
   const [hash, setHash] = useState(null);

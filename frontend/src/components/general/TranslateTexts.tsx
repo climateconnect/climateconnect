@@ -153,7 +153,7 @@ export default function TranslateTexts({
   });
   const [waitingForTranslation, setWaitingForTranslation] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-  const belowSmall = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  const belowSmall = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
 
   useEffect(() => {
     initializeTranslationsObject();

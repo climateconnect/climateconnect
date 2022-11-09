@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 export default function DonationsBanner({ h1ClassName }) {
   const classes = useStyles();
-  const isMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "donate", locale: locale, classes: classes });
   return (

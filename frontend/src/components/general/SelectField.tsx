@@ -11,6 +11,22 @@ const useStyles = makeStyles({
   },
 });
 
+type Props = {
+  className: string;
+  controlled: boolean;
+  controlledValue: any;
+  defaultValue?: any;
+  disabled?;
+  InputProps?;
+  isInOverlay?;
+  label;
+  multiple?;
+  onChange;
+  options;
+  required;
+  size: "small" | "medium";
+  values?;
+};
 export default function SelectField({
   className,
   controlled,
@@ -26,7 +42,7 @@ export default function SelectField({
   required,
   size,
   values,
-}) {
+}: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });

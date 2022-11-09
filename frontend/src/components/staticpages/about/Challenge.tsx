@@ -109,7 +109,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Challenge({ headlineClass, showContent, className }) {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "about", locale: locale, classes: classes });
   return (

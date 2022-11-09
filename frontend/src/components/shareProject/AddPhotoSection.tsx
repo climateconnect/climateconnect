@@ -65,7 +65,7 @@ export default function AddPhotoSection({
   const texts = getTexts({ page: "project", locale: locale });
   const [tempImage, setTempImage] = React.useState(projectData.image);
   const inputFileRef = React.useRef(null);
-  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
 
   const handleDialogClickOpen = (dialogName) => {
     handleSetOpen({ [dialogName]: true });

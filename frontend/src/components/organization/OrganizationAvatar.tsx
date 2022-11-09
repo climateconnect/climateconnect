@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function OrganizationAvatar({ organization, inlineVersionOnMobile }) {
   const classes = useStyles({ inlineVersionOnMobile: inlineVersionOnMobile });
-  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("xs"));
   const type = organization?.types[0]?.organization_tag;
   return (
     <div className={classes.root}>

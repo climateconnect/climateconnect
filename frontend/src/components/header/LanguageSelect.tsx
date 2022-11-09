@@ -39,8 +39,8 @@ export default function LanguageSelect({ transparentHeader }) {
   const buttonRef = useRef(null);
   const [anchorEl, setAnchorEl] = useState(buttonRef.current);
   const [open, setOpen] = useState(false);
-  const isMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
   const router = useRouter();
   useEffect(function () {
     setAnchorEl(buttonRef.current);
