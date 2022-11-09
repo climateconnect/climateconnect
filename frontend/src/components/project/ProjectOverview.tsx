@@ -1,5 +1,5 @@
 import { Button, Container, Link, Tooltip, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, Theme } from "@material-ui/core/styles";
 import ExploreIcon from "@material-ui/icons/Explore";
 import LanguageIcon from "@material-ui/icons/Language";
 import Linkify from "react-linkify";
@@ -21,7 +21,9 @@ import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 
-const useStyles = makeStyles((theme) => ({
+type StyleProps = { hasAdminPermissions?: boolean };
+
+const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
   ...projectOverviewStyles(theme),
   infoBottomBar: (props) => ({
     display: "flex",
@@ -141,7 +143,7 @@ export default function ProjectOverview({
   handleSetRequestedToJoinProject,
   requestedToJoinProject,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({});
 
   const texts = getTexts({ page: "project", locale: locale, project: project });
   /**
@@ -283,7 +285,7 @@ function SmallScreenOverview({
   token,
   numberOfFollowers,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({});
 
   return (
     <>

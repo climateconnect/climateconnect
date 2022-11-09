@@ -113,7 +113,7 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter }) {
   return (
     <>
       <WideLayout
-        hideHeadline
+        // hideHeadline
         showOnScrollUp={showOnScrollUp}
         subHeader={<HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef} />}
       >

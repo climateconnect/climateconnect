@@ -1,4 +1,6 @@
-export type User = {};
+export type User = {
+  id: string;
+};
 
 export enum CcLocale {
   en = "en",

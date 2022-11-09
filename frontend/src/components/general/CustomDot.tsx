@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function CustomDot({ onClick, ...rest }) {
+export default function CustomDot({ onClick, ...rest }: any) {
   const classes = useStyles();
   const { active } = rest;
   // onMove means if dragging or swiping in progress.

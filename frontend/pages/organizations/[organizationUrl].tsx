@@ -186,8 +186,8 @@ function OrganizationLayout({
 
   const membersWithAdditionalInfo = getMembersWithAdditionalInfo(members);
 
-  const isTinyScreen = useMediaQuery(theme.breakpoints.down("xs"));
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTinyScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
+  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   return (
     <AccountPage
       account={organization}

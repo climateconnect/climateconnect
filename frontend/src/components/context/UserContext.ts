@@ -8,6 +8,8 @@ const UserContext = createContext<{
   notifications?: any;
   locale?: any;
   pathName?: string;
+  socketConnectionState?: any
+  chatSocket?: any
 }>({ user: null });
 
 export default UserContext;

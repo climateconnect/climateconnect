@@ -1,4 +1,4 @@
-import { Container, Divider, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { Container, Divider, makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
 import React, { useContext } from "react";
 import Carousel from "react-multi-carousel";
 import getTexts from "../../../../public/texts/texts";

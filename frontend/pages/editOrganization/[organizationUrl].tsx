@@ -88,7 +88,7 @@ async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
       locale: locale,
     });
     return parseOrganization(resp.data, true);
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;

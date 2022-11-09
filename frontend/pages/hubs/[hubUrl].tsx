@@ -346,7 +346,7 @@ const getHubData = async (url_slug, locale) => {
       shouldThrowError: true,
     });
     return resp.data;
-  } catch (err) {
+  } catch (err: any) {
     if (err.response && err.response.data)
       console.log("Error in getHubData: " + err.response.data.detail);
     console.log(err);
@@ -363,7 +363,7 @@ const getHubAmbassadorData = async (url_slug, locale) => {
       shouldThrowError: true,
     });
     return resp.data;
-  } catch (err) {
+  } catch (err: any) {
     if (err.response && err.response.data)
       console.log("Error in getHubAmbassadorData: " + err.response.data.detail);
     console.log(err);

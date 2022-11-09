@@ -176,7 +176,7 @@ export default function ProjectPage({
   });
 
   const hubsSubHeaderRef = useRef(null);
-  const tinyScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
+  const tinyScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("xs"));
 
   return (
     <WideLayout

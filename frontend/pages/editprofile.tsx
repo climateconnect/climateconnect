@@ -99,7 +99,7 @@ async function getSkillsOptions(token, locale) {
     else {
       return parseOptions(resp.data.results, "parent_skill");
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
@@ -136,7 +136,7 @@ async function getUserProfile(token, locale) {
       shouldThrowError: true,
     });
     return resp.data;
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;

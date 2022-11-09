@@ -114,8 +114,8 @@ export async function getServerSideProps(ctx) {
 
 export default function Donate({ goal_name, goal_amount, current_amount }) {
   const classes = useStyles();
-  const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"));
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const isLargeScreen = useMediaQuery<Theme>(theme.breakpoints.up("md"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
   const [overlayOpen, setOverlayOpen] = React.useState(false);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "donate", locale: locale });

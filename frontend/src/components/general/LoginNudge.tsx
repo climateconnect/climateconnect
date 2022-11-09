@@ -18,7 +18,12 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function LoginNudge({ whatToDo, fullPage, className }) {
+type Props = {
+  whatToDo: string;
+  fullPage?: boolean;
+  className?: string;
+};
+export default function LoginNudge({ whatToDo, fullPage, className }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });

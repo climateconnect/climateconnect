@@ -29,6 +29,7 @@ export async function getServerSideProps(ctx) {
       },
     };
   }
+  if (!messages_object) throw Error("impossible");
   return {
     props: {
       chat_uuid: ctx.query.chatUUID,
@@ -120,6 +121,7 @@ export default function Chat({
         state.nextLink,
         locale
       );
+      if(!newMessagesObject) throw Error("error");
       const newMessages = newMessagesObject.messages;
       const sortedMessages = newMessages.sort((a, b) => a.id - b.id);
       setState({
@@ -195,7 +197,7 @@ export default function Chat({
           },
         ],
       });
-    } catch (err) {
+    } catch (err: any) {
       if (err.response && err.response.data)
         console.log("Error in sendChatMessageThroughPostRequest: " + err.response.data.detail);
       if (err.response && err.response.data.detail === "Invalid token.")
@@ -228,7 +230,7 @@ export default function Chat({
       redirect("/inbox", {
         message: `${texts.left_group_chat} ${title}`,
       });
-    } catch (e) {
+    } catch (e: any) {
       console.log(e.response.data.detail);
       setErrorMessage(e?.response?.data?.detail);
     }
@@ -251,7 +253,7 @@ export default function Chat({
           isPrivateChat={isPrivateChat}
           title={title}
           sendMessage={sendMessage}
-          socketConnectionState={socketConnectionState}
+          // socketConnectionState={socketConnectionState}
           loadMoreMessages={loadMoreMessages}
           hasMore={state.hasMore}
           participants={participants}
@@ -300,7 +302,7 @@ async function getChat(chat_uuid, token, locale) {
       id: resp.data.id,
       idea: resp.data.related_idea,
     };
-  } catch (e) {
+  } catch (e: any) {
     console.log(e?.response);
   }
 }
@@ -349,7 +351,7 @@ const getRolesOptions = async (locale) => {
     else {
       return resp.data.results;
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;

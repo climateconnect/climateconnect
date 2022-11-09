@@ -35,6 +35,32 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type Props = {
+  children?: React.ReactNode | undefined;
+  title: string;
+  message?: string;
+  messageType?: string;
+  isLoading?: string;
+  fixedHeader?: string;
+  transparentHeader?: string;
+  isStaticPage?: boolean;
+  noFeedbackButton?: string;
+  noSpaceBottom?: string;
+  showOnScrollUp?: boolean;
+  largeFooter?: string;
+  description?: string;
+  landingPage?: string;
+  headerBackground?: string;
+  subHeader?: JSX.Element;
+  image?: string;
+  useFloodStdFont?: boolean;
+  rootClassName?: string;
+  hideFooter?: boolean;
+  resetAlertMessage?: () => void;
+  isHubPage?: boolean;
+  /** @deprecated not used */
+  hideHeadline?: boolean
+};
 //Wrapper layout component for pages where the content takes the whole width of the screen
 export default function WideLayout({
   children,
@@ -59,7 +85,8 @@ export default function WideLayout({
   hideFooter,
   resetAlertMessage,
   isHubPage,
-}) {
+  hideHeadline
+}: Props) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);
   const [initialMessageType, setInitialMessageType] = React.useState(null);

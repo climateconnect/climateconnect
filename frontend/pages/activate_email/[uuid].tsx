@@ -37,7 +37,7 @@ async function newEmailVerification(uuid, token, locale) {
     redirect("/browse", {
       message: response.data.message,
     });
-  } catch (error) {
+  } catch (error: any) {
     const errortexts = getTexts({ page: "general", locale: locale });
     if (error.response && error.response.data) {
       if (error.response.data.detail)

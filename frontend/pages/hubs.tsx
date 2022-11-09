@@ -50,7 +50,7 @@ export async function getServerSideProps(ctx: { locale: any; }) {
 
 export default function Hubs({ hubs }) {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
   return (

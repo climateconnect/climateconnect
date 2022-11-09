@@ -7,9 +7,9 @@ type Args = {
   method: string;
   url: string;
   token?: string;
-  payload?: string;
+  payload?: any;
   shouldThrowError?: boolean;
-  locale: CcLocale;
+  locale?: CcLocale;
   headers?: object;
 };
 export async function apiRequest({
@@ -69,7 +69,7 @@ export async function resendEmail(email, onSuccess, onError) {
     });
 }
 
-export async function redirect(url, messages, hash) {
+export async function redirect(url, messages, hash?) {
   const payload = {
     pathname: url,
     query: messages,

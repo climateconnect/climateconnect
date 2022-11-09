@@ -1,4 +1,6 @@
-const projectOverviewStyles = (theme) => {
+import { StyleRules, Theme } from "@material-ui/core";
+
+const projectOverviewStyles = (theme: Theme): StyleRules => {
   //general styling
   return {
     projectOverview: {

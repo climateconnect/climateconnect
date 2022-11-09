@@ -127,7 +127,7 @@ export default function EditProjectPage({
       ROLE_TYPES.read_write_type
   )
     return (
-      <WideLayout title={texts.no_permissions_to_edit_project} hideHeadline={true}>
+      <WideLayout title={texts.no_permissions_to_edit_project} /*hideHeadline={true}*/>
         <Typography variant="h4" color="primary" className={classes.errorTitle}>
           {texts.need_to_be_admin_to_manage_project_team}
         </Typography>
@@ -174,7 +174,7 @@ async function getProjectByIdIfExists(projectUrl, token, locale) {
     else {
       return parseProject(resp.data);
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
@@ -202,7 +202,7 @@ const getUserOrganizations = async (token, locale) => {
     else {
       return resp.data.map((o) => o.organization);
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
@@ -221,7 +221,7 @@ async function getMembersByProject(projectUrl, token, locale) {
     else {
       return resp.data.results;
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;

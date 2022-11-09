@@ -34,7 +34,7 @@ async function profileVerification(uuid, locale) {
       locale: locale,
     });
     return { successMessage: response.data.message, errorMessage: "" };
-  } catch (error) {
+  } catch (error: any) {
     const texts = getTexts({ page: "general", locale: locale });
     if (error.response && error.response.data) {
       return { successMessage: "", errorMessage: error.response.data.message };

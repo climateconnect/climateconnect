@@ -65,7 +65,7 @@ export default function manageOrganizationMembers({
     return (
       <WideLayout
         title={texts.please_log_in + " " + texts.to_manage_org_members}
-        hideHeadline={true}
+        // hideHeadline={true}
       >
         <LoginNudge fullPage whatToDo={texts.to_manage_org_members} />
       </WideLayout>
@@ -74,7 +74,7 @@ export default function manageOrganizationMembers({
     return (
       <WideLayout
         title={texts.please_log_in + " " + texts.to_manage_org_members}
-        hideHeadline={true}
+        // hideHeadline={true}
       >
         <Typography variant="h4" color="primary" className={classes.headline}>
           {texts.you_are_not_a_member_of_this_organization}{" "}

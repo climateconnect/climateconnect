@@ -2,7 +2,7 @@ import LocationOnIcon from "@material-ui/icons/LocationOn";
 import { apiRequest } from "./apiOperations";
 import { parseOptions } from "./selectOptionsOperations";
 
-export async function getSkillsOptions(locale, parentSkillsOnly) {
+export async function getSkillsOptions(locale, parentSkillsOnly?: boolean) {
   try {
     const resp = await apiRequest({
       method: "get",
