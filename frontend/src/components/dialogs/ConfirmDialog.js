@@ -33,7 +33,6 @@ export default function ConfirmDialog({
   const handleConfirm = () => {
     onClose(true);
   };
-
   return (
     <GenericDialog onClose={handleCancel} open={open} title={title} dialogContentClass={className}>
       <Typography>{text}</Typography>
