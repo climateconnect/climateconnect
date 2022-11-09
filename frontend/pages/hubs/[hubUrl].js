@@ -26,6 +26,8 @@ import NavigationSubHeader from "../../src/components/hub/NavigationSubHeader";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import DonationCampaignInformation from "../../src/components/staticpages/donate/DonationCampaignInformation";
 import { retrievePage } from "../../src/utils/webflow";
+import SignUpPromptDialog from "../../src/components/dialogs/SignUpPromptDialog";
+import { redirect } from "../../public/lib/apiOperations";
 
 const useStyles = makeStyles((theme) => ({
   contentRefContainer: {
@@ -136,10 +138,11 @@ export default function Hub({
   hubDescription,
 }) {
   const classes = useStyles();
-  const { locale } = useContext(UserContext);
+  const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
   const token = new Cookies().get("auth_token");
   const [hubAmbassador, setHubAmbassador] = useState(null);
+  const [showSignUpPrompt, setShowSignUpPrompt] = useState(true);
 
   // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
   const [filters, setFilters] = useState(
@@ -234,6 +237,10 @@ export default function Hub({
     });
   };
 
+  const handleCloseSignUpPrompt = () => {
+    setShowSignUpPrompt(false);
+  };
+
   return (
     <>
       {hubDescription && hubDescription.headContent && (
@@ -242,6 +249,7 @@ export default function Hub({
       <WideLayout title={headline} headerBackground="#FFF" image={getImageUrl(image)} isHubPage>
         <div className={classes.contentUnderHeader}>
           <NavigationSubHeader hubName={name} allHubs={allHubs} isLocationHub={isLocationHub} />
+
           {<DonationCampaignInformation />}
           <HubHeaderImage
             image={getImageUrl(image)}
@@ -305,6 +313,18 @@ export default function Hub({
               hubUrl={hubUrl}
             />
           </div>
+          {!user && (
+            <SignUpPromptDialog
+              open={showSignUpPrompt}
+              onClose={handleCloseSignUpPrompt}
+              subTitle={`Sign up today and help to make ${name} Climate neutral`}
+              infoTextOne={`Sign up today and help to make ${name} Climate neutral`}
+              infoTextTwo={"Receive regular updates about interesting projects and climate topics"}
+              title={"Change the world!"}
+              image={"/images/team.jpg"}
+              buttonText={texts.join + "!"}
+            />
+          )}
         </div>
       </WideLayout>
     </>

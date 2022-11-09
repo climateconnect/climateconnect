@@ -1,7 +1,7 @@
 import { Button, Collapse, Container, makeStyles, useMediaQuery } from "@material-ui/core";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import MessageContent from "../communication/MessageContent";
@@ -11,6 +11,7 @@ import ElementOnScreen from "../hooks/ElementOnScreen";
 import HubHeadlineContainer from "./HubHeadlineContainer";
 import StatBox from "./StatBox";
 import ContactAmbassadorButton from "./ContactAmbassadorButton";
+import SignUpPromptDialog from "../dialogs/SignUpPromptDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -115,8 +116,9 @@ export default function HubContent({
     }
     setExpanded(!expanded);
   };
-  const [fixed, setFixed] = React.useState(false);
-  const [showMoreEl, setShowMoreEl] = React.useState(null);
+
+  const [fixed, setFixed] = useState(false);
+  const [showMoreEl, setShowMoreEl] = useState(null);
   const showMoreVisible = ElementOnScreen({ el: showMoreEl, triggerIfUnderScreen: true });
   if (!fixed && !showMoreVisible) {
     setFixed(true);

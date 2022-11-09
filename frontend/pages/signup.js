@@ -1,4 +1,5 @@
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
+
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../public/lib/apiOperations";
@@ -22,9 +23,11 @@ import AddInfo from "./../src/components/signup/AddInfo";
 
 export default function Signup() {
   const { ReactGA } = useContext(UserContext);
+  const router = useRouter();
+  const email = router.query.email;
 
   const [userInfo, setUserInfo] = React.useState({
-    email: "",
+    email: email ? email : "",
     password: "",
     repeatpassword: "",
     first_name: "",
