@@ -86,9 +86,8 @@ const useStyles = makeStyles((theme) => ({
   },
   emailInput: {
     width: "100%",
-    [theme.breakpoints.down("sm")]: {
-      width: "100%", // I dont know why I need to set this (it runs off screen at 100% width)
-    },
+    
+    
   },
   img: {
     visibility: "hidden",
