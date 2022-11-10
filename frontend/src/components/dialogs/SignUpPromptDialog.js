@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
   imageContainer: (props) =>  ({
    
-    background: `url('${props.image}') no-repeat`,
+    background: `url('${props.image}')`,
     backgroundSize: "cover",
     backgroundPositionX: "-110px",
     position: "relative",
