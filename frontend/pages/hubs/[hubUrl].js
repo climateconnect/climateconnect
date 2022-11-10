@@ -27,7 +27,8 @@ import WideLayout from "../../src/components/layouts/WideLayout";
 import DonationCampaignInformation from "../../src/components/staticpages/donate/DonationCampaignInformation";
 import { retrievePage } from "../../src/utils/webflow";
 import SignUpPromptDialog from "../../src/components/dialogs/SignUpPromptDialog";
-import { redirect } from "../../public/lib/apiOperations";
+import { getCookieProps } from "../../public/lib/cookieOperations";
+
 
 const useStyles = makeStyles((theme) => ({
   contentRefContainer: {
@@ -141,9 +142,13 @@ export default function Hub({
   const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
   const token = new Cookies().get("auth_token");
-  const [hubAmbassador, setHubAmbassador] = useState(null);
-  const [showSignUpPrompt, setShowSignUpPrompt] = useState(true);
+  const cookies = new Cookies();
+  const signUpPromptCookie = cookies.get("display_signup_prompt"); // this is always undefined
+  console.log(signUpPromptCookie);
 
+  const [hubAmbassador, setHubAmbassador] = useState(null);
+  const [showSignUpPrompt, setShowSignUpPrompt] = useState(true); // setting to true for now as signUpPromptCookie is undefined
+  console.log(showSignUpPrompt);
   // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
   const [filters, setFilters] = useState(
     getInitialFilters({
@@ -238,6 +243,10 @@ export default function Hub({
   };
 
   const handleCloseSignUpPrompt = () => {
+    const THIRTY_DAYS_IN_MS = 3600 * 24 * 30; 
+    const cookieProps = getCookieProps(THIRTY_DAYS_IN_MS);
+    cookies.set("display_signup_prompt", "false", cookieProps);
+    console.log(cookies);
     setShowSignUpPrompt(false);
   };
 
@@ -313,14 +322,14 @@ export default function Hub({
               hubUrl={hubUrl}
             />
           </div>
-          {!user && (
+          {!user && isLocationHub && (
             <SignUpPromptDialog
               open={showSignUpPrompt}
               onClose={handleCloseSignUpPrompt}
-              subTitle={`Sign up today and help to make ${name} Climate neutral`}
-              infoTextOne={`Sign up today and help to make ${name} Climate neutral`}
-              infoTextTwo={"Receive regular updates about interesting projects and climate topics"}
-              title={"Change the world!"}
+              subTitle={texts.sign_up_today_and_help_make_climate_neutral}
+              infoTextOne={texts.sign_up_today_and_help_make_climate_neutral}
+              infoTextTwo={texts.receive_regular_updates_about_projects_topics}
+              title={texts.change_the_world}
               image={"/images/team.jpg"}
               buttonText={texts.join + "!"}
             />

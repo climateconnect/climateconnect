@@ -1,10 +1,12 @@
 import { Button, TextField, Typography, Dialog, DialogTitle, IconButton } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import React, {useState} from "react";
+import React, { useState, useContext } from "react";
 import CloseIcon from "@material-ui/icons/Close";
 import { useMediaQuery } from "@material-ui/core";
-import Cookies from "universal-cookie";
 import Router from "next/router";
+import UserContext from "../context/UserContext";
+import getTexts from "../../../public/texts/texts";
+
 
 const useStyles = makeStyles((theme) => ({
   mainContainer: {
@@ -53,17 +55,17 @@ const useStyles = makeStyles((theme) => ({
   title: {
     marginLeft: theme.spacing(-3),
     fontSize: 24,
-    fontWeight: 700,
-    color: theme.palette.grey[700],
+    fontWeight: "bold",
+    color: "#707070",
   },
   subtitle: {
-    color: theme.palette.grey[600],
+    color: "#707070",
     fontSize: 18,
     fontWeight: 600,
     marginBottom: theme.spacing(2),
   },
   text: {
-    color: theme.palette.grey[600],
+    color: "#707070",
     fontWeight: 400,
   },
   emailInput: {
@@ -93,18 +95,18 @@ export default function SignUpPromptDialog({
   infoTextTwo,
   onClose,
   open,
-  submitEmail,
   subTitle,
   title,
   buttonText,
 }) {
   const classes = useStyles({ image: image });
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
-  const [emailForSignUp, setEmailForSignUp] = useState("");
-  const cookies = new Cookies();
+  const [emailForSignUp, setEmailForSignUp] = useState(""); 
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "general", locale: locale });
+
   const applySubmit = () => {
    
-    console.log("clicked");
     Router.push({
         pathname: '/signup',
         query: { email: emailForSignUp }
@@ -116,8 +118,9 @@ export default function SignUpPromptDialog({
     setEmailForSignUp(event.target.value);
   }
   return (
+    
     <Dialog open={open} onClose={onClose} PaperProps={{ style: { borderRadius: 20 } }}>
-      <form onSubmit={applySubmit}>
+      
         <div className={classes.mainContainer}>
           {isSmallScreen ? (
             <>
@@ -129,6 +132,8 @@ export default function SignUpPromptDialog({
                 infoTextTwo={infoTextTwo}
                 buttonText={buttonText}
                 onClose={onClose}
+                applySubmit={applySubmit}
+                texts={texts}
               />
               <ImageContainer image={image} />
             </>
@@ -143,11 +148,13 @@ export default function SignUpPromptDialog({
                 infoTextTwo={infoTextTwo}
                 buttonText={buttonText}
                 onClose={onClose}
+                applySubmit={applySubmit}
+                texts={texts}
               />
             </>
           )}
         </div>
-      </form>
+      
     </Dialog>
   );
 }
@@ -168,7 +175,9 @@ function InfoContainer({
   subTitle,
   infoTextOne,
   infoTextTwo,
-  handleEmailChange
+  handleEmailChange,
+  applySubmit,
+  texts,
 }) {
   const classes = useStyles();
   return (
@@ -198,10 +207,10 @@ function InfoContainer({
         text={infoTextTwo}
       />
 
-      <TextField  onChange={(e) => handleEmailChange(e)} type="text" label={"E-mail"} variant="outlined" className={classes.emailInput} />
+      <TextField  onChange={(e) => handleEmailChange(e)} type="text" label={texts.email} variant="outlined" className={classes.emailInput} />
 
       <div className={classes.buttonsContainer}>
-        <Button variant="contained" color="primary"  type="submit">
+        <Button variant="contained" color="primary"  onClick={applySubmit}>
           {buttonText}
         </Button>
       </div>
