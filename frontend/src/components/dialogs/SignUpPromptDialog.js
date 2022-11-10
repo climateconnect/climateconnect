@@ -46,6 +46,8 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("sm")]: {
       width: "100%",
       backgroundPositionX: "0px",
+      // i want to cut off the bottom of this image, but if I set a height then hide overflow
+      // the logo will not overflow like it would in the design
       },
   }),
 
