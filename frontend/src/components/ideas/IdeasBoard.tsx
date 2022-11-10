@@ -92,11 +92,30 @@ export default function IdeasBoard({
     });
   };
 
-  const handleRemoveComment = (c) => {
-    setIdea({
-      ...idea,
-      comments: [...idea.comments.filter((pc) => pc.id !== c.id)],
-    });
+  const handleRemoveComment = (comment) => {
+    // remove a top comment
+    if (comment.parent_comment_id === null) {
+      setIdea({
+        ...idea,
+        comments: [...idea.comments.filter((pc) => pc.id !== comment.id)],
+      });
+      // remove a reply comment
+    } else {
+      const tempIdeaComments = idea.comments;
+      const parentCommentIndex = tempIdeaComments.findIndex(
+        (c) => c.id === comment.parent_comment_id
+      );
+
+      const filterOutReplies = [
+        ...tempIdeaComments[parentCommentIndex].replies.filter((pc) => pc.id !== comment.id),
+      ];
+      tempIdeaComments[parentCommentIndex].replies = filterOutReplies;
+
+      setIdea({
+        ...idea,
+        comments: tempIdeaComments,
+      });
+    }
   };
 
   const handleSetComments = (newComments) => {
