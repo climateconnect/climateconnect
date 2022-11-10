@@ -40,3 +40,18 @@ export function getCookieProps(expiry) {
   console.log(cookieProps);
   return cookieProps;
 }
+
+export function getDisplaySignUpPromptFromCookie(cookieContent) {
+  const cookies = new Cookies();
+  // wasn't really sure how to handle the first time a user comes the page as the cookie being looked up is undefined at first
+  if (typeof cookieContent === "undefined") {
+    const expiryDate = new Date();
+    const month = (expiryDate.getMonth() + 1) % 12;
+    expiryDate.setMonth(month);
+    const cookieProps = getCookieProps(expiryDate);
+    cookies.set("display_signup_prompt", "true", cookieProps);
+    return true;
+  }
+
+  return false;
+}

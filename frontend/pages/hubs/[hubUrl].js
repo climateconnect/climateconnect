@@ -28,7 +28,7 @@ import DonationCampaignInformation from "../../src/components/staticpages/donate
 import { retrievePage } from "../../src/utils/webflow";
 import SignUpPromptDialog from "../../src/components/dialogs/SignUpPromptDialog";
 import { getCookieProps } from "../../public/lib/cookieOperations";
-
+import { getDisplaySignUpPromptFromCookie } from "../../public/lib/cookieOperations";
 
 const useStyles = makeStyles((theme) => ({
   contentRefContainer: {
@@ -144,11 +144,12 @@ export default function Hub({
   const token = new Cookies().get("auth_token");
   const cookies = new Cookies();
   const signUpPromptCookie = cookies.get("display_signup_prompt"); // this is always undefined
-  console.log(signUpPromptCookie);
 
   const [hubAmbassador, setHubAmbassador] = useState(null);
-  const [showSignUpPrompt, setShowSignUpPrompt] = useState(true); // setting to true for now as signUpPromptCookie is undefined
-  console.log(showSignUpPrompt);
+  const [showSignUpPrompt, setShowSignUpPrompt] = useState(
+    getDisplaySignUpPromptFromCookie(signUpPromptCookie)
+  );
+
   // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
   const [filters, setFilters] = useState(
     getInitialFilters({
@@ -243,10 +244,16 @@ export default function Hub({
   };
 
   const handleCloseSignUpPrompt = () => {
-    const THIRTY_DAYS_IN_MS = 3600 * 24 * 30; 
-    const cookieProps = getCookieProps(THIRTY_DAYS_IN_MS);
+    const expiryDate = new Date();
+    const month =
+      (expiryDate.getMonth() + 1) %
+      12; /*
+    new Date = gets today's date. Then, the next line is to get next month.
+    We use modulo for the edge case where it is currently December and we want it to return 1, instead of 13. 
+    We then set variable, expiryDate (now one month ahead), to our cookie. */
+    expiryDate.setMonth(month);
+    const cookieProps = getCookieProps(expiryDate);
     cookies.set("display_signup_prompt", "false", cookieProps);
-    console.log(cookies);
     setShowSignUpPrompt(false);
   };
 
@@ -324,14 +331,14 @@ export default function Hub({
           </div>
           {!user && isLocationHub && (
             <SignUpPromptDialog
-              open={showSignUpPrompt}
-              onClose={handleCloseSignUpPrompt}
-              subTitle={texts.sign_up_today_and_help_make_climate_neutral}
+              buttonText={texts.join + "!"}
+              image={"/images/team.jpg"}
               infoTextOne={texts.sign_up_today_and_help_make_climate_neutral}
               infoTextTwo={texts.receive_regular_updates_about_projects_topics}
+              onClose={handleCloseSignUpPrompt}
+              open={showSignUpPrompt}
+              subTitle={texts.sign_up_today_and_help_make_climate_neutral}
               title={texts.change_the_world}
-              image={"/images/team.jpg"}
-              buttonText={texts.join + "!"}
             />
           )}
         </div>

@@ -134,7 +134,7 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
     },
     sign_up_today_and_help_make_climate_neutral: {
       en: `Sign up today and help to make ${hubName} climate neutral`,
-      de: `Melde dich noch heute an und helfe mit, ${hubName} klimaneutral zu stellen`
+      de: `Melde dich noch heute an und helfe mit, ${hubName} klimaneutral zu stellen`,
     },
     change_the_world: {
       en: "Change the world!",
@@ -142,8 +142,8 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
     },
     receive_regular_updates_about_projects_topics: {
       en: "Receive regular updates about interesting projects and climate topics",
-      de: "Erhalte regelmäßig Informationen über interessante Projekte und Klimathemen"
-    }
+      de: "Erhalte regelmäßig Informationen über interessante Projekte und Klimathemen",
+    },
   };
 
   if (hubName === "Fashion") return { ...generalHubTexts, ...getFashionHubDescription() };

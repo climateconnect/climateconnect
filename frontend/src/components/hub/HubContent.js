@@ -11,7 +11,6 @@ import ElementOnScreen from "../hooks/ElementOnScreen";
 import HubHeadlineContainer from "./HubHeadlineContainer";
 import StatBox from "./StatBox";
 import ContactAmbassadorButton from "./ContactAmbassadorButton";
-import SignUpPromptDialog from "../dialogs/SignUpPromptDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {

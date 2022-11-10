@@ -6,7 +6,7 @@ import { useMediaQuery } from "@material-ui/core";
 import Router from "next/router";
 import UserContext from "../context/UserContext";
 import getTexts from "../../../public/texts/texts";
-
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 
 const useStyles = makeStyles((theme) => ({
   mainContainer: {
@@ -90,6 +90,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SignUpPromptDialog({
+  buttonText,
   image,
   infoTextOne,
   infoTextTwo,
@@ -97,64 +98,58 @@ export default function SignUpPromptDialog({
   open,
   subTitle,
   title,
-  buttonText,
 }) {
   const classes = useStyles({ image: image });
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
-  const [emailForSignUp, setEmailForSignUp] = useState(""); 
+  const [emailForSignUp, setEmailForSignUp] = useState("");
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
 
   const applySubmit = () => {
-   
     Router.push({
-        pathname: '/signup',
-        query: { email: emailForSignUp }
-    })
-    
+      pathname: getLocalePrefix(locale) + "/signup",
+      query: { email: emailForSignUp },
+    });
   };
 
   const handleEmailChange = (event) => {
     setEmailForSignUp(event.target.value);
-  }
+  };
   return (
-    
     <Dialog open={open} onClose={onClose} PaperProps={{ style: { borderRadius: 20 } }}>
-      
-        <div className={classes.mainContainer}>
-          {isSmallScreen ? (
-            <>
-              <InfoContainer
-                title={title}
-                subTitle={subTitle}
-                handleEmailChange={handleEmailChange}
-                infoTextOne={infoTextOne}
-                infoTextTwo={infoTextTwo}
-                buttonText={buttonText}
-                onClose={onClose}
-                applySubmit={applySubmit}
-                texts={texts}
-              />
-              <ImageContainer image={image} />
-            </>
-          ) : (
-            <>
-              <ImageContainer image={image} />
-              <InfoContainer
-                title={title}
-                subTitle={subTitle}
-                handleEmailChange={handleEmailChange}
-                infoTextOne={infoTextOne}
-                infoTextTwo={infoTextTwo}
-                buttonText={buttonText}
-                onClose={onClose}
-                applySubmit={applySubmit}
-                texts={texts}
-              />
-            </>
-          )}
-        </div>
-      
+      <div className={classes.mainContainer}>
+        {isSmallScreen ? (
+          <>
+            <InfoContainer
+              applySubmit={applySubmit}
+              buttonText={buttonText}
+              handleEmailChange={handleEmailChange}
+              infoTextOne={infoTextOne}
+              infoTextTwo={infoTextTwo}
+              onClose={onClose}
+              subTitle={subTitle}
+              texts={texts}
+              title={title}
+            />
+            <ImageContainer image={image} />
+          </>
+        ) : (
+          <>
+            <ImageContainer image={image} />
+            <InfoContainer
+              applySubmit={applySubmit}
+              buttonText={buttonText}
+              handleEmailChange={handleEmailChange}
+              infoTextOne={infoTextOne}
+              infoTextTwo={infoTextTwo}
+              onClose={onClose}
+              subTitle={subTitle}
+              texts={texts}
+              title={title}
+            />
+          </>
+        )}
+      </div>
     </Dialog>
   );
 }
@@ -169,15 +164,15 @@ function ImageContainer({ image }) {
 }
 
 function InfoContainer({
+  applySubmit,
   buttonText,
-  onClose,
-  title,
-  subTitle,
+  handleEmailChange,
   infoTextOne,
   infoTextTwo,
-  handleEmailChange,
-  applySubmit,
+  onClose,
+  subTitle,
   texts,
+  title,
 }) {
   const classes = useStyles();
   return (
@@ -207,10 +202,16 @@ function InfoContainer({
         text={infoTextTwo}
       />
 
-      <TextField  onChange={(e) => handleEmailChange(e)} type="text" label={texts.email} variant="outlined" className={classes.emailInput} />
+      <TextField
+        className={classes.emailInput}
+        label={texts.email}
+        onChange={(e) => handleEmailChange(e)}
+        type="text"
+        variant="outlined"
+      />
 
       <div className={classes.buttonsContainer}>
-        <Button variant="contained" color="primary"  onClick={applySubmit}>
+        <Button variant="contained" color="primary" onClick={applySubmit}>
           {buttonText}
         </Button>
       </div>
