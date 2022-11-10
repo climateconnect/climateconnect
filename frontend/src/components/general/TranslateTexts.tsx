@@ -8,6 +8,7 @@ import {
   AppBar,
   Toolbar,
   Tooltip,
+  Theme,
 } from "@material-ui/core";
 import _ from "lodash";
 import React, { useContext, useEffect, useState } from "react";
@@ -21,7 +22,7 @@ import VisibleFooterHeight from "../hooks/VisibleFooterHeight";
 import SaveIcon from "@material-ui/icons/Save";
 import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, {visibleFooterHeight: number}>((theme) => ({
   root: {
     marginTop: theme.spacing(2),
   },
@@ -98,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
     top: "auto",
     bottom: props.visibleFooterHeight,
     boxShadow: "-3px -3px 6px #00000029",
-    zIndex: "1",
+    zIndex: 1,
   }),
   containerButtonsActionBar: {
     display: "flex",
@@ -246,7 +247,7 @@ export default function TranslateTexts({
       console.log(translationsObject);
       handleChangeTranslationContent(targetLanguage, translationsObject);
       setWaitingForTranslation(false);
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
       console.log(e?.response?.data);
       setWaitingForTranslation(false);
@@ -346,7 +347,7 @@ function TranslationBlock({
   targetLanguageTexts,
   maxCharacters,
   showCharacterCounter,
-}) {
+}: any) {
   const classes = useStyles();
   const flatDataKey = dataKey.includes(".")
     ? dataKey.split(".")[dataKey.split(".").length - 1]

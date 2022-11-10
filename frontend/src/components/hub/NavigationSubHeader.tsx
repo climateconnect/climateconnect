@@ -4,6 +4,7 @@ import {
   Container,
   Link,
   makeStyles,
+  Theme,
   Typography,
   useMediaQuery,
 } from "@material-ui/core";
@@ -47,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function NavigationSubHeader({ hubName, allHubs, isLocationHub }) {
+export default function NavigationSubHeader({ hubName, allHubs, isLocationHub }: any) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });

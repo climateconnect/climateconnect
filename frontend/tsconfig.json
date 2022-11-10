@@ -17,6 +17,6 @@
     "moduleResolution": "node",
     "isolatedModules": true
   },
-  "include": ["src*", "pages*", "public*"],
+  "include": ["src/*", "pages/*", "public/*"],
   "exclude": ["node_modules"]
 }

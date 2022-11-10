@@ -1,4 +1,4 @@
-import { Container, Typography, useMediaQuery } from "@material-ui/core";
+import { Container, Theme, Typography, useMediaQuery } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import { apiRequest } from "../public/lib/apiOperations";

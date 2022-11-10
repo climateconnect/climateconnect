@@ -65,6 +65,7 @@ type Args<P extends Page> = {
   hubAmbassador?: string;
   creator?: string;
 };
+
 export default function getTexts<P extends Page>({
   classes,
   filterType,

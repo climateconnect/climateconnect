@@ -78,7 +78,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProjectMetaData({ project, hovering, withDescription }) {
+type Props = { project: {}; hovering: boolean; withDescription: boolean };
+export default function ProjectMetaData({ project, hovering, withDescription }: Props) {
   const classes = useStyles({ hovering: hovering });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
@@ -87,7 +88,7 @@ export default function ProjectMetaData({ project, hovering, withDescription }) 
   if (withDescription) {
     return (
       <WithDescription
-        className={classes.WithDescription}
+        // className={classes.WithDescription}
         project_parent={project_parent}
         project={project}
         hovering={hovering}
@@ -99,7 +100,7 @@ export default function ProjectMetaData({ project, hovering, withDescription }) 
 
   return (
     <WithOutDescription
-      className={classes.WithDescription}
+      // className={classes.WithDescription}
       project_parent={project_parent}
       project={project}
       main_project_tag={main_project_tag}

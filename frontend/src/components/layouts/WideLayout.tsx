@@ -45,9 +45,9 @@ type Props = {
   transparentHeader?: string;
   isStaticPage?: boolean;
   noFeedbackButton?: string;
-  noSpaceBottom?: string;
+  noSpaceBottom?: boolean;
   showOnScrollUp?: boolean;
-  largeFooter?: string;
+  largeFooter?: boolean;
   description?: string;
   landingPage?: string;
   headerBackground?: string;
