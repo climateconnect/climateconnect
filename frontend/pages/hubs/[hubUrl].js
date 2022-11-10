@@ -332,7 +332,7 @@ export default function Hub({
           {!user && isLocationHub && (
             <SignUpPromptDialog
               buttonText={texts.join + "!"}
-              image={"/images/team.jpg"}
+              image={"/images/sign_up_prompt_image.jpg"}
               infoTextOne={texts.sign_up_today_and_help_make_climate_neutral}
               infoTextTwo={texts.receive_regular_updates_about_projects_topics}
               onClose={handleCloseSignUpPrompt}

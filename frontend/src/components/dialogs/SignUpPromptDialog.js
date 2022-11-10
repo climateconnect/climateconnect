@@ -10,13 +10,22 @@ import { getLocalePrefix } from "../../../public/lib/apiOperations";
 
 const useStyles = makeStyles((theme) => ({
   mainContainer: {
-    overflow: "hidden",
     display: "flex",
     flexDirection: "row",
     [theme.breakpoints.down("sm")]: {
       flexDirection: "column",
+     
     },
   },
+  dialog: { 
+    maxWidth: "750px" ,
+    borderRadius: 20,
+    [theme.breakpoints.down("sm")]: {
+      minWidth: "375px",
+      maxWidth: "500px",
+    },
+  },
+
   closeButtonRight: {
     position: "absolute",
     right: theme.spacing(1),
@@ -26,22 +35,28 @@ const useStyles = makeStyles((theme) => ({
       right: theme.spacing(2.5),
     },
   },
-  imageContainer: {
-    display: "flex",
+  imageContainer: (props) =>  ({
+   
+    background: `url('${props.image}') no-repeat`,
+    backgroundSize: "cover",
+    backgroundPositionX: "-110px",
+    position: "relative",
     width: "30%",
+    
     [theme.breakpoints.down("sm")]: {
       width: "100%",
-    },
-  },
+      backgroundPositionX: "0px",
+      },
+  }),
 
   infoContainer: {
     width: "70%",
-    marginLeft: theme.spacing(2),
-    marginRight: theme.spacing(2),
+    //backgroundColor: "#000000",
+    marginLeft: theme.spacing(3),
+    marginRight: theme.spacing(3), // this isnt applying to small screen, uncomment color to see 
     [theme.breakpoints.down("sm")]: {
-      width: "100%",
-      display: "flex",
-      flexDirection: "column",
+      width: "87%",   // using custom width here to have same margin/similar on right as left
+      
     },
   },
   buttonsContainer: {
@@ -49,7 +64,8 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
     textAlign: "right",
     [theme.breakpoints.down("sm")]: {
-      textAlign: "center",
+      textAlign: "center", // button is not centered because above right margin isnt applying
+      marginBottom: theme.spacing(5),
     },
   },
   title: {
@@ -71,12 +87,28 @@ const useStyles = makeStyles((theme) => ({
   emailInput: {
     width: "100%",
     [theme.breakpoints.down("sm")]: {
-      width: "90%",
+      width: "100%", // I dont know why I need to set this (it runs off screen at 100% width)
     },
   },
   img: {
+    visibility: "hidden",
     width: "100%",
-    height: "100%",
+    
+  },
+  logo: {
+    position: "absolute",
+    left: "50%",
+    transform: "translate(-50%, -25%)",
+    top: "25%",
+    
+    width:"65%",
+    height:"65%",
+    [theme.breakpoints.down("sm")]: {
+      
+      transform: "translate(-50%, -55%)",
+      top: "25%",
+    },
+
   },
   textWithIcon: {
     display: "flex",
@@ -85,6 +117,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
   },
   icon: {
+    height:"50px",
     marginRight: theme.spacing(1.5),
   },
 }));
@@ -116,7 +149,7 @@ export default function SignUpPromptDialog({
     setEmailForSignUp(event.target.value);
   };
   return (
-    <Dialog open={open} onClose={onClose} PaperProps={{ style: { borderRadius: 20 } }}>
+    <Dialog open={open}  onClose={onClose} classes={{ paper: classes.dialog}}>
       <div className={classes.mainContainer}>
         {isSmallScreen ? (
           <>
@@ -155,10 +188,11 @@ export default function SignUpPromptDialog({
 }
 
 function ImageContainer({ image }) {
-  const classes = useStyles();
+  const classes = useStyles({image: image});
   return (
     <div className={classes.imageContainer}>
       <img src={image} className={classes.img} />
+      <img src={"/images/climate_connect_logo.svg"} className={classes.logo} />
     </div>
   );
 }
@@ -190,15 +224,11 @@ function InfoContainer({
       </DialogTitle>
       <Typography className={classes.subtitle}>{subTitle}</Typography>
       <TextWithIcon
-        icon={{
-          icon: CloseIcon,
-        }}
+        icon="/images/like_icon_with_background.svg"
         text={infoTextOne}
       />
       <TextWithIcon
-        icon={{
-          icon: CloseIcon,
-        }}
+        icon= "/images/mail_icon_with_background.svg"
         text={infoTextTwo}
       />
 
@@ -223,7 +253,7 @@ function TextWithIcon({ text, icon }) {
   const classes = useStyles();
   return (
     <span className={classes.textWithIcon}>
-      <icon.icon className={classes.icon} />
+      <img src={icon} className={classes.icon} />
       <Typography className={classes.text}>{text}</Typography>
     </span>
   );
