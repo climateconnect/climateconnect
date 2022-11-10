@@ -143,7 +143,7 @@ export default function Hub({
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
   const token = new Cookies().get("auth_token");
   const cookies = new Cookies();
-  const signUpPromptCookie = cookies.get("display_signup_prompt"); // this is always undefined
+  const signUpPromptCookie = cookies.get("display_signup_prompt");
 
   const [hubAmbassador, setHubAmbassador] = useState(null);
   const [showSignUpPrompt, setShowSignUpPrompt] = useState(
