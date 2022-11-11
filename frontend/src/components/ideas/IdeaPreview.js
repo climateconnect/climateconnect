@@ -1,4 +1,4 @@
-import { Card, CardMedia, Link, makeStyles, Typography } from "@material-ui/core";
+import { Card, CardMedia, Link, makeStyles, Typography, Tooltip } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import React, { useContext, useState } from "react";
@@ -10,6 +10,8 @@ import UserContext from "../context/UserContext";
 import CreateIdeaDialog from "./createIdea/CreateIdeaDialog";
 import IdeaHubIcon from "./IdeaHubIcon";
 import IdeaRatingIcon from "./IdeaRatingIcon";
+import PersonAddIcon from "@material-ui/icons/PersonAdd";
+import ModeCommentIcon from "@material-ui/icons/ModeComment";
 
 const useStyles = makeStyles((theme) => ({
   noUnderline: {
@@ -88,20 +90,43 @@ const useStyles = makeStyles((theme) => ({
   shortDescription: {
     padding: theme.spacing(0.5),
   },
+  imgAdditionalInfoContainer: {
+    borderRadius: theme.spacing(2),
+    backgroundColor: "white",
+    bottom: 8,
+    left: "50%",
+    transform: "translate(-50%)",
+    position: "absolute",
+    display: "inline-flex",
+    padding: theme.spacing(0.5),
+  },
+  noImgAdditionalInfoContainer: {
+    display: "inline-flex",
+    marginTop: theme.spacing(0.75),
+    marginBottom: theme.spacing(0.75),
+  },
+  additionalInfoCounter: {
+    marginLeft: theme.spacing(0.5),
+    marginRight: theme.spacing(1),
+    fontSize: 16,
+  },
+  additionalInfoIcon: {
+    marginLeft: theme.spacing(1),
+  },
 }));
 
 //This component is currently only capable of displaying the "add new idea" card and not a real idea preview card
 export default function IdeaPreview({
-  idea,
-  isCreateCard,
   allHubs,
-  userOrganizations,
-  onClickIdea,
-  index,
-  hubLocation,
   hubData,
-  sendToIdeaPageOnClick,
+  hubLocation,
+  idea,
+  index,
+  isCreateCard,
+  onClickIdea,
   resetTabsWhereFiltersWereApplied,
+  sendToIdeaPageOnClick,
+  userOrganizations,
 }) {
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale });
@@ -149,13 +174,13 @@ export default function IdeaPreview({
       </Link>
       {isCreateCard && (
         <CreateIdeaDialog
-          open={open}
-          onClose={onClose}
           allHubs={allHubs}
-          userOrganizations={userOrganizations}
-          hubLocation={hubLocation}
           hubData={hubData}
+          hubLocation={hubLocation}
+          onClose={onClose}
+          open={open}
           resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
+          userOrganizations={userOrganizations}
         />
       )}
     </>
@@ -186,6 +211,7 @@ function CreateCardContent() {
 
 function IdeaCardContent(idea) {
   const classes = useStyles();
+
   return (
     <div>
       <div className={classes.topSection}>
@@ -202,11 +228,20 @@ function IdeaCardContent(idea) {
       </div>
       <div>
         {idea.idea.image === undefined || idea.idea.image === null ? (
-          <Typography color="secondary" component="h4" className={classes.shortDescription}>
-            {idea.idea.short_description?.length > 200
-              ? idea.idea.short_description.slice(0, 200) + "..."
-              : idea.idea.short_description}
-          </Typography>
+          <>
+            <Typography color="secondary" component="h4" className={classes.shortDescription}>
+              {idea.idea.short_description?.length > 200
+                ? idea.idea.short_description.slice(0, 200) + "..."
+                : idea.idea.short_description}
+            </Typography>
+            {(idea.idea.rating?.number_of_ratings > 0 || false) && (
+              <AdditionalInfoIdeaCardPreview
+                containerName={classes.noImgAdditionalInfoContainer}
+                commentCount={idea.idea.number_of_comments}
+                participationCount={idea.idea.number_of_participants}
+              />
+            )}
+          </>
         ) : (
           <CardMedia title={idea.idea.url_slug} image={getImageUrl(idea.idea.image)}>
             <img
@@ -214,9 +249,42 @@ function IdeaCardContent(idea) {
               alt={idea.idea.name}
               className={classes.placeholderImg}
             />
+            {(idea.idea.rating?.number_of_ratings > 0 || false) && (
+              <AdditionalInfoIdeaCardPreview
+                containerName={classes.imgAdditionalInfoContainer}
+                commentCount={idea.idea.number_of_comments}
+                participationCount={idea.idea.number_of_participants}
+              />
+            )}
           </CardMedia>
         )}
       </div>
     </div>
+  );
+}
+
+function AdditionalInfoIdeaCardPreview({ containerName, commentCount, participationCount }) {
+  const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "general", locale: locale });
+  return (
+    <>
+      <div className={containerName}>
+        <Tooltip arrow title={texts.comments}>
+          <ModeCommentIcon className={classes.additionalInfoIcon} color="primary" />
+        </Tooltip>
+
+        <span className={classes.additionalInfoCounter}> {commentCount} </span>
+        {/* 
+        TODO: Perhaps a different icon / text is necessary as this uses the # of interactions and not participants?
+        maybe a heart icon or something different. Atm this is just following the design from the description in the issue.
+        Maybe get # of participants inside the group chat? 
+        */}
+        <Tooltip arrow title={texts.participants}>
+          <PersonAddIcon className={classes.additionalInfoIcon} color="primary" />
+        </Tooltip>
+        <span className={classes.additionalInfoCounter}> {participationCount} </span>
+      </div>
+    </>
   );
 }

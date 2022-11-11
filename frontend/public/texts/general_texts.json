@@ -774,5 +774,9 @@
   "days": {
     "en": "days",
     "de": "Tage"
+  },
+  "participants": {
+    "en": "Participants",
+    "de": "Teilnehmer"
   }
 }
