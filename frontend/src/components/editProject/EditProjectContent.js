@@ -95,6 +95,10 @@ export default function EditProjectContent({
     setOpen({ ...open, skills: true });
   };
 
+  const handleSkillsDialogClose = () => {
+    setOpen({ ...open, skills: false });
+  };
+
   const handleSkillDelete = (skill) => {
     handleSetProject({
       ...project,
@@ -103,7 +107,7 @@ export default function EditProjectContent({
     setSelectedItems(project.skills.filter((s) => s.id !== skill.id));
   };
 
-  const handleSkillsDialogClose = (skills) => {
+  const handleSkillsDialogSave = (skills) => {
     if (skills) handleSetProject({ ...project, skills: skills });
     setOpen({ ...open, skills: false });
   };
@@ -350,6 +354,7 @@ export default function EditProjectContent({
       <MultiLevelSelectDialog
         open={open.skills}
         onClose={handleSkillsDialogClose}
+        onSave={handleSkillsDialogSave}
         type="skills"
         options={skillsOptions}
         items={project.skills}
