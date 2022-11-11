@@ -333,8 +333,8 @@ export default function Hub({
             <SignUpPromptDialog
               buttonText={texts.join + "!"}
               image={"/images/sign_up_prompt_image.jpg"}
-              infoTextOne={texts.sign_up_today_and_help_make_climate_neutral}
-              infoTextTwo={texts.receive_regular_updates_about_projects_topics}
+              infoTextOne={texts.receive_regular_updates_about_projects_topics}
+              infoTextTwo={texts.send_messages_comments_and_more}
               onClose={handleCloseSignUpPrompt}
               open={showSignUpPrompt}
               subTitle={texts.sign_up_today_and_help_make_climate_neutral}
