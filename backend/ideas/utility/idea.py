@@ -153,21 +153,18 @@ def get_idea_short_description(idea: Idea, language_code: str) -> str:
     return idea.short_description
 
 
-def get_number_of_idea_comments(idea: Idea):    
-    return IdeaComment.objects.filter(idea=idea,
-    is_abusive=False,
-            deleted_at__isnull=True,
-            parent_comment=None,).count()
+def get_number_of_idea_comments(idea: Idea):
+    return IdeaComment.objects.filter(
+        idea=idea,
+        is_abusive=False,
+        deleted_at__isnull=True,
+        parent_comment=None,
+    ).count()
 
 
-def get_number_of_idea_participants(idea: Idea): 
-    chats = (MessageParticipants.objects.filter(
-        name=idea.name
-    ))
+def get_number_of_idea_participants(idea: Idea):
+    chats = MessageParticipants.objects.filter(name=idea.name)
     for chat in chats:
-        user_count = Participant.objects.filter(
-        chat=chat,
-        is_active=True
-        ).count()
-        
+        user_count = Participant.objects.filter(chat=chat, is_active=True).count()
+
     return user_count

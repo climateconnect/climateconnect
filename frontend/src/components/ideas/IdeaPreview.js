@@ -234,7 +234,7 @@ function IdeaCardContent(idea) {
                 ? idea.idea.short_description.slice(0, 200) + "..."
                 : idea.idea.short_description}
             </Typography>
-            {(idea.idea.rating?.number_of_ratings > 0 || false) && (
+            {(idea.idea.number_of_comments > 0 || idea.idea.number_of_participants > 0) && (
               <AdditionalInfoIdeaCardPreview
                 containerName={classes.noImgAdditionalInfoContainer}
                 commentCount={idea.idea.number_of_comments}
@@ -249,7 +249,7 @@ function IdeaCardContent(idea) {
               alt={idea.idea.name}
               className={classes.placeholderImg}
             />
-            {(idea.idea.rating?.number_of_ratings > 0 || false) && (
+            {(idea.idea.rating?.number_of_ratings > 0 || idea.idea.number_of_participants > 0) && (
               <AdditionalInfoIdeaCardPreview
                 containerName={classes.imgAdditionalInfoContainer}
                 commentCount={idea.idea.number_of_comments}
@@ -270,20 +270,22 @@ function AdditionalInfoIdeaCardPreview({ containerName, commentCount, participat
   return (
     <>
       <div className={containerName}>
-        <Tooltip arrow title={texts.comments}>
-          <ModeCommentIcon className={classes.additionalInfoIcon} color="primary" />
-        </Tooltip>
-
-        <span className={classes.additionalInfoCounter}> {commentCount} </span>
-        {/* 
-        TODO: Perhaps a different icon / text is necessary as this uses the # of interactions and not participants?
-        maybe a heart icon or something different. Atm this is just following the design from the description in the issue.
-        Maybe get # of participants inside the group chat? 
-        */}
-        <Tooltip arrow title={texts.participants}>
-          <PersonAddIcon className={classes.additionalInfoIcon} color="primary" />
-        </Tooltip>
-        <span className={classes.additionalInfoCounter}> {participationCount} </span>
+        {commentCount > 0 && (
+          <>
+            <Tooltip arrow title={texts.comments}>
+              <ModeCommentIcon className={classes.additionalInfoIcon} color="primary" />
+            </Tooltip>
+            <span className={classes.additionalInfoCounter}> {commentCount} </span>
+          </>
+        )}
+        {participationCount > 0 && (
+          <>
+            <Tooltip arrow title={texts.participants}>
+              <PersonAddIcon className={classes.additionalInfoIcon} color="primary" />
+            </Tooltip>
+            <span className={classes.additionalInfoCounter}> {participationCount} </span>
+          </>
+        )}
       </div>
     </>
   );
