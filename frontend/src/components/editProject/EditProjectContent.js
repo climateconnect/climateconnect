@@ -189,7 +189,7 @@ export default function EditProjectContent({
         <div className={classes.block}>
           {project.is_personal_project ? (
             <>
-              Created by
+              {texts.created_by}
               <MiniProfilePreview
                 className={classes.creator}
                 profile={project.project_parents.parent_user}
