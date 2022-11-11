@@ -145,7 +145,7 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
       de: "Erhalte regelmäßig Informationen über interessante Projekte und Klimathemen.",
     },
     send_messages_comments_and_more:{
-      en: "Send messages, comments and more to connect with others enthusiastic about climate change. ",
+      en: "Send messages, comments and more to connect with others committed to climate action.",
       de: "Sende Nachrichten, Kommentare und Mehr, um mit Klimaaktive zu vernetzen.",
     }
   };
