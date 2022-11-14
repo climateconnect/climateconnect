@@ -15,7 +15,11 @@ import EditAccountPage from "../account/EditAccountPage";
 import UserContext from "../context/UserContext";
 import PageNotFound from "../general/PageNotFound";
 import TranslateTexts from "../general/TranslateTexts";
+
 import Alert from "@material-ui/lab/Alert";
+
+import { parseOrganization } from "../../../public/lib/organizationOperations";
+
 
 const useStyles = makeStyles((theme) => ({
   headline: {
@@ -115,7 +119,8 @@ export default function EditOrganizationRoot({
       handleSetErrorMessage(error);
     } else {
       editedOrg.language = sourceLanguage;
-      const payload = await parseForRequest(getChanges(editedOrg, organization));
+      const oldOrg = await getOrganizationByUrlIfExists(organization.url_slug, token, locale);
+      const payload = await parseForRequest(getChanges(editedOrg, oldOrg));
       if (isTranslationsStep)
         payload.translations = getTranslationsWithoutRedundantKeys(
           getTranslationsFromObject(initialTranslations, "organization"),
@@ -159,7 +164,7 @@ export default function EditOrganizationRoot({
 
   const handleTranslationsSubmit = async (event) => {
     event.preventDefault();
-    await saveChanges(editedOrganization, true);
+    await saveChanges(editedOrganization, true, token, locale);
   };
 
   const standardTextsToTranslate = [
@@ -250,6 +255,22 @@ export default function EditOrganizationRoot({
       )}
     </>
   );
+}
+
+async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/organizations/" + organizationUrl + "/",
+      token: token,
+      locale: locale,
+    });
+    return parseOrganization(resp.data, true);
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
 }
 
 const parseForRequest = async (org) => {

@@ -87,6 +87,8 @@ export default function Inbox({ chatData, initialNextPage }) {
     nextPage: 0,
   });
 
+  const resetAlertMessage = () => setErrorMessage("");
+
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [searchingOpen, setSearchingOpen] = useState(false);
@@ -115,7 +117,6 @@ export default function Inbox({ chatData, initialNextPage }) {
   };
 
   const loadMoreFilteredChats = async () => {
-   
     const url = `/api/chat/?page=${searchedChatsState.nextPage}&search=${searchTerm}`;
     const response = await apiRequest({
       token: token,
@@ -131,8 +132,6 @@ export default function Inbox({ chatData, initialNextPage }) {
       nextPage: response.data.next ? searchedChatsState.nextPage + 1 : null,
       chats: [...searchedChatsState.chats, ...parsedChats],
     });
-
-    
   };
 
   const handleSetIsLoading = (newValue) => {
@@ -142,8 +141,6 @@ export default function Inbox({ chatData, initialNextPage }) {
   const updateErrorMessage = (e) => {
     setErrorMessage(e);
   };
-
-  const resetAlertMessage = () => setErrorMessage("");
 
   const enableChatSearch = () => {
     setChatSearchEnabled(true);

@@ -113,7 +113,7 @@ def create_organization_translation(
     org_translation = OrganizationTranslation.objects.create(
         organization=organization,
         language=language,
-        name_translation=texts["name"].strip(), # remove leading and trailing spaces
+        name_translation=texts["name"].strip(),  # remove leading and trailing spaces
         is_manual_translation=is_manual_translation,
     )
     if "short_description" in texts:

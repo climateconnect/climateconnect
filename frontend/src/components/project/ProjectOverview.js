@@ -209,6 +209,7 @@ export default function ProjectOverview({
           texts={texts}
           toggleShowFollowers={toggleShowFollowers}
           numberOfFollowers={numberOfFollowers}
+          dialogTitleShareButton={dialogTitleShareButton}
         />
       ) : (
         <LargeScreenOverview
