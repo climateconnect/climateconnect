@@ -74,20 +74,16 @@ LIBRARY_APPS = [
     "channels",
     "django_filters",
     "django.contrib.gis",
-    "django_celery_beat"
+    "django_celery_beat",
 ]
 
-DEBUG_APPS = [
-    "debug_toolbar"
-]
+DEBUG_APPS = ["debug_toolbar"]
 
 SECURITY_MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
 ]
 
-DEBUG_MIDDLEWARE = [
-    "debug_toolbar.middleware.DebugToolbarMiddleware"
-]
+DEBUG_MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"]
 
 NORMAL_MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",

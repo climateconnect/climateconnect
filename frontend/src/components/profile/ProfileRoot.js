@@ -152,7 +152,7 @@ export default function ProfileRoot({
       )}
       <Container className={classes.container} ref={projectsRef}>
         <div className={classes.sectionHeadlineWithButtonContainer}>
-          <h2>{isOwnAccount ? texts.your_projects + ":" : texts.this_users_projects + ":"}</h2>
+          <h2>{isOwnAccount ? texts.your_projects : texts.this_users_projects}</h2>
           {isTinyScreen ? (
             <IconButton href={getLocalePrefix(locale) + "/share"}>
               <ControlPointSharpIcon
@@ -181,7 +181,7 @@ export default function ProfileRoot({
       {(isOwnAccount || (ideas && ideas.length > 0)) && (
         <Container className={classes.container} ref={ideasRef}>
           <div className={classes.sectionHeadlineWithButtonContainer}>
-            <h2>{isOwnAccount ? texts.your_ideas + ":" : texts.this_users_ideas + ":"}</h2>
+            <h2>{isOwnAccount ? texts.your_ideas : texts.this_users_ideas}</h2>
           </div>
           {ideas && ideas.length ? (
             <IdeaPreviews ideas={ideas} noCreateCard sendToIdeaPageOnClick />
@@ -196,9 +196,7 @@ export default function ProfileRoot({
       )}
       <Container className={classes.container} ref={organizationsRef}>
         <div className={classes.sectionHeadlineWithButtonContainer}>
-          <h2>
-            {isOwnAccount ? texts.your_organizations + ":" : texts.this_users_organizations + ":"}
-          </h2>
+          <h2>{isOwnAccount ? texts.your_organizations : texts.this_users_organizations}</h2>
           {isTinyScreen ? (
             <IconButton href={getLocalePrefix(locale) + "/createorganization"}>
               <ControlPointSharpIcon

@@ -85,20 +85,22 @@ class ListOrganizationsAPIView(ListAPIView):
         return {"language_code": self.request.LANGUAGE_CODE}
 
     def get_queryset(self):
-        organizations = Organization.objects.all().prefetch_related(
-            Prefetch(
-                'tag_organization',
-                queryset=OrganizationTagging.objects.select_related(
-                    'organization_tag'
-                )
-            ),
-            'organization_member'
-        ).select_related('language', 'location')
+        organizations = (
+            Organization.objects.all()
+            .prefetch_related(
+                Prefetch(
+                    "tag_organization",
+                    queryset=OrganizationTagging.objects.select_related(
+                        "organization_tag"
+                    ),
+                ),
+                "organization_member",
+            )
+            .select_related("language", "location")
+        )
 
         if "hub" in self.request.query_params:
-            hub = Hub.objects.filter(
-                url_slug=self.request.query_params["hub"]
-            )
+            hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
             if hub.exists():
                 if hub.first().hub_type == Hub.SECTOR_HUB_TYPE:
                     project_category = hub.first().filter_parent_tags.all()
@@ -184,7 +186,7 @@ class ListOrganizationsAPIView(ListAPIView):
         if "country" and "city" in self.request.query_params:
             organizations = organizations.filter(
                 location__country=self.request.query_params.get("country"),
-                location__city=self.request.query_params.get("city")
+                location__city=self.request.query_params.get("city"),
             )
 
         if (
@@ -227,7 +229,9 @@ class CreateOrganizationView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-        texts = {"name": request.data["name"].strip()} # remove leading and trailing spaces
+        texts = {
+            "name": request.data["name"].strip()
+        }  # remove leading and trailing spaces
         if "short_description" in request.data:
             texts["short_description"] = request.data["short_description"]
         if "about" in request.data:
@@ -245,7 +249,7 @@ class CreateOrganizationView(APIView):
             translations = None
             logger.error("TranslationFailed: Error translating texts, {}".format(ve))
         organization, created = Organization.objects.get_or_create(
-            name=request.data["name"].strip() ## remove leading and trailing spaces
+            name=request.data["name"].strip()  ## remove leading and trailing spaces
         )
         if created:
             organization.url_slug = create_unique_slug(
