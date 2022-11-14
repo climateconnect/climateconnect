@@ -112,8 +112,6 @@ export default function EditOrganizationRoot({
     } else {
       editedOrg.language = sourceLanguage;
       const oldOrg = await getOrganizationByUrlIfExists(organization.url_slug, token, locale);
-      /*for the getChanges function if you want to check for changes within an attribute in an object such as translations or social media name
-       we need to get the old org via api request otherwise no changes will be noticed  see PR #1046 for more info */
       const payload = await parseForRequest(getChanges(editedOrg, oldOrg));
       if (isTranslationsStep)
         payload.translations = getTranslationsWithoutRedundantKeys(
@@ -157,7 +155,7 @@ export default function EditOrganizationRoot({
 
   const handleTranslationsSubmit = async (event) => {
     event.preventDefault();
-    await saveChanges(editedOrganization, true);
+    await saveChanges(editedOrganization, true, token, locale);
   };
 
   const standardTextsToTranslate = [
@@ -243,6 +241,22 @@ export default function EditOrganizationRoot({
       )}
     </>
   );
+}
+
+async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/organizations/" + organizationUrl + "/",
+      token: token,
+      locale: locale,
+    });
+    return parseOrganization(resp.data, true);
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
 }
 
 const parseForRequest = async (org) => {
