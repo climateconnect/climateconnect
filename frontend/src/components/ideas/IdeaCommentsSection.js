@@ -34,6 +34,9 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     padding: theme.spacing(1),
   },
+  defaultProjectCommentInput: {
+    marginTop: theme.spacing(0),
+  },
 }));
 
 export default function IdeaCommentsSection({
@@ -109,6 +112,7 @@ export default function IdeaCommentsSection({
           hasComments={idea.comments?.length > 0}
           infoTextSize={INFO_TEXT_SIZES.short}
           useIconButton
+          className={classes.defaultProjectCommentInput}
         />
         <Divider className={classes.divider} />
         {loading && (
