@@ -10,6 +10,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     borderBottom: `1px solid rgba(0, 0, 0, 0.87)`,
     marginLeft: theme.spacing(3),
+    overflow: "auto",
     "&:hover": {
       borderBottom: "2px solid black",
       marginBottom: -1,
@@ -23,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     display: "block",
     paddingTop: 3,
+
     paddingBottom: 7,
     "& textarea": {
       border: 0,
