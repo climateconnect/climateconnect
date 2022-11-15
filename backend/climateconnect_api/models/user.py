@@ -242,16 +242,12 @@ class UserProfile(models.Model):
     email_on_new_organization_follower = models.BooleanField(
         help_text="Check if user wants to receive emails when somebody follows their organization",
         verbose_name="Email on new organization follower",
-        null=True,
-        blank=True,
         default=True,
     )
 
     email_on_new_project_from_followed_org = models.BooleanField(
         help_text="Check if user wants to receive emails when an org they follow publishes a project",
         verbose_name="Email on new organization project published",
-        null=True,
-        blank=True,
         default=True,
     )
 
