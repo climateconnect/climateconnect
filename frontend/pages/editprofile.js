@@ -35,7 +35,6 @@ export default function EditProfilePage({ skillsOptions, availabilityOptions, us
   const [errorMessage, setErrorMessage] = useState("");
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
   const locationInputRef = useRef(null);
-  console.log(user);
   const handleSetLocationOptionsOpen = (newValue) => {
     setLocationOptionsOpen(newValue);
   };

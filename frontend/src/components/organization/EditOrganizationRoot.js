@@ -210,7 +210,7 @@ export default function EditOrganizationRoot({
             errorMessage={errorMessage}
             onClickCheckTranslations={onClickCheckTranslations}
             allHubs={allHubs}
-            defaultBackgroundImage={"/images/default_background_org.jpg"}
+            type="organization"
           />
         ) : (
           <>

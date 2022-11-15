@@ -37,6 +37,10 @@ import UploadImageDialog from "./../dialogs/UploadImageDialog";
 import SelectField from "./../general/SelectField";
 import DetailledDescriptionInput from "./DetailledDescriptionInput";
 import CloseIcon from "@material-ui/icons/Close";
+import EditRoundedIcon from "@material-ui/icons/EditRounded";
+import CancelRoundedIcon from "@material-ui/icons/CancelRounded";
+import ArrowDropDownRoundedIcon from "@material-ui/icons/ArrowDropDownRounded";
+import ArrowDropUpRoundedIcon from "@material-ui/icons/ArrowDropUpRounded";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -55,22 +59,50 @@ const useStyles = makeStyles((theme) => ({
     top: "-50%",
     cursor: "pointer",
   },
-  removePhotoIcon: {
-    position: "absolute",
-    left: "500",
-    top: "10",
+  editActionImageButton: {
+    padding: theme.spacing(1),
+    marginTop: theme.spacing(0.5),
+    borderRadius: 5,
     cursor: "pointer",
   },
-  removeBackgroundPhotoIcon: {
-    fontSize: 80,
+  editActionImageButtonText: {
+    fontSize: 12,
   },
-  removeImageButton: {
+  editActionImageContainer: {
+    flexDirection: "row",
+  },
+  removeBackgroundPhotoIcon: {
+    fontSize: 40,
+  },
+  removeBackgroundPhotoIconButton: {
+    backgroundColor: theme.palette.primary.main,
+    color: "white",
+  },
+  editImageButton: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    paddingTop: theme.spacing(-1),
     marginBottom: theme.spacing(1),
+    borderRadius: 5,
+  },
+
+  editAvatarImgContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    position: "absolute",
+    left: "-10%",
+    top: "65%",
+    zIndex: 1,
   },
 
   removeImagesContainer: {
     display: "flex",
     flexDirection: "column",
+
+    left: "90%",
+    top: "5%",
+    position: "absolute",
     alignItems: "flex-start",
     [theme.breakpoints.down("sm")]: {
       alignItems: "center",
@@ -132,7 +164,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(-11),
     position: "relative",
     borderRadius: 100,
-    cursor: "pointer",
+    marginBottom: theme.spacing(2),
   },
   avatar: {
     height: "100%",
@@ -271,7 +303,7 @@ export default function EditAccountPage({
   loadingSubmit,
   onClickCheckTranslations,
   allHubs,
-  defaultBackgroundImage,
+  type,
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
@@ -280,7 +312,9 @@ export default function EditAccountPage({
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles(editedAccount);
-  const showResetBackGroundButton = editedAccount.background_image !== defaultBackgroundImage;
+  const showResetBackGroundButton = editedAccount.background_image !== null;
+  const showResetAvatarButton = editedAccount.image !== null && type === "profile";
+
   //used for previewing images in UploadImageDialog
   const [tempImages, setTempImages] = React.useState({
     image: editedAccount.image ? editedAccount.image : DEFAULT_AVATAR_IMAGE,
@@ -325,6 +359,7 @@ export default function EditAccountPage({
           "image/jpeg"
         );
         setEditedAccount({ ...editedAccount, image: resizedBlob, thumbnail_image: thumbnailBlob });
+        type === "profile" && setShowImgEditingButtons(false);
       }, "image/jpeg");
     }
   };
@@ -665,7 +700,7 @@ export default function EditAccountPage({
       }
     });
   };
-  
+
   const onBackgroundChange = async (backgroundEvent) => {
     const file = backgroundEvent.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
@@ -687,13 +722,13 @@ export default function EditAccountPage({
   };
 
   const handleRemoveBackgroundImage = () => {
-    setEditedAccount({ ...editedAccount, background_image: "" });
+    setEditedAccount({ ...editedAccount, background_image: null });
   };
 
   const handleRemoveAvatarImage = () => {
-    setEditedAccount({ ...editedAccount, image: "", thumbnail_image: "" });
+    setEditedAccount({ ...editedAccount, image: null, thumbnail_image: null });
+    handleShowButtons(false);
   };
-  
 
   const onAvatarChange = async (avatarEvent) => {
     const file = avatarEvent.target.files[0];
@@ -739,6 +774,14 @@ export default function EditAccountPage({
     console.log(type);
   };
 
+  const [showImgEditingButtons, setShowImgEditingButtons] = useState(
+    type === "profile" ? false : true
+  );
+
+  const handleShowButtons = () => {
+    console.log("clicked");
+    setShowImgEditingButtons(!showImgEditingButtons);
+  };
   const handleFormSubmit = (event) => {
     event.preventDefault();
     handleSubmit(editedAccount);
@@ -763,6 +806,8 @@ export default function EditAccountPage({
     });
   };
 
+  console.log(showImgEditingButtons);
+
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <form onSubmit={handleFormSubmit}>
@@ -778,22 +823,16 @@ export default function EditAccountPage({
         >
           <div className={classes.removeImagesContainer}>
             {showResetBackGroundButton && (
-              <Button
-                onClick={handleRemoveBackgroundImage}
-                variant="contained"
-                className={classes.removeImageButton}
-              >
-                Reset background image
-              </Button>
-            )}
-            {showResetBackGroundButton && (
-              <Button
-                onClick={handleRemoveAvatarImage}
-                variant="contained"
-                className={classes.removeImageButton}
-              >
-                Reset avatar image
-              </Button>
+              <>
+                <IconButton
+                  onClick={handleRemoveBackgroundImage}
+                  className={classes.removeBackgroundPhotoIconButton}
+                  aria-label="remove"
+                  color="transparent"
+                >
+                  <CloseIcon className={classes.removeBackgroundPhotoIcon} />
+                </IconButton>
+              </>
             )}
           </div>
 
@@ -843,41 +882,92 @@ export default function EditAccountPage({
           </Button>
           <Container className={classes.avatarWithInfo}>
             <div className={classes.avatarContainer}>
-              <label htmlFor="avatarPhoto">
-                <input
-                  type="file"
-                  name="avatarPhoto"
-                  id="avatarPhoto"
-                  style={{ display: "none" }}
-                  onChange={onAvatarChange}
-                  accept=".png,.jpeg,.jpg"
-                  value={selectedFiles["avatar"]}
-                  onClick={() => handleFileInputClick("avatar")}
-                  onSubmit={(event) => handleFileSubmit(event, "avatar")}
-                />
-                <Avatar
+              <div className={classes.editAvatarImgContainer}>
+                <>
+                  {type === "profile" && (
+                    <>
+                      <Chip
+                        color="primary"
+                        label={"Edit"}
+                        icon={
+                          showImgEditingButtons ? (
+                            <ArrowDropUpRoundedIcon />
+                          ) : (
+                            <ArrowDropDownRoundedIcon />
+                          )
+                        }
+                        onClick={handleShowButtons}
+                        className={classes.editActionImageButton}
+                      />
+                    </>
+                  )}
+
+                  {showImgEditingButtons && (
+                    <>
+                      {showResetAvatarButton ? (
+                        <>
+                          <label htmlFor="avatarPhoto">
+                            <Chip
+                              label={editedAccount.image ? "Edit Avatar" : "Add Avatar"}
+                              color="primary"
+                              icon={
+                                editedAccount.image ? <EditRoundedIcon /> : <ControlPointIcon />
+                              }
+                              className={classes.editActionImageButton}
+                            ></Chip>
+                            <input
+                              type="file"
+                              name="avatarPhoto"
+                              id="avatarPhoto"
+                              style={{ display: "none" }}
+                              onChange={onAvatarChange}
+                              accept=".png,.jpeg,.jpg"
+                              value={selectedFiles["avatar"]}
+                              onClick={() => handleFileInputClick("avatar")}
+                              onSubmit={(event) => handleFileSubmit(event, "avatar")}
+                            />
+                          </label>
+                          <Chip
+                            onClick={handleRemoveAvatarImage}
+                            label={"Remove Avatar"}
+                            color="primary"
+                            icon={<CancelRoundedIcon />}
+                            className={classes.editActionImageButton}
+                          />
+                        </>
+                      ) : (
+                        <label htmlFor="avatarPhoto">
+                          <Chip
+                            label={editedAccount.image ? "Edit Avatar" : "Add Avatar"}
+                            color="primary"
+                            icon={editedAccount.image ? <EditRoundedIcon /> : <ControlPointIcon />}
+                            className={classes.editActionImageButton}
+                          ></Chip>
+                          <input
+                            type="file"
+                            name="avatarPhoto"
+                            id="avatarPhoto"
+                            style={{ display: "none" }}
+                            onChange={onAvatarChange}
+                            accept=".png,.jpeg,.jpg"
+                            value={selectedFiles["avatar"]}
+                            onClick={() => handleFileInputClick("avatar")}
+                            onSubmit={(event) => handleFileSubmit(event, "avatar")}
+                          />
+                        </label>
+                      )}
+                    </>
+                  )}
+                </>
+              </div>
+            
+              <Avatar
                   alt={editedAccount.name}
                   component="div"
                   size="large"
                   src={editedAccount.image}
                   className={classes.avatar}
                 />
-
-                {editedAccount.image ? (
-                  <div className={classes.avatarPhotoIconContainer}>
-                    <AddAPhotoIcon className={`${classes.photoIcon} ${classes.avatarPhotoIcon}`} />
-                  </div>
-                ) : (
-                  <div className={classes.avatarButtonContainer}>
-                    <Chip
-                      label={texts.add_image}
-                      color="primary"
-                      icon={<ControlPointIcon />}
-                      className={classes.cursorPointer}
-                    />
-                  </div>
-                )}
-              </label>
             </div>
 
             {splitName ? (
