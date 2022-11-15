@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(2),
     color: `${theme.palette.secondary.main}`,
     fontSize: 16,
+    wordBreak: "break-word",
   },
   marginRight: {
     marginRight: theme.spacing(0.5),

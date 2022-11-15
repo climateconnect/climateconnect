@@ -12,6 +12,7 @@ const projectOverviewStyles = (theme) => {
     projectInfoEl: {
       textAlign: "left",
       marginTop: theme.spacing(1),
+      wordBreak: "break-word",
     },
     icon: {
       verticalAlign: "bottom",
@@ -30,6 +31,7 @@ const projectOverviewStyles = (theme) => {
     smallScreenHeader: {
       textAlign: "center",
       paddingBottom: theme.spacing(2),
+      wordBreak: "break-word",
     },
     infoBottomBar: {
       paddingTop: theme.spacing(2),

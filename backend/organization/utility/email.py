@@ -1,5 +1,10 @@
 import logging
 import re
+from organization.utility.project import get_project_name
+from organization.utility.organization import get_organization_name
+
+
+from organization.models.translations import OrganizationTranslation, ProjectTranslation
 
 from climateconnect_api.models.user import UserProfile
 from climateconnect_api.utility.email_setup import get_template_id, send_email
@@ -214,21 +219,23 @@ def send_project_follower_email(user, project_follower, notification):
 def send_organization_follower_email(user, organization_follower, notification):
     lang_code = get_user_lang_code(user)
 
+    organization_name = get_organization_name(organization_follower.organization, lang_code)
+    
     following_user_full_name = (
         organization_follower.user.first_name
         + " "
         + organization_follower.user.last_name
     )
-
+   
     subjects_by_language = {
         "en": "{} now follows {} on Climate Connect".format(
-            following_user_full_name, organization_follower.organization.name
+            following_user_full_name, organization_name
         ),
         "de": "{} folgt jetzt {} auf Climate Connect".format(
-            following_user_full_name, organization_follower.organization.name
+            following_user_full_name, organization_name
         ),
     }
-   
+
     base_url = settings.FRONTEND_URL
     url_ending = (
         "/organizations/"
@@ -239,7 +246,7 @@ def send_organization_follower_email(user, organization_follower, notification):
     variables = {
         "RecipientFirstName": user.first_name,
         "FollowingUserFullName": following_user_full_name,
-        "OrganizationName": organization_follower.organization.name,
+        "OrganizationName": organization_name,
         "url": base_url + get_user_lang_url(lang_code) + url_ending,
     }
     send_email(
@@ -255,8 +262,11 @@ def send_organization_follower_email(user, organization_follower, notification):
 def send_org_project_published_email(user, org_project_published, notification):
     lang_code = get_user_lang_code(user)
 
-    organization_name = org_project_published.organization.name
-    project_name = org_project_published.project.name
+
+    organization_name = get_organization_name(org_project_published.organization, lang_code)
+    project_name = get_project_name(org_project_published.project, lang_code)
+    
+
     subjects_by_language = {
         "en": "New climate project from {}: {}".format(
             organization_name, project_name
@@ -344,3 +354,5 @@ def send_join_project_request_email(user, request, requester, notification):
         should_send_email_setting="email_on_join_request",
         notification=notification,
     )
+
+

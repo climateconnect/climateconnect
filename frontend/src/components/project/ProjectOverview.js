@@ -36,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
   smallScreenHeader: {
     fontSize: "calc(1.6rem + 6 * ((100vw - 320px) / 680))",
     paddingBottom: theme.spacing(2),
+    wordBreak: "break-word",
   },
   rootLinksContainer: {
     display: "flex",
@@ -58,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
     textAlign: "center",
+    wordBreak: "break-word",
   },
   headerButton: {
     right: 0,
@@ -86,6 +88,9 @@ const useStyles = makeStyles((theme) => ({
   contactProjectButtonLarge: {
     height: 40,
     minWidth: 120,
+  },
+  shortDescription: {
+    wordBreak: "break-word",
   },
 }));
 
@@ -205,6 +210,7 @@ export default function ProjectOverview({
           toggleShowFollowers={toggleShowFollowers}
           numberOfFollowers={numberOfFollowers}
           user={user}
+          dialogTitleShareButton={dialogTitleShareButton}
         />
       ) : (
         <LargeScreenOverview
@@ -324,7 +330,7 @@ function SmallScreenOverview({
           {project.name}
         </Typography>
 
-        <Typography>{project?.short_description}</Typography>
+        <Typography className={classes.shortDescription}>{project?.short_description}</Typography>
 
         <div className={classes.projectInfoEl}>
           <Typography>
@@ -424,7 +430,7 @@ function LargeScreenOverview({
           <Typography component="h2" variant="h5" className={classes.subHeader}>
             {texts.summary}
           </Typography>
-          <Typography component="div">
+          <Typography component="div" className={classes.shortDescription}>
             <MessageContent content={project?.short_description} />
           </Typography>
           <div className={classes.projectInfoEl}>

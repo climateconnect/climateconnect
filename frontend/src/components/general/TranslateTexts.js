@@ -79,7 +79,6 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
     marginLeft: theme.spacing(1),
     [theme.breakpoints.down("sm")]: {
-     
       minWidth: 100,
     },
     width: 265,
@@ -106,7 +105,6 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-around",
   },
   backButton: {
-
     border: `1px solid #000000`,
   },
 }));
@@ -145,6 +143,12 @@ export default function TranslateTexts({
   const targetLanguageTexts = getTexts({
     page: pageName,
     locale: targetLanguage,
+    organization: organization,
+  });
+
+  const localeTexts = getTexts({
+    page: pageName,
+    locale: locale,
     organization: organization,
   });
   const [waitingForTranslation, setWaitingForTranslation] = useState(false);
@@ -257,14 +261,15 @@ export default function TranslateTexts({
     <Container className={classes.root}>
       <form onSubmit={onSubmit}>
         <Typography className={classes.explanation} color="secondary">
-          {introTextKey && texts[introTextKey]}
+          {introTextKey && localeTexts[introTextKey]}
         </Typography>
+
         <TranslationActionButtonBar
           belowSmall={belowSmall}
           waitingForTranslation={waitingForTranslation}
           automaticallyTranslateTexts={automaticallyTranslateTexts}
           goToPreviousStep={goToPreviousStep}
-          texts={texts}
+          localeTexts={localeTexts}
           loadingSubmit={loadingSubmit}
           loadingSubmitDraft={loadingSubmitDraft}
           submitButtonText={submitButtonText}
@@ -386,7 +391,7 @@ function TranslationBlock({
         handleContentChange={(event) => {
           handleTranslationChange(event.target.value, dataKey, indexInArray);
         }}
-        maxCharacters={maxCharacters*1.20}
+        maxCharacters={maxCharacters * 1.2}
         characterText={texts.characters}
         showCharacterCounter={showCharacterCounter}
       />
@@ -406,7 +411,6 @@ function TranslationBlockElement({
 }) {
   const classes = useStyles();
 
-
   return (
     <div className={classes.translationBlockElement}>
       {!noHeadline && (
@@ -424,7 +428,7 @@ function TranslationBlockElement({
         inputProps={{ maxLength: maxCharacters }}
         helperText={
           showCharacterCounter &&
-          "( " + content.length + " / " + maxCharacters + " " + characterText + " ) "
+          "( " + content?.length + " / " + maxCharacters + " " + characterText + " ) "
         }
         value={content}
         onChange={handleContentChange}
@@ -438,7 +442,7 @@ function TranslationActionButtonBar({
   waitingForTranslation,
   automaticallyTranslateTexts,
   goToPreviousStep,
-  texts,
+  localeTexts,
   loadingSubmit,
   loadingSubmitDraft,
   submitButtonText,
@@ -453,19 +457,19 @@ function TranslationActionButtonBar({
         <div className={classes.topButtonRow}>
           <BackButton
             goToPreviousStep={goToPreviousStep}
-            label={{ label: texts.back }}
-            texts={texts}
+            label={{ label: localeTexts.back }}
+            localeTexts={localeTexts}
           />
           <TranslateButton
             automaticallyTranslateTexts={automaticallyTranslateTexts}
             waitingForTranslation={waitingForTranslation}
-            label={texts.automatically_translate}
+            label={localeTexts.automatically_translate}
           />
           <div className={classes.submitOptions}>
             <SaveButtons
               loadingSubmit={loadingSubmit}
               loadingSubmitDraft={loadingSubmitDraft}
-              texts={texts}
+              localeTexts={localeTexts}
               label={{ label: submitButtonText }}
               saveAsDraft={saveAsDraft}
             />
@@ -479,18 +483,18 @@ function TranslationActionButtonBar({
               <BackButton
                 goToPreviousStep={goToPreviousStep}
                 label={{ icon: KeyboardBackspaceIcon }}
-                texts={texts}
+                localeTexts={localeTexts}
               />
               <TranslateButton
                 automaticallyTranslateTexts={automaticallyTranslateTexts}
                 waitingForTranslation={waitingForTranslation}
-                label={texts.translate}
+                label={localeTexts.translate}
               />
               <div className={classes.submitOptions}>
                 <SaveButtons
                   loadingSubmit={loadingSubmit}
                   loadingSubmitDraft={loadingSubmitDraft}
-                  texts={texts}
+                  localeTexts={localeTexts}
                   label={{ icon: SaveIcon }}
                   saveAsDraft={saveAsDraft}
                 />
@@ -503,12 +507,12 @@ function TranslationActionButtonBar({
   );
 }
 
-function BackButton({ goToPreviousStep, label, texts }) {
+function BackButton({ goToPreviousStep, label, localeTexts }) {
   const classes = useStyles();
   return (
     <Button onClick={goToPreviousStep} className={classes.backButton} variant="contained">
       {label.icon ? (
-        <Tooltip arrow placement="top" title={texts.back}>
+        <Tooltip arrow placement="top" title={localeTexts.back}>
           <label.icon />
         </Tooltip>
       ) : (
@@ -537,7 +541,7 @@ function TranslateButton({ automaticallyTranslateTexts, waitingForTranslation, l
   );
 }
 
-function SaveButtons({ loadingSubmit, loadingSubmitDraft, texts, label, saveAsDraft }) {
+function SaveButtons({ loadingSubmit, loadingSubmitDraft, localeTexts, label, saveAsDraft }) {
   const classes = useStyles();
   return (
     <>
@@ -551,14 +555,14 @@ function SaveButtons({ loadingSubmit, loadingSubmitDraft, texts, label, saveAsDr
           <CircularProgress className={classes.translationLoader} size={23} />
         ) : label ? (
           label.icon ? (
-            <Tooltip arrow placement="top" title={texts.save}>
+            <Tooltip arrow placement="top" title={localeTexts.save}>
               <label.icon />
             </Tooltip>
           ) : (
             label.label
           )
         ) : (
-          texts.skip_and_publish
+          localeTexts.skip_and_publish
         )}
       </Button>
       {saveAsDraft && (
@@ -571,7 +575,7 @@ function SaveButtons({ loadingSubmit, loadingSubmitDraft, texts, label, saveAsDr
           {loadingSubmitDraft ? (
             <CircularProgress className={classes.translationLoader} size={23} />
           ) : (
-            texts.save_as_draft
+            localeTexts.save_as_draft
           )}
         </Button>
       )}

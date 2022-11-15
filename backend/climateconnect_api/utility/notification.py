@@ -244,13 +244,11 @@ def get_following_user(user):
 
 
 def get_organization_info(organization):
-    organization = Organization.objects.get(name=organization.name)
     serializer = OrganizationNotificationSerializer(organization)
     return(serializer.data)
 
 
 def get_project_info(project):
-    project = Project.objects.get(name=project.name)
     serializer= ProjectNotificationSerializer(project)
     return(serializer.data)
     
