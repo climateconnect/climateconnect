@@ -200,7 +200,6 @@ export default function EditOrganizationRoot({
       {organization ? (
         step === "edit_organization" ? (
           <EditAccountPage
-            type="organization"
             account={organization}
             possibleAccountTypes={tagOptions}
             infoMetadata={infoMetadata}
@@ -211,6 +210,7 @@ export default function EditOrganizationRoot({
             errorMessage={errorMessage}
             onClickCheckTranslations={onClickCheckTranslations}
             allHubs={allHubs}
+            defaultBackgroundImage={"/images/default_background_org.jpg"}
           />
         ) : (
           <>

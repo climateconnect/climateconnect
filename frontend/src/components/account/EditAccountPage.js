@@ -8,6 +8,7 @@ import {
   Typography,
   useMediaQuery,
   Link,
+  IconButton,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
@@ -35,6 +36,7 @@ import SelectDialog from "./../dialogs/SelectDialog";
 import UploadImageDialog from "./../dialogs/UploadImageDialog";
 import SelectField from "./../general/SelectField";
 import DetailledDescriptionInput from "./DetailledDescriptionInput";
+import CloseIcon from "@material-ui/icons/Close";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -52,6 +54,30 @@ const useStyles = makeStyles((theme) => ({
     left: "-50%",
     top: "-50%",
     cursor: "pointer",
+  },
+  removePhotoIcon: {
+    position: "absolute",
+    left: "500",
+    top: "10",
+    cursor: "pointer",
+  },
+  removeBackgroundPhotoIcon: {
+    fontSize: 80,
+  },
+  removeImageButton: {
+    marginBottom: theme.spacing(1),
+  },
+
+  removeImagesContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    [theme.breakpoints.down("sm")]: {
+      alignItems: "center",
+      marginLeft: theme.spacing(0),
+    },
+    paddingTop: theme.spacing(1),
+    paddingLeft: theme.spacing(1),
   },
   backgroundImage: (props) => ({
     backgroundImage: `url(${props.background_image})`,
@@ -245,15 +271,16 @@ export default function EditAccountPage({
   loadingSubmit,
   onClickCheckTranslations,
   allHubs,
+  defaultBackgroundImage,
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
-  const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });
-  const [editedAccount, setEditedAccount] = React.useState({ ...account });
+  const [selectedFiles, setSelectedFiles] = useState({ avatar: "", background: "" });
+  const [editedAccount, setEditedAccount] = useState({ ...account });
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles(editedAccount);
-
+  const showResetBackGroundButton = editedAccount.background_image !== defaultBackgroundImage;
   //used for previewing images in UploadImageDialog
   const [tempImages, setTempImages] = React.useState({
     image: editedAccount.image ? editedAccount.image : DEFAULT_AVATAR_IMAGE,
@@ -638,7 +665,7 @@ export default function EditAccountPage({
       }
     });
   };
-
+  
   const onBackgroundChange = async (backgroundEvent) => {
     const file = backgroundEvent.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
@@ -658,6 +685,15 @@ export default function EditAccountPage({
       console.log(error);
     }
   };
+
+  const handleRemoveBackgroundImage = () => {
+    setEditedAccount({ ...editedAccount, background_image: "" });
+  };
+
+  const handleRemoveAvatarImage = () => {
+    setEditedAccount({ ...editedAccount, image: "", thumbnail_image: "" });
+  };
+  
 
   const onAvatarChange = async (avatarEvent) => {
     const file = avatarEvent.target.files[0];
@@ -740,6 +776,27 @@ export default function EditAccountPage({
             editedAccount.background_image ? classes.backgroundImage : classes.backgroundColor
           }`}
         >
+          <div className={classes.removeImagesContainer}>
+            {showResetBackGroundButton && (
+              <Button
+                onClick={handleRemoveBackgroundImage}
+                variant="contained"
+                className={classes.removeImageButton}
+              >
+                Reset background image
+              </Button>
+            )}
+            {showResetBackGroundButton && (
+              <Button
+                onClick={handleRemoveAvatarImage}
+                variant="contained"
+                className={classes.removeImageButton}
+              >
+                Reset avatar image
+              </Button>
+            )}
+          </div>
+
           <label htmlFor="backgroundPhoto" className={classes.backgroundLabel}>
             <input
               type="file"
@@ -752,7 +809,7 @@ export default function EditAccountPage({
               onClick={() => handleFileInputClick("background")}
               onSubmit={() => handleFileSubmit(event, "background")}
             />
-            {editedAccount.background_image ? (
+            {editedAccount.background_image && showResetBackGroundButton ? (
               <div className={classes.backgroundPhotoIconContainer}>
                 <AddAPhotoIcon className={`${classes.photoIcon} ${classes.backgroundPhotoIcon}`} />
               </div>

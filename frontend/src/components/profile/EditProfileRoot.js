@@ -89,9 +89,12 @@ export default function EditAccountRoot({
       return;
     }
     editedAccount.language = sourceLanguage;
+    console.log(editedAccount);
     const parsedProfile = parseProfileForRequest(editedAccount, availabilityOptions, user);
+    console.log(parsedProfile);
+    console.log(user);
     const payload = await getProfileWithoutRedundantOptions(user, parsedProfile);
-
+    console.log(payload)
     payload.translations = parseTranslationsForRequest(
       getTranslationsWithoutRedundantKeys(
         getTranslationsFromObject(initialTranslations, "user_profile"),
@@ -151,8 +154,8 @@ export default function EditAccountRoot({
             infoMetadata={infoMetadata}
             skillsOptions={skillsOptions}
             splitName
-            type="profile"
             onClickCheckTranslations={onClickCheckTranslations}
+            defaultBackgroundImage={"/images/default_background_user.jpg"}
           />
         ) : (
           <>
@@ -192,6 +195,7 @@ export default function EditAccountRoot({
 
 const parseProfileForRequest = (profile, availabilityOptions, user) => {
   const availability = availabilityOptions.find((o) => o.key == profile.info.availability);
+  console.log(profile);
   const image = profile.image;
   const thumbnail = profile.thumbnail_image;
   const background = profile.background_image;
@@ -220,7 +224,8 @@ const getProfileWithoutRedundantOptions = async (user, newProfile) => {
     background_image: getImageUrl(user.background_image),
     availability: user.availability && user.availability.id,
   };
-
+  console.log(oldProfile);
+  console.log(newProfile);
   const finalProfile = {};
   Object.keys(newProfile).map((k) => {
     if (
@@ -233,6 +238,7 @@ const getProfileWithoutRedundantOptions = async (user, newProfile) => {
     } else if (oldProfile[k] !== newProfile[k] && !(!oldProfile[k] && !newProfile[k]))
       finalProfile[k] = newProfile[k];
   });
+  console.log(finalProfile);
   if (finalProfile.image) finalProfile.image = await blobFromObjectUrl(finalProfile.image);
   if (finalProfile.thumbnail_image)
     finalProfile.thumbnail_image = await blobFromObjectUrl(finalProfile.thumbnail_image);
