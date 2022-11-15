@@ -9,6 +9,7 @@ import {
   useMediaQuery,
   Link,
   IconButton,
+  Tooltip
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
@@ -99,17 +100,12 @@ const useStyles = makeStyles((theme) => ({
   removeImagesContainer: {
     display: "flex",
     flexDirection: "column",
-
-    left: "90%",
-    top: "5%",
-    position: "absolute",
-    alignItems: "flex-start",
+    alignItems: "flex-end",
     [theme.breakpoints.down("sm")]: {
-      alignItems: "center",
-      marginLeft: theme.spacing(0),
+  
     },
     paddingTop: theme.spacing(1),
-    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
   },
   backgroundImage: (props) => ({
     backgroundImage: `url(${props.background_image})`,
@@ -779,7 +775,7 @@ export default function EditAccountPage({
   );
 
   const handleShowButtons = () => {
-    console.log("clicked");
+  
     setShowImgEditingButtons(!showImgEditingButtons);
   };
   const handleFormSubmit = (event) => {
@@ -806,7 +802,7 @@ export default function EditAccountPage({
     });
   };
 
-  console.log(showImgEditingButtons);
+ 
 
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
@@ -824,14 +820,19 @@ export default function EditAccountPage({
           <div className={classes.removeImagesContainer}>
             {showResetBackGroundButton && (
               <>
+               <Tooltip arrow placement="bottom" title={"Remove Image"} >
                 <IconButton
                   onClick={handleRemoveBackgroundImage}
                   className={classes.removeBackgroundPhotoIconButton}
                   aria-label="remove"
                   color="transparent"
                 >
+                    
                   <CloseIcon className={classes.removeBackgroundPhotoIcon} />
+                 
                 </IconButton>
+                </Tooltip>
+               
               </>
             )}
           </div>
