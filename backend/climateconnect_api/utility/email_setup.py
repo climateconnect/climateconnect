@@ -19,9 +19,7 @@ mailjet_api = Client(auth=(settings.MJ_APIKEY_PUBLIC, settings.MJ_APIKEY_PRIVATE
 
 def get_template_id(template_key, lang_code):
     if not lang_code == "en":
-        return getattr(
-            settings, template_key + "_" + lang_code.upper()
-        )
+        return getattr(settings, template_key + "_" + lang_code.upper())
     else:
         return getattr(settings, template_key)
 
@@ -46,7 +44,7 @@ def send_email(
         return
 
     if should_send_email_setting:
-      
+
         try:
             user_profile = UserProfile.objects.get(user=user)
             # short circuit if the user has changed his settings to not
@@ -86,12 +84,12 @@ def send_email(
 
     try:
         mail = mailjet_send_api.send.create(data=data)
-        
+
         if notification:
             EmailNotification.objects.create(
                 user=user, created_at=datetime.now(), notification=notification
             )
-      
+
         return mail
     except Exception as ex:
         logger.error("%s: Error sending email: %s" % (send_email.__name__, ex))
@@ -211,7 +209,6 @@ def send_feedback_email(email, message, send_response):
             }
         ]
     }
- 
 
     try:
         mailjet_send_api.send.create(data=data)

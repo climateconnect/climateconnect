@@ -337,9 +337,9 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: "This organization does not have any followers yet.",
       de: "Diese Organisation hat noch keine Follower.",
     },
-    follow_this_organization_for_updates: {
-      en: "Follow this organization to receive updates!",
-      de: "Folge dieser Organisation, um Updates zu bekommen!",
+    follow_for_updates: {
+      en: "Follow to receive updates!",
+      de: "Folgen, um Updates zu erhalten!",
     },
     get_involved: {
       en: "How to get involved",

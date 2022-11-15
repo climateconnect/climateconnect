@@ -109,7 +109,7 @@ class SetFollowView(APIView):
 
     def post(self, request, url_slug):
         # probably a better way -> .mo / po files todo
-    
+
         return set_user_following_organization(request, url_slug)
 
 

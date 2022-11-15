@@ -101,25 +101,19 @@ def create_comment_mention_notification(entity_type, entity, comment, sender):
 
 def create_project_follower_notification(project_follower):
     create_follower_notification(
-        notif_type_number = Notification.PROJECT_FOLLOWER,
-        look_up_follower_type_field_name = "project_follower",
-        look_up_entitiy_type_field_name = "project",
-        member_type_model = ProjectMember,
-        follower_type = project_follower,
-        follower_type_entity = project_follower.project,
-        follower_type_user_id = project_follower.user.id,
+        notif_type_number=Notification.PROJECT_FOLLOWER,
+        follower=project_follower,
+        follower_entity=project_follower.project,
+        follower_user_id=project_follower.user.id,
     )
 
 
 def create_organization_follower_notification(organization_follower):
     create_follower_notification(
-        notif_type_number = Notification.ORGANIZATION_FOLLOWER,
-        look_up_follower_type_field_name = "organization_follower",
-        look_up_entitiy_type_field_name = "organization",
-        member_type_model = OrganizationMember,
-        follower_type = organization_follower,
-        follower_type_entity = organization_follower.organization,
-        follower_type_user_id = organization_follower.user.id,
+        notif_type_number=Notification.ORGANIZATION_FOLLOWER,
+        follower=organization_follower,
+        follower_entity=organization_follower.organization,
+        follower_user_id=organization_follower.user.id,
     )
 
 
@@ -132,7 +126,8 @@ def create_organization_project_published_notification(
             organization=organization, project=project, user=follower.user
         )
         notification = Notification.objects.create(
-            notification_type=Notification.ORG_PROJECT_PUBLISHED, org_project_published=org_project_published
+            notification_type=Notification.ORG_PROJECT_PUBLISHED,
+            org_project_published=org_project_published,
         )
         create_user_notification(org_project_published.user, notification)
         send_org_project_published_email(
@@ -173,7 +168,8 @@ def create_project_join_request_approval_notification(request_id):
     """
     request = MembershipRequests.objects.get(id=request_id)
     notification = Notification.objects.create(
-        notification_type=Notification.PROJECT_JOIN_REQUEST_APPROVED, membership_request=request
+        notification_type=Notification.PROJECT_JOIN_REQUEST_APPROVED,
+        membership_request=request,
     )
     create_user_notification(request.user, notification)
 

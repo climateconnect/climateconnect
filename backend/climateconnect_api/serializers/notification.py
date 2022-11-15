@@ -1,4 +1,8 @@
-from climateconnect_api.utility.notification import get_following_user, get_organization_info, get_project_info
+from climateconnect_api.utility.notification import (
+    get_following_user,
+    get_organization_info,
+    get_project_info,
+)
 from organization.utility.email import linkify_mentions
 from ideas.serializers.comment import IdeaCommentSerializer
 from rest_framework import serializers
@@ -28,7 +32,6 @@ class NotificationSerializer(serializers.ModelSerializer):
     membership_requester = serializers.SerializerMethodField()
     organization_follower = serializers.SerializerMethodField()
     organization = serializers.SerializerMethodField()
-   
 
     class Meta:
         model = Notification
@@ -52,7 +55,6 @@ class NotificationSerializer(serializers.ModelSerializer):
             "membership_requester",
             "organization_follower",
             "organization",
-            
         )
 
     def get_last_message(self, obj):
@@ -95,30 +97,29 @@ class NotificationSerializer(serializers.ModelSerializer):
             return comment
 
     def get_project(self, obj):
-        
+
         if obj.project_comment:
-            return get_project_info(obj.project_comment.project) 
-           
+            return get_project_info(obj.project_comment.project)
+
         if obj.project_follower:
-            return get_project_info(obj.project_follower.project) 
-           
+            return get_project_info(obj.project_follower.project)
+
         if obj.project_like:
-            return get_project_info(obj.project_like.project) 
-          
+            return get_project_info(obj.project_like.project)
+
         if obj.membership_request and not obj.membership_request.target_project == None:
-            return get_project_info(obj.membership_request.target_project) 
-            
-        if obj.org_project_published: 
-            return get_project_info(obj.org_project_published.project) 
+            return get_project_info(obj.membership_request.target_project)
+
+        if obj.org_project_published:
+            return get_project_info(obj.org_project_published.project)
 
     def get_organization(self, obj):
-        
+
         if obj.org_project_published:
             return get_organization_info(obj.org_project_published.organization)
-        
+
         if obj.organization_follower:
             return get_organization_info(obj.organization_follower.organization)
-           
 
     def get_project_follower(self, obj):
         if obj.project_follower:
@@ -126,7 +127,7 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     def get_organization_follower(self, obj):
         if obj.organization_follower:
-           return get_following_user(obj.organization_follower.user)
+            return get_following_user(obj.organization_follower.user)
 
     def get_project_like(self, obj):
         if obj.project_like:

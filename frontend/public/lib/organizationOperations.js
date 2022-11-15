@@ -13,7 +13,6 @@ export function parseOrganization(organization, editMode) {
     hubs: organization.hubs,
     number_of_followers: organization.number_of_followers,
     info: getOrganizationInfo(organization, editMode),
-
   };
 
   if (editMode)

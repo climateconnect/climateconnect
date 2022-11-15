@@ -24,7 +24,7 @@ from ideas.models.comment import IdeaComment
 from ideas.models.support import IdeaSupporter
 from ideas.serializers.comment import IdeaCommentSerializer
 from organization.models.content import ProjectComment
-from organization.models.members import ProjectMember
+from organization.models.members import OrganizationMember, ProjectMember
 from organization.serializers.content import ProjectCommentSerializer
 from organization.utility.email import (
     send_idea_comment_email,
@@ -44,29 +44,40 @@ async def send_out_live_notification(user_id):
 
 
 def create_follower_notification(
-    notif_type_number, # Integer value of the notification type
-    look_up_follower_type_field_name, # name of the field being looked up based on the follower type
-    look_up_entitiy_type_field_name, # name of the field being looked up based on the model type
-    member_type_model, # type of team to be looked at when getting their members (e.g project or org team)
-    follower_type, # type of follower e.g project or org
-    follower_type_entity, # type of entity being followed e.g. org or project
-    follower_type_user_id, # user id of the follower who is a certain type (project/org)
+    notif_type_number,  # Integer value of the notification type
+    follower,  # follower e.g project or org
+    follower_entity,  # entity being followed e.g. org or project
+    follower_user_id,  # user id of the follower
 ):
-    
-    lookup_up_field_input_notifications = {look_up_follower_type_field_name: follower_type}
+    notification_values = get_notification_values(notif_type_number)
+
+    lookup_up_field_input_notifications = {
+        notification_values["look_up_follower_type_field_name"]: follower
+    }
     notification = Notification.objects.create(
         notification_type=notif_type_number, **lookup_up_field_input_notifications
     )
 
-    look_up_field_input_team = {look_up_entitiy_type_field_name: follower_type_entity} 
+    look_up_field_input_team = {
+        notification_values["look_up_entitiy_type_field_name"]: follower_entity
+    }
 
-    team_members_of_entity = member_type_model.objects.filter(**look_up_field_input_team).values("user")
-    
+    team_members_of_entity = (
+        notification_values["member_type_model"]
+        .objects.filter(**look_up_field_input_team)
+        .values("user")
+    )
+
     for member in team_members_of_entity:
-        if not member["user"] == follower_type_user_id:
+        if not member["user"] == follower_user_id:
             user = User.objects.filter(id=member["user"])[0]
             create_user_notification(user, notification)
-            create_follower_email(user, look_up_entitiy_type_field_name, follower_type, notification)
+            create_follower_email(
+                user,
+                notification_values["look_up_entitiy_type_field_name"],
+                follower,
+                notification,
+            )
 
 
 def create_follower_email(user, obj_field_name, follower_type, notification):
@@ -245,10 +256,24 @@ def get_following_user(user):
 
 def get_organization_info(organization):
     serializer = OrganizationNotificationSerializer(organization)
-    return(serializer.data)
+    return serializer.data
 
 
 def get_project_info(project):
-    serializer= ProjectNotificationSerializer(project)
-    return(serializer.data)
-    
+    serializer = ProjectNotificationSerializer(project)
+    return serializer.data
+
+
+def get_notification_values(notif_type_number):
+    if notif_type_number == Notification.PROJECT_FOLLOWER:
+        return {
+            "look_up_follower_type_field_name": "project_follower",
+            "look_up_entitiy_type_field_name": "project",
+            "member_type_model": ProjectMember,
+        }
+    if notif_type_number == Notification.ORGANIZATION_FOLLOWER:
+        return {
+            "look_up_follower_type_field_name": "organization_follower",
+            "look_up_entitiy_type_field_name": "organization",
+            "member_type_model": OrganizationMember,
+        }

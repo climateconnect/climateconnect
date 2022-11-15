@@ -1,4 +1,4 @@
-import { Button, CircularProgress, Link, Typography } from "@material-ui/core";
+import { Button, CircularProgress, Link, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 import ButtonIcon from "./ButtonIcon";
@@ -70,6 +70,8 @@ export default function FollowButton({
   showStartIcon,
   showLinkUnderButton,
   showNumberInText,
+  toolTipText,
+  toolTipPlacement,
 }) {
   const classes = useStyles({
     hasAdminPermissions: hasAdminPermissions,
@@ -78,34 +80,37 @@ export default function FollowButton({
   });
   return (
     <span className={classes.followButtonContainer}>
-      <Button
-        {...bindFollow}
-        onClick={handleToggleFollow}
-        variant="contained"
-        startIcon={
-          showStartIcon ? (
-            <ButtonIcon icon="follow" size={27} color={isUserFollowing ? "earth" : "white"} />
-          ) : (
-            <></>
-          )
-        }
-        color={isUserFollowing && isLoggedIn ? "secondary" : "primary"}
-        disabled={followingChangePending}
-        className={classes.followingButton}
-      >
-        <div className={classes.buttonLabel}>
-          <CircularProgress
-            size={20}
-            className={`${classes.fabProgress} ${!followingChangePending && classes.hidden}`}
-          />
-          <div className={classes.buttonText}>
-            {isUserFollowing && isLoggedIn ? texts.following : texts.follow}
-            {showNumberInText && !followingChangePending && numberOfFollowers > 0
-              ? " • " + numberOfFollowers
-              : ""}
+      {/* conditionally display the tooltip if text is defined only, since this is also used for project follow button */}
+      <Tooltip arrow placement={toolTipPlacement} title={toolTipText == null ? "" : toolTipText}>
+        <Button
+          {...bindFollow}
+          onClick={handleToggleFollow}
+          variant="contained"
+          startIcon={
+            showStartIcon ? (
+              <ButtonIcon icon="follow" size={27} color={isUserFollowing ? "earth" : "white"} />
+            ) : (
+              <></>
+            )
+          }
+          color={isUserFollowing && isLoggedIn ? "secondary" : "primary"}
+          disabled={followingChangePending}
+          className={classes.followingButton}
+        >
+          <div className={classes.buttonLabel}>
+            <CircularProgress
+              size={20}
+              className={`${classes.fabProgress} ${!followingChangePending && classes.hidden}`}
+            />
+            <div className={classes.buttonText}>
+              {isUserFollowing && isLoggedIn ? texts.following : texts.follow}
+              {showNumberInText && !followingChangePending && numberOfFollowers > 0
+                ? " • " + numberOfFollowers
+                : ""}
+            </div>
           </div>
-        </div>
-      </Button>
+        </Button>
+      </Tooltip>
       {showLinkUnderButton && numberOfFollowers > 0 && (
         <LinkWithText
           numberOfFollowers={numberOfFollowers}

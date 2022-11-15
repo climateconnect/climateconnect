@@ -318,9 +318,9 @@ const OrganizationFollowerNotification = ({ notification }) => {
 const OrgProjectSharedNotification = ({ notification }) => {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", locale: locale });
-  
+
   const projectName = notification.project.name;
-  
+
   return (
     <GenericNotification
       link={`/projects/${notification.project.url_slug}`}

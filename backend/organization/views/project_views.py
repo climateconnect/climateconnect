@@ -1,7 +1,6 @@
 import logging
 import traceback
 from organization.utility.follow import (
-
     check_if_user_follows_project,
     get_list_of_project_followers,
     set_user_following_project,
@@ -859,9 +858,8 @@ class SetFollowView(APIView):
 
     def post(self, request, url_slug):
         # probably a better way -> .mo / po files todo
-       
+
         return set_user_following_project(request, url_slug)
-         
 
 
 class SetLikeView(APIView):

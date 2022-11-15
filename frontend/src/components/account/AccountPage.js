@@ -13,10 +13,7 @@ import PlaceIcon from "@material-ui/icons/Place";
 import React, { useContext, useState, useEffect } from "react";
 import Linkify from "react-linkify";
 import Cookies from "universal-cookie";
-
 import FeedbackContext from "../context/FeedbackContext";
-import { getImageUrl } from "../../../public/lib/imageOperations";
-
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import DetailledDescription from "./DetailledDescription";
 import getTexts from "../../../public/texts/texts";
@@ -29,7 +26,6 @@ import UserContext from "../context/UserContext";
 import EditSharpIcon from "@material-ui/icons/EditSharp";
 import IconButton from "@material-ui/core/IconButton";
 
-
 import ConfirmDialog from "../dialogs/ConfirmDialog";
 import FollowersDialog from "../dialogs/FollowersDialog";
 import { apiRequest } from "../../../public/lib/apiOperations";
@@ -40,7 +36,6 @@ import { NOTIFICATION_TYPES } from "../communication/notifications/Notification"
 
 import SelectWithText from "./SelectWithText";
 import SubTitleWithContent from "../general/SubTitleWithContent";
-
 
 const useStyles = makeStyles((theme) => ({
   avatarContainer: {
@@ -293,7 +288,7 @@ export default function AccountPage({
   const [initiallyCaughtFollowers, setInitiallyCaughtFollowers] = useState(false);
   const [followers, setFollowers] = useState([]);
   const [showFollowers, setShowFollowers] = useState(false);
-  
+
   const toggleShowFollowers = async () => {
     setShowFollowers(!showFollowers);
     if (!initiallyCaughtFollowers) {
@@ -318,8 +313,7 @@ export default function AccountPage({
 
   const bindFollow = useLongPress(() => {
     toggleShowFollowers();
-  });  // end of follow organizations codeblock
- 
+  }); // end of follow organizations codeblock
 
   const displayAccountInfo = (info) =>
     Object.keys(info)
@@ -520,6 +514,8 @@ export default function AccountPage({
                 followingChangePending={followingChangePending}
                 isLoggedIn={user}
                 showLinkUnderButton
+                toolTipText={organizationTexts.follow_for_updates}
+                toolTipPlacement="bottom"
               />
 
               <Typography className={classes.followInfo}>

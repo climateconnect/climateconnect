@@ -54,7 +54,6 @@ class OrganizationSerializer(serializers.ModelSerializer):
     number_of_followers = serializers.SerializerMethodField()
     get_involved = serializers.SerializerMethodField()
 
-
     class Meta:
         model = Organization
         fields = (
@@ -77,7 +76,6 @@ class OrganizationSerializer(serializers.ModelSerializer):
             "creator",
             "number_of_followers",
             "get_involved",
-
         )
 
     def get_name(self, obj):
@@ -288,9 +286,10 @@ class OrganizationSitemapEntrySerializer(serializers.ModelSerializer):
 
 class OrganizationNotificationSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
+
     class Meta:
         model = Organization
         fields = ("name", "url_slug")
-        
+
     def get_name(self, obj):
         return get_organization_name(obj, get_language())
