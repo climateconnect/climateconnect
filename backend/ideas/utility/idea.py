@@ -163,8 +163,5 @@ def get_number_of_idea_comments(idea: Idea):
 
 
 def get_number_of_idea_participants(idea: Idea):
-    chats = MessageParticipants.objects.filter(name=idea.name)
-    for chat in chats:
-        user_count = Participant.objects.filter(chat=chat, is_active=True).count()
-
-    return user_count
+    chat_user_count = Participant.objects.filter(chat__name=idea.name, is_active=True).count()
+    return chat_user_count
