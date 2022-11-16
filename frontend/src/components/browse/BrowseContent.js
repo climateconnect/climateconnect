@@ -262,8 +262,9 @@ export default function BrowseContent({
       });
       const locationFilter = possibleFilters.find((f) => f.type === "location");
       queryObject[locationFilter.key] = filters[locationFilter.key];
-      const splitQueryObject = splitFiltersFromQueryObject(newFilters, possibleFilters);
-
+      
+      const splitQueryObject = splitFiltersFromQueryObject(filters, possibleFilters);
+   
       const newFilters = { ...emptyFilters, ...splitQueryObject.filters };
       const tabValue = TYPES_BY_TAB_VALUE[newValue];
       // Apply new filters with the query object immediately:
@@ -287,7 +288,7 @@ export default function BrowseContent({
       filterChoices: metadata.options,
       propertyToFilterBy: "original_name",
       valueToFilterBy: value,
-    }).name;
+    })?.name;
   };
 
   const getQueryObjectFromUrl = (query) => {
@@ -300,7 +301,7 @@ export default function BrowseContent({
     const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFiltersMetadata);
     for (const [key, value] of Object.entries(splitQueryObject.filters)) {
       const metadata = possibleFiltersMetadata.find((f) => f.key === key);
-
+     
       if (value.indexOf(",") > 0) {
         queryObject[key] = value.split(",").map((v) => getValueInCurrentLanguage(metadata, v));
       } else if (
