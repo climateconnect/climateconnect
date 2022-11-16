@@ -42,5 +42,21 @@
   "do_you_really_want_to_exit_without_saving": {
     "en": "Do you really want to exit without saving?",
     "de": "Möchtest du die Seite wirklich verlassen, ohne zu speichern?"
+  },
+  "edit": {
+    "en": "Edit",
+    "de": "Bearbeiten"
+  },
+  "edit_avatar": {
+    "en": "Edit Avatar",
+    "de": "Profilbild Bearbeiten"
+  },
+  "remove_avatar": {
+    "en": "Remove Avatar",
+    "de": "Profilbild entfernen"
+  },
+  "add_avatar": {
+    "en": "Add Avatar",
+    "de": "Profilbild hinzufügen"
   }
 }

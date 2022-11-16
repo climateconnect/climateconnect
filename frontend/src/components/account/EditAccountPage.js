@@ -9,7 +9,7 @@ import {
   useMediaQuery,
   Link,
   IconButton,
-  Tooltip
+  Tooltip,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
@@ -66,25 +66,12 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 5,
     cursor: "pointer",
   },
-  editActionImageButtonText: {
-    fontSize: 12,
-  },
-  editActionImageContainer: {
-    flexDirection: "row",
-  },
   removeBackgroundPhotoIcon: {
     fontSize: 40,
   },
   removeBackgroundPhotoIconButton: {
     backgroundColor: theme.palette.primary.main,
     color: "white",
-  },
-  editImageButton: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
-    paddingTop: theme.spacing(-1),
-    marginBottom: theme.spacing(1),
-    borderRadius: 5,
   },
 
   editAvatarImgContainer: {
@@ -101,9 +88,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-end",
-    [theme.breakpoints.down("sm")]: {
-  
-    },
     paddingTop: theme.spacing(1),
     paddingRight: theme.spacing(1),
   },
@@ -723,7 +707,7 @@ export default function EditAccountPage({
 
   const handleRemoveAvatarImage = () => {
     setEditedAccount({ ...editedAccount, image: null, thumbnail_image: null });
-    handleShowButtons(false);
+    handleShowImgEditingButtons(false);
   };
 
   const onAvatarChange = async (avatarEvent) => {
@@ -774,8 +758,7 @@ export default function EditAccountPage({
     type === "profile" ? false : true
   );
 
-  const handleShowButtons = () => {
-  
+  const handleShowImgEditingButtons = () => {
     setShowImgEditingButtons(!showImgEditingButtons);
   };
   const handleFormSubmit = (event) => {
@@ -802,8 +785,6 @@ export default function EditAccountPage({
     });
   };
 
- 
-
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <form onSubmit={handleFormSubmit}>
@@ -820,19 +801,15 @@ export default function EditAccountPage({
           <div className={classes.removeImagesContainer}>
             {showResetBackGroundButton && (
               <>
-               <Tooltip arrow placement="bottom" title={"Remove Image"} >
-                <IconButton
-                  onClick={handleRemoveBackgroundImage}
-                  className={classes.removeBackgroundPhotoIconButton}
-                  aria-label="remove"
-                  color="transparent"
-                >
-                    
-                  <CloseIcon className={classes.removeBackgroundPhotoIcon} />
-                 
-                </IconButton>
+                <Tooltip arrow placement="bottom" title={"Remove Image"}>
+                  <IconButton
+                    onClick={handleRemoveBackgroundImage}
+                    className={classes.removeBackgroundPhotoIconButton}
+                    aria-label="remove"
+                  >
+                    <CloseIcon className={classes.removeBackgroundPhotoIcon} />
+                  </IconButton>
                 </Tooltip>
-               
               </>
             )}
           </div>
@@ -849,7 +826,7 @@ export default function EditAccountPage({
               onClick={() => handleFileInputClick("background")}
               onSubmit={() => handleFileSubmit(event, "background")}
             />
-            {editedAccount.background_image && showResetBackGroundButton ? (
+            {editedAccount.background_image ? (
               <div className={classes.backgroundPhotoIconContainer}>
                 <AddAPhotoIcon className={`${classes.photoIcon} ${classes.backgroundPhotoIcon}`} />
               </div>
@@ -889,7 +866,7 @@ export default function EditAccountPage({
                     <>
                       <Chip
                         color="primary"
-                        label={"Edit"}
+                        label={texts.edit}
                         icon={
                           showImgEditingButtons ? (
                             <ArrowDropUpRoundedIcon />
@@ -897,7 +874,7 @@ export default function EditAccountPage({
                             <ArrowDropDownRoundedIcon />
                           )
                         }
-                        onClick={handleShowButtons}
+                        onClick={handleShowImgEditingButtons}
                         className={classes.editActionImageButton}
                       />
                     </>
@@ -909,13 +886,13 @@ export default function EditAccountPage({
                         <>
                           <label htmlFor="avatarPhoto">
                             <Chip
-                              label={editedAccount.image ? "Edit Avatar" : "Add Avatar"}
+                              label={editedAccount.image ? texts.edit_avatar : texts.add_avatar}
                               color="primary"
                               icon={
                                 editedAccount.image ? <EditRoundedIcon /> : <ControlPointIcon />
                               }
                               className={classes.editActionImageButton}
-                            ></Chip>
+                            />
                             <input
                               type="file"
                               name="avatarPhoto"
@@ -930,7 +907,7 @@ export default function EditAccountPage({
                           </label>
                           <Chip
                             onClick={handleRemoveAvatarImage}
-                            label={"Remove Avatar"}
+                            label={texts.remove_avatar}
                             color="primary"
                             icon={<CancelRoundedIcon />}
                             className={classes.editActionImageButton}
@@ -939,11 +916,11 @@ export default function EditAccountPage({
                       ) : (
                         <label htmlFor="avatarPhoto">
                           <Chip
-                            label={editedAccount.image ? "Edit Avatar" : "Add Avatar"}
+                            label={editedAccount.image ? texts.edit_avatar : texts.add_avatar}
                             color="primary"
                             icon={editedAccount.image ? <EditRoundedIcon /> : <ControlPointIcon />}
                             className={classes.editActionImageButton}
-                          ></Chip>
+                          />
                           <input
                             type="file"
                             name="avatarPhoto"
@@ -961,14 +938,14 @@ export default function EditAccountPage({
                   )}
                 </>
               </div>
-            
+
               <Avatar
-                  alt={editedAccount.name}
-                  component="div"
-                  size="large"
-                  src={editedAccount.image}
-                  className={classes.avatar}
-                />
+                alt={editedAccount.name}
+                component="div"
+                size="large"
+                src={editedAccount.image}
+                className={classes.avatar}
+              />
             </div>
 
             {splitName ? (
