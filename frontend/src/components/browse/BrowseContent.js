@@ -263,8 +263,9 @@ export default function BrowseContent({
       const locationFilter = possibleFilters.find((f) => f.type === "location");
       queryObject[locationFilter.key] = filters[locationFilter.key];
       
-      const splitQueryObject = splitFiltersFromQueryObject(filters, possibleFilters);
+      const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFilters);
    
+      
       const newFilters = { ...emptyFilters, ...splitQueryObject.filters };
       const tabValue = TYPES_BY_TAB_VALUE[newValue];
       // Apply new filters with the query object immediately:
@@ -368,6 +369,7 @@ export default function BrowseContent({
    * state, and persists the new filters as query params in the URL.
    */
   const handleApplyNewFilters = async ({ type, newFilters, closeFilters, nonFilterParams }) => {
+   
     const newUrl = getFilterUrl({
       activeFilters: newFilters,
       infoMetadata: getInfoMetadataByType(type),
@@ -375,6 +377,7 @@ export default function BrowseContent({
       locale: locale,
       nonFilterParams: nonFilterParams,
     });
+   
     if (newUrl !== window?.location?.href) {
       window.history.pushState({}, "", newUrl);
     }
