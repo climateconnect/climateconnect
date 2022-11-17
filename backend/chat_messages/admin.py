@@ -13,7 +13,7 @@ for model in pass_through_models:
 
 class MessageAdmin(admin.ModelAdmin):
     search_fields = (
-        "message_participant__id",
+        "message_participant__id__exact",
     )
 
 admin.site.register(Message, MessageAdmin)
