@@ -341,7 +341,11 @@ const InputTags = ({ project, handleChangeProject, tagsOptions, texts }) => {
     setOpen(true);
   };
 
-  const handleCategoriesDialogClose = (tags) => {
+  const handleCloseDialog = () => {
+    setOpen(false);
+  };
+
+  const handleSaveSelection = (tags) => {
     if (tags) handleChangeProject(tags, "tags");
     setOpen(false);
   };
@@ -378,7 +382,8 @@ const InputTags = ({ project, handleChangeProject, tagsOptions, texts }) => {
       )}
       <MultiLevelSelectDialog
         open={open}
-        onClose={handleCategoriesDialogClose}
+        onSave={handleSaveSelection}
+        onClose={handleCloseDialog}
         type="categories"
         options={tagsOptions}
         /*TODO(undefined) items={project.tags}*/
