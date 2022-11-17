@@ -15,6 +15,7 @@ jobs:
         with:
           node-version: 16
           cache: yarn
+          cache-dependency-path: frontend/yarn.lock
 
       # ESLint and Prettier must be in `package.json`
       - name: Install Node.js dependencies
@@ -26,4 +27,4 @@ jobs:
         run: yarn format --check
 
       - name: Typescript Compile frontend
-        run: yarn tsc
+        run: yarn tsc 
