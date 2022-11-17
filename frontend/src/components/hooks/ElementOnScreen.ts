@@ -4,7 +4,15 @@ import { useEffect, useState } from "react";
 //returns true if the el is currently visible on screen
 //@el: ref of the element
 //@triggerIfUnderScreen: should the hook return true, if the el is under the current scroll position
-export default function ElementOnScreen({ el, triggerIfUnderScreen, minSpaceFromBottom = 0 }) {
+export default function ElementOnScreen({
+  el,
+  triggerIfUnderScreen,
+  minSpaceFromBottom = 0,
+}: {
+  el;
+  triggerIfUnderScreen?: boolean;
+  minSpaceFromBottom?: number;
+}) {
   const [elementOnScreen, setElementOnScreen] = useState(
     isElementInViewport(el, triggerIfUnderScreen, minSpaceFromBottom)
   );

@@ -1,5 +1,5 @@
 import { Button, Chip, Container, List, TextField, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, Theme } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import React, { useContext } from "react";
 
@@ -20,7 +20,7 @@ import UploadImageDialog from "../dialogs/UploadImageDialog";
 import LocationSearchBar from "../search/LocationSearchBar";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
   ...projectOverviewStyles(theme),
   projectTitleInput: {
     marginBottom: theme.spacing(2),
@@ -85,7 +85,7 @@ export default function EditProjectOverview({
   handleSetLocationOptionsOpen,
   locationInputRef,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({});
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const handleChangeProject = (newValue, key) => {
@@ -140,7 +140,7 @@ function SmallScreenOverview({
   locationInputRef,
   texts,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({});
   return (
     <>
       <InputImage
@@ -187,7 +187,7 @@ function LargeScreenOverview({
   locationInputRef,
   texts,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({});
   return (
     <>
       <InputName
@@ -263,7 +263,7 @@ const InputLocation = ({
   locationInputRef,
   texts,
 }) => {
-  const classes = useStyles();
+  const classes = useStyles({});
   const handleChangeLocation = (location) => {
     handleChangeProject(parseLocation(location), "loc");
   };
@@ -285,7 +285,7 @@ const InputLocation = ({
         />
         <TextField
           label={texts.country}
-          className={classes.projectInfoEl}
+          /*TODO(undefined) className={classes.projectInfoEl}*/
           variant="outlined"
           fullWidth
           value={project?.loc?.country}
@@ -297,7 +297,7 @@ const InputLocation = ({
     );
   }
   return (
-    <div className={classes.projectInfoEl}>
+    <div /*TODO(undefined) className={classes.projectInfoEl}*/>
       <LocationSearchBar
         label={texts.location}
         required
@@ -316,7 +316,7 @@ const InputLocation = ({
 };
 
 const InputWebsite = ({ project, handleChangeProject, texts }) => {
-  const classes = useStyles();
+  const classes = useStyles({});
   return (
     <div className={classes.projectInfoEl}>
       <TextField
@@ -333,7 +333,7 @@ const InputWebsite = ({ project, handleChangeProject, texts }) => {
 };
 
 const InputTags = ({ project, handleChangeProject, tagsOptions, texts }) => {
-  const classes = useStyles();
+  const classes = useStyles({});
   const [open, setOpen] = React.useState(false);
   const [selectedItems, setSelectedItems] = React.useState(project.tags ? [...project.tags] : []);
 
@@ -381,7 +381,7 @@ const InputTags = ({ project, handleChangeProject, tagsOptions, texts }) => {
         onClose={handleCategoriesDialogClose}
         type="categories"
         options={tagsOptions}
-        items={project.tags}
+        /*TODO(undefined) items={project.tags}*/
         selectedItems={selectedItems}
         setSelectedItems={setSelectedItems}
         maxSelections={3}
@@ -391,8 +391,8 @@ const InputTags = ({ project, handleChangeProject, tagsOptions, texts }) => {
   );
 };
 
-const InputName = ({ project, screenSize, handleChangeProject, texts }) => {
-  const classes = useStyles();
+const InputName = ({ project, screenSize, handleChangeProject = undefined as any, texts }) => {
+  const classes = useStyles({});
   return (
     <TextField
       label={texts.project_name}
@@ -409,7 +409,7 @@ const InputName = ({ project, screenSize, handleChangeProject, texts }) => {
 const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
   const classes = useStyles(project);
 
-  const inputFileRef = React.useRef(null);
+  const inputFileRef = React.useRef(null as HTMLInputElement | null);
   const [open, setOpen] = React.useState(false);
   const [tempImage, setTempImage] = React.useState(
     project.image ? getImageUrl(project.image) : null
@@ -426,7 +426,7 @@ const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
 
   const onUploadImageClick = (event) => {
     event.preventDefault();
-    inputFileRef.current.click();
+    inputFileRef.current!.click();
   };
 
   const handleImageDialogClose = async (image) => {
@@ -434,9 +434,9 @@ const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
     if (image && image instanceof HTMLCanvasElement) {
       whitenTransparentPixels(image);
       image.toBlob(async function (blob) {
-        const resizedBlob = URL.createObjectURL(blob);
+        const resizedBlob = URL.createObjectURL(blob!);
         const thumbnailBlob = await getResizedImage(
-          URL.createObjectURL(blob),
+          URL.createObjectURL(blob!),
           290,
           160,
           "image/jpeg"

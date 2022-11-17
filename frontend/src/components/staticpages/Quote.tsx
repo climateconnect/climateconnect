@@ -1,8 +1,8 @@
 import React from "react";
-import { makeStyles, Typography, Container } from "@material-ui/core";
+import { makeStyles, Typography, Container, Theme } from "@material-ui/core";
 import FormatQuoteIcon from "@material-ui/icons/FormatQuote";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { noPadding?: boolean }>((theme) => ({
   root: {
     display: "flex",
     position: "relative",

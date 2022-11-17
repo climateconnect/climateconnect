@@ -1,4 +1,4 @@
-import { Box, Collapse, Container, Tooltip, Typography } from "@material-ui/core";
+import { Box, Collapse, Container, Theme, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PlaceIcon from "@material-ui/icons/Place";
 import React, { useContext } from "react";
@@ -10,8 +10,9 @@ import LocationDisplay from "./LocationDisplay";
 import ProjectCategoriesDisplay from "./ProjectCategoriesDisplay";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import ModeCommentIcon from "@material-ui/icons/ModeComment";
+import { Project } from "../../types";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
   creatorImage: {
     height: 20,
     marginRight: theme.spacing(1),
@@ -78,13 +79,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type Props = { project: {}; hovering: boolean; withDescription: boolean };
+type Props = { project: Project; hovering: boolean; withDescription?: boolean };
 export default function ProjectMetaData({ project, hovering, withDescription }: Props) {
   const classes = useStyles({ hovering: hovering });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
-  const project_parent = project.project_parents[0];
-  const main_project_tag = project.tags.map((t) => t.project_tag.name)[0];
+  const project_parent = project.project_parents![0];
+  const main_project_tag = project.tags!.map((t) => t.project_tag.name)[0];
   if (withDescription) {
     return (
       <WithDescription
@@ -110,7 +111,7 @@ export default function ProjectMetaData({ project, hovering, withDescription }: 
 }
 
 const WithDescription = ({ className, project_parent, hovering, project, main_project_tag }) => {
-  const classes = useStyles();
+  const classes = useStyles({});
   return (
     <Box className={className}>
       <Container className={classes.wrapper}>
@@ -152,8 +153,14 @@ const WithDescription = ({ className, project_parent, hovering, project, main_pr
   );
 };
 
-const WithOutDescription = ({ className, project_parent, project, main_project_tag, texts }) => {
-  const classes = useStyles();
+const WithOutDescription = ({
+  className,
+  project_parent,
+  project,
+  main_project_tag,
+  texts,
+}: any) => {
+  const classes = useStyles({});
   return (
     <Box className={className}>
       <Container className={classes.wrapper}>

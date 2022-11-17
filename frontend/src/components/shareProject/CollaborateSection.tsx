@@ -170,7 +170,7 @@ export default function CollaborateSection({
         onClose={handleSkillsDialogClose}
         type="skills"
         options={skillsOptions}
-        items={projectData.skills}
+        /* TODO(unused) items={projectData.skills} */
         selectedItems={selectedItems}
         setSelectedItems={setSelectedItems}
       />

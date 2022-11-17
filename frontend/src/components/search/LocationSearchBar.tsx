@@ -7,6 +7,23 @@ import { getNameFromLocation } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
+type Props = {
+  label?;
+  required?;
+  helperText?;
+  inputClassName?;
+  smallInput?;
+  onSelect?;
+  className?;
+  value?;
+  initialValue?;
+  onChange?;
+  open?;
+  handleSetOpen?;
+  locationInputRef?;
+  textFieldClassName?;
+  disabled?;
+};
 export default function LocationSearchBar({
   label,
   required,
@@ -23,7 +40,7 @@ export default function LocationSearchBar({
   locationInputRef,
   textFieldClassName,
   disabled,
-}) {
+}: Props) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const getValue = (newValue, inputValue) => {
@@ -36,7 +53,7 @@ export default function LocationSearchBar({
     }
   };
 
-  const [options, setOptions] = React.useState([]);
+  const [options, setOptions] = React.useState<{ simple_name: string }[]>([]);
   // If no 'open' prop is passed to the component, the component handles its 'open' state with this internal state
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState("");
@@ -64,7 +81,7 @@ export default function LocationSearchBar({
         };
         const response = await axios(
           `https://nominatim.openstreetmap.org/search?q=${searchValue}&format=json&addressdetails=1&polygon_geojson=1&polygon_threshold=0.001&accept-language=en-US,en;q=0.9`,
-          config
+          config as any
         );
         const bannedClasses = [
           "tourism",

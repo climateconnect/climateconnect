@@ -28,8 +28,8 @@ export default function WhoWeAreContent() {
   const texts = getTexts({ page: "donate", locale: locale, classes: classes });
   return (
     <div className={classes.teamRoot}>
-      <div className={classes.imageContainer}>
-        <div className={classes.imageWrapper}>
+      <div /*TODO(undefined) className={classes.imageContainer}*/>
+        <div /*TODO(undefined) className={classes.imageWrapper}*/>
           <img src="/images/team.jpg" alt={texts.our_team_image_text} className={classes.image} />
         </div>
       </div>

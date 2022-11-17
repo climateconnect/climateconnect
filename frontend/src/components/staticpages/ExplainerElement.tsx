@@ -1,13 +1,13 @@
-import React from "react";
-import { Typography, makeStyles } from "@material-ui/core";
+import React, { PropsWithChildren } from "react";
+import { Typography, makeStyles, Theme } from "@material-ui/core";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { horizontal?: boolean }>((theme) => ({
   explainerElementWrapper: (props) => ({
     display: "flex",
-    flexDirection: props.horizontal ? "line" : "column",
+    flexDirection: props.horizontal ? "row" : "column",
     justifyContent: props.horizontal ? "center" : "auto",
     alignItems: "center",
-    textAlign: props.horizontal ? "auto" : "center",
+    textAlign: props.horizontal ? undefined : "center",
     maxWidth: props.horizontal ? 330 : 300,
     position: "relative",
   }),
@@ -18,7 +18,8 @@ const useStyles = makeStyles((theme) => ({
   }),
 }));
 
-export default function ExplainerElement({ icon, text, children, alt, horizontal }) {
+type Props = PropsWithChildren<{ icon?: string; text: string | JSX.Element; alt?: string; horizontal?: boolean }>;
+export default function ExplainerElement({ icon, text, children, alt, horizontal }: Props) {
   const classes = useStyles({ horizontal: horizontal });
   return (
     <div className={classes.explainerElementWrapper}>

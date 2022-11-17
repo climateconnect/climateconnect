@@ -1,10 +1,10 @@
-import { Grid, Typography } from "@material-ui/core";
+import { Grid, Theme, Typography } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import LoadingContext from "../context/LoadingContext";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { noMarginTop?: boolean; color?: string }>((theme) => ({
   spinner: (props) => ({
     marginTop: props.noMarginTop ? 0 : "48px",
     color: props.color ? props.color : "default",
@@ -18,12 +18,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type Props = {
+  isLoading?: boolean;
+  className?: string;
+  color?: string;
+  noMarginTop?: boolean;
+  message?: string;
+};
 /**
  * Generalized loading spinner that's centered and to be used
  * for search and filtering use cases. Uses a global loading context
  * to determine if the spinnner should be rendered.
  */
-const LoadingSpinner = ({ isLoading = false, className, color, noMarginTop, message }) => {
+const LoadingSpinner = ({ isLoading = false, className, color, noMarginTop, message }: Props) => {
   const classes = useStyles({ color: color, noMarginTop: noMarginTop });
 
   // A short-circuit isLoading prop will bypass the loading context.

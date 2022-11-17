@@ -1,4 +1,4 @@
-import { Button, IconButton, Tooltip, Typography, useMediaQuery } from "@material-ui/core";
+import { Button, IconButton, Theme, Tooltip, Typography, useMediaQuery } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import React, { useContext } from "react";
@@ -13,7 +13,7 @@ import {
 } from "./../../../public/lib/imageOperations";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
-const useStyles = makeStyles((theme) => {
+const useStyles = makeStyles<Theme, {image?: string}>((theme) => {
   return {
     imageZoneWrapper: {
       display: "block",
@@ -64,7 +64,7 @@ export default function AddPhotoSection({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const [tempImage, setTempImage] = React.useState(projectData.image);
-  const inputFileRef = React.useRef(null);
+  const inputFileRef = React.useRef(null as HTMLInputElement | null);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
 
   const handleDialogClickOpen = (dialogName) => {
@@ -82,7 +82,7 @@ export default function AddPhotoSection({
 
   const onUploadImageClick = (event) => {
     event.preventDefault();
-    inputFileRef.current.click();
+    inputFileRef.current!.click();
   };
 
   const handleAvatarDialogClose = async (image) => {
@@ -90,9 +90,9 @@ export default function AddPhotoSection({
     if (image && image instanceof HTMLCanvasElement) {
       whitenTransparentPixels(image);
       image.toBlob(async function (blob) {
-        const resizedBlob = URL.createObjectURL(blob);
+        const resizedBlob = URL.createObjectURL(blob!);
         const thumbnailBlob = await getResizedImage(
-          URL.createObjectURL(blob),
+          URL.createObjectURL(blob!),
           290,
           160,
           "image/jpeg"

@@ -85,7 +85,7 @@ export default function OrganizersContainer({
               </Typography>
               <MiniOrganizationPreview
                 organization={projectData.parent_organization}
-                type="parentOrganization"
+                /*TODO(unused) type="parentOrganization" */
               />
             </>
           )}
@@ -99,7 +99,7 @@ export default function OrganizersContainer({
               <MiniOrganizationPreview
                 key={index}
                 organization={o}
-                type="parentOrganization"
+                /*TODO(unused) type="parentOrganization" */
                 onDelete={handleRemoveOrganization}
               />
             ))}

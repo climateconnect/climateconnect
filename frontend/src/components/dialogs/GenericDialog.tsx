@@ -1,10 +1,13 @@
-import { Button, Dialog, DialogTitle, IconButton, Typography } from "@material-ui/core";
+import { Button, Dialog, DialogTitle, IconButton, Theme, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
 import PropTypes from "prop-types";
-import React from "react";
+import React, { PropsWithChildren } from "react";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<
+  Theme,
+  { fullScreen?: boolean; useApplyButton?: boolean; closeButtonRightSide?: boolean }
+>((theme) => ({
   dialog: (props) => ({
     [theme.breakpoints.up("sm")]: {
       padding: props.fullScreen ? 0 : theme.spacing(8),
@@ -50,6 +53,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type Props = PropsWithChildren<{
+  applyText?: string;
+  fullScreen?: boolean;
+  maxWidth?: "sm";
+  onApply?: () => void;
+  onClose: (arg: false | React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  open: boolean;
+  title: string;
+  topBarFixed?: boolean;
+  useApplyButton?: boolean;
+  paperClassName?: string;
+  closeButtonRightSide?: boolean;
+  closeButtonSmall?: boolean;
+  titleTextClassName?: string;
+  dialogContentClass?: string;
+}>;
 /**
  * Simple base wrapper on top of the Material UI (MUI)
  * core Dialog component. This component
@@ -72,11 +91,11 @@ export default function GenericDialog({
   closeButtonSmall,
   titleTextClassName,
   dialogContentClass,
-}) {
+}: Props) {
   const classes = useStyles({
-    useApplyButton: useApplyButton,
-    fullScreen: fullScreen,
-    closeButtonRightSide: closeButtonRightSide,
+    useApplyButton,
+    fullScreen,
+    closeButtonRightSide,
   });
 
   const handleCancel = () => {
@@ -100,7 +119,7 @@ export default function GenericDialog({
             aria-label="close"
             className={classes.closeButtonLeft}
             onClick={onClose}
-            size={closeButtonSmall && "small"}
+            size={closeButtonSmall ? "small" : undefined}
           >
             <CloseIcon />
           </IconButton>
@@ -123,7 +142,7 @@ export default function GenericDialog({
             aria-label="close"
             className={classes.closeButtonRight}
             onClick={onClose}
-            size={closeButtonSmall && "small"}
+            size={closeButtonSmall ? "small" : undefined}
           >
             <CloseIcon />
           </IconButton>

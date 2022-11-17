@@ -123,7 +123,7 @@ const CustomStepIcon = (props) => {
   else return <div className={`${classes.customIcon} ${classes.customIconMarginBottom}`} />;
 };
 
-export default function StepsTracker({ steps, activeStep, grayBackground, onlyDisplayActiveStep }) {
+export default function StepsTracker({ steps, activeStep, grayBackground, onlyDisplayActiveStep }: any) {
   const classes = useStyles();
   const activeStepIndex = steps.indexOf(steps.find((step) => step.key === activeStep));
   return (

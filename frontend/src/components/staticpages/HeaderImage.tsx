@@ -1,7 +1,7 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, Theme } from "@material-ui/core/styles";
 
-const useStyles = makeStyles((theme) => {
+const useStyles = makeStyles<Theme, { image: string }>((theme) => {
   return {
     imageContainer: (props) => ({
       width: "100%",

@@ -103,7 +103,7 @@ export default function FaqSection({ headlineClass, questions }) {
               (q, index) =>
                 (index <= 1 || expanded) && (
                   <FaqQuestionElement
-                    answerClassName={classes.faqAnswer}
+                    /*TODO(undefined) answerClassName={classes.faqAnswer} */
                     className={classes.faqQuestion}
                     key={index}
                     questionObject={q}

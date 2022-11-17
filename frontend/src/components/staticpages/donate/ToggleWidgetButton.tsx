@@ -56,7 +56,7 @@ export default function ToggleWidgetButton({
           name={goal_name}
           current={current_amount}
           goal={goal_amount}
-          className={classes.donationGoal}
+          /*TODO(undefined) className={classes.donationGoal} */
         />
       )}
       <DonationWigetDialog open={overlayOpen} title="" onClose={handleDialogClose} />

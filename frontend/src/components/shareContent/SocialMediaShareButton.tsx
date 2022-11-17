@@ -1,10 +1,10 @@
-import { IconButton, makeStyles } from "@material-ui/core";
+import { IconButton, makeStyles, Theme } from "@material-ui/core";
 import ShareIcon from "@material-ui/icons/Share";
 import React from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import SocialMediaShareDialog from "./SocialMediaShareDialog";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { switchColors?: boolean }>((theme) => ({
   button: (props) => ({
     color: props.switchColors ? theme.palette.primary.main : "white",
     width: 35,

@@ -34,9 +34,9 @@ export default function MyApp({ Component, pageProps = {} }) {
   if (
     acceptedStatistics &&
     !gaInitialized &&
-    !["develop", "development", "test"].includes(process.env.ENVIRONMENT)
+    !["develop", "development", "test"].includes(process.env.ENVIRONMENT!)
   ) {
-    ReactGA.initialize(process.env.GOOGLE_ANALYTICS_CODE, {
+    ReactGA.initialize(process.env.GOOGLE_ANALYTICS_CODE!, {
       debug: ["develop", "development", "test"].includes(process.env.ENVIRONMENT),
       gaOptions: {
         cookieDomain: process.env.BASE_URL_HOST,
@@ -318,7 +318,7 @@ async function getLoggedInUser(token) {
         token: token,
       });
       return resp.data;
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
       if (err.response && err.response.data)
         console.log("Error in getLoggedInUser: " + err.response.data.detail);
@@ -340,7 +340,7 @@ async function getNotifications(token) {
         token: token,
       });
       return resp.data.results.sort((a, b) => b.id - a.id);
-    } catch (err) {
+    } catch (err: any) {
       if (err.response && err.response.data)
         console.log("Error in getNotifications: " + err.response.data.detail);
       if (err.response && err.response.data.detail === "Invalid token.")
@@ -371,7 +371,7 @@ async function getDonationGoalData(locale) {
     };
     console.log(ret);
     return ret;
-  } catch (err) {
+  } catch (err: any) {
     console.log("ERROR");
     if (err.response && err.response.data) {
       console.log(err.response.data);

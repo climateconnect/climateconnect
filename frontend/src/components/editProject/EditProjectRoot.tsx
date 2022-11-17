@@ -1,5 +1,5 @@
 import { Container, Divider, Typography, useMediaQuery } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, Theme } from "@material-ui/core/styles";
 import Router from "next/router";
 import React, { useContext, useRef, useState } from "react";
 
@@ -56,8 +56,8 @@ export default function EditProjectRoot({
     name: texts.project_name,
     loc: texts.location,
   };
-  const overviewInputsRef = useRef(null);
-  const locationInputRef = useRef(null);
+  const overviewInputsRef = useRef(null as HTMLInputElement | null);
+  const locationInputRef = useRef(null as HTMLInputElement | null);
   const STEPS = ["edit_project", "check_translations"];
 
   const [step, setStep] = useState(STEPS[0]);
@@ -76,7 +76,7 @@ export default function EditProjectRoot({
 
   const checkIfProjectValid = (isDraft) => {
     if (project?.loc && oldProject?.loc !== project.loc && !isLocationValid(project.loc)) {
-      overviewInputsRef.current.scrollIntoView();
+      overviewInputsRef.current!.scrollIntoView();
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, handleSetErrorMessage, texts);
       return false;
     }

@@ -1,10 +1,10 @@
-import { makeStyles, Tooltip, Typography } from "@material-ui/core";
+import { makeStyles, Theme, Tooltip, Typography } from "@material-ui/core";
 import ExploreIcon from "@material-ui/icons/Explore";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
   categories: (props) => ({
     display: "flex",
     marginBottom: theme.spacing(0.75),
@@ -30,7 +30,7 @@ export default function ProjectCategoriesDisplay({
   color,
   iconClassName,
   className,
-}) {
+}: any) {
   const classes = useStyles({ hovering: hovering });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });

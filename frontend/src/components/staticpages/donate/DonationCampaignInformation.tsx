@@ -5,6 +5,7 @@ import {
   IconButton,
   Link,
   makeStyles,
+  Theme,
   Typography,
   useMediaQuery,
 } from "@material-ui/core";

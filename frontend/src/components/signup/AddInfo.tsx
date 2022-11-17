@@ -90,7 +90,7 @@ export default function AddInfo({
         onSubmit={(event, values) => handleSubmit(event, values)}
         errorMessage={errorMessage}
         onGoBack={handleGoBack}
-        fieldClassName={classes.fieldClassName}
+        /*TODO(undefined) fieldClassName={classes.fieldClassName} */
         autocomplete="off"
       />
     </>

@@ -22,7 +22,7 @@ import VisibleFooterHeight from "../hooks/VisibleFooterHeight";
 import SaveIcon from "@material-ui/icons/Save";
 import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
 
-const useStyles = makeStyles<Theme, {visibleFooterHeight: number}>((theme) => ({
+const useStyles = makeStyles<Theme, { visibleFooterHeight: number }>((theme) => ({
   root: {
     marginTop: theme.spacing(2),
   },
@@ -110,6 +110,24 @@ const useStyles = makeStyles<Theme, {visibleFooterHeight: number}>((theme) => ({
   },
 }));
 
+type Props = {
+  data?;
+  handleSetData?;
+  onSubmit?;
+  goToPreviousStep?;
+  handleChangeTranslationContent?;
+  translations?;
+  targetLanguage?;
+  pageName?;
+  textsToTranslate?;
+  arrayTranslationKeys?;
+  introTextKey?;
+  submitButtonText?;
+  saveAsDraft?;
+  loadingSubmit?;
+  loadingSubmitDraft?;
+  organization?;
+};
 // @textsToTranslate: Metadata object showing which keys of the data object are translateable.
 // Example: [{textKey: "short_description", rows: 5, headlineTextKey: "summary"}]
 export default function TranslateTexts({
@@ -129,7 +147,7 @@ export default function TranslateTexts({
   loadingSubmit,
   loadingSubmitDraft,
   organization,
-}) {
+}: Props) {
   const visibleFooterHeight = VisibleFooterHeight({});
   const classes = useStyles({ visibleFooterHeight: visibleFooterHeight });
 
@@ -348,7 +366,7 @@ function TranslationBlock({
   maxCharacters,
   showCharacterCounter,
 }: any) {
-  const classes = useStyles();
+  const classes = useStyles({});
   const flatDataKey = dataKey.includes(".")
     ? dataKey.split(".")[dataKey.split(".").length - 1]
     : dataKey;

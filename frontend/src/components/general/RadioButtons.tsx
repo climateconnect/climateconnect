@@ -58,7 +58,7 @@ function StyledRadio(props) {
   );
 }
 
-export default function RadioButtons({ values, defaultValue, value, className, onChange }) {
+export default function RadioButtons({ values, defaultValue, value, className, onChange }: any) {
   const [checkedValue, setCheckedValue] = React.useState(value ? value : defaultValue);
 
   const handleCheckedValueChange = (event) => {

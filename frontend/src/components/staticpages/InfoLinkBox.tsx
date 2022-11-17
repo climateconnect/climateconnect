@@ -1,7 +1,7 @@
 import React from "react";
-import { makeStyles, Typography, Link } from "@material-ui/core";
+import { makeStyles, Typography, Link, Theme } from "@material-ui/core";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { centerContent?: boolean }>((theme) => ({
   infoLinkBox: (props) => ({
     display: "flex",
     alignItems: "center",
@@ -55,7 +55,7 @@ export default function InfoLinkBox({
   children,
   centerContent,
   link,
-}) {
+}: any) {
   const classes = useStyles({ centerContent: centerContent });
   return (
     <Link href={link} className={classes.noUnderline}>

@@ -42,18 +42,18 @@ const useStyles = makeStyles((theme) => {
 
 export default function FloatingWidget({ goal_name, current_amount, goal_amount }) {
   const classes = useStyles();
-  const [el, setEl] = React.useState(null);
+  const [el, setEl] = React.useState<HTMLDivElement | null>(null);
   const [isFixed, setIsFixed] = React.useState(false);
   const [isAtBottom, setIsAtBottom] = React.useState(false);
   const trigger = ElementOnScreen({ el: el });
-  const spaceToTop = ElementSpaceToTop({ initTopOfPage: true, el: el });
+  const spaceToTop = ElementSpaceToTop({ /*initTopOfPage: true,*/ el });
   const atBottomOfPage = BottomOfPage({ initBottomOfPage: false, marginToTrigger: 363 });
   if (!isFixed && trigger && spaceToTop.page != null && spaceToTop.page > 215) setIsFixed(true);
   if (isFixed && spaceToTop.page != null && spaceToTop.page < 215) setIsFixed(false);
   if (atBottomOfPage && !isAtBottom) setIsAtBottom(true);
   if (!atBottomOfPage && isAtBottom) setIsAtBottom(false);
   return (
-    <Container maxWidth="xl" className={classes.twingleWrapper}>
+    <Container maxWidth="xl" /*TODO(undefined) className={classes.twingleWrapper}*/>
       <div
         className={`${classes.twingleContainer} ${isFixed && classes.twingleContainerFixed} ${
           isAtBottom && classes.twingleContainerAtBottom
@@ -69,7 +69,7 @@ export default function FloatingWidget({ goal_name, current_amount, goal_amount 
             name={goal_name}
             current={current_amount}
             goal={goal_amount}
-            className={classes.donationGoal}
+            /*TODO(undefined) className={classes.donationGoal}*/
             isInWidget
           />
         )}

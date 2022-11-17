@@ -19,13 +19,14 @@ export function removeUnnecesaryCookies() {
 }
 
 export function getCookieProps(expiry) {
-  const develop = ["develop", "development", "test"].includes(process.env.ENVIRONMENT);
+  const develop = ["develop", "development", "test"].includes(process.env.ENVIRONMENT as string);
   //TODO: set httpOnly=true to make cookie only accessible by server and sameSite=true
   const cookieProps = {
     path: "/",
-    sameSite: develop ? false : "lax",
+    sameSite: develop ? false : "lax" as "lax",
     expires: new Date(expiry),
     secure: !develop,
+    domain: undefined as string | undefined
   };
   console.log("getting cookie props");
   console.log(expiry);

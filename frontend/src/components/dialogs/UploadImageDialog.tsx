@@ -1,4 +1,4 @@
-import { Slider } from "@material-ui/core";
+import { Slider, Theme } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import PropTypes from "prop-types";
@@ -27,6 +27,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type Props = {
+  onClose?;
+  open?;
+  imageUrl?;
+  borderRadius?;
+  ratio?;
+  height?;
+  mobileHeight?;
+  mediumHeight?;
+  loading?;
+};
+
 export default function UploadImageDialog({
   onClose,
   open,
@@ -37,7 +49,7 @@ export default function UploadImageDialog({
   mobileHeight,
   mediumHeight,
   loading,
-}) {
+}: Props) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
   const classes = useStyles();
@@ -89,7 +101,7 @@ export default function UploadImageDialog({
 
   return (
     <GenericDialog
-      className={classes.dialog}
+      /*TODO(undefined) className={classes.dialog} */
       onClose={handleClose}
       aria-labelledby="simple-dialog-title"
       open={open}
@@ -102,7 +114,7 @@ export default function UploadImageDialog({
       {loading ? (
         <LoadingSpinner className={classes.loadingSpinner} isLoading />
       ) : (
-        <div className={classes.dialogContent}>
+        <div /*TODO(undefined) className={classes.dialogContent} */>
           <AvatarEditor
             className={classes.avatarEditor}
             image={imageUrl}

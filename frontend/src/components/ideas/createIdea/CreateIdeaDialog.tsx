@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core";
+import { makeStyles, Theme } from "@material-ui/core";
 import React, { useContext, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest, redirect } from "../../../../public/lib/apiOperations";
@@ -12,13 +12,13 @@ import IdeaCreationLoadingScreen from "./IdeaCreationLoadingScreen";
 import IdeaInfoStep from "./IdeaInfoStep";
 import IdeaMetadataStep from "./IdeaMetadataStep";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { userOrganizations?: any }>((theme) => ({
   root: {
     border: `3px solid ${theme.palette.primary.main}`,
     borderRadius: theme.spacing(2),
   },
   titleText: {
-    fontWeight: "600",
+    fontWeight: 600,
     color: theme.palette.secondary.main,
     [theme.breakpoints.down("xs")]: {
       fontSize: 18,
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: 0,
   },
   content: (props) => ({
-    visibility: props.userOrganizations === null ? "hidden" : "default",
+    visibility: props.userOrganizations === null ? "hidden" : undefined,
   }),
 }));
 
@@ -47,7 +47,7 @@ export default function CreateIdeaDialog({
   resetTabsWhereFiltersWereApplied,
 }) {
   const [waitingForCreation, setWaitingForCreation] = useState(false);
-  const classes = useStyles({ userOrganization: userOrganizations });
+  const classes = useStyles({ userOrganizations });
   const token = new Cookies().get("auth_token");
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale });
@@ -71,7 +71,7 @@ export default function CreateIdeaDialog({
   });
   const STEPS = ["idea_info", "idea_metadata"];
   const [step, setStep] = useState(STEPS[0]);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null as string | null);
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
   const locationInputRef = useRef(null);
 
@@ -131,7 +131,7 @@ export default function CreateIdeaDialog({
       );
 
       setWaitingForCreation(false);
-    } catch (e) {
+    } catch (e: any) {
       console.log("there has been an error :,(");
       setWaitingForCreation(false);
       setErrorMessage(
@@ -180,7 +180,7 @@ export default function CreateIdeaDialog({
               onSubmitIdea={onSubmitIdea}
               goBack={handleStepBackwards}
               errorMessage={errorMessage}
-              hubLocation={hubLocation}
+              /*TODO(undefined) hubLocation={hubLocation} */
             />
           )}
         </div>

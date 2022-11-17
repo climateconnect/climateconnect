@@ -2,7 +2,19 @@ import { Link } from "@material-ui/core";
 import React from "react";
 import { getLocalePrefix } from "../../public/lib/apiOperations";
 
-const displayedMention = (locale: any, id: string, display: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined) => (
+const displayedMention = (
+  locale: any,
+  id: string,
+  display:
+    | string
+    | number
+    | boolean
+    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+    | React.ReactFragment
+    | React.ReactPortal
+    | null
+    | undefined
+) => (
   <Link href={getLocalePrefix(locale) + "/profiles/" + id} target="_blank">
     @{display}
   </Link>
@@ -19,7 +31,7 @@ const getFragmentsWithMentions = (content: string, linkify: boolean, locale: any
   // this one only matches at the beginning of the string
   const g = /^@@@__([^^]*)\^\^__([^@]*)@@@\^\^\^/g;
 
-  const fragments: string[] = [];
+  const fragments: (string | JSX.Element)[] = [];
   for (let i = 0; i < content.length; i++) {
     const m = content.substring(i);
     const greedyMatch = [...m.matchAll(g)];
@@ -39,6 +51,7 @@ const getFragmentsWithMentions = (content: string, linkify: boolean, locale: any
       if (fullMatch.length !== 0) {
         // there exists another mention later in the string, find it and render what's in between as text
         fragments.push(m.substring(0, fullMatch[0].index));
+        if (!fullMatch[0].index) throw Error("impossible");
         i += fullMatch[0].index - 1;
       } else {
         // there aren't any more mentions, so render the rest of the string as text

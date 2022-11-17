@@ -15,7 +15,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LightBigButton({ className, children, href, onClick }) {
+export default function LightBigButton({
+  className,
+  children,
+  href,
+  onClick,
+}: {
+  className?: string;
+  children?;
+  href?: string;
+  onClick?;
+}) {
   const classes = useStyles();
   return (
     <Button

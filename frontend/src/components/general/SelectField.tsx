@@ -1,6 +1,7 @@
 import { Checkbox, ListItemText, MenuItem, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import { string } from "prop-types";
 import React, { useContext, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -13,8 +14,8 @@ const useStyles = makeStyles({
 
 type Props = {
   className: string;
-  controlled: boolean;
-  controlledValue: any;
+  controlled?: boolean;
+  controlledValue?: any;
   defaultValue?: any;
   disabled?;
   InputProps?;
@@ -24,7 +25,7 @@ type Props = {
   onChange;
   options;
   required;
-  size: "small" | "medium";
+  size?: "small" | "medium";
   values?;
 };
 export default function SelectField({
@@ -54,7 +55,7 @@ export default function SelectField({
   // If we want to force the checkboxes to be checked
   // based on a persisted query param URL, then
   // we update the value and values here...
-  const [value, setValue] = useState({
+  const [value, setValue] = useState<{ name: string; key?: string }>({
     name: defaultValue.name,
     key: defaultValue.key,
   });
@@ -101,8 +102,8 @@ export default function SelectField({
       SelectProps={{
         native: !multiple,
         multiple: multiple,
-        renderValue: !multiple ? null : () => texts.select_more,
-        MenuProps: MenuProps,
+        renderValue: (!multiple ? null : () => texts.select_more) as any,
+        MenuProps: MenuProps as any,
       }}
       size={size}
     >
@@ -120,7 +121,7 @@ export default function SelectField({
                   checkedIcon={<CheckBoxIcon className={classes.white} />}
                 />
                 <ListItemText
-                  className={values.indexOf(value.name) > -1 ? classes.white : classes.none}
+                  className={values.indexOf(value.name) > -1 ? classes.white : undefined}
                   primary={value.name}
                 />
               </MenuItem>

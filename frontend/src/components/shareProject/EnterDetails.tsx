@@ -307,7 +307,7 @@ export default function EnterDetails({
               projectData={projectData}
               handleSetProjectData={handleSetProjectData}
               blockClassName={classes.block}
-              subHeaderClassname={classes.subHeader}
+              subHeaderClassName={classes.subHeader}
               toolTipClassName={classes.tooltip}
               helpTexts={helpTexts}
               ToolTipIcon={HelpOutlineIcon}

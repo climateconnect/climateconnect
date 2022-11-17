@@ -66,7 +66,7 @@ export default function MiniProfileInput({
   creatorRole,
   fullRolesOptions,
   dontPickRole,
-}) {
+}: any) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const { locale } = useContext(UserContext);
@@ -128,7 +128,7 @@ export default function MiniProfileInput({
     <div className={className}>
       <Avatar
         alt={profile.name}
-        size="large"
+        /*TODO(unused) size="large" */
         src={getImageUrl(profile.image)}
         className={classes.avatar}
       />

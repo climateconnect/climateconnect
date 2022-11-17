@@ -173,7 +173,7 @@ export default function MultiLevelSelector({
   maxSelections,
   selected,
   setSelected,
-}) {
+}: any) {
   const [expanded, setExpanded] = React.useState(null);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "filter_and_search", locale: locale });

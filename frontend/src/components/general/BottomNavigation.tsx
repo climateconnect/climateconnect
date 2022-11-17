@@ -39,7 +39,7 @@ export default function BottomNavigation({
   additionalButtons,
   loadingSubmit,
   loadingSubmitDraft,
-}) {
+}: any) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const { locale } = useContext(UserContext);

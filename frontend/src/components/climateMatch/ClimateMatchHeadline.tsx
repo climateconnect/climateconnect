@@ -1,7 +1,7 @@
-import { makeStyles, Typography } from "@material-ui/core";
+import { makeStyles, Theme, Typography } from "@material-ui/core";
 import React from "react";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles<Theme, {size: string}>(() => ({
   header: (props) => ({
     fontSize:
       props.size === "tiny" ? 30 : props.size === "small" ? 35 : props.size === "medium" ? 40 : 60,
@@ -15,10 +15,9 @@ export default function ClimateMatchHeadline({ children, className, size }: any)
   const classes = useStyles({ size: size });
   return (
     <Typography
-      variant="climateMatch"
       component="h1"
       className={`${className} ${classes.header}`}
-      noSpaceBottom
+      /*TODO(undefined) noSpaceBottom */
     >
       {children}
     </Typography>

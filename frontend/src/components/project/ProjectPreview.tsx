@@ -99,7 +99,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function ProjectPreview({ project, projectRef, hubUrl, className }) {
+export default function ProjectPreview({ project, projectRef, hubUrl, className }: any) {
   const [hovering, setHovering] = React.useState(false);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
@@ -129,7 +129,7 @@ export default function ProjectPreview({ project, projectRef, hubUrl, className 
         ref={projectRef}
       >
         <CardMedia
-          className={classes.media}
+          /*TODO(undefined) className={classes.media} */
           title={project.name}
           image={getImageUrl(project.image)}
         >

@@ -15,7 +15,7 @@ const fields = [
 ];
 
 export default function ResendVerificationEmail() {
-  const [errorMessage, setErrorMessage] = React.useState(null);
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "settings", locale: locale });
   const messages = {

@@ -1,4 +1,4 @@
-import { Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { Container, makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
 import React from "react";
 import theme from "../../../themes/theme";
 import IconWrapper from "./IconWrapper";

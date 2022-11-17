@@ -1,4 +1,4 @@
-import { Button, Fade, makeStyles, Tooltip, useMediaQuery } from "@material-ui/core";
+import { Button, Fade, makeStyles, Theme, Tooltip, useMediaQuery } from "@material-ui/core";
 import React, { useContext, useEffect, useRef } from "react";
 import Cookies from "universal-cookie";
 import get_steps from "../../../public/data/tutorial_steps";
@@ -49,7 +49,7 @@ export default function Tutorial({
   const { acceptedNecessary, user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "tutorial", locale: locale });
   const tutorialSteps = get_steps(pointerRefs ? { ...pointerRefs, hubName: hubName } : {});
-  const curStepRef = useRef(null);
+  const curStepRef = useRef<null | HTMLElement>(null);
 
   const now = new Date();
   const oneYearFromNow = new Date(now.setFullYear(now.getFullYear() + 1));

@@ -287,7 +287,7 @@ export default function get_steps({
         <div className={classes.buttonContainer}>
           <Button className={classes.signUpButton} onClick={handleConnectBtn}>
             {loading ? (
-              <CircularProgress size={24} className={classes.buttonProgress} />
+              <CircularProgress size={24} /*TODO(undefined) className={classes.buttonProgress} */ />
             ) : (
               <>
                 <img src="../images/thomas_profile_image.jpg" className={classes.thomasImage} />

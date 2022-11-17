@@ -3,6 +3,15 @@ import "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 
+type Props = {
+  label?: any;
+  date?: any;
+  handleChange?: any;
+  className?: any;
+  minDate?: any;
+  maxDate?: any;
+  required?: any;
+};
 export default function DatePicker({
   label,
   date,
@@ -11,7 +20,7 @@ export default function DatePicker({
   minDate,
   maxDate,
   required,
-}) {
+}: Props) {
   const handleDateChange = (selectedDate) => {
     handleChange(selectedDate);
   };

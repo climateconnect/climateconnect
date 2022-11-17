@@ -16,7 +16,7 @@ export default function MultiLevelSelectDialog({
   setSelectedItems,
   type,
   title,
-}) {
+}: any) {
   /**
    * When clicking "Save" we want to apply the filters,
    * update the persisted URL, refetch the data,
@@ -69,7 +69,3 @@ export default function MultiLevelSelectDialog({
     </GenericDialog>
   );
 }
-
-MultiLevelSelectDialog.propTypes = {
-  open: PropTypes.bool.isRequired,
-};

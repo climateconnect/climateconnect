@@ -15,6 +15,7 @@ import EnterDetails from "./EnterDetails";
 import ProjectSubmittedPage from "./ProjectSubmittedPage";
 import SelectCategory from "./SelectCategory";
 import ShareProject from "./ShareProject";
+import { Project } from "../../types";
 
 const DEFAULT_STATUS = 2;
 
@@ -78,7 +79,7 @@ export default function ShareProjectRoot({
   const classes = useStyles();
   const { locale, locales } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
-  const steps = getSteps(texts, locale);
+  const steps = getSteps(texts);
   const [project, setProject] = React.useState(
     getDefaultProjectValues(
       {
@@ -137,7 +138,7 @@ export default function ShareProjectRoot({
   };
 
   const goToNextStep = () => {
-    const curStepIndex = steps.indexOf(steps.find((s) => s.key === curStep.key));
+    const curStepIndex = steps.indexOf(steps.find((s) => s.key === curStep.key)!);
     setCurStep(getStep(curStepIndex + 1));
     setMessage("");
     //scroll to top when navigating to another step
@@ -145,7 +146,7 @@ export default function ShareProjectRoot({
   };
 
   const goToPreviousStep = () => {
-    const curStepIndex = steps.indexOf(steps.find((s) => s.key === curStep.key));
+    const curStepIndex = steps.indexOf(steps.find((s) => s.key === curStep.key)!);
     setCurStep(getStep(curStepIndex - 1));
     setMessage("");
     //scroll to top when navigating to another step
@@ -169,7 +170,7 @@ export default function ShareProjectRoot({
       setProject({ ...project, url_slug: resp.data.url_slug });
       setLoadingSubmit(false);
       setFinished(true);
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       setErrorDialogOpen(true);
       setProject({ ...project, error: true });
@@ -242,7 +243,7 @@ export default function ShareProjectRoot({
         <>
           <StepsTracker
             grayBackground={true}
-            className={classes.stepsTracker}
+            /*TODO(undefined) className={classes.stepsTracker} */
             steps={steps}
             activeStep={curStep.key}
           />
@@ -336,7 +337,12 @@ export default function ShareProjectRoot({
 }
 
 //TODO: remove some of these default values as they are just for testing
-const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations, locale) => {
+const getDefaultProjectValues = (
+  loggedInUser,
+  statusOptions,
+  userOrganizations,
+  locale
+): Project => {
   return {
     collaborators_welcome: true,
     status: statusOptions.find((s) => s.id === DEFAULT_STATUS),

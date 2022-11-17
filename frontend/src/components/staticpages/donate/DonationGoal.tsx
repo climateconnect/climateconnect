@@ -80,7 +80,7 @@ export default function DonationGoal({
   barOnly,
   small,
   isInWidget,
-}) {
+}: any) {
   //const atTopOfPage = TopOfPage({ initTopOfPage: true, marginToTrigger: 95 });
   const classes = useStyles({
     embedded: embedded,

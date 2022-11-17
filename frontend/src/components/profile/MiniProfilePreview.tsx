@@ -46,6 +46,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
+type Props = { className?; profile?; avatarClassName?; size?; nolink?; onDelete? };
 export default function MiniProfilePreview({
   className,
   profile,
@@ -53,7 +54,7 @@ export default function MiniProfilePreview({
   size,
   nolink,
   onDelete,
-}) {
+}: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   if (!nolink)
@@ -62,7 +63,7 @@ export default function MiniProfilePreview({
         <Link
           color="inherit"
           href={getLocalePrefix(locale) + "/profiles/" + profile.url_slug}
-          className={`${classes.avatarWithInfo} ${className}`}
+          className={`${"" /*TODO(undefined) classes.avatarWithInfo*/} ${className}`}
         >
           <Content profile={profile} avatarClassName={avatarClassName} size={size} />
         </Link>
@@ -75,7 +76,7 @@ export default function MiniProfilePreview({
     );
   else
     return (
-      <div className={`${classes.avatarWithInfo} ${className}`}>
+      <div className={`${"" /*TODO(undefined) classes.avatarWithInfo*/} ${className}`}>
         <Content profile={profile} avatarClassName={avatarClassName} size={size} />
       </div>
     );

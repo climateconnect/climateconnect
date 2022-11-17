@@ -1,4 +1,4 @@
-import { Avatar, IconButton, Link, Typography } from "@material-ui/core";
+import { Avatar, IconButton, Link, Theme, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
 import React, { useContext } from "react";
@@ -7,8 +7,9 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 import Truncate from "react-truncate";
+import { Props } from "html-react-parser/lib/attributes-to-props";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { showBorder: boolean }>((theme) => ({
   orgName: {
     display: "inline-block",
     wordBreak: "break-word",
@@ -16,12 +17,12 @@ const useStyles = makeStyles((theme) => ({
   smallAvatar: (props) => ({
     height: 20,
     width: 20,
-    border: props.showBorder && "0.5px solid gray",
+    border: props.showBorder ? "0.5px solid gray" : undefined,
   }),
   mediumAvatar: (props) => ({
     height: 30,
     width: 30,
-    border: props.showBorder && "0.5px solid gray",
+    border: props.showBorder ? "0.5px solid gray" : undefined,
   }),
   avatarWrapper: {
     display: "inline-block",
@@ -46,7 +47,7 @@ export default function MiniOrganizationPreview({
   onDelete,
   nolink,
   doNotShowName,
-}) {
+}: any) {
   const { locale } = useContext(UserContext);
   if (!nolink)
     return (

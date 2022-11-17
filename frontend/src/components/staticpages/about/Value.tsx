@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 600,
   },
 }));
-export default function Value({ iconSrc, icon, text }) {
+export default function Value({ iconSrc, icon, text }: {iconSrc?, icon?, text: string}) {
   const classes = useStyles();
   return (
     <div className={classes.root}>

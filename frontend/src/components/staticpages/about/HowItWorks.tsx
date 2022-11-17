@@ -1,4 +1,4 @@
-import { Button, Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { Button, Container, makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import React, { useContext } from "react";
@@ -10,7 +10,7 @@ import theme from "../../../themes/theme";
 import UserContext from "../../context/UserContext";
 import CustomDot from "../../general/CustomDot";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { img?: string }>((theme) => ({
   root: {
     marginTop: theme.spacing(8),
   },
@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   imageWrapper: (props) => ({
-    background: `url('${props.img}')`,
+    background: `url('${props?.img}')`,
     backgroundSize: "contain",
   }),
   image: {
@@ -95,7 +95,7 @@ const responsive = {
 };
 
 export default function HowItWorks({ headlineClass }) {
-  const classes = useStyles();
+  const classes = useStyles({});
   const isSmallerScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "about", locale: locale });
@@ -133,7 +133,7 @@ export default function HowItWorks({ headlineClass }) {
 }
 
 const Element = ({ headline, text, link, img, linkText, mobile }) => {
-  const classes = useStyles({ img: img });
+  const classes = useStyles({ img });
   return (
     <div className={classes.elementRoot}>
       <div className={classes.imageBackground}>
@@ -147,7 +147,7 @@ const Element = ({ headline, text, link, img, linkText, mobile }) => {
         </Typography>
         <Typography>{text}</Typography>
         {!mobile && (
-          <div className={classes.buttonWrapper}>
+          <div /*TODO(undefined) className={classes.buttonWrapper}*/>
             <Button variant="contained" color="primary" href={link}>
               {linkText}
             </Button>
@@ -158,8 +158,8 @@ const Element = ({ headline, text, link, img, linkText, mobile }) => {
   );
 };
 
-const CustomArrow = ({ direction, onClick }) => {
-  const classes = useStyles();
+const CustomArrow = ({ direction, onClick }: { direction; onClick? }) => {
+  const classes = useStyles({});
   return (
     <div
       className={`${classes.arrowContainer} ${
@@ -168,9 +168,9 @@ const CustomArrow = ({ direction, onClick }) => {
       onClick={() => onClick()}
     >
       {direction === "left" ? (
-        <ArrowBackIcon color="primary" className={classes.arrow} />
+        <ArrowBackIcon color="primary" /*TODO(undefined) className={classes.arrow} */ />
       ) : (
-        <ArrowForwardIcon color="primary" className={classes.arrow} />
+        <ArrowForwardIcon color="primary" /*TODO(undefined) className={classes.arrow} */ />
       )}
     </div>
   );

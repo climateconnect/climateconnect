@@ -86,11 +86,44 @@ const useStyles = makeStyles((theme) => ({
 
 //TODO throw error if "label" isn't unique
 
-//@fields: [{required: boolean, label: text, type: CSS Input Type, progressOnFill: number, select:select(see below)}, ...]
-//@select: {selectValues: [{label:text, value: text}], defaultValue=text}
-//@messages: {submitMessage:text, headerMessage: text, bottomMessage:text}
-//@bottomLink: {text: text, href: url}
-//@formAction: {href: href, method: method}
+type Props = {
+  fields: {
+    required?: boolean;
+    label?: string;
+    type?: any;
+    progressOnFill?: number;
+    select?: any;
+    key: string;
+    multiselect?: any;
+    value?: any;
+    selectedValues?: any;
+    checked?: boolean;
+    onlyShowIfChecked?: string;
+    bottomLink?: any;
+    maxOptions?: number;
+    multiple?: boolean;
+    multiSelectProps?: any;
+    falseLabel?: string;
+    trueLabel?: string;
+  }[];
+  select?: { selectValues: { label: string; value: string }[] };
+  messages: {
+    submitMessage: string | JSX.Element;
+    headerMessage?: string | JSX.Element;
+    bottomMessage?: string | JSX.Element;
+  };
+  bottomLink?: { text: string; href: string };
+  formAction?: { href: string; method: string; action?: any };
+  usePercentage?: boolean;
+  percentage?: number;
+  onSubmit: (...args: any[]) => void;
+  errorMessage?: string | null;
+  className?: string;
+  alignButtonsRight?: boolean;
+  fieldClassName?: string;
+  onGoBack?: (...args: any[]) => void;
+  autocomplete?: string;
+};
 export default function Form({
   fields,
   messages,
@@ -105,7 +138,7 @@ export default function Form({
   className,
   fieldClassName,
   autocomplete,
-}) {
+}: Props) {
   const classes = useStyles();
   const [curPercentage, setCurPercentage] = React.useState(percentage);
   const [values, setValues] = React.useState(
@@ -120,20 +153,20 @@ export default function Form({
     }, {})
   );
 
-  function updatePercentage(customValues) {
+  function updatePercentage(customValues?) {
     const filledFields =
       customValues && typeof customValues === "object"
         ? fields.filter((field) => !!customValues[field.key])
         : fields.filter((field) => !!values[field.key]);
     if (filledFields.length) {
       const totalValue = filledFields.reduce((accumulator, curField) => {
-        return accumulator + curField.progressOnFill;
+        return accumulator + curField.progressOnFill!;
       }, 0);
-      setCurPercentage(percentage + totalValue);
+      setCurPercentage(percentage! + totalValue);
     }
   }
 
-  function handleValueChange(event, key, type, updateInstantly) {
+  function handleValueChange(event, key, type, updateInstantly = false) {
     const newValues = {
       ...values,
       [key]: type === "checkbox" || type === "switch" ? event.target.checked : event.target.value,
@@ -211,7 +244,7 @@ export default function Form({
                   options={options}
                   label={field.label}
                   className={`${classes.blockElement} ${fieldClassName}`}
-                  key={field.label + fields.indexOf(field)}
+                  key={String(field.label) + fields.indexOf(field)}
                   onChange={() => handleValueChange(event, field.key, field.type, true)}
                 />
                 {field.bottomLink && field.bottomLink}
@@ -228,7 +261,7 @@ export default function Form({
                   options={options}
                   label={field.label}
                   className={`${classes.blockElement} ${fieldClassName}`}
-                  key={field.label + fields.indexOf(field)}
+                  key={String(field.label) + fields.indexOf(field)}
                   onChange={(event) => {
                     // we first check if we are reached limit of selected values
                     if (field.selectedValues.length === field.maxOptions) {
@@ -259,7 +292,7 @@ export default function Form({
                   color="primary"
                   size="small"
                   onBlur={handleBlur}
-                  onChange={() => handleValueChange(event, field.key, field.type)}
+                  onChange={(event) => handleValueChange(event, field.key, field.type)}
                 />
                 <label htmlFor={"checkbox" + field.key}>{field.label}</label>
               </div>

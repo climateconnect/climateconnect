@@ -6,7 +6,7 @@ import Form from "../src/components/general/Form";
 import Layout from "../src/components/layouts/layout";
 
 export default function ResetPassword() {
-  const [errorMessage, setErrorMessage] = React.useState(null);
+  const [errorMessage, setErrorMessage] = React.useState(null as string | null);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "settings", locale: locale });
 
@@ -36,7 +36,7 @@ export default function ResetPassword() {
         redirect("/browse", {
           message: response.data.message,
         });
-      } catch (error) {
+      } catch (error: any) {
         console.log(error);
         if (error.response && error.response && error.response.data)
           setErrorMessage(error.response.data.message);

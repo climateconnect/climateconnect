@@ -6,6 +6,19 @@ import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
+type Props = {
+  label?;
+  baseUrl?;
+  filterOut?;
+  className?;
+  clearOnSelect?;
+  onSelect?;
+  getOptionLabel?;
+  renderOption?;
+  helperText?;
+  freeSolo?;
+  onUnselect?;
+};
 export default function AutoCompleteSearchBar({
   label,
   baseUrl,
@@ -18,7 +31,7 @@ export default function AutoCompleteSearchBar({
   helperText,
   freeSolo,
   onUnselect,
-}) {
+}: Props) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const [open, setOpen] = React.useState(false);
@@ -33,7 +46,7 @@ export default function AutoCompleteSearchBar({
       if (searchValue) {
         const response = await apiRequest({
           method: "get",
-          url: (baseUrl + searchValue).replace(process.env.API_URL, ""),
+          url: (baseUrl + searchValue).replace(process.env.API_URL!, ""),
           locale: locale,
         });
         if (active) {

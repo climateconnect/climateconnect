@@ -154,10 +154,10 @@ export default function TutorialStep({
       <Popper
         open
         anchorEl={curStep?.pointsAt?.current}
-        placement={curStep.placement ? curStep.placement : "right"}
+        placement={curStep.placement ? (curStep.placement as any) : "right"}
         className={`${classes.popper} ${
           ["bottom", "bottom-start", "bottom-end", "top", "top-start", "top-end"].includes(
-            curStep.placement
+            curStep.placement as any
           ) && classes.vertical
         }`}
         modifiers={{
@@ -227,7 +227,7 @@ const Step = ({
         <ButtonBar
           onClickForward={onClickForward}
           onClickBackward={onClickBackward}
-          isFinalStep={isFinalStep}
+          // isFinalStep={isFinalStep}
           possibleAnswers={curStep.possibleAnswers}
           variableToSet={curStep.setsValue}
           forwardWithValue={forwardWithValue}
@@ -301,13 +301,13 @@ const StepText = ({ curStep, tutorialVariables }) => {
   };
 
   return (
-    <div className={classes.textBox}>
+    <div /*className={classes.textBox}*/>
       {!curStep.preventUsingTypist && (
         <Typist cursor={{ show: false }} stdTypingDelay={0} avgTypingDelay={20}>
           <Typography className={classes.text}>{getTextFromStep()}</Typography>
         </Typist>
       )}
-      <Typography className={!curStep.preventUsingTypist && classes.textPlaceholder}>
+      <Typography className={!curStep.preventUsingTypist ? classes.textPlaceholder : undefined}>
         {getTextFromStep()}
       </Typography>
     </div>

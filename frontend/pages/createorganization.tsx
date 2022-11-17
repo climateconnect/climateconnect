@@ -29,7 +29,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export async function getServerSideProps(ctx: { locale?: any; req?: { headers: { cookie?: string | undefined; }; } | undefined; }) {
+export async function getServerSideProps(ctx: {
+  locale?: any;
+  req?: { headers: { cookie?: string | undefined } } | undefined;
+}) {
   const { auth_token } = NextCookies(ctx);
   const [tagOptions, rolesOptions, allHubs] = await Promise.all([
     await getTags(auth_token, ctx.locale),
@@ -177,7 +180,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         });
         setCurStep(steps[1]);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
       if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
       return null;
@@ -253,7 +256,6 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       rolesOptions,
       translations,
       sourceLanguage,
-      targetLanguage
     );
     await makeCreateOrganizationRequest(organizationToSubmit);
   };
@@ -379,14 +381,14 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
           handleSetData={handleSetOrganizationInfo}
           onSubmit={handleSubmit}
           translations={translations}
-          sourceLanguage={sourceLanguage}
+          /*TODO(undefined) sourceLanguage={sourceLanguage} */
           targetLanguage={targetLanguage}
           handleChangeTranslationContent={handleChangeTranslationContent}
           goToPreviousStep={goToPreviousStep}
           introTextKey="translate_organization_intro"
           textsToTranslate={textsToTranslate}
           organization={organizationInfo}
-          changeTranslationLanguages={changeTranslationLanguages}
+          /*TODO(undefined) changeTranslationLanguages={changeTranslationLanguages} */
         />
       </WideLayout>
     );
@@ -405,7 +407,7 @@ const getRolesOptions = async (token, locale) => {
     else {
       return resp.data.results;
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
@@ -426,7 +428,7 @@ async function getTags(token: string | undefined, locale: any) {
         return { ...t, key: t.id, additionalInfo: t.additional_info ? t.additional_info : [] };
       });
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
@@ -457,6 +459,8 @@ const parseOrganizationForRequest = async (o, user, rolesOptions, translations, 
       ...translations,
     },
     source_language: sourceLanguage,
+    parent_organization: undefined,
+    school: undefined,
   };
   if (o.parentorganization) organization.parent_organization = o.parentorganization;
   if (o.background_image)

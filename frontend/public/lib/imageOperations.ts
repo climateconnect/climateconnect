@@ -14,7 +14,7 @@ export function getImageDialogHeight(screenWidth) {
   return (screenWidth / 16) * 9 * 0.7;
 }
 
-export async function getResizedImage(blob, width, height, type, forceExactSize) {
+export async function getResizedImage(blob, width, height, type, forceExactSize?: boolean) {
   //only resize by factors of 2, otherwise we'll lose quality
   const image = new Image();
   image.src = blob;

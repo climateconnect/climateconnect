@@ -1,9 +1,12 @@
-import { makeStyles } from "@material-ui/core";
+import { makeStyles, Theme } from "@material-ui/core";
 import React from "react";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles<
+  Theme,
+  { show: boolean; type: string; light: boolean; white: boolean; reverse: boolean }
+>(() => ({
   root: (props) => ({
-    display: !props.show && "none",
+    display: !props.show ? "none" : undefined,
     backgroundImage:
       "url(/icons/small-cloud-" +
       props.type +
@@ -17,7 +20,7 @@ const useStyles = makeStyles(() => ({
   }),
 }));
 
-export default function SmallCloud({ className, type, reverse, light, show, white }) {
+export default function SmallCloud({ className, type, reverse, light, show, white }: any) {
   const classes = useStyles({
     type: type,
     reverse: reverse,
