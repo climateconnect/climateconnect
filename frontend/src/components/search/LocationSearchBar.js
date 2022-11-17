@@ -131,7 +131,6 @@ export default function LocationSearchBar({
 
   const getOptionsWithoutRedundancies = (options) => {
     const type_hierarchy = ["administrative", "county"];
-    console.log(options);
     //If there is multiple locations with the same name, only let the one with the "strongest" type in.
     //e.g. don't display both a city and a county if their names are identical
     return options.filter((cur) => {

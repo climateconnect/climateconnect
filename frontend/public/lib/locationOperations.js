@@ -68,7 +68,6 @@ export function getNameFromLocation(location) {
 const getFirstPart = (address, order) => {
   for (const el of order) {
     if (address[el]) {
-      console.log(el);
       if (el === "state") return address[el] + " (state)";
       if (el === "municipality") return address[el] + " (municipality)";
       return address[el];
