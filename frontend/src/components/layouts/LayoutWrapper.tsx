@@ -57,11 +57,11 @@ export default function LayoutWrapper({
   children,
   theme,
   fixedHeight,
-  noFeedbackButton ,
-  noSpaceForFooter ,
-  description ,
-  image ,
-  useFloodStdFont ,
+  noFeedbackButton,
+  noSpaceForFooter,
+  description,
+  image,
+  useFloodStdFont,
 }: any) {
   const [snackbarProps, setSnackbarProps] = useState({
     open: false,

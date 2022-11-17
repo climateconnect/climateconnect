@@ -110,7 +110,13 @@ export default function ProjectMetaData({ project, hovering, withDescription }: 
   );
 }
 
-const WithDescription = ({ className, project_parent, hovering, project, main_project_tag }: any) => {
+const WithDescription = ({
+  className,
+  project_parent,
+  hovering,
+  project,
+  main_project_tag,
+}: any) => {
   const classes = useStyles({});
   return (
     <Box className={className}>

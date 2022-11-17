@@ -121,7 +121,7 @@ export default function Chat({
         state.nextLink,
         locale
       );
-      if(!newMessagesObject) throw Error("error");
+      if (!newMessagesObject) throw Error("error");
       const newMessages = newMessagesObject.messages;
       const sortedMessages = newMessages.sort((a, b) => a.id - b.id);
       setState({

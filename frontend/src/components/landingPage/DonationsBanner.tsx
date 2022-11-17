@@ -78,7 +78,11 @@ export default function DonationsBanner({ h1ClassName }) {
         </div>
       </div>
       <div className={classes.donateButtonContainer}>
-        <LightBigButton href={getLocalePrefix(locale) + "/donate"} /*TODO(undefined) className={classes.donateButton}*/>
+        <LightBigButton
+          href={
+            getLocalePrefix(locale) + "/donate"
+          } /*TODO(undefined) className={classes.donateButton}*/
+        >
           {texts.donate_now}
         </LightBigButton>
       </div>

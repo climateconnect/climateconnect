@@ -5,7 +5,7 @@ const retrievePage = async (url: string) => {
   const res = await axios.get(url).catch((err) => {
     console.error(err);
   });
-  if(!res) throw Error("error caught but not handled");
+  if (!res) throw Error("error caught but not handled");
   const html = res.data;
 
   // Parse HTML with Cheerio

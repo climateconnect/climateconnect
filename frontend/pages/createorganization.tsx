@@ -255,7 +255,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       user,
       rolesOptions,
       translations,
-      sourceLanguage,
+      sourceLanguage
     );
     await makeCreateOrganizationRequest(organizationToSubmit);
   };

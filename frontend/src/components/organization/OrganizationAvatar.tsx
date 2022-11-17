@@ -2,7 +2,7 @@ import { Avatar, Chip, makeStyles, Theme, Typography, useMediaQuery } from "@mat
 import React from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 
-const useStyles = makeStyles<Theme, {inlineVersionOnMobile?: boolean}>((theme) => ({
+const useStyles = makeStyles<Theme, { inlineVersionOnMobile?: boolean }>((theme) => ({
   root: (props) => ({
     display: "flex",
     flexDirection: "column",

@@ -93,7 +93,7 @@ export default function Values({ headlineClass }) {
     <div className={classes.root}>
       <Container className={classes.wrapper}>
         <div>
-          <Typography className={`${headlineClass} ${""/*TODO(undefined) classes.headline*/}`}>
+          <Typography className={`${headlineClass} ${"" /*TODO(undefined) classes.headline*/}`}>
             {texts.our_values}
           </Typography>
           <Typography className={classes.textBody}>

@@ -13,7 +13,7 @@ import {
 } from "./../../../public/lib/imageOperations";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
-const useStyles = makeStyles<Theme, {image?: string}>((theme) => {
+const useStyles = makeStyles<Theme, { image?: string }>((theme) => {
   return {
     imageZoneWrapper: {
       display: "block",

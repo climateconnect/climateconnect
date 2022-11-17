@@ -8,7 +8,10 @@ import theme from "../../../themes/theme";
 import UserContext from "../../context/UserContext";
 import ContactCreatorButtonInfo from "../../communication/contactcreator/ContactCreatorButtonInfo";
 
-const useStyles = makeStyles<Theme, { collapsable: boolean; customCardWidth: number, explanationBackground: string }>({
+const useStyles = makeStyles<
+  Theme,
+  { collapsable: boolean; customCardWidth: number; explanationBackground: string }
+>({
   root: (props) => ({
     height: props.collapsable ? 40 : "auto",
     position: "relative",

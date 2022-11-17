@@ -74,7 +74,7 @@ export async function redirect(url, messages, hash?) {
     pathname: url,
     query: messages,
     forceRedirect: true,
-    hash: undefined
+    hash: undefined,
   };
   if (hash) payload.hash = hash;
   Router.push(payload);

@@ -4,7 +4,7 @@ import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import UserContext from "../context/UserContext";
 
-const useStyles = makeStyles<Theme, { size: string, image?: string }>((theme) => ({
+const useStyles = makeStyles<Theme, { size: string; image?: string }>((theme) => ({
   badgeRoot: (props) => ({
     left: props.size === "small" ? "10%" : props.size === "medium" ? "10%" : "20%",
     bottom: props.size === "small" ? "10%" : props.size === "medium" ? "10%" : "40%",

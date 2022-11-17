@@ -131,7 +131,7 @@ export default function getTexts<P extends Page>({
   const text = { ...texts[page], ...general_texts };
   const defaultLocale = "en";
 
-  const result = {} as Record<string, string>
+  const result = {} as Record<string, string>;
 
   return Object.keys(text).reduce((obj, curKey) => {
     if (text[curKey][locale]) obj[curKey] = text[curKey][locale];

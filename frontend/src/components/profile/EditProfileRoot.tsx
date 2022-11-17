@@ -78,7 +78,7 @@ export default function EditAccountRoot({
     setTranslations({ ...newTranslationsObject });
   };
 
-  const saveChanges = async (editedAccount, isTranslationsStep=false) => {
+  const saveChanges = async (editedAccount, isTranslationsStep = false) => {
     if (
       editedAccount?.info?.location === user?.info?.location &&
       !isLocationValid(editedAccount?.info?.location) &&

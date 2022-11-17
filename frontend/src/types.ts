@@ -1,30 +1,27 @@
-
 export type User = {
   id: string;
 };
 
 export type Project = {
-  
-    collaborators_welcome: boolean,
-    status: string,
-    skills: any[],
-    helpful_connections: any[],
-    collaborating_organizations: any[],
-    loc: any,
-    parent_organization: any,
-    isPersonalProject: boolean,
-    is_organization_project: boolean,
-    team_members: any[],
-    website: string,
-    language: CcLocale,
-    error?: boolean,
-    is_draft?: boolean,
-    url_slug?: string,
-    name?: string
-    project_parents?: any[];
-    tags?: any[];
-  
-}
+  collaborators_welcome: boolean;
+  status: string;
+  skills: any[];
+  helpful_connections: any[];
+  collaborating_organizations: any[];
+  loc: any;
+  parent_organization: any;
+  isPersonalProject: boolean;
+  is_organization_project: boolean;
+  team_members: any[];
+  website: string;
+  language: CcLocale;
+  error?: boolean;
+  is_draft?: boolean;
+  url_slug?: string;
+  name?: string;
+  project_parents?: any[];
+  tags?: any[];
+};
 export enum CcLocale {
   en = "en",
   de = "de",

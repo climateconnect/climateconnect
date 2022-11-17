@@ -17,8 +17,8 @@ import { makeStyles, Theme } from "@material-ui/core/styles";
 import ProjectSideBar from "../../src/components/project/ProjectSideBar";
 
 type StyleProps = {
-  showSimilarProjects: boolean 
-}
+  showSimilarProjects: boolean;
+};
 const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
   contentWrapper: {
     display: "flex",

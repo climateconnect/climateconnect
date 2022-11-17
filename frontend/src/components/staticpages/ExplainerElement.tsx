@@ -18,7 +18,12 @@ const useStyles = makeStyles<Theme, { horizontal?: boolean }>((theme) => ({
   }),
 }));
 
-type Props = PropsWithChildren<{ icon?: string; text: string | JSX.Element; alt?: string; horizontal?: boolean }>;
+type Props = PropsWithChildren<{
+  icon?: string;
+  text: string | JSX.Element;
+  alt?: string;
+  horizontal?: boolean;
+}>;
 export default function ExplainerElement({ icon, text, children, alt, horizontal }: Props) {
   const classes = useStyles({ horizontal: horizontal });
   return (

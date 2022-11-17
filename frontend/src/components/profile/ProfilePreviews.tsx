@@ -56,7 +56,7 @@ export default function ProfilePreviews({
   return (
     <>
       <InfiniteScroll
-        className={`${classes.reset} ${/*TODO(undefined) classes.root*/""}`}
+        className={`${classes.reset} ${/*TODO(undefined) classes.root*/ ""}`}
         // component="ul"
         // container
         element={Grid as any}

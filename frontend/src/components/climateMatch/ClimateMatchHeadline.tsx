@@ -1,7 +1,7 @@
 import { makeStyles, Theme, Typography } from "@material-ui/core";
 import React from "react";
 
-const useStyles = makeStyles<Theme, {size: string}>(() => ({
+const useStyles = makeStyles<Theme, { size: string }>(() => ({
   header: (props) => ({
     fontSize:
       props.size === "tiny" ? 30 : props.size === "small" ? 35 : props.size === "medium" ? 40 : 60,
