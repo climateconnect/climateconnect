@@ -34,7 +34,7 @@ export default function ContactCreatorButtonInfo({
   creatorImageURL,
   creatorsRoleInProject,
   customMessage,
-}) {
+}: any) {
   const classes = useStyles();
   console.log("customMessage: " + customMessage);
   return (

@@ -6,7 +6,7 @@ import PlaceIcon from "@material-ui/icons/Place";
 const useStyles = makeStyles((theme) => {
   return {
     locationName: {
-      fontWeight: "600",
+      fontWeight: 600,
       whiteSpace: "nowrap",
       width: "100%",
       overflow: "hidden",
@@ -63,7 +63,7 @@ export default function OrganizationPreviewBody({ organization }) {
           <span className={classes.locationBox}>
             <span className={classes.cardIconBox}>
               <Tooltip title="location">
-                <PlaceIcon className={classes.placeIcon} color="primary" />
+                <PlaceIcon /*TODO(undefined) className={classes.placeIcon} */ color="primary" />
               </Tooltip>
             </span>
             <span className={classes.locationNameBox}>

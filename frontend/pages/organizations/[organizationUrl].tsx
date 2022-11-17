@@ -1,5 +1,5 @@
 import { Button, Container, Divider, Typography, useMediaQuery } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, Theme } from "@material-ui/core/styles";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import NextCookies from "next-cookies";
@@ -113,7 +113,7 @@ export default function OrganizationPage({
           organization={organization}
           projects={projects}
           members={members}
-          organizationTypes={organizationTypes}
+          /*TODO(unused) organizationTypes={organizationTypes} */
           infoMetadata={infoMetadata}
           user={user}
           texts={texts}
@@ -193,7 +193,7 @@ function OrganizationLayout({
       account={organization}
       default_background={DEFAULT_BACKGROUND_IMAGE}
       editHref={getLocalePrefix(locale) + "/editOrganization/" + organization.url_slug}
-      type="organization"
+      /*TODO(unused) type="organization" */
       infoMetadata={infoMetadata}
       isOwnAccount={canEdit}
       isOrganization={true}
@@ -221,7 +221,7 @@ function OrganizationLayout({
             <IconButton href={getLocalePrefix(locale) + "/share"}>
               <ControlPointSharpIcon
                 className={classes.button}
-                variant="contained"
+                /*TODO(unused) variant="contained" */
                 color="primary"
               />
             </IconButton>
@@ -253,7 +253,7 @@ function OrganizationLayout({
                   getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug
                 }
               >
-                <GroupAddIcon className={classes.button} variant="contained" color="primary" />
+                <GroupAddIcon className={classes.button} color="primary" />
               </IconButton>
             ) : (
               <Button

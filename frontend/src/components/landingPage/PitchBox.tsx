@@ -1,4 +1,4 @@
-import { makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
 import React, { useContext } from "react";
 import getPitchElements from "../../../public/data/pitch_elements";
 import getTexts from "../../../public/texts/texts";
@@ -6,7 +6,7 @@ import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import SmallCloud from "../staticpages/SmallCloud";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { alternate?: boolean }>((theme) => ({
   root: {
     position: "relative",
     maxWidth: 1280,
@@ -150,7 +150,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function PitchBox({ h1ClassName, className }) {
-  const classes = useStyles();
+  const classes = useStyles({});
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "about", locale: locale });
   const pitch_elements = getPitchElements(texts);
@@ -219,7 +219,7 @@ export default function PitchBox({ h1ClassName, className }) {
   );
 }
 
-const PitchElement = ({ image, headline, text, alternate, children }) => {
+const PitchElement = ({ image, headline, text, alternate, children }: any) => {
   const classes = useStyles({ alternate: alternate });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "landing_page", locale: locale });
@@ -236,21 +236,10 @@ const PitchElement = ({ image, headline, text, alternate, children }) => {
         </div>
       )}
       <div>
-        <Typography
-          component="h1"
-          className={classes.pitchElementHeadline}
-          color="primary"
-          alt={
-            texts.man_floating_in_the_air_with_a_lightbulb_a_book_a_pen_a_notebook_a_baloon_and_saturn_floating_around_him
-          }
-        >
+        <Typography className={classes.pitchElementHeadline} color="primary">
           {headline}
         </Typography>
-        <Typography
-          color="secondary"
-          className={classes.pitchElementText}
-          alt={texts.four_people_at_a_table_working_together_and_giving_each_other_a_high_five}
-        >
+        <Typography color="secondary" className={classes.pitchElementText}>
           {text}
         </Typography>
       </div>

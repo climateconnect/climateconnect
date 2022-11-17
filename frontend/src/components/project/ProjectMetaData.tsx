@@ -110,7 +110,7 @@ export default function ProjectMetaData({ project, hovering, withDescription }: 
   );
 }
 
-const WithDescription = ({ className, project_parent, hovering, project, main_project_tag }) => {
+const WithDescription = ({ className, project_parent, hovering, project, main_project_tag }: any) => {
   const classes = useStyles({});
   return (
     <Box className={className}>
@@ -187,7 +187,7 @@ const WithOutDescription = ({
 
 const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_parent }) => {
   const collaborating_organizations = collaborating_organization.slice(0, 2); // only show 2 collaborating orgs
-  const classes = useStyles();
+  const classes = useStyles({});
   return (
     <>
       {project_parent && project_parent.parent_organization && (
@@ -231,7 +231,7 @@ const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_pa
 };
 
 const AdditionalPreviewInfo = ({ project }) => {
-  const classes = useStyles();
+  const classes = useStyles({});
   return (
     <Box className={classes.additionalInfoContainer}>
       <Box className={classes.additionalInfoIcon}>

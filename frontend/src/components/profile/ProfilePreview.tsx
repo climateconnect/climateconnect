@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function ProfilePreview({ profile, allowMessage, showAdditionalInfo }) {
+export default function ProfilePreview({ profile, allowMessage, showAdditionalInfo }: any) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });

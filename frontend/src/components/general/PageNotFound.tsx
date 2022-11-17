@@ -11,7 +11,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function PageNotFound({ itemName, returnText, returnLink }) {
+export default function PageNotFound({
+  itemName,
+  returnText,
+  returnLink,
+}: {
+  itemName?: string;
+  returnText?: string;
+  returnLink?: string;
+}) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });

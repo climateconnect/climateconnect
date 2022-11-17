@@ -19,7 +19,7 @@ export default function LocationDisplay({
   color,
   iconClassName,
   className,
-}) {
+}: any) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
   const classes = useStyles();

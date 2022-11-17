@@ -33,7 +33,7 @@ export default function Layout({
 }: any) {
   const classes = useStyles({ donationCampaignRunning: process.env.DONATION_CAMPAIGN_RUNNING });
   const [hideAlertMessage, setHideAlertMessage] = React.useState(false);
-  const [initialMessageType, setInitialMessageType] = React.useState(null);
+  const [initialMessageType, setInitialMessageType] = React.useState(null as string | null);
   const [initialMessage, setInitialMessage] = React.useState("");
   useEffect(() => {
     const params = getParams(window.location.href);

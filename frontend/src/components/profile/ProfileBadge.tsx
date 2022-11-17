@@ -1,10 +1,10 @@
-import { Badge, Link, makeStyles, Tooltip } from "@material-ui/core";
+import { Badge, Link, makeStyles, Theme, Tooltip } from "@material-ui/core";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import UserContext from "../context/UserContext";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { size: string, image?: string }>((theme) => ({
   badgeRoot: (props) => ({
     left: props.size === "small" ? "10%" : props.size === "medium" ? "10%" : "20%",
     bottom: props.size === "small" ? "10%" : props.size === "medium" ? "10%" : "40%",
@@ -25,7 +25,8 @@ const useStyles = makeStyles((theme) => ({
   }),
 }));
 
-export default function ProfileBadge({ className, badge, children, size, contentOnly }) {
+type Props = { className?: string; badge?; children; size?; contentOnly?: boolean };
+export default function ProfileBadge({ className, badge, children, size, contentOnly }: Props) {
   const classes = useStyles({ image: getImageUrl(badge.image), size: size });
   if (contentOnly) {
     return <BadgeContent badge={badge} size={size} className={className} />;
@@ -50,7 +51,7 @@ export default function ProfileBadge({ className, badge, children, size, content
   );
 }
 
-const BadgeContent = ({ badge, size, className, withLink }) => {
+const BadgeContent = ({ badge, size, className, withLink }: any) => {
   const { locale } = useContext(UserContext);
   return (
     <Tooltip title={badge.name}>

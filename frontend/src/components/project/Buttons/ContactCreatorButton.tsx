@@ -1,4 +1,4 @@
-import { Avatar, Button, Collapse, Fade, Typography } from "@material-ui/core";
+import { Avatar, Button, Collapse, Fade, Theme, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import SendIcon from "@material-ui/icons/Send";
 import React, { useContext, useState } from "react";
@@ -8,7 +8,7 @@ import theme from "../../../themes/theme";
 import UserContext from "../../context/UserContext";
 import ContactCreatorButtonInfo from "../../communication/contactcreator/ContactCreatorButtonInfo";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles<Theme, { collapsable: boolean; customCardWidth: number, explanationBackground: string }>({
   root: (props) => ({
     height: props.collapsable ? 40 : "auto",
     position: "relative",
@@ -110,7 +110,7 @@ export default function ContactCreatorButton({
 
   return (
     <div
-      className={withInfoCard ? `${classes.root} ${className}` : null}
+      className={withInfoCard ? `${classes.root} ${className}` : undefined}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleClickContact}

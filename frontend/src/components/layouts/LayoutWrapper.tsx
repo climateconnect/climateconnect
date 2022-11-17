@@ -2,6 +2,7 @@ import {
   CircularProgress,
   Snackbar,
   SnackbarContent,
+  Theme,
   Typography,
   useMediaQuery,
 } from "@material-ui/core";
@@ -61,7 +62,7 @@ export default function LayoutWrapper({
   description ,
   image ,
   useFloodStdFont ,
-}) {
+}: any) {
   const [snackbarProps, setSnackbarProps] = useState({
     open: false,
     message: "",

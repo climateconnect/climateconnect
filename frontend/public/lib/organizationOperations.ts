@@ -1,7 +1,7 @@
 import { apiRequest } from "./apiOperations";
 import { getImageUrl } from "./imageOperations";
 
-export function parseOrganization(organization, editMode) {
+export function parseOrganization(organization, editMode: boolean = false) {
   const org = {
     url_slug: organization.url_slug,
     background_image: getImageUrl(organization.background_image),
@@ -11,7 +11,7 @@ export function parseOrganization(organization, editMode) {
     language: organization.language,
     translations: organization.translations,
     hubs: organization.hubs,
-    info: getOrganizationInfo(organization, editMode),
+    info: getOrganizationInfo(organization, editMode) as any,
   };
 
   if (editMode)
@@ -49,7 +49,7 @@ export async function getUserOrganizations(token, locale) {
     else {
       return resp.data.map((o) => o.organization);
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;

@@ -1,4 +1,4 @@
-import { Box, Link, useMediaQuery } from "@material-ui/core";
+import { Box, Link, Theme, useMediaQuery } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import FavoriteIcon from "@material-ui/icons/Favorite";
@@ -89,7 +89,7 @@ export default function Footer({
   noAbsolutePosition,
   showOnScrollUp,
   large,
-}) {
+}: any) {
   if (!large)
     return (
       <SmallFooter

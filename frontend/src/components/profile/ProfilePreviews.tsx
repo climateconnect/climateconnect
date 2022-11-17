@@ -22,7 +22,7 @@ export default function ProfilePreviews({
   parentHandlesGridItems,
   profiles,
   showAdditionalInfo,
-}) {
+}: any) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
@@ -56,15 +56,15 @@ export default function ProfilePreviews({
   return (
     <>
       <InfiniteScroll
-        className={`${classes.reset} ${classes.root}`}
-        component="ul"
-        container
-        element={Grid}
+        className={`${classes.reset} ${/*TODO(undefined) classes.root*/""}`}
+        // component="ul"
+        // container
+        element={Grid as any}
         // We block subsequent invocations from InfinteScroll until we update local state
         hasMore={hasMore && !isFetchingMore}
         loadMore={loadMore}
         pageStart={0}
-        spacing={2}
+        // spacing={2}
       >
         {parentHandlesGridItems
           ? profiles && profiles.length > 0

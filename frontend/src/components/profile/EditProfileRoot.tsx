@@ -42,7 +42,7 @@ export default function EditAccountRoot({
     initialTranslations ? getTranslationsFromObject(initialTranslations, "user_profile") : {}
   );
   const [sourceLanguage, setSourceLanguage] = useState(profile.language);
-  const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== sourceLanguage));
+  const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== sourceLanguage)!);
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const [editedProfile, setEditedProfile] = useState({ ...profile });
   const STEPS = ["edit_profile", "edit_translations"];
@@ -78,7 +78,7 @@ export default function EditAccountRoot({
     setTranslations({ ...newTranslationsObject });
   };
 
-  const saveChanges = async (editedAccount, isTranslationsStep) => {
+  const saveChanges = async (editedAccount, isTranslationsStep=false) => {
     if (
       editedAccount?.info?.location === user?.info?.location &&
       !isLocationValid(editedAccount?.info?.location) &&
@@ -151,7 +151,7 @@ export default function EditAccountRoot({
             infoMetadata={infoMetadata}
             skillsOptions={skillsOptions}
             splitName
-            type="profile"
+            /*TODO(unused) type="profile" */
             onClickCheckTranslations={onClickCheckTranslations}
           />
         ) : (
@@ -179,7 +179,7 @@ export default function EditAccountRoot({
                   showCharacterCounter: true,
                 },
               ]}
-              changeTranslationLanguages={changeTranslationLanguages}
+              /*TODO(unused) changeTranslationLanguages={changeTranslationLanguages} */
             />
           </>
         )
@@ -221,7 +221,7 @@ const getProfileWithoutRedundantOptions = async (user, newProfile) => {
     availability: user.availability && user.availability.id,
   };
 
-  const finalProfile = {};
+  const finalProfile: any = {};
   Object.keys(newProfile).map((k) => {
     if (
       oldProfile[k] &&

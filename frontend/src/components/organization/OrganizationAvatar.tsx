@@ -1,8 +1,8 @@
-import { Avatar, Chip, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { Avatar, Chip, makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
 import React from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, {inlineVersionOnMobile?: boolean}>((theme) => ({
   root: (props) => ({
     display: "flex",
     flexDirection: "column",
@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     width: 120,
     height: 120,
     [theme.breakpoints.down("xs")]: {
-      marginRight: props.inlineVersionOnMobile && theme.spacing(2),
+      marginRight: props.inlineVersionOnMobile ? theme.spacing(2) : undefined,
     },
     ["@media(max-width: 500px)"]: {
       width: props.inlineVersionOnMobile ? 90 : 120,
@@ -47,7 +47,7 @@ export default function OrganizationAvatar({ organization, inlineVersionOnMobile
   const type = organization?.types[0]?.organization_tag;
   return (
     <div className={classes.root}>
-      <Avatar size="large" src={getImageUrl(organization.image)} className={classes.avatar} />
+      <Avatar src={getImageUrl(organization.image)} className={classes.avatar} component="div" />
       {inlineVersionOnMobile && isNarrowScreen ? (
         <div className={classes.inlineRightContainer}>
           <Typography component="h2" color="secondary" className={classes.suggestionTitle}>

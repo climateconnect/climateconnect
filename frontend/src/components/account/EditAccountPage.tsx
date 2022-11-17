@@ -245,7 +245,7 @@ export default function EditAccountPage({
   loadingSubmit,
   onClickCheckTranslations,
   allHubs,
-}) {
+}: any) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
   const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });

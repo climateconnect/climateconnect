@@ -25,7 +25,7 @@ export default function ProjectPreviews({
   firstProjectCardRef,
   hubUrl,
   displayOnePreviewInRow,
-}) {
+}: any) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
@@ -67,16 +67,16 @@ export default function ProjectPreviews({
     <>
       <InfiniteScroll
         className={classes.reset}
-        component="ul"
-        container
+        // component="ul"
+        // container
         // TODO: fix this: InfiniteScroll is throwing a React error:
         // Failed prop type: Invalid prop `element` supplied to `InfiniteScroll`, expected a ReactNode.
-        element={Grid}
+        element={Grid as any}
         // We block subsequent invocations from InfinteScroll until we update local state
         hasMore={hasMore && !isFetchingMore}
         loadMore={loadMore}
         pageStart={1}
-        spacing={2}
+        // spacing={2}
       >
         {parentHandlesGridItems
           ? projects && projects.length > 0
@@ -98,7 +98,7 @@ function GridItem({
 }) {
   const projectPreviewProps = {
     project: project,
-  };
+  } as any;
   if (isFirstProject) {
     projectPreviewProps.projectRef = firstProjectCardRef;
   }
@@ -108,7 +108,7 @@ function GridItem({
     smValue: displayOnePreviewInRow ? 12 : 6,
     mdValue: displayOnePreviewInRow ? 12 : 4,
     lgValue: displayOnePreviewInRow ? 12 : 3,
-  };
+  } as const;
 
   return (
     <Grid

@@ -1,4 +1,4 @@
-import { Collapse, Container } from "@material-ui/core";
+import { Collapse, Container, Theme } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
 import React, { useEffect, useState } from "react";
@@ -11,8 +11,8 @@ import Header from "../header/Header";
 import ElementSpaceToTop from "../hooks/ElementSpaceToTop";
 import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
 import LayoutWrapper from "./LayoutWrapper";
-
-const useStyles = makeStyles((theme) => ({
+type ThemeProps = { noSpaceBottom?: boolean; isStaticPage?: boolean };
+const useStyles = makeStyles<Theme, ThemeProps>((theme) => ({
   main: (props) => ({
     padding: 0,
     marginTop: props.isStaticPage ? 0 : -16,
@@ -59,7 +59,7 @@ type Props = {
   resetAlertMessage?: () => void;
   isHubPage?: boolean;
   /** @deprecated not used */
-  hideHeadline?: boolean
+  hideHeadline?: boolean;
 };
 //Wrapper layout component for pages where the content takes the whole width of the screen
 export default function WideLayout({
@@ -85,7 +85,7 @@ export default function WideLayout({
   hideFooter,
   resetAlertMessage,
   isHubPage,
-  hideHeadline
+  hideHeadline,
 }: Props) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);
@@ -94,7 +94,7 @@ export default function WideLayout({
   const [alertEl, setAlertEl] = React.useState(null);
   //Atm this is simply used to slide in the donation campaign banner after a certain timeout
   const [showDonationBanner, setShowDonationBanner] = useState(false);
-  const spaceToTop = ElementSpaceToTop({ initTopOfPage: true, el: alertEl });
+  const spaceToTop = ElementSpaceToTop({ el: alertEl });
   useEffect(() => {
     const params = getParams(window.location.href);
     if (params.message) setInitialMessage(decodeURI(params.message));
@@ -135,12 +135,16 @@ export default function WideLayout({
             <Alert
               className={`
                 ${classes.alert}
-                ${spaceToTop.screen <= 0 && spaceToTop.page >= 98 && classes.alertFixed}
+                ${spaceToTop.screen! <= 0 && spaceToTop.page! >= 98 && classes.alertFixed}
               `}
               severity={
-                messageType ? messageType : initialMessageType ? initialMessageType : "success"
+                (messageType
+                  ? messageType
+                  : initialMessageType
+                  ? initialMessageType
+                  : "success") as any
               }
-              ref={(node) => {
+              ref={(node: any) => {
                 if (node) {
                   setAlertEl(node);
                 }
