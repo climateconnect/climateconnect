@@ -92,7 +92,7 @@ export default function IdeaInfoStep({ idea, handleValueChange, updateImages, go
             onChange={(e) => handleChangeShortDescription(e)}
             value={idea.short_description}
             helperText={shortDescriptionError}
-            error={shortDescriptionError}
+            error={shortDescriptionError as any}
           />
         </div>
         <div>

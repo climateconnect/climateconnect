@@ -1,7 +1,7 @@
 import { Menu, withStyles } from "@material-ui/core";
 import React from "react";
 
-const StyledMenu = withStyles({
+const StyledMenu: any = withStyles({
   paper: {
     width: 64,
   },
@@ -17,7 +17,7 @@ const StyledMenu = withStyles({
       vertical: "top",
       horizontal: "center",
     }}
-    {...props}
+    {...props as any}
   />
 ));
 

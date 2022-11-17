@@ -22,7 +22,7 @@ import VisibleFooterHeight from "../hooks/VisibleFooterHeight";
 import SaveIcon from "@material-ui/icons/Save";
 import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
 
-const useStyles = makeStyles<Theme, { visibleFooterHeight: number }>((theme) => ({
+const useStyles = makeStyles<Theme, { visibleFooterHeight?: number }>((theme) => ({
   root: {
     marginTop: theme.spacing(2),
   },
@@ -400,7 +400,7 @@ function TranslationBlock({
         headline={targetLanguageTexts[headlineTextKey]}
         noHeadline={noHeadline}
         rows={rows}
-        isTranslation
+        //TODO(unused) isTranslation
         content={
           translations[targetLanguage] &&
           (isInArray
@@ -428,7 +428,7 @@ function TranslationBlockElement({
   maxCharacters,
   characterText,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({});
 
   return (
     <div className={classes.translationBlockElement}>
@@ -527,7 +527,7 @@ function TranslationActionButtonBar({
 }
 
 function BackButton({ goToPreviousStep, label, localeTexts }) {
-  const classes = useStyles();
+  const classes = useStyles({});
   return (
     <Button onClick={goToPreviousStep} className={classes.backButton} variant="contained">
       {label.icon ? (
@@ -542,7 +542,7 @@ function BackButton({ goToPreviousStep, label, localeTexts }) {
 }
 
 function TranslateButton({ automaticallyTranslateTexts, waitingForTranslation, label }) {
-  const classes = useStyles();
+  const classes = useStyles({});
   return (
     <Button
       variant="contained"
@@ -561,7 +561,7 @@ function TranslateButton({ automaticallyTranslateTexts, waitingForTranslation, l
 }
 
 function SaveButtons({ loadingSubmit, loadingSubmitDraft, localeTexts, label, saveAsDraft }) {
-  const classes = useStyles();
+  const classes = useStyles({});
   return (
     <>
       <Button

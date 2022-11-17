@@ -38,15 +38,15 @@ export default function MiniHubPreviews({
             hub={hub}
             key={hub.url_slug}
             editMode={editMode}
-            isFirstItem={index === 0}
+            //TODO(unused) isFirstItem={index === 0}
             onClickRemoveHub={onClickRemoveHub}
           />
         ))}
       {allowCreate && (
         <GridItem
           createMode
-          isFirstItem={hubs.length === 0}
-          isLastItem
+          //TODO(unused) isFirstItem={hubs.length === 0}
+          //TODO(unused) isLastItem
           hubsToSelectFrom={allHubs}
           onSelectNewHub={onSelectNewHub}
         />
@@ -62,7 +62,7 @@ function GridItem({
   hubsToSelectFrom,
   onSelectNewHub,
   onClickRemoveHub,
-}) {
+}: any) {
   return (
     <Grid
       key={hub ? hub.url_slug : "create"}

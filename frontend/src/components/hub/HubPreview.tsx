@@ -1,13 +1,13 @@
-import { Card, CardMedia, Link, makeStyles, Typography } from "@material-ui/core";
+import { Card, CardMedia, Link, makeStyles, Theme, Typography } from "@material-ui/core";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { disableBoxShadow?: boolean }>((theme) => ({
   root: (props) => ({
-    boxShadow: props.disableBoxShadow ? 0 : `3px 3px 3px #e0e0e0`,
+    boxShadow: props.disableBoxShadow ? undefined : `3px 3px 3px #e0e0e0`,
     borderColor: "#e0e0e0",
   }),
   placeholderImg: {
@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function HubPreview({ hub, disableBoxShadow }) {
+export default function HubPreview({ hub, disableBoxShadow = false }) {
   const classes = useStyles({ disableBoxShadow: disableBoxShadow });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });

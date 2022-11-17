@@ -16,6 +16,20 @@ const useStyles = makeStyles<Theme, { switchColors?: boolean }>((theme) => ({
   }),
 }));
 
+type Props = {
+  containerClassName?: any;
+  contentLinkPath?: any;
+  apiEndpoint?: any;
+  locale?: any;
+  token?: any;
+  messageTitle?: any;
+  tinyScreen?: any;
+  smallScreen?: any;
+  mailBody?: any;
+  texts?: any;
+  dialogTitle?: any;
+  switchColors?: any;
+};
 export default function SocialMediaShareButton({
   containerClassName,
   contentLinkPath,
@@ -29,7 +43,7 @@ export default function SocialMediaShareButton({
   texts,
   dialogTitle,
   switchColors,
-}) {
+}: Props) {
   const classes = useStyles({ switchColors: switchColors });
 
   const [showSocials, setShowSocials] = React.useState(false);

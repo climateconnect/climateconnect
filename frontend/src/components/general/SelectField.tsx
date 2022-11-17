@@ -13,7 +13,7 @@ const useStyles = makeStyles({
 });
 
 type Props = {
-  className: string;
+  className?: string;
   controlled?: boolean;
   controlledValue?: any;
   defaultValue?: any;
@@ -24,7 +24,7 @@ type Props = {
   multiple?;
   onChange;
   options;
-  required;
+  required?;
   size?: "small" | "medium";
   values?;
 };

@@ -1,4 +1,4 @@
-import { Button, TextField, Tooltip, Typography } from "@material-ui/core";
+import { Button, TextField, Theme, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import getRadiusFilterOptions from "../../../public/data/radiusFilterOptions";
@@ -8,7 +8,7 @@ import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import SelectField from "../general/SelectField";
 import LocationSearchBar from "../search/LocationSearchBar";
 
-const useStyles = makeStyles((theme) => {
+const useStyles = makeStyles<Theme, {filterElementMargin: number, justifyContent: any}>((theme) => {
   return {
     flexContainer: (props) => ({
       display: "flex",
@@ -174,7 +174,7 @@ export default function Filters({
                   key={filter.key}
                   size="small"
                   isInOverlay={isInOverlay}
-                  defaultValues={currentFilters[filter.key]}
+                  //TODO(unused) defaultValues={currentFilters[filter.key]}
                   onChange={(event) => {
                     handleValueChange(filter.key, event.target.value);
                   }}
@@ -257,10 +257,10 @@ export default function Filters({
                   className={classes.radiusField}
                   label={texts.radius_km}
                   options={radiusFilterOptions}
-                  type={filter.type}
+                  /*TODO(unused) type={filter.type} */
                   controlled
                   controlledValue={{ name: currentFilters.radius }}
-                  variant="outlined"
+                  /*TODO(unused) variant="outlined" */
                   size="small"
                   onChange={(event) => handleValueChange("radius", event.target.value)}
                   InputProps={{

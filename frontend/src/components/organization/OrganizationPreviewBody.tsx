@@ -76,10 +76,10 @@ export default function OrganizationPreviewBody({ organization }) {
       </Box>
       <Box
         className={classes.summaryBox}
-        ref={(textBox) => {
+        /*TODO(unused) ref={(textBox) => {
           const linesEstimation = textBox?.clientHeight / 25;
           setLinesOfText(Math.floor(linesEstimation));
-        }}
+        }} */
       >
         <Typography className={classes.shortenedSummary} style={{ WebkitLineClamp: linesOfText }}>
           {organization.short_description ?? organization.description}

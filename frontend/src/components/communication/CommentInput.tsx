@@ -1,4 +1,4 @@
-import { Avatar, Button, IconButton, Tooltip, Typography, useMediaQuery } from "@material-ui/core";
+import { Avatar, Button, IconButton, Theme, Tooltip, Typography, useMediaQuery } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext, useState } from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
@@ -53,7 +53,7 @@ function CommentInput({
   hasComments,
   infoTextSize,
   useIconButton,
-}) {
+}: any) {
   const classes = useStyles();
   const [curComment, setCurComment] = React.useState("");
   const { locale } = useContext(UserContext);
@@ -91,8 +91,8 @@ function CommentInput({
         return texts.how_to_mention_explainer_text;
       }
     }
-    if (infoTextSize === INFO_TEXT_SIZES.short) return texts.how_to_mention_explainer_text_short;
-    if (infoTextSize === INFO_TEXT_SIZES.hidden) return "";
+    if (infoTextSize === INFO_TEXT_SIZES.SHORT) return texts.how_to_mention_explainer_text_short;
+    if (infoTextSize === INFO_TEXT_SIZES.HIDDEN) return "";
     return texts.how_to_mention_explainer_text;
   };
 
@@ -124,11 +124,11 @@ function CommentInput({
               <Avatar {...avatarProps} />
             )}
             <InputWithMentions
-              autoFocus
-              multiline
+              //TODO(unused) autoFocus
+              //TODO(unused) multiline
               baseUrl={process.env.API_URL + "/api/members/?search="}
               placeholder={(hasComments ? texts.write_a_comment : texts.start_a_discussion) + "..."}
-              className={classes.messageInput}
+              //TODO(undefined) className={classes.messageInput}
               value={curComment}
               onChange={onCurCommentChange}
               onKeyDown={handleMessageKeydown}
@@ -144,11 +144,11 @@ function CommentInput({
               >
                 <IconButton
                   color="primary"
-                  variant="contained"
+                  //TODO(unused) variant="contained"
                   className={classes.commentButton}
                   onClick={(event) => handleSendComment(event)}
                 >
-                  <SendIcon className={classes.sendButtonIcon} />
+                  <SendIcon /*TODO(undefined) className={classes.sendButtonIcon} */ />
                 </IconButton>
               </Tooltip>
             )}

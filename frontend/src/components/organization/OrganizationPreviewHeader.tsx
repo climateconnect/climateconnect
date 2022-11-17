@@ -44,7 +44,7 @@ export default function OrganizationPreviewHeader({ organization }) {
     <div>
       <Avatar
         alt={organization.name}
-        size="large"
+        //TODO(unused) size="large"
         src={getImageUrl(organization.thumbnail_image)}
         className={classes.media}
         component="div"

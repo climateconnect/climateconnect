@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getStaticPageLinks } from "../../../public/data/getStaticPageLinks";
-import { Container, Link, makeStyles, useMediaQuery } from "@material-ui/core";
+import { Container, Link, makeStyles, Theme, useMediaQuery } from "@material-ui/core";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import theme from "../../themes/theme";

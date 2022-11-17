@@ -51,7 +51,7 @@ export default function IdeaCommentsSection({
   const texts = getTexts({ page: "idea", locale: locale });
 
   const onSendComment = async (comment, parentComment, clearInput, setDisplayReplies) => {
-    const payload = {
+    const payload: any = {
       content: comment,
       idea: idea.url_slug,
       parent_comment_id: parentComment || null,
@@ -78,7 +78,7 @@ export default function IdeaCommentsSection({
       });
       handleAddComment(resp.data);
       if (setDisplayReplies) setDisplayReplies(true);
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
       if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
       return null;
@@ -94,7 +94,7 @@ export default function IdeaCommentsSection({
         locale: locale,
       });
       handleRemoveComment(post);
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
       if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
       return null;
@@ -110,11 +110,11 @@ export default function IdeaCommentsSection({
           user={user}
           onSendComment={onSendComment}
           hasComments={idea.comments?.length > 0}
-          infoTextSize={INFO_TEXT_SIZES.short}
+          infoTextSize={INFO_TEXT_SIZES.SHORT}
           useIconButton
-          className={classes.defaultProjectCommentInput}
+          /*TODO(unused) className={classes.defaultProjectCommentInput} */
         />
-        <Divider className={classes.divider} />
+        <Divider /*TODO(unused) className={classes.divider} */ />
         {loading && (
           <div className={classes.loadingSpinnerContainer}>
             <LoadingSpinner isLoading message={texts.loading_ideas} />
@@ -128,7 +128,7 @@ export default function IdeaCommentsSection({
             user={user}
             onSendComment={onSendComment}
             onDeletePost={onDeleteComment}
-            infoTextSize={INFO_TEXT_SIZES.short}
+            infoTextSize={INFO_TEXT_SIZES.SHORT}
           />
         )}
       </div>

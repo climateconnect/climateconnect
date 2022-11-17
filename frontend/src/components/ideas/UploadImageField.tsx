@@ -1,4 +1,4 @@
-import { Button, makeStyles, useMediaQuery } from "@material-ui/core";
+import { Button, makeStyles, Theme, useMediaQuery } from "@material-ui/core";
 import React, { useContext, useRef, useState } from "react";
 import {
   getCompressedJPG,
@@ -12,7 +12,7 @@ import UploadImageDialog from "../dialogs/UploadImageDialog";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
   root: (props) => ({
     width: 256,
     height: 192,
@@ -56,7 +56,7 @@ export default function UploadImageField({ image, className, updateImages }) {
   const [tempImages, setTempImage] = useState("");
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
 
   const handleClickInput = () => {
@@ -68,9 +68,9 @@ export default function UploadImageField({ image, className, updateImages }) {
     if (newImage && newImage instanceof HTMLCanvasElement) {
       whitenTransparentPixels(newImage);
       newImage.toBlob(async function (blob) {
-        const resizedBlob = URL.createObjectURL(blob);
+        const resizedBlob = URL.createObjectURL(blob!);
         const thumbnailBlob = await getResizedImage(
-          URL.createObjectURL(blob),
+          URL.createObjectURL(blob!),
           192,
           256,
           "image/jpeg"
@@ -88,7 +88,7 @@ export default function UploadImageField({ image, className, updateImages }) {
     try {
       setOpen(true);
       setUploadImageDialogLoading(true);
-      const compressedImage = await getCompressedJPG(file, 1);
+      const compressedImage = await getCompressedJPG(file, 1) as string;
       setTempImage(compressedImage);
       setUploadImageDialogLoading(false);
     } catch (error) {
@@ -98,7 +98,7 @@ export default function UploadImageField({ image, className, updateImages }) {
 
   const handleClickUploadButton = (e) => {
     e.preventDefault();
-    inputRef.current.click();
+    inputRef.current!.click();
   };
 
   return (

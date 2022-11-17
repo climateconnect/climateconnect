@@ -1,4 +1,4 @@
-import { Button, makeStyles } from "@material-ui/core";
+import { Button, ButtonProps, makeStyles } from "@material-ui/core";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import React, { useContext, useRef } from "react";
 import getTexts from "../../../../public/texts/texts";
@@ -26,21 +26,21 @@ export default function HubsDropDown({
   onOpen,
   onClose,
   addLocationHubExplainerLink,
-}) {
+}: any) {
   const classes = useStyles();
-  const buttonRef = useRef(null);
-  const popperRef = useRef(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const popperRef = useRef<HTMLAnchorElement | null>(null);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
 
-  const toggleButtonProps = {};
+  const toggleButtonProps: ButtonProps = {};
   if (!isNarrowScreen) {
     toggleButtonProps.onMouseEnter = onOpen;
     toggleButtonProps.onMouseLeave = onClose;
   }
 
   const handleBlur = (e) => {
-    if (isNarrowScreen && !popperRef?.current.contains(e.relatedTarget)) {
+    if (isNarrowScreen && !popperRef?.current?.contains(e.relatedTarget)) {
       onClose();
     }
   };

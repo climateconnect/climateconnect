@@ -1,4 +1,4 @@
-import { Card, IconButton, Link, makeStyles, Typography } from "@material-ui/core";
+import { Card, IconButton, Link, makeStyles, Theme, Typography } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -7,7 +7,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import SelectField from "../general/SelectField";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, any>((theme) => ({
   link: {
     ["&:hover"]: {
       textDecoration: "none",

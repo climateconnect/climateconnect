@@ -1,4 +1,4 @@
-import { Button, makeStyles, useMediaQuery } from "@material-ui/core";
+import { Button, makeStyles, Theme, useMediaQuery } from "@material-ui/core";
 import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";
 import { joinIdeaGroupChat } from "../../../public/lib/messagingOperations";

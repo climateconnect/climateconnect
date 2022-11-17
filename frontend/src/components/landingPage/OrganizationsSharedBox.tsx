@@ -1,4 +1,4 @@
-import { Button, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { Button, makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";

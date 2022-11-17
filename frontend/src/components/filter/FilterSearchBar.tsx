@@ -11,7 +11,7 @@ export default function FilterSearchBar({
   onSubmit = () => {},
   type,
   value,
-}) {
+}: any) {
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       // Perform the search: this invokes the search

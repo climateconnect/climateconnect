@@ -25,7 +25,7 @@ export default function GoBackFromProjectPageButton({
   tinyScreen,
   locale,
   containerClassName,
-}) {
+}: any) {
   const classes = useStyles();
 
   const router = useRouter();

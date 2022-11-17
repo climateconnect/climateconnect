@@ -60,7 +60,7 @@ export default function Posts({
   infoTextSize,
   truncate,
   noLink,
-}) {
+}: any) {
   const classes = useStyles();
   const classNames = {
     reply: classes.indent,

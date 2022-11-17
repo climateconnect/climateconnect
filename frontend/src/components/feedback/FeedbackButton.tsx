@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function FeedbackButton({ justLink, children }) {
+export default function FeedbackButton({ justLink, children }: any) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const cookies = new Cookies();

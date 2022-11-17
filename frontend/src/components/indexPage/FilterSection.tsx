@@ -86,7 +86,7 @@ export default function FilterSection({
   };
 
   return (
-    <div className={classes.filterSection}>
+    <div /*TODO(undefined) className={classes.filterSection} */>
       <div className={classes.filterSectionFirstLine}>
         <div className={classes.searchBarContainer}>
           <FilterSearchBar

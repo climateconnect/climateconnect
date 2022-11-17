@@ -50,15 +50,15 @@ import DropDownButton from "./DropDownButton";
 import LanguageSelect from "./LanguageSelect";
 import StaticPageLinks from "./StaticPageLinks";
 
-type Props = {
-  transparentHeader: boolean;
-  fixedHeader: boolean;
+type StyleProps = {
+  transparentHeader?: boolean;
+  fixedHeader?: boolean;
   background?: string;
-  isStaticPage: boolean;
-  isHubPage: boolean;
+  isStaticPage?: boolean;
+  isHubPage?: boolean;
 };
 
-const useStyles = makeStyles<Theme, Props>((theme: Theme) => {
+const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
   return {
     root: (props) => {
       return {
@@ -313,7 +313,7 @@ export default function Header({
 
   const { user, signOut, notifications, pathName, locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
-  const [anchorEl, setAnchorEl] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("xs"));
   const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const LINKS = getLinks(pathName, texts);
@@ -621,7 +621,7 @@ function NarrowScreenLinks({
           onClose={closeDrawer}
           disableBackdropTransition={true}
         >
-          <List styles={{ height: "100vh" }}>
+          <List /*TODO(unused) styles={{ height: "100vh" }} */>
             {LINKS.filter(
               (link) =>
                 !link.alwaysDisplayDirectly &&
@@ -642,7 +642,7 @@ function NarrowScreenLinks({
             })}
             {loggedInUser &&
               getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts }).map((link, index) => {
-                const Icon = link.iconForDrawer;
+                const Icon: any = link.iconForDrawer;
                 const avatarProps = {
                   className: classes.loggedInAvatarMobile,
                   src: getImageUrl(loggedInUser.image),
@@ -695,7 +695,7 @@ function NarrowScreenLinks({
 }
 
 const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader, texts, localePrefix }) => {
-  const classes = useStyles();
+  const classes = useStyles({});
   const [menuOpen, setMenuOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
 
@@ -743,7 +743,7 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader, texts, 
               {getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts })
                 .filter((link) => !link.showOnMobileOnly)
                 .map((link, index) => {
-                  const menuItemProps = {
+                  const menuItemProps: any = {
                     component: "button",
                     className: classes.loggedInLink,
                   };
@@ -752,7 +752,7 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader, texts, 
                   return (
                     <MenuItem
                       key={index}
-                      component="button"
+                      /*TODO(unused) component="button" */
                       className={classes.loggedInLink}
                       onClick={link.isLogoutButton && handleLogout}
                       href={!link.isLogoutButton ? localePrefix + link.href : undefined}
@@ -779,8 +779,8 @@ const getLinkButtonProps = ({
   isNarrowScreen,
   linksOutsideDrawer,
   localePrefix,
-}) => {
-  const buttonProps = {};
+}: any) => {
+  const buttonProps: any = {};
   if (!isNarrowScreen && index !== 0) {
     if (link.className) buttonProps.className = classes[link.className];
     else buttonProps.className = classes.buttonMarginLeft;

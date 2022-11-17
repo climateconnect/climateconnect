@@ -25,7 +25,7 @@ const getFilterUrl = ({
   locale,
   idea,
   nonFilterParams,
-}) => {
+}: any) => {
   const filteredParams = encodeQueryParamsFromFilters({
     filters: activeFilters,
     infoMetadata: infoMetadata,
@@ -131,7 +131,7 @@ const encodeQueryParamsFromFilters = ({ filters, infoMetadata, filterChoices, lo
             filters[filterKey].map((filter) => getFilterName(filter, filterKey, filterChoices)),
           ].join();
         } else {
-          const options = possibleFiltersForFilterKey.options;
+          const options = (possibleFiltersForFilterKey as any).options;
           filterValues = findOptionByNameDeep({
             filterChoices: options,
             propertyToFilterBy: "name",

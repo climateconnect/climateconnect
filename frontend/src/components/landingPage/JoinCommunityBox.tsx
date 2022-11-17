@@ -1,4 +1,4 @@
-import { Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { Container, makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -156,7 +156,7 @@ export default function JoinCommunityBox({ h1ClassName }) {
   );
 }
 
-const JoinCommunityText = ({ h1ClassName, texts, locale }) => {
+const JoinCommunityText = ({ h1ClassName, texts, locale }: any) => {
   const classes = useStyles();
   return (
     <div className={classes.textContainer}>

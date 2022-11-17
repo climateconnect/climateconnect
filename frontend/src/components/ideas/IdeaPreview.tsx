@@ -1,4 +1,4 @@
-import { Card, CardMedia, Link, makeStyles, Typography, Tooltip } from "@material-ui/core";
+import { Card, CardMedia, Link, makeStyles, Typography, Tooltip, Theme } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import React, { useContext, useState } from "react";
@@ -13,7 +13,7 @@ import IdeaRatingIcon from "./IdeaRatingIcon";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import ModeCommentIcon from "@material-ui/icons/ModeComment";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { borderColor?: any }>((theme) => ({
   noUnderline: {
     textDecoration: "inherit",
     "&:hover": {
@@ -190,7 +190,7 @@ export default function IdeaPreview({
 function CreateCardContent() {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale });
-  const classes = useStyles();
+  const classes = useStyles({});
   return (
     <div>
       <div className={classes.topSection}>
@@ -210,7 +210,7 @@ function CreateCardContent() {
 }
 
 function IdeaCardContent(idea) {
-  const classes = useStyles();
+  const classes = useStyles({});
 
   return (
     <div>
@@ -264,7 +264,7 @@ function IdeaCardContent(idea) {
 }
 
 function AdditionalInfoIdeaCardPreview({ containerName, commentCount, participationCount }) {
-  const classes = useStyles();
+  const classes = useStyles({});
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
   return (

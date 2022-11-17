@@ -1,4 +1,12 @@
-import { Button, Card, makeStyles, Tooltip, Typography, useMediaQuery } from "@material-ui/core";
+import {
+  Button,
+  Card,
+  makeStyles,
+  Theme,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+} from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import React, { useContext, useEffect, useState } from "react";
@@ -20,7 +28,16 @@ import IdeaHubIcon from "./IdeaHubIcon";
 import IdeaJoinButton from "./IdeaJoinButton";
 import IdeaRatingSlider from "./IdeaRatingSlider";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<
+  Theme,
+  {
+    borderColor: string;
+    loading: boolean;
+    isEditing: boolean;
+    offsetTop: number;
+    offsetBottom: number;
+  }
+>((theme) => ({
   root: (props) => ({
     borderColor: props.borderColor,
     borderWidth: 3,
@@ -220,7 +237,7 @@ export default function IdeaRoot({
           all_comment_ids.includes(n.idea_comment?.id)
         );
         setUserRating &&
-          setUserRating({ ...userRating, last_locked_rating_score: userRating?.rating_score });
+          setUserRating({ ...userRating, last_locked_rating_score: userRating?.rating_score } as any);
         setHasJoinedIdea &&
           setHasJoinedIdea({
             has_joined: hasJoinedIdea?.has_joined,
@@ -231,7 +248,7 @@ export default function IdeaRoot({
       } else {
         setLoading(false);
       }
-    },
+    } as any,
     [idea.url_slug]
   );
 
@@ -434,7 +451,7 @@ const getIdeaCommentsFromServer = async (idea, token, locale) => {
       locale: locale,
     });
     return response.data.results;
-  } catch (err) {
+  } catch (err: any) {
     console.log(err?.response);
   }
 };
@@ -448,7 +465,7 @@ const getHasJoinedIdea = async (idea, token, locale) => {
       locale: locale,
     });
     return response.data;
-  } catch (err) {
+  } catch (err: any) {
     console.log(err?.response);
   }
 };

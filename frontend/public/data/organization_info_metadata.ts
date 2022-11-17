@@ -6,7 +6,7 @@ import SchoolIcon from "@material-ui/icons/School";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import getTexts from "../texts/texts";
 
-export default function getOrganizationInfoMetadata(locale, organization, isEditing) {
+export default function getOrganizationInfoMetadata(locale, organization?, isEditing?) {
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   const metaData = {
     short_description: {

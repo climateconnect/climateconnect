@@ -1,4 +1,4 @@
-import { Container, makeStyles, Typography, useMediaQuery, Link } from "@material-ui/core";
+import { Container, makeStyles, Typography, useMediaQuery, Link, Theme } from "@material-ui/core";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";

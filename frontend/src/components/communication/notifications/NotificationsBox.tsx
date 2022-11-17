@@ -1,12 +1,12 @@
 import { Menu, withStyles } from "@material-ui/core";
 import React from "react";
 
-const NotificationsBox = withStyles({
+const NotificationsBox: any = withStyles({
   paper: {
     border: "1px solid #d3d4d5",
     minWidth: 300,
   },
-})((props) => (
+})((props: any) => (
   <Menu
     elevation={0}
     getContentAnchorEl={null}

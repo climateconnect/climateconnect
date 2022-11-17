@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function DropDownButton({ buttonProps, options, children, href }) {
+export default function DropDownButton({ buttonProps, options, children, href }: any) {
   const classes = useStyles();
   const [showOptions, setShowOptions] = useState(false);
   const buttonRef = useRef(null);

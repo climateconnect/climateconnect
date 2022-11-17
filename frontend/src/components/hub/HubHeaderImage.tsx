@@ -1,9 +1,9 @@
-import { makeStyles, Typography } from "@material-ui/core";
+import { makeStyles, Theme, Typography } from "@material-ui/core";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, any>((theme) => ({
   imageContainer: (props) => ({
     background: `url('${props.image}')`,
     backgroundSize: "cover",

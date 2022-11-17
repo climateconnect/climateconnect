@@ -53,15 +53,15 @@ export default function OrganizationPreviews({
   return (
     <>
       <InfiniteScroll
-        className={`${classes.reset} ${classes.root}`}
-        component="ul"
-        container
-        element={Grid}
+        className={`${classes.reset}`}
+        //TODO(unused) component="ul"
+        //TODO(unused) container
+        element={Grid as any}
         // We block subsequent invocations from InfinteScroll until we update local state
         hasMore={hasMore && !isFetchingMore}
         loadMore={loadMore}
         pageStart={0}
-        spacing={2}
+        //TODO(unused) spacing={2}
       >
         {parentHandlesGridItems
           ? organizations && organizations.length > 0

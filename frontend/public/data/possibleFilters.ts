@@ -35,6 +35,7 @@ export default function getFilters({ key, filterChoices, locale }) {
   }
 
   console.log("possibleFilters invalid input:" + key);
+  return [];
 }
 
 const getLocationFilters = (texts) => {

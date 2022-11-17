@@ -1,4 +1,4 @@
-import { Button, makeStyles, useMediaQuery } from "@material-ui/core";
+import { Button, makeStyles, Theme, useMediaQuery } from "@material-ui/core";
 import LanguageIcon from "@material-ui/icons/Language";
 import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -9,7 +9,7 @@ import UserContext from "../context/UserContext";
 import StyledMenu from "../general/StyledMenu";
 import StyledMenuItem from "../general/StyledMenuItem";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { transparentHeader: boolean }>((theme) => ({
   root: (props) => ({
     color: props.transparentHeader ? "white" : theme.palette.primary.main,
     cursor: "pointer",
@@ -36,8 +36,8 @@ const useStyles = makeStyles((theme) => ({
 export default function LanguageSelect({ transparentHeader }) {
   const classes = useStyles({ transparentHeader: transparentHeader });
   const { locale, locales, startLoading } = useContext(UserContext);
-  const buttonRef = useRef(null);
-  const [anchorEl, setAnchorEl] = useState(buttonRef.current);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(buttonRef.current);
   const [open, setOpen] = useState(false);
   const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
@@ -69,7 +69,7 @@ export default function LanguageSelect({ transparentHeader }) {
       cookies.set("NEXT_LOCALE", newLocale, cookieProps);
       const hasHash = router.asPath.split("#").length > 1;
       if (hasHash) {
-        window.location = "/" + newLocale + router.asPath;
+        window.location.href = "/" + newLocale + router.asPath;
         startLoading();
       } else {
         router.push(router.asPath, router.asPath, { locale: newLocale });
@@ -77,7 +77,7 @@ export default function LanguageSelect({ transparentHeader }) {
     }
   };
 
-  const hoverButtonProps = {};
+  const hoverButtonProps: any = {};
 
   if (!isNarrowScreen) {
     (hoverButtonProps.onMouseEnter = handleOpen), (hoverButtonProps.onMouseLeave = handleClose);

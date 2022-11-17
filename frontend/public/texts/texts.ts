@@ -51,8 +51,8 @@ type Args<P extends Page> = {
   filterType?: string;
   goal?: string;
   hubName?: string;
-  idea?: string;
-  isNarrowScreen?: string;
+  idea?: any;
+  isNarrowScreen?: boolean;
   locale: CcLocale;
   location?: string;
   organization?: string;

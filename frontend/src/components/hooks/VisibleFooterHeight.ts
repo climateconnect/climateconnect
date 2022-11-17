@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import theme from "../../themes/theme";
 
-export default function VisibleFooterHeight({ footerHeightProp }) {
+export default function VisibleFooterHeight({ footerHeightProp }: any) {
   const [visibleFooterHeight, setVisibleFooterHeight] = useState(0);
 
   useEffect(() => {

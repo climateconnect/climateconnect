@@ -29,7 +29,7 @@ export default function LoginNudge({ whatToDo, fullPage, className }: Props) {
   const texts = getTexts({ page: "general", locale: locale });
   return (
     <div className={`${fullPage && classes.loginNudge} ${className}`}>
-      <Typography className={fullPage && classes.loginNudgeText}>
+      <Typography className={fullPage ? classes.loginNudgeText : undefined}>
         {texts.please}{" "}
         <Link underline="always" color="primary" href={getLocalePrefix(locale) + "/signin"}>
           {texts.log_in}

@@ -1,4 +1,4 @@
-import { makeStyles, useMediaQuery } from "@material-ui/core";
+import { makeStyles, Theme, useMediaQuery } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { getCommentsObjectAfterAddingComments } from "../../../public/lib/communicationOperations";
 import { getInfoMetadataByType } from "../../../public/lib/parsingOperations";
@@ -9,7 +9,7 @@ import IdeaPreviews from "./IdeaPreviews";
 import IdeaRoot from "./IdeaRoot";
 import MobileIdeaPage from "./MobileIdeaPage";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles<Theme, { ideaOpen?: boolean }>({
   root: (props) => ({
     display: props.ideaOpen ? "flex" : "default",
     flex: "1 1 0px",
@@ -47,7 +47,7 @@ export default function IdeasBoard({
     }
   };
   const [idea, setIdea] = useState(getInitialIdea(initialIdeaUrlSlug));
-  const [ideaContainerEl, setIdeaContainerEl] = useState(null);
+  const [ideaContainerEl, setIdeaContainerEl] = useState<HTMLDivElement | null>(null);
   const containerOffsetTop = ElementSpaceToTop({ el: ideaContainerEl });
   const classes = useStyles({ ideaOpen: idea !== null });
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));

@@ -26,7 +26,7 @@ export default function DropDownList({
   open,
   loadOnClick,
   popperRef,
-}) {
+}: any) {
   const classes = useStyles();
   const { locale, startLoading } = useContext(UserContext);
   const handleClickLink = () => {

@@ -105,6 +105,10 @@ type Props = {
     multiSelectProps?: any;
     falseLabel?: string;
     trueLabel?: string;
+    autoCompleteProps?: any;
+    ref?: any;
+    handleSetLocationOptionsOpen?: any;
+    locationOptionsOpen?: any;
   }[];
   select?: { selectValues: { label: string; value: string }[] };
   messages: {
@@ -348,8 +352,8 @@ export default function Form({
           ) {
             return (
               <AutoCompleteSearchBar
-                required={field.required}
-                autoFocus={field === fields[0]}
+                /*TODO(unused) required={field.required} */
+                /*TODO(unused) autoFocus={field === fields[0]} */
                 label={field.autoCompleteProps.label}
                 key={field.key}
                 freeSolo={field.autoCompleteProps.freeSolo}

@@ -1,9 +1,9 @@
-import { makeStyles, Tooltip } from "@material-ui/core";
+import { makeStyles, Theme, Tooltip } from "@material-ui/core";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { rating?: any }>((theme) => ({
   heartContainer: {
     height: 40,
     position: "relative",

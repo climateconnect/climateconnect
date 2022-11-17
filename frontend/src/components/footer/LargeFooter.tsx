@@ -174,22 +174,22 @@ const SocialLinks = () => {
   return (
     <div className={classes.socialIconsContainer}>
       <Link target="_blank" href="https://www.instagram.com/climate_connect.earth/">
-        <InstagramIcon color="primary" className={classes.socialIcon} alt="Instagram" />
+        <InstagramIcon color="primary" className={classes.socialIcon} titleAccess="Instagram" />
       </Link>
       <Link target="_blank" href="https://github.com/climateconnect/climateconnect">
-        <GitHubIcon className={classes.socialIcon} alt="GitHub" />
+        <GitHubIcon className={classes.socialIcon} titleAccess="GitHub" />
       </Link>
       <Link target="_blank" href="https://twitter.com/ConnectClimate">
-        <TwitterIcon color="primary" className={classes.socialIcon} alt="Twitter" />
+        <TwitterIcon color="primary" className={classes.socialIcon} titleAccess="Twitter" />
       </Link>
       <Link target="_blank" href="https://www.linkedin.com/company/climateconnect">
-        <LinkedInIcon color="primary" className={classes.socialIcon} alt="LinkedIn" />
+        <LinkedInIcon color="primary" className={classes.socialIcon} titleAccess="LinkedIn" />
       </Link>
       <Link target="_blank" href="https://www.facebook.com/climateconnect.earth">
-        <FacebookIcon color="primary" className={classes.socialIcon} alt="Facebook" />
+        <FacebookIcon color="primary" className={classes.socialIcon} titleAccess="Facebook" />
       </Link>
       <Link target="_blank" href="https://www.youtube.com/channel/UC10rPriptUxYilMfvt-8Tkw">
-        <YouTubeIcon color="primary" className={classes.socialIcon} alt="YouTube" />
+        <YouTubeIcon color="primary" className={classes.socialIcon} titleAccess="YouTube" />
       </Link>
     </div>
   );
@@ -272,7 +272,7 @@ const SiteLinks = ({ texts, locale }) => {
           className={classes.newsletterSubscribeButton}
           color="primary"
           variant="contained"
-          target="_blank"
+          //TODO(unused) target="_blank"
           href={process.env.LATEST_NEWSLETTER_LINK}
         >
           {texts.latest_newsletter}

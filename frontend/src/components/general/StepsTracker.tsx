@@ -1,5 +1,4 @@
 import React from "react";
-import { PropTypes } from "prop-types";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { Stepper, Step, StepLabel, StepConnector, Typography } from "@material-ui/core";
 import CheckIcon from "@material-ui/icons/Check";
@@ -140,7 +139,7 @@ export default function StepsTracker({
         className={`${classes.stepper} ${grayBackground && classes.grayBackground}`}
       >
         {steps.map((step, index) => (
-          <Step className={classes.step} key={index}>
+          <Step /*TODO(unused) className={classes.step}*/ key={index}>
             <StepLabel
               StepIconComponent={CustomStepIcon}
               color="primary"
@@ -162,8 +161,3 @@ export default function StepsTracker({
   );
 }
 
-StepsTracker.propTypes = {
-  steps: PropTypes.array.isRequired,
-  activeStep: PropTypes.string.isRequired,
-  grayBackground: PropTypes.bool,
-};

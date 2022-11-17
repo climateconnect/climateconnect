@@ -1,6 +1,6 @@
 import theme from "../../src/themes/theme";
 
-export function getIdeaBorderColor({ idea, index, isCreateCard }) {
+export function getIdeaBorderColor({ idea, index, isCreateCard }: any) {
   const colors = [
     theme.palette.primary.main,
     theme.palette.primary.light,

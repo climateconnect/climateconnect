@@ -1,4 +1,4 @@
-import { Link, makeStyles, useMediaQuery } from "@material-ui/core";
+import { Link, makeStyles, Theme, useMediaQuery } from "@material-ui/core";
 import React, { useState } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import getTexts from "../../../../public/texts/texts";
@@ -25,7 +25,7 @@ export default function HubLinks({
   showAllProjectsButton,
   onlyShowDropDown,
   isLocationHub,
-}) {
+}: any) {
   const classes = useStyles();
   const [open, setOpen] = useState({ sectorHubs: false, climateHubs: false });
   const texts = getTexts({ page: "navigation", locale: locale });

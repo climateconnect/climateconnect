@@ -1,7 +1,7 @@
-import { makeStyles, Slider, Typography } from "@material-ui/core";
+import { makeStyles, Slider, Theme, Typography } from "@material-ui/core";
 import React from "react";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, {averageRating: any}>((theme) => ({
   root: {
     color: theme.palette.primary.main,
     height: theme.spacing(1.75),

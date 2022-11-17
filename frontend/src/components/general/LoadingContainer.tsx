@@ -1,10 +1,10 @@
-import { Typography } from "@material-ui/core";
+import { Theme, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles<Theme, { subtractedHeight?: string }>(() => ({
   spinnerContainer: (props) => ({
     display: "flex",
     position: "relative",

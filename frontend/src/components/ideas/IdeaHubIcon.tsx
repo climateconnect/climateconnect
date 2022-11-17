@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function IdeaHubIcon({ idea, className }) {
+export default function IdeaHubIcon({ idea, className }: any) {
   const classes = useStyles();
   return (
     <Tooltip title={idea.hub.name}>

@@ -1,4 +1,4 @@
-import { Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { Container, makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -7,7 +7,7 @@ import UserContext from "../context/UserContext";
 import AlternatingText from "../general/AlternatingText";
 import LightBigButton from "../staticpages/LightBigButton";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, {imageSource: string}>((theme) => ({
   imageContainer: (props) => ({
     background: `url('/images/${props.imageSource}')`,
     backgroundSize: "cover",
@@ -178,12 +178,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function LandingTopBox() {
   const { locale } = useContext(UserContext);
-  const texts = getTexts({
-    page: "landing_page",
-    locale: locale,
-    classes: classes,
-    isNarrowScreen: isNarrowScreen,
-  });
+
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
   const isVeryLargeScreen = useMediaQuery<Theme>(theme.breakpoints.up("lg"));
   const imageSource = isNarrowScreen
@@ -192,6 +187,12 @@ export default function LandingTopBox() {
     ? "landing_image_extra_large.jpg"
     : "landing_image_extra_large.jpg";
   const classes = useStyles({ imageSource: imageSource });
+  const texts = getTexts({
+    page: "landing_page",
+    locale: locale,
+    classes: classes,
+    isNarrowScreen: isNarrowScreen,
+  });
   return (
     <div>
       <div className={classes.imageContainer}>

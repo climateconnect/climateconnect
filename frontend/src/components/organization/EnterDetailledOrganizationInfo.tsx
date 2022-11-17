@@ -18,7 +18,7 @@ const useStyles = makeStyles(() => {
   };
 });
 
-const parseOrganizationInfo = (info, organization_info_metadata) => {
+const parseOrganizationInfo = (info, organization_info_metadata): any => {
   const ret = { info: {} };
   Object.keys(info).map((key) => {
     if (organization_info_metadata[key]) ret.info[key] = info[key];

@@ -1,4 +1,4 @@
-import { Container, Link, makeStyles, useMediaQuery } from "@material-ui/core";
+import { Container, Link, makeStyles, Theme, useMediaQuery } from "@material-ui/core";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import getTexts from "../../../../public/texts/texts";
@@ -55,7 +55,7 @@ export default function HubsSubHeader({ hubs, subHeaderRef, onlyShowDropDown }) 
         <div>
           {!isNarrowScreen && onlyShowDropDown && (
             <GoBackFromProjectPageButton
-              containerClassName={classes.goBackButtonContainer}
+              /*TODO(undefined) containerClassName={classes.goBackButtonContainer} */
               texts={texts}
               locale={locale}
               tinyScreen={isNarrowScreen}

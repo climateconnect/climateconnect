@@ -139,7 +139,7 @@ export default function EditIdeaRoot({ idea, cancelEdit, userOrganizations, allH
             <Typography component="h2" className={classes.mainHeadline}>
               {texts.edit_your_idee}
             </Typography>
-            <div className={classes.chooseIsOrganizationsProject}>
+            <div /*TODO(undefined) className={classes.chooseIsOrganizationsProject} */>
               <Switcher
                 trueLabel={texts.organizations_idea}
                 falseLabel={texts.personal_idea}
@@ -150,7 +150,7 @@ export default function EditIdeaRoot({ idea, cancelEdit, userOrganizations, allH
                 <SelectField
                   size="small"
                   label={texts.choose_your_organization}
-                  className={classes.chooseOrganizationField}
+                  /*TODO(undefined) className={classes.chooseOrganizationField} */
                   options={userOrganizations}
                   controlled
                   required

@@ -5,6 +5,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Theme,
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -19,7 +20,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import FilterSearchBar from "../filter/FilterSearchBar";
 
-const useStyles = makeStyles((theme) => {
+const useStyles = makeStyles<Theme, { flexWrapper?: boolean; marginTop?: boolean, offset?: number }>((theme) => {
   return {
     wrapper: (props) => ({
       margin: "0 auto",
@@ -40,7 +41,7 @@ const useStyles = makeStyles((theme) => {
     subList: (props) => {
       return {
         display: "inline-block",
-        marginTop: theme.spacing(props.offset * 8),
+        marginTop: theme.spacing(props.offset! * 8),
         verticalAlign: "top",
         maxWidth: "50%",
       };
@@ -245,7 +246,7 @@ export default function MultiLevelSelector({
           selected={selected}
           isNarrowScreen={isNarrowScreen}
           isInPopup={isInPopup}
-          className={classes.listWrapper}
+          //TODO(unused) className={classes.listWrapper}
           texts={texts}
         />
 
@@ -276,7 +277,7 @@ function ListToChooseWrapper({
   isNarrowScreen,
   texts,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({});
 
   // The first section should be the initial tab value
   const [searchValue, setSearchValue] = React.useState("");
@@ -308,7 +309,7 @@ function ListToChooseWrapper({
 
   return (
     <Container>
-      <div className={classes.searchBarContainer}>
+      <div /*TODO(undefined) className={classes.searchBarContainer} */>
         <FilterSearchBar
           label={texts.search_for_keywords}
           className={classes.searchBar}
@@ -445,7 +446,7 @@ function ListToChooseFrom({
   parentEl,
   parentList,
   selected,
-}) {
+}: any) {
   const index = isSubList ? parentList.indexOf(parentEl) : 0;
   const subListHeightCorrection = isSubList
     ? Math.min(index, Math.max(0, itemsToSelectFrom.length - parentList.length + index))

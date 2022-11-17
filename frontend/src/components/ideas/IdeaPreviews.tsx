@@ -19,7 +19,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const toIdeaPreviews = ({ ideas, onClickIdea, hasIdeaOpen, hubData, sendToIdeaPageOnClick }) => {
+const toIdeaPreviews = ({
+  ideas,
+  onClickIdea,
+  hasIdeaOpen,
+  hubData,
+  sendToIdeaPageOnClick,
+}: any) => {
   return ideas.map((idea, index) => (
     <GridItem
       index={index}
@@ -48,7 +54,7 @@ export default function IdeaPreviews({
   noCreateCard,
   sendToIdeaPageOnClick,
   resetTabsWhereFiltersWereApplied,
-}) {
+}: any) {
   const classes = useStyles();
   const [gridItems, setGridItems] = React.useState(
     toIdeaPreviews({
@@ -83,17 +89,17 @@ export default function IdeaPreviews({
     <>
       <InfiniteScroll
         className={`${classes.reset} ${className}`}
-        component="ul"
-        container
+        /*TODO(unused) component="ul" */
+        //TODO(unused) container
         // TODO: fix this: InfiniteScroll is throwing a React error:
         // Failed prop type: Invalid prop `element` supplied to `InfiniteScroll`, expected a ReactNode.
-        element={Grid}
+        element={Grid as any}
         // We block subsequent invocations from InfinteScroll until we update local state
         hasMore={hasMore && !isFetchingMore}
         loadMore={loadMore}
         pageStart={1}
-        spacing={2}
-        alignContent="flex-start"
+        //TODO(unused) spacing={2}
+        //TODO(unused) alignContent="flex-start"
       >
         {ideas?.length === 0 && (
           <NoItemsFound type="ideas" hubName={hubData?.name} className={classes.noItemsFound} />
@@ -136,7 +142,7 @@ function GridItem({
   hubData,
   sendToIdeaPageOnClick,
   resetTabsWhereFiltersWereApplied,
-}) {
+}: any) {
   return (
     <Grid
       key={idea ? idea.url_slug : "createCard"}

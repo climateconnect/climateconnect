@@ -89,7 +89,7 @@ export default function WideLayout({
 }: Props) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);
-  const [initialMessageType, setInitialMessageType] = React.useState(null);
+  const [initialMessageType, setInitialMessageType] = React.useState(null as any);
   const [initialMessage, setInitialMessage] = React.useState("");
   const [alertEl, setAlertEl] = React.useState(null);
   //Atm this is simply used to slide in the donation campaign banner after a certain timeout
