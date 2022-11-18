@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-02 14:08+0100\n"
+"POT-Creation-Date: 2022-11-18 15:17+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,25 +18,78 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: organization/utility/organization.py:171
-msgid "The name {} is already in use. Please use another name."
+#: organization/utility/follow.py:102
+msgid "Missing required parameters"
 msgstr ""
-"Der Name {} wird bereits verwendet. Bitte gebe einen anderen Namen ein."
 
-#: organization/views/organization_views.py:435
-#: organization/views/organization_views.py:457
+#: organization/utility/follow.py:109
+#, fuzzy
+#| msgid "Organization not found:"
+msgid "Organization not found."
+msgstr "Organisation nicht gefunden:"
+
+#: organization/utility/follow.py:111
+msgid "Project not found."
+msgstr "Projekt nicht gefunden."
+
+#: organization/utility/follow.py:120
+msgid "You're already following this organization."
+msgstr "Du folgst dieser Organisation bereits."
+
+#: organization/utility/follow.py:122
+msgid "You're already following this project."
+msgstr "Du folgst diesem Projekt bereits"
+
+#: organization/utility/follow.py:136
+msgid ""
+"You are now following this organization. You will be notified when they post "
+"an update!"
+msgstr "Du folgst der Organisation jetzt. Du wirst benachrichtigt, wenn sie ein Update posten."
+
+#: organization/utility/follow.py:140
+msgid ""
+"You are now following this project. You will be notified when they post an "
+"update!"
+msgstr "Du folgst dem Projekt jetzt. Du wirst benachrichtigt, es ein Update gibt."
+
+#: organization/utility/follow.py:157
+msgid "You weren't following this organization."
+msgstr "Du hast dieser Organisation nicht gefolgt"
+
+#: organization/utility/follow.py:159
+msgid "You weren't following this project."
+msgstr "Du hast diesem Projekt nicht gefolgt"
+
+#: organization/utility/follow.py:167
+msgid "You are not following this organization anymore."
+msgstr "Du folgst dieser Organisation nicht mehr"
+
+#: organization/utility/follow.py:169
+msgid "You are not following this project anymore."
+msgstr "Du folgst diesem Projekt nicht mehr"
+
+#: organization/utility/follow.py:180
+msgid "Invalid value for variable \"following\""
+msgstr "Ungültiger Wert für die Variable \"following\""
+
+#: organization/utility/organization.py:179
+msgid "The name {} is already in use. Please use another name."
+msgstr "Der Name {} wird bereits verwendet. Bitte verwende einen anderen Namen."
+
+#: organization/views/organization_views.py:478
+#: organization/views/organization_views.py:500
 msgid "Organization not found:"
 msgstr "Organisation nicht gefunden:"
 
-#: organization/views/organization_views.py:337
+#: organization/views/organization_views.py:566
 msgid "Parent organization not found for organization"
 msgstr "Mutterorganisation der Organisation nicht gefunden"
 
-#: organization/views/organization_views.py:389
+#: organization/views/organization_views.py:613
 msgid "Passed organization tag id does not exists: "
 msgstr "Dieser Organisationstyp existiert nicht: "
 
-#: organization/views/organization_views.py:392
+#: organization/views/organization_views.py:619
 msgid "Successfully updated organization."
 msgstr "Organisation erfolgreich bearbeitet"
 

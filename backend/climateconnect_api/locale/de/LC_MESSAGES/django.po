@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-02 14:08+0100\n"
+"POT-Creation-Date: 2022-11-18 15:17+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,17 +28,17 @@ msgstr "Feedback erfolgreich eingereicht. Wir melden uns bei dir!"
 msgid "Feedback successfully submitted."
 msgstr "Feedback erhalten!"
 
-#: climateconnect_api/views/settings_views.py:128
+#: climateconnect_api/views/settings_views.py:137
 #: climateconnect_api/views/user_views.py:452
 msgid "Required parameters are missing."
 msgstr "Es fehlen benötigte Parameter."
 
-#: climateconnect_api/views/settings_views.py:140
+#: climateconnect_api/views/settings_views.py:149
 #: climateconnect_api/views/user_views.py:463
 msgid "User profile not found."
 msgstr "Nutzer*innenprofil nicht gefunden."
 
-#: climateconnect_api/views/settings_views.py:143
+#: climateconnect_api/views/settings_views.py:152
 #: climateconnect_api/views/user_views.py:466
 msgid ""
 "Contact contact@climateconnect.earth if you repeatedly experience problems."
@@ -46,13 +46,13 @@ msgstr ""
 "Kontaktiere contact@climateconnect.earth, wenn du wiederholt Probleme haben "
 "solltest."
 
-#: climateconnect_api/views/settings_views.py:157
+#: climateconnect_api/views/settings_views.py:166
 msgid "No pending E-Mail change. This link may already have been used."
 msgstr ""
 "Keine E-Mail Änderung angefragt. Vielleicht wurde dieser Link schon "
 "verwendet?"
 
-#: climateconnect_api/views/settings_views.py:164
+#: climateconnect_api/views/settings_views.py:173
 msgid "Your E-Mail address is now "
 msgstr "Deine E-Mail Adresse ist jetzt "
 
