@@ -29,7 +29,7 @@ export async function getDataFromServer({ type, page, token, urlEnding, hubUrl, 
         hasMore: !!resp.data.next,
       };
     }
-  } catch (err) {
+  } catch (err: any) {
     if (err.response && err.response.data) {
       console.log("Error: ");
       console.log(err.response.data);
@@ -40,7 +40,7 @@ export async function getDataFromServer({ type, page, token, urlEnding, hubUrl, 
 
 export async function loadMoreData({ type, page, urlEnding, token, locale, hubUrl }) {
   try {
-    const payload = {
+    const payload: any = {
       type: type,
       page: page,
       token: token,
@@ -50,7 +50,7 @@ export async function loadMoreData({ type, page, urlEnding, token, locale, hubUr
     if (hubUrl) {
       payload.hubUrl = hubUrl;
     }
-    const newDataObject = await getDataFromServer(payload);
+    const newDataObject: any = await getDataFromServer(payload);
     const newData =
       type === "members" ? membersWithAdditionalInfo(newDataObject.members) : newDataObject[type];
 

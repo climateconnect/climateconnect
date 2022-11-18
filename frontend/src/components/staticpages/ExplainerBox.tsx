@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
     width: 120,
   },
 }));
-export default function ExplainerBox({ h1ClassName, className, hideHeadline }) {
+export default function ExplainerBox({ h1ClassName, className, hideHeadline }: any) {
   const classes = useStyles();
   const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const { locale } = useContext(UserContext);

@@ -52,7 +52,7 @@ const getSettings = async (token, locale) => {
       locale: locale,
     });
     return resp.data;
-  } catch (err) {
+  } catch (err: any) {
     if (err.response && err.response.data) {
       console.log("Error: ");
       console.log(err.response.data);

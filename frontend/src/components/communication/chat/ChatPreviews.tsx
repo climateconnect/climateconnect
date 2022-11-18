@@ -4,6 +4,7 @@ import {
   List,
   ListItem,
   ListItemText,
+  Theme,
   Typography,
   useMediaQuery,
 } from "@material-ui/core";
@@ -102,7 +103,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabl
       pageStart={1}
       loadMore={loadMore}
       hasMore={hasMore && !isLoading}
-      element={List}
+      element={List as any}
     >
       {chats.map((chat, index) => (
         <ChatPreview
@@ -138,7 +139,7 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
             <ChatTitle
               chat={chat}
               className={classes.miniProfilePreview}
-              mobile={isNarrowScreen}
+              //TODO(unused) mobile={isNarrowScreen}
               size="medium"
             />
           ) : (
@@ -154,7 +155,7 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
               <>
                 <Truncate
                   lines={1}
-                  className={`${classes.contentPreview} ${
+                  className={`${""/*TODO(undefined) classes.contentPreview*/} ${
                     chat.unread_count ? classes.unreadPreview : ""
                   }`}
                   ellipsis={"..."}
@@ -163,7 +164,7 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
                 </Truncate>
                 <span className={classes.badgeAndTimeContainer}>
                   <span>
-                    <span className={classes.time}>{getDateTime(lastAction)}</span>
+                    <span /*TODO(undefined) className={classes.time}*/>{getDateTime(lastAction)}</span>
                   </span>
                   {chat.unread_count > 0 && (
                     <span>

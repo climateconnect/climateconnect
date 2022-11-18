@@ -50,7 +50,7 @@ const useStyles = makeStyles<Theme, any>((theme) => ({
   },
 }));
 
-export default function HubHeaderImage({ image, source, fullWidth, isLocationHub }) {
+export default function HubHeaderImage({ image, source, fullWidth, isLocationHub }: any) {
   const { locale } = useContext(UserContext);
 
   const classes = useStyles({

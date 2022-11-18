@@ -10,7 +10,7 @@ export default function Privacy() {
       </div>
       <h2>Table of Contents</h2>
       <b>
-        <ol start="1">
+        <ol start={1}>
           <li>
             <a href="#scope">Scope of application</a>
           </li>
@@ -572,7 +572,7 @@ export default function Privacy() {
       375 Beale Street, Suite 300, San Francisco, CA 94105 for sending automatic emails.
       <a
         href="https://www.twilio.com/legal/privacy/privacy-august-2020"
-        target_="_blank"
+        target="_blank"
         rel="noreferrer"
       >
         Link

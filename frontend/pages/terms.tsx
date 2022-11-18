@@ -4,7 +4,7 @@ import React from "react";
 export default function Terms() {
   return (
     <Layout title="Terms of Use">
-      <ol start="1">
+      <ol start={1}>
         <li>
           By registering on the site or by using any of the features on the site, you agree to be
           bound by these Terms of Use of Climate Connect gUG (hereinafter referred to as “We” and

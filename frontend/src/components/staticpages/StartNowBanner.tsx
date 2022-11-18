@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function StartNowBanner({ h1ClassName, className }) {
+export default function StartNowBanner({ h1ClassName, className }: any) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "landing_page", locale: locale, classes: classes });

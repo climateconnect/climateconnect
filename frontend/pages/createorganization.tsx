@@ -73,7 +73,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
   const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== locale));
   const [loadingSubmit, setLoadingSubmit] = useState(false);
 
-  const [organizationInfo, setOrganizationInfo] = useState({
+  const [organizationInfo, setOrganizationInfo] = useState<any>({
     name: "",
     hasparentorganization: false,
     parentorganization: "",
@@ -89,7 +89,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       website: "",
       hubs: [],
     },
-    types: [],
+    types: [] as any[],
   });
 
   const changeTranslationLanguages = ({ newLanguagesObject }) => {

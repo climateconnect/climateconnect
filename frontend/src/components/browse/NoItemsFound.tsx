@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function NoItemsFound({ type, hubName, className }) {
+export default function NoItemsFound({ type, hubName, className }: any) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({

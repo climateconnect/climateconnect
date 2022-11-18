@@ -1,4 +1,12 @@
-import { Avatar, Button, CircularProgress, Link, Tooltip, Typography } from "@material-ui/core";
+import {
+  Avatar,
+  Button,
+  CircularProgress,
+  Link,
+  Theme,
+  Tooltip,
+  Typography,
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -15,7 +23,7 @@ import CommentInput from "./CommentInput";
 import MessageContent from "./MessageContent";
 import Posts from "./Posts";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { preview?: boolean }>((theme) => ({
   postDate: {
     color: theme.palette.grey[700],
   },
@@ -132,7 +140,11 @@ export default function Post({
   return (
     <div className={className}>
       {type === "progresspost" ? (
-        <Typography component="h3" variant="h6" color="primary" className={classes.nameOfPoster}>
+        <Typography
+          component="h3"
+          variant="h6"
+          color="primary" /*TODO(undefined) className={classes.nameOfPoster} */
+        >
           {post.author_user.first_name + " " + post.author_user.last_name}
         </Typography>
       ) : (
@@ -167,7 +179,10 @@ export default function Post({
               <Typography variant="body2" className={classes.postDate}>
                 {post.unconfirmed && (
                   <Tooltip title={texts.sending_message + "..."}>
-                    <CircularProgress size={10} color="inherit" className={classes.loader} />
+                    <CircularProgress
+                      size={10}
+                      color="inherit" /*TODO(undefined) className={classes.loader} */
+                    />
                   </Tooltip>
                 )}
                 <DateDisplay date={new Date(post.created_at)} />
@@ -176,7 +191,7 @@ export default function Post({
             {type === "preview" ? (
               <Typography>
                 <Truncate lines={truncate} ellipsis={"..."}>
-                  <MessageContent content={post.content} maxLines={maxLines} />
+                  <MessageContent content={post.content} /*TODO(unused) maxLines={maxLines} */ />
                 </Truncate>
               </Typography>
             ) : (
@@ -187,7 +202,7 @@ export default function Post({
                     ellipsis={"..."}
                     onTruncate={handleTruncate}
                   >
-                    <MessageContent content={post.content} maxLines={maxLines} />
+                    <MessageContent content={post.content} /*TODO(unused) maxLines={maxLines} */ />
                   </Truncate>
                 </Typography>
 

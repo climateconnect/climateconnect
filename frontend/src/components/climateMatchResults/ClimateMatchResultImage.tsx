@@ -9,7 +9,13 @@ const useStyles = makeStyles({
   },
 });
 
-export default function ClimateMatchResultImage({ suggestion, className }) {
+export default function ClimateMatchResultImage({
+  suggestion,
+  className,
+}: {
+  suggestion;
+  className?: string;
+}) {
   const imageUrl = getImageUrl(
     suggestion.thumbnail_image ? suggestion.thumbnail_image : suggestion.image
   );

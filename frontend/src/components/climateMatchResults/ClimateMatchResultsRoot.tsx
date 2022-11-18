@@ -66,49 +66,51 @@ export default function ClimateMatchResultsRoot() {
   const climatematch_token = cookies.get("climatematch_token");
   const [loading, setLoading] = useState(true);
 
-  const [suggestions, setSuggestions] = useState({
+  const [suggestions, setSuggestions] = useState<any>({
     hasMore: true,
     matched_resources: [],
   });
   const [page, setPage] = useState(0);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
 
-  const [fromHub, setFromHub] = useState(FALLBACK_HUB);
+  const [fromHub, setFromHub] = useState<any>(FALLBACK_HUB);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "climatematch", locale: locale });
   const headerContainerRef = useRef(null);
   const screenIsSmallerThanMd = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const screenIsSmallerThanSm = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
-  useEffect(async () => {
-    try {
-      setIsFetchingMore(true);
-      if (!token && !climatematch_token) {
-        return Router.push({
-          pathname: "/climatematch",
-          query: {
-            message: texts.you_havent_done_the_climatematch,
-          },
+  useEffect(() => {
+    (async () => {
+      try {
+        setIsFetchingMore(true);
+        if (!token && !climatematch_token) {
+          return Router.push({
+            pathname: "/climatematch",
+            query: {
+              message: texts.you_havent_done_the_climatematch,
+            },
+          });
+        }
+        const result = await getSuggestions({
+          token: token,
+          climatematch_token: climatematch_token,
+          page: page,
+          //TODO(unused) texts: texts,
+          locale: locale,
         });
+        setPage(page + 1);
+        setFromHub(result.hub);
+        setSuggestions({
+          ...suggestions,
+          matched_resources: result.matched_resources,
+          hasMore: result.has_more,
+        });
+        setIsFetchingMore(false);
+        setLoading(false);
+      } catch (e) {
+        console.log(e);
       }
-      const result = await getSuggestions({
-        token: token,
-        climatematch_token: climatematch_token,
-        page: page,
-        texts: texts,
-        locale: locale,
-      });
-      setPage(page + 1);
-      setFromHub(result.hub);
-      setSuggestions({
-        ...suggestions,
-        matched_resources: result.matched_resources,
-        hasMore: result.has_more,
-      });
-      setIsFetchingMore(false);
-      setLoading(false);
-    } catch (e) {
-      console.log(e);
-    }
+    })();
   }, []);
 
   const loadMore = async () => {
@@ -121,7 +123,7 @@ export default function ClimateMatchResultsRoot() {
         token: token,
         climatematch_token: climatematch_token,
         page: page,
-        texts: texts,
+        //TODO(unused) texts: texts,
         locale: locale,
       });
       setPage(page + 1);
@@ -135,7 +137,7 @@ export default function ClimateMatchResultsRoot() {
   };
 
   return (
-    <div className={classes.root}>
+    <div /*TODO(unused) className={classes.root} */>
       {loading ? (
         <div className={classes.loadingOverlay}>
           <LoadingSpinner
@@ -174,13 +176,13 @@ export default function ClimateMatchResultsRoot() {
             )}
             <InfiniteScroll
               className={classes.resultsContainer}
-              component="div"
-              container
+              //TODO(unused) component="div"
+              //TODO(unused) container
               // We block subsequent invocations from InfinteScroll until we update local state
               hasMore={suggestions.hasMore && !isFetchingMore && !loading}
               loadMore={loadMore}
               pageStart={1}
-              spacing={2}
+              //TODO(unused) spacing={2}
             >
               {suggestions?.matched_resources?.map((suggestion, index) => (
                 <ClimateMatchResult key={index} suggestion={suggestion} pos={index} />
@@ -196,7 +198,7 @@ export default function ClimateMatchResultsRoot() {
 
 const getSuggestions = async ({ token, page, climatematch_token, locale }) => {
   try {
-    const args = {
+    const args: any = {
       method: "get",
       url: `/api/climatematch_results/?range_start=${page * 10}&range_end=${(page + 1) * 10}`,
       locale: locale,
@@ -208,7 +210,7 @@ const getSuggestions = async ({ token, page, climatematch_token, locale }) => {
     }
     const resp = await apiRequest(args);
     return resp.data;
-  } catch (e) {
+  } catch (e: any) {
     console.log(e.response);
   }
 };

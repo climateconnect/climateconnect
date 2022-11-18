@@ -16,7 +16,7 @@ export async function getSkillsOptions(locale, parentSkillsOnly?: boolean) {
         "parent_skill"
       );
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
@@ -34,7 +34,7 @@ export async function getStatusOptions(locale) {
     else {
       return resp.data.results;
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
@@ -53,7 +53,7 @@ export async function getProjectTagsOptions(hub, locale) {
     else {
       return parseOptions(resp.data.results, "parent_tag");
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
@@ -73,7 +73,7 @@ export async function getOrganizationTagsOptions(locale) {
         return { ...t, key: t.id, additionalInfo: t.additional_info ? t.additional_info : [] };
       });
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;

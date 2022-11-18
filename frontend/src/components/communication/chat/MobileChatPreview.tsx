@@ -67,11 +67,11 @@ export default function MobileChatPreview({ chat, isFirstChat }) {
           }}
         />
         <span className={classes.badgeAndTimeContainer}>
-          <span className={classes.timeContainer}>
+          <span /*TODO(undefined) className={classes.timeContainer}*/>
             <span className={classes.time}>{getDateTime(last_activity)}</span>
           </span>
           {chat.unread_count > 0 && (
-            <span className={classes.badgeContainer}>
+            <span /*TODO(undefined) className={classes.badgeContainer}*/>
               <Badge
                 color="primary"
                 className={classes.unreadBadge}

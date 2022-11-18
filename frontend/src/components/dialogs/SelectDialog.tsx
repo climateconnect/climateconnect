@@ -40,8 +40,8 @@ export default function SelectDialog({
   className,
 }) {
   const classes = useStyles();
-  const [element, setElement] = React.useState(null);
-  const [additionalInfo, setAdditionalInfo] = React.useState({});
+  const [element, setElement] = React.useState<any>(null);
+  const [additionalInfo, setAdditionalInfo] = React.useState<any[]>([]);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
 

@@ -43,7 +43,7 @@ export default function TabContentWrapper({
     <TabContent
       value={tabValue}
       index={TYPES_BY_TAB_VALUE.indexOf(type)}
-      className={classes.tabContent}
+      //TODO(unused) className={classes.tabContent}
     >
       {filtersExpanded && tabValue === TYPES_BY_TAB_VALUE.indexOf(type) && (
         <FilterContent

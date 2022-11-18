@@ -58,7 +58,7 @@ export async function getServerSideProps(ctx) {
     const message = texts.you_have_to_log_in_to_see_your_inbox;
     return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
   }
-  const chatData = await getChatsOfLoggedInUser(auth_token, 1, ctx.locale);
+  const chatData: any = await getChatsOfLoggedInUser(auth_token, 1, ctx.locale);
   return {
     props: {
       chatData: chatData.chats,
@@ -81,8 +81,8 @@ export default function Inbox({ chatData, initialNextPage }) {
   });
 
   const [searchedChatsState, setSearchedChatsState] = useState({
-    chats: [],
-    nextPage: 0,
+    chats: [] as any[],
+    nextPage: 0 as number | null,
   });
 
   const resetAlertMessage = () => setErrorMessage("");
@@ -127,7 +127,7 @@ export default function Inbox({ chatData, initialNextPage }) {
     const parsedChats = parseChats(parsedChatData, texts);
     setSearchedChatsState({
       ...searchedChatsState,
-      nextPage: response.data.next ? searchedChatsState.nextPage + 1 : null,
+      nextPage: response.data.next ? searchedChatsState.nextPage! + 1 : null,
       chats: [...searchedChatsState.chats, ...parsedChats],
     });
   };
@@ -161,7 +161,7 @@ export default function Inbox({ chatData, initialNextPage }) {
   };
 
   const loadMoreChats = async () => {
-    const newChatData = await getChatsOfLoggedInUser(token, chatsState.nextPage, locale);
+    const newChatData: any = await getChatsOfLoggedInUser(token, chatsState.nextPage, locale);
     const newChats = newChatData.chats;
     setChatsState({
       ...chatsState,
@@ -203,7 +203,7 @@ export default function Inbox({ chatData, initialNextPage }) {
                       chatSearchEnabled={chatSearchEnabled}
                       loadFunc={loadMoreChats}
                       chats={chatsState.chats}
-                      user={user}
+                      // TODO(unused) user={user}
                       hasMore={!!chatsState.nextPage}
                     />
                   </span>
@@ -222,7 +222,7 @@ export default function Inbox({ chatData, initialNextPage }) {
                         chatSearchEnabled={chatSearchEnabled}
                         loadFunc={loadMoreChats}
                         chats={chatsState.chats}
-                        user={user}
+                        // TODO(unused) user={user}
                         hasMore={!!chatsState.nextPage}
                       />
                     ) : (
@@ -232,7 +232,7 @@ export default function Inbox({ chatData, initialNextPage }) {
                             chatSearchEnabled={chatSearchEnabled}
                             loadFunc={loadMoreFilteredChats}
                             chats={searchedChatsState.chats}
-                            user={user}
+                            // TODO(unused) user={user}
                             hasMore={!!searchedChatsState.nextPage}
                           />
                         ) : (
@@ -267,7 +267,7 @@ export default function Inbox({ chatData, initialNextPage }) {
                       chatSearchEnabled={chatSearchEnabled}
                       loadFunc={loadMoreChats}
                       chats={chatsState.chats}
-                      user={user}
+                      //TODO(unused) user={user}
                       hasMore={!!chatsState.nextPage}
                     />
                   </span>
@@ -304,7 +304,7 @@ async function getChatsOfLoggedInUser(token, nextPage, locale) {
       chats: parseChatData(resp.data.results),
       nextPage: resp.data.next ? nextPage + 1 : null,
     };
-  } catch (err) {
+  } catch (err: any) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     console.log("error!");
     console.log(err);

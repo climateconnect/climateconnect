@@ -6,7 +6,7 @@ export function getCommentsObjectAfterAddingComment(c, comments) {
     const newCurComments = [
       ...comments.filter((c) => c.id !== parent_comment.id),
       { ...parent_comment, replies: [...parent_comment.replies, c] },
-    ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     return newCurComments;
   } else {
     //Otherwise add it to the list. Incase the comment is already in the list as an unconfirmed comment, replace it.

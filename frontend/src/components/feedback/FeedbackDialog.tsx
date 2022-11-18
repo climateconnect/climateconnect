@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function FeedbackDialog({ onClose, open, title, inputLabel, maxLength, className }) {
   const classes = useStyles();
-  const [element, setElement] = React.useState(null);
+  const [element, setElement] = React.useState<string | null>(null);
   const [checked, setChecked] = React.useState(false);
   const [email, setEmail] = React.useState("");
   const { locale, user } = useContext(UserContext);
@@ -90,7 +90,7 @@ export default function FeedbackDialog({ onClose, open, title, inputLabel, maxLe
               <TextField
                 variant="outlined"
                 onChange={handleEmailChange}
-                className={classes.emailTextField}
+                /*TODO(undefined) className={classes.emailTextField} */
                 value={email}
                 placeholder={texts.email_address}
                 type="email"

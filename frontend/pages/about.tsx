@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => {
 });
 
 export async function getServerSideProps(ctx) {
-  const questions = await getQuestionsWithAnswers(ctx.locale);
+  const questions = (await getQuestionsWithAnswers(ctx.locale))!;
   return {
     props: {
       questionsFromSection: questions.all,
@@ -130,7 +130,7 @@ const getQuestionsWithAnswers = async (locale) => {
     return {
       all: resp.data.results,
     };
-  } catch (err) {
+  } catch (err: any) {
     if (err.response && err.response.data) {
       console.log(err.response.data);
     } else {

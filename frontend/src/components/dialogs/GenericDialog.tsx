@@ -56,7 +56,7 @@ const useStyles = makeStyles<
 type Props = PropsWithChildren<{
   applyText?: string;
   fullScreen?: boolean;
-  maxWidth?: "sm";
+  maxWidth?: "sm" | "lg";
   onApply?: () => void;
   onClose: (arg: false | React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   open: boolean;

@@ -1,10 +1,11 @@
-import { makeStyles } from "@material-ui/core";
+import { makeStyles, Theme } from "@material-ui/core";
 import React from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import OptionalQuestionTypeBody from "./OptionalQuestionTypeBody";
 import RankingQuestionTypeBody from "./RankingQuestionTypeBody";
 
-const useStyles = makeStyles((theme) => ({
+type StyleProps = { questionType: "optional" | "ranking"; image?: string };
+const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
   root: {
     display: "flex",
     position: "relative",
@@ -20,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     height: 500,
     minWidth: props.questionType === "optional" ? 400 : 300,
     [theme.breakpoints.down("md")]: {
-      minWidth: props.questionType !== "optional" && 200,
+      minWidth: props.questionType !== "optional" ? 200 : undefined,
     },
     [theme.breakpoints.down("sm")]: {
       display: "none",
@@ -55,7 +56,7 @@ export default function ClimateMatchQuestion({
             question={question}
             handleForwardClick={handleForwardClick}
             onBackClick={onBackClick}
-            userAnswer={userAnswers[step - 1]}
+            //TODO(unused) userAnswer={userAnswers[step - 1]}
           />
         </>
       ) : (

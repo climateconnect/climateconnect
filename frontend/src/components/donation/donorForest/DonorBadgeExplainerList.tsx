@@ -58,7 +58,7 @@ const DonorBadgeListEntry = ({ badge }) => {
     }`,
   };
   return (
-    <ListItem className={classes.listItem}>
+    <ListItem /* TODO(undefined) className={classes.listItem} */>
       <ListItemIcon className={classes.listItemIcon}>
         <ProfileBadge contentOnly badge={badge} />
       </ListItemIcon>

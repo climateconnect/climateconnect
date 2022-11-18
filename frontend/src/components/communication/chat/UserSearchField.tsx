@@ -40,7 +40,7 @@ export default function UserSearchField({ cancelUserSearch, setErrorMessage }) {
   const token = new Cookies().get("auth_token");
   const { user, locale } = React.useContext(UserContext);
   const texts = getTexts({ page: "chat", locale: locale });
-  const [newChatMembers, setNewChatMembers] = React.useState([]);
+  const [newChatMembers, setNewChatMembers] = React.useState<any[]>([]);
   const [groupName, setGroupName] = React.useState("");
 
   const handleAddNewChatMember = (member) => {
@@ -72,7 +72,7 @@ export default function UserSearchField({ cancelUserSearch, setErrorMessage }) {
     const isGroupchat = newChatMembers.length > 1;
     const urlPostfix = isGroupchat ? "/api/start_group_chat/" : "/api/start_private_chat/";
     if (newChatMembers.length >= 1) {
-      const payload = {};
+      const payload: any = {};
       if (isGroupchat) {
         // lines 77 - 83 don't run because TextField for entering Group chat name has prop required set
         if (!groupName) {
@@ -143,7 +143,7 @@ export default function UserSearchField({ cancelUserSearch, setErrorMessage }) {
             value={groupName}
           />
         )}
-        <div className={classes.newChatParticipantsContainer}>
+        <div /*TODO(undefined) className={classes.newChatParticipantsContainer} */>
           {newChatMembers.map((m, index) => (
             <MiniProfilePreview
               key={index}

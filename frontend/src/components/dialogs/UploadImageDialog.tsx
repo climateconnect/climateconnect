@@ -60,7 +60,7 @@ export default function UploadImageDialog({
   const smallScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
 
   const [scale, setScale] = React.useState(1);
-  const [editor, setEditor] = React.useState(null);
+  const [editor, setEditor] = React.useState<any>(null);
 
   const handleClose = () => {
     setScale(1);

@@ -8,6 +8,7 @@ import {
   Typography,
   useMediaQuery,
   Link,
+  Theme,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
@@ -40,7 +41,7 @@ const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { background_image?: string }>((theme) => ({
   backgroundContainer: {
     width: "100%",
     height: 305,
@@ -278,7 +279,7 @@ export default function EditAccountPage({
       if (image && image instanceof HTMLCanvasElement) {
         whitenTransparentPixels(image);
         image.toBlob(async function (blob) {
-          const resizedBlob = URL.createObjectURL(blob);
+          const resizedBlob = URL.createObjectURL(blob!);
           setEditedAccount({ ...editedAccount, background_image: resizedBlob });
         }, "image/jpeg");
       }
@@ -290,9 +291,9 @@ export default function EditAccountPage({
     if (image && image instanceof HTMLCanvasElement) {
       whitenTransparentPixels(image);
       image.toBlob(async function (blob) {
-        const resizedBlob = URL.createObjectURL(blob);
+        const resizedBlob = URL.createObjectURL(blob!);
         const thumbnailBlob = await getResizedImage(
-          URL.createObjectURL(blob),
+          URL.createObjectURL(blob!),
           120,
           120,
           "image/jpeg"
@@ -302,7 +303,7 @@ export default function EditAccountPage({
     }
   };
 
-  const handleTextFieldChange = (key, newValue, isInfoElement) => {
+  const handleTextFieldChange = (key, newValue, isInfoElement = false) => {
     if (isInfoElement)
       setEditedAccount({ ...editedAccount, info: { ...editedAccount.info, [key]: newValue } });
     setEditedAccount({ ...editedAccount, [key]: newValue });
@@ -584,7 +585,7 @@ export default function EditAccountPage({
         };
         return (
           <ActiveHubsSelect
-            info={i}
+            //TODO(unused) info={i}
             hubsToSelectFrom={allHubs.filter(
               (h) =>
                 editedAccount?.info?.hubs.filter((addedHub) => addedHub.url_slug === h.url_slug)
@@ -801,7 +802,7 @@ export default function EditAccountPage({
                 <Avatar
                   alt={editedAccount.name}
                   component="div"
-                  size="large"
+                  //TODO(unused) size="large"
                   src={editedAccount.image}
                   className={classes.avatar}
                 />

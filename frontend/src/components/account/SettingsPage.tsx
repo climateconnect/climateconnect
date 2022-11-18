@@ -205,7 +205,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
             oldpassword: "",
             newpassword: "",
             confirmnewpassword: "",
-            profileurlerror: "",
+            /* profileurlerror: "", */
           });
           window.scrollTo(0, 0);
         })
@@ -282,7 +282,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           emailpreferenceserror: "",
         });
         window.scrollTo(0, 0);
-      } catch (error) {
+      } catch (error: any) {
         setEmailPreferencesLoading(false);
         console.log(error);
         setErrors({
@@ -457,7 +457,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
               />
             }
             key={key}
-            label={possibleEmailPreferences.find((p) => p.key === key).text}
+            label={possibleEmailPreferences.find((p) => p.key === key)!.text}
             className={classes.displayBlock}
           />
         ))}
@@ -499,7 +499,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
               />
             }
             key={key}
-            label={possibleCookiePreferences.find((p) => p.key === key).text}
+            label={possibleCookiePreferences.find((p) => p.key === key)!.text}
             className={classes.displayBlock}
           />
         ))}

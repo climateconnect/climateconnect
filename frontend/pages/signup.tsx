@@ -31,6 +31,7 @@ export default function Signup() {
     last_name: "",
     location: {},
     newsletter: "",
+    sendNewsletter: undefined
   });
   const cookies = new Cookies();
   const { user, locale } = useContext(UserContext);

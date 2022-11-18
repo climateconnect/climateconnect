@@ -92,7 +92,7 @@ export default function Filters({
   possibleFilters,
   selectedItems,
   setSelectedItems,
-}) {
+}: any) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const classes = useStyles({

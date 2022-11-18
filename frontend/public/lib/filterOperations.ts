@@ -37,7 +37,7 @@ export function getKeysOfDifferingValues({ obj, newObj, type, filterChoices, loc
     locale: locale,
   }).map((f) => f.key);
   const locationKeys = getLocationFilterKeys();
-  const differingKeys = [];
+  const differingKeys: string[] = [];
   for (const key of possibleFilterKeys) {
     if (key === "location" && (!newObj[key] || typeof newObj[key] === "object")) {
       let isLocationEqual = true;
@@ -119,7 +119,7 @@ export function getInitialFilters({ filterChoices, locale, initialLocationFilter
 }
 
 //Splits a query array from a url into filters and non-fitlers
-export function splitFiltersFromQueryObject(queryObject, possibleFilters) {
+export function splitFiltersFromQueryObject(queryObject, possibleFilters): any {
   if (!queryObject) return { filters: {}, nonFilters: {} };
   const possibleFilterKeys = possibleFilters.map((f) => f.key);
   const filters = Object.keys(queryObject).reduce((obj, curKey) => {
@@ -169,7 +169,7 @@ export async function applyNewFilters({
   handleSetTabsWhereFiltersWereApplied,
   hubUrl,
   idea,
-}) {
+}: any) {
   // Don't fetch data again if the exact same filters were already applied in this tab
   if (
     !hasDifferingValues({
@@ -218,7 +218,7 @@ export async function applyNewFilters({
   handleSetErrorMessage(null);
 
   try {
-    const payload = {
+    const payload: any = {
       type: type,
       page: 1,
       token: token,
@@ -231,7 +231,7 @@ export async function applyNewFilters({
     if (hubUrl) {
       payload.hubUrl = hubUrl;
     }
-    const filteredItemsObject = await getDataFromServer(payload);
+    const filteredItemsObject: any = await getDataFromServer(payload);
 
     if (type === "members") {
       filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);

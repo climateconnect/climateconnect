@@ -56,7 +56,7 @@ export default function Terms() {
           The adoption of a coral through{" "}
           <a
             href="https://www.coralguardian.org/en/adopt-a-coral/"
-            target_="_blank"
+            target="_blank"
             rel="noreferrer"
           >
             Coral Guardian
@@ -205,7 +205,7 @@ export default function Terms() {
           Die Adoption einer Koralle durch{" "}
           <a
             href="https://www.coralguardian.org/en/adopt-a-coral/"
-            target_="_blank"
+            target="_blank"
             rel="noreferrer"
           >
             Coral Guardian

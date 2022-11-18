@@ -1,4 +1,4 @@
-import { Avatar, Link, makeStyles, Tooltip } from "@material-ui/core";
+import { Avatar, Link, makeStyles, Theme, Tooltip } from "@material-ui/core";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { durationFromMiliseconds } from "../../../../public/lib/dateOperations";
@@ -6,7 +6,7 @@ import { getImageUrl } from "../../../../public/lib/imageOperations";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, {image?: any, width?: number}>((theme) => ({
   treeImageContainer: (props) => ({
     width: props.width,
     backgroundImage: `url('${props.image}')`,
@@ -45,7 +45,7 @@ export default function DonorForestEntry({ donor }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "donate", locale: locale });
   const now = new Date();
-  const timeSinceFirstDonation = now - new Date(donor.started_donating);
+  const timeSinceFirstDonation = now.getTime() - new Date(donor.started_donating).getTime();
   return (
     <Tooltip
       title={`${donor.first_name} ${donor.last_name} ${
@@ -58,7 +58,7 @@ export default function DonorForestEntry({ donor }) {
         </div>
         <Link href={`${getLocalePrefix(locale)}/profiles/${donor.url_slug}`} target="_blank">
           <Avatar
-            size="large"
+            /* TODO(unused) size="large" */
             src={getImageUrl(donor.thumbnail_image ?? donor.image)}
             className={classes.avatar}
           />

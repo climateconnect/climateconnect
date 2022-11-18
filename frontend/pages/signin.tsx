@@ -41,11 +41,11 @@ export default function Signin() {
     href: getLocalePrefix(locale) + "/resetpassword",
   };
 
-  const [errorMessage, setErrorMessage] = React.useState(null);
+  const [errorMessage, setErrorMessage] = React.useState<JSX.Element | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const [initialized, setInitialized] = React.useState(false);
-  const [redirectUrl, setRedirectUrl] = React.useState();
+  const [redirectUrl, setRedirectUrl] = React.useState<string | undefined>();
   useEffect(function () {
     if (!initialized) {
       const params = getParams(window.location.href);

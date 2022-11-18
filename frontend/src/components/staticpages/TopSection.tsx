@@ -77,7 +77,7 @@ const useStyles = makeStyles<Theme, { fixedHeight?: boolean; noMarginBottom?: bo
   })
 );
 
-export default function TopSection({ headline, subHeader, fixedHeight, noMarginBottom }) {
+export default function TopSection({ headline, subHeader, fixedHeight, noMarginBottom }: any) {
   const classes = useStyles({
     fixedHeight: fixedHeight,
     noMarginBottom: noMarginBottom,

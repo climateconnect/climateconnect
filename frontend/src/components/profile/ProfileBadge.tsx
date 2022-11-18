@@ -25,7 +25,7 @@ const useStyles = makeStyles<Theme, { size: string; image?: string }>((theme) =>
   }),
 }));
 
-type Props = { className?: string; badge?; children; size?; contentOnly?: boolean };
+type Props = React.PropsWithChildren<{ className?: string; badge?; size?; contentOnly?: boolean }>;
 export default function ProfileBadge({ className, badge, children, size, contentOnly }: Props) {
   const classes = useStyles({ image: getImageUrl(badge.image), size: size });
   if (contentOnly) {

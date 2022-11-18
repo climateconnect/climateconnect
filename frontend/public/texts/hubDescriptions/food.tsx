@@ -81,7 +81,7 @@ export function getFoodHubDescription() {
           on what actually makes a difference. It’s even sometimes more climate friendly to buy
           products from other countries, produced in acquaintance with the local climate, than in
           your country but using greenhouses. To illustrate this with some numbers:{" "}
-          <Link src="https://www.sciencedirect.com/science/article/abs/pii/S0921800902002616">
+          <Link href="https://www.sciencedirect.com/science/article/abs/pii/S0921800902002616">
             a study{" "}
           </Link>{" "}
           from Sweden shows that tomatoes produced in local greenhouses in Sweden outside of the
@@ -98,7 +98,7 @@ export function getFoodHubDescription() {
           Unterschied macht. Manchmal ist es sogar klimafreundlicher, Produkte aus anderen Ländern
           zu kaufen, die im Einklang mit dem lokalen Klima produziert werden, als in deinem Land, wo
           Gewächshäusern eingesetzt werden müsse. Um dies mit einigen Zahlen zu verdeutlichen:{" "}
-          <Link src="https://www.sciencedirect.com/science/article/abs/pii/S0921800902002616">
+          <Link href="https://www.sciencedirect.com/science/article/abs/pii/S0921800902002616">
             eine Studie{" "}
           </Link>{" "}
           aus Schweden zeigt, dass Tomaten, die in lokalen Gewächshäusern in Schweden außerhalb der

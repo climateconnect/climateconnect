@@ -5,7 +5,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import WideLayout from "../layouts/WideLayout";
 
-export default function WebflowPage({ bodyContent, headContent, pageKey, className, hideFooter }) {
+export default function WebflowPage({ bodyContent, headContent, pageKey, className, hideFooter }: any) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   return (

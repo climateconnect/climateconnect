@@ -8,7 +8,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function ClimateMatchButton({ children, className, wide, onClick }) {
+export default function ClimateMatchButton({ children, className, wide, onClick }: any) {
   const classes = useStyles();
   return (
     <LightBigButton className={`${wide && classes.wide} ${className}`} onClick={onClick}>

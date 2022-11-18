@@ -20,7 +20,7 @@ export default function DetailledDescriptionInput({ title, helpText, value, onCh
     <div>
       <Typography color="primary" variant="h2" className={classes.headline}>
         {title}
-        <Tooltip title={helpText} className={classes.tooltip}>
+        <Tooltip title={helpText} /*TODO(unused) className={classes.tooltip} */>
           <IconButton>
             <HelpOutlineIcon />
           </IconButton>

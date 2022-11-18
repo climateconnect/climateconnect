@@ -30,7 +30,7 @@ export async function getServerSideProps(ctx) {
 
 export default function EditProfilePage({ skillsOptions, availabilityOptions, user }) {
   const { locale } = useContext(UserContext);
-  let infoMetadata = getProfileInfoMetadata(locale);
+  let infoMetadata: any = getProfileInfoMetadata(locale);
   const texts = getTexts({ page: "profile", locale: locale });
   const [errorMessage, setErrorMessage] = useState("");
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
@@ -119,7 +119,7 @@ async function getAvailabilityOptions(token, locale) {
     else {
       return resp.data.results;
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;

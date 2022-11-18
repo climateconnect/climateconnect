@@ -59,29 +59,31 @@ export default function ClimateMatchRoot() {
   const [isLoading, setIsLoading] = useState(true);
   const [fromHub, setFromHub] = useState(null);
   const [hasDoneClimateMatch, setHasDoneClimateMatch] = useState(false);
-  const [userAnswers, setUserAnswers] = useState([]);
+  const [userAnswers, setUserAnswers] = useState<any[]>([]);
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
   const climatematch_token = cookies.get("climatematch_token");
   const { showFeedbackMessage } = useContext(FeedbackContext);
 
   //get initial props after the page loaded
-  useEffect(async function () {
-    //getHubClimateMatchInfo if ?location="..." is set in the url
-    const urlSearchParams = new URLSearchParams(window.location.search);
-    const params = Object.fromEntries(urlSearchParams.entries());
-    if (params.from_hub) setFromHub(params.from_hub);
-    const retrievedQuestionsData = await getQuestions(
-      token,
-      locale,
-      params.location,
-      climatematch_token
-    );
-    setHasDoneClimateMatch(retrievedQuestionsData.has_done_climatematch);
-    setQuestions(retrievedQuestionsData.results);
-    setTotalQuestions(retrievedQuestionsData.total_questions);
-    setUserAnswers(getInitialUserAnswerArray(retrievedQuestionsData.results));
-    setIsLoading(false);
+  useEffect(() => {
+    (async function () {
+      //getHubClimateMatchInfo if ?location="..." is set in the url
+      const urlSearchParams = new URLSearchParams(window.location.search);
+      const params = Object.fromEntries(urlSearchParams.entries()) as any;
+      if (params.from_hub) setFromHub(params.from_hub);
+      const retrievedQuestionsData = await getQuestions(
+        token,
+        locale,
+        params.location,
+        climatematch_token
+      );
+      setHasDoneClimateMatch(retrievedQuestionsData.has_done_climatematch);
+      setQuestions(retrievedQuestionsData.results);
+      setTotalQuestions(retrievedQuestionsData.total_questions);
+      setUserAnswers(getInitialUserAnswerArray(retrievedQuestionsData.results));
+      setIsLoading(false);
+    })();
   }, []);
 
   const goToNextStep = () => {
@@ -98,7 +100,7 @@ export default function ClimateMatchRoot() {
 
   const submitUserQuestionAnswerForClimateMatch = (userAnswers, token, locale) => {
     const climatematch_token = cookies.get("climatematch_token");
-    const payload = {
+    const payload: any = {
       method: "post",
       url: `/api/climatematch_question_answers/`,
       payload: {
@@ -172,7 +174,7 @@ export default function ClimateMatchRoot() {
         <WelcomeToClimateMatch
           isLoading={isLoading}
           goToNextStep={goToNextStep}
-          hub={fromHub}
+          //TODO(unused) hub={fromHub}
           hasDoneClimateMatch={hasDoneClimateMatch}
         />
       ) : (
@@ -194,7 +196,7 @@ const parseUserQuestionAnswers = (userAnswers, questions, user, climatematch_tok
     question_id: q.id,
     answers: userAnswers[i],
   }));
-  const ret = {
+  const ret: any = {
     user_question_answers: userQuestionAnswers,
   };
   if (!user && climatematch_token) {

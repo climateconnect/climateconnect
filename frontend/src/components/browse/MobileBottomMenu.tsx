@@ -44,8 +44,8 @@ export default function MobileBottomMenu({
           centered={true}
         >
           {TYPES_BY_TAB_VALUE.map((t, index) => {
-            const tabProps = {
-              className: classes.tab,
+            const tabProps: any = {
+              //TODO(unused)  className: classes.tab,
             };
             const typeIcon = {
               icon: type_icons[t],

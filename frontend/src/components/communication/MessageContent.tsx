@@ -17,7 +17,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function MessageContent({ content, renderYoutubeVideos }) {
+export default function MessageContent({ content, renderYoutubeVideos = false }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   //workaround to get target="_blank" because setting 'properties' on the Linkify component doesn't work
@@ -48,7 +48,7 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
             let video_id = YouTubeGetID(w);
             const ampersandPosition = video_id.indexOf("&");
             if (ampersandPosition !== -1) video_id = video_id.substring(0, ampersandPosition);
-            return <YouTube videoId={video_id} opts={opts} />;
+            return <YouTube videoId={video_id} opts={opts as any} />;
           } else {
             return <Linkify componentDecorator={componentDecorator}>{w + " "}</Linkify>;
           }

@@ -100,7 +100,7 @@ function CommentInput({
     if (event.key === "Enter") {
       if (event.ctrlKey) {
         if (!curComment) return alert(texts.your_comment_cannot_be_empty);
-        handleSendComment(event, curComment);
+        handleSendComment(event, /*TODO(unused) curComment */);
       } else {
         setShowSendHelper(true);
       }

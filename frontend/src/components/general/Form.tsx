@@ -121,7 +121,7 @@ type Props = {
   usePercentage?: boolean;
   percentage?: number;
   onSubmit: (...args: any[]) => void;
-  errorMessage?: string | null;
+  errorMessage?: JSX.Element | string | null;
   className?: string;
   alignButtonsRight?: boolean;
   fieldClassName?: string;

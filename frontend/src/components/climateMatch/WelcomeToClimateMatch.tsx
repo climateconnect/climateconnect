@@ -99,7 +99,7 @@ export default function WelcomeToClimateMatch({
   location,
   hasDoneClimateMatch,
   isLoading,
-}) {
+}: any) {
   const bottomRef = useRef(null);
   const unfixButtonBar = ElementOnScreen({
     el: bottomRef.current,

@@ -1,4 +1,4 @@
-import { makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import ModeCommentIcon from "@material-ui/icons/ModeComment";
 import React, { useContext } from "react";
@@ -12,7 +12,7 @@ import ProjectCategoriesDisplay from "../project/ProjectCategoriesDisplay";
 import ClimateMatchResultImage from "./ClimateMatchResultImage";
 import IconNumberDisplay from "./IconNumberDisplay";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { displayContactButton?: boolean }>((theme) => ({
   wrapper: (props) => ({
     width: props.displayContactButton ? "100%" : "default",
   }),
@@ -126,7 +126,7 @@ export default function ClimateMatchSuggestionInfo({
   handleClickContact,
   background,
   isInSlider,
-}) {
+}: any) {
   const classes = useStyles({ displayContactButton: displayContactButton });
   const suggestionInfoUnderImage = isInSlider || useMediaQuery<Theme>("(max-width:1525px)");
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("xs"));
@@ -191,7 +191,7 @@ const SuggestionBottomBar = ({ suggestion }) => (
 );
 
 const SuggestionContent = ({ name, description, location, isNarrowScreen }) => {
-  const classes = useStyles();
+  const classes = useStyles({});
   return (
     <div>
       {!isNarrowScreen && (
@@ -206,7 +206,7 @@ const SuggestionContent = ({ name, description, location, isNarrowScreen }) => {
 };
 
 const IdeaBottomBar = ({ idea }) => {
-  const classes = useStyles();
+  const classes = useStyles({});
   return (
     <div className={`${classes.lowerBar} ${classes.lowerBarIdeas}`}>
       <div className={classes.lowerBarLeftSide}>
@@ -230,7 +230,7 @@ const IdeaBottomBar = ({ idea }) => {
 };
 
 const ProjectBottomBar = ({ project }) => {
-  const classes = useStyles();
+  const classes = useStyles({});
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
 

@@ -22,10 +22,7 @@ export type Project = {
   project_parents?: any[];
   tags?: any[];
 };
-export enum CcLocale {
-  en = "en",
-  de = "de",
-}
+export type CcLocale = "en" | "de";
 
 declare module "@material-ui/core/styles/createPalette" {
   // augment theme type with climateconnect custom properties

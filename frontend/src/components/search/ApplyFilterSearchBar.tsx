@@ -16,7 +16,7 @@ export default function ApplyFilterSearchBar({
   onUnselect,
 
   applyFilterToChats,
-}) {
+}: any) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const [open, setOpen] = React.useState(false);

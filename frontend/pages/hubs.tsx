@@ -1,4 +1,4 @@
-import { Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { Container, makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
 import React, { useContext } from "react";
 import { getAllHubs } from "../public/lib/hubOperations";
 import getTexts from "../public/texts/texts";
@@ -58,7 +58,7 @@ export default function Hubs({ hubs }) {
       <NavigationSubHeader allHubs={hubs} />
       <HubHeaderImage
         image="/images/hubs_background.jpg"
-        alt={texts.hubs_overview_image_alt}
+        // TODO(unused) alt={texts.hubs_overview_image_alt}
         fullWidth
       />
       <Container>

@@ -11,6 +11,7 @@ import { getCookieProps } from "../public/lib/cookieOperations";
 import WebSocketService from "../public/lib/webSockets";
 import UserContext from "../src/components/context/UserContext";
 import theme from "../src/themes/theme";
+import { CcLocale } from "../src/types";
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
 
@@ -37,12 +38,12 @@ export default function MyApp({ Component, pageProps = {} }) {
     !["develop", "development", "test"].includes(process.env.ENVIRONMENT!)
   ) {
     ReactGA.initialize(process.env.GOOGLE_ANALYTICS_CODE!, {
-      debug: ["develop", "development", "test"].includes(process.env.ENVIRONMENT),
+      debug: ["develop", "development", "test"].includes(process.env.ENVIRONMENT!),
       gaOptions: {
         cookieDomain: process.env.BASE_URL_HOST,
         anonymizeIp: true,
       },
-    });
+    } as any);
     ReactGA.pageview(pathName ? pathName : "/");
     setGaInitialized(true);
   }
@@ -56,20 +57,20 @@ export default function MyApp({ Component, pageProps = {} }) {
   // into individual state updates for
   // user, and notifications
   const [state, setState] = useState({
-    user: token ? {} : null,
-    notifications: [],
-    donationGoal: null,
+    user: token ? {} : null as any,
+    notifications: [] as any[],
+    donationGoal: null as any,
   });
 
-  const [webSocketClient, setWebSocketClient] = useState(null);
+  const [webSocketClient, setWebSocketClient] = useState<WebSocket | null | undefined>(null);
 
   // Possible socket connection states: "disconnected", "connecting", "connected"
   const [socketConnectionState, setSocketConnectionState] = useState("connecting");
 
   //TODO: reload current path or main page while being logged out
   const signOut = async () => {
-    const develop = ["develop", "development", "test"].includes(process.env.ENVIRONMENT);
-    const cookieProps = {
+    const develop = ["develop", "development", "test"].includes(process.env.ENVIRONMENT!);
+    const cookieProps: any = {
       path: "/",
     };
     if (!develop) cookieProps.domain = "." + API_HOST;
@@ -79,7 +80,7 @@ export default function MyApp({ Component, pageProps = {} }) {
         url: "/logout/",
         token: token,
         payload: {},
-        locale: locale,
+        locale: locale as CcLocale,
       });
       cookies.remove("auth_token", cookieProps);
       setState({
@@ -126,25 +127,27 @@ export default function MyApp({ Component, pageProps = {} }) {
     });
   };
 
-  useEffect(async () => {
-    // Remove the server-side injected CSS.
-    const jssStyles = document.querySelector("#jss-server-side");
-    if (jssStyles) {
-      jssStyles.parentElement.removeChild(jssStyles);
-    }
-    const [fetchedDonationGoal, fetchedUser, fetchedNotifications] = await Promise.all([
-      getDonationGoalData(locale),
-      getLoggedInUser(token),
-      getNotifications(token, locale),
-    ]);
+  useEffect(() => {
+    (async () => {
+      // Remove the server-side injected CSS.
+      const jssStyles: any = document.querySelector("#jss-server-side");
+      if (jssStyles) {
+        jssStyles.parentElement.removeChild(jssStyles);
+      }
+      const [fetchedDonationGoal, fetchedUser, fetchedNotifications] = await Promise.all([
+        getDonationGoalData(locale),
+        getLoggedInUser(token),
+        getNotifications(token, locale),
+      ]);
 
-    setState({
-      ...state,
-      user: fetchedUser,
-      notifications: fetchedNotifications,
-      donationGoal: fetchedDonationGoal,
-    });
-    setLoading(false);
+      setState({
+        ...state,
+        user: fetchedUser,
+        notifications: fetchedNotifications,
+        donationGoal: fetchedDonationGoal,
+      });
+      setLoading(false);
+    })();
   }, []);
 
   useEffect(() => {
@@ -239,8 +242,8 @@ export default function MyApp({ Component, pageProps = {} }) {
     socketConnectionState: socketConnectionState,
     donationGoal: state.donationGoal,
     acceptedNecessary: acceptedNecessary,
-    locale: locale,
-    locales: locales,
+    locale: locale as CcLocale,
+    locales: locales as CcLocale[],
     isLoading: isLoading,
     startLoading: startLoading,
     stopLoading: stopLoading,
@@ -261,7 +264,7 @@ export default function MyApp({ Component, pageProps = {} }) {
 }
 
 const getNotificationsToSetRead = (notifications, pageProps) => {
-  let notifications_to_set_unread = [];
+  let notifications_to_set_unread: any[] = [];
   if (pageProps.comments) {
     const comment_ids = pageProps.comments.map((p) => p.id);
     const comment_notifications_to_set_unread = notifications.filter((n) => {

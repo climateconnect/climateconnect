@@ -51,7 +51,7 @@ export function getInfoMetadataByType(type, locale?) {
   if (type === "projects") return getProjectInfoMetadata();
 }
 
-export function getReducedPossibleFilters(possibleFilters, locationFilter) {
+export function getReducedPossibleFilters(possibleFilters, locationFilter = undefined) {
   const reducedPossibleFilters = possibleFilters.reduce((map, obj) => {
     const locationKeys = getLocationFilterKeys();
     //don't add location keys to the reduced possible filters. They are represented by the locationFilter

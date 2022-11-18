@@ -54,7 +54,7 @@ export default function FeedbackButton({ justLink, children }: any) {
       showFeedbackMessage({
         message: response.data,
       });
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
       console.log(e.response);
     }

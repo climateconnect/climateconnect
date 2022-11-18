@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function QuestionButtonBar({ onForwardClick, onBackClick, disableForward }) {
+export default function QuestionButtonBar({ onForwardClick, onBackClick, disableForward }: any) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "climatematch", locale: locale });

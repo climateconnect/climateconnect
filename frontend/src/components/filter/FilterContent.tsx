@@ -1,3 +1,4 @@
+import { Theme } from "@material-ui/core";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -23,7 +24,7 @@ export const findAllItems = (currentPossibleFilter, selectedFiltersToCheck) => {
   }
 
   // Ensure we've accurate set membership, and iterate over all items to choose from...
-  const items = [];
+  const items: any[] = [];
   currentPossibleFilter.options.forEach((item) => {
     if (selectedFiltersToCheck.has(item.name)) {
       items.push(item);
@@ -124,14 +125,14 @@ export default function FilterContent({
     } else if (Array.isArray(reducedPossibleFilters[key])) {
       // If the query value is concat'd -
       // split into multiple items
-      const splitItems = value.split(",");
+      const splitItems = (value as string).split(",");
       reducedPossibleFilters[key] = [...splitItems];
     } else {
       reducedPossibleFilters[key] = value;
     }
   });
 
-  const [open, setOpen] = useState({});
+  const [open, setOpen] = useState<{prop?: any}>({});
   const [initialized, setInitialized] = useState(false);
   const reduced = reduceFilters(filters, possibleFilters);
 

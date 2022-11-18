@@ -85,7 +85,7 @@ export default function InputWithMentions({ baseUrl, value, onChange, placeholde
             trigger="@"
             markup={`@@@____id__^^____display__@@@^^^`}
             data={lookupUsers}
-            allowSpaceInQuery
+            /*TODO(unused) allowSpaceInQuery */
           />
         </MentionsInput>
       </div>

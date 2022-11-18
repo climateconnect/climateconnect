@@ -100,7 +100,7 @@ const getAvailabilityOptions = async (token, locale) => {
     else {
       return resp.data.results;
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
@@ -119,7 +119,7 @@ const getCategoryOptions = async (token, locale) => {
     else {
       return parseOptions(resp.data.results, "parent_tag");
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
@@ -138,7 +138,7 @@ const getSkillsOptions = async (token, locale) => {
     else {
       return parseOptions(resp.data.results, "parent_skill");
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
@@ -157,7 +157,7 @@ const getRolesOptions = async (token, locale) => {
     else {
       return resp.data.results;
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
@@ -176,7 +176,7 @@ const getStatusOptions = async (token, locale) => {
     else {
       return resp.data.results;
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
@@ -195,7 +195,7 @@ const getUserOrganizations = async (token, locale) => {
     else {
       return resp.data.map((o) => o.organization);
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;

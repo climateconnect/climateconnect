@@ -37,19 +37,19 @@ const useStyles = makeStyles<Theme, ThemeProps>((theme) => ({
 
 type Props = {
   children?: React.ReactNode | undefined;
-  title: string;
+  title?: string;
   message?: string;
   messageType?: string;
   isLoading?: string;
-  fixedHeader?: string;
-  transparentHeader?: string;
+  fixedHeader?: boolean;
+  transparentHeader?: boolean;
   isStaticPage?: boolean;
-  noFeedbackButton?: string;
+  noFeedbackButton?: boolean;
   noSpaceBottom?: boolean;
   showOnScrollUp?: boolean;
   largeFooter?: boolean;
   description?: string;
-  landingPage?: string;
+  landingPage?: boolean;
   headerBackground?: string;
   subHeader?: JSX.Element;
   image?: string;

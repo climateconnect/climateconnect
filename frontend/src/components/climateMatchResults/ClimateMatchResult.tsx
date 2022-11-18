@@ -1,4 +1,4 @@
-import { Box, Link, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { Box, Link, makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
 import Router from "next/router";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
@@ -11,9 +11,9 @@ import ClimateMatchResultFirstLine from "./ClimateMatchResultFirstLine";
 import ClimateMatchSuggestionInfo from "./ClimateMatchSuggestionInfo";
 import ProjectsSlider from "./ProjectsSlider";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { addBackground?: boolean }>((theme) => ({
   root: (props) => ({
-    background: props.addBackground && theme.palette.secondary.extraLight,
+    background: props.addBackground ? theme.palette.secondary.extraLight : undefined,
     width: "100%",
     padding: theme.spacing(2),
     "&:hover": {

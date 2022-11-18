@@ -9,7 +9,7 @@ export async function getAllHubs(locale: any, just_sector_hubs?: boolean) {
       locale: locale,
     });
     return resp.data.results;
-  } catch (err) {
+  } catch (err: any) {
     if (err.response && err.response.data)
       console.log("Error in getHubData: " + err.response.data.detail);
     console.log(err);

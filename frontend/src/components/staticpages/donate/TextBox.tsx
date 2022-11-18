@@ -14,6 +14,17 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+type Props = {
+  className?: any;
+  headlineClass?: any;
+  textBodyClass?: any;
+  icon?: any;
+  text?: any;
+  headline?: any;
+  children?: any;
+  subPoints?: any;
+  subHeadlineClass?: any;
+};
 export default function TextBox({
   className,
   headlineClass,
@@ -24,7 +35,7 @@ export default function TextBox({
   children,
   subPoints,
   subHeadlineClass,
-}) {
+}: Props) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
   return (

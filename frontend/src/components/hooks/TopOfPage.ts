@@ -1,7 +1,7 @@
 //global imports
 import { useState, useEffect } from "react";
 
-export default function TopOfPage({ initTopOfPage, marginToTrigger }) {
+export default function TopOfPage({ initTopOfPage, marginToTrigger }: any) {
   const [topOfPage, setTopOfPage] = useState(initTopOfPage);
 
   useEffect(() => {

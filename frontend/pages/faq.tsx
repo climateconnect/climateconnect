@@ -94,8 +94,8 @@ export async function getServerSideProps(ctx) {
 
   return {
     props: {
-      questionsBySection: questions.by_section,
-      questions: questions.all,
+      questionsBySection: questions!.by_section,
+      questions: questions!.all,
     },
   };
 }
@@ -172,7 +172,7 @@ const getQuestionsWithAnswers = async (token, locale) => {
       by_section: sortBySection(resp.data.results),
       all: resp.data.results,
     };
-  } catch (err) {
+  } catch (err: any) {
     if (err.response && err.response.data) {
       console.log(err.response.data);
     } else console.log(err);

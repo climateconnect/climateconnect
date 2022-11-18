@@ -1,5 +1,5 @@
 import { makeStyles } from "@material-ui/core/styles";
-import { Container, Divider, Tab, Tabs, useMediaQuery } from "@material-ui/core";
+import { Container, Divider, Tab, Tabs, Theme, useMediaQuery } from "@material-ui/core";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import _ from "lodash";
 import React, { useContext, useEffect, useRef, useState, Suspense, useMemo } from "react";
@@ -82,7 +82,7 @@ export default function BrowseContent({
   resetTabsWhereFiltersWereApplied,
   hubUrl,
   hubAmbassador,
-}) {
+}: any) {
   const initialState = {
     items: {
       projects: initialProjects ? [...initialProjects.projects] : [],
@@ -122,18 +122,18 @@ export default function BrowseContent({
   }
   const { locale } = useContext(UserContext);
   const texts = useMemo(() => getTexts({ page: "general", locale: locale }), [locale]);
+
+  const [hash, setHash] = useState<string | null>(null);
+  const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
+
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const isMobileScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("xs"));
   const type_names = {
     projects: texts.projects,
     organizations: isNarrowScreen ? texts.orgs : texts.organizations,
     members: texts.members,
     ideas: texts.ideas,
   };
-  const [hash, setHash] = useState(null);
-  const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
-
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
-  const isMobileScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("xs"));
-
   // Always default to filters being expanded
   const [filtersExpanded, setFiltersExpanded] = useState(true);
   // On mobile filters take up the whole screen so they aren't expanded by default
@@ -147,18 +147,20 @@ export default function BrowseContent({
   };
 
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
-  const [userOrganizations, setUserOrganizations] = useState(null);
+  const [userOrganizations, setUserOrganizations] = useState<any>(null);
   const handleSetLocationOptionsOpen = (bool) => {
     setLocationOptionsOpen(bool);
   };
   //When switching to the ideas tab: catch the orgs the user is a part of.
   //This info is required to share an idea
-  useEffect(async function () {
-    if (tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas") && userOrganizations === null) {
-      setUserOrganizations("");
-      const userOrgsFromServer = await getUserOrganizations(token, locale);
-      setUserOrganizations(userOrgsFromServer || []);
-    }
+  useEffect(() => {
+    (async function () {
+      if (tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas") && userOrganizations === null) {
+        setUserOrganizations("");
+        const userOrgsFromServer = await getUserOrganizations(token, locale);
+        setUserOrganizations(userOrgsFromServer || []);
+      }
+    })();
   });
   // We have 2 distinct loading states: filtering, and loading more data. For
   // each state, we want to treat the loading spinner a bit differently, hence
@@ -166,7 +168,7 @@ export default function BrowseContent({
   const [isFiltering, setIsFiltering] = useState(false);
   const [isFetchingMoreData, setIsFetchingMoreData] = useState(false);
 
-  const hasQueryParams = (Object.keys(getSearchParams(window.location.search)).length === 0) !== 0;
+  const hasQueryParams = Object.keys(getSearchParams(window.location.search)).length !== 0;
 
   const { showFeedbackMessage } = useContext(FeedbackContext);
   /**
@@ -215,7 +217,7 @@ export default function BrowseContent({
       }
 
       if (initialLocationFilter) {
-        const locationFilter = possibleFilters.find((f) => f.type === "location");
+        const locationFilter: any = possibleFilters.find((f) => f.type === "location");
         newFilters[locationFilter.key] = initialLocationFilter;
       }
       // Apply new filters with the query object immediately:
@@ -260,10 +262,10 @@ export default function BrowseContent({
         filterChoices: filterChoices,
         locale: locale,
       });
-      const locationFilter = possibleFilters.find((f) => f.type === "location");
+      const locationFilter: any = possibleFilters.find((f) => f.type === "location");
       queryObject[locationFilter.key] = filters[locationFilter.key];
-      const splitQueryObject = splitFiltersFromQueryObject(newFilters, possibleFilters);
-
+      const splitQueryObject = splitFiltersFromQueryObject(/*TODO(undefined) newFilters*/ queryObject, possibleFilters);
+      
       const newFilters = { ...emptyFilters, ...splitQueryObject.filters };
       const tabValue = TYPES_BY_TAB_VALUE[newValue];
       // Apply new filters with the query object immediately:
@@ -298,7 +300,7 @@ export default function BrowseContent({
       locale: locale,
     });
     const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFiltersMetadata);
-    for (const [key, value] of Object.entries(splitQueryObject.filters)) {
+    for (const [key, value] of Object.entries(splitQueryObject.filters) as any) {
       const metadata = possibleFiltersMetadata.find((f) => f.key === key);
 
       if (value.indexOf(",") > 0) {
@@ -522,7 +524,7 @@ export default function BrowseContent({
             centered={true}
           >
             {TYPES_BY_TAB_VALUE.map((t, index) => {
-              const tabProps = {
+              const tabProps: any = {
                 label: type_names[t],
                 className: classes.tab,
               };
@@ -542,7 +544,7 @@ export default function BrowseContent({
             tabValue={tabValue}
             handleTabChange={handleTabChange}
             TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
-            type_names={type_names}
+            //TODO(unused) type_names={type_names}
             organizationsTabRef={organizationsTabRef}
             hubAmbassador={hubAmbassador}
           />
@@ -553,7 +555,7 @@ export default function BrowseContent({
         <Suspense fallback={<LoadingSpinner isLoading />}>
           <TabContentWrapper type={"projects"} {...tabContentWrapperProps}>
             <ProjectPreviews
-              className={classes.itemsContainer}
+              //TODO(unused) className={classes.itemsContainer}
               hasMore={state.hasMore.projects}
               loadFunc={() => handleLoadMoreData("projects")}
               parentHandlesGridItems

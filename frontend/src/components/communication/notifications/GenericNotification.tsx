@@ -6,6 +6,7 @@ import {
   ListItemIcon,
   ListItemText,
   makeStyles,
+  Theme,
 } from "@material-ui/core";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
@@ -15,7 +16,7 @@ import { StyledMenuItem } from "./Notification";
 import CloseIcon from "@material-ui/icons/Close";
 import Cookies from "universal-cookie";
 
-const useStyles = makeStyles((theme) => {
+const useStyles = makeStyles<Theme, {}>((theme) => {
   return {
     messageSender: {
       fontWeight: 600,
@@ -40,7 +41,7 @@ const useStyles = makeStyles((theme) => {
       overflow: "hidden",
       WebkitBoxOrient: "vertical",
       display: "-webkit-box",
-      WebkitLineClamp: "1",
+      WebkitLineClamp: 1,
       wordBreak: "break-word",
     },
     deleteIcon: {
@@ -54,6 +55,14 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
+type Props = {
+  link: any;
+  primaryText: any;
+  secondaryText?: any;
+  notificationIcon?: any;
+  avatar?: any;
+  notification: any;
+};
 export default function GenericNotification({
   link,
   primaryText,
@@ -61,7 +70,7 @@ export default function GenericNotification({
   notificationIcon,
   avatar,
   notification,
-}) {
+}: Props) {
   const token = new Cookies().get("auth_token");
   const { locale, setNotificationsRead, refreshNotifications, hideNotification } = useContext(
     UserContext

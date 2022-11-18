@@ -97,20 +97,20 @@ export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
   const [showScrollToTop, setShowScrollToTop] = useState(false);
   //holds projects, organizations and hubs
-  const [elements, setElements] = useState({});
+  const [elements, setElements] = useState<any>({});
   useEffect(() => {
     const initialize = async () => {
       if (!initialized && isLoading) {
-        setPos(document.scrollingElement.scrollTop < 50 ? "top" : "moved");
+        setPos(document.scrollingElement!.scrollTop < 50 ? "top" : "moved");
         document.addEventListener("scroll", () => {
-          const scrolled = document.scrollingElement.scrollTop;
+          const scrolled = document.scrollingElement!.scrollTop;
           if (scrolled < 50) {
             setPos("top");
           } else {
             setPos("moved");
           }
         });
-        const projects = await getProjects(locale);
+        const projects = await getProjects(undefined, locale);
         const organizations = await getOrganizations(locale);
         const hubs = await getHubs(locale);
         setElements({
@@ -133,16 +133,16 @@ export default function Index() {
     return () => document.removeEventListener("scroll", toggleScrollToTop);
   }, []);
 
-  const contentRef = useRef(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
   const scrollToTopRef = useRef(null);
 
-  const scrollToContent = () => contentRef.current.scrollIntoView({ behavior: "smooth" });
+  const scrollToContent = () => contentRef.current!.scrollIntoView({ behavior: "smooth" });
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   return (
     <WideLayout
-      hideTitle
+      /*TODO(unused) hideTitle */
       fixedHeader
       transparentHeader={pos === "top"}
       noFeedbackButton
@@ -151,7 +151,7 @@ export default function Index() {
       landingPage
     >
       <div className={`${classes.root} ${isLoading && classes.hideOverFlowY}`}>
-        <LandingTopBox scrollToContent={scrollToContent} />
+        <LandingTopBox /*TODO(unused) scrollToContent={scrollToContent}  */ />
         <div className={classes.lowerPart}>
           <div id="info" ref={contentRef} className={classes.contentRef} />
           <ExplainerBox h1ClassName={classes.h1ClassName} className={classes.explainerBox} />
@@ -209,7 +209,7 @@ const getProjects = async (token, locale) => {
     }
 
     return parseProjects(resp.data.results);
-  } catch (err) {
+  } catch (err: any) {
     if (err.response && err.response.data) {
       console.log("Error: ");
       console.log(err.response.data);
@@ -227,7 +227,7 @@ const getOrganizations = async (locale) => {
     });
     if (resp.data.length === 0) return null;
     else return parseOrganizations(resp.data.results);
-  } catch (err) {
+  } catch (err: any) {
     if (err.response && err.response.data) {
       console.log("Error: ");
       console.log(err.response.data);
@@ -261,7 +261,7 @@ const getHubs = async (locale) => {
       locale: locale,
     });
     return resp.data.results.slice(0, 4);
-  } catch (err) {
+  } catch (err: any) {
     if (err.response && err.response.data)
       console.log("Error in getHubData: " + err.response.data.detail);
     console.log(err);

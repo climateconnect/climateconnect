@@ -5,7 +5,7 @@ import { SHORT_DESCRIPTION_MAX_LENGTH } from "../../src/components/ideas/createI
 const ONE_WEEK_IN_MINISECONDS = 1000 * 60 * 60 * 24 * 7;
 
 export default function getIdeaTexts({ idea, creator }) {
-  const olderThanOneWeek = new Date() - new Date(idea?.created_at) > ONE_WEEK_IN_MINISECONDS;
+  const olderThanOneWeek = new Date().getTime() - new Date(idea?.created_at).getTime() > ONE_WEEK_IN_MINISECONDS;
 
   return {
     share_your_idea_and_find_the_right_collaborators: {

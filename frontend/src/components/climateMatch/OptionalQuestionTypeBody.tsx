@@ -1,4 +1,4 @@
-import { Chip, Container, makeStyles, useMediaQuery } from "@material-ui/core";
+import { Chip, Container, makeStyles, Theme, useMediaQuery } from "@material-ui/core";
 import React from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import climateMatchStyles from "../../../public/styles/climateMatchStyles";
@@ -6,7 +6,7 @@ import theme from "../../themes/theme";
 import ClimateMatchHeadline from "./ClimateMatchHeadline";
 import QuestionButtonBar from "./QuestionButtonBar";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
   ...climateMatchStyles(theme),
   headline: {
     marginTop: theme.spacing(4),

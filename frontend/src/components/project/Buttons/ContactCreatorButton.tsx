@@ -83,7 +83,7 @@ export default function ContactCreatorButton({
   customCardWidth,
   withInfoCard,
   collapsable,
-}) {
+}: any) {
   const classes = useStyles({
     explanationBackground: explanationBackground,
     customCardWidth: customCardWidth,

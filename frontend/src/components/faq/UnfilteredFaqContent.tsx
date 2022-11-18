@@ -38,7 +38,7 @@ export default function UnfilteredFaqContent({ questionsBySection }) {
       >
         {Object.keys(questionsBySection).map((key, index) => (
           <Tab
-            className={classes.tab}
+            /*TODO(undefined) className={classes.tab} */
             key={`${key}-${index}-tab`}
             label={Object.keys(questionsBySection)[index].toUpperCase()}
           />

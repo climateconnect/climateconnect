@@ -1,4 +1,4 @@
-const DEVELOPMENT = ["development", "develop", "test"].includes(process.env.ENVIRONMENT);
+const DEVELOPMENT = ["development", "develop", "test"].includes(process.env.ENVIRONMENT!);
 import imageCompression from "browser-image-compression";
 
 export function getImageUrl(url) {
@@ -35,7 +35,7 @@ export async function getResizedImage(blob, width, height, type, forceExactSize?
 
 function getResizedBlob(image, width, height, type) {
   const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
+  const context = canvas.getContext("2d")!;
   canvas.width = width;
   canvas.height = height;
   context.fillStyle = "#fff";
@@ -43,7 +43,7 @@ function getResizedBlob(image, width, height, type) {
   context.drawImage(image, 0, 0, width, height);
   return new Promise(function (resolve) {
     canvas.toBlob(function (blob) {
-      resolve(URL.createObjectURL(blob));
+      resolve(URL.createObjectURL(blob!));
     }, type);
   });
 }
@@ -82,7 +82,7 @@ export async function getCompressedJPG(file, maxSizeMB) {
             useWebWorker: true,
           };
           try {
-            const compressedFile = await imageCompression(blob, options);
+            const compressedFile = await imageCompression(blob as File, options);
             resolve(URL.createObjectURL(compressedFile));
           } catch (error) {
             console.log(error);
@@ -130,7 +130,7 @@ export async function blobFromObjectUrl(objectUrl) {
   const blob = await fetch(objectUrl).then((r) => r.blob());
   return new Promise(function (resolve) {
     a.onload = function (e) {
-      resolve(e.target.result);
+      resolve(e.target!.result);
     };
     a.readAsDataURL(blob);
   });

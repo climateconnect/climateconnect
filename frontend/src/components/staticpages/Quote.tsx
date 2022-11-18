@@ -52,7 +52,7 @@ const useStyles = makeStyles<Theme, { noPadding?: boolean }>((theme) => ({
   },
 }));
 
-export default function Quote({ text, className, textClassName, quoteIconClassName, noPadding }) {
+export default function Quote({ text, className, textClassName, quoteIconClassName, noPadding }: any) {
   const classes = useStyles({ noPadding: noPadding });
   return (
     <Container className={`${className} ${classes.root}`}>

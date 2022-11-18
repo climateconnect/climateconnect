@@ -102,7 +102,7 @@ const useStyles = makeStyles((theme) => {
 });
 
 export async function getServerSideProps(ctx) {
-  const { goal_name, goal_amount, current_amount } = await getDonations(ctx.locale);
+  const { goal_name, goal_amount, current_amount } = (await getDonations(ctx.locale))!;
   return {
     props: {
       goal_name: goal_name,
@@ -278,7 +278,7 @@ const getDonations = async (locale) => {
       goal_amount: resp.data.amount ? resp.data.amount : null,
       current_amount: resp.data.current_amount ? resp.data.current_amount : null,
     };
-  } catch (err) {
+  } catch (err: any) {
     if (err.response && err.response.data) {
       console.log(err.response.data);
     } else console.log(err);

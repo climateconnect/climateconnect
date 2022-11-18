@@ -2,8 +2,8 @@ import Router from "next/router";
 import getTexts from "../texts/texts";
 import { getImageUrl } from "./imageOperations";
 
-export function parseProfile(profile, detailledSkills, keepOldProps) {
-  let user = { info: {} };
+export function parseProfile(profile, detailledSkills, keepOldProps = false) {
+  let user: any = { info: {} };
   if (keepOldProps) {
     user.first_name = profile.first_name;
   }

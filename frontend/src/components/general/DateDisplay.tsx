@@ -21,7 +21,7 @@ const shorten = (strings, languageCode) => {
   }, {});
 };
 
-export default function DateDisplay({ date, className, short }) {
+export default function DateDisplay({ date, className, short = false }) {
   const { locale } = useContext(UserContext);
   const formatters = {
     de: short ? shorten(germanStrings, "de") : germanStrings,
