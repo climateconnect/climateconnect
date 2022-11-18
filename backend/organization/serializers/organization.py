@@ -11,8 +11,9 @@ from organization.models import (
     Organization,
     OrganizationMember,
     OrganizationTranslation,
+    OrganizationFollower,
 )
-from organization.models.project import Project, ProjectParents
+from organization.models.project import ProjectParents
 from organization.serializers.tags import OrganizationTaggingSerializer
 from organization.serializers.translation import OrganizationTranslationSerializer
 from organization.utility.organization import (
@@ -50,6 +51,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
     language = serializers.SerializerMethodField()
     hubs = serializers.SerializerMethodField()
     creator = serializers.SerializerMethodField()
+    number_of_followers = serializers.SerializerMethodField()
     get_involved = serializers.SerializerMethodField()
 
     class Meta:
@@ -72,6 +74,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
             "organization_size",
             "hubs",
             "creator",
+            "number_of_followers",
             "get_involved",
         )
 
@@ -119,6 +122,22 @@ class OrganizationSerializer(serializers.ModelSerializer):
             return creator_data
         except (OrganizationMember.DoesNotExist, UserProfile.DoesNotExist):
             print("No creator!")
+
+    def get_number_of_followers(self, obj):
+        return obj.organization_following.count()
+
+
+class OrganizationFollowerSerializer(serializers.ModelSerializer):
+    user_profile = serializers.SerializerMethodField()
+
+    class Meta:
+        model = OrganizationFollower
+        fields = ("user_profile", "created_at")
+
+    def get_user_profile(self, obj):
+        user_profile = UserProfile.objects.get(user=obj.user)
+        serializer = UserProfileStubSerializer(user_profile)
+        return serializer.data
 
 
 class EditOrganizationSerializer(OrganizationSerializer):
@@ -263,3 +282,14 @@ class OrganizationSitemapEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = ("url_slug", "updated_at")
+
+
+class OrganizationNotificationSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Organization
+        fields = ("name", "url_slug")
+
+    def get_name(self, obj):
+        return get_organization_name(obj, get_language())
