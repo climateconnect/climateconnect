@@ -1,11 +1,13 @@
 import {
   Badge,
+  Chip,
   Divider,
   List,
   ListItem,
   ListItemText,
   Typography,
   useMediaQuery,
+  Avatar,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
@@ -13,7 +15,7 @@ import React, { useContext } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import Truncate from "react-truncate";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
-import { getDateTime } from "../../../../public/lib/dateOperations";
+import { getChatPreviewDataTime, getDateTime } from "../../../../public/lib/dateOperations";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
 import LoadingSpinner from "../../general/LoadingSpinner";
@@ -26,10 +28,23 @@ const useStyles = makeStyles((theme) => {
     date: {
       color: theme.palette.grey[600],
     },
-    unreadBadge: {
-      "& span": {
-        backgroundColor: theme.palette.success.main,
-      },
+
+    previewContent: {
+      display: "flex",
+      height: 50,
+    },
+    time: {
+      backgroundColor: "white",
+    },
+    previewTextContent: {
+      display: "flex",
+      alignItems: "flex-start",
+      flexDirection: "column",
+      justifyContent: "center",
+      width: "100%",
+      marginRight: theme.spacing(1),
+      marginTop: theme.spacing(1),
+      marginBottom: theme.spacing(1),
     },
     unread: {
       color: theme.palette.success.main,
@@ -43,12 +58,22 @@ const useStyles = makeStyles((theme) => {
     unreadPreview: {
       fontWeight: "bold",
     },
-    badgeAndTimeContainer: {
-      float: "right",
-      height: 40,
+    needToReplyContainer: {
+      marginRight: theme.spacing(1),
       display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
+      alignItems: "center",
+      marginTop: theme.spacing(0.5),
+    },
+    needToReplyChip: {
+      borderRadius: 30,
+      maxHeight: 30,
+    },
+    unreadAvatar: {
+      backgroundColor: theme.palette.success.main,
+    },
+    timeContainer: {
+      display: "flex",
+      textAlign: "right",
       alignItems: "center",
     },
     NoChatsMessage: {
@@ -59,6 +84,9 @@ const useStyles = makeStyles((theme) => {
     },
     listItem: {
       display: "flex",
+    },
+    avatarLabelText: {
+      color: "white",
     },
   };
 });
@@ -111,6 +139,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabl
           isNarrowScreen={isNarrowScreen}
           chat={chat}
           locale={locale}
+          texts={texts}
         />
       ))}
       <LoadingSpinner />
@@ -118,7 +147,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabl
   );
 }
 
-const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
+const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale, texts }) => {
   const lastAction = chat.last_message ? chat.last_message.sent_at : chat.created_at;
   if (!lastAction) console.log(chat);
   const classes = useStyles();
@@ -151,31 +180,49 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
           )}
           <ListItemText
             secondary={
-              <>
-                <Truncate
-                  lines={1}
-                  className={`${classes.contentPreview} ${
-                    chat.unread_count ? classes.unreadPreview : ""
-                  }`}
-                  ellipsis={"..."}
-                >
-                  {chat.content}
-                </Truncate>
-                <span className={classes.badgeAndTimeContainer}>
-                  <span>
-                    <span className={classes.time}>{getDateTime(lastAction)}</span>
-                  </span>
-                  {chat.unread_count > 0 && (
-                    <span>
-                      <Badge
-                        color="primary"
-                        className={classes.unreadBadge}
-                        badgeContent={chat.unread_count}
-                      />
-                    </span>
+              <div className={classes.previewContent}>
+                <div className={classes.previewTextContent}>
+                  <Truncate
+                    lines={1}
+                    className={`${classes.contentPreview} ${
+                      chat.unread_count ? classes.unreadPreview : ""
+                    }`}
+                    ellipsis={"..."}
+                  >
+                    {chat.content}
+                  </Truncate>
+                  {(!chat.last_message || chat.last_message.last_sender !== chat.user.id) && (
+                    <div className={classes.needToReplyContainer}>
+                      {chat.unread_count > 0 ? (
+                        <Chip
+                          avatar={
+                            <Avatar className={classes.unreadAvatar}>
+                              <div className={classes.avatarLabelText}>
+                                {chat.unread_count > 0 && chat.unread_count}
+                              </div>
+                            </Avatar>
+                          }
+                          className={classes.needToReplyChip}
+                          variant="outlined"
+                          label={texts.you_havent_replied}
+                        ></Chip>
+                      ) : (
+                        <Chip
+                          className={classes.needToReplyChip}
+                          variant="outlined"
+                          label={texts.you_havent_replied}
+                        ></Chip>
+                      )}
+                    </div>
                   )}
-                </span>
-              </>
+                </div>
+
+                <div className={classes.timeContainer}>
+                  <span>
+                    <span className={classes.time}>{getChatPreviewDataTime(lastAction, texts.today_at)}</span>
+                  </span>
+                </div>
+              </div>
             }
           />
         </ListItem>

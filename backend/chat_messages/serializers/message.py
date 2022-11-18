@@ -64,7 +64,7 @@ class MessageParticipantSerializer(serializers.ModelSerializer):
     def get_last_message(self, obj):
         last_message = Message.objects.filter(message_participant=obj).first()
         if last_message:
-            return {"content": last_message.content, "sent_at": last_message.sent_at}
+            return {"content": last_message.content, "sent_at": last_message.sent_at, "last_sender": last_message.sender.id}
         else:
             return None
 

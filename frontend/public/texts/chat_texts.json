@@ -166,5 +166,13 @@
   "no_chats_found_for_this_search": {
     "en": "No matches found for your search",
     "de": "Keine Suchergebnisse gefunden"
+  },
+  "you_havent_replied": {
+    "en": "You haven't replied yet",
+    "de": "Du hast noch nicht geantwortet"
+  },
+  "today_at": {
+    "en": "Today at ",
+    "de": "Heute um "
   }
 }

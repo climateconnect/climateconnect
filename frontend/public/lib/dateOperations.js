@@ -7,6 +7,13 @@ export function getDateTime(rawDate) {
   else return format(date, "MMM dd yyyy HH:mm");
 }
 
+export function getChatPreviewDataTime(rawDate, todayText) {
+  const date = new Date(rawDate);
+  if (isToday(date)) return todayText + format(date, "hh:mm");
+  if (isThisYear(date)) return format(date, "MMM dd HH:mm");
+  else return format(date, "MMM dd yyyy HH:mm");
+}
+
 export function durationFromMiliseconds(miliseconds, texts) {
   const yearInMiliseconds = 1000 * 60 * 60 * 24 * 365;
   const monthInMiliseconds = 1000 * 60 * 60 * 24 * 30;
