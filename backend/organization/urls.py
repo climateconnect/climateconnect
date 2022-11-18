@@ -61,6 +61,21 @@ urlpatterns = [
         name="featured-organizations-api-view",
     ),
     path(
+        "organizations/<str:url_slug>/set_follow/",
+        organization_views.SetFollowView.as_view(),
+        name="set-follow-view",
+    ),
+    path(
+        "organizations/<str:url_slug>/am_i_following/",
+        organization_views.IsUserFollowing.as_view(),
+        name="am-i-following-view",
+    ),
+    path(
+        "organizations/<str:url_slug>/followers/",
+        organization_views.ListOrganizationFollowersView.as_view(),
+        name="list-followers-view",
+    ),
+    path(
         "look_up_organization/",
         organization_views.LookUpOrganizationAPIView.as_view(),
         name="look-up-organization-api-view",

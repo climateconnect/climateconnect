@@ -1,11 +1,13 @@
 from organization.models.members import MembershipRequests
-from chat_messages.models.message import MessageParticipants, MessageReceiver
+from chat_messages.models.message import MessageParticipants
 from django.contrib.auth.models import User
 from django.db import models
 from ideas.models.comment import IdeaComment
 from ideas.models.support import IdeaSupporter
 from organization.models.content import Post, PostComment, ProjectComment
-from organization.models.followers import ProjectFollower
+from organization.models.followers import ProjectFollower, OrganizationFollower
+from organization.models.organization_project_published import OrgProjectPublished
+
 from organization.models.likes import ProjectLike
 
 
@@ -28,6 +30,8 @@ class Notification(models.Model):
     IDEA_COMMENT = 13
     REPLY_TO_IDEA_COMMENT = 14
     PERSON_JOINED_IDEA = 15
+    ORGANIZATION_FOLLOWER = 16
+    ORG_PROJECT_PUBLISHED = 17
     NOTIFICATION_TYPES = (
         (BROADCAST, "broadcast"),
         (PRIVATE_MESSAGE, "private_message"),
@@ -45,6 +49,8 @@ class Notification(models.Model):
         (IDEA_COMMENT, "idea_comment"),
         (REPLY_TO_IDEA_COMMENT, "reply_to_idea_comment"),
         (PERSON_JOINED_IDEA, "person_joined_idea"),
+        (ORGANIZATION_FOLLOWER, "organization_follower"),
+        (ORG_PROJECT_PUBLISHED, "org_project_published"),
     )
 
     notification_type = models.IntegerField(
@@ -148,6 +154,23 @@ class Notification(models.Model):
         help_text="Time when participants started a messaging",
         verbose_name="Created at",
         auto_now_add=True,
+    )
+
+    organization_follower = models.ForeignKey(
+        OrganizationFollower,
+        related_name="notification_organization_follower",
+        verbose_name="Organization Follower",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+    org_project_published = models.ForeignKey(
+        OrgProjectPublished,
+        related_name="notification_org_project_published",
+        verbose_name="Org Project Published",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
     )
 
 
