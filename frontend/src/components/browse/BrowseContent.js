@@ -262,13 +262,9 @@ export default function BrowseContent({
       });
       const locationFilter = possibleFilters.find((f) => f.type === "location");
       queryObject[locationFilter.key] = filters[locationFilter.key];
-      
       const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFilters);
-   
-      
       const newFilters = { ...emptyFilters, ...splitQueryObject.filters };
       const tabValue = TYPES_BY_TAB_VALUE[newValue];
-      console.log(newFilters);
       // Apply new filters with the query object immediately:
       handleApplyNewFilters({
         type: tabValue,
@@ -370,7 +366,6 @@ export default function BrowseContent({
    * state, and persists the new filters as query params in the URL.
    */
   const handleApplyNewFilters = async ({ type, newFilters, closeFilters, nonFilterParams }) => {
-    console.log(newFilters);
     const newUrl = getFilterUrl({
       activeFilters: newFilters,
       infoMetadata: getInfoMetadataByType(type),
@@ -397,7 +392,6 @@ export default function BrowseContent({
 
     handleSetErrorMessage("");
     setIsFiltering(true);
-    console.log("applying filter");
     const res = await applyNewFilters({
       type: type,
       newFilters: newFilters,
@@ -419,7 +413,6 @@ export default function BrowseContent({
       });
     }
     setIsFiltering(false);
-    console.log("filter applied");
   };
 
   /**

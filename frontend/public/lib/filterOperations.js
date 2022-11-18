@@ -37,7 +37,6 @@ export function getKeysOfDifferingValues({ obj, newObj, type, filterChoices, loc
     locale: locale,
   }).map((f) => f.key);
   const locationKeys = getLocationFilterKeys();
-  console.log(locationKeys);
   const differingKeys = [];
   for (const key of possibleFilterKeys) {
     if (key === "location" && (!newObj[key] || typeof newObj[key] === "object")) {
@@ -71,7 +70,6 @@ export function getKeysOfDifferingValues({ obj, newObj, type, filterChoices, loc
       differingKeys.push(key);
     }
   }
-  console.log(differingKeys);
   return differingKeys;
 }
 
@@ -183,7 +181,6 @@ export async function applyNewFilters({
     }) &&
     tabsWhereFiltersWereApplied.includes(type)
   ) {
-    console.log("Here");
     return;
   }
   //Record the tabs in which the filters were applied already

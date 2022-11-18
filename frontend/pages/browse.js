@@ -80,7 +80,6 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter }) {
   };
 
   const handleApplyNewFilters = async ({ type, newFilters, closeFilters }) => {
-    console.log(newFilters);
     return await applyNewFilters({
       type: type,
       filters: filters,
