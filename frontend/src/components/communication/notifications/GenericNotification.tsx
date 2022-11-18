@@ -50,8 +50,8 @@ const useStyles = makeStyles<Theme, {}>((theme) => {
     },
     content: {
       display: "flex",
-      alignItems: "center"
-    }
+      alignItems: "center",
+    },
   };
 });
 

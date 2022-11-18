@@ -57,7 +57,7 @@ export default function MyApp({ Component, pageProps = {} }) {
   // into individual state updates for
   // user, and notifications
   const [state, setState] = useState({
-    user: token ? {} : null as any,
+    user: token ? {} : (null as any),
     notifications: [] as any[],
     donationGoal: null as any,
   });

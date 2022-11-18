@@ -19,7 +19,13 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function Switcher({ trueLabel, falseLabel, value, required, handleChangeValue }: any) {
+export default function Switcher({
+  trueLabel,
+  falseLabel,
+  value,
+  required,
+  handleChangeValue,
+}: any) {
   const classes = useStyles();
 
   const handleValueChange = (event) => {

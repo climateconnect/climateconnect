@@ -155,7 +155,7 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
               <>
                 <Truncate
                   lines={1}
-                  className={`${""/*TODO(undefined) classes.contentPreview*/} ${
+                  className={`${"" /*TODO(undefined) classes.contentPreview*/} ${
                     chat.unread_count ? classes.unreadPreview : ""
                   }`}
                   ellipsis={"..."}
@@ -164,7 +164,9 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
                 </Truncate>
                 <span className={classes.badgeAndTimeContainer}>
                   <span>
-                    <span /*TODO(undefined) className={classes.time}*/>{getDateTime(lastAction)}</span>
+                    <span /*TODO(undefined) className={classes.time}*/>
+                      {getDateTime(lastAction)}
+                    </span>
                   </span>
                   {chat.unread_count > 0 && (
                     <span>

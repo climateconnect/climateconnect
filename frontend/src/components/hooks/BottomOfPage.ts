@@ -11,7 +11,9 @@ export default function BottomOfPage({ initBottomOfPage, marginToTrigger }) {
       const scrollY = window.scrollY;
       const triggerMargin = marginToTrigger ? marginToTrigger : 0;
       setBottomOfPage(
-        parseInt(String(window.innerHeight)) + parseInt(String(scrollY)) + parseInt(triggerMargin) >=
+        parseInt(String(window.innerHeight)) +
+          parseInt(String(scrollY)) +
+          parseInt(triggerMargin) >=
           document.body.offsetHeight
       );
       ticking = false;

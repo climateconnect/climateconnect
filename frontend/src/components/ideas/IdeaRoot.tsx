@@ -237,7 +237,10 @@ export default function IdeaRoot({
           all_comment_ids.includes(n.idea_comment?.id)
         );
         setUserRating &&
-          setUserRating({ ...userRating, last_locked_rating_score: userRating?.rating_score } as any);
+          setUserRating({
+            ...userRating,
+            last_locked_rating_score: userRating?.rating_score,
+          } as any);
         setHasJoinedIdea &&
           setHasJoinedIdea({
             has_joined: hasJoinedIdea?.has_joined,

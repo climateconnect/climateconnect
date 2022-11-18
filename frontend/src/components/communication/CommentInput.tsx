@@ -1,4 +1,12 @@
-import { Avatar, Button, IconButton, Theme, Tooltip, Typography, useMediaQuery } from "@material-ui/core";
+import {
+  Avatar,
+  Button,
+  IconButton,
+  Theme,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext, useState } from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
@@ -100,7 +108,7 @@ function CommentInput({
     if (event.key === "Enter") {
       if (event.ctrlKey) {
         if (!curComment) return alert(texts.your_comment_cannot_be_empty);
-        handleSendComment(event, /*TODO(unused) curComment */);
+        handleSendComment(event /*TODO(unused) curComment */);
       } else {
         setShowSendHelper(true);
       }

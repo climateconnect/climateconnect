@@ -69,7 +69,7 @@ export default function LayoutWrapper({
     action: <></>,
     hash: "",
     error: undefined as any,
-    success: undefined as any
+    success: undefined as any,
   });
   const classes = useStyles();
   const [initialized, setInitialized] = React.useState(false);

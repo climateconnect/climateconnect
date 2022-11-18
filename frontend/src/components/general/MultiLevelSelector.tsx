@@ -20,7 +20,10 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import FilterSearchBar from "../filter/FilterSearchBar";
 
-const useStyles = makeStyles<Theme, { flexWrapper?: boolean; marginTop?: boolean, offset?: number }>((theme) => {
+const useStyles = makeStyles<
+  Theme,
+  { flexWrapper?: boolean; marginTop?: boolean; offset?: number }
+>((theme) => {
   return {
     wrapper: (props) => ({
       margin: "0 auto",

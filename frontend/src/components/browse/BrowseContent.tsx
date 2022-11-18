@@ -264,8 +264,11 @@ export default function BrowseContent({
       });
       const locationFilter: any = possibleFilters.find((f) => f.type === "location");
       queryObject[locationFilter.key] = filters[locationFilter.key];
-      const splitQueryObject = splitFiltersFromQueryObject(/*TODO(undefined) newFilters*/ queryObject, possibleFilters);
-      
+      const splitQueryObject = splitFiltersFromQueryObject(
+        /*TODO(undefined) newFilters*/ queryObject,
+        possibleFilters
+      );
+
       const newFilters = { ...emptyFilters, ...splitQueryObject.filters };
       const tabValue = TYPES_BY_TAB_VALUE[newValue];
       // Apply new filters with the query object immediately:

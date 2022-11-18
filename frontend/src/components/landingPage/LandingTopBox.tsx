@@ -7,7 +7,7 @@ import UserContext from "../context/UserContext";
 import AlternatingText from "../general/AlternatingText";
 import LightBigButton from "../staticpages/LightBigButton";
 
-const useStyles = makeStyles<Theme, {imageSource: string}>((theme) => ({
+const useStyles = makeStyles<Theme, { imageSource: string }>((theme) => ({
   imageContainer: (props) => ({
     background: `url('/images/${props.imageSource}')`,
     backgroundSize: "cover",

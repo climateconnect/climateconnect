@@ -17,7 +17,7 @@ const StyledMenu: any = withStyles({
       vertical: "top",
       horizontal: "center",
     }}
-    {...props as any}
+    {...(props as any)}
   />
 ));
 

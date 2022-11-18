@@ -88,7 +88,7 @@ export default function UploadImageField({ image, className, updateImages }) {
     try {
       setOpen(true);
       setUploadImageDialogLoading(true);
-      const compressedImage = await getCompressedJPG(file, 1) as string;
+      const compressedImage = (await getCompressedJPG(file, 1)) as string;
       setTempImage(compressedImage);
       setUploadImageDialogLoading(false);
     } catch (error) {

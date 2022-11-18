@@ -45,7 +45,11 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function FaqQuestionElement({ questionObject, className, questionTextClassName }: any) {
+export default function FaqQuestionElement({
+  questionObject,
+  className,
+  questionTextClassName,
+}: any) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
 

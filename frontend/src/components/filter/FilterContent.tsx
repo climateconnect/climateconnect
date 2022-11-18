@@ -132,7 +132,7 @@ export default function FilterContent({
     }
   });
 
-  const [open, setOpen] = useState<{prop?: any}>({});
+  const [open, setOpen] = useState<{ prop?: any }>({});
   const [initialized, setInitialized] = useState(false);
   const reduced = reduceFilters(filters, possibleFilters);
 

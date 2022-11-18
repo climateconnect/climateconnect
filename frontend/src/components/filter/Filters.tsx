@@ -8,73 +8,75 @@ import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import SelectField from "../general/SelectField";
 import LocationSearchBar from "../search/LocationSearchBar";
 
-const useStyles = makeStyles<Theme, {filterElementMargin: number, justifyContent: any}>((theme) => {
-  return {
-    flexContainer: (props) => ({
-      display: "flex",
-      justifyContent: props.justifyContent,
-      marginBottom: theme.spacing(1),
-    }),
-    verticalFlexContainer: {
-      flexDirection: "column",
-      marginTop: theme.spacing(2),
-    },
-    iconLabel: {
-      display: "flex",
-      alignItems: "center",
-    },
-    field: {
-      display: "flex",
-      width: 190,
-    },
-    locationFieldWrapper: {
-      width: 290,
-      display: "flex",
-      borderRadius: 0,
-      marginRight: theme.spacing(1),
-    },
-    locationField: {
-      borderTopRightRadius: 0,
-      borderBottomRightRadius: 0,
-      borderRight: 0,
-    },
-    overlayLocationField: {
-      flexGrow: 1,
-    },
-    radiusField: {
-      width: 110,
-    },
-    radiusInput: {
-      borderTopLeftRadius: 0,
-      borderBottomLeftRadius: 0,
-      borderLeft: 0,
-    },
-    filterElement: (props) => ({
-      marginRight: theme.spacing(props.filterElementMargin),
-      minHeight: 40,
-    }),
-    overlayField: {
-      marginBottom: theme.spacing(2),
-      width: "100%",
-    },
-    applyButton: {
-      height: 40,
-      display: "flex",
-    },
-    applyButtonContainer: {
-      display: "flex",
-      justifyContent: "flex-end",
-    },
-    outlinedField: {
-      borderColor: theme.palette.primary.main,
-      borderWidth: 2,
-    },
-    errorMessageWrapper: {
-      textAlign: "center",
-      marginBottom: theme.spacing(1),
-    },
-  };
-});
+const useStyles = makeStyles<Theme, { filterElementMargin: number; justifyContent: any }>(
+  (theme) => {
+    return {
+      flexContainer: (props) => ({
+        display: "flex",
+        justifyContent: props.justifyContent,
+        marginBottom: theme.spacing(1),
+      }),
+      verticalFlexContainer: {
+        flexDirection: "column",
+        marginTop: theme.spacing(2),
+      },
+      iconLabel: {
+        display: "flex",
+        alignItems: "center",
+      },
+      field: {
+        display: "flex",
+        width: 190,
+      },
+      locationFieldWrapper: {
+        width: 290,
+        display: "flex",
+        borderRadius: 0,
+        marginRight: theme.spacing(1),
+      },
+      locationField: {
+        borderTopRightRadius: 0,
+        borderBottomRightRadius: 0,
+        borderRight: 0,
+      },
+      overlayLocationField: {
+        flexGrow: 1,
+      },
+      radiusField: {
+        width: 110,
+      },
+      radiusInput: {
+        borderTopLeftRadius: 0,
+        borderBottomLeftRadius: 0,
+        borderLeft: 0,
+      },
+      filterElement: (props) => ({
+        marginRight: theme.spacing(props.filterElementMargin),
+        minHeight: 40,
+      }),
+      overlayField: {
+        marginBottom: theme.spacing(2),
+        width: "100%",
+      },
+      applyButton: {
+        height: 40,
+        display: "flex",
+      },
+      applyButtonContainer: {
+        display: "flex",
+        justifyContent: "flex-end",
+      },
+      outlinedField: {
+        borderColor: theme.palette.primary.main,
+        borderWidth: 2,
+      },
+      errorMessageWrapper: {
+        textAlign: "center",
+        marginBottom: theme.spacing(1),
+      },
+    };
+  }
+);
 
 export default function Filters({
   currentFilters,

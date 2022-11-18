@@ -6,7 +6,7 @@ import { getImageUrl } from "../../../../public/lib/imageOperations";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
 
-const useStyles = makeStyles<Theme, {image?: any, width?: number}>((theme) => ({
+const useStyles = makeStyles<Theme, { image?: any; width?: number }>((theme) => ({
   treeImageContainer: (props) => ({
     width: props.width,
     backgroundImage: `url('${props.image}')`,
