@@ -45,6 +45,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
     alignItems: "flex-end",
   }),
 }));
+import { NOTIFICATION_TYPES } from "../../src/components/communication/notifications/Notification";
 
 const parseComments = (comments) => {
   return comments
@@ -130,6 +131,23 @@ export default function ProjectPage({
   };
 
   const smallScreenSize = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+
+  // Handle remove bell icon notification
+  const { notifications, setNotificationsRead, refreshNotifications } = useContext(UserContext);
+  const handleReadNotifications = async (notificationType) => {
+    const notification_to_set_read = notifications.filter(
+      (n) => n.notification_type === notificationType && n.project.url_slug === project.url_slug
+    );
+    await setNotificationsRead(token, notification_to_set_read, locale);
+    await refreshNotifications();
+  };
+
+  useEffect(async () => {
+    await handleReadNotifications(NOTIFICATION_TYPES.indexOf("org_project_published"));
+  }, [
+    notifications.length !== 0,
+  ]); /* end of removing bell icon notification 
+  TODO: need a better way of getting rid of the  bell notification */
 
   const handleFollow = (userFollows, updateCount, pending) => {
     setIsUserFollowing(userFollows);

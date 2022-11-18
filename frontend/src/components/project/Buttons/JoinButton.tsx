@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import React, { useContext } from "react";
 
-import ButtonIcon from "./ButtonIcon";
+import ButtonIcon from "../../general/ButtonIcon";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
 

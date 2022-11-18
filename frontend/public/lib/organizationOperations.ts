@@ -11,6 +11,7 @@ export function parseOrganization(organization, editMode: boolean = false) {
     language: organization.language,
     translations: organization.translations,
     hubs: organization.hubs,
+    number_of_followers: organization.number_of_followers,
     info: getOrganizationInfo(organization, editMode) as any,
   };
 

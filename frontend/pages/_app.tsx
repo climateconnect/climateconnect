@@ -106,7 +106,7 @@ export default function MyApp({ Component, pageProps = {} }) {
   };
 
   const refreshNotifications = async () => {
-    const notifications = await getNotifications(cookies.get("auth_token"));
+    const notifications = await getNotifications(cookies.get("auth_token"), locale);
     setState({
       ...state,
       notifications: notifications,
@@ -135,7 +135,7 @@ export default function MyApp({ Component, pageProps = {} }) {
     const [fetchedDonationGoal, fetchedUser, fetchedNotifications] = await Promise.all([
       getDonationGoalData(locale),
       getLoggedInUser(token),
-      getNotifications(token),
+      getNotifications(token, locale),
     ]);
 
     setState({
@@ -331,12 +331,16 @@ async function getLoggedInUser(token) {
   }
 }
 
-async function getNotifications(token) {
+// I want to get the translated names for the project/orgs on the notification
+// but it isn't quite working properly i.e. changing locale then checking the notification
+// the names dont update until you manually refresh the page
+async function getNotifications(token, locale) {
   if (token) {
     try {
       const resp = await apiRequest({
         method: "get",
         url: "/api/notifications/",
+        locale: locale,
         token: token,
       });
       return resp.data.results.sort((a, b) => b.id - a.id);
