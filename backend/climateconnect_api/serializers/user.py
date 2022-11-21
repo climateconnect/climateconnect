@@ -24,6 +24,7 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
     availability = AvailabilitySerializer()
     skills = SkillSerializer(many=True)
     badges = serializers.SerializerMethodField()
+    role = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
@@ -43,6 +44,7 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
             "has_logged_in",
             "website",
             "badges",
+            "role",
         )
 
     def get_id(self, obj):
@@ -69,6 +71,9 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
             return serializer.data
         else:
             return None
+
+    def get_role(self, obj):
+        return obj.role
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

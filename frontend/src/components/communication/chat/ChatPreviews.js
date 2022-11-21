@@ -7,15 +7,14 @@ import {
   ListItemText,
   Typography,
   useMediaQuery,
-  Avatar,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import Truncate from "react-truncate";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
-import { getChatPreviewDataTime, getDateTime } from "../../../../public/lib/dateOperations";
+import { getChatPreviewDataTime } from "../../../../public/lib/dateOperations";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
 import LoadingSpinner from "../../general/LoadingSpinner";
@@ -31,11 +30,8 @@ const useStyles = makeStyles((theme) => {
 
     previewContent: {
       display: "flex",
-      height: 50,
     },
-    time: {
-      backgroundColor: "white",
-    },
+
     previewTextContent: {
       display: "flex",
       alignItems: "flex-start",
@@ -43,8 +39,6 @@ const useStyles = makeStyles((theme) => {
       justifyContent: "center",
       width: "100%",
       marginRight: theme.spacing(1),
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1),
     },
     unread: {
       color: theme.palette.success.main,
@@ -60,21 +54,16 @@ const useStyles = makeStyles((theme) => {
     },
     needToReplyContainer: {
       marginRight: theme.spacing(1),
-      display: "flex",
-      alignItems: "center",
       marginTop: theme.spacing(0.5),
     },
     needToReplyChip: {
       borderRadius: 30,
-      maxHeight: 30,
-    },
-    unreadAvatar: {
-      backgroundColor: theme.palette.success.main,
     },
     timeContainer: {
       display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
       textAlign: "right",
-      alignItems: "center",
     },
     NoChatsMessage: {
       marginTop: theme.spacing(2),
@@ -84,19 +73,27 @@ const useStyles = makeStyles((theme) => {
     },
     listItem: {
       display: "flex",
+      height: 100,
     },
-    avatarLabelText: {
+    badge: {
+      marginBottom: theme.spacing(1),
+      marginTop: theme.spacing(1.25),
+      marginRight: theme.spacing(2.25),
       color: "white",
+      "& span": {
+        backgroundColor: theme.palette.success.main,
+      },
     },
   };
 });
 
 export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabled }) {
   const classes = useStyles();
-  const { locale } = useContext(UserContext);
+  const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "chat", locale: locale });
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
+  console.log(user);
   const loadMore = async () => {
     //sometimes InfiniteScroll calls loadMore twice really fast. Therefore we're using isLoading to make sure it doesn't catch 2 pages at once
     if (!isLoading) {
@@ -140,6 +137,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabl
           chat={chat}
           locale={locale}
           texts={texts}
+          isNormalUser={user && user.role === 0} // role are 0, 1 ,2 where 0 is a normal user and others have special rights
         />
       ))}
       <LoadingSpinner />
@@ -147,7 +145,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabl
   );
 }
 
-const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale, texts }) => {
+const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale, texts, isNormalUser }) => {
   const lastAction = chat.last_message ? chat.last_message.sent_at : chat.created_at;
   if (!lastAction) console.log(chat);
   const classes = useStyles();
@@ -191,36 +189,24 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale, texts }) => {
                   >
                     {chat.content}
                   </Truncate>
-                  {(!chat.last_message || chat.last_message.last_sender !== chat.user.id) && (
-                    <div className={classes.needToReplyContainer}>
-                      {chat.unread_count > 0 ? (
-                        <Chip
-                          avatar={
-                            <Avatar className={classes.unreadAvatar}>
-                              <div className={classes.avatarLabelText}>
-                                {chat.unread_count > 0 && chat.unread_count}
-                              </div>
-                            </Avatar>
-                          }
-                          className={classes.needToReplyChip}
-                          variant="outlined"
-                          label={texts.you_havent_replied}
-                        ></Chip>
-                      ) : (
+                  {(!chat.last_message || chat.last_message.last_sender !== chat.user.id) &&
+                    !isNormalUser && (
+                      <div className={classes.needToReplyContainer}>
                         <Chip
                           className={classes.needToReplyChip}
                           variant="outlined"
                           label={texts.you_havent_replied}
-                        ></Chip>
-                      )}
-                    </div>
-                  )}
+                        />
+                      </div>
+                    )}
                 </div>
 
                 <div className={classes.timeContainer}>
-                  <span>
-                    <span className={classes.time}>{getChatPreviewDataTime(lastAction, texts.today_at)}</span>
-                  </span>
+                  <div>{getChatPreviewDataTime(lastAction, texts.today_at)}</div>
+
+                  {chat.unread_count > 0 && (
+                    <Badge badgeContent={chat.unread_count} className={classes.badge} />
+                  )}
                 </div>
               </div>
             }

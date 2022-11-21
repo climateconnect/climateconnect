@@ -319,6 +319,23 @@ class UserProfile(models.Model):
         on_delete=models.SET_NULL,
     )
 
+    READ_ONLY_TYPE = 0
+    READ_WRITE_TYPE = 1
+    ALL_TYPE = 2
+
+    ROLE_TYPES = (
+        (READ_ONLY_TYPE, "User"),
+        (READ_WRITE_TYPE, "Moderator"),
+        (ALL_TYPE, "Admin"),
+    )
+
+    role = models.IntegerField(
+        help_text="Type of role",
+        verbose_name="Role Type",
+        choices=ROLE_TYPES,
+        default=READ_ONLY_TYPE,
+    )
+
     class Meta:
         app_label = "climateconnect_api"
         verbose_name = "User Profile"
