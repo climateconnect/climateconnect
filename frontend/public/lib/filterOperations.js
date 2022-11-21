@@ -43,7 +43,12 @@ export function getKeysOfDifferingValues({ obj, newObj, type, filterChoices, loc
       let isLocationEqual = true;
       //if there are no location keys in either object we still check whether the user selected a location
       //If a user selects a location from the options it changes from a string to an obj
-      if (typeof obj?.location === "string" && typeof newObj?.location === "object") {
+
+      if (
+        (typeof obj?.location === "string" && typeof newObj?.location === "object") ||
+        // if the user clears the location filter the new obj is a string and the old obj was an object
+        (typeof obj?.location === "object" && typeof newObj?.location === "string")
+      ) {
         isLocationEqual = false;
       } else {
         //Otherwise we'll have to check for each key from the url whether it has changed.

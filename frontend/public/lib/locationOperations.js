@@ -161,7 +161,7 @@ export function indicateWrongLocation(
   setErrorMessage,
   texts
 ) {
-  locationInputRef.current.focus();
+  locationInputRef.current?.focus(); // null check so when user switches tab while typing, it doesn't crash
   setLocationOptionsOpen(true);
   setErrorMessage(texts.please_choose_one_of_the_location_options);
 }

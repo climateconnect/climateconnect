@@ -299,7 +299,7 @@ export default function BrowseContent({
     const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFiltersMetadata);
     for (const [key, value] of Object.entries(splitQueryObject.filters)) {
       const metadata = possibleFiltersMetadata.find((f) => f.key === key);
-     
+
       if (value.indexOf(",") > 0) {
         queryObject[key] = value.split(",").map((v) => getValueInCurrentLanguage(metadata, v));
       } else if (
@@ -373,7 +373,7 @@ export default function BrowseContent({
       locale: locale,
       nonFilterParams: nonFilterParams,
     });
-   
+
     if (newUrl !== window?.location?.href) {
       window.history.pushState({}, "", newUrl);
     }

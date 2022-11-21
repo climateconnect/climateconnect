@@ -156,7 +156,7 @@ export default function Filters({
                   multiple={filter.type === "multiselect"}
                   values={filter.type === "multiselect" && currentFilters[filter.key]}
                   controlled={filter.type === "select"}
-                  controlledValue={filter.type === "select" && currentFilters[filter.key]}
+                  controlledValue={filter.type === "select" && { name: currentFilters[filter.key] }}
                   label={
                     <div className={classes.iconLabel}>
                       <filter.icon fontSize="inherit" />
