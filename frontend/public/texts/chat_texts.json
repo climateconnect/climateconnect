@@ -166,5 +166,13 @@
   "no_chats_found_for_this_search": {
     "en": "No matches found for your search",
     "de": "Keine Suchergebnisse gefunden"
+  },
+  "filter_by_need_to_reply": {
+    "en": "Filter by need to reply",
+    "de": "Sortiere nach noch nicht beantwortet"
+  },
+  "via_location": {
+    "en": "via Location",
+    "de": "über Standort"
   }
 }

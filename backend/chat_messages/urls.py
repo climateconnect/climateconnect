@@ -58,4 +58,9 @@ urlpatterns = [
     path(
         "chat/", message_views.GetSearchedChat.as_view(), name="get-searched-chats-api"
     ),
+    path(
+        "filtered_by_need_to_reply_chats/",
+        message_views.GetFilteredByNeedToReplyChats.as_view(),
+        name="get-chats-by-need-to-reply",
+    ),
 ]

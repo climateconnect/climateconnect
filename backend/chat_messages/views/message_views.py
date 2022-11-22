@@ -1,6 +1,7 @@
 from heapq import merge
 from itertools import chain
 import itertools
+from chat_messages.utility.chat import filter_chats, get_initial_chat_ids_from_user
 from chat_messages.utility.notification import create_chat_message_notification
 from climateconnect_api.utility.notification import (
     create_email_notification,
@@ -155,26 +156,12 @@ class GetChatsView(ListAPIView):
 
     def get_queryset(self):
 
-        chat_ids = Participant.objects.filter(
-            user=self.request.user, is_active=True
-        ).values_list("chat", flat=True)
+        chat_ids = get_initial_chat_ids_from_user(self.request.user)
 
         chats = MessageParticipants.objects.filter(id__in=chat_ids)
 
         if chats.exists():
-            filtered_chats = chats
-            for chat in chats:
-                number_of_participants = Participant.objects.filter(
-                    chat=chat, is_active=True
-                ).count()
-                if (
-                    not chat.name
-                    and not Message.objects.filter(message_participant=chat).exists()
-                    and number_of_participants == 2
-                ):
-                    filtered_chats = filtered_chats.exclude(id=chat.id)
-
-            return filtered_chats
+            return filter_chats(chats)
         else:
             return []
 
@@ -191,11 +178,7 @@ class GetSearchedChat(ListAPIView):
             self.request.user.first_name + " " + self.request.user.last_name
         )
 
-        chat_ids = (
-            Participant.objects.select_related("chat")
-            .filter(user=self.request.user, is_active=True)
-            .values_list("chat", flat=True)
-        )
+        chat_ids = get_initial_chat_ids_from_user(self.request.user)
 
         chats = MessageParticipants.objects.filter(
             Q(
@@ -215,6 +198,36 @@ class GetSearchedChat(ListAPIView):
         ).distinct()
 
         return chats
+
+
+class GetFilteredByNeedToReplyChats(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = MessageParticipantSerializer
+    pagination_class = ChatsPagination
+
+    def get_queryset(self):
+
+        chat_ids = get_initial_chat_ids_from_user(self.request.user)
+
+        all_chats = MessageParticipants.objects.filter(id__in=chat_ids)
+        if all_chats.exists():
+            chats = all_chats
+            for chat in all_chats:
+                message = (
+                    Message.objects.filter(message_participant=chat)
+                    .order_by("-sent_at")
+                    .first()
+                )
+                if message is not None:
+                    if message.sender.id == self.request.user.id:
+                        chats = chats.exclude(id=chat.id)
+        else:
+            return []
+
+        if chats.exists():
+            return filter_chats(chats)
+        else:
+            return []
 
 
 class GetChatMessages(ListAPIView):

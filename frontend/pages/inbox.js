@@ -1,4 +1,4 @@
-import { Button, Container, Typography } from "@material-ui/core";
+import { Button, Container, IconButton, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import SearchIcon from "@material-ui/icons/Search";
@@ -13,6 +13,9 @@ import WideLayout from "../src/components/layouts/WideLayout";
 import UserSearchField from "../src/components/communication/chat/UserSearchField";
 import ChatSearchField from "../src/components/communication/chat/ChatSearchField";
 import LoadingSpinner from "../src/components/general/LoadingSpinner";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import RemoveIcon from "@material-ui/icons/Remove";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -48,6 +51,18 @@ const useStyles = makeStyles((theme) => {
       position: "relative",
       height: 40,
     },
+    extraFilterButtonContainer: {
+      display: "flex",
+      flexDirection: "column",
+    },
+    buttonContainer: {
+      display: "flex",
+      flexDirection: "row",
+    },
+    toggleMoreFiltersButton: {
+      height: 42,
+      width: 42,
+    },
   };
 });
 
@@ -74,7 +89,13 @@ export default function Inbox({ chatData, initialNextPage }) {
   const texts = getTexts({ page: "chat", locale: locale });
   const [userSearchEnabled, setUserSearchEnabled] = useState(false);
   const [chatSearchEnabled, setChatSearchEnabled] = useState(false);
+  const [filterChatsByNeedToReply, setFilterChatsByNeedToReply] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchingOpen, setSearchingOpen] = useState(false);
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
+
   const [chatsState, setChatsState] = useState({
     chats: parseChats(chatData, texts),
     nextPage: initialNextPage,
@@ -85,11 +106,16 @@ export default function Inbox({ chatData, initialNextPage }) {
     nextPage: 0,
   });
 
-  const resetAlertMessage = () => setErrorMessage("");
+  const [needToReplyChatsState, setNeedToReplyChatsState] = useState({
+    chats: [],
+    nextPage: 0,
+  });
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [searchingOpen, setSearchingOpen] = useState(false);
+  const handleToggleMoreFilters = () => {
+    setShowMoreFilters(!showMoreFilters);
+  };
+
+  const resetAlertMessage = () => setErrorMessage("");
 
   const applyFilterToChats = async (filter) => {
     setSearchingOpen(true);
@@ -114,8 +140,10 @@ export default function Inbox({ chatData, initialNextPage }) {
     });
   };
 
-  const loadMoreFilteredChats = async () => {
-    const url = `/api/chat/?page=${searchedChatsState.nextPage}&search=${searchTerm}`;
+  const applyFilterToChatsForNeedToReply = async () => {
+    setSearchingOpen(true);
+    handleSetIsLoading(true);
+    const url = `/api/filtered_by_need_to_reply_chats/?page=1`; // TODO update API
     const response = await apiRequest({
       token: token,
       method: "get",
@@ -123,13 +151,20 @@ export default function Inbox({ chatData, initialNextPage }) {
       locale: locale,
     });
 
+    handleSetIsLoading(false);
+
     const parsedChatData = parseChatData(response.data.results);
     const parsedChats = parseChats(parsedChatData, texts);
-    setSearchedChatsState({
-      ...searchedChatsState,
-      nextPage: response.data.next ? searchedChatsState.nextPage + 1 : null,
-      chats: [...searchedChatsState.chats, ...parsedChats],
+
+    setNeedToReplyChatsState({
+      chats: parsedChats,
+      nextPage: response.data.next ? 2 : null,
     });
+  };
+
+  const toggleShowChatsByNeedToReply = () => {
+    setFilterChatsByNeedToReply(!filterChatsByNeedToReply);
+    if (!filterChatsByNeedToReply) applyFilterToChatsForNeedToReply();
   };
 
   const handleSetIsLoading = (newValue) => {
@@ -167,6 +202,43 @@ export default function Inbox({ chatData, initialNextPage }) {
       ...chatsState,
       nextPage: newChatData.nextPage,
       chats: [...chatsState.chats, ...parseChats(newChats, texts)],
+    });
+  };
+
+  const loadMoreFilteredChats = async () => {
+    const url = `/api/chat/?page=${searchedChatsState.nextPage}&search=${searchTerm}`;
+    const response = await apiRequest({
+      token: token,
+      method: "get",
+      url: url,
+      locale: locale,
+    });
+
+    const parsedChatData = parseChatData(response.data.results);
+    const parsedChats = parseChats(parsedChatData, texts);
+    setSearchedChatsState({
+      ...searchedChatsState,
+      nextPage: response.data.next ? searchedChatsState.nextPage + 1 : null,
+      chats: [...searchedChatsState.chats, ...parsedChats],
+    });
+  };
+
+  const loadMoreNeedToReplyChats = async () => {
+    const url = `/api/filtered_by_need_to_reply_chats/?page=${needToReplyChatsState.nextPage}`;
+    const response = await apiRequest({
+      token: token,
+      method: "get",
+      url: url,
+      locale: locale,
+    });
+
+    const parsedChatData = parseChatData(response.data.results);
+    const parsedChats = parseChats(parsedChatData, texts);
+
+    setNeedToReplyChatsState({
+      ...needToReplyChatsState,
+      nextPage: response.data.next ? needToReplyChatsState.nextPage + 1 : null,
+      chats: [...needToReplyChatsState.chats, ...parsedChats],
     });
   };
 
@@ -242,27 +314,102 @@ export default function Inbox({ chatData, initialNextPage }) {
                     )}
                   </span>
                 );
-              if (!userSearchEnabled && !chatSearchEnabled)
+              if (filterChatsByNeedToReply) {
                 return (
                   <span>
                     <Button
                       className={classes.newChatButton}
-                      startIcon={<AddIcon />}
+                      startIcon={<RemoveIcon />}
                       variant="contained"
                       color="primary"
-                      onClick={enableUserSearch}
+                      onClick={toggleShowChatsByNeedToReply}
                     >
-                      {texts.new_chat}
+                      Remove Filter by Need To Reply
                     </Button>
-                    <Button
-                      className={classes.searchChatButton}
-                      startIcon={<SearchIcon />}
-                      variant="contained"
-                      color="primary"
-                      onClick={enableChatSearch}
-                    >
-                      {texts.find_a_chat}
-                    </Button>
+                    {!searchingOpen ? (
+                      <ChatPreviews
+                        chatSearchEnabled={chatSearchEnabled}
+                        loadFunc={loadMoreNeedToReplyChats}
+                        chats={needToReplyChatsState.chats}
+                        user={user}
+                        hasMore={!!needToReplyChatsState.nextPage}
+                      />
+                    ) : (
+                      [
+                        !isLoading ? (
+                          <ChatPreviews
+                            chatSearchEnabled={chatSearchEnabled}
+                            loadFunc={loadMoreNeedToReplyChats}
+                            chats={needToReplyChatsState.chats}
+                            user={user}
+                            hasMore={!!needToReplyChatsState.nextPage}
+                          />
+                        ) : (
+                          <LoadingSpinner isLoading />
+                        ),
+                      ]
+                    )}
+                  </span>
+                );
+              }
+              if (!userSearchEnabled && !chatSearchEnabled)
+                return (
+                  <span>
+                    <div className={classes.buttonContainer}>
+                      <div>
+                        <Button
+                          className={classes.newChatButton}
+                          startIcon={<AddIcon />}
+                          variant="contained"
+                          color="primary"
+                          onClick={enableUserSearch}
+                        >
+                          {texts.new_chat}
+                        </Button>
+                        <Button
+                          className={classes.searchChatButton}
+                          startIcon={<SearchIcon />}
+                          variant="contained"
+                          color="primary"
+                          onClick={enableChatSearch}
+                        >
+                          {texts.find_a_chat}
+                        </Button>
+                      </div>
+                      {true && ( // if super user
+                        <>
+                          <IconButton
+                            className={classes.toggleMoreFiltersButton}
+                            onClick={handleToggleMoreFilters}
+                          >
+                            {showMoreFilters ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                          </IconButton>
+                          {showMoreFilters && (
+                            <div className={classes.extraFilterButtonContainer}>
+                              <Button
+                                className={classes.newChatButton}
+                                startIcon={<SearchIcon />}
+                                variant="contained"
+                                color="primary"
+                                onClick={enableChatSearch} // get by location
+                              >
+                                {texts.find_a_chat} {texts.via_location}
+                              </Button>
+                              <Button
+                                className={classes.newChatButton}
+                                startIcon={<SearchIcon />}
+                                variant="contained"
+                                color="primary"
+                                onClick={toggleShowChatsByNeedToReply}
+                              >
+                                {texts.filter_by_need_to_reply}
+                              </Button>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+
                     <ChatPreviews
                       chatSearchEnabled={chatSearchEnabled}
                       loadFunc={loadMoreChats}
