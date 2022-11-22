@@ -169,10 +169,15 @@
   },
   "filter_by_need_to_reply": {
     "en": "Filter by need to reply",
-    "de": "Sortiere nach noch nicht beantwortet"
+    "de": "Filter nach noch nicht beantwortet"
   },
   "via_location": {
     "en": "via Location",
     "de": "über Standort"
+  },
+  "remove_filter_by_need_to_reply": {
+    "en": "Remove filter by need to reply",
+    "de": "Filter nach muss antworten entfernen"
   }
+  
 }

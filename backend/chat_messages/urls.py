@@ -63,4 +63,9 @@ urlpatterns = [
         message_views.GetFilteredByNeedToReplyChats.as_view(),
         name="get-chats-by-need-to-reply",
     ),
+     path(
+        "filtered_by_location_chats/",
+        message_views.GetFilteredByLocationChats.as_view(),
+        name="get-chats-by-location",
+    ),
 ]

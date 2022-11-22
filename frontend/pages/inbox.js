@@ -12,6 +12,7 @@ import UserContext from "../src/components/context/UserContext";
 import WideLayout from "../src/components/layouts/WideLayout";
 import UserSearchField from "../src/components/communication/chat/UserSearchField";
 import ChatSearchField from "../src/components/communication/chat/ChatSearchField";
+import LocationSearchField from "../src/components/communication/chat/LocationSearchField";
 import LoadingSpinner from "../src/components/general/LoadingSpinner";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
@@ -89,6 +90,7 @@ export default function Inbox({ chatData, initialNextPage }) {
   const texts = getTexts({ page: "chat", locale: locale });
   const [userSearchEnabled, setUserSearchEnabled] = useState(false);
   const [chatSearchEnabled, setChatSearchEnabled] = useState(false);
+  const [locationSearchEnabled, setLocationSearchEnabled] = useState(false);
   const [filterChatsByNeedToReply, setFilterChatsByNeedToReply] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -106,6 +108,12 @@ export default function Inbox({ chatData, initialNextPage }) {
     nextPage: 0,
   });
 
+  const [searchedByLocationChatsState, setSearchedByLocationChatsState] = useState({
+    chats: [],
+    nextPage: 0,
+  });
+
+
   const [needToReplyChatsState, setNeedToReplyChatsState] = useState({
     chats: [],
     nextPage: 0,
@@ -117,24 +125,33 @@ export default function Inbox({ chatData, initialNextPage }) {
 
   const resetAlertMessage = () => setErrorMessage("");
 
-  const applyFilterToChats = async (filter) => {
+  const applyFilterByNameToChats = async (filter) => {
     setSearchingOpen(true);
     setSearchTerm(filter);
     handleSetIsLoading(true);
     const url = `/api/chat/?page=1&search=${filter}`;
-    const response = await apiRequest({
-      token: token,
-      method: "get",
-      url: url,
-      locale: locale,
-    });
-
+    const response = await getResponseFromAPI(locale, token, url);
     handleSetIsLoading(false);
 
-    const parsedChatData = parseChatData(response.data.results);
-    const parsedChats = parseChats(parsedChatData, texts);
-
+    const parsedChats = getParsedChats(response, texts);
     setSearchedChatsState({
+      chats: parsedChats,
+      nextPage: response.data.next ? 2 : null,
+    });
+  };
+
+  const applyLocationFilterToChats = async (filter) => {
+    console.log(filter);
+    setSearchingOpen(true);
+    setSearchTerm(filter);
+    handleSetIsLoading(true);
+    const url = `/api/filtered_by_location_chats/?page=1&search=${filter}`; // update API / url
+    const response = await getResponseFromAPI(locale, token, url);
+    console.log(response);
+    handleSetIsLoading(false);
+    const parsedChats = getParsedChats(response,texts);
+
+    setSearchedByLocationChatsState({
       chats: parsedChats,
       nextPage: response.data.next ? 2 : null,
     });
@@ -143,18 +160,11 @@ export default function Inbox({ chatData, initialNextPage }) {
   const applyFilterToChatsForNeedToReply = async () => {
     setSearchingOpen(true);
     handleSetIsLoading(true);
-    const url = `/api/filtered_by_need_to_reply_chats/?page=1`; // TODO update API
-    const response = await apiRequest({
-      token: token,
-      method: "get",
-      url: url,
-      locale: locale,
-    });
-
+    const url = `/api/filtered_by_need_to_reply_chats/?page=1`;
+    const response = await getResponseFromAPI(locale, token, url);
     handleSetIsLoading(false);
 
-    const parsedChatData = parseChatData(response.data.results);
-    const parsedChats = parseChats(parsedChatData, texts);
+    const parsedChats = getParsedChats(response, texts);
 
     setNeedToReplyChatsState({
       chats: parsedChats,
@@ -183,6 +193,14 @@ export default function Inbox({ chatData, initialNextPage }) {
     setUserSearchEnabled(true);
   };
 
+  const enableLocationSearch = () => {
+    setLocationSearchEnabled(true);
+  }
+
+  const disableLocationSearch = () => {
+    setLocationSearchEnabled(false);
+  }
+
   const disableUserSearch = () => {
     setUserSearchEnabled(false);
   };
@@ -205,17 +223,10 @@ export default function Inbox({ chatData, initialNextPage }) {
     });
   };
 
-  const loadMoreFilteredChats = async () => {
+  const loadMoreFilteredByNameChats = async () => {
     const url = `/api/chat/?page=${searchedChatsState.nextPage}&search=${searchTerm}`;
-    const response = await apiRequest({
-      token: token,
-      method: "get",
-      url: url,
-      locale: locale,
-    });
-
-    const parsedChatData = parseChatData(response.data.results);
-    const parsedChats = parseChats(parsedChatData, texts);
+    const response = await getResponseFromAPI(locale, token, url);
+    const parsedChats = getParsedChats(response, texts);
     setSearchedChatsState({
       ...searchedChatsState,
       nextPage: response.data.next ? searchedChatsState.nextPage + 1 : null,
@@ -223,18 +234,21 @@ export default function Inbox({ chatData, initialNextPage }) {
     });
   };
 
+  const loadMoreFilteredByLocationChats = async () => {
+    const url = `/api/filtered_by_location_chats/?page=${searchedByLocationChatsState.nextPage}&search=${searchTerm}`;
+    const response = await getResponseFromAPI(locale, token, url);
+    const parsedChats = getParsedChats(response, texts);
+    setSearchedByLocationChatsState({
+      ...searchedByLocationChatsState,
+      nextPage: response.data.next ? searchedByLocationChatsState.nextPage + 1 : null,
+      chats: [...searchedByLocationChatsState.chats, ...parsedChats],
+    });
+  }
+
   const loadMoreNeedToReplyChats = async () => {
     const url = `/api/filtered_by_need_to_reply_chats/?page=${needToReplyChatsState.nextPage}`;
-    const response = await apiRequest({
-      token: token,
-      method: "get",
-      url: url,
-      locale: locale,
-    });
-
-    const parsedChatData = parseChatData(response.data.results);
-    const parsedChats = parseChats(parsedChatData, texts);
-
+    const response = await getResponseFromAPI(locale, token, url);
+    const parsedChats = getParsedChats(response, texts);
     setNeedToReplyChatsState({
       ...needToReplyChatsState,
       nextPage: response.data.next ? needToReplyChatsState.nextPage + 1 : null,
@@ -286,7 +300,7 @@ export default function Inbox({ chatData, initialNextPage }) {
                   <span>
                     <ChatSearchField
                       cancelChatSearch={disableChatSearch}
-                      applyFilterToChats={applyFilterToChats}
+                      applyFilterByNameToChats={applyFilterByNameToChats}
                     />
 
                     {!searchingOpen ? (
@@ -302,7 +316,7 @@ export default function Inbox({ chatData, initialNextPage }) {
                         !isLoading ? (
                           <ChatPreviews
                             chatSearchEnabled={chatSearchEnabled}
-                            loadFunc={loadMoreFilteredChats}
+                            loadFunc={loadMoreFilteredByNameChats}
                             chats={searchedChatsState.chats}
                             user={user}
                             hasMore={!!searchedChatsState.nextPage}
@@ -314,6 +328,40 @@ export default function Inbox({ chatData, initialNextPage }) {
                     )}
                   </span>
                 );
+              if (locationSearchEnabled) {
+                return(
+                <span>
+                    <LocationSearchField
+                      cancelChatSearch={disableLocationSearch} 
+                      applyLocationFilterToChats={applyLocationFilterToChats}
+                    />
+
+                    {!searchingOpen ? (
+                      <ChatPreviews
+                        chatSearchEnabled={locationSearchEnabled}
+                        loadFunc={loadMoreChats}
+                        chats={chatsState.chats}
+                        user={user}
+                        hasMore={!!chatsState.nextPage}
+                      />
+                    ) : (
+                      [
+                        !isLoading ? (
+                          <ChatPreviews
+                            chatSearchEnabled={locationSearchEnabled}
+                            loadFunc={loadMoreFilteredByLocationChats}
+                            chats={searchedByLocationChatsState.chats}
+                            user={user}
+                            hasMore={!!searchedByLocationChatsState.nextPage}
+                          />
+                        ) : (
+                          <LoadingSpinner isLoading />
+                        ),
+                      ]
+                    )}
+                  </span>
+                );
+              }
               if (filterChatsByNeedToReply) {
                 return (
                   <span>
@@ -324,11 +372,11 @@ export default function Inbox({ chatData, initialNextPage }) {
                       color="primary"
                       onClick={toggleShowChatsByNeedToReply}
                     >
-                      Remove Filter by Need To Reply
+                      {texts.remove_filter_by_need_to_reply} 
                     </Button>
                     {!searchingOpen ? (
                       <ChatPreviews
-                        chatSearchEnabled={chatSearchEnabled}
+                        chatSearchEnabled={filterChatsByNeedToReply}
                         loadFunc={loadMoreNeedToReplyChats}
                         chats={needToReplyChatsState.chats}
                         user={user}
@@ -338,7 +386,7 @@ export default function Inbox({ chatData, initialNextPage }) {
                       [
                         !isLoading ? (
                           <ChatPreviews
-                            chatSearchEnabled={chatSearchEnabled}
+                            chatSearchEnabled={filterChatsByNeedToReply}
                             loadFunc={loadMoreNeedToReplyChats}
                             chats={needToReplyChatsState.chats}
                             user={user}
@@ -391,7 +439,7 @@ export default function Inbox({ chatData, initialNextPage }) {
                                 startIcon={<SearchIcon />}
                                 variant="contained"
                                 color="primary"
-                                onClick={enableChatSearch} // get by location
+                                onClick={enableLocationSearch}
                               >
                                 {texts.find_a_chat} {texts.via_location}
                               </Button>
@@ -469,3 +517,22 @@ const parseChatData = (chats) => {
     })),
   }));
 };
+
+const getParsedChats = (response, texts) => {
+  const parsedChatData = parseChatData(response.data.results);
+  const parsedChats = parseChats(parsedChatData, texts);
+  return parsedChats;
+}
+
+const getResponseFromAPI = async (
+  locale,
+  token,
+  url,
+) => {
+  return await apiRequest({
+    token: token,
+    method: "get",
+    url: url,
+    locale: locale,
+  });
+}

@@ -169,7 +169,6 @@ class GetChatsView(ListAPIView):
 class GetSearchedChat(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = MessageParticipantSerializer
-
     pagination_class = ChatsPagination
 
     def get_queryset(self):
@@ -198,6 +197,16 @@ class GetSearchedChat(ListAPIView):
         ).distinct()
 
         return chats
+
+class GetFilteredByLocationChats(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = MessageParticipantSerializer
+    pagination_class = ChatsPagination
+    def get_queryset(self):
+        query = self.request.query_params.get("search")
+        print(query)
+        return ""
+
 
 
 class GetFilteredByNeedToReplyChats(ListAPIView):

@@ -14,8 +14,7 @@ export default function ApplyFilterSearchBar({
   helperText,
   freeSolo,
   onUnselect,
-
-  applyFilterToChats,
+  applyFilterByNameToChats,
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "filter_and_search", locale: locale });
@@ -27,7 +26,7 @@ export default function ApplyFilterSearchBar({
 
   React.useEffect(() => {
     if (isMounted.current) {
-      applyFilterToChats(searchValue);
+      applyFilterByNameToChats(searchValue);
     } else {
       isMounted.current = true;
     }
