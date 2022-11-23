@@ -47,6 +47,10 @@ const useStyles = makeStyles((theme) => {
       position: "absolute",
       right: 0,
     },
+    content: {
+      display: "flex",
+      alignItems: "center"
+    }
   };
 });
 
@@ -72,26 +76,28 @@ export default function GenericNotification({
 
   return (
     <StyledMenuItem>
-      {avatar ? (
-        <ListItemAvatar>
-          <Avatar alt={avatar.alt} src={getImageUrl(avatar.image)} />
-        </ListItemAvatar>
-      ) : (
-        <ListItemIcon>
-          <notificationIcon.icon />
-        </ListItemIcon>
-      )}
       <Link href={getLocalePrefix(locale) + link} underline="none">
-        <ListItemText
-          primary={primaryText}
-          secondary={secondaryText}
-          primaryTypographyProps={{
-            className: classes.messageSender,
-          }}
-          secondaryTypographyProps={{
-            className: classes.notificationText,
-          }}
-        />
+        <div className={classes.content}>
+          {avatar ? (
+            <ListItemAvatar>
+              <Avatar alt={avatar.alt} src={getImageUrl(avatar.image)} />
+            </ListItemAvatar>
+          ) : (
+            <ListItemIcon>
+              <notificationIcon.icon />
+            </ListItemIcon>
+          )}
+          <ListItemText
+            primary={primaryText}
+            secondary={secondaryText}
+            primaryTypographyProps={{
+              className: classes.messageSender,
+            }}
+            secondaryTypographyProps={{
+              className: classes.notificationText,
+            }}
+          />
+        </div>
       </Link>
       <IconButton onClick={deleteNotification} className={classes.deleteIcon}>
         <CloseIcon />
