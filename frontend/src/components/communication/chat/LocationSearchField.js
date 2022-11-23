@@ -28,8 +28,8 @@ export default function LocationSearchField({ cancelChatSearch, applyLocationFil
 
   const handleLocationChange = (newValue) => {
     setSelectedLocation(newValue.simple_name);
-    applyLocationFilterToChats("e");
-  }
+    applyLocationFilterToChats(newValue.place_id, newValue.osm_id, newValue.osm_type);
+  };
 
   return (
     <>
@@ -39,7 +39,7 @@ export default function LocationSearchField({ cancelChatSearch, applyLocationFil
         helperText={"search for a location"}
         onSelect={(newValue) => handleLocationChange(newValue)}
       />
-    <Chip label={selectedLocation}></Chip>
+      <Chip label={selectedLocation}></Chip>
       <div className={classes.buttonBar}>
         <Button variant="contained" className={classes.cancelButton} onClick={cancelChatSearch}>
           {texts.cancel}

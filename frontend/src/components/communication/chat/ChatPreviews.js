@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabled }) {
+export default function ChatPreviews({ chats, loadFunc, hasMore, isSearchingEnabled }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "chat", locale: locale });
@@ -78,7 +78,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabl
     }
   };
 
-  if (chats.length === 0 && !chatSearchEnabled)
+  if (chats.length === 0 && !isSearchingEnabled)
     return (
       <>
         <Divider />
@@ -87,7 +87,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabl
         </Typography>
       </>
     );
-  if (chats.length === 0 && chatSearchEnabled)
+  if (chats.length === 0 && isSearchingEnabled)
     return (
       <>
         <Divider />

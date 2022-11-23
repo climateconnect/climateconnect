@@ -1,12 +1,15 @@
 from heapq import merge
 from itertools import chain
 import itertools
+from climateconnect_api.utility.user import get_user_location_from_search
+from location.utility import get_location_with_range
 from chat_messages.utility.chat import filter_chats, get_initial_chat_ids_from_user
 from chat_messages.utility.notification import create_chat_message_notification
 from climateconnect_api.utility.notification import (
     create_email_notification,
     create_user_notification,
 )
+
 from chat_messages.models.message import MessageReceiver
 from django.utils import timezone
 from rest_framework.views import APIView
@@ -202,11 +205,41 @@ class GetFilteredByLocationChats(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = MessageParticipantSerializer
     pagination_class = ChatsPagination
-    def get_queryset(self):
-        query = self.request.query_params.get("search")
-        print(query)
-        return ""
 
+    def get_queryset(self):
+       
+        current_user_full_name = (
+            self.request.user.first_name + " " + self.request.user.last_name
+        )
+        # obtain chats ids of requesting user
+        chat_ids = get_initial_chat_ids_from_user(self.request.user)
+
+        # obtain the participants of each chat
+        chat_participants = Participant.objects.filter(
+                    chat__in=chat_ids,
+                    is_active=True,
+                ).exclude(
+                    chat__in=chat_ids,
+                    user__user_profile__name=current_user_full_name,
+                    is_active=True,
+                ).values_list('user', flat=True)
+
+        # obtain user profiles of the participants
+        users = UserProfile.objects.filter(user__in=chat_participants)
+
+        # obtain the users that are from the filtered location
+        location_data = get_location_with_range(self.request.query_params)
+        users = get_user_location_from_search(users, location_data)
+        
+        # find participants from filtered users and requesting users chat ids
+        filtered_participants = Participant.objects.filter(user__user_profile__in=users, chat__in=chat_ids)
+
+        filtered_chats = MessageParticipants.objects.filter(participant_participants__in=filtered_participants)
+
+        if filtered_chats.exists():
+            return filter_chats(filtered_chats)
+        else:
+            return []
 
 
 class GetFilteredByNeedToReplyChats(ListAPIView):

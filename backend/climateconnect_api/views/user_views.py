@@ -1,6 +1,7 @@
 import logging
 import uuid
 from datetime import datetime, timedelta
+from climateconnect_api.utility.user import get_user_location_from_search
 
 from climateconnect_api.models import Availability, Skill, UserProfile
 from climateconnect_api.models.language import Language
@@ -238,31 +239,7 @@ class ListMemberProfilesView(ListAPIView):
 
         if "place" in self.request.query_params and "osm" in self.request.query_params:
             location_data = get_location_with_range(self.request.query_params)
-            user_profiles = (
-                user_profiles.filter(
-                    Q(location__country=location_data["country"])
-                    & (
-                        Q(
-                            location__multi_polygon__distance_lte=(
-                                location_data["location"],
-                                location_data["radius"],
-                            )
-                        )
-                        | Q(
-                            location__centre_point__distance_lte=(
-                                location_data["location"],
-                                location_data["radius"],
-                            )
-                        )
-                    )
-                )
-                .annotate(
-                    distance=Distance(
-                        "location__centre_point", location_data["location"]
-                    )
-                )
-                .order_by("distance")
-            )
+            user_profiles = get_user_location_from_search(user_profiles, location_data)
 
         if "country" and "city" in self.request.query_params:
             location_ids = Location.objects.filter(
