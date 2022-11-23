@@ -142,7 +142,7 @@ class Message(models.Model):
     def __str__(self):
         return "Message %s from %s in chat %s" % (
             self.id,
-            self.sender.id,
+            self.sender.first_name + " " + self.sender.last_name,
             self.message_participant_id,
         )
 
