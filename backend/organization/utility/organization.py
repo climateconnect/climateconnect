@@ -11,6 +11,7 @@ from organization.models.tags import OrganizationTags
 from rest_framework.response import Response
 from rest_framework import status
 from django.utils.translation import gettext as _
+from django.utils.html import format_html
 
 def check_organization(organization_id: str) -> Organization:
     try:
@@ -176,4 +177,4 @@ def check_existing_name_translation(name):
 
 
 def get_existing_name_message(name):
-    return _("The name {} is already in use. Please use another name.").format(name)
+    return _("Someone has already created the organization {}. Please join the organization or use a different name. If you're having problems please contact support@climateconnect.earth").format(name)

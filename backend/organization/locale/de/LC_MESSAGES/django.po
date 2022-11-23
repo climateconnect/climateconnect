@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-18 15:17+0100\n"
+"POT-Creation-Date: 2022-11-23 10:06+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,13 +44,16 @@ msgstr "Du folgst diesem Projekt bereits"
 msgid ""
 "You are now following this organization. You will be notified when they post "
 "an update!"
-msgstr "Du folgst der Organisation jetzt. Du wirst benachrichtigt, wenn sie ein Update posten."
+msgstr ""
+"Du folgst der Organisation jetzt. Du wirst benachrichtigt, wenn sie ein "
+"Update posten."
 
 #: organization/utility/follow.py:140
 msgid ""
 "You are now following this project. You will be notified when they post an "
 "update!"
-msgstr "Du folgst dem Projekt jetzt. Du wirst benachrichtigt, es ein Update gibt."
+msgstr ""
+"Du folgst dem Projekt jetzt. Du wirst benachrichtigt, es ein Update gibt."
 
 #: organization/utility/follow.py:157
 msgid "You weren't following this organization."
@@ -72,9 +75,12 @@ msgstr "Du folgst diesem Projekt nicht mehr"
 msgid "Invalid value for variable \"following\""
 msgstr "Ungültiger Wert für die Variable \"following\""
 
-#: organization/utility/organization.py:179
-msgid "The name {} is already in use. Please use another name."
-msgstr "Der Name {} wird bereits verwendet. Bitte verwende einen anderen Namen."
+#: organization/utility/organization.py:180
+msgid ""
+"Someone has already created the organization {}. Please join the "
+"organization or use a different name. If you're having problems please "
+"contact support@climateconnect.earth"
+msgstr "Jemand hat die Organisation bereits gegründet {}. Bitte trete der Organisation bei oder verwende einen anderen Namen. Falls du Probleme hast, wende dich bitte an support@climateconnect.earth"
 
 #: organization/views/organization_views.py:478
 #: organization/views/organization_views.py:500
@@ -92,6 +98,10 @@ msgstr "Dieser Organisationstyp existiert nicht: "
 #: organization/views/organization_views.py:619
 msgid "Successfully updated organization."
 msgstr "Organisation erfolgreich bearbeitet"
+
+#~ msgid "The name {} is already in use. Please use another name."
+#~ msgstr ""
+#~ "Der Name {} wird bereits verwendet. Bitte verwende einen anderen Namen."
 
 #~ msgid "hello"
 #~ msgstr "hallo"
