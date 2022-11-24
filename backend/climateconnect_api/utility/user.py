@@ -3,6 +3,7 @@ from climateconnect_api.models import UserProfile, UserProfileTranslation, Langu
 from django.contrib.gis.db.models.functions import Distance
 from django.db.models import Q
 
+
 def create_user_profile_translation(
     translations: Dict,
     user_profile: UserProfile,
@@ -37,27 +38,25 @@ def get_user_profile_biography(user_profile: UserProfile, language_code: str) ->
 
 def get_user_location_from_search(users, location_data):
     return (
-                users.filter(
-                    Q(location__country=location_data["country"])
-                    & (
-                        Q(
-                            location__multi_polygon__distance_lte=(
-                                location_data["location"],
-                                location_data["radius"],
-                            )
-                        )
-                        | Q(
-                            location__centre_point__distance_lte=(
-                                location_data["location"],
-                                location_data["radius"],
-                            )
-                        )
+        users.filter(
+            Q(location__country=location_data["country"])
+            & (
+                Q(
+                    location__multi_polygon__distance_lte=(
+                        location_data["location"],
+                        location_data["radius"],
                     )
                 )
-                .annotate(
-                    distance=Distance(
-                        "location__centre_point", location_data["location"]
+                | Q(
+                    location__centre_point__distance_lte=(
+                        location_data["location"],
+                        location_data["radius"],
                     )
                 )
-                .order_by("distance")
             )
+        )
+        .annotate(
+            distance=Distance("location__centre_point", location_data["location"])
+        )
+        .order_by("distance")
+    )

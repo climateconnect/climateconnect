@@ -201,13 +201,14 @@ class GetSearchedChat(ListAPIView):
 
         return chats
 
+
 class GetFilteredByLocationChats(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = MessageParticipantSerializer
     pagination_class = ChatsPagination
 
     def get_queryset(self):
-       
+
         current_user_full_name = (
             self.request.user.first_name + " " + self.request.user.last_name
         )
@@ -215,14 +216,18 @@ class GetFilteredByLocationChats(ListAPIView):
         chat_ids = get_initial_chat_ids_from_user(self.request.user)
 
         # obtain the participants of each chat
-        chat_participants = Participant.objects.filter(
-                    chat__in=chat_ids,
-                    is_active=True,
-                ).exclude(
-                    chat__in=chat_ids,
-                    user__user_profile__name=current_user_full_name,
-                    is_active=True,
-                ).values_list('user', flat=True)
+        chat_participants = (
+            Participant.objects.filter(
+                chat__in=chat_ids,
+                is_active=True,
+            )
+            .exclude(
+                chat__in=chat_ids,
+                user__user_profile__name=current_user_full_name,
+                is_active=True,
+            )
+            .values_list("user", flat=True)
+        )
 
         # obtain user profiles of the participants
         users = UserProfile.objects.filter(user__in=chat_participants)
@@ -230,11 +235,15 @@ class GetFilteredByLocationChats(ListAPIView):
         # obtain the users that are from the filtered location
         location_data = get_location_with_range(self.request.query_params)
         users = get_user_location_from_search(users, location_data)
-        
-        # find participants from filtered users and requesting users chat ids
-        filtered_participants = Participant.objects.filter(user__user_profile__in=users, chat__in=chat_ids)
 
-        filtered_chats = MessageParticipants.objects.filter(participant_participants__in=filtered_participants)
+        # find participants from filtered users and requesting users chat ids
+        filtered_participants = Participant.objects.filter(
+            user__user_profile__in=users, chat__in=chat_ids
+        )
+
+        filtered_chats = MessageParticipants.objects.filter(
+            participant_participants__in=filtered_participants
+        )
 
         if filtered_chats.exists():
             return filter_chats(filtered_chats)

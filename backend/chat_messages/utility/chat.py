@@ -7,7 +7,7 @@ def get_initial_chat_ids_from_user(user):
         .filter(user=user, is_active=True)
         .values_list("chat", flat=True)
     )
-    
+
 
 def filter_chats(chats):
     filtered_chats = chats

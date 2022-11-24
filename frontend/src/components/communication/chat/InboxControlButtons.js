@@ -26,10 +26,26 @@ const useStyles = makeStyles((theme) => {
     toggleMoreFiltersButton: {
       height: 42,
       width: 42,
+
+      marginBottom: theme.spacing(1),
+      [theme.breakpoints.down("md")]: {
+        marginLeft: theme.spacing(1),
+      },
     },
     extraFilterButtonContainer: {
       display: "flex",
       flexDirection: "column",
+      [theme.breakpoints.down("sm")]: {
+        flexDirection: "row",
+      },
+      [theme.breakpoints.down("xs")]: {
+        flexDirection: "column",
+      },
+    },
+    expandMenuIcon: {
+      [theme.breakpoints.down("sm")]: {
+        transform: "rotate(90deg)",
+      },
     },
   };
 });
@@ -47,7 +63,6 @@ export default function InboxControlButtons({
   const handleToggleMoreFilters = () => {
     setShowMoreFilters(!showMoreFilters);
   };
-
   return (
     <>
       <div>
@@ -73,7 +88,11 @@ export default function InboxControlButtons({
       {true && ( //  TODO  change to check if super user
         <>
           <IconButton className={classes.toggleMoreFiltersButton} onClick={handleToggleMoreFilters}>
-            {showMoreFilters ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            {showMoreFilters ? (
+              <ChevronLeftIcon className={classes.expandMenuIcon} />
+            ) : (
+              <ChevronRightIcon className={classes.expandMenuIcon} />
+            )}
           </IconButton>
           {showMoreFilters && (
             <div className={classes.extraFilterButtonContainer}>

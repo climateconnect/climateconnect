@@ -178,5 +178,9 @@
   "remove_filter_by_need_to_reply": {
     "en": "Remove filter by need to reply",
     "de": "Filter nach muss antworten entfernen"
+  },
+  "search_for_a_location": {
+    "en": "Search for a location to display chats with users from that location",
+    "de": "Nach Ort suchen, um Chats mit Benutzer von dem Ort anzuzeigen"
   }
 }

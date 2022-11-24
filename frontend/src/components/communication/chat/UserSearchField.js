@@ -86,8 +86,6 @@ export default function UserSearchField({ cancelUserSearch, setErrorMessage }) {
       } else {
         payload.profile_url_slug = newChatMembers[0].url_slug;
       }
-
-      console.log(payload);
       apiRequest({
         method: "post",
         url: urlPostfix,
@@ -96,7 +94,6 @@ export default function UserSearchField({ cancelUserSearch, setErrorMessage }) {
         locale: locale,
       })
         .then(async function (response) {
-          console.log(response);
           Router.push("/chat/" + response.data.chat_uuid + "/");
           //Router.push(getLocalePrefix(locale) + "/chat/c8012911-7189-4f05-b115-2d30d9b9c1ad/");
         })

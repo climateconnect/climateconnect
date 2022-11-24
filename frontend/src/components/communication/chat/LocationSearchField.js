@@ -4,43 +4,81 @@ import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../../../src/components/context/UserContext";
 import { Button, Chip } from "@material-ui/core";
 import LocationSearchBar from "../../search/LocationSearchBar";
+import PlaceIcon from "@material-ui/icons/Place";
+import theme from "../../../themes/theme";
 
 const useStyles = makeStyles(() => {
   return {
     buttonBar: {
-      marginTop: 20,
-      marginBottom: 10,
-      position: "relative",
-      height: 40,
+      display: "flex",
+
+      justifyContent: "flex-start",
+      marginTop: theme.spacing(3),
+      marginBottom: theme.spacing(1),
+      flexWrap: "wrap",
     },
     cancelButton: {
-      position: "absolute",
-      right: 0,
+      width: 100,
+      marginLeft: "auto",
+    },
+    locationChip: {
+      marginTop: theme.spacing(1),
     },
   };
 });
 
-export default function LocationSearchField({ cancelChatSearch, applyLocationFilterToChats }) {
+export default function LocationSearchField({
+  cancelChatSearch,
+  applyLocationFilterToChats,
+  handleRemoveLocationFilterFromChats,
+}) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "chat", locale: locale });
-  const [selectedLocation, setSelectedLocation] = useState("test");
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [showLocationChip, setShowLocationChip] = useState(false);
+  const [locationTextFieldValue, setLocationTextFieldValue] = useState("");
+
+  const handleShowLocationChip = () => {
+    setShowLocationChip(true);
+  };
+
+  const handleRemoveSelection = () => {
+    setShowLocationChip(false);
+    setLocationTextFieldValue("");
+    setSelectedLocation("");
+    handleRemoveLocationFilterFromChats();
+  };
 
   const handleLocationChange = (newValue) => {
     setSelectedLocation(newValue.simple_name);
+    setLocationTextFieldValue(newValue.simple_name);
+    handleShowLocationChip();
     applyLocationFilterToChats(newValue.place_id, newValue.osm_id, newValue.osm_type);
   };
-
+  const handleLocationTextFieldValueChange = (newLocationString) => {
+    setLocationTextFieldValue(newLocationString);
+  };
   return (
     <>
       <LocationSearchBar
-        label={"enter a location to search for"}
+        label={texts.location}
         freeSolo
-        helperText={"search for a location"}
+        value={locationTextFieldValue}
+        helperText={texts.search_for_a_location}
         onSelect={(newValue) => handleLocationChange(newValue)}
+        onChange={handleLocationTextFieldValueChange}
       />
-      <Chip label={selectedLocation}></Chip>
       <div className={classes.buttonBar}>
+        {showLocationChip && (
+          <Chip
+            className={classes.locationChip}
+            icon={<PlaceIcon />}
+            label={selectedLocation}
+            onDelete={handleRemoveSelection}
+          />
+        )}
+
         <Button variant="contained" className={classes.cancelButton} onClick={cancelChatSearch}>
           {texts.cancel}
         </Button>
