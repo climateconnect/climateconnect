@@ -1,5 +1,10 @@
 import logging
 import re
+from organization.utility.project import get_project_name
+from organization.utility.organization import get_organization_name
+
+
+from organization.models.translations import OrganizationTranslation, ProjectTranslation
 
 from climateconnect_api.models.user import UserProfile
 from climateconnect_api.utility.email_setup import get_template_id, send_email
@@ -207,6 +212,84 @@ def send_project_follower_email(user, project_follower, notification):
         template_key="PROJECT_FOLLOWER_TEMPLATE_ID",
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_new_project_follower",
+        notification=notification,
+    )
+
+
+def send_organization_follower_email(user, organization_follower, notification):
+    lang_code = get_user_lang_code(user)
+
+    organization_name = get_organization_name(
+        organization_follower.organization, lang_code
+    )
+
+    following_user_full_name = (
+        organization_follower.user.first_name
+        + " "
+        + organization_follower.user.last_name
+    )
+
+    subjects_by_language = {
+        "en": "{} now follows {} on Climate Connect".format(
+            following_user_full_name, organization_name
+        ),
+        "de": "{} folgt jetzt {} auf Climate Connect".format(
+            following_user_full_name, organization_name
+        ),
+    }
+
+    base_url = settings.FRONTEND_URL
+    url_ending = (
+        "/organizations/"
+        + organization_follower.organization.url_slug
+        + "?show_followers=true"
+    )
+
+    variables = {
+        "RecipientFirstName": user.first_name,
+        "FollowingUserFullName": following_user_full_name,
+        "OrganizationName": organization_name,
+        "url": base_url + get_user_lang_url(lang_code) + url_ending,
+    }
+    send_email(
+        user=user,
+        variables=variables,
+        template_key="ORGANIZATION_FOLLOWER_TEMPLATE_ID",
+        subjects_by_language=subjects_by_language,
+        should_send_email_setting="email_on_new_organization_follower",
+        notification=notification,
+    )
+
+
+def send_org_project_published_email(user, org_project_published, notification):
+    lang_code = get_user_lang_code(user)
+
+    organization_name = get_organization_name(
+        org_project_published.organization, lang_code
+    )
+    project_name = get_project_name(org_project_published.project, lang_code)
+
+    subjects_by_language = {
+        "en": "New climate project from {}: {}".format(organization_name, project_name),
+        "de": "Neues Klimaprojekt von {} : {}".format(organization_name, project_name),
+    }
+
+    base_url = settings.FRONTEND_URL
+    url_ending = "/projects/" + org_project_published.project.url_slug
+
+    variables = {
+        "FirstName": user.first_name,
+        "OrganizationName": organization_name,
+        "url": base_url + get_user_lang_url(lang_code) + url_ending,
+        "ProjectName": project_name,
+    }
+
+    send_email(
+        user=user,
+        variables=variables,
+        template_key="ORG_PUBLISHED_NEW_PROJECT_TEMPLATE_ID",
+        subjects_by_language=subjects_by_language,
+        should_send_email_setting="email_on_new_project_from_followed_org",
         notification=notification,
     )
 

@@ -1,4 +1,9 @@
 import logging
+from organization.utility.follow import (
+    check_if_user_follows_organization,
+    get_list_of_organization_followers,
+    set_user_following_organization,
+)
 
 # Backend app imports
 from climateconnect_api.models import Role, UserProfile, ContentShares
@@ -13,6 +18,15 @@ from climateconnect_api.utility.translation import (
 from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.utility.common import create_unique_slug
+
+
+from climateconnect_api.utility.notification import (
+    create_email_notification,
+    create_user_notification,
+    send_comment_notification,
+    send_out_live_notification,
+)
+
 
 # Django imports
 from django.contrib.auth.models import User
@@ -29,6 +43,7 @@ from organization.models import (
     OrganizationTagging,
     OrganizationTags,
     ProjectParents,
+    OrganizationFollower,
 )
 from organization.models.tags import ProjectTags
 from organization.models.translations import OrganizationTranslation
@@ -46,6 +61,7 @@ from organization.serializers.organization import (
     OrganizationSerializer,
     OrganizationSitemapEntrySerializer,
     UserOrganizationSerializer,
+    OrganizationFollowerSerializer,
 )
 from organization.serializers.project import ProjectFromProjectParentsSerializer
 from organization.serializers.tags import OrganizationTagsSerializer
@@ -54,7 +70,6 @@ from organization.utility.organization import (
     is_valid_organization_size,
 )
 from rest_framework import status
-from rest_framework.exceptions import NotFound
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import (
     ListAPIView,
@@ -67,8 +82,35 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.exceptions import NotFound, ValidationError
+
+from django.utils.translation import get_language
 
 logger = logging.getLogger(__name__)
+
+
+class ListOrganizationFollowersView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = OrganizationFollowerSerializer
+
+    def get_queryset(self):
+        return get_list_of_organization_followers(self)
+
+
+class IsUserFollowing(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, url_slug):
+        return check_if_user_follows_organization(request.user, url_slug)
+
+
+class SetFollowView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, url_slug):
+        # probably a better way -> .mo / po files todo
+
+        return set_user_following_organization(request, url_slug)
 
 
 class ListOrganizationsAPIView(ListAPIView):
@@ -84,20 +126,22 @@ class ListOrganizationsAPIView(ListAPIView):
         return {"language_code": self.request.LANGUAGE_CODE}
 
     def get_queryset(self):
-        organizations = Organization.objects.all().prefetch_related(
-            Prefetch(
-                'tag_organization',
-                queryset=OrganizationTagging.objects.select_related(
-                    'organization_tag'
-                )
-            ),
-            'organization_member'
-        ).select_related('language', 'location')
+        organizations = (
+            Organization.objects.all()
+            .prefetch_related(
+                Prefetch(
+                    "tag_organization",
+                    queryset=OrganizationTagging.objects.select_related(
+                        "organization_tag"
+                    ),
+                ),
+                "organization_member",
+            )
+            .select_related("language", "location")
+        )
 
         if "hub" in self.request.query_params:
-            hub = Hub.objects.filter(
-                url_slug=self.request.query_params["hub"]
-            )
+            hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
             if hub.exists():
                 if hub.first().hub_type == Hub.SECTOR_HUB_TYPE:
                     project_category = hub.first().filter_parent_tags.all()
@@ -183,7 +227,7 @@ class ListOrganizationsAPIView(ListAPIView):
         if "country" and "city" in self.request.query_params:
             organizations = organizations.filter(
                 location__country=self.request.query_params.get("country"),
-                location__city=self.request.query_params.get("city")
+                location__city=self.request.query_params.get("city"),
             )
 
         if (
@@ -226,7 +270,9 @@ class CreateOrganizationView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-        texts = {"name": request.data["name"].strip()} # remove leading and trailing spaces
+        texts = {
+            "name": request.data["name"].strip()
+        }  # remove leading and trailing spaces
         if "short_description" in request.data:
             texts["short_description"] = request.data["short_description"]
         if "about" in request.data:
@@ -244,7 +290,7 @@ class CreateOrganizationView(APIView):
             translations = None
             logger.error("TranslationFailed: Error translating texts, {}".format(ve))
         organization, created = Organization.objects.get_or_create(
-            name=request.data["name"].strip() ## remove leading and trailing spaces
+            name=request.data["name"].strip()  ## remove leading and trailing spaces
         )
         if created:
             organization.url_slug = create_unique_slug(

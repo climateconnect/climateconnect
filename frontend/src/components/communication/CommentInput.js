@@ -15,16 +15,16 @@ const useStyles = makeStyles((theme) => {
     flexBox: {
       display: "flex",
       alignItems: "center",
+      marginTop: theme.spacing(1.5),
     },
-
     cancelButton: {
       float: "right",
-      marginTop: theme.spacing(1),
+      marginTop: theme.spacing(0.5),
       marginRight: theme.spacing(1),
     },
     commentButton: {
       float: "right",
-      marginTop: theme.spacing(1),
+      marginTop: theme.spacing(0.5),
     },
     commentButtonContainer: {
       height: 60,
@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => {
       float: "left",
       marginLeft: theme.spacing(8.5),
       fontSize: 13,
+      width: "100%",
     },
   };
 });
@@ -152,8 +153,9 @@ function CommentInput({
               </Tooltip>
             )}
           </div>
+          <Typography className={classes.explanation}>{getInfoText()}</Typography>
+
           <div className={classes.commentButtonContainer}>
-            <Typography className={classes.explanation}>{getInfoText()}</Typography>
             {!useIconButton && (
               <Button
                 color="primary"

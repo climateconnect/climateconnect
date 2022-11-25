@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-const getSteps = (texts, sourceLocale) => {
+const getSteps = (texts) => {
   const steps = [
     {
       key: "share",

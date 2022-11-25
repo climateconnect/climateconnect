@@ -76,20 +76,16 @@ LIBRARY_APPS = [
     "channels",
     "django_filters",
     "django.contrib.gis",
-    "django_celery_beat"
+    "django_celery_beat",
 ]
 
-DEBUG_APPS = [
-    "debug_toolbar"
-]
+DEBUG_APPS = ["debug_toolbar"]
 
 SECURITY_MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
 ]
 
-DEBUG_MIDDLEWARE = [
-    "debug_toolbar.middleware.DebugToolbarMiddleware"
-]
+DEBUG_MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"]
 
 NORMAL_MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -265,7 +261,12 @@ JOINED_IDEA_TEMPLATE = env("JOINED_IDEA_TEMPLATE")
 JOINED_IDEA_TEMPLATE_DE = env("JOINED_IDEA_TEMPLATE_DE")
 PROJECT_JOIN_REQUEST_TEMPLATE_ID = env("PROJECT_JOIN_REQUEST_TEMPLATE_ID")
 PROJECT_JOIN_REQUEST_TEMPLATE_ID_DE = env("PROJECT_JOIN_REQUEST_TEMPLATE_ID_DE")
-
+ORGANIZATION_FOLLOWER_TEMPLATE_ID = env("ORGANIZATION_FOLLOWER_TEMPLATE_ID")
+ORGANIZATION_FOLLOWER_TEMPLATE_ID_DE = env("ORGANIZATION_FOLLOWER_TEMPLATE_ID_DE")
+ORG_PUBLISHED_NEW_PROJECT_TEMPLATE_ID = env("ORG_PUBLISHED_NEW_PROJECT_TEMPLATE_ID")
+ORG_PUBLISHED_NEW_PROJECT_TEMPLATE_ID_DE = env(
+    "ORG_PUBLISHED_NEW_PROJECT_TEMPLATE_ID_DE"
+)
 
 FRONTEND_URL = env("FRONTEND_URL", "")
 LOCATION_SERVICE_BASE_URL = env("LOCATION_SERVICE_BASE_URL")
