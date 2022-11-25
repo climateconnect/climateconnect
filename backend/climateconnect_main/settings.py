@@ -209,9 +209,6 @@ MEDIA_ROOT = env("MEDIA_ROOT")
 MEDIA_URL = "/media/"
 
 REST_KNOX = {"TOKEN_TTL": timedelta(days=120)}
-
-# https://stackoverflow.com/questions/70572345/django-could-not-find-the-gdal-library-osx
-# ???
 GDAL_LIBRARY_PATH = '/opt/homebrew/opt/gdal/lib/libgdal.dylib'
 GEOS_LIBRARY_PATH = '/opt/homebrew/opt/geos/lib/libgeos_c.dylib'
 
