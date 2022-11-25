@@ -40,3 +40,18 @@ export function getCookieProps(expiry) {
   console.log(cookieProps);
   return cookieProps;
 }
+
+export function getShowUnreadLabelFromCookie(cookieContent) {
+  const cookies = new Cookies();
+  // first time opening inbox, set cookie default to true and show label
+  if (typeof cookieContent === "undefined") {
+    const expiryDate = new Date();
+    const month = (expiryDate.getMonth() + 1) % 12;
+    expiryDate.setMonth(month);
+    const cookieProps = getCookieProps(expiryDate);
+    cookies.set("show_unread_label", true, cookieProps);
+    return true;
+  }
+  // otherwise always use saved value
+  return cookies.get("show_unread_label") === "true";
+}

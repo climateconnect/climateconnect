@@ -7,8 +7,10 @@ import {
   ListItemText,
   Typography,
   useMediaQuery,
+  Switch,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import Cookies from "universal-cookie";
 import PropTypes from "prop-types";
 import React, { useContext, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
@@ -21,6 +23,10 @@ import LoadingSpinner from "../../general/LoadingSpinner";
 import MiniProfilePreview from "../../profile/MiniProfilePreview";
 import ChatTitle from "./ChatTitle";
 import MobileChatPreview from "./MobileChatPreview";
+import {
+  getCookieProps,
+  getShowUnreadLabelFromCookie,
+} from "../../../../public/lib/cookieOperations";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -84,11 +90,17 @@ const useStyles = makeStyles((theme) => {
         backgroundColor: theme.palette.success.main,
       },
     },
+    switch: {
+      marginLeft: theme.spacing(1),
+    },
   };
 });
 
 export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabled }) {
   const classes = useStyles();
+
+  const cookies = new Cookies();
+  const showUnreadLabelCookie = cookies.get("show_unread_label");
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "chat", locale: locale });
   const [isLoading, setIsLoading] = useState(false);
@@ -100,6 +112,18 @@ export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabl
       await loadFunc();
       setIsLoading(false);
     }
+  };
+  const [showUnreadLabel, setShowUnreadLabel] = useState(
+    getShowUnreadLabelFromCookie(showUnreadLabelCookie)
+  );
+
+  const handleSwitch = () => {
+    const expiryDate = new Date();
+    const month = (expiryDate.getMonth() + 1) % 12;
+    expiryDate.setMonth(month);
+    const cookieProps = getCookieProps(expiryDate);
+    cookies.set("show_unread_label", !showUnreadLabel, cookieProps);
+    setShowUnreadLabel(!showUnreadLabel);
   };
 
   if (chats.length === 0 && !chatSearchEnabled)
@@ -122,29 +146,45 @@ export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabl
     );
 
   return (
-    <InfiniteScroll
-      pageStart={1}
-      loadMore={loadMore}
-      hasMore={hasMore && !isLoading}
-      element={List}
-    >
-      {chats.map((chat, index) => (
-        <ChatPreview
-          key={index}
-          isFirstChat={index === 0}
-          isNarrowScreen={isNarrowScreen}
-          chat={chat}
-          locale={locale}
-          texts={texts}
-          isNormalUser={user && user.role === 0} // role are 0, 1 ,2 where 0 is a normal user and others have special rights
-        />
-      ))}
-      <LoadingSpinner />
-    </InfiniteScroll>
+    <>
+      {!isNarrowScreen &&
+        (
+        <div className={classes.switch}>
+          {texts.hide_not_replied_label}
+          <Switch
+            checked={showUnreadLabel}
+            onChange={handleSwitch}
+            inputProps={{ "aria-label": "toggle label switch" }}
+            color="primary"
+          />
+           {texts.show_not_replied_label}     
+        </div>
+      )}
+
+      <InfiniteScroll
+        pageStart={1}
+        loadMore={loadMore}
+        hasMore={hasMore && !isLoading}
+        element={List}
+      >
+        {chats.map((chat, index) => (
+          <ChatPreview
+            key={index}
+            isFirstChat={index === 0}
+            isNarrowScreen={isNarrowScreen}
+            chat={chat}
+            locale={locale}
+            texts={texts}
+            showUnreadLabel={showUnreadLabel}
+          />
+        ))}
+        <LoadingSpinner />
+      </InfiniteScroll>
+    </>
   );
 }
 
-const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale, texts, isNormalUser }) => {
+const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale, texts, showUnreadLabel }) => {
   const lastAction = chat.last_message ? chat.last_message.sent_at : chat.created_at;
   if (!lastAction) console.log(chat);
   const classes = useStyles();
@@ -189,7 +229,7 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale, texts, isNorma
                     {chat.content}
                   </Truncate>
                   {(!chat.last_message || chat.last_message.last_sender !== chat.user.id) &&
-                    !isNormalUser && (
+                    showUnreadLabel && (
                       <div className={classes.needToReplyContainer}>
                         <Chip
                           className={classes.needToReplyChip}

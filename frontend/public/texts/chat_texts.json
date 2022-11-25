@@ -169,10 +169,18 @@
   },
   "you_havent_replied": {
     "en": "You haven't replied yet",
-    "de": "Du hast noch nicht geantwortet"
+    "de": "Du hast noch nicht beantwortet"
   },
   "today_at": {
     "en": "Today at ",
     "de": "Heute um "
+  },
+  "show_not_replied_label": {
+    "en": "Show not replied label",
+    "de": "Nicht beanwortetes Etikett anzeigen"
+  },
+  "hide_not_replied_label": {
+    "en": "Hide not replied label",
+    "de": "Nicht beanwortetes Etikett verstecken"
   }
 }
