@@ -126,7 +126,7 @@ export default function InboxBoxContent({ updateErrorMessage, loadMoreChats, cha
   const applyLocationFilterToChats = async (placeId, osmId, locType) => {
     setLocationSearch({ place: placeId, osm: osmId, loc_type: locType });
     handleSetIsLoading(true);
-    const url = `/api/filtered_by_location_chats/?page=1&place=${placeId}&osm=${osmId}&loc_type=${locType}`;
+    const url = `/api/chat/?page=1&place=${placeId}&osm=${osmId}&loc_type=${locType}`;
     const response = await getResponseFromAPI(locale, token, url);
 
     handleSetIsLoading(false);
@@ -147,7 +147,7 @@ export default function InboxBoxContent({ updateErrorMessage, loadMoreChats, cha
 
   const applyFilterToChatsForNeedToReply = async () => {
     handleSetIsLoading(true);
-    const url = `/api/filtered_by_need_to_reply_chats/?page=1`;
+    const url = `/api/chat/?page=1&requires_reply`;
     const response = await getResponseFromAPI(locale, token, url);
     handleSetIsLoading(false);
 
@@ -173,7 +173,7 @@ export default function InboxBoxContent({ updateErrorMessage, loadMoreChats, cha
 
   const loadMoreFilteredByLocationChats = async () => {
     const urlEnding = `&place=${locationSearch.place}&osm=${locationSearch.osm}&loc_type=${locationSearch.loc_type}`;
-    const url = `/api/filtered_by_location_chats/?page=${searchedByLocationChatsState.nextPage}${urlEnding}`;
+    const url = `/api/chat/?page=${searchedByLocationChatsState.nextPage}${urlEnding}`;
     const response = await getResponseFromAPI(locale, token, url);
     const parsedChats = getParsedChats(response, texts);
     setSearchedByLocationChatsState({
@@ -184,7 +184,7 @@ export default function InboxBoxContent({ updateErrorMessage, loadMoreChats, cha
   };
 
   const loadMoreNeedToReplyChats = async () => {
-    const url = `/api/filtered_by_need_to_reply_chats/?page=${needToReplyChatsState.nextPage}`;
+    const url = `/api/chat/?page=${needToReplyChatsState.nextPage}&requires_reply`;
     const response = await getResponseFromAPI(locale, token, url);
     const parsedChats = getParsedChats(response, texts);
     setNeedToReplyChatsState({
