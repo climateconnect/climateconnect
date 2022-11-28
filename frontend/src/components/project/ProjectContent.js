@@ -153,9 +153,6 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: theme.palette.error.main,
     },
   },
-  finishedDate: {
-    marginTop: theme.spacing(0.5),
-  },
   joinButton: {
     float: "right",
   },
@@ -349,16 +346,17 @@ export default function ProjectContent({
                   size="small"
                 />
               )}
-              {project.end_date && (
-                <Typography className={classes.finishedDate}>
-                  {texts.finished + " "}
-                  <TimeAgo
-                    date={new Date(project.end_date)}
-                    formatter={locale === "de" ? germanYearAndDayFormatter : yearAndDayFormatter}
-                  />{" "}
-                </Typography>
-              )}
             </div>
+            {project.end_date && (
+              <Typography>
+                {texts.finished + " "}
+                <TimeAgo
+                  date={new Date(project.end_date)}
+                  formatter={locale === "de" ? germanYearAndDayFormatter : yearAndDayFormatter}
+                />{" "}
+              </Typography>
+            )}
+
             {project.collaborating_organizations && project.collaborating_organizations.length > 0 && (
               <div className={classes.collaborationContainer}>
                 <span> {texts.in_collaboration_with}</span>
