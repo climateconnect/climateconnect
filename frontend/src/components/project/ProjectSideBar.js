@@ -71,7 +71,7 @@ export default function ProjectSideBar({
         </>
       ) : (
         <IconButton size="small" onClick={handleHideContent}>
-          <MenuIcon fontSize="medium" />
+          <MenuIcon />
         </IconButton>
       )}
 
