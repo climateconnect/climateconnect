@@ -278,7 +278,7 @@ function OrganizationLayout({
       {childOrganizations && childOrganizations.length > 0 && (
         <>
           <Container>
-            <Typography>{texts.our_local_groups}</Typography>
+            <Typography color="primary" className={classes.headline} component="h2">{texts.our_local_groups}</Typography>
             <div className={classes.organizationsSection}>
               {childOrganizations.map((o, index) => (
                 <MiniOrganizationPreview organization={o} key={index} size="small" />
