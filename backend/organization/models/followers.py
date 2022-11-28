@@ -1,6 +1,46 @@
 from django.db import models
 from organization.models.project import Project
+from organization.models.organization import Organization
 from django.contrib.auth.models import User
+
+
+class OrganizationFollower(models.Model):
+    organization = models.ForeignKey(
+        Organization,
+        related_name="organization_following",
+        verbose_name="Organization",
+        help_text="Points to an organization",
+        on_delete=models.CASCADE,
+    )
+
+    user = models.ForeignKey(
+        User,
+        related_name="org_follower",
+        verbose_name="Follower",
+        help_text="Points to the user following the organization",
+        on_delete=models.CASCADE,
+    )
+
+    created_at = models.DateTimeField(
+        help_text="Time when the user followed the organization",
+        verbose_name="Created At",
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        help_text="Time when the follower was updated",
+        verbose_name="Updated At",
+        auto_now_add=True,
+    )
+
+    class Meta:
+        app_label = "organization"
+        verbose_name = "Organization Follower"
+        verbose_name_plural = "Organization Followers"
+        ordering = ["-id"]
+
+    def __str__(self):
+        return "%s follows %s " % (self.user, self.organization.name)
 
 
 class ProjectFollower(models.Model):

@@ -444,3 +444,23 @@ class ProjectLikeSerializer(serializers.ModelSerializer):
         user_profile = UserProfile.objects.get(user=obj.user)
         serializer = UserProfileStubSerializer(user_profile)
         return serializer.data
+
+
+class ProjectNotificationSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Project
+        fields = ("name", "url_slug", "image")
+
+    def get_name(self, obj):
+        return get_project_name(obj, get_language())
+
+    def get_image(self, obj):
+        if obj.thumbnail_image:
+            return obj.thumbnail_image.url
+        if obj.image:
+            return obj.image.url
+        else:
+            return None

@@ -88,6 +88,7 @@ export async function getServerSideProps(ctx) {
     organizationTypes,
     rolesOptions,
     childOrganizations,
+    following,
   ] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
     getProjectsByOrganization(organizationUrl, auth_token, ctx.locale),
@@ -95,6 +96,7 @@ export async function getServerSideProps(ctx) {
     getOrganizationTypes(),
     getRolesOptions(auth_token, ctx.locale),
     getChildOrganizations(organizationUrl),
+    getIsUserFollowing(organizationUrl, auth_token, ctx.locale),
   ]);
 
   return {
@@ -105,6 +107,7 @@ export async function getServerSideProps(ctx) {
       organizationTypes: organizationTypes,
       rolesOptions: rolesOptions,
       childOrganizations: childOrganizations,
+      following: following,
     }),
   };
 }
@@ -116,10 +119,45 @@ export default function OrganizationPage({
   organizationTypes,
   rolesOptions,
   childOrganizations,
+  following,
 }) {
   const { user, locale } = useContext(UserContext);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization, false);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
+
+  // l. 105-137 handles following Organizations
+  const [numberOfFollowers, setNumberOfFollowers] = React.useState(
+    organization.number_of_followers
+  );
+  const [isUserFollowing, setIsUserFollowing] = React.useState(following);
+  const [followingChangePending, setFollowingChangePending] = React.useState(false);
+
+  const handleWindowClose = (e) => {
+    if (followingChangePending) {
+      e.preventDefault();
+      return (e.returnValue = texts.changes_might_not_be_saved);
+    }
+  };
+
+  const handleFollow = (userFollows, updateCount, pending) => {
+    setIsUserFollowing(userFollows);
+    if (updateCount) {
+      if (userFollows) {
+        setNumberOfFollowers(numberOfFollowers + 1);
+      } else {
+        setNumberOfFollowers(numberOfFollowers - 1);
+      }
+    }
+    setFollowingChangePending(pending);
+  };
+
+  React.useEffect(() => {
+    window.addEventListener("beforeunload", handleWindowClose);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleWindowClose);
+    };
+  });
 
   return (
     <WideLayout
@@ -129,6 +167,10 @@ export default function OrganizationPage({
     >
       {organization ? (
         <OrganizationLayout
+          numberOfFollowers={numberOfFollowers}
+          handleFollow={handleFollow}
+          followingChangePending={followingChangePending}
+          isUserFollowing={isUserFollowing}
           organization={organization}
           projects={projects}
           members={members}
@@ -148,6 +190,10 @@ export default function OrganizationPage({
 }
 
 function OrganizationLayout({
+  numberOfFollowers,
+  handleFollow,
+  followingChangePending,
+  isUserFollowing,
   organization,
   projects,
   members,
@@ -213,6 +259,10 @@ function OrganizationLayout({
 
   return (
     <AccountPage
+      numberOfFollowers={numberOfFollowers}
+      handleFollow={handleFollow}
+      followingChangePending={followingChangePending}
+      isUserFollowing={isUserFollowing}
       account={organization}
       default_background={DEFAULT_BACKGROUND_IMAGE}
       editHref={getLocalePrefix(locale) + "/editOrganization/" + organization.url_slug}
@@ -363,7 +413,24 @@ async function getChildOrganizations(organizationUrl) {
     }
     return response.data.results.map((r) => parseOrganization(r));
   } catch (err) {
-    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
+
+async function getIsUserFollowing(organizationUrl, token, locale) {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/organizations/" + organizationUrl + "/am_i_following/",
+      token: token,
+      locale: locale,
+    });
+    if (resp.data.length === 0) return null;
+    else {
+      return resp.data.is_following;
+    }
+  } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }

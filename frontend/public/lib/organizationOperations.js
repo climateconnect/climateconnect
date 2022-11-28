@@ -10,6 +10,7 @@ export function parseOrganization(organization, editMode) {
     types: organization.types.map((t) => ({ ...t.organization_tag, key: t.organization_tag.id })),
     language: organization.language,
     hubs: organization.hubs,
+    number_of_followers: organization.number_of_followers,
     info: getOrganizationInfo(organization, editMode),
   };
 
