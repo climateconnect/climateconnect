@@ -574,12 +574,11 @@ class ProjectAPIView(APIView):
             project_parents.parent_organization = organization
             project_parents.save()
 
-        old_collaborators = ProjectCollaborators.objects.filter(project=project)
-        old_collaborating_orgs = old_collaborators.values("collaborating_organization")
+        old_collaborators = ProjectCollaborators.objects.filter(project=project).values("collaborating_organization")
 
         if "collaborating_organizations" in request.data:
 
-            for old_collaborator in old_collaborating_orgs:
+            for old_collaborator in old_collaborators:
                 if not old_collaborator in request.data["collaborating_organizations"]:
                     collaborator_to_delete = Organization.objects.get(
                         id=old_collaborator["collaborating_organization"]
