@@ -36,7 +36,6 @@ export default function ContactCreatorButtonInfo({
   customMessage,
 }) {
   const classes = useStyles();
-  console.log("customMessage: " + customMessage);
   return (
     <Card className={classes.slideInCard} variant="outlined">
       <CardHeader

@@ -54,6 +54,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 220,
     maxWidth: "100%",
     marginRight: theme.spacing(1),
+    marginBottom: theme.spacing(1),
     background: "none",
     borderRadius: 0,
     fontSize: 16,
@@ -62,6 +63,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     padding: 0,
+    flexWrap: "wrap",
     marginBottom: theme.spacing(3),
     marginTop: theme.spacing(2),
   },
@@ -122,6 +124,10 @@ export default function EditProjectContent({
     setOpen({ ...open, skills: true });
   };
 
+  const handleSkillsDialogClose = () => {
+    setOpen({ ...open, skills: false });
+  };
+
   const handleSkillDelete = (skill) => {
     handleSetProject({
       ...project,
@@ -143,7 +149,7 @@ export default function EditProjectContent({
     );
   };
 
-  const handleSkillsDialogClose = (skills) => {
+  const handleSkillsDialogSave = (skills) => {
     if (skills) handleSetProject({ ...project, skills: skills });
     setOpen({ ...open, skills: false });
   };
@@ -232,14 +238,15 @@ export default function EditProjectContent({
         )}
         <div className={classes.block}>
           {project.is_personal_project ? (
-            <div className={classes.projectCreatorContainer}>
+            <>
+
               {texts.created_by}
               <MiniProfilePreview
                 className={classes.creator}
                 profile={project.project_parents.parent_user}
                 size="small"
               />
-            </div>
+            </>
           ) : (
             <SelectField
               controlled
@@ -408,6 +415,7 @@ export default function EditProjectContent({
       <MultiLevelSelectDialog
         open={open.skills}
         onClose={handleSkillsDialogClose}
+        onSave={handleSkillsDialogSave}
         type="skills"
         options={skillsOptions}
         items={project.skills}

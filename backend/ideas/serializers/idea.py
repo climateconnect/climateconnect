@@ -2,7 +2,12 @@ from climateconnect_api.serializers.user import UserProfileStubSerializer
 from django.utils.translation import get_language
 from hubs.serializers.hub import HubStubSerializer
 from ideas.models import Idea, IdeaSupporter
-from ideas.utility.idea import get_idea_name, get_idea_short_description
+from ideas.utility.idea import (
+    get_number_of_idea_participants,
+    get_number_of_idea_comments,
+    get_idea_name,
+    get_idea_short_description,
+)
 from organization.serializers.organization import OrganizationStubSerializer
 from rest_framework import serializers
 
@@ -40,6 +45,8 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
     organization = serializers.SerializerMethodField()
     url_slug = serializers.SerializerMethodField()
     hub_shared_in = serializers.SerializerMethodField()
+    number_of_comments = serializers.SerializerMethodField()
+    number_of_participants = serializers.SerializerMethodField()
 
     class Meta:
         model = Idea
@@ -57,6 +64,8 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
             "created_at",
             "organization",
             "hub_shared_in",
+            "number_of_comments",
+            "number_of_participants",
         ]
 
     def get_name(self, obj):
@@ -104,6 +113,12 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
 
     def get_url_slug(self, obj):
         return obj.url_slug
+
+    def get_number_of_comments(self, obj):
+        return get_number_of_idea_comments(obj)
+
+    def get_number_of_participants(self, obj):
+        return get_number_of_idea_participants(obj)
 
 
 class IdeaSerializer(serializers.ModelSerializer):
