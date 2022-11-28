@@ -78,7 +78,6 @@ export async function getServerSideProps(ctx) {
     organization,
     projects,
     members,
-    organizationTypes,
     rolesOptions,
     following,
   ] = await Promise.all([
@@ -105,7 +104,6 @@ export default function OrganizationPage({
   organization,
   projects,
   members,
-  organizationTypes,
   rolesOptions,
   following,
 }) {

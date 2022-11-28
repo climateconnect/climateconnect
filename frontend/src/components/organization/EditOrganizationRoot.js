@@ -301,19 +301,3 @@ const verifyChanges = (newOrg, texts) => {
   }
   return true;
 };
-
-async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: "/api/organizations/" + organizationUrl + "/",
-      token: token,
-      locale: locale,
-    });
-    return parseOrganization(resp.data, true);
-  } catch (err) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-}

@@ -84,7 +84,7 @@ export function getSocialMediaButtons(socialLinks) {
 
 function getUrl(socialLinks, type) {
   const indexOfSearchedType = socialLinks.findIndex(social => social.social_media_channel.social_media_name === type);
-  return socialLinks[indexOfSearchedType].url;
+  return socialLinks[indexOfSearchedType]?.url;
 }
 
 export function createSocialMediaIconButton(socialChannel) {

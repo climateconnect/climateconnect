@@ -533,10 +533,14 @@ export default function AccountPage({
                   altText={socialMedia.altText}
                   isFooterIcon={socialMedia.isFooterIcon}
                 />
+              
               ))}
+
+              </>
+          )}
               
           {isOrganization && (
-            <>
+            <div>
               <FollowButton
                 isUserFollowing={isUserFollowing}
                 handleToggleFollow={handleToggleFollowOrganization}
@@ -556,7 +560,7 @@ export default function AccountPage({
                 {organizationTexts.follow_this_organization_for_updates}
               </Typography>
 
-            </>
+            </div>
           )}
         </Container>
 
