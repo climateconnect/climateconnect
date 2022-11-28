@@ -76,7 +76,6 @@ const useStyles = makeStyles((theme) => ({
   },
   location: {
     marginBottom: theme.spacing(2),
-
   },
   noPadding: {
     padding: 0,
@@ -172,10 +171,6 @@ const useStyles = makeStyles((theme) => ({
   mainContainer: {
     display: "flex",
     flexDirection: "column",
-  },
-  mainInfoContainer: {
-    display: "flex",
-    flexDirection: "column",
     [theme.breakpoints.up("md")]: {
       flexDirection: "row",
     },
@@ -184,28 +179,22 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     textAlign: "center",
-    width: theme.spacing(40),
-
     [theme.breakpoints.up("md")]: {
-      marginLeft: theme.spacing(-8),
+      marginLeft: theme.spacing(-3),
+      width: "25%",
     },
   },
   middleInfoContainer: {
     display: "flex",
     flexDirection: "column",
     [theme.breakpoints.up("md")]: {
-      marginLeft: theme.spacing(-2),
-      marginRight: theme.spacing(-4),
-      marginTop: theme.spacing(5.5),
+      width: "60%",
+      marginTop: theme.spacing(1),
     },
   },
   buttonInfoContainer: {
-    textAlign: "center",
-
     [theme.breakpoints.up("md")]: {
-      marginTop: theme.spacing(6),
-      marginRight: theme.spacing(-8),
-      width: theme.spacing(55),
+      marginRight: theme.spacing(-3),
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
@@ -217,6 +206,7 @@ const useStyles = makeStyles((theme) => ({
   },
   sideButton: {
     width: 225,
+    marginTop: theme.spacing(5),
   },
   sizeContainer: {
     display: "flex",
@@ -235,7 +225,7 @@ const useStyles = makeStyles((theme) => ({
   },
   followButtonContainer: {
     marginTop: theme.spacing(1),
-  }
+  },
 }));
 
 //Generic component to display personal profiles or organization profiles
@@ -521,47 +511,46 @@ export default function AccountPage({
       </div>
 
       <Container className={classes.mainContainer}>
-        <Container className={classes.mainInfoContainer}>
-          <Container className={classes.leftInfoContainer}>
-            <div className={classes.avatarContainer}>
-              {account.badges?.length > 0 ? (
-                <ProfileBadge badge={account.badges[0]}>
-                  <Avatar {...avatarProps} />
-                </ProfileBadge>
-              ) : (
+        <Container className={classes.leftInfoContainer}>
+          <div className={classes.avatarContainer}>
+            {account.badges?.length > 0 ? (
+              <ProfileBadge badge={account.badges[0]}>
                 <Avatar {...avatarProps} />
-              )}
+              </ProfileBadge>
+            ) : (
+              <Avatar {...avatarProps} />
+            )}
+          </div>
+          <Typography variant="h5" className={classes.name}>
+            {account.name}
+          </Typography>
+          {location && (
+            <div>
+              <div className={classes.location}>
+                <Tooltip title="Location">
+                  <PlaceIcon color="primary" className={classes.infoIcon} />
+                </Tooltip>
+                {location ? location + locationAdditionalText : location.missingMessage}
+              </div>
             </div>
-            <Typography variant="h5" className={classes.name}>
-              {account.name}
-            </Typography>
-            {location && (
-              <div>
-                <div className={classes.location}>
-                  <Tooltip title="Location">
-                    <PlaceIcon color="primary" className={classes.infoIcon} />
-                  </Tooltip>
-                  {location ? location + locationAdditionalText : location.missingMessage}
-                </div>
-              </div>
-            )}
-            {account.types && (
-              <Container className={classes.noPadding}>
-                {account.types.map((type) => (
-                  <Chip label={type.name} key={type.key} className={classes.chip} />
-                ))}
-              </Container>
-            )}
-            {isOrganization && (
-              <div className={classes.website}>
-                <Typography variant="caption"> {organizationTexts.find_us_here} </Typography>
-                <Linkify componentDecorator={componentDecorator}>
-                  {" "}
-                  <Typography className={classes.websiteLink}> {account.info.website}</Typography>
-                </Linkify>
-              </div>
-            )}
-            {isOrganization && (
+          )}
+          {account.types && (
+            <Container className={classes.noPadding}>
+              {account.types.map((type) => (
+                <Chip label={type.name} key={type.key} className={classes.chip} />
+              ))}
+            </Container>
+          )}
+          {isOrganization && (
+            <div className={classes.website}>
+              <Typography variant="caption"> {organizationTexts.find_us_here} </Typography>
+              <Linkify componentDecorator={componentDecorator}>
+                {" "}
+                <Typography className={classes.websiteLink}> {account.info.website}</Typography>
+              </Linkify>
+            </div>
+          )}
+          {isOrganization && (
             <div className={classes.followButtonContainer}>
               <FollowButton
                 isUserFollowing={isUserFollowing}
@@ -583,29 +572,28 @@ export default function AccountPage({
               </Typography>
             </div>
           )}
-          </Container>
-          <Container className={classes.middleInfoContainer}>
-            {displayAccountInfo(account.info)}
-          </Container>
-
-          {user && (
-            <div className={classes.buttonInfoContainer}>
-              {!isSmallScreen && isOwnAccount && (
-                <>
-                  <Button
-                    className={classes.sideButton}
-                    variant="contained"
-                    color="primary"
-                    href={editHref}
-                  >
-                    <EditSharpIcon className={classes.innerIcon} />
-                    {editText ? editText : texts.edit_profile}
-                  </Button>
-                </>
-              )}
-            </div>
-          )}
         </Container>
+        <Container className={classes.middleInfoContainer}>
+          {displayAccountInfo(account.info)}
+        </Container>
+
+        {user && (
+          <div className={classes.buttonInfoContainer}>
+            {!isSmallScreen && isOwnAccount && (
+              <>
+                <Button
+                  className={classes.sideButton}
+                  variant="contained"
+                  color="primary"
+                  href={editHref}
+                >
+                  <EditSharpIcon className={classes.innerIcon} />
+                  {editText ? editText : texts.edit_profile}
+                </Button>
+              </>
+            )}
+          </div>
+        )}
       </Container>
       <FollowersDialog
         open={showFollowers}
@@ -665,6 +653,3 @@ const getFollowers = async (organization, token, locale) => {
 const getFullInfoElement = (infoMetadata, key, value) => {
   return { ...infoMetadata[key], value: value };
 };
-
-
-       
