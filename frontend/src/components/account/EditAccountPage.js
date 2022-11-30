@@ -266,7 +266,6 @@ export default function EditAccountPage({
       ? editedAccount.background_image
       : DEFAULT_BACKGROUND_IMAGE,
   });
-  console.log(editedAccount);
 
   const [open, setOpen] = useState({
     backgroundDialog: false,
