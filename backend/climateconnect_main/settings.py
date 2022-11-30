@@ -25,6 +25,7 @@ from sentry_sdk.integrations.celery import CeleryIntegration
 
 load_dotenv(find_dotenv(".backend_env"))
 
+
 env = os.environ.get
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -46,6 +47,7 @@ INTERNAL_IPS = [
     "127.0.0.1",
     # ...
 ]
+
 
 AUTO_VERIFY = True if env("AUTO_VERIFY") in ["True", "true", "TRUE"] else False
 
@@ -120,6 +122,7 @@ APPEND_SLASH = False
 
 ROOT_URLCONF = "climateconnect_main.urls"
 
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -191,9 +194,7 @@ if env("ENVIRONMENT") not in ("development", "test"):
     AZURE_CONTAINER = env("AZURE_CONTAINER")
 
 STATIC_URL = (
-    "/static/"
-    if env("ENVIRONMENT") in ("development", "test")
-    else "https://"
+    "/static/" if env("ENVIRONMENT") in ("development", "test") else "https://"
     + env("AZURE_ACCOUNT_NAME")
     + "."
     + env("AZURE_HOST")
