@@ -200,8 +200,6 @@ STATIC_URL = (
     + env("AZURE_HOST")
     + "/{}/".format(env("AZURE_CONTAINER"))
 )
-
-
 STATIC_ROOT = (
     env("STATIC_ROOT") if env("ENVIRONMENT") in ("development", "test") else "static/"
 )
