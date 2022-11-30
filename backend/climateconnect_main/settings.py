@@ -209,8 +209,6 @@ MEDIA_ROOT = env("MEDIA_ROOT")
 MEDIA_URL = "/media/"
 
 REST_KNOX = {"TOKEN_TTL": timedelta(days=120)}
-GDAL_LIBRARY_PATH = '/opt/homebrew/opt/gdal/lib/libgdal.dylib'
-GEOS_LIBRARY_PATH = '/opt/homebrew/opt/geos/lib/libgeos_c.dylib'
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
