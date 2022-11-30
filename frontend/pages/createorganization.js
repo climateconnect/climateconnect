@@ -191,7 +191,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
           basicOrganizationInfo: (
             <div>
               {texts.an_organization_with_this_name_already_exists}{" "}
-              <a href={getLocalePrefix(locale) + "/organizations/" + err?.response?.data?.url}>
+              <a href={getLocalePrefix(locale) + "/organizations/" + err?.response?.data?.url} target="_blank">
                 {texts.click_here}
               </a>{" "}
               {texts.to_see_it}
