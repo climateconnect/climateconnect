@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+
 from organization.models import (
     Organization,
     OrganizationTags,
@@ -23,7 +24,10 @@ from organization.models import (
     PostTranslation,
     CommentTranslation,
     ProjectLike,
+    OrganizationFollower,
+    OrgProjectPublished,
 )
+
 
 from organization.models.members import MembershipRequests
 
@@ -44,6 +48,8 @@ pass_through_models = (
     CommentTranslation,
     ProjectLike,
     MembershipRequests,
+    OrganizationFollower,
+    OrgProjectPublished,
 )
 
 for model in pass_through_models:

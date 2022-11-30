@@ -36,7 +36,6 @@ export default function ContactCreatorButtonInfo({
   customMessage,
 }) {
   const classes = useStyles();
-  console.log("customMessage: " + customMessage);
   return (
     <Card className={classes.slideInCard} variant="outlined">
       <CardHeader
@@ -51,6 +50,7 @@ export default function ContactCreatorButtonInfo({
           creatorsRoleInProject ? (
             creatorsRoleInProject
           ) : (
+            /* eslint-disable-next-line react/no-unescaped-entities */
             <Typography className={classes.customMessage}>"{customMessage}"</Typography>
           )
         }

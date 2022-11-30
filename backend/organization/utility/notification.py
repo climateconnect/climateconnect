@@ -2,32 +2,30 @@ import re
 from datetime import datetime, timedelta
 
 from asgiref.sync import async_to_sync
-from organization.models.members import MembershipRequests
+
+
+from organization.models.organization_project_published import OrgProjectPublished
+from organization.models.members import MembershipRequests, OrganizationMember
 from channels.layers import get_channel_layer
 from organization.utility.email import (
     send_join_project_request_email,
     send_mention_email,
-    send_project_follower_email,
+    send_org_project_published_email,
     send_project_like_email,
 )
 from climateconnect_api.models import UserProfile
 from climateconnect_api.models.notification import (
-    EmailNotification,
     Notification,
-    UserNotification,
 )
 from climateconnect_api.utility.notification import (
-    create_email_notification,
     create_user_notification,
     send_comment_notification,
     send_out_live_notification,
+    create_follower_notification,
 )
 from django.contrib.auth.models import User
-from django.db.models import Q
-
-from organization.models import Comment, ProjectMember
+from organization.models import ProjectMember
 from organization.models.content import ProjectComment
-from organization.serializers.content import ProjectCommentSerializer
 
 
 def create_project_comment_reply_notification(
@@ -74,12 +72,12 @@ def get_mentions(text, url_slugs_only):
 def create_comment_mention_notification(entity_type, entity, comment, sender):
     if entity_type == "project":
         notification = Notification.objects.create(
-            notification_type=11, project_comment=comment
+            notification_type=Notification.MENTION, project_comment=comment
         )
 
     if entity_type == "idea":
         notification = Notification.objects.create(
-            notification_type=11, idea_comment=comment
+            notification_type=Notification.MENTION, idea_comment=comment
         )
     matches = get_mentions(text=comment.content, url_slugs_only=False)
     sender_url_slug = UserProfile.objects.get(user=sender).url_slug
@@ -102,17 +100,39 @@ def create_comment_mention_notification(entity_type, entity, comment, sender):
 
 
 def create_project_follower_notification(project_follower):
-    notification = Notification.objects.create(
-        notification_type=4, project_follower=project_follower
+    create_follower_notification(
+        notif_type_number=Notification.PROJECT_FOLLOWER,
+        follower=project_follower,
+        follower_entity=project_follower.project,
+        follower_user_id=project_follower.user.id,
     )
-    project_team = ProjectMember.objects.filter(
-        project=project_follower.project
-    ).values("user")
-    for member in project_team:
-        if not member["user"] == project_follower.user.id:
-            user = User.objects.filter(id=member["user"])[0]
-            create_user_notification(user, notification)
-            send_project_follower_email(user, project_follower, notification)
+
+
+def create_organization_follower_notification(organization_follower):
+    create_follower_notification(
+        notif_type_number=Notification.ORGANIZATION_FOLLOWER,
+        follower=organization_follower,
+        follower_entity=organization_follower.organization,
+        follower_user_id=organization_follower.user.id,
+    )
+
+
+def create_organization_project_published_notification(
+    followers, organization, project
+):
+
+    for follower in followers:
+        org_project_published = OrgProjectPublished.objects.create(
+            organization=organization, project=project, user=follower.user
+        )
+        notification = Notification.objects.create(
+            notification_type=Notification.ORG_PROJECT_PUBLISHED,
+            org_project_published=org_project_published,
+        )
+        create_user_notification(org_project_published.user, notification)
+        send_org_project_published_email(
+            org_project_published.user, org_project_published, notification
+        )
 
 
 def create_project_join_request_notification(
@@ -128,7 +148,7 @@ def create_project_join_request_notification(
     """
     requester_name = requester.first_name + " " + requester.last_name
     notification = Notification.objects.create(
-        notification_type=9,
+        notification_type=Notification.JOIN_PROJECT_REQUEST,
         text=f"{requester_name} wants to join your project {project.name}!",
         membership_request=request,
     )
@@ -148,7 +168,8 @@ def create_project_join_request_approval_notification(request_id):
     """
     request = MembershipRequests.objects.get(id=request_id)
     notification = Notification.objects.create(
-        notification_type=10, membership_request=request
+        notification_type=Notification.PROJECT_JOIN_REQUEST_APPROVED,
+        membership_request=request,
     )
     create_user_notification(request.user, notification)
 

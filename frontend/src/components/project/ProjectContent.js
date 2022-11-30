@@ -35,12 +35,13 @@ const useStyles = makeStyles((theme) => ({
     display: "block",
     fontSize: 14,
   },
-  creator: {
+  creator: (props) => ({
+    paddingTop: props.isPersonalProject && theme.spacing(0.25),
     paddingLeft: theme.spacing(1),
     color: theme.palette.grey[800],
     cursor: "pointer",
     wordBreak: "break-word",
-  },
+  }),
   collaboratingOrganization: {
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1),
@@ -152,14 +153,19 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: theme.palette.error.main,
     },
   },
-  finishedDate: {
-    marginTop: theme.spacing(0.5),
-  },
   joinButton: {
     float: "right",
   },
   projectDescription: {
     wordBreak: "break-word",
+  },
+  projectParentContainer: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  collaborationContainer: {
+    display: "flex",
+    flexDirection: "row",
   },
 }));
 
@@ -200,7 +206,7 @@ export default function ProjectContent({
   handleSendProjectJoinRequest,
   requestedToJoinProject,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({ isPersonalProject: project.isPersonalProject });
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
 
@@ -318,29 +324,31 @@ export default function ProjectContent({
             {texts.created}: <DateDisplay date={new Date(project.creation_date)} />
           </Typography>
           <div>
-            <Typography component="span">
-              {texts.started + " "}
-              <TimeAgo
-                date={new Date(project.start_date)}
-                formatter={locale === "de" ? germanYearAndDayFormatter : yearAndDayFormatter}
-              />{" "}
-              {texts.by}
-            </Typography>
-            {project.isPersonalProject ? (
-              <MiniProfilePreview
-                className={classes.creator}
-                profile={project.creator}
-                size="small"
-              />
-            ) : (
-              <MiniOrganizationPreview
-                size="small"
-                className={classes.creator}
-                organization={project.creator}
-              />
-            )}
+            <div className={classes.projectParentContainer}>
+              <Typography component="span">
+                {texts.started + " "}
+                <TimeAgo
+                  date={new Date(project.start_date)}
+                  formatter={locale === "de" ? germanYearAndDayFormatter : yearAndDayFormatter}
+                />{" "}
+                {texts.by}
+              </Typography>
+              {project.isPersonalProject ? (
+                <MiniProfilePreview
+                  className={classes.creator}
+                  profile={project.creator}
+                  size="small"
+                />
+              ) : (
+                <MiniOrganizationPreview
+                  className={classes.creator}
+                  organization={project.creator}
+                  size="small"
+                />
+              )}
+            </div>
             {project.end_date && (
-              <Typography className={classes.finishedDate}>
+              <Typography>
                 {texts.finished + " "}
                 <TimeAgo
                   date={new Date(project.end_date)}
@@ -348,8 +356,9 @@ export default function ProjectContent({
                 />{" "}
               </Typography>
             )}
+
             {project.collaborating_organizations && project.collaborating_organizations.length > 0 && (
-              <div>
+              <div className={classes.collaborationContainer}>
                 <span> {texts.in_collaboration_with}</span>
                 {project.collaborating_organizations.map((o) => (
                   <MiniOrganizationPreview
