@@ -224,17 +224,24 @@ const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_pa
 
 const AdditionalPreviewInfo = ({ project }) => {
   const classes = useStyles();
+  //only display additional preview info if the project has a significant number of likes/comments
+  if(project.number_of_comments < 3 && project.number_of_likes <3) {
+    return <></>
+  }
   return (
     <Box className={classes.additionalInfoContainer}>
-      <Box className={classes.additionalInfoIcon}>
-        <ModeCommentIcon color="primary" />
-        <span className={classes.additionalInfoCounter}> {project.number_of_comments} </span>
-      </Box>
-      <Box className={classes.additionalInfoIcon}>
-        <FavoriteIcon color="primary" />
-
-        <span className={classes.additionalInfoCounter}> {project.number_of_likes}</span>
-      </Box>
+      {project.number_of_comments > 2 &&
+        <Box className={classes.additionalInfoIcon}>
+          <ModeCommentIcon color="primary" />
+          <span className={classes.additionalInfoCounter}> {project.number_of_comments} </span>
+        </Box>
+      }
+      {project.number_of_likes > 2 &&
+        <Box className={classes.additionalInfoIcon}>
+          <FavoriteIcon color="primary" />
+          <span className={classes.additionalInfoCounter}> {project.number_of_likes}</span>
+        </Box>
+      }
       <Box className={classes.additionalInfoIcon}>
         {" • "}
         <div className={classes.horizontalSpacing} />
