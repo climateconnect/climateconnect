@@ -80,7 +80,7 @@ msgid ""
 "Someone has already created the organization {}. Please join the "
 "organization or use a different name. If you're having problems please "
 "contact support@climateconnect.earth"
-msgstr "Jemand hat die Organisation bereits gegründet {}. Bitte trete der Organisation bei oder verwende einen anderen Namen. Falls du Probleme hast, wende dich bitte an support@climateconnect.earth"
+msgstr "Jemand hat die Organisation {} bereits erstellt. Bitte trete der Organisation bei oder verwende einen anderen Namen. Falls du Probleme hast, wende dich bitte an support@climateconnect.earth"
 
 #: organization/views/organization_views.py:478
 #: organization/views/organization_views.py:500
