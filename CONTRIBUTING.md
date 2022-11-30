@@ -33,10 +33,14 @@ If you are looking for a place to start contributing to Climate Connect, take a 
 When creating a pull request (PR) follow these guidelines.
 
 1. Ensure you're starting off a new branch, that's checked out from the latest master. The project uses a single branching model off master (no develop branches).
-1. Add concise description to the PR summary.
+1. `yarn lint` passes (frontend)
+1. `yarn format` passes (frontend)
+1. `make format` passes (backend)
+1. Add concise description to the PR summary, and a meaningful title.
 1. Add detailed steps to for testing a feature or bug.
 1. If there is code unrelated to feature or a bug in the PR, please list all changes.
-1. After approval, ensure that you squash merge your PR.
+
+Once your PR is approved, ensure that you **squash merge** your PR -- this improves maintainability for future contributors.
 
 ### Documentation
 
