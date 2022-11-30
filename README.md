@@ -6,9 +6,9 @@ The client and server code for the web platform on https://climateconnect.earth.
 
 ### Postgres
 
-1. Create a local Postgres database with your own username and password.
-1. Install [PostGIS](https://postgis.net/install/) on your local machine
-1. Create the postgis extension within that database: run [`CREATE EXTENSION postgis;`](https://docs.djangoproject.com/en/3.1/ref/contrib/gis/install/postgis/)
+1. Create a local Postgres database with your own username and password. E.g., `createdb climateconnect-dev`.
+1. Install [PostGIS](https://postgis.net/install/) on your local machine.
+1. Create the PostGIS extension within that database: run [`CREATE EXTENSION postgis;`](https://docs.djangoproject.com/en/3.1/ref/contrib/gis/install/postgis/).
 
 You will connect to this for your local backend project.
 
@@ -25,8 +25,6 @@ We use Docker to run the local Redis server. See the [Docker install docs](https
 Make sure to install docker-ce, docker-ce-cli, containerd.io, and docker-compose.
 
 ## Get Started
-
-We use Python/Django for our backend and Next.js for the frontend.
 
 First, create a Python virtual environment and start it
 
@@ -46,7 +44,7 @@ git clone https://github.com/climateconnect/climateconnect
 
 After you've cloned the repository, we can set up the local Redis server and backend.
 
-Note: we use Python 3, so for all instructions we assume `python` means `python3`.
+_Note: we use Python 3, so for all instructions, if not explicitly speficied we assume `python` means `python3`._
 
 #### First Time Setup
 
@@ -55,8 +53,8 @@ Note: we use Python 3, so for all instructions we assume `python` means `python3
 1.  Create `.backend_env` to set environment variables.
     - You can find up-to-date sample env variables in [`backend/local-env-setup.md`](https://github.com/climateconnect/climateconnect/blob/master/backend/local-env-setup.md).
     - For the [Django `SECRET_KEY`](https://docs.djangoproject.com/en/3.1/ref/settings/#std:setting-SECRET_KEY), run `openssl rand -base64 32` to create a 32 char random secret.
-1.  Run `python manage.py migrate` to run Django migrations.
-    - Note: This command is used for when you first start, or whenever you are adding or updating database models.
+1.  Run `make migrate` to run Django migrations.
+    - _Note: This command is used for when you first start, or whenever you are adding or updating database models_.
 1.  Create a superuser using `python manage.py createsuperuser`
     - You can then access your admin panel via <API_URL>/admin/
 
