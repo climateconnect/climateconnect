@@ -1,3 +1,6 @@
+install:
+	pip3 install -r requirements.txt
+
 default: start
 
 start:
@@ -5,9 +8,6 @@ start:
 	$(info -- Starting server --)
 	$(info )
 	python3 manage.py runserver
-
-install:
-	pip install -r requirements.txt
 
 test:
 	python3 manage.py test
@@ -35,4 +35,4 @@ migrate:
 migrations: migrate
 
 test-data:
-	python manage.py create_test_data --number_of_rows 4
+	python3 manage.py create_test_data --number_of_rows 4
