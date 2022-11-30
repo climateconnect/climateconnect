@@ -49,8 +49,8 @@ const useStyles = makeStyles((theme) => {
     },
     content: {
       display: "flex",
-      alignItems: "center"
-    }
+      alignItems: "center",
+    },
   };
 });
 
