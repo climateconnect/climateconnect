@@ -28,10 +28,12 @@ Make sure to install docker-ce, docker-ce-cli, containerd.io, and docker-compose
 
 We use Python/Django for our backend and Next.js for the frontend.
 
+Note: we use Python 3, so for all instructions we assume `python` means `python3`.
+
 First, create a Python virtual environment and start it
 
 ```sh
-python3 -m venv climateconnect_env
+python -m venv climateconnect_env
 cd climateconnect_env
 source bin/activate
 ```
@@ -45,8 +47,6 @@ git clone https://github.com/climateconnect/climateconnect
 ### Backend
 
 After you've cloned the repository, we can set up the local Redis server and backend.
-
-Note: we use Python 3, so for all instructions we assume `python` means `python3`.
 
 #### First Time Setup
 
