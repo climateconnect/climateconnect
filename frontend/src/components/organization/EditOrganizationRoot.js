@@ -20,7 +20,6 @@ import Alert from "@material-ui/lab/Alert";
 
 import { parseOrganization } from "../../../public/lib/organizationOperations";
 
-
 const useStyles = makeStyles((theme) => ({
   headline: {
     textAlign: "center",
@@ -34,15 +33,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function EditOrganizationRoot({
+  allHubs,
+  errorMessage,
+  existingName,
+  existingUrlSlug,
+  handleSetErrorMessage,
+  handleSetExistingName,
+  handleSetExistingUrlSlug,
+  handleSetLocationOptionsOpen,
+  infoMetadata,
+  initialTranslations,
+  locationInputRef,
   organization,
   tagOptions,
-  infoMetadata,
-  handleSetErrorMessage,
-  locationInputRef,
-  handleSetLocationOptionsOpen,
-  errorMessage,
-  initialTranslations,
-  allHubs,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
@@ -146,6 +149,10 @@ export default function EditOrganizationRoot({
           console.log(error);
           if (error) console.log(error.response);
           if (error?.response?.data?.message) handleSetErrorMessage(error?.response?.data?.message);
+          if (error?.response?.data?.url_slug)
+            handleSetExistingUrlSlug(error?.response?.data?.url_slug);
+          if (error?.response?.data?.existing_name)
+            handleSetExistingName(error?.response.data?.existing_name);
         });
     }
   };
@@ -219,6 +226,8 @@ export default function EditOrganizationRoot({
             handleSubmit={saveChanges}
             handleCancel={handleCancel}
             errorMessage={errorMessage}
+            existingName={existingName}
+            existingUrlSlug={existingUrlSlug}
             onClickCheckTranslations={onClickCheckTranslations}
             allHubs={allHubs}
           />

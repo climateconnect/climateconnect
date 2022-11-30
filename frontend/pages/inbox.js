@@ -80,9 +80,7 @@ export default function Inbox({ chatData, initialNextPage }) {
     nextPage: initialNextPage,
   });
 
-
   const [searchedChatsState, setSearchedChatsState] = useState({
-
     chats: [],
     nextPage: 0,
   });

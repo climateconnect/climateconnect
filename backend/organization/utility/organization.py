@@ -13,6 +13,7 @@ from rest_framework import status
 from django.utils.translation import gettext as _
 from django.utils.html import format_html
 
+
 def check_organization(organization_id: str) -> Organization:
     try:
         organization = Organization.objects.get(id=int(organization_id))
@@ -143,14 +144,18 @@ def add_organization_member(organization, user, user_role, role_in_organization)
     return
 
 
-def check_edit_exisiting_name(organization, name): 
+def check_edit_exisiting_name(organization, name):
     # allows an org to change capitilization of their name
-    if (Organization.objects.filter(name__iexact=name).exclude(id=organization.id).exists()):
+    if (
+        Organization.objects.filter(name__iexact=name)
+        .exclude(id=organization.id)
+        .exists()
+    ):
         return True
 
-    if (OrganizationTranslation.objects.filter(
-                name_translation__iexact=name
-            ).exclude(organization=organization)):
+    if OrganizationTranslation.objects.filter(name_translation__iexact=name).exclude(
+        organization=organization
+    ):
         return True
 
     return False
@@ -164,17 +169,17 @@ def check_create_existing_name(name):
 
 def check_existing_name(name):
     if Organization.objects.filter(name__iexact=name).exists():
-            return True
+        return True
     return False
 
 
 def check_existing_name_translation(name):
-    if OrganizationTranslation.objects.filter(
-            name_translation__iexact=name
-        ).exists():
-            return True
+    if OrganizationTranslation.objects.filter(name_translation__iexact=name).exists():
+        return True
     return False
 
 
 def get_existing_name_message(name):
-    return _("Someone has already created the organization {}. Please join the organization or use a different name. If you're having problems please contact support@climateconnect.earth").format(name)
+    return _(
+        "Someone has already created the organization {}. Please join the organization or use a different name. If you're having problems please contact support@climateconnect.earth"
+    ).format(name)

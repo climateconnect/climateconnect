@@ -54,7 +54,7 @@ export async function getServerSideProps(ctx) {
 export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }) {
   const token = new Cookies().get("auth_token");
   const classes = useStyles();
-  const [errorMessages, setErrorMessages] = React.useState({
+  const [errorMessages, setErrorMessages] = useState({
     basicOrganizationInfo: "",
     detailledOrganizationInfo: "",
   });
@@ -75,6 +75,8 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
   const [sourceLanguage, setSourceLanguage] = useState(locale);
   const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== locale));
   const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [existingUrlSlug, setExistingUrlSlug] = useState("");
+  const [existingName, setExistingName] = useState("");
 
   const [organizationInfo, setOrganizationInfo] = useState({
     name: "",
@@ -128,6 +130,14 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       ...errorMessages,
       detailledOrganizationInfo: newMessage,
     });
+  };
+
+  const handleSetExistingUrlSlug = (urlSlug) => {
+    setExistingUrlSlug(urlSlug);
+  };
+
+  const handleSetExistingName = (name) => {
+    setExistingName(name);
   };
 
   const handleBasicInfoSubmit = async (event, values) => {
@@ -199,7 +209,6 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
           types: values.orgtypes,
         });
         setCurStep(steps[1]);
-
       }
 
       if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
@@ -309,6 +318,10 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
             errorMessages,
             detailledOrganizationInfo: error?.response?.data?.message,
           });
+        if (error?.response?.data?.url_slug)
+          handleSetExistingUrlSlug(error?.response?.data?.url_slug);
+        if (error?.response?.data?.existing_name)
+          handleSetExistingName(error?.response.data?.existing_name);
         return;
       });
   };
@@ -341,6 +354,8 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       <WideLayout title={texts.create_an_organization}>
         <EnterDetailledOrganizationInfo
           errorMessage={errorMessages.detailledOrganizationInfo}
+          existingName={existingName}
+          existingUrlSlug={existingUrlSlug}
           handleSubmit={handleDetailledInfoSubmit}
           organizationInfo={organizationInfo}
           tagOptions={tagOptions}

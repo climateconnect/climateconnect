@@ -194,7 +194,9 @@ if env("ENVIRONMENT") not in ("development", "test"):
     AZURE_CONTAINER = env("AZURE_CONTAINER")
 
 STATIC_URL = (
-    "/static/" if env("ENVIRONMENT") in ("development", "test") else "https://"
+    "/static/"
+    if env("ENVIRONMENT") in ("development", "test")
+    else "https://"
     + env("AZURE_ACCOUNT_NAME")
     + "."
     + env("AZURE_HOST")

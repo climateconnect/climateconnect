@@ -274,18 +274,19 @@ class CreateOrganizationView(APIView):
                     {"message": "Required parameter missing: {}".format(param)},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-        
-
 
         if check_create_existing_name(request.data["name"]):
             message = get_existing_name_message(request.data["name"])
+            existing_org = Organization.objects.get(name__iexact=request.data["name"])
             return Response(
                 {
                     "message": message,
+                    "url_slug": existing_org.url_slug,
+                    "existing_name": existing_org.name,
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-            
+
         texts = {
             "name": request.data["name"].strip()
         }  # remove leading and trailing spaces
@@ -461,9 +462,7 @@ class LookUpOrganizationAPIView(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        return Response(
-            status=status.HTTP_200_OK
-        )
+        return Response(status=status.HTTP_200_OK)
 
 
 class OrganizationAPIView(APIView):
@@ -511,11 +510,16 @@ class OrganizationAPIView(APIView):
             "get_involved",
         ]
         if "name" in request.data:
-            if check_edit_exisiting_name(organization, request.data['name']):
+            if check_edit_exisiting_name(organization, request.data["name"]):
                 message = get_existing_name_message(request.data["name"])
+                existing_org = Organization.objects.get(
+                    name__iexact=request.data["name"]
+                )
                 return Response(
                     {
-                        "message": message
+                        "message": message,
+                        "url_slug": existing_org.url_slug,
+                        "existing_name": existing_org.name,
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
