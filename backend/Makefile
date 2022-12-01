@@ -26,7 +26,7 @@ lint:
 	flake8 . --count --select=E9,F6,F7,F8 --show-source --statistics
 
 format:
-	black
+	black .
 
 # Database migrations and test data creation:
 migrate:
