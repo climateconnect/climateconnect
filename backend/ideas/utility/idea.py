@@ -2,7 +2,9 @@ import logging
 import urllib.parse
 from typing import Dict, Optional
 
+from chat_messages.models.message import MessageParticipants, Participant
 
+from ideas.models.comment import IdeaComment
 from climateconnect_api.models.language import Language
 from climateconnect_main.utility.general import get_image_from_data_url
 from django.contrib.auth.models import User
@@ -149,3 +151,19 @@ def get_idea_short_description(idea: Idea, language_code: str) -> str:
         )
 
     return idea.short_description
+
+
+def get_number_of_idea_comments(idea: Idea):
+    return IdeaComment.objects.filter(
+        idea=idea,
+        is_abusive=False,
+        deleted_at__isnull=True,
+        parent_comment=None,
+    ).count()
+
+
+def get_number_of_idea_participants(idea: Idea):
+    chat_user_count = Participant.objects.filter(
+        chat__name=idea.name, is_active=True
+    ).count()
+    return chat_user_count

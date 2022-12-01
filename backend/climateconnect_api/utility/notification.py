@@ -1,13 +1,21 @@
 from datetime import datetime, timedelta
 from typing import List
 
+from yaml import serialize
+
 from asgiref.sync import async_to_sync
+from organization.models.project import Project
+from organization.serializers.project import ProjectNotificationSerializer
+from organization.models.organization import Organization
+from organization.serializers.organization import OrganizationNotificationSerializer
 from channels.layers import get_channel_layer
 from chat_messages.models import Participant
 from chat_messages.utility.email import (
     send_group_chat_message_notification_email,
     send_private_chat_message_notification_email,
 )
+
+from climateconnect_api.serializers.user import UserProfileStubSerializer
 from climateconnect_api.models.notification import Notification, UserNotification
 from climateconnect_api.models.user import UserProfile
 from django.contrib.auth.models import User
@@ -16,13 +24,15 @@ from ideas.models.comment import IdeaComment
 from ideas.models.support import IdeaSupporter
 from ideas.serializers.comment import IdeaCommentSerializer
 from organization.models.content import ProjectComment
-from organization.models.members import ProjectMember
+from organization.models.members import OrganizationMember, ProjectMember
 from organization.serializers.content import ProjectCommentSerializer
 from organization.utility.email import (
     send_idea_comment_email,
     send_idea_comment_reply_email,
+    send_organization_follower_email,
     send_project_comment_email,
     send_project_comment_reply_email,
+    send_project_follower_email,
 )
 
 channel_layer = get_channel_layer()
@@ -33,9 +43,54 @@ async def send_out_live_notification(user_id):
     await channel_layer.group_send("user-" + str(user_id), {"type": "notification"})
 
 
+def create_follower_notification(
+    notif_type_number,  # Integer value of the notification type
+    follower,  # follower e.g project or org
+    follower_entity,  # entity being followed e.g. org or project
+    follower_user_id,  # user id of the follower
+):
+    notification_values = get_notification_values(notif_type_number)
+
+    lookup_up_field_input_notifications = {
+        notification_values["look_up_follower_type_field_name"]: follower
+    }
+    notification = Notification.objects.create(
+        notification_type=notif_type_number, **lookup_up_field_input_notifications
+    )
+
+    look_up_field_input_team = {
+        notification_values["look_up_entitiy_type_field_name"]: follower_entity
+    }
+
+    team_members_of_entity = (
+        notification_values["member_type_model"]
+        .objects.filter(**look_up_field_input_team)
+        .values("user")
+    )
+
+    for member in team_members_of_entity:
+        if not member["user"] == follower_user_id:
+            user = User.objects.filter(id=member["user"])[0]
+            create_user_notification(user, notification)
+            create_follower_email(
+                user,
+                notification_values["look_up_entitiy_type_field_name"],
+                follower,
+                notification,
+            )
+
+
+def create_follower_email(user, obj_field_name, follower_type, notification):
+    if obj_field_name == "organization":
+        send_organization_follower_email(user, follower_type, notification)
+    elif obj_field_name == "project":
+        send_project_follower_email(user, follower_type, notification)
+
+
 def create_user_notification(user, notification):
     # TODO: root cause why this filtering is failing
     # on the creation of Project Approval notifications
+
     old_notification_object = None
     try:
         old_notification_object = UserNotification.objects.filter(
@@ -191,3 +246,34 @@ def send_comment_email_notification(
         sender,
         notification,
     )
+
+
+def get_following_user(user):
+    follower_user = UserProfile.objects.filter(user=user)
+    serializer = UserProfileStubSerializer(follower_user[0])
+    return serializer.data
+
+
+def get_organization_info(organization):
+    serializer = OrganizationNotificationSerializer(organization)
+    return serializer.data
+
+
+def get_project_info(project):
+    serializer = ProjectNotificationSerializer(project)
+    return serializer.data
+
+
+def get_notification_values(notif_type_number):
+    if notif_type_number == Notification.PROJECT_FOLLOWER:
+        return {
+            "look_up_follower_type_field_name": "project_follower",
+            "look_up_entitiy_type_field_name": "project",
+            "member_type_model": ProjectMember,
+        }
+    if notif_type_number == Notification.ORGANIZATION_FOLLOWER:
+        return {
+            "look_up_follower_type_field_name": "organization_follower",
+            "look_up_entitiy_type_field_name": "organization",
+            "member_type_model": OrganizationMember,
+        }
