@@ -194,7 +194,9 @@ if env("ENVIRONMENT") not in ("development", "test"):
     AZURE_CONTAINER = env("AZURE_CONTAINER")
 
 STATIC_URL = (
-    "/static/" if env("ENVIRONMENT") in ("development", "test") else "https://"
+    "/static/"
+    if env("ENVIRONMENT") in ("development", "test")
+    else "https://"
     + env("AZURE_ACCOUNT_NAME")
     + "."
     + env("AZURE_HOST")
@@ -209,8 +211,8 @@ MEDIA_ROOT = env("MEDIA_ROOT")
 MEDIA_URL = "/media/"
 
 REST_KNOX = {"TOKEN_TTL": timedelta(days=120)}
-GDAL_LIBRARY_PATH = '/opt/homebrew/opt/gdal/lib/libgdal.dylib'
-GEOS_LIBRARY_PATH = '/opt/homebrew/opt/geos/lib/libgeos_c.dylib'
+GDAL_LIBRARY_PATH = "/opt/homebrew/opt/gdal/lib/libgdal.dylib"
+GEOS_LIBRARY_PATH = "/opt/homebrew/opt/geos/lib/libgeos_c.dylib"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
