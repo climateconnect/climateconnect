@@ -42,7 +42,9 @@ def send_email(
 ):
     if not check_send_email_notification(user):
         return
+
     if should_send_email_setting:
+
         try:
             user_profile = UserProfile.objects.get(user=user)
             # short circuit if the user has changed his settings to not
@@ -54,6 +56,7 @@ def send_email(
     lang_code = get_user_lang_code(user)
     subject = subjects_by_language[lang_code]
     template_id = get_template_id(template_key=template_key, lang_code=lang_code)
+
     data = {
         "Messages": [
             {
@@ -81,10 +84,12 @@ def send_email(
 
     try:
         mail = mailjet_send_api.send.create(data=data)
+
         if notification:
             EmailNotification.objects.create(
                 user=user, created_at=datetime.now(), notification=notification
             )
+
         return mail
     except Exception as ex:
         logger.error("%s: Error sending email: %s" % (send_email.__name__, ex))
@@ -204,7 +209,6 @@ def send_feedback_email(email, message, send_response):
             }
         ]
     }
-    print(data)
 
     try:
         mailjet_send_api.send.create(data=data)

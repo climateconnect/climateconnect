@@ -279,6 +279,68 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: "Skip for now",
       de: "Erstmal überspringen",
     },
+
+    please_log_in_to_follow_an_organization: {
+      en: "Please log in to follow an organization.",
+      de: "Bitte logge dich ein, um einer Organisation zu folgen.",
+    },
+    do_you_really_want_to_unfollow: {
+      en: "Do you really want to unfollow?",
+      de: "Möchtest du dieser Organisation wirklich nicht mehr folgen? ",
+    },
+    are_you_sure_that_you_want_to_unfollow_this_organization: {
+      en: (
+        <>
+          Are you sure that you want to unfollow this organization?
+          <br />
+          You {"won't"} receive updates about it anymore
+        </>
+      ),
+      de: (
+        <>
+          Bist du sicher, dass du dieser Organisation nicht mehr folgen willst?
+          <br />
+          Du wirst keine Updates mehr erhalten
+        </>
+      ),
+    },
+    followers: {
+      en: "Followers",
+      de: "Follower",
+    },
+    follower: {
+      en: "Follower",
+      de: "Follower",
+    },
+    follow: {
+      en: "Follow",
+      de: "Folgen",
+    },
+    following: {
+      en: "Following",
+      de: "Du folgst",
+    },
+    to_see_this_organizations_followers: {
+      en: " to see this organization's followers",
+      de: ", um die Follower der Organisation zu sehen",
+    },
+    //Kontext: Followers of Organization
+    followers_of: {
+      en: "Followers of",
+      de: "Follower von",
+    },
+    following_since: {
+      en: "Following since",
+      de: "Folgt seit",
+    },
+    this_organzation_does_not_have_any_followers_yet: {
+      en: "This organization does not have any followers yet.",
+      de: "Diese Organisation hat noch keine Follower.",
+    },
+    follow_for_updates: {
+      en: "Follow to receive updates!",
+      de: "Folgen, um Updates zu erhalten!",
+    },
     get_involved: {
       en: "How to get involved",
       de: "Wie man sich einbringen kann",
@@ -295,6 +357,16 @@ export default function getOrganizationTexts({ organization, locale }) {
     organization_is_active_in_these_sectors: {
       en: `${organization?.name} is active in these sectors`,
       de: `${organization?.name} ist in diesen Bereichen aktiv`,
+    },
+    someone_has_already_created_organization: {
+      en: "Someone has already created the organization ",
+      de: "Jemand erstellte bereits die Organisation ",
+    },
+    please_join_org_or_use_diff_name_if_problems_contact: {
+      en:
+        ". Please join the organization or use a different name. If you're having problems please contact ",
+      de:
+        ". Bitte trete der Organisation bei oder verwende einen anderen Namen. Falls du Probleme hast, wende dich bitte an ",
     },
   };
 }

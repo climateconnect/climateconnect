@@ -84,7 +84,7 @@
     "de": "Lädt..."
   },
   "privacy_policy": {
-    "en": "Privacy policy",
+    "en": "privacy policy",
     "de": "Datenschutzrichtlinien"
   },
   "and": {
@@ -774,5 +774,9 @@
   "days": {
     "en": "days",
     "de": "Tage"
+  },
+  "participants": {
+    "en": "Participants",
+    "de": "Teilnehmer"
   }
 }
