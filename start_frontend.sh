@@ -1,2 +1,0 @@
-cd frontend
-yarn start
