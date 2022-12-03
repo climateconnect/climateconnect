@@ -18,7 +18,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install flake8
+          ls
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          # TODO: fix the install of deps here
       - name: Lint with flake8
         run: |
           flake8 backend --count --select=E9,F6,F7,F8 --show-source --statistics
