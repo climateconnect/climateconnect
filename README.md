@@ -64,7 +64,7 @@ After you've cloned the repository, we can set up the local Redis server and bac
 
 1.  Ensure Docker is running and then run `sudo docker-compose up`. This will start a Redis server on Docker.
 1.  Ensure the Postgres server is running.
-1.  Run server using `python manage.py runserver`.
+1.  Run server using `make start`.
 1.  Run Celery using `celery -A climateconnect_main worker -l INFO`
 
 #### Creating and Removing Test Data
@@ -100,7 +100,7 @@ $DATABASE_NAME-# \q
 Then run
 
 ```sh
-python manage.py migrate
+make migrate
 ```
 
 to update your migrations, and
@@ -147,21 +147,21 @@ More configuration for Black can be found in the `pyproject.toml` file.
 
 ### Frontend
 
-1. `cd frontend`
-1. `yarn install` to download all npm packages
+1. `cd frontend`.
+1. `yarn` to download all npm packages.
 1. Add a `.env` file for frontend environment variables. You can find variables you need to set in [`/frontend/next.config.js/`](https://github.com/climateconnect/climateconnect/blob/master/frontend/next.config.js)
 
 For local development, use the following for `.env`:
 
 ```sh
-  API_HOST="localhost"
-  API_URL="http://127.0.0.1:8000"
-  BASE_URL_HOST="localhost"
-  SOCKET_URL="ws://localhost"
-  ENVIRONMENT="development"
+API_HOST="localhost"
+API_URL="http://127.0.0.1:8000"
+BASE_URL_HOST="localhost"
+SOCKET_URL="ws://localhost"
+ENVIRONMENT="development"
 ```
 
-Note: This is for people who are using newer version of node (v17.0.1) or have new apple M1 devices. Before running `yarn dev`, please run this command `export NODE_OPTIONS=--openssl-legacy-provider`. You can save this in your `~/.zshrc` file as well.
+_Note: This is for people who are using newer version of node (v17.0.1) or have new apple M1 devices. Before running `yarn dev`, please run this command `export NODE_OPTIONS=--openssl-legacy-provider`. You can save this in your `~/.zshrc` file as well._
 
 And finally `yarn dev` to spin up the Next.js app! Check out our [frontend (FE) code style guidelines wiki](https://github.com/climateconnect/climateconnect/wiki/Frontend-Code-Style-Guide) to follow codebase best practices and contribute to a healthy and maintainable codebase.
 
