@@ -28,7 +28,7 @@ Make sure to install docker-ce, docker-ce-cli, containerd.io, and docker-compose
 
 We use Python/Django for our backend and Next.js for the frontend.
 
-Note: we use Python 3, so for all instructions we assume `python` means `python3`.
+_Note: we use Python 3, so for all instructions we assume `python` means `python3`._
 
 First, create a Python virtual environment and start it
 
