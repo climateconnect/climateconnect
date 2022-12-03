@@ -125,6 +125,12 @@ Or a specific test file or test class:
 python manage.py test <file_path> or <file_path + class_name>
 ```
 
+Like,
+
+```
+python3 manage.py test climateconnect_api.tests.test_user_views.TestUserLoginView.test_successful_login_api
+```
+
 For linting, we use [flake8](https://flake8.pycqa.org/en/latest/). Lint with
 
 ```sh
