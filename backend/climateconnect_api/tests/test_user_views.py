@@ -12,8 +12,11 @@ class TestUserLoginView(APITestCase):
 
     def test_successful_login_api(self):
         url = reverse("login-api")
+        print(url)
         data = {"username": "test_user", "password": "testing@2020"}
         response = self.client.post(url, data, format="json")
+        print("💜")
+        print(response)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_failed_login_api(self):
