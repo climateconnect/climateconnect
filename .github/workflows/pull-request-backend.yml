@@ -1,4 +1,4 @@
-name: Python linting with flake8
+name: Backend CI
 on: [pull_request]
 
 jobs:
