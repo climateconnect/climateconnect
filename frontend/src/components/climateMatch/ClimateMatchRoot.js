@@ -61,7 +61,7 @@ export default function ClimateMatchRoot() {
   const [hasDoneClimateMatch, setHasDoneClimateMatch] = useState(false);
   const [userAnswers, setUserAnswers] = useState([]);
   const cookies = new Cookies();
-  const token = cookies.get("token");
+  const token = cookies.get("auth_token");
   const climatematch_token = cookies.get("climatematch_token");
   const { showFeedbackMessage } = useContext(FeedbackContext);
 

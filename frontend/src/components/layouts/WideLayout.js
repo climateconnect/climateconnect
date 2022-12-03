@@ -57,6 +57,9 @@ export default function WideLayout({
   useFloodStdFont,
   rootClassName,
   hideFooter,
+  resetAlertMessage,
+  isHubPage,
+  hideDonationCampaign,
 }) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);
@@ -96,6 +99,7 @@ export default function WideLayout({
         transparentHeader={transparentHeader}
         noSpacingBottom={isStaticPage}
         background={headerBackground}
+        isHubPage={isHubPage}
       />
       {isLoading ? (
         <LoadingContainer headerHeight={113} footerHeight={80} />
@@ -116,6 +120,7 @@ export default function WideLayout({
                 }
               }}
               onClose={() => {
+                resetAlertMessage && resetAlertMessage();
                 setAlertOpen(false);
               }}
             >
@@ -123,7 +128,7 @@ export default function WideLayout({
             </Alert>
           )}
           {subHeader && subHeader}
-          {!fixedHeader && process.env.DONATION_CAMPAIGN_RUNNING === "true" && !landingPage && (
+          {!fixedHeader && !hideDonationCampaign && process.env.DONATION_CAMPAIGN_RUNNING === "true" && !landingPage && (
             <Collapse in={showDonationBanner}>
               <DonationCampaignInformation />
             </Collapse>

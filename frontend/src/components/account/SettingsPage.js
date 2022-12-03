@@ -49,13 +49,16 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(5),
     marginBottom: theme.spacing(5),
   },
+  spaceStrings: {
+    width: 4,
+  },
 }));
 
 export default function SettingsPage({ settings, setSettings, token, setMessage }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "settings", locale: locale });
-
+  const emailLink = "contact@climateconnect.earth";
   const possibleEmailPreferences = [
     {
       key: "send_newsletter",
@@ -100,6 +103,14 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
     {
       key: "email_on_join_request",
       text: texts.email_on_join_request_text,
+    },
+    {
+      key: "email_on_new_organization_follower",
+      text: texts.email_on_new_org_follower_text,
+    },
+    {
+      key: "email_on_new_project_from_followed_org",
+      text: texts.email_on_new_org_project_text,
     },
   ];
 
@@ -545,6 +556,10 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       <Typography variant="subtitle2" className={classes.deleteMessage}>
         <InfoOutlinedIcon />
         {texts.if_you_wish_to_delete_this_account}
+        <div className={classes.spaceStrings} />
+        <Link href="mailto:contact@climateconnect.earth">
+          <a className={classes.primaryColor}>{emailLink}</a>
+        </Link>
       </Typography>
     </>
   );

@@ -16,32 +16,46 @@ import UserContext from "../context/UserContext";
 import PageNotFound from "../general/PageNotFound";
 import TranslateTexts from "../general/TranslateTexts";
 
+import Alert from "@material-ui/lab/Alert";
+
+import { parseOrganization } from "../../../public/lib/organizationOperations";
+
 const useStyles = makeStyles((theme) => ({
   headline: {
     textAlign: "center",
     marginTop: theme.spacing(4),
   },
+  alert: {
+    textAlign: "center",
+    maxWidth: 1280,
+    margin: "0 auto",
+  },
 }));
 
 export default function EditOrganizationRoot({
+  allHubs,
+  errorMessage,
+  existingName,
+  existingUrlSlug,
+  handleSetErrorMessage,
+  handleSetExistingName,
+  handleSetExistingUrlSlug,
+  handleSetLocationOptionsOpen,
+  infoMetadata,
+  initialTranslations,
+  locationInputRef,
   organization,
   tagOptions,
-  infoMetadata,
-  handleSetErrorMessage,
-  locationInputRef,
-  handleSetLocationOptionsOpen,
-  errorMessage,
-  initialTranslations,
-  allHubs,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
-  const token = cookies.get("token");
+  const token = cookies.get("auth_token");
   const { locale, locales } = useContext(UserContext);
   const STEPS = ["edit_organization", "edit_translations"];
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
 
   const [editedOrganization, setEditedOrganization] = useState({ ...organization });
+
   const texts = getTexts({
     page: "organization",
     locale: locale,
@@ -108,7 +122,8 @@ export default function EditOrganizationRoot({
       handleSetErrorMessage(error);
     } else {
       editedOrg.language = sourceLanguage;
-      const payload = await parseForRequest(getChanges(editedOrg, organization));
+      const oldOrg = await getOrganizationByUrlIfExists(organization.url_slug, token, locale);
+      const payload = await parseForRequest(getChanges(editedOrg, oldOrg));
       if (isTranslationsStep)
         payload.translations = getTranslationsWithoutRedundantKeys(
           getTranslationsFromObject(initialTranslations, "organization"),
@@ -133,6 +148,11 @@ export default function EditOrganizationRoot({
         .catch(function (error) {
           console.log(error);
           if (error) console.log(error.response);
+          if (error?.response?.data?.message) handleSetErrorMessage(error?.response?.data?.message);
+          if (error?.response?.data?.url_slug)
+            handleSetExistingUrlSlug(error?.response?.data?.url_slug);
+          if (error?.response?.data?.existing_name)
+            handleSetExistingName(error?.response.data?.existing_name);
         });
     }
   };
@@ -151,8 +171,46 @@ export default function EditOrganizationRoot({
 
   const handleTranslationsSubmit = async (event) => {
     event.preventDefault();
-    await saveChanges(editedOrganization, true);
+    await saveChanges(editedOrganization, true, token, locale);
   };
+
+  const standardTextsToTranslate = [
+    {
+      textKey: "name",
+      rows: 2,
+      headlineTextKey: "organization_name",
+    },
+    {
+      textKey: "info.short_description",
+      rows: 5,
+      headlineTextKey: "short_description",
+      maxCharacters: 280,
+      showCharacterCounter: true,
+    },
+    {
+      textKey: "info.about",
+      rows: 9,
+      headlineTextKey: "about",
+    },
+  ];
+
+  const getInvolvedText = [
+    {
+      textKey: "info.get_involved",
+      rows: 5,
+      headlineTextKey: "get_involved",
+      maxCharacters: 250,
+      showCharacterCounter: true,
+    },
+  ];
+
+  const hideGetInvolvedField =
+    editedOrganization.types.map((type) => type.hide_get_involved).includes(true) ||
+    editedOrganization.types.length === 0;
+
+  const textsToTranslate = hideGetInvolvedField
+    ? standardTextsToTranslate
+    : standardTextsToTranslate.concat(getInvolvedText);
 
   return (
     <>
@@ -168,14 +226,22 @@ export default function EditOrganizationRoot({
             handleSubmit={saveChanges}
             handleCancel={handleCancel}
             errorMessage={errorMessage}
+            existingName={existingName}
+            existingUrlSlug={existingUrlSlug}
             onClickCheckTranslations={onClickCheckTranslations}
             allHubs={allHubs}
           />
         ) : (
           <>
+            {errorMessage && (
+              <Alert severity="error" className={classes.alert}>
+                {errorMessage}
+              </Alert>
+            )}
             <Typography color="primary" className={classes.headline} component="h1" variant="h4">
               {texts.translate}
             </Typography>
+
             <TranslateTexts
               data={editedOrganization}
               handleSetData={handleSetEditedOrganization}
@@ -188,18 +254,7 @@ export default function EditOrganizationRoot({
               pageName="organization"
               introTextKey="translate_organization_intro"
               submitButtonText={texts.save}
-              textsToTranslate={[
-                {
-                  textKey: "info.short_description",
-                  rows: 5,
-                  headlineTextKey: "short_description",
-                },
-                {
-                  textKey: "info.about",
-                  rows: 9,
-                  headlineTextKey: "about",
-                },
-              ]}
+              textsToTranslate={textsToTranslate}
               changeTranslationLanguages={changeTranslationLanguages}
             />
           </>
@@ -211,10 +266,28 @@ export default function EditOrganizationRoot({
   );
 }
 
+async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/organizations/" + organizationUrl + "/",
+      token: token,
+      locale: locale,
+    });
+    return parseOrganization(resp.data, true);
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
+
 const parseForRequest = async (org) => {
   const parsedOrg = {
     ...org,
   };
+  if (org.organization_size) parsedOrg.organization_size = org.organization_size;
+  if (org.get_involved) parsedOrg.get_involved = org.get_involved;
   if (org.short_description) parsedOrg.short_description = org.short_description;
   if (org.parent_organization)
     parsedOrg.parent_organization = org.parent_organization ? org.parent_organization.id : null;

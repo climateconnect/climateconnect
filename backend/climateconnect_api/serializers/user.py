@@ -1,11 +1,12 @@
 from climateconnect_api.models import UserProfile
 from climateconnect_api.models.donation import Donation
 from climateconnect_api.models.user import UserProfileTranslation
-from climateconnect_api.serializers.badge import DonorBadgeSerializer
-from climateconnect_api.serializers.common import (AvailabilitySerializer,
-                                                   SkillSerializer)
-from climateconnect_api.serializers.translation import \
-    UserProfileTranslationSerializer
+from climateconnect_api.serializers.badge import BadgeSerializer, DonorBadgeSerializer
+from climateconnect_api.serializers.common import (
+    AvailabilitySerializer,
+    SkillSerializer,
+)
+from climateconnect_api.serializers.translation import UserProfileTranslationSerializer
 from climateconnect_api.utility.badges import get_badges, get_oldest_relevant_donation
 from climateconnect_api.utility.user import get_user_profile_biography
 from django.conf import settings
@@ -27,11 +28,21 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = (
-            'id', 'email', 'first_name', 'last_name',
-            'url_slug', 'image', 'background_image',
-            'location', 'biography', 'is_profile_verified',
-            'availability', 'skills', 'has_logged_in', 'website',
-            'badges'
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "url_slug",
+            "image",
+            "background_image",
+            "location",
+            "biography",
+            "is_profile_verified",
+            "availability",
+            "skills",
+            "has_logged_in",
+            "website",
+            "badges",
         )
 
     def get_id(self, obj):
@@ -54,7 +65,7 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
     def get_badges(self, obj):
         badges = get_badges(obj)
         if len(badges) > 0:
-            serializer = DonorBadgeSerializer(badges, many=True)
+            serializer = BadgeSerializer(badges, many=True)
             return serializer.data
         else:
             return None
@@ -74,11 +85,20 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = (
-            'id', 'first_name', 'last_name',
-            'url_slug', 'image', 'background_image',
-            'biography', 'is_profile_verified',
-            'availability', 'skills', 'website', 'location',
-            'language', 'badges'
+            "id",
+            "first_name",
+            "last_name",
+            "url_slug",
+            "image",
+            "background_image",
+            "biography",
+            "is_profile_verified",
+            "availability",
+            "skills",
+            "website",
+            "location",
+            "language",
+            "badges",
         )
 
     def get_id(self, obj):
@@ -104,7 +124,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_badges(self, obj):
         badges = get_badges(obj)
         if len(badges) > 0:
-            serializer = DonorBadgeSerializer(badges, many=True)
+            serializer = BadgeSerializer(badges, many=True)
             return serializer.data
         else:
             return None
@@ -117,10 +137,7 @@ class EditUserProfileSerializer(UserProfileSerializer):
 
     def get_location(self, obj):
         if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
-            return {
-                "city": obj.location.city,
-                "country": obj.location.country
-            }
+            return {"city": obj.location.city, "country": obj.location.country}
         else:
             if obj.location == None:
                 return None
@@ -129,8 +146,7 @@ class EditUserProfileSerializer(UserProfileSerializer):
     def get_translations(self, obj):
         translations = UserProfileTranslation.objects.filter(user_profile=obj)
         if translations.exists():
-            serializer = UserProfileTranslationSerializer(
-                translations, many=True)
+            serializer = UserProfileTranslationSerializer(translations, many=True)
             return serializer.data
         else:
             return {}
@@ -139,8 +155,7 @@ class EditUserProfileSerializer(UserProfileSerializer):
         return obj.biography
 
     class Meta(UserProfileSerializer.Meta):
-        fields = UserProfileSerializer.Meta.fields + \
-            ('location', 'translations')
+        fields = UserProfileSerializer.Meta.fields + ("location", "translations")
 
 
 class UserProfileMinimalSerializer(serializers.ModelSerializer):
@@ -153,9 +168,15 @@ class UserProfileMinimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = (
-            'id', 'first_name', 'last_name',
-            'url_slug', 'image', 'background_image',
-            'location', 'website', 'badges'
+            "id",
+            "first_name",
+            "last_name",
+            "url_slug",
+            "image",
+            "background_image",
+            "location",
+            "website",
+            "badges",
         )
 
     def get_id(self, obj):
@@ -175,7 +196,7 @@ class UserProfileMinimalSerializer(serializers.ModelSerializer):
     def get_badges(self, obj):
         badges = get_badges(obj)
         if len(badges) > 0:
-            serializer = DonorBadgeSerializer(badges, many=True)
+            serializer = BadgeSerializer(badges, many=True)
             return serializer.data
         else:
             return None
@@ -191,9 +212,13 @@ class UserProfileStubSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = (
-            'id', 'first_name', 'last_name',
-            'url_slug', 'thumbnail_image', 'location',
-            'badges'
+            "id",
+            "first_name",
+            "last_name",
+            "url_slug",
+            "thumbnail_image",
+            "location",
+            "badges",
         )
 
     def get_id(self, obj):
@@ -213,7 +238,7 @@ class UserProfileStubSerializer(serializers.ModelSerializer):
     def get_badges(self, obj):
         badges = get_badges(obj)
         if len(badges) > 0:
-            serializer = DonorBadgeSerializer(badges, many=True)
+            serializer = BadgeSerializer(badges, many=True)
             return serializer.data
         else:
             return None
@@ -223,8 +248,7 @@ class DonorProfileSerializer(UserProfileStubSerializer):
     started_donating = serializers.SerializerMethodField()
 
     class Meta(UserProfileSerializer.Meta):
-        fields = UserProfileStubSerializer.Meta.fields + \
-            ('started_donating',)
+        fields = UserProfileStubSerializer.Meta.fields + ("started_donating",)
 
     def get_started_donating(self, obj):
         donations = Donation.objects.filter(user=obj.user)
@@ -233,17 +257,28 @@ class DonorProfileSerializer(UserProfileStubSerializer):
             return d.date_first_received
         return None
 
+
 class UserAccountSettingsSerializer(serializers.ModelSerializer):
     email = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
         fields = (
-            'email', 'send_newsletter',
-            'url_slug', 'email_on_private_chat_message', 'email_on_group_chat_message',
-            'email_on_comment_on_your_project', 'email_on_reply_to_your_comment',
-            'email_on_mention', 'email_on_new_project_follower', 'email_on_new_project_like',
-            'email_on_comment_on_your_idea', 'email_on_idea_join', 'email_on_join_request'
+            "email",
+            "send_newsletter",
+            "url_slug",
+            "email_on_private_chat_message",
+            "email_on_group_chat_message",
+            "email_on_comment_on_your_project",
+            "email_on_reply_to_your_comment",
+            "email_on_mention",
+            "email_on_new_project_follower",
+            "email_on_new_project_like",
+            "email_on_comment_on_your_idea",
+            "email_on_idea_join",
+            "email_on_join_request",
+            "email_on_new_organization_follower",
+            "email_on_new_project_from_followed_org",
         )
 
     def get_email(self, obj):
@@ -253,4 +288,4 @@ class UserAccountSettingsSerializer(serializers.ModelSerializer):
 class UserProfileSitemapEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ('url_slug', 'updated_at')
+        fields = ("url_slug", "updated_at")

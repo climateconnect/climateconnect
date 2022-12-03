@@ -56,6 +56,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 23,
     fontWeight: "bold",
     marginBottom: theme.spacing(1),
+    wordBreak: "break-word",
   },
   sectionHeadlineWithButtonContainer: {
     display: "flex",
@@ -70,14 +71,22 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export async function getServerSideProps(ctx) {
-  const { token } = NextCookies(ctx);
+  const { auth_token } = NextCookies(ctx);
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
-  const [organization, projects, members, organizationTypes, rolesOptions] = await Promise.all([
-    getOrganizationByUrlIfExists(organizationUrl, token, ctx.locale),
-    getProjectsByOrganization(organizationUrl, token, ctx.locale),
-    getMembersByOrganization(organizationUrl, token, ctx.locale),
+  const [
+    organization,
+    projects,
+    members,
+    organizationTypes,
+    rolesOptions,
+    following,
+  ] = await Promise.all([
+    getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
+    getProjectsByOrganization(organizationUrl, auth_token, ctx.locale),
+    getMembersByOrganization(organizationUrl, auth_token, ctx.locale),
     getOrganizationTypes(),
-    getRolesOptions(token, ctx.locale),
+    getRolesOptions(auth_token, ctx.locale),
+    getIsUserFollowing(organizationUrl, auth_token, ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -86,6 +95,7 @@ export async function getServerSideProps(ctx) {
       members: members,
       organizationTypes: organizationTypes,
       rolesOptions: rolesOptions,
+      following: following,
     }),
   };
 }
@@ -96,10 +106,46 @@ export default function OrganizationPage({
   members,
   organizationTypes,
   rolesOptions,
+  following,
 }) {
   const { user, locale } = useContext(UserContext);
-  const infoMetadata = getOrganizationInfoMetadata(locale, organization);
+  const infoMetadata = getOrganizationInfoMetadata(locale, organization, false);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
+
+  // l. 105-137 handles following Organizations
+  const [numberOfFollowers, setNumberOfFollowers] = React.useState(
+    organization.number_of_followers
+  );
+  const [isUserFollowing, setIsUserFollowing] = React.useState(following);
+  const [followingChangePending, setFollowingChangePending] = React.useState(false);
+
+  const handleWindowClose = (e) => {
+    if (followingChangePending) {
+      e.preventDefault();
+      return (e.returnValue = texts.changes_might_not_be_saved);
+    }
+  };
+
+  const handleFollow = (userFollows, updateCount, pending) => {
+    setIsUserFollowing(userFollows);
+    if (updateCount) {
+      if (userFollows) {
+        setNumberOfFollowers(numberOfFollowers + 1);
+      } else {
+        setNumberOfFollowers(numberOfFollowers - 1);
+      }
+    }
+    setFollowingChangePending(pending);
+  };
+
+  React.useEffect(() => {
+    window.addEventListener("beforeunload", handleWindowClose);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleWindowClose);
+    };
+  });
+
   return (
     <WideLayout
       title={organization ? organization.name : texts.not_found_error}
@@ -108,6 +154,10 @@ export default function OrganizationPage({
     >
       {organization ? (
         <OrganizationLayout
+          numberOfFollowers={numberOfFollowers}
+          handleFollow={handleFollow}
+          followingChangePending={followingChangePending}
+          isUserFollowing={isUserFollowing}
           organization={organization}
           projects={projects}
           members={members}
@@ -126,6 +176,10 @@ export default function OrganizationPage({
 }
 
 function OrganizationLayout({
+  numberOfFollowers,
+  handleFollow,
+  followingChangePending,
+  isUserFollowing,
   organization,
   projects,
   members,
@@ -170,7 +224,7 @@ function OrganizationLayout({
 
   const handleConnectBtn = async (e) => {
     e.preventDefault();
-    const token = cookies.get("token");
+    const token = cookies.get("auth_token");
     const creator = members.filter((m) => m.isCreator === true)[0];
     const chat = await startPrivateChat(creator, token, locale);
     Router.push("/chat/" + chat.chat_uuid + "/");
@@ -188,6 +242,10 @@ function OrganizationLayout({
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   return (
     <AccountPage
+      numberOfFollowers={numberOfFollowers}
+      handleFollow={handleFollow}
+      followingChangePending={followingChangePending}
+      isUserFollowing={isUserFollowing}
       account={organization}
       default_background={DEFAULT_BACKGROUND_IMAGE}
       editHref={getLocalePrefix(locale) + "/editOrganization/" + organization.url_slug}
@@ -308,6 +366,24 @@ async function getProjectsByOrganization(organizationUrl, token, locale) {
     }
   } catch (err) {
     console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
+
+async function getIsUserFollowing(organizationUrl, token, locale) {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/organizations/" + organizationUrl + "/am_i_following/",
+      token: token,
+      locale: locale,
+    });
+    if (resp.data.length === 0) return null;
+    else {
+      return resp.data.is_following;
+    }
+  } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }

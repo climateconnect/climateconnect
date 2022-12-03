@@ -2,9 +2,8 @@ import { Avatar, Button, CircularProgress, Link, Tooltip, Typography } from "@ma
 import { makeStyles } from "@material-ui/core/styles";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Truncate from "react-truncate";
-
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -25,10 +24,8 @@ const useStyles = makeStyles((theme) => ({
     alignItems: props.preview ? "center" : "stretch",
   }),
   messageWithMetaData: {
-    display: "flex",
-    flexDirection: "column",
-    flexWrap: "wrap",
-    flex: 1,
+    minWidth: 0,
+    overflowWrap: "break-word",
   },
   avatar: {
     marginRight: theme.spacing(2),
@@ -66,6 +63,9 @@ const useStyles = makeStyles((theme) => ({
   inlineBadge: {
     marginRight: theme.spacing(0.5),
   },
+  commentBox: {
+    display: "flex",
+  },
 }));
 
 export default function Post({
@@ -81,11 +81,12 @@ export default function Post({
   noLink,
 }) {
   const classes = useStyles({ preview: type === "preview" });
+
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "communication", locale: locale });
-  const [open, setOpen] = React.useState(false);
-  const [displayReplies, setDisplayReplies] = React.useState(true);
-  const [replyInterfaceExpanded, setInterfaceExpanded] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [displayReplies, setDisplayReplies] = useState(true);
+  const [replyInterfaceExpanded, setInterfaceExpanded] = useState(false);
   const expandReplyInterface = () => setInterfaceExpanded(true);
   const unexpandReplyInterface = () => setInterfaceExpanded(false);
 
@@ -95,6 +96,22 @@ export default function Post({
 
   const handleSendComment = (curComment, parent_comment, clearInput) => {
     onSendComment(curComment, parent_comment, clearInput, setDisplayReplies);
+  };
+
+  const [isTextExpanded, setIsTextExpanded] = useState(false);
+  const [isTextTruncated, setisTextTruncated] = useState(false);
+
+  const handleExpandText = () => {
+    setIsTextExpanded(!isTextExpanded);
+  };
+
+  const handleTruncate = (truncated) => {
+    if (isTextTruncated === true) {
+      // keeps the button for comments that had originally been truncated.
+      //Pressing show more will cause
+      return; // a rerender and unmarks them as untruncated
+    }
+    setisTextTruncated(truncated);
   };
 
   const toggleDeleteDialogOpen = () => setOpen(!open);
@@ -142,8 +159,7 @@ export default function Post({
               {post.author_user.badges?.length > 0 && (
                 <ProfileBadge
                   contentOnly
-                  name={post.author_user.badges[0].name}
-                  image={getImageUrl(post.author_user.badges[0].image)}
+                  badge={post.author_user.badges[0]}
                   size="medium"
                   className={classes.inlineBadge}
                 />
@@ -164,7 +180,23 @@ export default function Post({
                 </Truncate>
               </Typography>
             ) : (
-              <MessageContent content={post.content} maxLines={maxLines} />
+              <div>
+                <Typography>
+                  <Truncate
+                    lines={!isTextExpanded && 3}
+                    ellipsis={"..."}
+                    onTruncate={handleTruncate}
+                  >
+                    <MessageContent content={post.content} maxLines={maxLines} />
+                  </Truncate>
+                </Typography>
+
+                {isTextTruncated && (
+                  <Link className={classes.toggleReplies} onClick={handleExpandText}>
+                    {!isTextExpanded ? texts.read_more : texts.read_less}
+                  </Link>
+                )}
+              </div>
             )}
             <>
               {type !== "reply" &&
@@ -183,7 +215,7 @@ export default function Post({
                   </Button>
                 ))}
               {user && user.id === post.author_user.id && type !== "preview" && (
-                <Button onClick={toggleDeleteDialogOpen}>Delete</Button>
+                <Button onClick={toggleDeleteDialogOpen}>{texts.delete}</Button>
               )}
             </>
             <>

@@ -4,27 +4,24 @@ import {
   Checkbox,
   Chip,
   Container,
-  IconButton,
   TextField,
-  Tooltip,
   Typography,
   useMediaQuery,
+  Link,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import ControlPointIcon from "@material-ui/icons/ControlPoint";
-import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
-import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import Alert from "@material-ui/lab/Alert";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import {
   getCompressedJPG,
   getImageDialogHeight,
   getResizedImage,
   whitenTransparentPixels,
 } from "../../../public/lib/imageOperations";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { parseLocation } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -132,6 +129,10 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   infoElement: {
+    marginBottom: theme.spacing(2),
+    marginTop: theme.spacing(1),
+  },
+  marginBottom: {
     marginBottom: theme.spacing(1),
   },
   name: {
@@ -211,6 +212,9 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     marginTop: theme.spacing(10),
   },
+  spaceStrings: {
+    width: 4,
+  },
   checkTranslationsButtonAndManageMembersButtonContainer: {
     display: "flex",
     justifyContent: "space-between",
@@ -236,6 +240,8 @@ export default function EditAccountPage({
   submitMessage,
   handleCancel,
   errorMessage,
+  existingName,
+  existingUrlSlug,
   skillsOptions,
   splitName,
   deleteEmail,
@@ -246,12 +252,13 @@ export default function EditAccountPage({
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
+  const organizationTexts = getTexts({ page: "organization", locale: locale });
   const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });
   const [editedAccount, setEditedAccount] = React.useState({ ...account });
+  const isOrganization = type === "organization" ? true : false;
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles(editedAccount);
-  const isOrganization = type === "organization";
   //used for previewing images in UploadImageDialog
   const [tempImages, setTempImages] = React.useState({
     image: editedAccount.image ? editedAccount.image : DEFAULT_AVATAR_IMAGE,
@@ -260,13 +267,12 @@ export default function EditAccountPage({
       : DEFAULT_BACKGROUND_IMAGE,
   });
 
-  const [open, setOpen] = React.useState({
+  const [open, setOpen] = useState({
     backgroundDialog: false,
     avatarDialog: false,
     addTypeDialog: false,
     confirmExitDialog: false,
   });
-
   const handleDialogClickOpen = (dialogKey) => {
     setOpen({ ...open, [dialogKey]: true });
   };
@@ -401,10 +407,12 @@ export default function EditAccountPage({
 
       const handleChange = (event) => {
         let newValue = event.target.value;
+
         if (i.type === "select") {
           //On select fields, use the key as the new value since the text can have multiple languages
           newValue = i.options.find((o) => o.name === event.target.value).key;
         }
+
         setEditedAccount({
           ...editedAccount,
           info: { ...editedAccount.info, [key]: newValue },
@@ -592,28 +600,45 @@ export default function EditAccountPage({
             onSelectNewHub={onSelectNewHub}
           />
         );
-      } else if (key != "parent_organization" && ["text", "bio"].includes(i.type)) {
         //This is the fallback for normal textfields
+      } else if (key != "parent_organization" && ["text", "bio"].includes(i.type)) {
+        /* By checking the attribute of the types assigned to an organization, determine if the textfield should be displayed on
+        the edit account page. Should any of the type's attribute "hide get involved" be true or no type is selected, we hide the field. 
+        */
+        const hideGetInvolvedField =
+          i.key === "get_involved"
+            ? editedAccount.types.map((type) => type.hide_get_involved).includes(true) ||
+              editedAccount.types.length === 0
+            : false;
         return (
-          <div key={key} className={classes.infoElement}>
-            <Typography className={classes.subtitle}>
-              {i.name}
-              {i.helptext && (
-                <Tooltip title={i.helptext}>
-                  <IconButton>
-                    <HelpOutlineIcon className={classes.helpIcon} />
-                  </IconButton>
-                </Tooltip>
-              )}
-            </Typography>
-            <TextField
-              required={i.required}
-              fullWidth
-              value={i.value}
-              multiline
-              onChange={handleChange}
-            />
-          </div>
+          <>
+            {!hideGetInvolvedField && (
+              <div key={key} className={classes.infoElement}>
+                <TextField
+                  required={i.required}
+                  label={i.name}
+                  fullWidth
+                  inputProps={{ maxLength: i.maxLength }}
+                  value={i.value}
+                  multiline
+                  rows={i.rows}
+                  onChange={handleChange}
+                  helperText={
+                    i.showCharacterCounter
+                      ? i.helptext +
+                        (editedAccount.info[i.key] ? editedAccount.info[i.key].length : 0) +
+                        " / " +
+                        i.maxLength +
+                        " " +
+                        texts.characters +
+                        ")"
+                      : ""
+                  }
+                  variant="outlined"
+                />
+              </div>
+            )}
+          </>
         );
       }
     });
@@ -669,7 +694,8 @@ export default function EditAccountPage({
         delete tempEditedAccount.info[info.key];
       }
     }
-    tempEditedAccount.types = tempEditedAccount.types.filter((t) => t !== typeToDelete);
+
+    tempEditedAccount.types = tempEditedAccount.types.filter((t) => t.key !== typeToDelete);
     setEditedAccount(tempEditedAccount);
   };
 
@@ -684,6 +710,7 @@ export default function EditAccountPage({
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
+
     handleSubmit(editedAccount);
   };
 
@@ -711,9 +738,17 @@ export default function EditAccountPage({
       <form onSubmit={handleFormSubmit}>
         {errorMessage && (
           <Alert severity="error" className={classes.alert}>
-            {errorMessage}
+            {editErrorMessage(
+              existingName,
+              errorMessage,
+              existingUrlSlug,
+              isOrganization,
+              organizationTexts,
+              locale
+            )}
           </Alert>
         )}
+
         <div
           className={`${classes.backgroundContainer} ${
             editedAccount.background_image ? classes.backgroundImage : classes.backgroundColor
@@ -761,7 +796,7 @@ export default function EditAccountPage({
             variant="contained"
             onClick={() => handleDialogClickOpen("confirmExitDialog")}
           >
-            Cancel
+            {texts.cancel}
           </Button>
           <Container className={classes.avatarWithInfo}>
             <div className={classes.avatarContainer}>
@@ -877,30 +912,6 @@ export default function EditAccountPage({
                   {texts.check_translations}
                 </Button>
               )}
-              {isOrganization &&
-                (isNarrowScreen ? (
-                  <IconButton
-                    className={classes.editButton}
-                    variant="contained"
-                    color="primary"
-                    href={
-                      getLocalePrefix(locale) + "/manageOrganizationMembers/" + account.url_slug
-                    }
-                  >
-                    <GroupAddIcon />
-                  </IconButton>
-                ) : (
-                  <Button
-                    className={classes.editButton}
-                    variant="contained"
-                    color="primary"
-                    href={
-                      getLocalePrefix(locale) + "/manageOrganizationMembers/" + account.url_slug
-                    }
-                  >
-                    {texts.manage_members}
-                  </Button>
-                ))}
             </div>
           </Container>
         </Container>
@@ -919,7 +930,9 @@ export default function EditAccountPage({
         {deleteEmail && (
           <Typography variant="subtitle2" className={classes.deleteMessage}>
             <InfoOutlinedIcon />
-            {texts.if_you_wish_to_delete} {deleteEmail}
+            {texts.if_you_wish_to_delete}
+            <div className={classes.spaceStrings}> </div>
+            <Link href={`mailto:${deleteEmail}`}>{deleteEmail}</Link>
           </Typography>
         )}
       </form>
@@ -946,7 +959,7 @@ export default function EditAccountPage({
           open={open.addTypeDialog}
           title={texts.add_type}
           values={getTypes(possibleAccountTypes, infoMetadata).filter(
-            (type) => editedAccount.types && !editedAccount.types.includes(type.key)
+            (value) => !editedAccount.types.some((val) => val.key === value.key)
           )}
           label={texts.choose_type}
           supportAdditionalInfo={true}
@@ -978,10 +991,38 @@ const getTypes = (possibleAccountTypes, infoMetadata) => {
 
 const getTypesOfAccount = (account, possibleAccountTypes, infoMetadata) => {
   return getTypes(possibleAccountTypes, infoMetadata).filter((type) =>
-    account.types.includes(type.key)
+    account.types.find((thisType) => thisType.key === type.key)
   );
 };
 
 const getFullInfoElement = (infoMetadata, key, value) => {
   return { ...infoMetadata[key], value: value };
+};
+
+const editErrorMessage = (
+  existingName,
+  errorMessage,
+  existingUrlSlug,
+  isOrganization,
+  texts,
+  locale
+) => {
+  // if we are on a profile page or no existing url slug is generated by the error then return the normal error message
+  if (!isOrganization || !existingUrlSlug) return errorMessage;
+  else {
+    const firstSentenceText = texts.someone_has_already_created_organization;
+    const secondSentenceText = texts.please_join_org_or_use_diff_name_if_problems_contact;
+    return (
+      <>
+        {firstSentenceText}
+        <Link href={getLocalePrefix(locale) + "/organizations/" + existingUrlSlug} target="_blank">
+          {existingName}
+        </Link>
+        {secondSentenceText}
+        <Link href="mailto:support@climateconnect.earth" target="_blank">
+          support@climateconnect.earth
+        </Link>
+      </>
+    );
+  }
 };

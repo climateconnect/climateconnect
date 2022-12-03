@@ -12,15 +12,15 @@ import EditOrganizationRoot from "../../src/components/organization/EditOrganiza
 import { getOrganizationTagsOptions } from "./../../public/lib/getOptions";
 
 export async function getServerSideProps(ctx) {
-  const { token } = NextCookies(ctx);
-  if (ctx.req && !token) {
+  const { auth_token } = NextCookies(ctx);
+  if (ctx.req && !auth_token) {
     const texts = getTexts({ page: "organization", locale: ctx.locale });
     const message = texts.log_in_to_edit_organization;
     return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
   }
   const url = encodeURI(ctx.query.organizationUrl);
   const [organization, tagOptions, allHubs] = await Promise.all([
-    getOrganizationByUrlIfExists(url, token, ctx.locale),
+    getOrganizationByUrlIfExists(url, auth_token, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getAllHubs(ctx.locale, true),
   ]);
@@ -37,8 +37,10 @@ export async function getServerSideProps(ctx) {
 export default function EditOrganizationPage({ organization, tagOptions, allHubs }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
-  const organization_info_metadata = getOrganizationInfoMetadata(locale, organization);
+  const organization_info_metadata = getOrganizationInfoMetadata(locale, organization, true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [existingUrlSlug, setExistingUrlSlug] = useState("");
+  const [existingName, setExistingName] = useState("");
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
 
@@ -61,18 +63,30 @@ export default function EditOrganizationPage({ organization, tagOptions, allHubs
     window.scrollTo(0, 0);
   };
 
+  const handleSetExistingUrlSlug = (urlSlug) => {
+    setExistingUrlSlug(urlSlug);
+  };
+
+  const handleSetExistingName = (name) => {
+    setExistingName(name);
+  };
+
   return (
     <WideLayout title={organization ? organization.name : texts.not_found_error}>
       <EditOrganizationRoot
+        allHubs={allHubs}
+        errorMessage={errorMessage}
+        existingUrlSlug={existingUrlSlug}
+        existingName={existingName}
+        handleSetErrorMessage={handleSetErrorMessage}
+        handleSetExistingName={handleSetExistingName}
+        handleSetExistingUrlSlug={handleSetExistingUrlSlug}
+        handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+        infoMetadata={infoMetadata}
+        initialTranslations={organization.translations}
+        locationInputRef={locationInputRef}
         organization={organization}
         tagOptions={tagOptions}
-        infoMetadata={infoMetadata}
-        handleSetErrorMessage={handleSetErrorMessage}
-        locationInputRef={locationInputRef}
-        handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-        errorMessage={errorMessage}
-        initialTranslations={organization.translations}
-        allHubs={allHubs}
       />
     </WideLayout>
   );

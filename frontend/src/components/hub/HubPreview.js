@@ -7,8 +7,8 @@ import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
-    boxShadow: props.disableBoxShadow ? 0 : `3px 3px 3px #f8f8f8`,
-    border: 0,
+    boxShadow: props.disableBoxShadow ? 0 : `3px 3px 3px #e0e0e0`,
+    borderColor: "#e0e0e0",
   }),
   placeholderImg: {
     visibility: "hidden",

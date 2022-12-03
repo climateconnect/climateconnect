@@ -32,13 +32,13 @@ export default function getOrganizationTexts({ organization, locale }) {
     },
     how_to_summarize_organization: {
       en:
-        "Give a short summary or what your organization is doing. This text will be displayed on your organization card.",
+        "Give a short summary or what your organization is doing. Below you'll have more space to describe it. (",
       de:
-        "Beschreibe kurz deine Organisation und ihre Aktivitäten. Dieser Text wird auf der Organisationskarte deiner Organisation angezeigt werden.",
+        "Fasse deine Organisation und ihre Aktivitäten kurz zusammen. Unten hast du Platz, sie genauer zu beschreiben. (",
     },
     how_to_describe_organization: {
       en:
-        "Describe what your organization is doing, how you work and what impact you have on climate change. Please only use english!",
+        "Describe what your organization is doing, how you work and what impact you have on climate change. Please only use English!",
       de:
         "Beschreibe, was deine Organisation macht, wie ihr arbeitet und welchen Einfluss ihr auf den Klimawandel habt.",
     },
@@ -176,10 +176,9 @@ export default function getOrganizationTexts({ organization, locale }) {
       de: ", um mehr zu erfahren.",
     },
     you_have_successfully_created_an_organization_you_can_add_members: {
-      en:
-        "You have successfully created an organization! You can add members by scrolling down to the members section.",
+      en: "You have successfully created an organization! Now you can add the rest of your team.",
       de:
-        "Du hast erfolgreich eine Organisation erstellt! Du kannst nun Mitglieder hinzufügen, indem du nach unten zum Mitgliederbereich scrollst.",
+        "Du hast erfolgreich eine Organisation erstellt! Jetzt kannst du den Rest deines Teams hinzufügen.",
     },
     to_create_an_organization: {
       en: "to create an organization",
@@ -234,7 +233,7 @@ export default function getOrganizationTexts({ organization, locale }) {
     },
     about: {
       en: `About`,
-      de: `Über ${organization?.name}`,
+      de: `Über uns`,
     },
     large_medium_organization_size: {
       en: "501-1,000",
@@ -253,8 +252,8 @@ export default function getOrganizationTexts({ organization, locale }) {
       de: "Über 50.000",
     },
     organization_size: {
-      en: "Organization size",
-      de: "Größe der Organisation",
+      en: "Members",
+      de: "Mitglieder",
     },
     people: {
       en: "people",
@@ -275,6 +274,99 @@ export default function getOrganizationTexts({ organization, locale }) {
       de: `Hey,
       Ich habe gerade diese spannende Klimaschutzorganisation gefunden: "${organization?.name}". 
       Schau sie dir doch mal an: `,
+    },
+    skip_for_now: {
+      en: "Skip for now",
+      de: "Erstmal überspringen",
+    },
+
+    please_log_in_to_follow_an_organization: {
+      en: "Please log in to follow an organization.",
+      de: "Bitte logge dich ein, um einer Organisation zu folgen.",
+    },
+    do_you_really_want_to_unfollow: {
+      en: "Do you really want to unfollow?",
+      de: "Möchtest du dieser Organisation wirklich nicht mehr folgen? ",
+    },
+    are_you_sure_that_you_want_to_unfollow_this_organization: {
+      en: (
+        <>
+          Are you sure that you want to unfollow this organization?
+          <br />
+          You {"won't"} receive updates about it anymore
+        </>
+      ),
+      de: (
+        <>
+          Bist du sicher, dass du dieser Organisation nicht mehr folgen willst?
+          <br />
+          Du wirst keine Updates mehr erhalten
+        </>
+      ),
+    },
+    followers: {
+      en: "Followers",
+      de: "Follower",
+    },
+    follower: {
+      en: "Follower",
+      de: "Follower",
+    },
+    follow: {
+      en: "Follow",
+      de: "Folgen",
+    },
+    following: {
+      en: "Following",
+      de: "Du folgst",
+    },
+    to_see_this_organizations_followers: {
+      en: " to see this organization's followers",
+      de: ", um die Follower der Organisation zu sehen",
+    },
+    //Kontext: Followers of Organization
+    followers_of: {
+      en: "Followers of",
+      de: "Follower von",
+    },
+    following_since: {
+      en: "Following since",
+      de: "Folgt seit",
+    },
+    this_organzation_does_not_have_any_followers_yet: {
+      en: "This organization does not have any followers yet.",
+      de: "Diese Organisation hat noch keine Follower.",
+    },
+    follow_for_updates: {
+      en: "Follow to receive updates!",
+      de: "Folgen, um Updates zu erhalten!",
+    },
+    get_involved: {
+      en: "How to get involved",
+      de: "Wie man sich einbringen kann",
+    },
+    get_involved_helptext: {
+      en: "e.g. Open online meeting every Wednesday at 6pm. New people always welcome! (",
+      de:
+        'z.B. "Offenes Treffen jeden Mittwoch um 18 Uhr im Café Margareta. Interessierte sind immer willkommen!" (',
+    },
+    add_up_to_two_types: {
+      en: "Organization Type (Up to 2)",
+      de: "Organisationsart (Bis zu 2)",
+    },
+    organization_is_active_in_these_sectors: {
+      en: `${organization?.name} is active in these sectors`,
+      de: `${organization?.name} ist in diesen Bereichen aktiv`,
+    },
+    someone_has_already_created_organization: {
+      en: "Someone has already created the organization ",
+      de: "Jemand erstellte bereits die Organisation ",
+    },
+    please_join_org_or_use_diff_name_if_problems_contact: {
+      en:
+        ". Please join the organization or use a different name. If you're having problems please contact ",
+      de:
+        ". Bitte trete der Organisation bei oder verwende einen anderen Namen. Falls du Probleme hast, wende dich bitte an ",
     },
   };
 }

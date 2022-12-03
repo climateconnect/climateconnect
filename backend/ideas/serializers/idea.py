@@ -1,9 +1,13 @@
-
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from django.utils.translation import get_language
 from hubs.serializers.hub import HubStubSerializer
 from ideas.models import Idea, IdeaSupporter
-from ideas.utility.idea import get_idea_name, get_idea_short_description
+from ideas.utility.idea import (
+    get_number_of_idea_participants,
+    get_number_of_idea_comments,
+    get_idea_name,
+    get_idea_short_description,
+)
 from organization.serializers.organization import OrganizationStubSerializer
 from rest_framework import serializers
 
@@ -13,10 +17,10 @@ class IdeaSupportedMinimalSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = IdeaSupporter
-        fields = ['name']
+        fields = ["name"]
 
     def get_name(self, obj):
-        return f'{obj.user.first_name} {obj.user.last_name}'
+        return f"{obj.user.first_name} {obj.user.last_name}"
 
 
 class IdeaFromIdeaSupporterSerializer(serializers.ModelSerializer):
@@ -24,7 +28,7 @@ class IdeaFromIdeaSupporterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = IdeaSupporter
-        fields = ('idea',)
+        fields = ("idea",)
 
     def get_idea(self, obj):
         serializer = IdeaMinimalSerializer(obj.idea)
@@ -41,13 +45,27 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
     organization = serializers.SerializerMethodField()
     url_slug = serializers.SerializerMethodField()
     hub_shared_in = serializers.SerializerMethodField()
+    number_of_comments = serializers.SerializerMethodField()
+    number_of_participants = serializers.SerializerMethodField()
 
     class Meta:
         model = Idea
         fields = [
-            'id', 'name', 'url_slug', 'short_description', 
-            'thumbnail_image', 'hub', 'rating', 'image', 'user',
-            'location', 'created_at', 'organization', 'hub_shared_in'
+            "id",
+            "name",
+            "url_slug",
+            "short_description",
+            "thumbnail_image",
+            "hub",
+            "rating",
+            "image",
+            "user",
+            "location",
+            "created_at",
+            "organization",
+            "hub_shared_in",
+            "number_of_comments",
+            "number_of_participants",
         ]
 
     def get_name(self, obj):
@@ -70,14 +88,12 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
         total_average = 0
         number_of_ratings = obj.rating_idea.count()
         if number_of_ratings > 0:
-            total_average = sum(
-                idea_rating.rating for idea_rating in obj.rating_idea.all()
-            ) // obj.rating_idea.count()
+            total_average = (
+                sum(idea_rating.rating for idea_rating in obj.rating_idea.all())
+                // obj.rating_idea.count()
+            )
 
-        return {
-            'number_of_ratings': number_of_ratings,
-            'rating_score': total_average
-        }
+        return {"number_of_ratings": number_of_ratings, "rating_score": total_average}
 
     def get_user(self, obj):
         if obj.user and obj.user.user_profile:
@@ -98,6 +114,12 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
     def get_url_slug(self, obj):
         return obj.url_slug
 
+    def get_number_of_comments(self, obj):
+        return get_number_of_idea_comments(obj)
+
+    def get_number_of_participants(self, obj):
+        return get_number_of_idea_participants(obj)
+
 
 class IdeaSerializer(serializers.ModelSerializer):
     supported_by_users = serializers.SerializerMethodField()
@@ -112,9 +134,17 @@ class IdeaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Idea
         fields = (
-            'id', 'name', 'hub_image', 'image', 'short_description',
-            'supported_by_users', 'thumbnail_image',
-            'user', 'url_slug', 'hub_shared_in', 'hub'
+            "id",
+            "name",
+            "hub_image",
+            "image",
+            "short_description",
+            "supported_by_users",
+            "thumbnail_image",
+            "user",
+            "url_slug",
+            "hub_shared_in",
+            "hub",
         )
 
     def get_name(self, obj):
@@ -132,17 +162,17 @@ class IdeaSerializer(serializers.ModelSerializer):
     def get_user(self, obj):
         thumbnail_image = obj.user.user_profile.thumbnail_image.url
         return {
-            'first_name': obj.user.first_name,
-            'last_name': obj.user.last_name,
-            'image': None if not thumbnail_image else thumbnail_image
+            "first_name": obj.user.first_name,
+            "last_name": obj.user.last_name,
+            "image": None if not thumbnail_image else thumbnail_image,
         }
 
     def get_supported_by_users(self, obj):
         return {
-            'total': obj.supported_idea.count(),
-            'users': IdeaSupportedMinimalSerializer(
+            "total": obj.supported_idea.count(),
+            "users": IdeaSupportedMinimalSerializer(
                 obj.supported_idea.all(), many=True
-            ).data
+            ).data,
         }
 
     def get_url_slug(self, obj):

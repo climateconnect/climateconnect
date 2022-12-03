@@ -2,7 +2,7 @@ import { AppBar, Container, Toolbar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 import ContactCreatorButton from "./ContactCreatorButton";
-import FollowButton from "./FollowButton";
+import FollowButton from "../../general/FollowButton";
 import LikeButton from "./LikeButton";
 
 const useStyles = makeStyles(() => ({
@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
     top: "auto",
     bottom: props.visibleFooterHeight,
     boxShadow: "-3px -3px 6px #00000029",
-    zIndex: "auto",
+    zIndex: "1",
   }),
   containerButtonsActionBar: {
     display: "flex",
@@ -47,6 +47,7 @@ export default function ProjectInteractionButtons({
   numberOfLikes,
   bindLike,
   bindFollow,
+  user,
 }) {
   const classes = useStyles({
     visibleFooterHeight: visibleFooterHeight,
@@ -66,7 +67,7 @@ export default function ProjectInteractionButtons({
           )}
           <FollowButton
             isUserFollowing={isUserFollowing}
-            handleToggleFollowProject={handleToggleFollowProject}
+            handleToggleFollow={handleToggleFollowProject}
             project={project}
             hasAdminPermissions={hasAdminPermissions}
             toggleShowFollowers={toggleShowFollowers}
@@ -75,6 +76,9 @@ export default function ProjectInteractionButtons({
             screenSize={screenSize}
             numberOfFollowers={numberOfFollowers}
             bindFollow={bindFollow}
+            showStartIcon={screenSize.belowSmall && !screenSize.belowTiny}
+            showNumberInText={screenSize.belowSmall}
+            isLoggedIn={user}
           />
           <LikeButton
             texts={texts}

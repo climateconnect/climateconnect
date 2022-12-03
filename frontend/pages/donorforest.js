@@ -18,9 +18,9 @@ const useStyles = makeStyles(() => ({
 }));
 
 export async function getServerSideProps(ctx) {
-  const { token } = NextCookies(ctx);
-  const donorsWithBadges = await getDonorsWithBadges(token, ctx.locale);
-  const possibleBadges = await getPossibleDonorBadges(token, ctx.locale);
+  const { auth_token } = NextCookies(ctx);
+  const donorsWithBadges = await getDonorsWithBadges(auth_token, ctx.locale);
+  const possibleBadges = await getPossibleDonorBadges(auth_token, ctx.locale);
   return {
     props: {
       donorsWithBadges: donorsWithBadges,

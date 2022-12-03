@@ -11,12 +11,12 @@ import { apiRequest } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 import { getParams } from "../../../public/lib/generalOperations";
 import ContactCreatorButton from "./Buttons/ContactCreatorButton";
-import FollowButton from "./Buttons/FollowButton";
+import FollowButton from "../general/FollowButton";
 import getTexts from "../../../public/texts/texts";
 import GoBackFromProjectPageButton from "./Buttons/GoBackFromProjectPageButton";
 import LikeButton from "./Buttons/LikeButton";
 import MessageContent from "../communication/MessageContent";
-import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
+import FollowersDialog from "../dialogs/FollowersDialog";
 import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
@@ -36,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
   smallScreenHeader: {
     fontSize: "calc(1.6rem + 6 * ((100vw - 320px) / 680))",
     paddingBottom: theme.spacing(2),
+    wordBreak: "break-word",
   },
   rootLinksContainer: {
     display: "flex",
@@ -58,6 +59,16 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
     textAlign: "center",
+    wordBreak: "break-word",
+  },
+  headerButton: {
+    right: 0,
+    position: "absolute",
+  },
+
+  headerContainer: {
+    display: "flex",
+    justifyContent: "center",
   },
   goBackButtonContainer: {
     position: "absolute",
@@ -73,6 +84,13 @@ const useStyles = makeStyles((theme) => ({
   },
   imageContainer: {
     position: "relative",
+  },
+  contactProjectButtonLarge: {
+    height: 40,
+    minWidth: 120,
+  },
+  shortDescription: {
+    wordBreak: "break-word",
   },
 }));
 
@@ -126,7 +144,6 @@ export default function ProjectOverview({
   const classes = useStyles();
 
   const texts = getTexts({ page: "project", locale: locale, project: project });
-
   /**
    * Calls endpoint to return a current list
    * of users that have requested to
@@ -191,6 +208,9 @@ export default function ProjectOverview({
           project={project}
           texts={texts}
           toggleShowFollowers={toggleShowFollowers}
+          numberOfFollowers={numberOfFollowers}
+          user={user}
+          dialogTitleShareButton={dialogTitleShareButton}
         />
       ) : (
         <LargeScreenOverview
@@ -219,17 +239,24 @@ export default function ProjectOverview({
           toggleShowFollowers={toggleShowFollowers}
           toggleShowLikes={toggleShowLikes}
           token={token}
+          user={user}
         />
       )}
 
-      <ProjectFollowersDialog
+      <FollowersDialog
         open={showFollowers}
         loading={!initiallyCaughtFollowers}
         followers={followers}
-        project={project}
+        object={project}
         onClose={toggleShowFollowers}
         user={user}
         url={"projects/" + project.url_slug + "?show_followers=true"}
+        titleText={texts.followers_of}
+        pleaseLogInText={texts.please_log_in}
+        toSeeFollowerText={texts.to_see_this_projects_followers}
+        logInText={texts.log_in}
+        noFollowersText={texts.this_project_does_not_have_any_followers_yet}
+        followingSinceText={texts.following_since}
       />
 
       <ProjectLikesDialog
@@ -263,6 +290,8 @@ function SmallScreenOverview({
   texts,
   toggleShowFollowers,
   token,
+  user,
+  numberOfFollowers,
 }) {
   const classes = useStyles();
 
@@ -301,7 +330,8 @@ function SmallScreenOverview({
           {project.name}
         </Typography>
 
-        <Typography>{project?.short_description}</Typography>
+        <Typography className={classes.shortDescription}>{project?.short_description}</Typography>
+
         <div className={classes.projectInfoEl}>
           <Typography>
             <Tooltip title={texts.location}>
@@ -330,13 +360,17 @@ function SmallScreenOverview({
         </div>
         <div className={classes.infoBottomBar}>
           <FollowButton
+            isLoggedIn={user}
             isUserFollowing={isUserFollowing}
-            handleToggleFollowProject={handleToggleFollowProject}
+            handleToggleFollow={handleToggleFollowProject}
             project={project}
             hasAdminPermissions={hasAdminPermissions}
             toggleShowFollowers={toggleShowFollowers}
             followingChangePending={followingChangePending}
+            numberOfFollowers={numberOfFollowers}
             texts={texts}
+            showStartIcon
+            showNumberInText
           />
 
           {!hasAdminPermissions && (
@@ -375,14 +409,17 @@ function LargeScreenOverview({
   texts,
   toggleShowFollowers,
   toggleShowLikes,
+  user,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
 
   return (
     <>
-      <Typography component="h1" variant="h4" className={classes.largeScreenHeader}>
-        {project.name}
-      </Typography>
+      <div className={classes.headerContainer}>
+        <Typography component="h1" variant="h4" className={classes.largeScreenHeader}>
+          {project.name}
+        </Typography>
+      </div>
       <div className={classes.flexContainer}>
         <img
           className={classes.inlineImage}
@@ -393,7 +430,7 @@ function LargeScreenOverview({
           <Typography component="h2" variant="h5" className={classes.subHeader}>
             {texts.summary}
           </Typography>
-          <Typography component="div">
+          <Typography component="div" className={classes.shortDescription}>
             <MessageContent content={project?.short_description} />
           </Typography>
           <div className={classes.projectInfoEl}>
@@ -436,8 +473,9 @@ function LargeScreenOverview({
               numberOfLikes={numberOfLikes}
             />
             <FollowButton
+              isLoggedIn={user}
               followingChangePending={followingChangePending}
-              handleToggleFollowProject={handleToggleFollowProject}
+              handleToggleFollow={handleToggleFollowProject}
               hasAdminPermissions={hasAdminPermissions}
               isUserFollowing={isUserFollowing}
               numberOfFollowers={numberOfFollowers}
@@ -445,18 +483,31 @@ function LargeScreenOverview({
               screenSize={screenSize}
               texts={texts}
               toggleShowFollowers={toggleShowFollowers}
+              showStartIcon={!screenSize.belowMedium}
+              showLinkUnderButton
             />
-            {!hasAdminPermissions && (
-              <ContactCreatorButton
-                creator={projectAdmin}
-                contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
-                handleClickContact={handleClickContact}
-                customCardWidth={220}
-                withInfoCard={true}
-                withIcons={true}
-                collapsable={true}
-              />
-            )}
+            {!hasAdminPermissions &&
+              (!screenSize.belowMedium ? (
+                <ContactCreatorButton
+                  creator={projectAdmin}
+                  contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
+                  handleClickContact={handleClickContact}
+                  customCardWidth={220}
+                  withInfoCard={true}
+                  withIcons={true}
+                  collapsable={true}
+                />
+              ) : (
+                <Button
+                  className={classes.contactProjectButtonLarge}
+                  variant="contained"
+                  color="primary"
+                  onClick={handleClickContact}
+                  ref={contactProjectCreatorButtonRef}
+                >
+                  {texts.contact}
+                </Button>
+              ))}
           </div>
         </div>
       </div>

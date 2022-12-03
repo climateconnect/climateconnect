@@ -127,7 +127,7 @@ export default function getAboutTexts(classes) {
     },
     one_platform_for_all_climate_actors: {
       en: "One Platform For All Climate Actors",
-      de: "Eine Plattform für alle Klimaschützer",
+      de: "Eine Plattform für alle Klimaschützer:innen",
     },
     how_climate_connect_works: {
       en: "How Climate Connect Works",
@@ -342,7 +342,7 @@ export default function getAboutTexts(classes) {
       ),
     },
     hundred_percent_independent: {
-      en: "100% Independent",
+      en: "100% independent",
       de: "100% Unabhängig",
     },
     heart_icon: {

@@ -28,10 +28,12 @@ Make sure to install docker-ce, docker-ce-cli, containerd.io, and docker-compose
 
 We use Python/Django for our backend and Next.js for the frontend.
 
+Note: we use Python 3, so for all instructions we assume `python` means `python3`.
+
 First, create a Python virtual environment and start it
 
 ```sh
-python3 -m venv climateconnect_env
+python -m venv climateconnect_env
 cd climateconnect_env
 source bin/activate
 ```
@@ -46,12 +48,10 @@ git clone https://github.com/climateconnect/climateconnect
 
 After you've cloned the repository, we can set up the local Redis server and backend.
 
-Note: we use Python 3, so for all instructions we assume `python` means `python3`.
-
 #### First Time Setup
 
 1.  Go to backend directory: `cd backend`
-1.  Run `pip install -r requirements.txt` to install all backend libraries.
+1.  Run `make install` to install all backend libraries.
 1.  Create `.backend_env` to set environment variables.
     - You can find up-to-date sample env variables in [`backend/local-env-setup.md`](https://github.com/climateconnect/climateconnect/blob/master/backend/local-env-setup.md).
     - For the [Django `SECRET_KEY`](https://docs.djangoproject.com/en/3.1/ref/settings/#std:setting-SECRET_KEY), run `openssl rand -base64 32` to create a 32 char random secret.
@@ -116,7 +116,7 @@ to re-create a super user to be used in the Django admin panel.
 For unit tests, to run the test suite use:
 
 ```sh
-python manage.py test
+make test
 ```
 
 Or a specific test file or test class:

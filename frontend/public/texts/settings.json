@@ -180,8 +180,8 @@
     "de": "Profilseite bearbeiten"
   },
   "if_you_wish_to_delete_this_account": {
-    "en": "If you wish to delete this account, send an email to contact@climateconnect.earth",
-    "de": "Wenn du das Konto löschen willst, sende eine E-Mail an contact@climateconnect.earth"
+    "en": "If you wish to delete this account, send an email to",
+    "de": "Wenn du das Konto löschen willst, sende eine E-Mail an"
   },
   "old_password": {
     "en": "Old Password",
@@ -194,5 +194,13 @@
   "confirm_new_password": {
     "en": "Confirm new password",
     "de": "Neues Passwort bestätigen"
+  },
+  "email_on_new_org_follower_text": {
+    "en": "Get notified when somebody follows an organization you're part of",
+    "de": "Ich möchte benachrichtigt werden, wenn jemand einer Organisation folgt, von der ich Teil bin."
+  },
+  "email_on_new_org_project_text": {
+    "en": "Get notified when an organization you follow posts an update",
+    "de": "Ich möchte benachrichtigt werden, wenn eine Organisation, der ich folge, eine Update postet"
   }
 }
