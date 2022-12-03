@@ -24,4 +24,4 @@ jobs:
           flake8 backend --count --select=E9,F6,F7,F8 --show-source --statistics
       - name: Run tests
         run: |
-          make test
+          python3 manage.py test
