@@ -44,7 +44,6 @@ def send_email(
         return
 
     if should_send_email_setting:
-
         try:
             user_profile = UserProfile.objects.get(user=user)
             # short circuit if the user has changed his settings to not
@@ -53,6 +52,7 @@ def send_email(
                 return
         except UserProfile.DoesNotExist:
             print("there is no user profile (send_email)")
+
     lang_code = get_user_lang_code(user)
     subject = subjects_by_language[lang_code]
     template_id = get_template_id(template_key=template_key, lang_code=lang_code)
@@ -70,7 +70,8 @@ def send_email(
                         "Name": user.first_name + " " + user.last_name,
                     }
                 ],
-                "TemplateID": int(template_id),
+                # "TemplateID": int(template_id),
+                "TemplateID": "",
                 "TemplateLanguage": True,
                 "Variables": variables,
                 "Subject": subject,
