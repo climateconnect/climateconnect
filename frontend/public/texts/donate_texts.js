@@ -313,12 +313,12 @@ export default function getDonateTexts({ classes, goal }) {
       de: "unterstützt seit",
     },
     donation_campaign_headline_short: {
-      en: "Your donations is tripled",
-      de: "Deine Spende wird verdreifacht",
+      en: "Donate for climate action",
+      de: "Spende für den Klimaschutz",
     },
     donation_campaign_headline_long: {
-      en: `All donations in December will be tripled until we reach our goal`,
-      de: `Alle Spenden im Dezember werden verdreifacht bis wir unser Ziel erreichen`,
+      en: `Accelerate climate action with your donation`,
+      de: `Beschleunige den Klimaschutz mit deiner Spende`,
     },
     you_can_find_the_terms_to_the_raffle_here: {
       en: "You can find the terms of the raffle ",
@@ -329,12 +329,31 @@ export default function getDonateTexts({ classes, goal }) {
       de: "hier",
     },
     donation_campaing_info_text_first_sentence: {
-      en: `Climate Connect is funded by your donations. Help scale up effective climate action, support us in growing
-      a global network of climate actors and allow Climate Connect to stay free and
-      independent. A big donor agreed to triple all donations in December until we reach our goal (they will donate a maximum of 10,000€) `,
-      de: `Climate Connect ist spendenfinanziert. Hilf uns, effektive Klimaschutzprojekte zu ermöglichen, ein globales
-      Netzwerk von Klimaschützer*innen aufzubauen und dabei, Climate Connect kostenlos und unabhängig zu halten.
-      Ein Großspender verdreifacht im Dezember alle Spenden, bis wir unser Ziel erreichen.`,
+      en: (
+        <>
+          Climate Connect is funded by your donations. Help scale up effective climate action,
+          support us in growing a global network of climate actors and allow Climate Connect to stay
+          free and independent. Each week in December you can read a story about how Climate Connect
+          helps people effectively fight climate change on our{" "}
+          <Link color="inherit" underline="always" href="/blog" target="_blank">
+            blog
+          </Link>{" "}
+          .
+        </>
+      ),
+      de: (
+        <>
+          Climate Connect ist unabhängig und spendenfinanziert. Hilf uns, effektive
+          Klimaschutzprojekte zu ermöglichen, ein globales Netzwerk von Klimaschützer*innen
+          aufzubauen und dabei, Climate Connect kostenlos und unabhängig zu halten. Jede Woche im
+          Dezember kannst du auf unserem{" "}
+          <Link color="inherit" underline="always" href="/blog" target="_blank">
+            Blog
+          </Link>{" "}
+          einen neuen Artikel darüber lesen, wie Menschen mithilfe von Climate Connect den
+          Klimawandel bekämpfen.
+        </>
+      ),
     },
     raffle_announcement: {
       en: `In our December raffle everybody who donates to Climate Connect in the
