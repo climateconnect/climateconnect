@@ -56,7 +56,7 @@ def send_email(
     lang_code = get_user_lang_code(user)
     subject = subjects_by_language[lang_code]
     # template_id = get_template_id(template_key=template_key, lang_code=lang_code)
-    template_id = ""
+    # template_id = ""
 
     data = {
         "Messages": [
