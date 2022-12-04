@@ -9,7 +9,11 @@ jobs:
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
         with:
-          python-version: 3.6.9
+          # Note: be aware of specific Python versions. This version should always
+          # match what version we specif in our other setup files, like start_backend.sh.
+          # 3.6.9 started breaking GitHub actions, see related issue:
+          # https://github.com/actions/setup-python/issues/162#issuecomment-1324176396
+          python-version: 3.8
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-28 12:09+0200\n"
+"POT-Creation-Date: 2022-11-23 10:06+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: organization/utility/follow.py:102
 msgid "Missing required parameters"
-msgstr "Es fehlen erforderliche Parameter"
+msgstr ""
 
 #: organization/utility/follow.py:109
 #, fuzzy
@@ -38,59 +38,70 @@ msgstr "Du folgst dieser Organisation bereits."
 
 #: organization/utility/follow.py:122
 msgid "You're already following this project."
-msgstr "Du folgst dieses Project bereits."
+msgstr "Du folgst diesem Projekt bereits"
 
 #: organization/utility/follow.py:136
 msgid ""
 "You are now following this organization. You will be notified when they post "
 "an update!"
 msgstr ""
-"Du folgst jetzt diese Organisation. Dir wird mitgeteilt, wenn es Updates "
-"gibt!"
+"Du folgst der Organisation jetzt. Du wirst benachrichtigt, wenn sie ein "
+"Update posten."
 
 #: organization/utility/follow.py:140
 msgid ""
 "You are now following this project. You will be notified when they post an "
 "update!"
 msgstr ""
-"Du folgst jetzt diesem Projekt. Dir wird mitgeteilt, wenn es Updates gibt!"
+"Du folgst dem Projekt jetzt. Du wirst benachrichtigt, es ein Update gibt."
 
 #: organization/utility/follow.py:157
 msgid "You weren't following this organization."
-msgstr "Du hast diese Organisation nicht verfolgt."
+msgstr "Du hast dieser Organisation nicht gefolgt"
 
 #: organization/utility/follow.py:159
 msgid "You weren't following this project."
-msgstr "Du hast dieses Projekt nicht verfolgt."
+msgstr "Du hast diesem Projekt nicht gefolgt"
 
 #: organization/utility/follow.py:167
 msgid "You are not following this organization anymore."
-msgstr "Du folgst jetzt diese Organisation nicht mehr."
+msgstr "Du folgst dieser Organisation nicht mehr"
 
 #: organization/utility/follow.py:169
 msgid "You are not following this project anymore."
-msgstr "Du folgst diesem Projekt nicht mehr."
+msgstr "Du folgst diesem Projekt nicht mehr"
 
 #: organization/utility/follow.py:180
 msgid "Invalid value for variable \"following\""
-msgstr "Ungültiger Wert für Variable \"following\""
+msgstr "Ungültiger Wert für die Variable \"following\""
 
-#: organization/views/organization_views.py:437
-#: organization/views/organization_views.py:459
+#: organization/utility/organization.py:180
+msgid ""
+"Someone has already created the organization {}. Please join the "
+"organization or use a different name. If you're having problems please "
+"contact support@climateconnect.earth"
+msgstr "Jemand hat die Organisation {} bereits erstellt. Bitte trete der Organisation bei oder verwende einen anderen Namen. Falls du Probleme hast, wende dich bitte an support@climateconnect.earth"
+
+#: organization/views/organization_views.py:478
+#: organization/views/organization_views.py:500
 msgid "Organization not found:"
 msgstr "Organisation nicht gefunden:"
 
-#: organization/views/organization_views.py:516
+#: organization/views/organization_views.py:566
 msgid "Parent organization not found for organization"
 msgstr "Mutterorganisation der Organisation nicht gefunden"
 
-#: organization/views/organization_views.py:563
+#: organization/views/organization_views.py:613
 msgid "Passed organization tag id does not exists: "
 msgstr "Dieser Organisationstyp existiert nicht: "
 
-#: organization/views/organization_views.py:569
+#: organization/views/organization_views.py:619
 msgid "Successfully updated organization."
 msgstr "Organisation erfolgreich bearbeitet"
+
+#~ msgid "The name {} is already in use. Please use another name."
+#~ msgstr ""
+#~ "Der Name {} wird bereits verwendet. Bitte verwende einen anderen Namen."
 
 #~ msgid "hello"
 #~ msgstr "hallo"

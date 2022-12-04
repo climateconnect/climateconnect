@@ -15,10 +15,10 @@ export default function getLandingPageTexts({ classes, isNarrowScreen }) {
       ),
     },
     be_part_of_the_community_text: {
-      en: `Sign up to Climate Connect - it's for free! By signing up you can work together and
+      en: `Sign up to Climate Connect - it's free! By signing up you can work together and
       share knowledge and experiences with people taking climate action globally and in your home
       town.`,
-      de: `Melde dich bei Climate Connect an - es ist kostenlos! Wenn du dich anmeldest, kannst du 
+      de: `Melde dich bei Climate Connect an - es ist kostenlos! Wenn du dich anmeldest, kannst du
       mit Menschen zusammenarbeiten und Erfahrungen austauschen, die sich weltweit und in deiner Heimatstadt
       für den Klimaschutz engagieren.`,
     },
@@ -68,7 +68,7 @@ export default function getLandingPageTexts({ classes, isNarrowScreen }) {
     find_a_climate_action_organization_and_get_involved_text: {
       en: `Find nonprofits, associations, companies, institutes, NGOs, local governments and other
       types of organizations taking climate action!`,
-      de: `Finde Non-Profit-Organisationen, Verbände, Unternehmen, Institute, Nicht-Regierungs-Organisationen, lokale Regierungen und 
+      de: `Finde Non-Profit-Organisationen, Verbände, Unternehmen, Institute, Nicht-Regierungs-Organisationen, lokale Regierungen und
       andere Arten von Organisationen, die sich für den Klimaschutz einseten!`,
     },
     find_a_climate_action_organization_and_get_involved_additional_text: {
