@@ -3,53 +3,70 @@ from django.utils.translation import get_language
 from organization.utility.project import get_projecttag_name
 from rest_framework import serializers
 
-from organization.models import (ProjectTagging, ProjectTags, OrganizationTagging, OrganizationTags)
+from organization.models import (
+    ProjectTagging,
+    ProjectTags,
+    OrganizationTagging,
+    OrganizationTags,
+)
+
 
 class ProjectTaggingSerializer(serializers.ModelSerializer):
-  project_tag = serializers.SerializerMethodField()
+    project_tag = serializers.SerializerMethodField()
 
-  class Meta:
-    model = ProjectTagging
-    fields = ('project_tag',)
+    class Meta:
+        model = ProjectTagging
+        fields = ("project_tag",)
 
-  def get_project_tag(self, obj):
-    serializer = ProjectTagsSerializer(obj.project_tag)
-    return serializer.data
+    def get_project_tag(self, obj):
+        serializer = ProjectTagsSerializer(obj.project_tag)
+        return serializer.data
+
 
 class ProjectTagsSerializer(serializers.ModelSerializer):
-  name = serializers.SerializerMethodField()
-  original_name = serializers.SerializerMethodField()
-  class Meta:
-    model = ProjectTags
-    fields = ('id', 'name', 'original_name', 'parent_tag')
+    name = serializers.SerializerMethodField()
+    original_name = serializers.SerializerMethodField()
 
-  def get_name(self, obj):
-    return get_projecttag_name(obj, get_language())
+    class Meta:
+        model = ProjectTags
+        fields = ("id", "name", "original_name", "parent_tag")
 
-  def get_original_name(self, obj):
-    return obj.name
+    def get_name(self, obj):
+        return get_projecttag_name(obj, get_language())
+
+    def get_original_name(self, obj):
+        return obj.name
+
 
 class OrganizationTaggingSerializer(serializers.ModelSerializer):
-  organization_tag = serializers.SerializerMethodField()
+    organization_tag = serializers.SerializerMethodField()
 
-  class Meta:
-    model = OrganizationTagging
-    fields = ('organization_tag',)
+    class Meta:
+        model = OrganizationTagging
+        fields = ("organization_tag",)
 
-  def get_organization_tag(self, obj):
-    serializer = OrganizationTagsSerializer(obj.organization_tag)
-    return serializer.data
+    def get_organization_tag(self, obj):
+        serializer = OrganizationTagsSerializer(obj.organization_tag)
+        return serializer.data
+
 
 class OrganizationTagsSerializer(serializers.ModelSerializer):
-  name = serializers.SerializerMethodField()
-  original_name = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+    original_name = serializers.SerializerMethodField()
 
-  class Meta:
-    model = OrganizationTags
-    fields = ('id', 'name', 'original_name', 'parent_tag', 'additional_info')
+    class Meta:
+        model = OrganizationTags
+        fields = (
+            "id",
+            "name",
+            "hide_get_involved",
+            "original_name",
+            "parent_tag",
+            "additional_info",
+        )
 
-  def get_name(self, obj):
-    return get_organizationtag_name(obj, get_language())
+    def get_name(self, obj):
+        return get_organizationtag_name(obj, get_language())
 
-  def get_original_name(self, obj):
-    return obj.name
+    def get_original_name(self, obj):
+        return obj.name

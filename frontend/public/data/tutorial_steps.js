@@ -47,7 +47,7 @@ export default function get_steps({
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
-  const token = cookies.get("token");
+  const token = cookies.get("auth_token");
   const [loading, setLoading] = React.useState(false);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "tutorial", locale: locale, hubName: hubName, classes: classes });

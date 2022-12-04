@@ -198,7 +198,7 @@ export default function Dashboard({ allHubs, hubData, className, headline, locat
 
   const [userOrganizations, setUserOrganizations] = useState(null);
   const [isCreateIdeaOpen, setCreateIdeaOpen] = useState(false);
-  const token = new Cookies().get("token");
+  const token = new Cookies().get("auth_token");
 
   useEffect(async function () {
     if (userOrganizations === null) {

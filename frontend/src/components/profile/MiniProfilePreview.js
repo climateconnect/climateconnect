@@ -17,7 +17,6 @@ const useStyles = makeStyles((theme) => {
       display: "inline-block",
       verticalAlign: "middle",
       marginLeft: theme.spacing(1),
-      whiteSpace: "nowrap",
     },
     smallProfileName: {
       fontSize: 14,
@@ -91,14 +90,12 @@ function Content({ profile, avatarClassName, size }) {
       size === "medium" && classes.mediumAvatar
     } ${avatarClassName}`,
   };
-
   return (
     <span className={classes.contentWrapper}>
       <div className={classes.avatarWrapper}>
         {profile.badges?.length > 0 ? (
           <ProfileBadge
-            name={profile.badges[0].name}
-            image={getImageUrl(profile.badges[0].image)}
+            badge={profile.badges[0]}
             size={["medium", "small"].includes(size) ? "small" : "medium"}
             className={size === "medium" && classes.badge}
           >

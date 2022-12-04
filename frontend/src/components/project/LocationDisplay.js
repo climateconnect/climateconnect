@@ -8,7 +8,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     alignItems: "center",
-    marginBottom: -2,
+    marginBottom: theme.spacing(0.75),
     marginRight: theme.spacing(0.5),
   },
 }));

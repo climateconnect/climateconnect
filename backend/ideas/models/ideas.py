@@ -12,9 +12,7 @@ def idea_image_path(instance, filename):
 
 class Idea(models.Model):
     name = models.CharField(
-        help_text="Name of an idea",
-        verbose_name="Name",
-        max_length=256
+        help_text="Name of an idea", verbose_name="Name", max_length=256
     )
 
     url_slug = models.CharField(
@@ -23,13 +21,11 @@ class Idea(models.Model):
         max_length=1024,
         null=True,
         blank=True,
-        unique=True
+        unique=True,
     )
 
     short_description = models.CharField(
-        help_text="Summary of an idea",
-        verbose_name="Summary",
-        max_length=2048
+        help_text="Summary of an idea", verbose_name="Summary", max_length=2048
     )
 
     image = models.ImageField(
@@ -37,7 +33,7 @@ class Idea(models.Model):
         verbose_name="Image",
         upload_to=idea_image_path,
         null=True,
-        blank=True
+        blank=True,
     )
 
     thumbnail_image = models.ImageField(
@@ -45,7 +41,7 @@ class Idea(models.Model):
         verbose_name="Thumbnail image",
         upload_to=idea_image_path,
         null=True,
-        blank=True
+        blank=True,
     )
 
     user = models.ForeignKey(
@@ -55,7 +51,7 @@ class Idea(models.Model):
         related_name="idea_user",
         on_delete=models.CASCADE,
         null=True,
-        blank=True
+        blank=True,
     )
 
     organization = models.ForeignKey(
@@ -65,7 +61,7 @@ class Idea(models.Model):
         related_name="idea_organization",
         null=True,
         blank=True,
-        on_delete=models.SET_NULL
+        on_delete=models.SET_NULL,
     )
 
     hub = models.ForeignKey(
@@ -75,7 +71,7 @@ class Idea(models.Model):
         related_name="idea_hub",
         null=True,
         blank=True,
-        on_delete=models.SET_NULL
+        on_delete=models.SET_NULL,
     )
 
     hub_shared_in = models.ForeignKey(
@@ -85,7 +81,7 @@ class Idea(models.Model):
         related_name="idea_hub_shared_in",
         null=True,
         blank=True,
-        on_delete=models.SET_NULL
+        on_delete=models.SET_NULL,
     )
 
     location = models.ForeignKey(
@@ -95,7 +91,7 @@ class Idea(models.Model):
         related_name="idea_location",
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
     )
 
     language = models.ForeignKey(
@@ -105,25 +101,25 @@ class Idea(models.Model):
         related_name="idea_language",
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
     )
 
     created_at = models.DateTimeField(
         help_text="Time when idea was created",
         verbose_name="Created at",
-        auto_now_add=True
+        auto_now_add=True,
     )
 
     updated_at = models.DateTimeField(
         help_text="Time when idea was last updated",
         verbose_name="Update at",
-        auto_now=True
+        auto_now=True,
     )
 
     class Meta:
         verbose_name = "Idea"
         verbose_name_plural = "Ideas"
         ordering = ["-id"]
-    
+
     def __str__(self):
         return "{}: {}".format(self.id, self.name)

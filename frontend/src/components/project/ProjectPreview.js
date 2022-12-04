@@ -21,7 +21,8 @@ const useStyles = makeStyles((theme) => {
       userSelect: "none",
       backgroundColor: theme.palette.background.default,
       borderRadius: 3,
-      border: `1px solid #EEE`,
+      boxShadow: "3px 3px 8px #E0E0E0",
+
       position: "relative",
       height: "100%",
       display: "flex",
@@ -45,6 +46,7 @@ const useStyles = makeStyles((theme) => {
       ["&span"]: {
         whiteSpace: "nowrap",
       },
+      wordBreak: "break-word",
     },
     button: {
       marginTop: theme.spacing(1),
@@ -108,6 +110,7 @@ export default function ProjectPreview({ project, projectRef, hubUrl, className 
   const handleMouseLeave = () => {
     setHovering(false);
   };
+
   const queryString = hubUrl ? "?hubPage=" + hubUrl : "";
   return (
     <Link

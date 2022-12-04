@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => {
       [theme.breakpoints.down("xs")]: {
         fontSize: 40,
       },
-      textAlign: "left",
+      textAlign: "center",
     },
     headerTextSmall: {
       color: "white",
@@ -87,10 +87,10 @@ const useStyles = makeStyles((theme) => {
 });
 
 export async function getServerSideProps(ctx) {
-  const { token } = Cookies(ctx);
+  const { auth_token } = Cookies(ctx);
 
   // Fetch list of FAQ questions from the database
-  const questions = await getQuestionsWithAnswers(token, ctx.locale);
+  const questions = await getQuestionsWithAnswers(auth_token, ctx.locale);
 
   return {
     props: {
@@ -110,11 +110,10 @@ export default function Faq({ questionsBySection, questions }) {
   const handleSearchBarChange = (event) => {
     setSearchValue(event?.target?.value);
   };
-
   return (
     <div>
       <WideLayout title={texts.faq} isStaticPage>
-        <HeaderImage src={"images/supportusheader.jpg"} className={classes.headerImageContainer}>
+        <HeaderImage src="/images/supportusheader.jpg" className={classes.headerImageContainer}>
           <div className={classes.headerTextContainer}>
             <div className={classes.headerTextInnerContainer}>
               <div>

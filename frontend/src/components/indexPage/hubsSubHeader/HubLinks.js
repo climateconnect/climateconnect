@@ -11,6 +11,10 @@ const useStyles = makeStyles(() => ({
     justifyContent: "flex-end",
     width: "100%",
   },
+  wrapper: {
+    display: "flex",
+    alignItems: "center",
+  },
 }));
 
 export default function HubLinks({
@@ -20,6 +24,7 @@ export default function HubLinks({
   isNarrowScreen,
   showAllProjectsButton,
   onlyShowDropDown,
+  isLocationHub,
 }) {
   const classes = useStyles();
   const [open, setOpen] = useState({ sectorHubs: false, climateHubs: false });
@@ -62,14 +67,11 @@ export default function HubLinks({
     setOpen(newOpen);
   };
   return (
-    <div className={isNarrowScreen && classes.spaceAround}>
+    <div className={`${isNarrowScreen && classes.spaceAround} ${classes.wrapper}`}>
       {!isMediumScreen &&
         !onlyShowDropDown &&
         (showAllProjectsButton ? (
-          <Link
-            className={`${classes.link} ${classes.allProjectsLink}`}
-            href={getLocalePrefix(locale) + "/browse"}
-          >
+          <Link className={linkClassName} href={getLocalePrefix(locale) + "/browse"}>
             {texts.all_projects}
           </Link>
         ) : (
@@ -83,7 +85,7 @@ export default function HubLinks({
             </Link>
           ))
         ))}
-      {sectorHubs?.length > (onlyShowDropDown ? 0 : 3) && (
+      {!(isLocationHub && isNarrowScreen) && sectorHubs?.length > (onlyShowDropDown ? 0 : 3) && (
         <HubsDropDown
           hubs={sectorHubs}
           label="SectorHubs"

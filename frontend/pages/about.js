@@ -18,6 +18,7 @@ import ExplainerBox from "../src/components/staticpages/ExplainerBox";
 import FaqSection from "../src/components/staticpages/FaqSection";
 import Quote from "../src/components/staticpages/Quote";
 import StartNowBanner from "../src/components/staticpages/StartNowBanner";
+
 //local components
 import TopSection from "../src/components/staticpages/TopSection";
 
@@ -62,21 +63,20 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export async function getServerSideProps() {
-  const questions = await getQuestionsWithAnswers();
+export async function getServerSideProps(ctx) {
+  const questions = await getQuestionsWithAnswers(ctx.locale);
   return {
     props: {
-      faqQuestions: questions,
+      questionsFromSection: questions.all,
     },
   };
 }
 
-export default function About({ faqQuestions }) {
+export default function About({ questionsFromSection }) {
   const classes = useStyles();
   const trigger = !TopOfPage({ initTopOfPage: true });
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "about", locale: locale });
-
   const quoteText = texts.about_quote_text;
 
   return (
@@ -106,10 +106,7 @@ export default function About({ faqQuestions }) {
           <Born className={classes.born} headlineClass={classes.boxHeadlineClass} />
           <Timeline headlineClass={classes.headlineClass} />
           <HowItWorks headlineClass={classes.headlineClass} />
-          <FaqSection
-            headlineClass={classes.boxHeadlineClass}
-            questions={faqQuestions.by_section["Basics"]}
-          />
+          <FaqSection headlineClass={classes.boxHeadlineClass} questions={questionsFromSection} />
           <Team headlineClass={classes.headlineClass} className={classes.team} />
           {!user && <StartNowBanner h1ClassName={classes.headlineClass} />}
         </div>
@@ -118,15 +115,19 @@ export default function About({ faqQuestions }) {
   );
 }
 
-const getQuestionsWithAnswers = async () => {
+const getQuestionsWithAnswers = async (locale) => {
   try {
-    const resp = await apiRequest({ method: "get", url: "/api/list_faq/" });
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/about_faq/",
+
+      locale: locale,
+    });
     if (resp.data.length === 0) {
       return null;
     }
 
     return {
-      by_section: sortBySection(resp.data.results),
       all: resp.data.results,
     };
   } catch (err) {
@@ -137,12 +138,4 @@ const getQuestionsWithAnswers = async () => {
     }
     return null;
   }
-};
-
-const sortBySection = (questions) => {
-  return questions.reduce((obj, question) => {
-    if (!obj[question.section]) obj[question.section] = [question];
-    else obj[question.section].push(question);
-    return obj;
-  }, {});
 };

@@ -9,47 +9,42 @@ class Post(models.Model):
         related_name="post_project",
         verbose_name="Project",
         help_text="Points to the project to which the post belongs",
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
     )
 
     author_user = models.ForeignKey(
         User,
         related_name="post_author",
-        help_text='Points to a user who wrote the post',
+        help_text="Points to a user who wrote the post",
         verbose_name="Author",
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
     )
 
-    content = models.TextField(
-        help_text="Content of the post",
-        verbose_name="Content"
-    )
+    content = models.TextField(help_text="Content of the post", verbose_name="Content")
 
     created_at = models.DateTimeField(
         help_text="Time when post was created",
         verbose_name="Created at",
-        auto_now_add=True
+        auto_now_add=True,
     )
 
     updated_at = models.DateTimeField(
-        help_text="Time when post was updated",
-        verbose_name="Updated at",
-        auto_now=True
+        help_text="Time when post was updated", verbose_name="Updated at", auto_now=True
     )
 
     is_hidden = models.BooleanField(
         help_text="If post has made hidden from public",
         verbose_name="Is hidden?",
-        default=False
+        default=False,
     )
 
     deleted_at = models.DateTimeField(
         help_text="Time when post was deleted",
         verbose_name="Deleted at",
         null=True,
-        blank=True
+        blank=True,
     )
 
     deleted_by_user = models.ForeignKey(
@@ -59,7 +54,7 @@ class Post(models.Model):
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name="post_delete"
+        related_name="post_delete",
     )
 
     class Meta:
@@ -73,52 +68,47 @@ class Post(models.Model):
 
 class Comment(models.Model):
     parent_comment = models.ForeignKey(
-        'self',
+        "self",
         related_name="comment_parent",
         help_text="Points to parent comment",
         verbose_name="Parent Comment",
         null=True,
         blank=True,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
     author_user = models.ForeignKey(
         User,
         related_name="comment_author",
         help_text="Points to user who made comment",
         verbose_name="Author User",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
 
-    content = models.TextField(
-        help_text="Comment content",
-        verbose_name="Content"
-    )
+    content = models.TextField(help_text="Comment content", verbose_name="Content")
 
     # Note: Added this so website administrator can mark a comment as abusive.
     # Only website administrator can mark comments abusive
     is_abusive = models.BooleanField(
-        help_text="If comment is abusive",
-        verbose_name="Is abusive?",
-        default=False
+        help_text="If comment is abusive", verbose_name="Is abusive?", default=False
     )
 
     created_at = models.DateTimeField(
         help_text="Time when post was created",
         auto_now_add=True,
-        verbose_name="Created at"
+        verbose_name="Created at",
     )
 
     updated_at = models.DateTimeField(
         help_text="Time when comment was updated",
         verbose_name="Updated at",
-        auto_now=True
+        auto_now=True,
     )
 
     deleted_at = models.DateTimeField(
         help_text="Time when comment was deleted",
         verbose_name="Deleted at",
         null=True,
-        blank=True
+        blank=True,
     )
 
     deleted_by_user = models.ForeignKey(
@@ -128,7 +118,7 @@ class Comment(models.Model):
         verbose_name="Deleted by user",
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
     )
 
     class Meta:
@@ -146,7 +136,7 @@ class PostComment(Comment):
         related_name="post_comment",
         help_text="Point to post table",
         verbose_name="Post",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
 
     class Meta:
@@ -163,7 +153,7 @@ class ProjectComment(Comment):
         Project,
         related_name="project_comment",
         verbose_name="Project",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
 
     class Meta:

@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-const getSteps = (texts, sourceLocale) => {
+const getSteps = (texts) => {
   const steps = [
     {
       key: "share",
@@ -53,14 +53,14 @@ const getSteps = (texts, sourceLocale) => {
       headline: texts.add_your_team,
     },
   ];
-  if (sourceLocale === "de") {
+  /*if (sourceLocale === "de") {
     steps.push({
       key: "translate",
       text: texts.languages,
       headline: texts.translate,
       sourceLocale: ["de"],
-    });
-  }
+    })
+  }*/
   return steps;
 };
 
@@ -220,6 +220,8 @@ export default function ShareProjectRoot({
       textKey: "short_description",
       rows: 5,
       headlineTextKey: "short_description",
+      maxCharacters: 280,
+      showCharacterCounter: true,
     },
     {
       textKey: "description",

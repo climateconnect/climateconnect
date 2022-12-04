@@ -36,7 +36,7 @@ export default function EditAccountRoot({
 }) {
   const { locale, locales } = useContext(UserContext);
   const cookies = new Cookies();
-  const token = cookies.get("token");
+  const token = cookies.get("auth_token");
   const classes = useStyles();
   const [translations, setTranslations] = useState(
     initialTranslations ? getTranslationsFromObject(initialTranslations, "user_profile") : {}
@@ -91,6 +91,7 @@ export default function EditAccountRoot({
     editedAccount.language = sourceLanguage;
     const parsedProfile = parseProfileForRequest(editedAccount, availabilityOptions, user);
     const payload = await getProfileWithoutRedundantOptions(user, parsedProfile);
+
     payload.translations = parseTranslationsForRequest(
       getTranslationsWithoutRedundantKeys(
         getTranslationsFromObject(initialTranslations, "user_profile"),
@@ -174,6 +175,8 @@ export default function EditAccountRoot({
                   textKey: "info.bio",
                   rows: 5,
                   headlineTextKey: "bio",
+                  maxCharacters: 280,
+                  showCharacterCounter: true,
                 },
               ]}
               changeTranslationLanguages={changeTranslationLanguages}
@@ -188,10 +191,11 @@ export default function EditAccountRoot({
 }
 
 const parseProfileForRequest = (profile, availabilityOptions, user) => {
-  const availability = availabilityOptions.find((o) => o.name == profile.info.availability);
+  const availability = availabilityOptions.find((o) => o.key == profile.info.availability);
   const image = profile.image;
   const thumbnail = profile.thumbnail_image;
   const background = profile.background_image;
+
   return {
     first_name: profile.first_name,
     last_name: profile.last_name,
@@ -216,6 +220,7 @@ const getProfileWithoutRedundantOptions = async (user, newProfile) => {
     background_image: getImageUrl(user.background_image),
     availability: user.availability && user.availability.id,
   };
+
   const finalProfile = {};
   Object.keys(newProfile).map((k) => {
     if (
@@ -233,6 +238,7 @@ const getProfileWithoutRedundantOptions = async (user, newProfile) => {
     finalProfile.thumbnail_image = await blobFromObjectUrl(finalProfile.thumbnail_image);
   if (finalProfile.background_image)
     finalProfile.background_image = await blobFromObjectUrl(finalProfile.background_image);
+
   return finalProfile;
 };
 

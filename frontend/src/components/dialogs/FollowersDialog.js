@@ -16,7 +16,7 @@ import React, { useContext } from "react";
 import ReactTimeago from "react-timeago";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
-import getTexts from "../../../public/texts/texts";
+
 import UserContext from "../context/UserContext";
 import GenericDialog from "./GenericDialog";
 
@@ -45,35 +45,34 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProjectFollowersDialog({
+export default function FollowersDialog({
   open,
   onClose,
-  project,
+  object,
   followers,
   loading,
   user,
   url,
+  titleText,
+  pleaseLogInText,
+  toSeeFollowerText,
+  logInText,
+  noFollowersText,
+  followingSinceText,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "project", locale: locale });
   const handleClose = () => {
     onClose();
   };
   return (
-    <GenericDialog
-      onClose={handleClose}
-      open={open}
-      title={texts.followers_of + " " + project.name}
-    >
+    <GenericDialog onClose={handleClose} open={open} title={titleText + " " + object.name}>
       <div>
         {loading ? (
           <LinearProgress />
         ) : !user ? (
           <>
-            <Typography>
-              {texts.please_log_in + " " + texts.to_see_this_projects_followers + "!"}
-            </Typography>
+            <Typography>{pleaseLogInText + " " + toSeeFollowerText + "!"}</Typography>
             <Container className={classes.loginButtonContainer}>
               <Button
                 className={classes.loginButton}
@@ -81,21 +80,25 @@ export default function ProjectFollowersDialog({
                 color="primary"
                 href={getLocalePrefix(locale) + "/signin?redirect=" + encodeURIComponent(url)}
               >
-                {texts.log_in}
+                {logInText}
               </Button>
             </Container>
           </>
         ) : followers && followers.length > 0 ? (
-          <ProjectFollowers followers={followers} texts={texts} locale={locale} />
+          <ProjectFollowers
+            followers={followers}
+            followingSinceText={followingSinceText}
+            locale={locale}
+          />
         ) : (
-          <Typography>{texts.this_project_does_not_have_any_followers_yet}</Typography>
+          <Typography>{noFollowersText}</Typography>
         )}
       </div>
     </GenericDialog>
   );
 }
 
-const ProjectFollowers = ({ followers, texts, locale }) => {
+const ProjectFollowers = ({ followers, followingSinceText, locale }) => {
   const classes = useStyles();
   return (
     <>
@@ -122,7 +125,7 @@ const ProjectFollowers = ({ followers, texts, locale }) => {
                 </TableCell>
                 <TableCell>
                   <Typography className={classes.followedText}>
-                    {texts.following_since} <ReactTimeago date={f.created_at} />
+                    {followingSinceText} <ReactTimeago date={f.created_at} />
                   </Typography>
                 </TableCell>
               </TableRow>

@@ -29,6 +29,8 @@ const parseOrganizationInfo = (info, organization_info_metadata) => {
 
 export default function EnterDetailledOrganizationInfo({
   errorMessage,
+  existingName,
+  existingUrlSlug,
   organizationInfo,
   handleSubmit,
   tagOptions,
@@ -40,7 +42,7 @@ export default function EnterDetailledOrganizationInfo({
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
-  const organization_info_metadata = getOrganizationInfoMetadata(locale, organizationInfo);
+  const organization_info_metadata = getOrganizationInfoMetadata(locale, organizationInfo, true);
   const organization = parseOrganizationInfo(organizationInfo, organization_info_metadata);
   const infoMetadata = {
     ...organization_info_metadata,
@@ -52,7 +54,6 @@ export default function EnterDetailledOrganizationInfo({
     },
   };
   const classes = useStyles();
-
   const handleCancel = () => {
     Router.push("/browse");
   };
@@ -76,6 +77,8 @@ export default function EnterDetailledOrganizationInfo({
         submitMessage={texts.create}
         handleCancel={handleCancel}
         errorMessage={errorMessage}
+        existingName={existingName}
+        existingUrlSlug={existingUrlSlug}
         loadingSubmit={loadingSubmit}
         allHubs={allHubs}
       />

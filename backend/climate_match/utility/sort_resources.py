@@ -8,9 +8,7 @@ from climate_match.models.user import UserQuestionAnswer
 
 
 def sort_user_resource_preferences(
-    user: User, 
-    climatematch_token: UUID,
-    hub_id: int
+    user: User, climatematch_token: UUID, hub_id: int
 ) -> List:
     user_resource_preferences = []
     if user.is_authenticated:
@@ -18,7 +16,8 @@ def sort_user_resource_preferences(
     else:
         personalized_filter = "token = '{}'".format(climatematch_token)
     with connection.cursor() as cursor:
-        cursor.execute(f"""
+        cursor.execute(
+            f"""
 WITH hub_location_ids AS (
     SELECT location_id
     FROM hubs_hub_location
@@ -164,9 +163,12 @@ get_user_resource_preference AS (
 )
 
 select * from get_user_reference_relevancy_score;
-        """)
+        """
+        )
 
         columns = [col[0] for col in cursor.description]
-        user_resource_preferences = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        user_resource_preferences = [
+            dict(zip(columns, row)) for row in cursor.fetchall()
+        ]
 
     return user_resource_preferences

@@ -84,7 +84,7 @@
     "de": "Lädt..."
   },
   "privacy_policy": {
-    "en": "Privacy policy",
+    "en": "privacy policy",
     "de": "Datenschutzrichtlinien"
   },
   "and": {
@@ -143,6 +143,10 @@
     "en": "Status",
     "de": "Status"
   },
+  "click_here_to_send_or_press_ctrl_enter": {
+    "en": "Click here to send (or press ctrl + Enter)",
+    "de": "Klicke hier, um zu senden (oder drücke ctrl + Enter)"
+  },
   "categories": {
     "en": "Categories",
     "de": "Kategorien"
@@ -186,6 +190,10 @@
   "sign_up_and_make_a_change": {
     "en": "Sign up & make a change",
     "de": "Mach mit"
+  },
+  "sign_up_now": {
+    "en": "Sign up now",
+    "de": "Jetzt anmelden"
   },
   "my_profile": {
     "en": "My Profile",
@@ -537,7 +545,7 @@
   },
   "climate_action_platform_text": {
     "en": "Bringing everyone involved in climate action together.",
-    "de": "Wir bringen alle Klimaschützer zusammen."
+    "de": "Wir bringen alle Klimaschützer:innen zusammen."
   },
   "get_inspired_text": {
     "en": "Find inspiring climate projects to work on. See where you can make the biggest difference.",
@@ -685,11 +693,19 @@
   },
   "summary": {
     "en": "Summary",
-    "de": "Zusammenfassung"
+    "de": "Kurzbeschreibung"
+  },
+  "characters": {
+    "en": "characters",
+    "de": "Zeichen"
   },
   "twohundred_eighty_chars_max": {
     "en": "280 characters max",
     "de": "Maximal 280 Zeichen"
+  },
+  "twohundred_fifty_chars_max": {
+    "en": "250 characters max",
+    "de": "Maximal 250 Zeichen"
   },
   "make_this_user_the_creator": {
     "en": "Make this user the Super Admin",
@@ -758,5 +774,9 @@
   "days": {
     "en": "days",
     "de": "Tage"
+  },
+  "participants": {
+    "en": "Participants",
+    "de": "Teilnehmer"
   }
 }

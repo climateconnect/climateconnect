@@ -1,6 +1,6 @@
-import { Avatar, Button, Typography, useMediaQuery } from "@material-ui/core";
+import { Avatar, Button, IconButton, Tooltip, Typography, useMediaQuery } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
@@ -8,22 +8,23 @@ import UserContext from "../context/UserContext";
 import LoginNudge from "../general/LoginNudge";
 import ProfileBadge from "../profile/ProfileBadge";
 import InputWithMentions from "./InputWithMentions";
+import SendIcon from "@material-ui/icons/Send";
 
 const useStyles = makeStyles((theme) => {
   return {
     flexBox: {
       display: "flex",
       alignItems: "center",
+      marginTop: theme.spacing(1.5),
     },
-
     cancelButton: {
       float: "right",
-      marginTop: theme.spacing(1),
+      marginTop: theme.spacing(0.5),
       marginRight: theme.spacing(1),
     },
     commentButton: {
       float: "right",
-      marginTop: theme.spacing(1),
+      marginTop: theme.spacing(0.5),
     },
     commentButtonContainer: {
       height: 60,
@@ -32,6 +33,7 @@ const useStyles = makeStyles((theme) => {
       float: "left",
       marginLeft: theme.spacing(8.5),
       fontSize: 13,
+      width: "100%",
     },
   };
 });
@@ -50,20 +52,29 @@ function CommentInput({
   onCancel,
   hasComments,
   infoTextSize,
+  useIconButton,
 }) {
   const classes = useStyles();
   const [curComment, setCurComment] = React.useState("");
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "communication", locale: locale });
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const [showSendHelper, setShowSendHelper] = useState(false);
 
   const onCurCommentChange = (e) => {
     setCurComment(e.target.value);
   };
 
+  const handleOpenHelper = () => {
+    setShowSendHelper(true);
+  };
+  const handleCloseHelper = () => {
+    setShowSendHelper(false);
+  };
+
   const handleSendComment = (event) => {
     if (event) event.preventDefault();
-    if (!curComment) alert(texts.your_comment_cannot_be_empty);
+    if (!curComment) return alert(texts.your_comment_cannot_be_empty);
     onSendComment(curComment, parent_comment, clearInput);
   };
 
@@ -86,7 +97,14 @@ function CommentInput({
   };
 
   const handleMessageKeydown = (event) => {
-    if (event.key === "Enter" && event.ctrlKey) handleSendComment(event, curComment);
+    if (event.key === "Enter") {
+      if (event.ctrlKey) {
+        if (!curComment) return alert(texts.your_comment_cannot_be_empty);
+        handleSendComment(event, curComment);
+      } else {
+        setShowSendHelper(true);
+      }
+    }
   };
 
   const avatarProps = {
@@ -99,11 +117,7 @@ function CommentInput({
         <form onSubmit={onSendComment}>
           <div className={classes.flexBox}>
             {user?.badges?.length > 0 ? (
-              <ProfileBadge
-                name={user?.badges[0].name}
-                image={getImageUrl(user?.badges[0].image)}
-                size="small"
-              >
+              <ProfileBadge badge={user?.badges[0]} size="small">
                 <Avatar {...avatarProps} />
               </ProfileBadge>
             ) : (
@@ -119,17 +133,39 @@ function CommentInput({
               onChange={onCurCommentChange}
               onKeyDown={handleMessageKeydown}
             />
+            {useIconButton && (
+              <Tooltip
+                open={showSendHelper}
+                onClose={handleCloseHelper}
+                onOpen={handleOpenHelper}
+                arrow
+                title={texts.click_here_to_send_or_press_ctrl_enter}
+                placement="top"
+              >
+                <IconButton
+                  color="primary"
+                  variant="contained"
+                  className={classes.commentButton}
+                  onClick={(event) => handleSendComment(event)}
+                >
+                  <SendIcon className={classes.sendButtonIcon} />
+                </IconButton>
+              </Tooltip>
+            )}
           </div>
+          <Typography className={classes.explanation}>{getInfoText()}</Typography>
+
           <div className={classes.commentButtonContainer}>
-            <Typography className={classes.explanation}>{getInfoText()}</Typography>
-            <Button
-              color="primary"
-              variant="contained"
-              className={classes.commentButton}
-              onClick={(event) => handleSendComment(event)}
-            >
-              {texts.send}
-            </Button>
+            {!useIconButton && (
+              <Button
+                color="primary"
+                variant="contained"
+                className={classes.commentButton}
+                onClick={(event) => handleSendComment(event)}
+              >
+                {texts.send}
+              </Button>
+            )}
             {onCancel && (
               <Button variant="contained" className={classes.cancelButton} onClick={onCancel}>
                 {texts.cancel}
