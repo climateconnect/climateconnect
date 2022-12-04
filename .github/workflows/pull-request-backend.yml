@@ -26,4 +26,5 @@ jobs:
       - name: Run tests
         run: |
           cd backend
-          make test
+          # make test
+          python3 manage.py test climateconnect_api.tests.test_user_views.TestSignUpView.test_signup_api_success
