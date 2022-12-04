@@ -59,6 +59,7 @@ export default function WideLayout({
   hideFooter,
   resetAlertMessage,
   isHubPage,
+  hideDonationCampaign,
 }) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);
@@ -127,7 +128,7 @@ export default function WideLayout({
             </Alert>
           )}
           {subHeader && subHeader}
-          {!fixedHeader && process.env.DONATION_CAMPAIGN_RUNNING === "true" && !landingPage && (
+          {!fixedHeader && !hideDonationCampaign && process.env.DONATION_CAMPAIGN_RUNNING === "true" && !landingPage && (
             <Collapse in={showDonationBanner}>
               <DonationCampaignInformation />
             </Collapse>
