@@ -25,6 +25,7 @@ import UserContext from "./../../src/components/context/UserContext";
 import IconButton from "@material-ui/core/IconButton";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import ControlPointSharpIcon from "@material-ui/icons/ControlPointSharp";
+import MiniOrganizationPreview from "../../src/components/organization/MiniOrganizationPreview";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -68,6 +69,13 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(4),
     marginBottom: theme.spacing(5),
   },
+  organizationsSection: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(2),
+  },
 }));
 
 export async function getServerSideProps(ctx) {
@@ -79,6 +87,7 @@ export async function getServerSideProps(ctx) {
     members,
     organizationTypes,
     rolesOptions,
+    childOrganizations,
     following,
   ] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
@@ -86,8 +95,10 @@ export async function getServerSideProps(ctx) {
     getMembersByOrganization(organizationUrl, auth_token, ctx.locale),
     getOrganizationTypes(),
     getRolesOptions(auth_token, ctx.locale),
+    getChildOrganizations(organizationUrl),
     getIsUserFollowing(organizationUrl, auth_token, ctx.locale),
   ]);
+
   return {
     props: nullifyUndefinedValues({
       organization: organization,
@@ -95,6 +106,7 @@ export async function getServerSideProps(ctx) {
       members: members,
       organizationTypes: organizationTypes,
       rolesOptions: rolesOptions,
+      childOrganizations: childOrganizations,
       following: following,
     }),
   };
@@ -106,6 +118,7 @@ export default function OrganizationPage({
   members,
   organizationTypes,
   rolesOptions,
+  childOrganizations,
   following,
 }) {
   const { user, locale } = useContext(UserContext);
@@ -167,6 +180,7 @@ export default function OrganizationPage({
           texts={texts}
           locale={locale}
           rolesOptions={rolesOptions}
+          childOrganizations={childOrganizations}
         />
       ) : (
         <PageNotFound itemName={texts.organization} />
@@ -188,6 +202,8 @@ function OrganizationLayout({
   texts,
   locale,
   rolesOptions,
+
+  childOrganizations,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
@@ -240,6 +256,7 @@ function OrganizationLayout({
 
   const isTinyScreen = useMediaQuery(theme.breakpoints.down("xs"));
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
     <AccountPage
       numberOfFollowers={numberOfFollowers}
@@ -257,6 +274,19 @@ function OrganizationLayout({
       isTinyScreen={isTinyScreen}
       isSmallScreen={isSmallScreen}
     >
+      {" "}
+      {childOrganizations && childOrganizations.length > 0 && (
+        <>
+          <Container>
+            <Typography color="primary" className={classes.headline} component="h2">{texts.our_local_groups}</Typography>
+            <div className={classes.organizationsSection}>
+              {childOrganizations.map((o, index) => (
+                <MiniOrganizationPreview organization={o} key={index} size="small" />
+              ))}
+            </div>
+          </Container>
+        </>
+      )}
       {!user && (
         <LoginNudge
           className={classes.loginNudge}
@@ -288,7 +318,8 @@ function OrganizationLayout({
             </Button>
           )}
         </div>
-        {projects && projects.length ? (
+
+        {projects && projects.length > 0 ? (
           <ProjectPreviews projects={projects} />
         ) : (
           <Typography className={classes.no_content_yet}>
@@ -366,6 +397,22 @@ async function getProjectsByOrganization(organizationUrl, token, locale) {
     }
   } catch (err) {
     console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
+
+async function getChildOrganizations(organizationUrl) {
+  try {
+    const response = await apiRequest({
+      method: "get",
+      url: "/api/child_organizations/" + organizationUrl + "/",
+    });
+    if (!response.data) {
+      return null;
+    }
+    return response.data.results.map((r) => parseOrganization(r));
+  } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }

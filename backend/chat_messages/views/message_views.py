@@ -1,6 +1,4 @@
 from heapq import merge
-from itertools import chain
-import itertools
 from chat_messages.utility.notification import create_chat_message_notification
 from climateconnect_api.utility.notification import (
     create_email_notification,

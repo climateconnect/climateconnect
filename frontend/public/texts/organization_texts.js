@@ -279,7 +279,10 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: "Skip for now",
       de: "Erstmal überspringen",
     },
-
+    our_local_groups: {
+      en: "Our local groups",
+      de: "Unsere lokalen Gruppen",
+    },
     please_log_in_to_follow_an_organization: {
       en: "Please log in to follow an organization.",
       de: "Bitte logge dich ein, um einer Organisation zu folgen.",

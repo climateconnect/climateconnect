@@ -61,6 +61,11 @@ urlpatterns = [
         name="featured-organizations-api-view",
     ),
     path(
+        "child_organizations/<str:url_slug>/",
+        organization_views.ListChildOrganizations.as_view(),
+        name="child-organizations-api-view",   
+    ),
+    path(
         "organizations/<str:url_slug>/set_follow/",
         organization_views.SetFollowView.as_view(),
         name="set-follow-view",

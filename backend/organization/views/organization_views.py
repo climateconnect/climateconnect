@@ -15,6 +15,7 @@ from climateconnect_api.utility.translation import (
     get_translations,
     translate_text,
 )
+from itertools import chain
 from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.utility.common import create_unique_slug
@@ -771,11 +772,22 @@ class ListOrganizationProjectsAPIView(ListAPIView):
     serializer_class = ProjectFromProjectParentsSerializer
 
     def get_queryset(self):
-        return ProjectParents.objects.filter(
-            parent_organization__url_slug=self.kwargs["url_slug"],
-            project__is_draft=False,
-        ).order_by("id")
+        
+        organization_urls = Organization.objects.filter(
+            parent_organization__url_slug = 
+            self.kwargs['url_slug']).values_list('url_slug', flat=True)
 
+        own_project = ProjectParents.objects.filter(
+            parent_organization__url_slug=self.kwargs["url_slug"],
+            project__is_draft=False
+        )
+
+        child_orgs_projects = ProjectParents.objects.filter(
+            parent_organization__url_slug__in=organization_urls,
+            project__is_draft=False
+        )
+
+        return list(chain(own_project, child_orgs_projects))
 
 class ListOrganizationMembersAPIView(ListAPIView):
     permission_classes = [AllowAny]
@@ -801,7 +813,7 @@ class ListOrganizationTags(ListAPIView):
 class ListFeaturedOrganizations(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = OrganizationCardSerializer
-
+    
     def get_serializer_context(self):
         return {"language_code": self.request.LANGUAGE_CODE}
 
@@ -829,3 +841,17 @@ class SetOrganisationSharedView(APIView):
             )
         save_content_shared(request, organization)
         return Response(status=status.HTTP_201_CREATED)
+
+
+class ListChildOrganizations(ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = OrganizationSerializer
+    def get_queryset(self):
+        organizations = Organization.objects.filter( parent_organization__url_slug = self.kwargs['url_slug']) 
+        return organizations
+        
+        
+        
+
+   
+    
