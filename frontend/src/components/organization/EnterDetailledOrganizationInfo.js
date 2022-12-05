@@ -29,6 +29,8 @@ const parseOrganizationInfo = (info, organization_info_metadata) => {
 
 export default function EnterDetailledOrganizationInfo({
   errorMessage,
+  existingName,
+  existingUrlSlug,
   organizationInfo,
   handleSubmit,
   tagOptions,
@@ -76,6 +78,8 @@ export default function EnterDetailledOrganizationInfo({
         submitMessage={texts.create}
         handleCancel={handleCancel}
         errorMessage={errorMessage}
+        existingName={existingName}
+        existingUrlSlug={existingUrlSlug}
         loadingSubmit={loadingSubmit}
         allHubs={allHubs}
         socialMediaChannels={socialMediaChannels}

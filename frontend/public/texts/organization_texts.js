@@ -389,5 +389,15 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: `${organization?.name} is active in these sectors`,
       de: `${organization?.name} ist in diesen Bereichen aktiv`,
     },
+    someone_has_already_created_organization: {
+      en: "Someone has already created the organization ",
+      de: "Jemand erstellte bereits die Organisation ",
+    },
+    please_join_org_or_use_diff_name_if_problems_contact: {
+      en:
+        ". Please join the organization or use a different name. If you're having problems please contact ",
+      de:
+        ". Bitte trete der Organisation bei oder verwende einen anderen Namen. Falls du Probleme hast, wende dich bitte an ",
+    },
   };
 }
