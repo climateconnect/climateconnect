@@ -132,6 +132,7 @@ const getXHTMLLinkTag = (BASE_URL, url, languageCode) => {
     hreflang="de"
     href="${BASE_URL}/de${url}"/>`;
   }
+
   const englishURL = BASE_URL + "/" + getEnglishURLFromGerman(url);
   if (languageCode === "de") {
     return `<xhtml:link
