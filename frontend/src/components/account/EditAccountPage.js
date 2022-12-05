@@ -290,8 +290,8 @@ export default function EditAccountPage({
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
-  const showResetBackGroundButton = editedAccount.background_image !== null;
-  const showResetAvatarButton = editedAccount.image !== null && type === "profile";
+  const showResetBackGroundButton = editedAccount?.background_image !== null;
+  const showResetAvatarButton = editedAccount?.image !== null && type === "profile";
 
   const organizationTexts = getTexts({ page: "organization", locale: locale });
   const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });
