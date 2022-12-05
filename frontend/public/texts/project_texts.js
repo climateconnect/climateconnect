@@ -743,6 +743,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Collaborating Organizations",
       de: "Zusammenarbeitende Organisation",
     },
+    select_collaborating_organizations: {
+      en: "Select Collaborating Organizations",
+      de: "Wähle Zusammenarbeitende Organisationen aus",
+    },
+    search_collaborating_organization_name: {
+      en: "Search for the name of the collaborating organization you wish to add.",
+      de: "Suche nach dem Namen der Zusammenarbeitende Organisation, den du hinzfügen willst.",
+    },
     there_has_been_an_error_when_trying_to_publish_your_project: {
       en:
         "There has been an error when trying to publish your project. Check the console for more information.",

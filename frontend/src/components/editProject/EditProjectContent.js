@@ -8,7 +8,7 @@ import {
   useMediaQuery,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import getCollaborationTexts from "../../../public/data/collaborationTexts";
 import ROLE_TYPES from "../../../public/data/role_types";
 import getTexts from "../../../public/texts/texts";
@@ -21,10 +21,14 @@ import SelectField from "../general/SelectField";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import DeleteProjectButton from "./DeleteProjectButton";
+import EditCollaboratingOrganizations from "./EditCollaboratingOrganizations";
 
 const useStyles = makeStyles((theme) => ({
   select: {
     maxWidth: 250,
+  },
+  selectCollaborators: {
+    maxWidth: 450,
   },
   startDate: {
     marginRight: theme.spacing(4),
@@ -66,6 +70,28 @@ const useStyles = makeStyles((theme) => ({
   spacer: {
     marginBottom: theme.spacing(1),
   },
+  selectedCollaboratingOrgs: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  collaboratingOrgChipsContainer: {
+    marginTop: theme.spacing(1),
+    display: "flex",
+    flexWrap: "wrap",
+  },
+  collaboratingOrgPreview: {
+    display: "flex",
+    border: "1px solid black",
+    justifyContent: "center",
+    height: theme.spacing(5),
+    minWidth: 220,
+    maxWidth: "100%",
+    marginRight: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+    background: "none",
+    borderRadius: "20px",
+    fontSize: 16,
+  },
 }));
 
 export default function EditProjectContent({
@@ -81,11 +107,12 @@ export default function EditProjectContent({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const collaborationTexts = getCollaborationTexts(texts);
-  const [selectedItems, setSelectedItems] = React.useState(
-    project.skills ? [...project.skills] : []
+  const [selectedItems, setSelectedItems] = useState(project.skills ? [...project.skills] : []);
+  const [selectedCollaboratingOrgs, setSelectedCollaboratingOrgs] = useState(
+    project.collaborating_organizations ? [...project.collaborating_organizations] : []
   );
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
-  const [open, setOpen] = React.useState({ skills: false, connections: false, delete: false });
+  const [open, setOpen] = useState({ skills: false, connections: false, delete: false });
   const statusesWithStartDate = statusOptions.filter((s) => s.has_start_date).map((s) => s.id);
   const statusesWithEndDate = statusOptions.filter((s) => s.has_end_date).map((s) => s.id);
 
@@ -107,6 +134,19 @@ export default function EditProjectContent({
       skills: project.skills.filter((s) => s.id !== skill.id),
     });
     setSelectedItems(project.skills.filter((s) => s.id !== skill.id));
+  };
+  const handleDeleteCollaboratingOrg = (collaborating_org) => {
+    handleSetProject({
+      ...project,
+      collaborating_organizations: project.collaborating_organizations.filter(
+        (co) => co.collaborating_organization.id !== collaborating_org.id
+      ),
+    });
+    setSelectedCollaboratingOrgs(
+      project.collaborating_organizations.filter(
+        (co) => co.collaborating_organization.id !== collaborating_org.id
+      )
+    );
   };
 
   const handleSkillsDialogSave = (skills) => {
@@ -147,6 +187,14 @@ export default function EditProjectContent({
       deleteProject();
     }
     setOpen({ ...open, delete: false });
+  };
+
+  const handleAddCollaboratingOrg = (newValue) => {
+    const tempSelectCollaboratingOrgs = selectedCollaboratingOrgs;
+
+    tempSelectCollaboratingOrgs.push({ collaborating_organization: newValue });
+    setSelectedCollaboratingOrgs(tempSelectCollaboratingOrgs);
+    handleChangeProject(tempSelectCollaboratingOrgs, "collaborating_organizations");
   };
 
   const handleSwitchChange = (event) => {
@@ -191,6 +239,7 @@ export default function EditProjectContent({
         <div className={classes.block}>
           {project.is_personal_project ? (
             <>
+
               {texts.created_by}
               <MiniProfilePreview
                 className={classes.creator}
@@ -295,6 +344,16 @@ export default function EditProjectContent({
         {project.collaborators_welcome && (
           <>
             <div className={classes.block}>
+              <EditCollaboratingOrganizations
+                texts={texts}
+                baseUrl={process.env.API_URL + "/api/organizations/?search="}
+                searchBarClass={classes.selectCollaborators}
+                handleAddCollaboratingOrg={handleAddCollaboratingOrg}
+                organizationPreviewsContainerClass={classes.collaboratingOrgChipsContainer}
+                organizationPreviewClass={classes.collaboratingOrgPreview}
+                selectedCollaboratingOrgs={selectedCollaboratingOrgs}
+                handleDeleteCollaboratingOrg={handleDeleteCollaboratingOrg}
+              />
               <Typography
                 component="h2"
                 variant="subtitle2"

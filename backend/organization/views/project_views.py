@@ -593,6 +593,27 @@ class ProjectAPIView(APIView):
             project_parents.parent_organization = organization
             project_parents.save()
 
+        old_collaborators = ProjectCollaborators.objects.filter(project=project).values("collaborating_organization")
+
+        if "collaborating_organizations" in request.data:
+
+            for old_collaborator in old_collaborators:
+                if not old_collaborator in request.data["collaborating_organizations"]:
+                    collaborator_to_delete = Organization.objects.get(
+                        id=old_collaborator["collaborating_organization"]
+                    )
+                    ProjectCollaborators.objects.filter(
+                        project=project,
+                        collaborating_organization=collaborator_to_delete,
+                    ).delete()
+            for collaborating_org in request.data["collaborating_organizations"]:
+                organization = Organization.objects.get(
+                    id=collaborating_org["collaborating_organization"]["id"]
+                )
+                ProjectCollaborators.objects.create(
+                    project=project, collaborating_organization=organization
+                )
+
         project.save()
 
         items_to_translate = [
