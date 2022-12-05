@@ -21,11 +21,17 @@ import Layout from "./../src/components/layouts/layout";
 import WideLayout from "./../src/components/layouts/WideLayout";
 import EnterBasicOrganizationInfo from "./../src/components/organization/EnterBasicOrganizationInfo";
 import EnterDetailledOrganizationInfo from "./../src/components/organization/EnterDetailledOrganizationInfo";
+import Alert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles((theme) => ({
   headline: {
     textAlign: "center",
     marginTop: theme.spacing(4),
+  },
+  alert: {
+    textAlign: "center",
+    maxWidth: 1280,
+    margin: "0 auto",
   },
 }));
 
@@ -48,7 +54,7 @@ export async function getServerSideProps(ctx) {
 export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }) {
   const token = new Cookies().get("auth_token");
   const classes = useStyles();
-  const [errorMessages, setErrorMessages] = React.useState({
+  const [errorMessages, setErrorMessages] = useState({
     basicOrganizationInfo: "",
     detailledOrganizationInfo: "",
   });
@@ -69,6 +75,8 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
   const [sourceLanguage, setSourceLanguage] = useState(locale);
   const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== locale));
   const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [existingUrlSlug, setExistingUrlSlug] = useState("");
+  const [existingName, setExistingName] = useState("");
 
   const [organizationInfo, setOrganizationInfo] = useState({
     name: "",
@@ -124,6 +132,14 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
     });
   };
 
+  const handleSetExistingUrlSlug = (urlSlug) => {
+    setExistingUrlSlug(urlSlug);
+  };
+
+  const handleSetExistingName = (name) => {
+    setExistingName(name);
+  };
+
   const handleBasicInfoSubmit = async (event, values) => {
     event.preventDefault();
     try {
@@ -146,19 +162,39 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         );
         return;
       }
+      const url = `/api/look_up_organization/?search=${values.organizationname}`;
       const resp = await apiRequest({
         method: "get",
-        url: "/api/organizations/?search=" + values.organizationname,
+        url: url,
         locale: locale,
       });
-      if (resp.data.results && resp.data.results.find((r) => r.name === values.organizationname)) {
-        const org = resp.data.results.find((r) => r.name === values.organizationname);
+      const location = getLocationValue(values, "location");
+      setOrganizationInfo({
+        ...organizationInfo,
+        name: values.organizationname,
+        parentorganization: values.parentorganizationname,
+        location: parseLocation(location),
+      });
+      /* This is required in the case that the user first inputs a name that is taken 
+      then later submits with a valid name. Should they then edit the name to another taken name in the detailed view (German page)
+      and then go Erstellen it will open up the auto translate screen with the old error message from the basic view.
+      */
+      handleSetErrorMessages({
+        ...errorMessages,
+        basicOrganizationInfo: "",
+      });
+      setCurStep(steps[1]);
+    } catch (err) {
+      if (err?.response?.data?.message) {
         handleSetErrorMessages({
-          errorMessages,
+          ...errorMessages,
           basicOrganizationInfo: (
             <div>
-              {texts.an_organization_with_this_name_already_exists}
-              <a href={getLocalePrefix(locale) + "/organizations/" + org.url_slug}>
+              {texts.an_organization_with_this_name_already_exists}{" "}
+              <a
+                href={getLocalePrefix(locale) + "/organizations/" + err?.response?.data?.url}
+                target="_blank"
+              >
                 {texts.click_here}
               </a>{" "}
               {texts.to_see_it}
@@ -177,8 +213,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         });
         setCurStep(steps[1]);
       }
-    } catch (err) {
-      console.log(err);
+
       if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
       return null;
     }
@@ -286,6 +321,10 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
             errorMessages,
             detailledOrganizationInfo: error?.response?.data?.message,
           });
+        if (error?.response?.data?.url_slug)
+          handleSetExistingUrlSlug(error?.response?.data?.url_slug);
+        if (error?.response?.data?.existing_name)
+          handleSetExistingName(error?.response.data?.existing_name);
         return;
       });
   };
@@ -318,6 +357,8 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       <WideLayout title={texts.create_an_organization}>
         <EnterDetailledOrganizationInfo
           errorMessage={errorMessages.detailledOrganizationInfo}
+          existingName={existingName}
+          existingUrlSlug={existingUrlSlug}
           handleSubmit={handleDetailledInfoSubmit}
           organizationInfo={organizationInfo}
           tagOptions={tagOptions}
@@ -370,6 +411,16 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
 
     return (
       <WideLayout title={texts.languages}>
+        {errorMessages.detailledOrganizationInfo && (
+          <Alert severity="error" className={classes.alert}>
+            {errorMessages.detailledOrganizationInfo}
+          </Alert>
+        )}
+        {errorMessages.basicOrganizationInfo && (
+          <Alert severity="error" className={classes.alert}>
+            {errorMessages.basicOrganizationInfo}
+          </Alert>
+        )}
         <Typography color="primary" className={classes.headline} component="h1" variant="h4">
           {texts.translate}
         </Typography>

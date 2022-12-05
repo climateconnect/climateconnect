@@ -15,6 +15,9 @@ import EditAccountPage from "../account/EditAccountPage";
 import UserContext from "../context/UserContext";
 import PageNotFound from "../general/PageNotFound";
 import TranslateTexts from "../general/TranslateTexts";
+
+import Alert from "@material-ui/lab/Alert";
+
 import { parseOrganization } from "../../../public/lib/organizationOperations";
 
 const useStyles = makeStyles((theme) => ({
@@ -22,18 +25,27 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     marginTop: theme.spacing(4),
   },
+  alert: {
+    textAlign: "center",
+    maxWidth: 1280,
+    margin: "0 auto",
+  },
 }));
 
 export default function EditOrganizationRoot({
+  allHubs,
+  errorMessage,
+  existingName,
+  existingUrlSlug,
+  handleSetErrorMessage,
+  handleSetExistingName,
+  handleSetExistingUrlSlug,
+  handleSetLocationOptionsOpen,
+  infoMetadata,
+  initialTranslations,
+  locationInputRef,
   organization,
   tagOptions,
-  infoMetadata,
-  handleSetErrorMessage,
-  locationInputRef,
-  handleSetLocationOptionsOpen,
-  errorMessage,
-  initialTranslations,
-  allHubs,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
@@ -136,6 +148,11 @@ export default function EditOrganizationRoot({
         .catch(function (error) {
           console.log(error);
           if (error) console.log(error.response);
+          if (error?.response?.data?.message) handleSetErrorMessage(error?.response?.data?.message);
+          if (error?.response?.data?.url_slug)
+            handleSetExistingUrlSlug(error?.response?.data?.url_slug);
+          if (error?.response?.data?.existing_name)
+            handleSetExistingName(error?.response.data?.existing_name);
         });
     }
   };
@@ -208,15 +225,23 @@ export default function EditOrganizationRoot({
             handleSubmit={saveChanges}
             handleCancel={handleCancel}
             errorMessage={errorMessage}
+            existingName={existingName}
+            existingUrlSlug={existingUrlSlug}
             onClickCheckTranslations={onClickCheckTranslations}
             allHubs={allHubs}
             type="organization"
           />
         ) : (
           <>
+            {errorMessage && (
+              <Alert severity="error" className={classes.alert}>
+                {errorMessage}
+              </Alert>
+            )}
             <Typography color="primary" className={classes.headline} component="h1" variant="h4">
               {texts.translate}
             </Typography>
+
             <TranslateTexts
               data={editedOrganization}
               handleSetData={handleSetEditedOrganization}

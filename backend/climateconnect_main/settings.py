@@ -25,6 +25,7 @@ from sentry_sdk.integrations.celery import CeleryIntegration
 
 load_dotenv(find_dotenv(".backend_env"))
 
+
 env = os.environ.get
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -46,6 +47,7 @@ INTERNAL_IPS = [
     "127.0.0.1",
     # ...
 ]
+
 
 AUTO_VERIFY = True if env("AUTO_VERIFY") in ["True", "true", "TRUE"] else False
 
@@ -119,6 +121,7 @@ CORS_ORIGIN_WHITELIST = [
 APPEND_SLASH = False
 
 ROOT_URLCONF = "climateconnect_main.urls"
+
 
 TEMPLATES = [
     {
