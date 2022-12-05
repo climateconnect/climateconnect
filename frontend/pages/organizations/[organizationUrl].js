@@ -73,18 +73,18 @@ const useStyles = makeStyles((theme) => ({
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
+  
   const [
     organization,
     projects,
     members,
-    organizationTypes,
     rolesOptions,
     following,
   ] = await Promise.all([
+
     getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
     getProjectsByOrganization(organizationUrl, auth_token, ctx.locale),
     getMembersByOrganization(organizationUrl, auth_token, ctx.locale),
-    getOrganizationTypes(),
     getRolesOptions(auth_token, ctx.locale),
     getIsUserFollowing(organizationUrl, auth_token, ctx.locale),
   ]);
@@ -93,21 +93,21 @@ export async function getServerSideProps(ctx) {
       organization: organization,
       projects: projects,
       members: members,
-      organizationTypes: organizationTypes,
       rolesOptions: rolesOptions,
       following: following,
     }),
   };
 }
 
+
 export default function OrganizationPage({
   organization,
   projects,
   members,
-  organizationTypes,
   rolesOptions,
   following,
 }) {
+
   const { user, locale } = useContext(UserContext);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization, false);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
@@ -161,7 +161,6 @@ export default function OrganizationPage({
           organization={organization}
           projects={projects}
           members={members}
-          organizationTypes={organizationTypes}
           infoMetadata={infoMetadata}
           user={user}
           texts={texts}
@@ -406,10 +405,6 @@ async function getMembersByOrganization(organizationUrl, token, locale) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
-}
-
-async function getOrganizationTypes() {
-  return [];
 }
 
 function parseProjectStubs(projects) {

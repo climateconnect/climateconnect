@@ -19,6 +19,7 @@ import getOrganizationTexts from "./organization_texts";
 import getProfileTexts from "./profile_texts";
 import getProjectTexts from "./project_texts";
 import settings_texts from "./settings.json";
+import social_media_texts from "./social_media_texts.json";
 import getTutorialTexts from "./tutorial_texts";
 
 export default function getTexts({
@@ -80,6 +81,7 @@ export default function getTexts({
       creator: creator,
     }),
     settings: settings_texts,
+    social_media: social_media_texts,
     tutorial: getTutorialTexts({ hubName: hubName, classes: classes, locale: locale }),
   };
 

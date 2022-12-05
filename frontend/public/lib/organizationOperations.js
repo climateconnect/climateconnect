@@ -63,6 +63,7 @@ function getOrganizationInfo(organization, editMode) {
     short_description: organization.short_description,
     website: organization.website,
     about: organization.about,
+    social_options: organization.social_medias,
   };
 
   const hubs = {

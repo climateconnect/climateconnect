@@ -18,6 +18,7 @@ from climateconnect_api.models.donation import Donation, DonationGoal
 from climateconnect_api.models.language import Language
 from climateconnect_api.models.badge import Badge, DonorBadge, UserBadge
 from climateconnect_api.models.content_shares import ContentShares
+from climateconnect_api.models.social_media import SocialMediaChannel, SocialMediaLink
 
 
 pass_through_models = (
@@ -35,6 +36,8 @@ pass_through_models = (
     DonorBadge,
     UserBadge,
     ContentShares,
+    SocialMediaChannel,
+    SocialMediaLink,
 )
 
 for model in pass_through_models:

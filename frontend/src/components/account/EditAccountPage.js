@@ -36,6 +36,7 @@ import SelectDialog from "./../dialogs/SelectDialog";
 import UploadImageDialog from "./../dialogs/UploadImageDialog";
 import SelectField from "./../general/SelectField";
 import DetailledDescriptionInput from "./DetailledDescriptionInput";
+import SocialMediaChips from "./SocialMediaChips";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -191,7 +192,8 @@ const useStyles = makeStyles((theme) => ({
     width: 250,
   },
   dialogWidth: {
-    width: 400,
+    width: 500,
+    display: "flex,",
   },
   alert: {
     textAlign: "center",
@@ -248,6 +250,7 @@ export default function EditAccountPage({
   loadingSubmit,
   onClickCheckTranslations,
   allHubs,
+  socialMediaChannels,
   type,
 }) {
   const { locale } = useContext(UserContext);
@@ -272,6 +275,7 @@ export default function EditAccountPage({
     avatarDialog: false,
     addTypeDialog: false,
     confirmExitDialog: false,
+    addSocialMediaDialog: false,
   });
   const handleDialogClickOpen = (dialogKey) => {
     setOpen({ ...open, [dialogKey]: true });
@@ -311,6 +315,27 @@ export default function EditAccountPage({
     if (isInfoElement)
       setEditedAccount({ ...editedAccount, info: { ...editedAccount.info, [key]: newValue } });
     setEditedAccount({ ...editedAccount, [key]: newValue });
+  };
+
+  const handleAddSocialMediaClose = (socialMediaChannel, additionalInfo) => {
+    setOpen({ ...open, addSocialMediaDialog: false });
+
+    if (socialMediaChannel !== undefined && additionalInfo !== undefined) {
+      const tempAccount = editedAccount;
+      const socialMedaLink = {
+        handle: socialMediaChannel.ask_for_full_website ? "" : additionalInfo[0].value,
+        social_media_channel: {
+          social_media_name: socialMediaChannel.name,
+          ask_for_full_website: socialMediaChannel.ask_for_full_website,
+          base_url: socialMediaChannel.base_url,
+        },
+        url: socialMediaChannel.ask_for_full_website
+          ? "https://" + additionalInfo[0].value
+          : socialMediaChannel.base_url + additionalInfo[0].value,
+      };
+      tempAccount.info.social_options = [...tempAccount.info.social_options, socialMedaLink];
+      setEditedAccount(tempAccount);
+    }
   };
 
   const handleAddTypeClose = (type, additionalInfo) => {
@@ -488,6 +513,15 @@ export default function EditAccountPage({
             />
             <label htmlFor={"checkbox" + i.key}>{i.label}</label>
           </div>
+        );
+      } else if (i.type === "social_media") {
+        return (
+          <SocialMediaChips
+            socials={i}
+            handleDialogClickOpen={handleDialogClickOpen}
+            handleDeleteSocialMedia={handleDeleteSocialMedia}
+            maxNumOfSocials={socialMediaChannels?.length}
+          />
         );
       } else if (
         i.type === "auto_complete_searchbar" &&
@@ -681,6 +715,16 @@ export default function EditAccountPage({
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleDeleteSocialMedia = (socialToDelete) => {
+    const tempEditedAccount = { ...editedAccount };
+
+    tempEditedAccount.info.social_options = tempEditedAccount.info.social_options.filter(
+      (option) => option.social_media_channel.social_media_name !== socialToDelete
+    );
+
+    setEditedAccount(tempEditedAccount);
   };
 
   const handleTypeDelete = (typeToDelete) => {
@@ -898,6 +942,7 @@ export default function EditAccountPage({
                   )}
               </Container>
             )}
+            <div className={classes.marginTop} />
           </Container>
           <Container className={classes.accountInfo}>
             {/*Contains all the possible info a user can put about their account e.g. website, location, summary, bio, ...*/}
@@ -953,6 +998,18 @@ export default function EditAccountPage({
         height={isNarrowScreen ? getImageDialogHeight(window.innerWidth) : 200}
         ratio={1}
       />
+      {socialMediaChannels && (
+        <SelectDialog
+          onClose={handleAddSocialMediaClose}
+          open={open.addSocialMediaDialog}
+          title={organizationTexts.add_social_media}
+          label={organizationTexts.select_social_media}
+          values={getUnselectedSocials(editedAccount, socialMediaChannels)}
+          supportAdditionalInfo
+          isSocial
+          className={classes.dialogWidth}
+        />
+      )}
       {possibleAccountTypes && (
         <SelectDialog
           onClose={handleAddTypeClose}
@@ -998,6 +1055,17 @@ const getTypesOfAccount = (account, possibleAccountTypes, infoMetadata) => {
 const getFullInfoElement = (infoMetadata, key, value) => {
   return { ...infoMetadata[key], value: value };
 };
+
+const getUnselectedSocials = (account, socialMediaChannels) => {
+  const socialChannels = account.info.social_options.map(
+    (option) => option.social_media_channel.social_media_name
+  );
+  // get names that aren't selected
+  const socialLinks = socialMediaChannels.filter(
+    (channel) => !socialChannels.includes(channel.name)
+  );
+  return socialLinks;
+}
 
 const editErrorMessage = (
   existingName,

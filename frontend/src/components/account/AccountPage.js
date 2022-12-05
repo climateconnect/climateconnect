@@ -25,6 +25,8 @@ import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import UserContext from "../context/UserContext";
 import EditSharpIcon from "@material-ui/icons/EditSharp";
 import IconButton from "@material-ui/core/IconButton";
+import { getSocialMediaButtons } from "../../../public/lib/socialMediaOperations";
+import SocialMediaIconButton from "../general/SocialMediaIconButton";
 
 import ConfirmDialog from "../dialogs/ConfirmDialog";
 import FollowersDialog from "../dialogs/FollowersDialog";
@@ -185,6 +187,10 @@ const useStyles = makeStyles((theme) => ({
   selectContainer: {
     display: "flex",
     flexDirection: "row",
+  },
+  websiteLink: {
+    fontStyle: "italic",
+    fontSize: 13,
   },
 }));
 
@@ -358,6 +364,7 @@ export default function AccountPage({
               </div>
             );
           } else if (i.linkify && value) {
+            if (isOrganization) return;
             return (
               <>
                 <div className={classes.subtitle}>{i.name}:</div>
@@ -392,7 +399,7 @@ export default function AccountPage({
             );
           } else if (
             value &&
-            !["detailled_description", "location", "checkbox"].includes(i.type) &&
+            !["detailled_description", "location", "checkbox", "social_media"].includes(i.type) &&
             !isOrganization
           ) {
             return (
@@ -501,8 +508,39 @@ export default function AccountPage({
               ))}
             </Container>
           )}
-          {isOrganization && (
+          {/* only display this text if we have either a website or social media links to display*/}
+          {isOrganization && (account.info.social_options.length > 0 || account.info.website) && (
             <>
+              <Typography className={classes.websiteLink}>
+                {" "}
+                {organizationTexts.find_us_here}{" "}
+              </Typography>
+              {account.info.website && (
+                <Linkify componentDecorator={componentDecorator}>
+                  {" "}
+                  <Typography> {account.info.website}</Typography>
+                </Linkify>
+              )}
+            </>
+          )}
+          {account.info.social_options && (
+            <>
+              {getSocialMediaButtons(account.info.social_options).map((socialMedia, index) => (
+                <SocialMediaIconButton
+                  key={index}
+                  href={socialMedia.href}
+                  socialMediaIcon={{ icon: socialMedia.icon }}
+                  altText={socialMedia.altText}
+                  isFooterIcon={socialMedia.isFooterIcon}
+                />
+              
+              ))}
+
+              </>
+          )}
+              
+          {isOrganization && (
+            <div>
               <FollowButton
                 isUserFollowing={isUserFollowing}
                 handleToggleFollow={handleToggleFollowOrganization}
@@ -521,7 +559,8 @@ export default function AccountPage({
               <Typography className={classes.followInfo}>
                 {organizationTexts.follow_this_organization_for_updates}
               </Typography>
-            </>
+
+            </div>
           )}
         </Container>
 

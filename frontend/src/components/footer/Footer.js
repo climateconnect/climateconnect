@@ -10,7 +10,7 @@ import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-import SocialMediaButton from "../general/SocialMediaButton";
+import SocialMediaIconButton from "../general/SocialMediaIconButton";
 import LargeFooter from "./LargeFooter";
 
 const useStyles = makeStyles((theme) => ({
@@ -172,7 +172,7 @@ const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScroll
         )}
         <Box component="span" className={classes.rightBox}>
           {socialMediaLinks.map((sml, index) => (
-            <SocialMediaButton
+            <SocialMediaIconButton
               key={index}
               href={sml.href}
               socialMediaIcon={{ icon: sml.icon }}

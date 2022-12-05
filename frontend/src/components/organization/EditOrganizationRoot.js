@@ -46,6 +46,7 @@ export default function EditOrganizationRoot({
   locationInputRef,
   organization,
   tagOptions,
+  socialMediaChannels,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
@@ -230,6 +231,7 @@ export default function EditOrganizationRoot({
             existingUrlSlug={existingUrlSlug}
             onClickCheckTranslations={onClickCheckTranslations}
             allHubs={allHubs}
+            socialMediaChannels={socialMediaChannels}
           />
         ) : (
           <>

@@ -24,6 +24,10 @@ export default function getOrganizationInfoMetadata(locale, organization, isEdit
     website: {
       ...getWebsite(texts),
     },
+    social_options: {
+      type: "social_media",
+      name: texts.add_social_media,
+    },
     has_parent_organization: {
       ...getHasParentOrganization(texts),
     },

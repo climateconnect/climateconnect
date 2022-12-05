@@ -21,6 +21,7 @@ import Layout from "./../src/components/layouts/layout";
 import WideLayout from "./../src/components/layouts/WideLayout";
 import EnterBasicOrganizationInfo from "./../src/components/organization/EnterBasicOrganizationInfo";
 import EnterDetailledOrganizationInfo from "./../src/components/organization/EnterDetailledOrganizationInfo";
+import { getSocialMediaChannels } from "../public/lib/socialMediaOperations";
 import Alert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles((theme) => ({
@@ -37,21 +38,28 @@ const useStyles = makeStyles((theme) => ({
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
-  const [tagOptions, rolesOptions, allHubs] = await Promise.all([
+  const [tagOptions, rolesOptions, allHubs, socialMediaChannels] = await Promise.all([
     await getTags(auth_token, ctx.locale),
     await getRolesOptions(auth_token, ctx.locale),
     getAllHubs(ctx.locale, true),
+    getSocialMediaChannels(ctx.locale),
   ]);
   return {
     props: {
       tagOptions: tagOptions,
       rolesOptions: rolesOptions,
       allHubs: allHubs,
+      socialMediaChannels: socialMediaChannels,
     },
   };
 }
 
-export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }) {
+export default function CreateOrganization({
+  tagOptions,
+  rolesOptions,
+  allHubs,
+  socialMediaChannels,
+}) {
   const token = new Cookies().get("auth_token");
   const classes = useStyles();
   const [errorMessages, setErrorMessages] = useState({
@@ -89,6 +97,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       location: {},
       short_description: "",
       about: "",
+      social_options: [],
       get_involved: "",
       organization_size: 0,
       website: "",
@@ -367,6 +376,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           loadingSubmit={loadingSubmit}
           allHubs={allHubs}
+          socialMediaChannels={socialMediaChannels}
         />
       </WideLayout>
     );
@@ -502,6 +512,7 @@ const parseOrganizationForRequest = async (o, user, rolesOptions, translations, 
     organization_size: o.info.organization_size,
     website: o.info.website,
     hubs: o.info.hubs.map((h) => h.url_slug),
+    social_options: o.info.social_options,
     about: o.info.about,
     organization_tags: o.types,
     translations: {

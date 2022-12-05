@@ -2,6 +2,9 @@ from climateconnect_api.models.role import Role
 from climateconnect_api.models.user import UserProfile
 from climateconnect_api.serializers.role import RoleSerializer
 from climateconnect_api.serializers.user import UserProfileStubSerializer
+from climateconnect_api.serializers.social_media import (
+    OrganizationSocialMediaLinkSerializer,
+)
 from django.conf import settings
 from django.utils.translation import get_language
 from hubs.serializers.hub import HubStubSerializer
@@ -51,8 +54,10 @@ class OrganizationSerializer(serializers.ModelSerializer):
     language = serializers.SerializerMethodField()
     hubs = serializers.SerializerMethodField()
     creator = serializers.SerializerMethodField()
+    social_medias = serializers.SerializerMethodField()
     number_of_followers = serializers.SerializerMethodField()
     get_involved = serializers.SerializerMethodField()
+
 
     class Meta:
         model = Organization
@@ -74,6 +79,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
             "organization_size",
             "hubs",
             "creator",
+            "social_medias",
             "number_of_followers",
             "get_involved",
         )
@@ -90,6 +96,12 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
     def get_parent_organization(self, obj):
         serializer = OrganizationStubSerializer(obj.parent_organization)
+        return serializer.data
+
+    def get_social_medias(self, obj):
+        serializer = OrganizationSocialMediaLinkSerializer(
+            obj.social_media_link_to_organization, many=True
+        )
         return serializer.data
 
     def get_location(self, obj):
