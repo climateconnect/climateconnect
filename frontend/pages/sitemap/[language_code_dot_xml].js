@@ -146,8 +146,13 @@ const getXHTMLLinkTag = (BASE_URL, url, languageCode) => {
 };
 
 const getLanguageCode = (url) => {
-  if (url.startsWith("/de/")) return "de";
-  if (url.startsWith("/en/")) return "en";
+  if (url.startsWith("/de/")) {
+    return "de";
+  }
+  
+  if (url.startsWith("/en/")) { 
+    return "en";
+   }
   return "en";
 };
 
