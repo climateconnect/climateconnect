@@ -23,10 +23,14 @@ from sentry_sdk.integrations.redis import RedisIntegration
 from sentry_sdk.integrations.celery import CeleryIntegration
 
 
+# TODO: for tests, point to a stubbed backend_env
 load_dotenv(find_dotenv(".backend_env"))
 
 
 env = os.environ.get
+
+print(env)
+print("")
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -43,7 +47,6 @@ DEBUG = env("DEBUG", False)
 ALLOWED_HOSTS = get_allowed_hosts(env("ALLOWED_HOSTS"))
 
 INTERNAL_IPS = [
-    # ...
     "127.0.0.1",
     # ...
 ]
