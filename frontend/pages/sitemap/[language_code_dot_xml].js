@@ -83,7 +83,7 @@ async function createSitemap(
   }
   const BASE_URL = process.env.BASE_URL ? process.env.BASE_URL : "https://climateconnect.earth";
   return `<?xml version="1.0" encoding="UTF-8"?>
-    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="https://www.w3.org/1999/xhtml">
     ${getStaticPageEntries(staticPages)
       .map((p) => renderEntry(BASE_URL, p.url, p.priority, p.changefreq, p.lastmod))
       .join("")}
@@ -111,12 +111,52 @@ const getStaticPageEntries = (staticPages) => {
 };
 
 const renderEntry = (BASE_URL, url, priority, changefreq, lastmod) => {
+  const languageCode = getLanguageCode(url);
   return `<url>
       <loc>${BASE_URL}${url}</loc>
+      ${getXHTMLLinkTag(BASE_URL, url, languageCode)}
       <priority>${priority ? priority : 1}</priority>
       <changefreq>${changefreq ? changefreq : "daily"}</changefreq>
       ${lastmod ? `<lastmod>${lastmod}</lastmod>` : ``}
     </url>`;
+};
+
+const getXHTMLLinkTag = (BASE_URL, url, languageCode) => {
+  if (languageCode === "en") {
+    return `<xhtml:link
+    rel="alternate"
+    hreflang="${languageCode}"
+    href="${BASE_URL}${url}"/>
+    <xhtml:link
+    rel="alternate"
+    hreflang="de"
+    href="${BASE_URL}/de${url}"/>`;
+  }
+  const englishURL = BASE_URL + "/" + getEnglishURLFromGerman(url);
+  if (languageCode === "de") {
+    return `<xhtml:link
+    rel="alternate"
+    hreflang="${languageCode}"
+    href="${BASE_URL}${url}"/>
+    <xhtml:link
+    rel="alternate"
+    hreflang="en"
+    href="${englishURL}"/>`;
+  }
+};
+
+const getLanguageCode = (url) => {
+  if (url.startsWith("/de/")) return "de";
+  if (url.startsWith("/en/")) return "en";
+  return "en";
+};
+
+const getEnglishURLFromGerman = (url) => {
+  // removes the language code from the url
+  // splitting the url formats to [" ", <language code>, <parameters>]
+  const [emptyString, languageCode, ...desiredParameters] = url.split("/");
+  const desiredUrl = desiredParameters.join("/");
+  return desiredUrl;
 };
 
 export async function getServerSideProps(ctx) {
