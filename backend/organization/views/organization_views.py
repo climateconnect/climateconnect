@@ -67,7 +67,12 @@ from organization.serializers.organization import (
 from organization.serializers.project import ProjectFromProjectParentsSerializer
 from organization.serializers.tags import OrganizationTagsSerializer
 from organization.utility.organization import (
+    check_create_existing_name,
+    check_edit_exisiting_name,
+    check_existing_name,
+    check_existing_name_translation,
     create_organization_translation,
+    get_existing_name_message,
     is_valid_organization_size,
 )
 from rest_framework import status
@@ -271,9 +276,22 @@ class CreateOrganizationView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
+        if check_create_existing_name(request.data["name"]):
+            message = get_existing_name_message(request.data["name"])
+            existing_org = Organization.objects.get(name__iexact=request.data["name"])
+            return Response(
+                {
+                    "message": message,
+                    "url_slug": existing_org.url_slug,
+                    "existing_name": existing_org.name,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         texts = {
             "name": request.data["name"].strip()
         }  # remove leading and trailing spaces
+
         if "short_description" in request.data:
             texts["short_description"] = request.data["short_description"]
         if "about" in request.data:
@@ -419,15 +437,33 @@ class CreateOrganizationView(APIView):
                 },
                 status=status.HTTP_201_CREATED,
             )
-        else:
+
+
+class LookUpOrganizationAPIView(APIView):
+    def get(self, *args, **kwargs):
+        query = self.request.query_params.get("search")
+        message = get_existing_name_message(query)
+        if check_existing_name(query):
+            organization = Organization.objects.filter(name__iexact=query)
             return Response(
                 {
-                    "message": "Organization with name {} already exists".format(
-                        request.data["name"]
-                    )
+                    "message": message,
+                    "url": organization[0].url_slug,
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        if check_existing_name_translation(query):
+            organization_translation = OrganizationTranslation.objects.filter(
+                name_translation__iexact=query
+            )
+            return Response(
+                {
+                    "message": message,
+                    "url": organization_translation[0].organization.url_slug,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        return Response(status=status.HTTP_200_OK)
 
 
 class OrganizationAPIView(APIView):
@@ -474,6 +510,20 @@ class OrganizationAPIView(APIView):
             "organization_size",
             "get_involved",
         ]
+        if "name" in request.data:
+            if check_edit_exisiting_name(organization, request.data["name"]):
+                message = get_existing_name_message(request.data["name"])
+                existing_org = Organization.objects.get(
+                    name__iexact=request.data["name"]
+                )
+                return Response(
+                    {
+                        "message": message,
+                        "url_slug": existing_org.url_slug,
+                        "existing_name": existing_org.name,
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
         for param in pass_through_params:
             if param in request.data:
                 setattr(organization, param, request.data[param])

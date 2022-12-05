@@ -1,3 +1,6 @@
+install:
+	pip3 install -r requirements.txt
+
 default: start
 
 start:
@@ -5,9 +8,6 @@ start:
 	$(info -- Starting server --)
 	$(info )
 	python3 manage.py runserver
-
-install:
-	pip install -r requirements.txt
 
 test:
 	python3 manage.py test
@@ -23,11 +23,10 @@ all: docker start
 # Note: this should be in sync with out CI GitHub action that lints too. See
 # those files under .github/workflows
 lint:
-	flake8 backend --count --select=E9,F6,F7,F8 --show-source --statistics
+	flake8 . --count --select=E9,F6,F7,F8 --show-source --statistics
 
 format:
-	black
-
+	black .
 
 # Database migrations and test data creation:
 migrate:
@@ -36,4 +35,4 @@ migrate:
 migrations: migrate
 
 test-data:
-	python manage.py create_test_data --number_of_rows 4
+	python3 manage.py create_test_data --number_of_rows 4
