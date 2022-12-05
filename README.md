@@ -195,6 +195,8 @@ yarn analyze-bundle
 
 ## Deploy
 
+Currently the project is utilizing credits to deploy onto Azure. That deployment utilizes the two scripts in the root of the project, `start_backend.sh` and `start_frontend.sh`.
+
 ### Frontend
 
 #### Option 1: GitHub Actions
