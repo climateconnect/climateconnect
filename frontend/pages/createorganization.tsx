@@ -332,9 +332,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
 
   if (!user)
     return (
-      <WideLayout
-        title={texts.please_log_in + " " + texts.to_create_an_organization}
-      >
+      <WideLayout title={texts.please_log_in + " " + texts.to_create_an_organization}>
         <LoginNudge fullPage whatToDo={texts.to_create_an_organization} />
       </WideLayout>
     );

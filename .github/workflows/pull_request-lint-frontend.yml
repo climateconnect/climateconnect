@@ -24,7 +24,7 @@ jobs:
       - name: Lint frontend
         run: yarn lint
       - name: Format-check frontend
-        run: yarn format --check
+        run: yarn prettier '**/*.{js,jsx,ts,tsx,json,md}' --check
 
       - name: Typescript Compile frontend
         run: yarn tsc 

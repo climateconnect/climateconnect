@@ -57,9 +57,7 @@ export default function EditProfilePage({ skillsOptions, availabilityOptions, us
   const profile = user ? parseProfile(user, true) : null;
   if (!profile)
     return (
-      <WideLayout
-        title={texts.please_log_in + " " + texts.to_edit_your_profile}
-      >
+      <WideLayout title={texts.please_log_in + " " + texts.to_edit_your_profile}>
         <LoginNudge fullPage whatToDo={texts.to_edit_your_profile} />
       </WideLayout>
     );

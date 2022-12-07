@@ -157,11 +157,14 @@ export default function WideLayout({
             </Alert>
           )}
           {subHeader && subHeader}
-          {!fixedHeader && !hideDonationCampaign && process.env.DONATION_CAMPAIGN_RUNNING === "true" && !landingPage && (
-            <Collapse in={showDonationBanner}>
-              <DonationCampaignInformation />
-            </Collapse>
-          )}
+          {!fixedHeader &&
+            !hideDonationCampaign &&
+            process.env.DONATION_CAMPAIGN_RUNNING === "true" &&
+            !landingPage && (
+              <Collapse in={showDonationBanner}>
+                <DonationCampaignInformation />
+              </Collapse>
+            )}
           {children}
         </Container>
       )}
