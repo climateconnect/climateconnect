@@ -58,8 +58,7 @@ type Props = {
   hideFooter?: boolean;
   resetAlertMessage?: () => void;
   isHubPage?: boolean;
-  /** @deprecated not used */
-  hideHeadline?: boolean;
+  hideDonationCampaign?: boolean;
 };
 //Wrapper layout component for pages where the content takes the whole width of the screen
 export default function WideLayout({
@@ -85,7 +84,7 @@ export default function WideLayout({
   hideFooter,
   resetAlertMessage,
   isHubPage,
-  hideHeadline,
+  hideDonationCampaign,
 }: Props) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);
@@ -158,7 +157,7 @@ export default function WideLayout({
             </Alert>
           )}
           {subHeader && subHeader}
-          {!fixedHeader && process.env.DONATION_CAMPAIGN_RUNNING === "true" && !landingPage && (
+          {!fixedHeader && !hideDonationCampaign && process.env.DONATION_CAMPAIGN_RUNNING === "true" && !landingPage && (
             <Collapse in={showDonationBanner}>
               <DonationCampaignInformation />
             </Collapse>

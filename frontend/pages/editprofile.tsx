@@ -59,7 +59,6 @@ export default function EditProfilePage({ skillsOptions, availabilityOptions, us
     return (
       <WideLayout
         title={texts.please_log_in + " " + texts.to_edit_your_profile}
-        hideHeadline={true}
       >
         <LoginNudge fullPage whatToDo={texts.to_edit_your_profile} />
       </WideLayout>

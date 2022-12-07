@@ -170,31 +170,6 @@ export default function DonationCampaignInformation() {
               )}
               <Typography className={classes.textBlock}>
                 {texts.donation_campaing_info_text_first_sentence}
-                <br />
-                <br />
-                {texts.raffle_announcement}
-                <Link
-                  underline="always"
-                  className={classes.link}
-                  href="https://ecologi.com/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Ecologi
-                </Link>
-                !
-              </Typography>
-              <Typography className={classes.white}>
-                {texts.you_can_find_the_terms_to_the_raffle_here}
-                <Link
-                  underline="always"
-                  href={getLocalePrefix(locale) + "/raffleterms"}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={classes.link}
-                >
-                  {texts.here}
-                </Link>
               </Typography>
               {!isNarrowScreen && (
                 <Button

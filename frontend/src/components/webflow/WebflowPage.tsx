@@ -21,7 +21,7 @@ export default function WebflowPage({
         rootClassName={className}
         title={texts[pageKey]}
         isStaticPage
-        hideHeadline
+        //TODO(unused) hideHeadline
         noSpaceBottom
         hideFooter={hideFooter}
       >

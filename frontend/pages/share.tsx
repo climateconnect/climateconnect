@@ -60,7 +60,7 @@ export default function Share({
   const handleSetErrorMessage = (newMessage) => setErrorMessage(newMessage);
   if (!user)
     return (
-      <WideLayout title={texts.please_log_in + " " + texts.to_share_a_project} hideHeadline={true}>
+      <WideLayout title={texts.please_log_in + " " + texts.to_share_a_project}>
         <LoginNudge fullPage whatToDo={texts.to_share_a_project} />
       </WideLayout>
     );

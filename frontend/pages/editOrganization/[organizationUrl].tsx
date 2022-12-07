@@ -39,6 +39,8 @@ export default function EditOrganizationPage({ organization, tagOptions, allHubs
   const texts = getTexts({ page: "organization", locale: locale });
   const organization_info_metadata = getOrganizationInfoMetadata(locale, organization, true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [existingUrlSlug, setExistingUrlSlug] = useState("");
+  const [existingName, setExistingName] = useState("");
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
 
@@ -61,18 +63,30 @@ export default function EditOrganizationPage({ organization, tagOptions, allHubs
     window.scrollTo(0, 0);
   };
 
+  const handleSetExistingUrlSlug = (urlSlug) => {
+    setExistingUrlSlug(urlSlug);
+  };
+
+  const handleSetExistingName = (name) => {
+    setExistingName(name);
+  };
+
   return (
     <WideLayout title={organization ? organization.name : texts.not_found_error}>
       <EditOrganizationRoot
+        allHubs={allHubs}
+        errorMessage={errorMessage}
+        existingUrlSlug={existingUrlSlug}
+        existingName={existingName}
+        handleSetErrorMessage={handleSetErrorMessage}
+        handleSetExistingName={handleSetExistingName}
+        handleSetExistingUrlSlug={handleSetExistingUrlSlug}
+        handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+        infoMetadata={infoMetadata}
+        initialTranslations={organization.translations}
+        locationInputRef={locationInputRef}
         organization={organization}
         tagOptions={tagOptions}
-        infoMetadata={infoMetadata}
-        handleSetErrorMessage={handleSetErrorMessage}
-        locationInputRef={locationInputRef}
-        handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-        errorMessage={errorMessage}
-        initialTranslations={organization.translations}
-        allHubs={allHubs}
       />
     </WideLayout>
   );

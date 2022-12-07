@@ -118,7 +118,7 @@ export default function CookieBanner({ closeBanner }) {
           </a>{" "}
           {texts.and}{" "}
           <a href={getLocalePrefix(locale) + "terms"} target="_blank" rel="noreferrer">
-            {texts.terms_of_use}
+            {texts.terms_of_use}.
           </a>
         </Typography>
         <Checkbox checked={checked.necessary} disabled color="primary" />
