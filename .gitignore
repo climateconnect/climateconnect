@@ -36,3 +36,5 @@ yarn.lock
 frontend/.eslintcache
 
 media/
+
+.venv

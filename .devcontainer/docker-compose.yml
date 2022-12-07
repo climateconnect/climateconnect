@@ -30,6 +30,8 @@ services:
       POSTGRES_PASSWORD: backend
       POSTGRES_USER: backend
       POSTGRES_DB: backend
+    ports:
+      - "5499:5432"
   redis:
     image: redis:7
     ports:
