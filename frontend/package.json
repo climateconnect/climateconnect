@@ -91,5 +91,6 @@
     "jest": "^26.6.3",
     "next-compose-plugins": "^2.2.0",
     "prettier": "2.2.0"
-  }
+  },
+  "packageManager": "yarn@3.3.0"
 }
