@@ -1,11 +1,11 @@
 import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext, useState } from "react";
-import InfiniteScroll from "react-infinite-scroller";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import LoadingSpinner from "../general/LoadingSpinner";
 import ProjectPreview from "./ProjectPreview";
+import InfiniteScrollGrid from "../general/InfiniteScrollGrid";
 
 const useStyles = makeStyles({
   reset: {
@@ -65,18 +65,18 @@ export default function ProjectPreviews({
   // TODO: use `project.id` instead of index when using real projects
   return (
     <>
-      <InfiniteScroll
+      <InfiniteScrollGrid
         className={classes.reset}
-        // component="ul"
-        // container
+        component="ul"
+        container
         // TODO: fix this: InfiniteScroll is throwing a React error:
         // Failed prop type: Invalid prop `element` supplied to `InfiniteScroll`, expected a ReactNode.
-        element={Grid as any}
+        element={Grid}
         // We block subsequent invocations from InfinteScroll until we update local state
         hasMore={hasMore && !isFetchingMore}
         loadMore={loadMore}
         pageStart={1}
-        // spacing={2}
+        spacing={2}
       >
         {parentHandlesGridItems
           ? projects && projects.length > 0
@@ -84,7 +84,7 @@ export default function ProjectPreviews({
             : texts.no_projects_found
           : gridItems}
         {isFetchingMore && <LoadingSpinner isLoading key="project-previews-spinner" />}
-      </InfiniteScroll>
+      </InfiniteScrollGrid>
     </>
   );
 }

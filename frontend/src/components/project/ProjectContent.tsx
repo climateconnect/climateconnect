@@ -16,7 +16,7 @@ import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
-import Posts from "./../communication/Posts.js";
+import Posts from "./../communication/Posts";
 import ProjectRequestersDialog from "../dialogs/ProjectRequestersDialog";
 import ProjectStatus from "./ProjectStatus";
 import ROLE_TYPES from "../../../public/data/role_types";

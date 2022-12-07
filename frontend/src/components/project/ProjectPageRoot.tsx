@@ -1,5 +1,5 @@
 import { Container, Tab, Tabs, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, Theme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";

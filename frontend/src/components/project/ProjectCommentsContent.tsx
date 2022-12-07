@@ -3,12 +3,12 @@ import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 
 // Relative imports
-import { apiRequest } from "../../../public/lib/apiOperations.js";
-import { getCommentsObjectAfterAddingComment } from "../../../public/lib/communicationOperations.js";
-import getTexts from "../../../public/texts/texts.js";
-import CommentInput from "../communication/CommentInput.js";
-import UserContext from "../context/UserContext.js";
-import Posts from "./../communication/Posts.js";
+import { apiRequest } from "../../../public/lib/apiOperations";
+import { getCommentsObjectAfterAddingComment } from "../../../public/lib/communicationOperations";
+import getTexts from "../../../public/texts/texts";
+import CommentInput from "../communication/CommentInput";
+import UserContext from "../context/UserContext";
+import Posts from "./../communication/Posts";
 
 const useStyles = makeStyles((theme) => {
   return {

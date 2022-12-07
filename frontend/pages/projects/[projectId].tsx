@@ -10,7 +10,7 @@ import PageNotFound from "../../src/components/general/PageNotFound";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import ProjectPageRoot from "../../src/components/project/ProjectPageRoot";
 import HubsSubHeader from "../../src/components/indexPage/hubsSubHeader/HubsSubHeader";
-import { getAllHubs } from "../../public/lib/hubOperations.js";
+import { getAllHubs } from "../../public/lib/hubOperations";
 import { useMediaQuery } from "@material-ui/core";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { makeStyles, Theme } from "@material-ui/core/styles";

@@ -4,6 +4,7 @@ import React, { useContext } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import InfiniteScrollGrid from "../general/InfiniteScrollGrid";
 import LoadingSpinner from "../general/LoadingSpinner";
 import ProfilePreview from "./ProfilePreview";
 
@@ -55,11 +56,11 @@ export default function ProfilePreviews({
   // TODO: use `profile.id` instead of index when using real profiles
   return (
     <>
-      <InfiniteScroll
+      <InfiniteScrollGrid
         className={`${classes.reset} ${/*TODO(undefined) classes.root*/ ""}`}
-        // component="ul"
-        // container
-        element={Grid as any}
+        component="ul"
+        container
+        element={Grid}
         // We block subsequent invocations from InfinteScroll until we update local state
         hasMore={hasMore && !isFetchingMore}
         loadMore={loadMore}
@@ -72,7 +73,7 @@ export default function ProfilePreviews({
             : texts.no_members_found
           : gridItems}
         {isFetchingMore && <LoadingSpinner isLoading key="profile-previews-spinner" />}
-      </InfiniteScroll>
+      </InfiniteScrollGrid>
     </>
   );
 }

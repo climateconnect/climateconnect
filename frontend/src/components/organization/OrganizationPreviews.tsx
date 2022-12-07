@@ -4,6 +4,7 @@ import React, { useContext } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import InfiniteScrollGrid from "../general/InfiniteScrollGrid";
 import LoadingSpinner from "../general/LoadingSpinner";
 import OrganizationPreview from "./OrganizationPreview";
 
@@ -52,16 +53,16 @@ export default function OrganizationPreviews({
   // TODO: use `organization.id` instead of index when using real organizations
   return (
     <>
-      <InfiniteScroll
+      <InfiniteScrollGrid
         className={`${classes.reset}`}
-        //TODO(unused) component="ul"
-        //TODO(unused) container
-        element={Grid as any}
+        component="ul"
+        container
+        element={Grid}
         // We block subsequent invocations from InfinteScroll until we update local state
         hasMore={hasMore && !isFetchingMore}
         loadMore={loadMore}
         pageStart={0}
-        //TODO(unused) spacing={2}
+        spacing={2}
       >
         {parentHandlesGridItems
           ? organizations && organizations.length > 0
@@ -69,7 +70,7 @@ export default function OrganizationPreviews({
             : texts.no_organization_found
           : gridItems}
         {isFetchingMore && <LoadingSpinner isLoading key="organization-previews-spinner" />}
-      </InfiniteScroll>
+      </InfiniteScrollGrid>
     </>
   );
 }

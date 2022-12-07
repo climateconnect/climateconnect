@@ -2,6 +2,7 @@ import { Grid, makeStyles } from "@material-ui/core";
 import React from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import NoItemsFound from "../browse/NoItemsFound";
+import InfiniteScrollGrid from "../general/InfiniteScrollGrid";
 import LoadingSpinner from "../general/LoadingSpinner";
 import IdeaPreview from "./IdeaPreview";
 
@@ -87,19 +88,19 @@ export default function IdeaPreviews({
 
   return (
     <>
-      <InfiniteScroll
+      <InfiniteScrollGrid
         className={`${classes.reset} ${className}`}
-        /*TODO(unused) component="ul" */
-        //TODO(unused) container
+        component="ul"
+        container
         // TODO: fix this: InfiniteScroll is throwing a React error:
         // Failed prop type: Invalid prop `element` supplied to `InfiniteScroll`, expected a ReactNode.
-        element={Grid as any}
+        element={Grid}
         // We block subsequent invocations from InfinteScroll until we update local state
         hasMore={hasMore && !isFetchingMore}
         loadMore={loadMore}
         pageStart={1}
-        //TODO(unused) spacing={2}
-        //TODO(unused) alignContent="flex-start"
+        spacing={2}
+        alignContent="flex-start"
       >
         {ideas?.length === 0 && (
           <NoItemsFound type="ideas" hubName={hubData?.name} className={classes.noItemsFound} />
@@ -125,7 +126,7 @@ export default function IdeaPreviews({
             })
           : gridItems}
         {isFetchingMore && <LoadingSpinner isLoading key="idea-previews-spinner" />}
-      </InfiniteScroll>
+      </InfiniteScrollGrid>
     </>
   );
 }
