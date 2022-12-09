@@ -23,10 +23,18 @@ git clone https://github.com/climateconnect/climateconnect
 Make sure you have the [Remote Development Extension Pack](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack) VSCode extension installed.
 
 1. Open the repo in VS Code
-2. Run the command "Reopen in dev container"
+1. Run the command "Reopen in dev container"
 
+   ![](doc/devcontainer-reopen.png)
+1. Wait for it to be done setting up the dev container and running the setup scripts. This will take 1-5 minutes the first time, 10 seconds after that. It should look something like this:
+   ![](doc/devcontainer-done.png)
+1. Start the frontend dev server using `cd frontend && yarn dev`
+1. Start the backend server using `cd backend && make start`. If you get a "Django is not installed" error run Ctrl+Shift+P "Select python interpreter" -> Recommended so it uses the venv.
+1. Open http://localhost:3000
 
-## Manual System Setup
+You can get a Redis REPL using `redis-cli -h redis` and a PostgreSQL REPL using `psql`.
+
+## Manual Setup
 
 If you can't or don't want to use VSCode dev containers, follow the steps below.
 

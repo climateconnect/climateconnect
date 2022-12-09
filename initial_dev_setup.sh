@@ -1,3 +1,4 @@
+#!/bin/bash
 set -euo pipefail # http://redsymbol.net/articles/unofficial-bash-strict-mode/
 
 # installs deps and creates the .env files with the minimal configuration for development
@@ -50,3 +51,8 @@ EOF
 else
     echo backend/.backend_env already exists
 fi
+
+pushd backend
+make migrate
+make test-data
+popd

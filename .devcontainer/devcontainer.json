@@ -7,8 +7,17 @@
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "customizations": {
     "vscode": {
-      "extensions": ["esbenp.prettier-vscode", "dbaeumer.vscode-eslint"]
+      "extensions": [
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "ms-python.python"
+      ]
     }
+  },
+  "containerEnv": {
+    "PGPASSWORD": "backend",
+    "PGHOST": "db",
+    "PGUSER": "backend"
   },
 
   // Features to add to the dev container. More info: https://containers.dev/features.
@@ -20,7 +29,7 @@
   // "forwardPorts": [3000, 5432],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "./initial_dev_setup.sh",
+  "postCreateCommand": "./initial_dev_setup.sh"
 
   // Configure tool-specific properties.
   // "customizations": {},

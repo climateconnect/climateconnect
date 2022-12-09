@@ -1,4 +1,4 @@
 {
     "typescript.tsdk": "./frontend/node_modules/typescript/lib",
-    "python.defaultInterpreterPath": "./.venv/bin/python3"
+    "python.defaultInterpreterPath": "./backend/.venv/bin/python3"
 }
