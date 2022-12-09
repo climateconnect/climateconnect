@@ -13,14 +13,14 @@
 
   // Features to add to the dev container. More info: https://containers.dev/features.
   // "features": {},
-  "overrideCommand": false
+  "overrideCommand": false,
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // This can be used to network with other containers or with the host.
   // "forwardPorts": [3000, 5432],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  // "postCreateCommand": "yarn install",
+  "postCreateCommand": "./initial_dev_setup.sh",
 
   // Configure tool-specific properties.
   // "customizations": {},
