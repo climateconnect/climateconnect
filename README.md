@@ -2,7 +2,33 @@
 
 The client and server code for the web platform on https://climateconnect.earth.
 
-## Pre-steps
+# Development setup
+
+Climate Connect depends on PostgreSQL/PostGIS and Redis.
+
+We use Python/Django for our backend and Next.js for the frontend.
+
+Note: we use Python 3, so for all instructions we assume `python` means `python3`.
+
+First, clone the GitHub repository
+
+```sh
+git clone https://github.com/climateconnect/climateconnect
+```
+
+## One-click setup using VSCode Dev Containers
+
+[VSCode dev containers](https://code.visualstudio.com/docs/devcontainers/containers) allow deploying a development environment including using docker independent of the host operating system or installed programs.
+
+Make sure you have the [Remote Development Extension Pack](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack) VSCode extension installed.
+
+1. Open the repo in VS Code
+2. Run the command "Reopen in dev container"
+
+
+## Manual System Setup
+
+If you can't or don't want to use VSCode dev containers, follow the steps below.
 
 ### Postgres
 
@@ -24,29 +50,11 @@ We use Docker to run the local Redis server. See the [Docker install docs](https
 
 Make sure to install docker-ce, docker-ce-cli, containerd.io, and docker-compose.
 
-## Get Started
+## Project Dependencies
 
-We use Python/Django for our backend and Next.js for the frontend.
-
-Note: we use Python 3, so for all instructions we assume `python` means `python3`.
-
-First, create a Python virtual environment and start it
-
-```sh
-python -m venv climateconnect_env
-cd climateconnect_env
-source bin/activate
-```
-
-Then clone the GitHub repository
-
-```sh
-git clone https://github.com/climateconnect/climateconnect
-```
+Run `./install_deps.sh` to install the JavaScript dependencies and the Python dependencies in a virtualenv.
 
 ### Backend
-
-After you've cloned the repository, we can set up the local Redis server and backend.
 
 #### First Time Setup
 

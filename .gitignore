@@ -20,7 +20,6 @@ __pycache__
 
 # vscode
 *.code-workspace
-/.vscode
 backend/.vscode
 frontend/.vscode
 
