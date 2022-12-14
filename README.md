@@ -6,9 +6,9 @@ The client and server code for the web platform on https://climateconnect.earth.
 
 ### Postgres
 
-1. Create a local Postgres database with your own username and password.
-1. Install [PostGIS](https://postgis.net/install/) on your local machine
-1. Create the postgis extension within that database: run [`CREATE EXTENSION postgis;`](https://docs.djangoproject.com/en/3.1/ref/contrib/gis/install/postgis/)
+1. Create a local Postgres database with your own username and password. E.g., `createdb climateconnect-dev`.
+1. Install [PostGIS](https://postgis.net/install/) on your local machine.
+1. Create the PostGIS extension within that database: run [`CREATE EXTENSION postgis;`](https://docs.djangoproject.com/en/3.1/ref/contrib/gis/install/postgis/).
 
 You will connect to this for your local backend project.
 
@@ -28,7 +28,7 @@ Make sure to install docker-ce, docker-ce-cli, containerd.io, and docker-compose
 
 We use Python/Django for our backend and Next.js for the frontend.
 
-Note: we use Python 3, so for all instructions we assume `python` means `python3`.
+_Note: we use Python 3, so for all instructions we assume `python` means `python3`._
 
 First, create a Python virtual environment and start it
 
@@ -55,8 +55,8 @@ After you've cloned the repository, we can set up the local Redis server and bac
 1.  Create `.backend_env` to set environment variables.
     - You can find up-to-date sample env variables in [`backend/local-env-setup.md`](https://github.com/climateconnect/climateconnect/blob/master/backend/local-env-setup.md).
     - For the [Django `SECRET_KEY`](https://docs.djangoproject.com/en/3.1/ref/settings/#std:setting-SECRET_KEY), run `openssl rand -base64 32` to create a 32 char random secret.
-1.  Run `python manage.py migrate` to run Django migrations.
-    - Note: This command is used for when you first start, or whenever you are adding or updating database models.
+1.  Run `make migrate` to run Django migrations.
+    - _Note: This command is used for when you first start, or whenever you are adding or updating database models_.
 1.  Create a superuser using `python manage.py createsuperuser`
     - You can then access your admin panel via <API_URL>/admin/
 
@@ -64,7 +64,7 @@ After you've cloned the repository, we can set up the local Redis server and bac
 
 1.  Ensure Docker is running and then run `sudo docker-compose up`. This will start a Redis server on Docker.
 1.  Ensure the Postgres server is running.
-1.  Run server using `python manage.py runserver`.
+1.  Run server using `make start`.
 1.  Run Celery using `celery -A climateconnect_main worker -l INFO`
 
 #### Creating and Removing Test Data
@@ -100,7 +100,7 @@ $DATABASE_NAME-# \q
 Then run
 
 ```sh
-python manage.py migrate
+make migrate
 ```
 
 to update your migrations, and
@@ -147,21 +147,21 @@ More configuration for Black can be found in the `pyproject.toml` file.
 
 ### Frontend
 
-1. `cd frontend`
-1. `yarn install` to download all npm packages
+1. `cd frontend`.
+1. `yarn` to download all npm packages.
 1. Add a `.env` file for frontend environment variables. You can find variables you need to set in [`/frontend/next.config.js/`](https://github.com/climateconnect/climateconnect/blob/master/frontend/next.config.js)
 
 For local development, use the following for `.env`:
 
 ```sh
-  API_HOST="localhost"
-  API_URL="http://127.0.0.1:8000"
-  BASE_URL_HOST="localhost"
-  SOCKET_URL="ws://localhost"
-  ENVIRONMENT="development"
+API_HOST="localhost"
+API_URL="http://127.0.0.1:8000"
+BASE_URL_HOST="localhost"
+SOCKET_URL="ws://localhost"
+ENVIRONMENT="development"
 ```
 
-Note: This is for people who are using newer version of node (v17.0.1) or have new apple M1 devices. Before running `yarn dev`, please run this command `export NODE_OPTIONS=--openssl-legacy-provider`. You can save this in your `~/.zshrc` file as well.
+_Note: This is for people who are using newer version of node (v17.0.1) or have new apple M1 devices. Before running `yarn dev`, please run this command `export NODE_OPTIONS=--openssl-legacy-provider`. You can save this in your `~/.zshrc` file as well._
 
 And finally `yarn dev` to spin up the Next.js app! Check out our [frontend (FE) code style guidelines wiki](https://github.com/climateconnect/climateconnect/wiki/Frontend-Code-Style-Guide) to follow codebase best practices and contribute to a healthy and maintainable codebase.
 
