@@ -27,7 +27,7 @@ Make sure you have the [Remote Development Extension Pack](https://marketplace.v
 1. Run the command "Reopen in Container"
 
    ![](doc/devcontainer-reopen.png)
-1. Wait for it to be done setting up the dev container and running the setup scripts. This will take 1-5 minutes the first time, 10 seconds after that. It should look something like this:
+1. Wait for it to be done setting up the Dev Container and running the setup scripts. This will take 1-5 minutes the first time and 10 seconds after that. It should look something like this:
    ![](doc/devcontainer-done.png)
 1. Start the frontend dev server using `cd frontend && yarn dev`
 1. Start the backend server using `cd backend && make start`. If you get a "Django is not installed" error run Ctrl+Shift+P "Select python interpreter" -> Recommended so it uses the venv.
