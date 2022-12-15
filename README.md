@@ -24,7 +24,7 @@ Make sure you have the [Remote Development Extension Pack](https://marketplace.v
 
 1. Open the repo in VS Code
 1. Start Docker (if it's not running)
-1. Run the command "Reopen in dev container"
+1. Run the command "Reopen in Container"
 
    ![](doc/devcontainer-reopen.png)
 1. Wait for it to be done setting up the dev container and running the setup scripts. This will take 1-5 minutes the first time, 10 seconds after that. It should look something like this:
