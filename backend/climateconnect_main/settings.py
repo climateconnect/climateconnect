@@ -339,3 +339,7 @@ sentry_sdk.init(
     # and for prod env is "production"
     environment=SENTRY_ENVIRONMENT,
 )
+
+CLIMATE_CONNECT_CONTACT_EMAIL = env(
+    'CLIMATE_CONNECT_CONTACT_EMAIL', 'contact@climateconnect.earth'
+)
