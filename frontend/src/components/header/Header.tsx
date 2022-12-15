@@ -749,16 +749,17 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader, texts, 
                   };
                   if (link.isLogoutButton) menuItemProps.onClick = handleLogout;
                   else menuItemProps.href = localePrefix + link.href;
+                  const MenuItem_ = MenuItem as any;
                   return (
-                    <MenuItem
+                    <MenuItem_ // todo: type issue
                       key={index}
-                      /*TODO(unused) component="button" */
+                      component="button"
                       className={classes.loggedInLink}
                       onClick={link.isLogoutButton && handleLogout}
                       href={!link.isLogoutButton ? localePrefix + link.href : undefined}
                     >
                       {link.text}
-                    </MenuItem>
+                    </MenuItem_>
                   );
                 })}
             </MenuList>

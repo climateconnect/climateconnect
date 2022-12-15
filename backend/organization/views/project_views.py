@@ -340,10 +340,6 @@ class CreateProjectView(APIView):
             )
             translations = translations_object["translations"]
 
-        source_language = Language.objects.get(
-            language_code=translations_object["source_language"]
-        )
-        translations = translations_object["translations"]
         project = create_new_project(request.data, source_language)
 
         if not translations_failed:

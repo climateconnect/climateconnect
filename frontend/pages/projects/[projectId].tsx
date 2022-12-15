@@ -117,8 +117,8 @@ export default function ProjectPage({
   const [isUserLiking, setIsUserLiking] = React.useState(liking);
   const [followingChangePending, setFollowingChangePending] = React.useState(false);
   const [likingChangePending, setLikingChangePending] = React.useState(false);
-  const [numberOfLikes, setNumberOfLikes] = React.useState(project.number_of_likes);
-  const [numberOfFollowers, setNumberOfFollowers] = React.useState(project.number_of_followers);
+  const [numberOfLikes, setNumberOfLikes] = React.useState(project?.number_of_likes);
+  const [numberOfFollowers, setNumberOfFollowers] = React.useState(project?.number_of_followers);
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [showSimilarProjects, setShowSimilarProjects] = React.useState(true);
@@ -207,7 +207,7 @@ export default function ProjectPage({
           <HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef} onlyShowDropDown={true} />
         )
       }
-      image={getImageUrl(project.image)}
+      image={project ? getImageUrl(project.image) : undefined}
     >
       {project ? (
         <div className={classes.contentWrapper}>
