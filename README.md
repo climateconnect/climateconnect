@@ -23,6 +23,7 @@ git clone https://github.com/climateconnect/climateconnect
 Make sure you have the [Remote Development Extension Pack](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack) VSCode extension installed.
 
 1. Open the repo in VS Code
+1. Start Docker (if it's not running)
 1. Run the command "Reopen in dev container"
 
    ![](doc/devcontainer-reopen.png)
