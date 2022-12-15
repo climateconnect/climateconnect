@@ -37,7 +37,7 @@ You can get a Redis REPL using `redis-cli -h redis` and a PostgreSQL REPL using 
 
 ## Manual Setup
 
-If you can't or don't want to use VSCode dev containers, follow the steps below.
+If you can't or don't want to use VS Code dev containers, follow the steps below.
 
 ### Postgres
 
