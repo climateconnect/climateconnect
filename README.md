@@ -18,7 +18,7 @@ git clone https://github.com/climateconnect/climateconnect
 
 ## One-click setup using VSCode Dev Containers
 
-[VSCode dev containers](https://code.visualstudio.com/docs/devcontainers/containers) allow deploying a development environment including using docker independent of the host operating system or installed programs.
+[VSCode Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers) allow deploying a development environment including using Docker independent of the host operating system or installed programs.
 
 Make sure you have the [Remote Development Extension Pack](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack) VSCode extension installed.
 
