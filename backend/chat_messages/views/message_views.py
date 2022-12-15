@@ -13,11 +13,12 @@ from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.filters import SearchFilter
 from django.db.models import Prefetch
 from django.db.models import Value as V
 from django.db.models.functions import Concat
+from django.conf import settings
 
 from uuid import uuid4
 
@@ -85,6 +86,13 @@ class StartPrivateChat(APIView):
             return Response(
                 {"message": "Participant not found"}, status=status.HTTP_404_NOT_FOUND
             )
+        
+        if user_profile.restricted_profile:
+            return Response({
+                "message": f"Your account has been restricted to send messages on the "
+                f"platform.Please reach out {settings.CLIMATE_CONNECT_CONTACT_EMAIL} to "
+                f"lift your account restriction."
+            }, status=status.HTTP_403_FORBIDDEN)
 
         chatting_partner_user = user_profile.user
         participants = [request.user, chatting_partner_user]
@@ -123,6 +131,13 @@ class StartGroupChatView(APIView):
 
     def post(self, request):
         user = request.user
+        if user.user_profile and user.user_profile.restricted_profile:
+            return Response({
+                "message": f"Your account has been restricted to send messages on the "
+                f"platform.Please reach out {settings.CLIMATE_CONNECT_CONTACT_EMAIL} to "
+                f"lift your account restriction."
+            }, status=status.HTTP_403_FORBIDDEN)
+
         if "participants" not in request.data or "group_chat_name" not in request.data:
             return Response(
                 {"message": "Required parameter is missing"},
@@ -396,6 +411,15 @@ class SendChatMessage(APIView):
         if "message_content" not in request.data or not chat_uuid:
             return NotFound("Required parameter missing")
         user = request.user
+
+        # Raise permission error if user profile is restricted.
+        if user.user_profile and user.user_profile.restricted_profile:
+            raise PermissionDenied(
+                f"Your account has been restricted to send messages on the "
+                f"platform. Please reach out {settings.CLIMATE_CONNECT_CONTACT_EMAIL} to "
+                f"lift your account restriction."
+            )
+
         try:
             chat = MessageParticipants.objects.get(chat_uuid=chat_uuid)
             Participant.objects.get(user=user, chat=chat, is_active=True)
