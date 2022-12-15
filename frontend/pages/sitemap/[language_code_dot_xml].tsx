@@ -73,8 +73,8 @@ async function createSitemap(
   hubEntries,
   language_code
 ) {
-  let staticPages = (await globby(["pages/*.js"]))
-    .map((pageUrl) => pageUrl.replace("pages", "").replace(".js", ""))
+  let staticPages = (await globby(["pages/*.tsx"]))
+    .map((pageUrl) => pageUrl.replace("pages", "").replace(".tsx", ""))
     .filter((pageUrl) => !NOT_LISTED.includes(pageUrl));
   if (language_code) {
     staticPages = staticPages.map((pageUrl) => {

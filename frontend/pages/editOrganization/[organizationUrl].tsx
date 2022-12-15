@@ -1,14 +1,14 @@
 import NextCookies from "next-cookies";
 import React, { useContext, useRef, useState } from "react";
-import getOrganizationInfoMetadata from "../../public/data/organization_info_metadata.js";
+import getOrganizationInfoMetadata from "../../public/data/organization_info_metadata";
 import { apiRequest, sendToLogin } from "../../public/lib/apiOperations";
-import { getAllHubs } from "../../public/lib/hubOperations.js";
-import { parseOrganization } from "../../public/lib/organizationOperations.js";
-import { nullifyUndefinedValues } from "../../public/lib/profileOperations.js";
+import { getAllHubs } from "../../public/lib/hubOperations";
+import { parseOrganization } from "../../public/lib/organizationOperations";
+import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
 import WideLayout from "../../src/components/layouts/WideLayout";
-import EditOrganizationRoot from "../../src/components/organization/EditOrganizationRoot.js";
+import EditOrganizationRoot from "../../src/components/organization/EditOrganizationRoot";
 import { getOrganizationTagsOptions } from "./../../public/lib/getOptions";
 
 export async function getServerSideProps(ctx) {

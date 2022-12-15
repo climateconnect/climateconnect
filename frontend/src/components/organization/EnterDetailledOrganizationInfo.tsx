@@ -2,10 +2,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
 import Router from "next/router";
 import React, { useContext } from "react";
-import { getLocalePrefix } from "../../../public/lib/apiOperations.js";
-import getTexts from "../../../public/texts/texts.js";
-import UserContext from "../context/UserContext.js";
-import getOrganizationInfoMetadata from "./../../../public/data/organization_info_metadata.js";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import getOrganizationInfoMetadata from "./../../../public/data/organization_info_metadata";
 import EditAccountPage from "./../account/EditAccountPage";
 
 const useStyles = makeStyles(() => {

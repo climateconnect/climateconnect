@@ -20,7 +20,7 @@ import WideLayout from "../../src/components/layouts/WideLayout";
 import ProfilePreviews from "../../src/components/profile/ProfilePreviews";
 import ProjectPreviews from "../../src/components/project/ProjectPreviews";
 import theme from "../../src/themes/theme";
-import getOrganizationInfoMetadata from "./../../public/data/organization_info_metadata.js";
+import getOrganizationInfoMetadata from "./../../public/data/organization_info_metadata";
 import UserContext from "./../../src/components/context/UserContext";
 import IconButton from "@material-ui/core/IconButton";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
