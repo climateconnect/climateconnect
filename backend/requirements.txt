@@ -100,3 +100,4 @@ watchgod==0.6
 wcwidth==0.2.5
 websockets==9.1
 zope.interface==5.1.0
+gunicorn==20.1.0
