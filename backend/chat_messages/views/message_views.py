@@ -430,8 +430,7 @@ class SendChatMessage(APIView):
             # Check if this is a first message and restrict sending a message
             # if its a cold-message.
             message_count = Message.objects.filter(
-                message_participant=chat,
-                sender=user
+                message_participant=chat
             ).count()
             num_of_words_on_a_message = len(request.data.get('message_content').split())
 
