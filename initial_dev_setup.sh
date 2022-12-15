@@ -2,7 +2,7 @@
 set -euo pipefail # http://redsymbol.net/articles/unofficial-bash-strict-mode/
 
 # installs deps and creates the .env files with the minimal configuration for development
-# this script is automatically run in dev containers via postCreateCommand
+# this script is automatically run in VS Code Dev Containers via `postCreateCommand`
 
 cd "$(dirname "$0")" # go to dir this script is in
 
