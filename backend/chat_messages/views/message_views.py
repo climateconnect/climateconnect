@@ -39,6 +39,7 @@ from chat_messages.permissions import (
     AddParticipantsPermission,
     ParticipantReadWritePermission,
 )
+from chat_messages.constants import NUM_OF_WORDS_REQUIRED_FOR_FIRST_MESSAGE
 import logging
 
 logger = logging.getLogger(__name__)
@@ -426,6 +427,20 @@ class SendChatMessage(APIView):
         except Participant.DoesNotExist:
             raise NotFound("You are not a participant of this chat.")
         if chat:
+            # Check if this is a first message and restrict sending a message
+            # if its a cold-message.
+            message_count = Message.objects.filter(
+                message_participant=chat,
+                sender=user
+            ).count()
+            num_of_words_on_a_message = len(request.data.get('message_content').split())
+
+            if message_count == 0 and num_of_words_on_a_message < NUM_OF_WORDS_REQUIRED_FOR_FIRST_MESSAGE:
+                return Response({
+                    'detail': f'Dear {user.user_profile.name}, This is your first'
+                    f' interaction with a member on the platform. Please introduce yourself and the reason for'
+                    f' your outreach in {NUM_OF_WORDS_REQUIRED_FOR_FIRST_MESSAGE} or more words.'
+                }, status=status.HTTP_411_LENGTH_REQUIRED)
             receiver_user_ids = Participant.objects.filter(
                 chat=chat, is_active=True
             ).values_list("user", flat=True)
