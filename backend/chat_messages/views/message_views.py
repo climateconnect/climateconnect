@@ -33,7 +33,7 @@ from chat_messages.serializers.message import (
 )
 from chat_messages.pagination import ChatMessagePagination, ChatsPagination
 from climateconnect_api.models import UserProfile, Role
-from chat_messages.utility.chat_setup import set_read
+from chat_messages.utility.chat_setup import set_read, check_can_start_chat
 from chat_messages.permissions import (
     ChangeChatCreatorPermission,
     AddParticipantsPermission,
@@ -73,6 +73,7 @@ class StartPrivateChat(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        print("starting private chat")
         if "profile_url_slug" not in request.data:
             return Response(
                 {"message": "Required parameter is missing"},
@@ -86,12 +87,11 @@ class StartPrivateChat(APIView):
             return Response(
                 {"message": "Participant not found"}, status=status.HTTP_404_NOT_FOUND
             )
-        
-        if user_profile.restricted_profile:
+        print("checking whether user can send message")
+        can_start_chat = check_can_start_chat(request.user.user_profile)
+        if not can_start_chat == True:
             return Response({
-                "message": f"Your account has been restricted to send messages on the "
-                f"platform.Please reach out {settings.CLIMATE_CONNECT_CONTACT_EMAIL} to "
-                f"lift your account restriction."
+                "message": can_start_chat
             }, status=status.HTTP_403_FORBIDDEN)
 
         chatting_partner_user = user_profile.user
@@ -112,7 +112,7 @@ class StartPrivateChat(APIView):
         if private_chat_with_both_users.exists():
             private_chat = private_chat_with_both_users[0]
         else:
-            private_chat = MessageParticipants.objects.create(chat_uuid=str(uuid4()))
+            private_chat = MessageParticipants.objects.create(chat_uuid=str(uuid4()), created_by=request.user)
             basic_role = Role.objects.get(role_type=0)
             for participant in participants:
                 Participant.objects.create(
@@ -131,11 +131,14 @@ class StartGroupChatView(APIView):
 
     def post(self, request):
         user = request.user
-        if user.user_profile and user.user_profile.restricted_profile:
+        if not request.user.user_profile:
+            return Response(
+                {"message": "Participant not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+        can_start_chat = check_can_start_chat(request.user.user_profile)
+        if not can_start_chat == True:
             return Response({
-                "message": f"Your account has been restricted to send messages on the "
-                f"platform.Please reach out {settings.CLIMATE_CONNECT_CONTACT_EMAIL} to "
-                f"lift your account restriction."
+                "message": can_start_chat
             }, status=status.HTTP_403_FORBIDDEN)
 
         if "participants" not in request.data or "group_chat_name" not in request.data:
@@ -153,7 +156,7 @@ class StartGroupChatView(APIView):
             )
 
         chat = MessageParticipants.objects.create(
-            chat_uuid=str(uuid4()), name=request.data["group_chat_name"]
+            chat_uuid=str(uuid4()), name=request.data["group_chat_name"], created_by=request.user
         )
         creator_role = Role.objects.get(role_type=2)
         member_role = Role.objects.get(role_type=0)
