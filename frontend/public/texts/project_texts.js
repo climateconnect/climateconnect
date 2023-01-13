@@ -403,7 +403,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     personal_project: {
       en: "Personal project",
-      de: "Persönliches projekt",
+      de: "Persönliches Projekt",
     },
     organizations_project: {
       en: "Organization's project",
