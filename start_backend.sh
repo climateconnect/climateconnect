@@ -8,7 +8,7 @@ apt-get update -qq && apt-get install binutils libproj-dev gdal-bin -yqq
 cd backend
 
 # Install python dependencies
-make install
+pip install -r requirements.txt
 
 # Start server
 gunicorn --preload --bind=0.0.0.0 climateconnect_main.asgi:application -w 4 -k uvicorn.workers.UvicornWorker & celery -A climateconnect_main worker -B -l INFO
