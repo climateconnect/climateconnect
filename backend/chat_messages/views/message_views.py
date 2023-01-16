@@ -39,7 +39,7 @@ from chat_messages.permissions import (
     AddParticipantsPermission,
     ParticipantReadWritePermission,
 )
-from backend.constants import NUM_OF_WORDS_REQUIRED_FOR_FIRST_MESSAGE
+from constants import NUM_OF_WORDS_REQUIRED_FOR_FIRST_MESSAGE
 import logging
 
 logger = logging.getLogger(__name__)
