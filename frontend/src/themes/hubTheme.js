@@ -1,7 +1,7 @@
-import { createMuiTheme } from "@material-ui/core";
+import { createTheme } from "@material-ui/core";
 import theme from "./theme";
 
-const hubTheme = createMuiTheme({
+const hubTheme = createTheme({
   ...theme,
   typography: {
     ...theme.typography,
