@@ -10,6 +10,7 @@ from django.db.models import QuerySet
 
 from climateconnect_api.models import UserProfile, Role, Notification, UserNotification
 from chat_messages.models import MessageParticipants, Participant, MessageReceiver
+from django.utils.translation import gettext as _
 
 # Logging
 import logging
@@ -67,25 +68,32 @@ def create_private_or_group_chat(
                 f"NewChat: Participant {participant.id} added to chat {chat.id}"
             )
 
+
 def check_can_start_chat(user_profile: UserProfile) -> bool:
     if user_profile.restricted_profile:
         print("forbidden because user profile is restricted")
         return "User profile restricted"
-    
+
     # You can only start up to 3 chats within a 180 minute timeframe
     cooldown_minutes_for_starting_chats = 180
     max_new_chats_per_timeframe = 3
 
-    cutoff_date = datetime.now() - timedelta(minutes=cooldown_minutes_for_starting_chats)
-    print(cutoff_date)
-    print(user_profile.user)
+    cutoff_date = datetime.now() - timedelta(
+        minutes=cooldown_minutes_for_starting_chats
+    )
     # Find all chats started by the user after cutoff date (aka in the last 3 hours)
     affected_chats = MessageParticipants.objects.filter(
         created_by=user_profile.user, created_at__gte=cutoff_date
-    )
-    if(affected_chats.count() >= max_new_chats_per_timeframe):
+    ).order_by("-created_at")
+    minutes_since_last_chat = (datetime.now() - affected_chats[0].created_at.replace(tzinfo=None)).total_seconds() / 60
+    if affected_chats.count() >= max_new_chats_per_timeframe:
         print("too many chats started: " + str(affected_chats.count()))
-        return "Too many chats"
-    print(affected_chats.count())
-    print(affected_chats)
+        return _(
+            "Currently you can only contact %(max_chats_per_timeframe)d new people within %(hours)d hours. You can start a new chat in %(minutes)d minutes."
+        ) % {
+            "max_chats_per_timeframe": max_new_chats_per_timeframe,
+            "hours": cooldown_minutes_for_starting_chats / 60,
+            "minutes": cooldown_minutes_for_starting_chats - minutes_since_last_chat,
+        }
+
     return True

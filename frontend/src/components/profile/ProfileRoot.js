@@ -1,7 +1,7 @@
 import { Button, Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import Router from "next/router";
-import React, { useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
 import AccountPage from "../account/AccountPage";
@@ -11,6 +11,7 @@ import OrganizationPreviews from "../organization/OrganizationPreviews";
 import ProjectPreviews from "../project/ProjectPreviews";
 import ControlPointSharpIcon from "@material-ui/icons/ControlPointSharp";
 import IconButton from "@material-ui/core/IconButton";
+import FeedbackContext from "../context/FeedbackContext";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_user.jpg";
 
@@ -95,15 +96,23 @@ export default function ProfileRoot({
   texts,
   locale,
 }) {
+  const { showFeedbackMessage } = useContext(FeedbackContext);
   const classes = useStyles();
   const theme = useTheme();
   const isOwnAccount = user && user.url_slug === profile.url_slug;
   const handleConnectBtn = async (e) => {
     e.preventDefault();
-    const chat = await startPrivateChat(profile, token, locale);
-    Router.push({
-      pathname: "/chat/" + chat.chat_uuid + "/",
-    });
+    try{
+      const chat = await startPrivateChat(profile, token, locale);
+      Router.push({
+        pathname: "/chat/" + chat.chat_uuid + "/",
+      });
+    } catch(e) {
+      showFeedbackMessage({
+        message: <span>{e.response.data.message}</span>,
+        error: true
+      });
+    }
   };
   const projectsRef = useRef(null);
   const organizationsRef = useRef(null);
