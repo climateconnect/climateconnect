@@ -5,7 +5,7 @@ import uuid
 from datetime import datetime, timedelta
 
 # Django/Django REST imports
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from django.db.models import QuerySet
 
 from climateconnect_api.models import UserProfile, Role, Notification, UserNotification
@@ -73,10 +73,12 @@ def check_can_start_chat(user_profile: UserProfile) -> bool:
     if user_profile.restricted_profile:
         print("forbidden because user profile is restricted")
         return "User profile restricted"
-
-    # You can only start up to 3 chats within a 180 minute timeframe
+    # Users with special permissions aren't restricted
+    if(user_profile.user.has_perm("chat_messages.create_unlimited_messageparticipants")):
+        return True
+    # You can only start up to 4 chats within a 180 minute timeframe
     cooldown_minutes_for_starting_chats = 180
-    max_new_chats_per_timeframe = 3
+    max_new_chats_per_timeframe = 4
 
     cutoff_date = datetime.now() - timedelta(
         minutes=cooldown_minutes_for_starting_chats
@@ -85,8 +87,8 @@ def check_can_start_chat(user_profile: UserProfile) -> bool:
     affected_chats = MessageParticipants.objects.filter(
         created_by=user_profile.user, created_at__gte=cutoff_date
     ).order_by("-created_at")
-    minutes_since_last_chat = (datetime.now() - affected_chats[0].created_at.replace(tzinfo=None)).total_seconds() / 60
     if affected_chats.count() >= max_new_chats_per_timeframe:
+        minutes_since_last_chat = (datetime.now() - affected_chats[0].created_at.replace(tzinfo=None)).total_seconds() / 60
         print("too many chats started: " + str(affected_chats.count()))
         return _(
             "Currently you can only contact %(max_chats_per_timeframe)d new people within %(hours)d hours. You can start a new chat in %(minutes)d minutes."
