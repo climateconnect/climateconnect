@@ -1,7 +1,7 @@
-import { createMuiTheme } from "@material-ui/core/styles";
+import { createTheme } from "@material-ui/core/styles";
 
 // Create core theme so we can access spacing etc. when customizing components
-const coreTheme = createMuiTheme({
+const coreTheme = createTheme({
   palette: {
     primary: {
       main: "#207178",
@@ -55,7 +55,7 @@ const coreTheme = createMuiTheme({
  * styling primitives here, to minimize the duplication of raw styles
  * across other files.
  */
-const theme = createMuiTheme(coreTheme, {
+const theme = createTheme(coreTheme, {
   overrides: {
     MuiButton: {
       root: {
