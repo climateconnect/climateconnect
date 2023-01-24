@@ -114,7 +114,7 @@ export default function OrganizationPage({
 
   // l. 105-137 handles following Organizations
   const [numberOfFollowers, setNumberOfFollowers] = React.useState(
-    organization.number_of_followers
+    organization?.number_of_followers
   );
   const [isUserFollowing, setIsUserFollowing] = React.useState(following);
   const [followingChangePending, setFollowingChangePending] = React.useState(false);
@@ -149,8 +149,8 @@ export default function OrganizationPage({
   return (
     <WideLayout
       title={organization ? organization.name : texts.not_found_error}
-      description={organization.name + " | " + organization.info.short_description}
-      image={getImageUrl(organization.image)}
+      description={organization?.name + " | " + organization?.info.short_description}
+      image={getImageUrl(organization?.image)}
     >
       {organization ? (
         <OrganizationLayout

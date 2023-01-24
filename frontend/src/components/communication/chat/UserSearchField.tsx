@@ -101,7 +101,7 @@ export default function UserSearchField({ cancelUserSearch, setErrorMessage }) {
           //Router.push(getLocalePrefix(locale) + "/chat/c8012911-7189-4f05-b115-2d30d9b9c1ad/");
         })
         .catch(function (error) {
-          console.log(error.response);
+          console.log(error.response.data.message);
           // TODO: Show error message that user cant connect
         });
     } else
