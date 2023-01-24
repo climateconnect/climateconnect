@@ -26,6 +26,9 @@ import NavigationSubHeader from "../../src/components/hub/NavigationSubHeader";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import DonationCampaignInformation from "../../src/components/staticpages/donate/DonationCampaignInformation";
 import { retrievePage } from "../../src/utils/webflow";
+import SignUpPromptDialog from "../../src/components/dialogs/SignUpPromptDialog";
+import { getCookieProps } from "../../public/lib/cookieOperations";
+import { getDisplaySignUpPromptFromCookie } from "../../public/lib/cookieOperations";
 
 const useStyles = makeStyles((theme) => ({
   contentRefContainer: {
@@ -136,10 +139,16 @@ export default function Hub({
   hubDescription,
 }) {
   const classes = useStyles();
-  const { locale } = useContext(UserContext);
+  const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
   const token = new Cookies().get("auth_token");
+  const cookies = new Cookies();
+  const signUpPromptCookie = cookies.get("display_signup_prompt");
+
   const [hubAmbassador, setHubAmbassador] = useState(null);
+  const [showSignUpPrompt, setShowSignUpPrompt] = useState(
+    getDisplaySignUpPromptFromCookie(signUpPromptCookie)
+  );
 
   // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
   const [filters, setFilters] = useState(
@@ -234,6 +243,20 @@ export default function Hub({
     });
   };
 
+  const handleCloseSignUpPrompt = () => {
+    const expiryDate = new Date();
+    const month =
+      (expiryDate.getMonth() + 1) %
+      12; /*
+    new Date = gets today's date. Then, the next line is to get next month.
+    We use modulo for the edge case where it is currently December and we want it to return 1, instead of 13. 
+    We then set variable, expiryDate (now one month ahead), to our cookie. */
+    expiryDate.setMonth(month);
+    const cookieProps = getCookieProps(expiryDate);
+    cookies.set("display_signup_prompt", "false", cookieProps);
+    setShowSignUpPrompt(false);
+  };
+
   return (
     <>
       {hubDescription && hubDescription.headContent && (
@@ -242,6 +265,7 @@ export default function Hub({
       <WideLayout title={headline} headerBackground="#FFF" image={getImageUrl(image)} isHubPage hideDonationCampaign>
         <div className={classes.contentUnderHeader}>
           <NavigationSubHeader hubName={name} allHubs={allHubs} isLocationHub={isLocationHub} />
+
           {<DonationCampaignInformation />}
           <HubHeaderImage
             image={getImageUrl(image)}
@@ -305,6 +329,18 @@ export default function Hub({
               hubUrl={hubUrl}
             />
           </div>
+          {!user && isLocationHub && (
+            <SignUpPromptDialog
+              buttonText={texts.join + "!"}
+              image={"/images/sign_up_prompt_image.jpg"}
+              infoTextOne={texts.receive_regular_updates_about_projects_topics}
+              infoTextTwo={texts.send_messages_comments_and_more}
+              onClose={handleCloseSignUpPrompt}
+              open={showSignUpPrompt}
+              subTitle={texts.sign_up_today_and_help_make_climate_neutral}
+              title={texts.change_the_world}
+            />
+          )}
         </div>
       </WideLayout>
     </>

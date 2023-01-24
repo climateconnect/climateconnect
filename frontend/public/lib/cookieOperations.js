@@ -40,3 +40,22 @@ export function getCookieProps(expiry) {
   console.log(cookieProps);
   return cookieProps;
 }
+
+export function getDisplaySignUpPromptFromCookie(cookieContent) {
+  const cookies = new Cookies();
+  // wasn't really sure how to handle the first time a user comes the page as the cookie being looked up is undefined at first
+  if (typeof cookieContent === "undefined") {
+    const expiryDate = new Date();
+    const month = (expiryDate.getMonth() + 1) % 12;
+    /*
+    new Date = gets today's date. Then, the next line is to get next month.
+    We use modulo for the edge case where it is currently December and we want it to return 1, instead of 13. 
+    We then set variable, expiryDate (now one month ahead), to our cookie. */
+    expiryDate.setMonth(month);
+    const cookieProps = getCookieProps(expiryDate);
+    cookies.set("display_signup_prompt", "true", cookieProps);
+    return true;
+  }
+
+  return false;
+}
