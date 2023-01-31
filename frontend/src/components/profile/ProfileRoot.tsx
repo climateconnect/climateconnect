@@ -102,15 +102,15 @@ export default function ProfileRoot({
   const isOwnAccount = user && user.url_slug === profile.url_slug;
   const handleConnectBtn = async (e) => {
     e.preventDefault();
-    try{
+    try {
       const chat = await startPrivateChat(profile, token, locale);
       Router.push({
         pathname: "/chat/" + chat.chat_uuid + "/",
       });
-    } catch(e) {
+    } catch (e) {
       showFeedbackMessage({
         message: <span>{e.response.data.message}</span>,
-        error: true
+        error: true,
       });
     }
   };

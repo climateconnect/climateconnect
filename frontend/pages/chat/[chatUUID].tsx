@@ -200,7 +200,7 @@ export default function Chat({
     } catch (err: any) {
       if (err.response && err.response.data)
         console.log("Error in sendChatMessageThroughPostRequest: " + err.response.data.detail);
-        setErrorMessage(err.response.data.detail);
+      setErrorMessage(err.response.data.detail);
       if (err.response && err.response.data.detail === "Invalid token.")
         console.log("invalid token! token:" + token);
       console.log(err);

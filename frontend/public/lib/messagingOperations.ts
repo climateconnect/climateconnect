@@ -11,7 +11,7 @@ export async function getMessageFromServer(message_id, token, locale) {
 }
 
 export async function startPrivateChat(profile, token, locale) {
-  try{
+  try {
     const resp = await apiRequest({
       method: "post",
       url: "/api/start_private_chat/",
@@ -20,8 +20,8 @@ export async function startPrivateChat(profile, token, locale) {
       locale: locale,
     });
     return resp.data;
-  } catch(e) {
-    throw e
+  } catch (e) {
+    throw e;
   }
 }
 
