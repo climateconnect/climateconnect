@@ -42,6 +42,54 @@ When creating a pull request (PR) follow these guidelines.
 
 Once your PR is approved, ensure that you **squash merge** your PR -- this improves maintainability for future contributors.
 
+### Testing
+
+For a full test, test the following site functionality:
+
+**User**
+
+- [ ] Sign Up
+- [ ] Log In
+
+**Projects**
+
+- [ ] create project
+- [ ] view project
+- [ ] edit project
+
+**Organizations**
+
+- [ ] create organization
+- [ ] view organization
+- [ ] edit organization
+
+**Members**
+
+- [ ] create member
+- [ ] view member
+- [ ] edit member
+
+**Ideas**
+
+- [ ] create idea
+- [ ] view idea
+- [ ] edit idea
+
+**Hubs**
+
+- [ ] view hub http://localhost:3000/hubs/food
+- [ ] filter projects in hub
+
+**Other**
+
+- [ ] switch language de/en
+
+- [ ] private chat
+- [ ] group chat
+- [ ] /admin page
+- [ ] send and receive notification
+
+
 ### Documentation
 
 Code should be documented where appropriate. The general Python and JavaScript rules can be followed for formatting.
