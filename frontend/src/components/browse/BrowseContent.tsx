@@ -168,8 +168,6 @@ export default function BrowseContent({
   const [isFiltering, setIsFiltering] = useState(false);
   const [isFetchingMoreData, setIsFetchingMoreData] = useState(false);
 
-  const hasQueryParams = Object.keys(getSearchParams(window.location.search)).length !== 0;
-
   const { showFeedbackMessage } = useContext(FeedbackContext);
   /**
    * Support the functionality of a user entering
@@ -234,51 +232,49 @@ export default function BrowseContent({
   }, []);
 
   const handleTabChange = (event, newValue) => {
-    if (hasQueryParams) {
-      // Update the state of the visual filters, like Select, Dialog, etc
-      // Then actually fetch the data. We need a way to map what's
-      // in the query param, to what UI element is present on the screen. For
-      // example, if we have a MultiLevelSelect dialog representing categories
-      // and we have a ?&category=Food waste, then we need to update the
-      // the MultiLevelSelect dialog's selection to that value somehow.
+    // Update the state of the visual filters, like Select, Dialog, etc
+    // Then actually fetch the data. We need a way to map what's
+    // in the query param, to what UI element is present on the screen. For
+    // example, if we have a MultiLevelSelect dialog representing categories
+    // and we have a ?&category=Food waste, then we need to update the
+    // the MultiLevelSelect dialog's selection to that value somehow.
 
-      // For each query param option, ensure that it's
-      // split into array before spreading onto the new filters object.
-      const emptyFilters = getReducedPossibleFilters(
-        getFilters({
-          key: TYPES_BY_TAB_VALUE[0],
-          filterChoices: filterChoices,
-          locale: locale,
-        })
-      );
-      delete emptyFilters.location;
-      const queryObject = getQueryObjectFromUrl(getSearchParams(window.location.search));
-      //location is always set to "" here
-
-      //persist the old location filter when switching tabs
-      const tabKey = TYPES_BY_TAB_VALUE[newValue];
-      const possibleFilters = getFilters({
-        key: tabKey,
+    // For each query param option, ensure that it's
+    // split into array before spreading onto the new filters object.
+    const emptyFilters = getReducedPossibleFilters(
+      getFilters({
+        key: TYPES_BY_TAB_VALUE[0],
         filterChoices: filterChoices,
         locale: locale,
-      });
-      const locationFilter: any = possibleFilters.find((f) => f.type === "location");
-      queryObject[locationFilter.key] = filters[locationFilter.key];
-      const splitQueryObject = splitFiltersFromQueryObject(
-        /*TODO(undefined) newFilters*/ queryObject,
-        possibleFilters
-      );
+      })
+    );
+    delete emptyFilters.location;
+    const queryObject = getQueryObjectFromUrl(getSearchParams(window.location.search));
+    //location is always set to "" here
 
-      const newFilters = { ...emptyFilters, ...splitQueryObject.filters };
-      const tabValue = TYPES_BY_TAB_VALUE[newValue];
-      // Apply new filters with the query object immediately:
-      handleApplyNewFilters({
-        type: tabValue,
-        newFilters: newFilters,
-        closeFilters: false,
-        nonFilterParams: splitQueryObject.nonFilters,
-      });
-    }
+    //persist the old location filter when switching tabs
+    const tabKey = TYPES_BY_TAB_VALUE[newValue];
+    const possibleFilters = getFilters({
+      key: tabKey,
+      filterChoices: filterChoices,
+      locale: locale,
+    });
+    const locationFilter: any = possibleFilters.find((f) => f.type === "location");
+    queryObject[locationFilter.key] = filters[locationFilter.key];
+    const splitQueryObject = splitFiltersFromQueryObject(
+      /*TODO(undefined) newFilters*/ queryObject,
+      possibleFilters
+    );
+
+    const newFilters = { ...emptyFilters, ...splitQueryObject.filters };
+    const tabValue = TYPES_BY_TAB_VALUE[newValue];
+    // Apply new filters with the query object immediately:
+    handleApplyNewFilters({
+      type: tabValue,
+      newFilters: newFilters,
+      closeFilters: false,
+      nonFilterParams: splitQueryObject.nonFilters,
+    });
 
     window.location.hash = TYPES_BY_TAB_VALUE[newValue];
     setTabValue(newValue);
