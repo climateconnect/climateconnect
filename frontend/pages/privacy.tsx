@@ -219,7 +219,7 @@ export default function Privacy() {
         <li>
           <b>Service providers and advisors</b>: third party service providers that perform services
           for us, on our behalf, which may include payments processing, providing analytic services
-          (e.g. Google analytics; privacy policy is available
+          (e.g. Google analytics; privacy policy is available{" "}
           <a
             href="https://support.google.com/analytics/answer/6004245?hl=en"
             target="_blank"

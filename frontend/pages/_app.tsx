@@ -2,7 +2,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import { ThemeProvider } from "@material-ui/core/styles";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 // Add global styles
 import "react-multi-carousel/lib/styles.css";
 import Cookies from "universal-cookie";
@@ -20,7 +20,6 @@ export default function MyApp({ Component, pageProps = {} }) {
   // Cookies
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
-
   const [gaInitialized, setGaInitialized] = useState(false);
   const [isLoading, setLoading] = useState(true);
 
@@ -44,7 +43,6 @@ export default function MyApp({ Component, pageProps = {} }) {
         anonymizeIp: true,
       },
     } as any);
-    ReactGA.pageview(pathName ? pathName : "/");
     setGaInitialized(true);
   }
 
