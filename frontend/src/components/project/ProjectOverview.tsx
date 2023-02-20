@@ -20,6 +20,7 @@ import FollowersDialog from "../dialogs/FollowersDialog";
 import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
+import { getMembershipRequests } from "../../../public/lib/projectOperations";
 
 type StyleProps = { hasAdminPermissions?: boolean };
 
@@ -146,37 +147,23 @@ export default function ProjectOverview({
   const classes = useStyles({});
 
   const texts = getTexts({ page: "project", locale: locale, project: project });
-  /**
-   * Calls endpoint to return a current list
-   * of users that have requested to
-   * join a specific project (i.e. requested membership).
-   *
-   * Note that the response includes a list of requests
-   * (with corresponding request ID), and the users themselves.
-   */
-  async function getMembershipRequests(url_slug) {
-    const resp = await apiRequest({
-      method: "get",
-      url: `/api/projects/${url_slug}/requesters/`,
-    });
-
-    if (!resp?.data?.results) {
-      // TODO: error appropriately here
+  
+  const getHasRequestedToJoin = async () => {
+    try{
+      const resp = await apiRequest({
+        method: "get",
+        url: `/api/projects/${project.url_slug}/have_i_requested_to_join/`,
+        locale: locale,
+        token: token,
+      });
+    
+      // TODO: we should probably have an associated timestamp with each request too.
+      handleSetRequestedToJoinProject(resp.data.has_requested)
+    } catch(e) {
+      throw e
     }
-
-    const requestedMembers = resp.data.results;
-
-    // Now update the state, and thus button state,
-    // if the current user has already requested to join the project,
-    // based on results from the backend.
-    const members = requestedMembers.filter((m) => m.user_profile.url_slug === user.url_slug);
-    if (members.length > 0) {
-      handleSetRequestedToJoinProject(true);
-    }
-
-    // TODO: we should probably have an associated timestamp with each request too.
-    return requestedMembers;
   }
+  
 
   const [gotParams, setGotParams] = useState(false);
   useEffect(() => {
@@ -188,12 +175,11 @@ export default function ProjectOverview({
       setGotParams(true);
     }
 
-    // For non-creators, call the list of current requesters for this project,
+    // For non-members, check whether the user has requested to join,
     // so that we can update the state of the button as "Requested"
     // for the user.
-
-    if (!hasAdminPermissions && !requestedToJoinProject) {
-      getMembershipRequests(project.url_slug);
+    if(user) {
+      getHasRequestedToJoin()
     }
   }, []);
 

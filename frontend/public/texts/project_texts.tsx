@@ -968,5 +968,9 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "View all projects",
       de: "Alle Projekte anzeigen",
     },
+    only_project_admins_can_view_join_requests: {
+      en: "Only project admins can view join requests.",
+      de: "Nur Projektadministratoren können sehen, wer mitmachen möchte."
+    }
   };
 }

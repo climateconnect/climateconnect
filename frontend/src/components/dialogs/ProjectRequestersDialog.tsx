@@ -22,7 +22,9 @@ import Cookies from "universal-cookie";
 // Relative imports
 import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
+import { getMembershipRequests } from "../../../public/lib/projectOperations";
 import getTexts from "../../../public/texts/texts";
+import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
 import GenericDialog from "./GenericDialog";
 
@@ -62,6 +64,7 @@ export default function ProjectRequestersDialog({
   requesters,
   url,
   user,
+  user_permission
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -74,7 +77,14 @@ export default function ProjectRequestersDialog({
   return (
     <GenericDialog onClose={handleClose} open={open} title={texts.project_requesters_dialog_title}>
       <>
-        {loading ? (
+        {
+        // If we don't have any permissions, we can't load the join requests
+        !user_permission ? (
+          <Typography className={classes.noOpenRequestsText}>
+            {texts.only_project_admins_can_view_join_requests}
+          </Typography>
+        ) :
+        loading ? (
           <LinearProgress />
         ) : !user ? (
           <>
@@ -92,14 +102,12 @@ export default function ProjectRequestersDialog({
               </Button>
             </Container>
           </>
-        ) : // If we have some users requesting to join, then render them
+        ) : // If there are users requesting to join and we have permission to view them: render them!
         requesters && requesters.length > 0 ? (
           <ProjectRequesters
-            locale={locale}
             onClose={onClose}
             project={project}
             initialRequesters={requesters}
-            texts={texts}
           />
         ) : (
           <Typography className={classes.noOpenRequestsText}>
@@ -111,28 +119,26 @@ export default function ProjectRequestersDialog({
   );
 }
 
-const ProjectRequesters = ({ locale, initialRequesters, project }) => {
+const ProjectRequesters = ({ initialRequesters, project, onClose }) => {
   const classes = useStyles();
 
   const [requesters, setRequesters] = useState(initialRequesters);
-
+  const { showFeedbackMessage } = useContext(FeedbackContext)
+  const { locale } = useContext(UserContext)
+  const cookies = new Cookies();
+  const token = cookies.get("auth_token");
   /**
    * After any update is made to approve
    * or reject, we call the backend to update the
    * current list.
    */
   async function handleUpdateRequesters() {
-    const resp = await apiRequest({
-      method: "get",
-      url: `/api/projects/${project.url_slug}/requesters/`,
-    });
-
-    if (!resp?.data?.results) {
-      // TODO: error appropriately here
+    try{
+      const newRequesters = await getMembershipRequests(project.url_slug, locale, token)
+      setRequesters(newRequesters);
+    } catch(e){
+      console.log(e)
     }
-
-    const newRequesters = resp.data.results;
-    setRequesters(newRequesters);
   }
 
   return (
@@ -149,6 +155,7 @@ const ProjectRequesters = ({ locale, initialRequesters, project }) => {
                   requester={requester}
                   requestId={requester.requestId}
                   handleUpdateRequesters={handleUpdateRequesters}
+                  token={token}
                 />
               </TableRow>
             );
@@ -163,7 +170,7 @@ const ProjectRequesters = ({ locale, initialRequesters, project }) => {
  * Separate cohesive component that encapsulates
  * all the requester state and functionality together.
  */
-const Requester = ({ handleUpdateRequesters, locale, project, requester, requestId }) => {
+const Requester = ({ handleUpdateRequesters, locale, project, requester, requestId, token }) => {
   const classes = useStyles();
 
   /**
@@ -176,8 +183,6 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
    * See https://github.com/climateconnect/climateconnect/issues/672
    */
   async function handleApproveRequest() {
-    const cookies = new Cookies();
-    const token = cookies.get("auth_token");
 
     const response = await apiRequest({
       method: "post",
@@ -208,6 +213,7 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
       method: "post",
       url: `/api/projects/${project.url_slug}/request_membership/reject/${requestId}/`,
       token: token,
+      locale: locale
     });
 
     if (!response?.data?.results) {
