@@ -169,6 +169,13 @@ urlpatterns = [
         project_views.ListProjectRequestersView.as_view(),
         name="list-requesters-view",
     ),
+    # This endpoint returns whether the user
+    # calling it has an open join request
+    path(
+        "projects/<str:url_slug>/have_i_requested_to_join/",
+        project_views.HasUserRequested.as_view(),
+        name="have-i-requested-to-join-project",
+    ),
     path(
         "projects/<str:url_slug>/likes/",
         project_views.ListProjectLikesView.as_view(),

@@ -14,10 +14,8 @@ from climateconnect_api.models import (
     Role,
     Skill,
     UserProfile,
-    ContentShares,
 )
 from climateconnect_api.models.language import Language
-from climateconnect_api.permissions import UserPermission
 from climateconnect_api.utility.translation import (
     edit_translation,
     edit_translations,
@@ -63,7 +61,6 @@ from organization.models.translations import ProjectTranslation
 
 from organization.pagination import (
     MembersPagination,
-    ProjectCommentPagination,
     ProjectPostPagination,
     ProjectsPagination,
     ProjectsSitemapPagination,
@@ -73,7 +70,7 @@ from organization.permissions import (
     ChangeProjectCreatorPermission,
     ProjectMemberReadWritePermission,
     ProjectReadWritePermission,
-    ReadSensibleProjectDataPermission,
+    ReadWriteSensibleProjectDataPermission,
     ApproveDenyProjectMemberRequest,
 )
 from organization.serializers.content import PostSerializer, ProjectCommentSerializer
@@ -1037,6 +1034,7 @@ class ListProjectFollowersView(ListAPIView):
 
 
 class ListProjectRequestersView(ListAPIView):
+    permission_classes = [ReadWriteSensibleProjectDataPermission]
     """This is the endpoint view to return a list of users
     who have requested membership for a specific project, including their request IDs."""
 
@@ -1065,6 +1063,31 @@ class ListProjectRequestersView(ListAPIView):
 
         return open_membership_requests
 
+class HasUserRequested(APIView):
+    def get(self, request, url_slug):
+        if(not request.user.is_authenticated):
+            return Response(
+                data={"message": f"You need to be logged in to use this endpoint"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        try:
+            project = Project.objects.get(url_slug=self.kwargs["url_slug"])
+        except Project.DoesNotExist:
+            return Response(
+                data={"message": f"Project does not exist"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        has_open_membership_request = MembershipRequests.objects.filter(
+            target_project=project,
+            rejected_at=None,
+            approved_at=None,
+            user=self.request.user
+        ).exists()
+
+        return Response(
+                data={"has_requested": has_open_membership_request},
+                status=status.HTTP_200_OK,
+            )
 
 class ListProjectLikesView(ListAPIView):
     permission_classes = [IsAuthenticated]
@@ -1235,7 +1258,7 @@ class ManageJoinProjectView(RetrieveUpdateDestroyAPIView):
     # Keep in mind that when we redefine class attributes at the View level,
     # we're overwriting the default permission and authentication classes
     # that're defined within settings.py.
-    authentication_classes = [TokenAuthentication]
+    permission_classes = [ReadWriteSensibleProjectDataPermission]
 
     serializer_class = ProjectMemberSerializer
 
