@@ -778,5 +778,9 @@
   "participants": {
     "en": "Participants",
     "de": "Teilnehmer"
+  },
+  "no_permission": {
+    "en": "You do not have permission to do this.",
+    "de": "Dir fehlen die Berechtigungen für diese Aktion."
   }
 }

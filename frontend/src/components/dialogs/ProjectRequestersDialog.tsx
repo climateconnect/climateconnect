@@ -120,10 +120,8 @@ export default function ProjectRequestersDialog({
 }
 
 const ProjectRequesters = ({ initialRequesters, project, onClose }) => {
-  const classes = useStyles();
 
   const [requesters, setRequesters] = useState(initialRequesters);
-  const { showFeedbackMessage } = useContext(FeedbackContext)
   const { locale } = useContext(UserContext)
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
@@ -148,7 +146,7 @@ const ProjectRequesters = ({ initialRequesters, project, onClose }) => {
         <TableBody>
           {requesters.map((requester, index) => {
             return (
-              <TableRow key={index} className={classes.requester}>
+              <TableRow key={index}>
                 <Requester
                   project={project}
                   locale={locale}
@@ -172,60 +170,37 @@ const ProjectRequesters = ({ initialRequesters, project, onClose }) => {
  */
 const Requester = ({ handleUpdateRequesters, locale, project, requester, requestId, token }) => {
   const classes = useStyles();
-
-  /**
-   * Sends a POST to the backend to approve
-   * the membership request into the organizations_membershiprequests
-   * table. The API expects 2 dynamic parameters: the current project
-   * URL slug, and the ID of the original request, which is generated
-   * and returned to the client during the initial request.
-   *
-   * See https://github.com/climateconnect/climateconnect/issues/672
-   */
-  async function handleApproveRequest() {
-
-    const response = await apiRequest({
-      method: "post",
-      url: `/api/projects/${project.url_slug}/request_membership/approve/${requestId}/`,
-      headers: {
-        Authorization: `Token ${token}`,
-      },
-    });
-
-    if (!response?.data?.results) {
-      // TODO: error appropriately here
-    } else {
-      console.log("Approved!");
+  const { showFeedbackMessage } = useContext(FeedbackContext)
+  const texts = getTexts({"page": "general", "locale": locale})
+  async function handleRequest(approve: boolean) : Promise<void> {
+    const url = `/api/projects/${project.url_slug}/request_membership/${approve ? "approve" : "reject"}/${requestId}/`
+    try {
+      await apiRequest({
+        method: "post",
+        url: url,
+        locale: locale,
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+        payload: {}
+      });
+      showFeedbackMessage({
+        message: texts.no_permission,
+        success: true
+      })
+      // Now notify parent list to update current list
+      // of requesters to immediately
+      // show the updated state in the UI.
+      handleUpdateRequesters();
+    } catch (e) {
+      if(e.response.status === 401) {
+        showFeedbackMessage({
+          message: texts.no_permission,
+          error: true
+        })
+      }
+      console.log(e)
     }
-
-    // Now notify parent list to update current list
-    // of requesters to immediately
-    // show the updated state in the UI.
-    handleUpdateRequesters();
-  }
-
-  // See https://github.com/climateconnect/climateconnect/issues/672
-  async function handleRejectRequest() {
-    const cookies = new Cookies();
-    const token = cookies.get("auth_token");
-
-    const response = await apiRequest({
-      method: "post",
-      url: `/api/projects/${project.url_slug}/request_membership/reject/${requestId}/`,
-      token: token,
-      locale: locale
-    });
-
-    if (!response?.data?.results) {
-      // TODO: error appropriately here
-    } else {
-      console.log("Denied request.");
-    }
-
-    // Now notify parent list to update current list
-    // of requesters to immediately
-    // show the updated state in the UI.
-    handleUpdateRequesters();
   }
 
   return (
@@ -252,14 +227,14 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
             aria-label="approve project request"
             color="primary"
             disableRipple
-            onClick={handleApproveRequest}
+            onClick={() => handleRequest(true)}
           >
             <CheckIcon />
           </IconButton>
         </Tooltip>
 
         <Tooltip title="Deny">
-          <IconButton aria-label="deny project request" disableRipple onClick={handleRejectRequest}>
+          <IconButton aria-label="deny project request" disableRipple onClick={() => handleRequest(false)}>
             <BlockIcon />
           </IconButton>
         </Tooltip>

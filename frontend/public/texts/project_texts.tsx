@@ -970,7 +970,11 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     only_project_admins_can_view_join_requests: {
       en: "Only project admins can view join requests.",
-      de: "Nur Projektadministratoren können sehen, wer mitmachen möchte."
+      de: "Nur Projektadministratoren können sehen, wer mitmachen möchte.",
+    },
+    your_request_has_been_sent: {
+      en: "We notified the project owner that you would like to join this project.",
+      de: "Die Projektverantwortlichen wurden benachrichtigt, dass du gerne mitmachen möchtest."
     }
   };
 }

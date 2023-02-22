@@ -199,9 +199,16 @@ export default function ProjectPageRoot({
           Authorization: `Token ${token}`,
         },
       });
-
+      showFeedbackMessage({
+        message: texts.your_request_has_been_sent,
+        success: true
+      })
       setRequestedToJoinProject(true);
     } catch (error) {
+      showFeedbackMessage({
+        message: error?.response?.data?.message,
+        error: true
+      })
       if (error?.response?.data?.message === "Request already exists to join project") {
         setRequestedToJoinProject(true);
       }
