@@ -974,7 +974,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     your_request_has_been_sent: {
       en: "We notified the project owner that you would like to join this project.",
-      de: "Die Projektverantwortlichen wurden benachrichtigt, dass du gerne mitmachen möchtest."
-    }
+      de: "Die Projektverantwortlichen wurden benachrichtigt, dass du gerne mitmachen möchtest.",
+    },
   };
 }

@@ -102,10 +102,10 @@ const useStyles = makeStyles((theme) => {
 });
 
 export async function getServerSideProps(ctx) {
-  if(process.env.DONATION_CAMPAIGN_RUNNING !== "true")
+  if (process.env.DONATION_CAMPAIGN_RUNNING !== "true")
     return {
-      props: {}
-    }
+      props: {},
+    };
   const { goal_name, goal_amount, current_amount } = (await getDonations(ctx.locale))!;
   return {
     props: {

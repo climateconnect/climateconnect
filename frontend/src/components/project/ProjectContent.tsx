@@ -184,7 +184,7 @@ export default function ProjectContent({
   toggleShowRequests,
   handleSendProjectJoinRequest,
   requestedToJoinProject,
-  token
+  token,
 }) {
   const classes = useStyles({ isPersonalProject: project.isPersonalProject });
   const { user, locale } = useContext(UserContext);
@@ -202,12 +202,12 @@ export default function ProjectContent({
   // Fetch and populate requesters on initial load
   useEffect(async () => {
     //short circuit if the user doesn't have the necessary permissions to see join requests
-    if(!(user_permission && hasAdminPermissions)) {
-      return
+    if (!(user_permission && hasAdminPermissions)) {
+      return;
     }
     // Returns an array of objects with an ID (request ID) and
     // associated user profile.
-    try{
+    try {
       const membershipRequests = await getMembershipRequests(project.url_slug, locale, token);
       // Now transform to a shape of objects where a specific request ID is
       // alongside a user profile.
@@ -220,7 +220,7 @@ export default function ProjectContent({
       setRequesters(userRequests);
       setRequestersRetrieved(true);
     } catch (e) {
-      console.log(e.response.data)
+      console.log(e.response.data);
     }
   }, []);
 

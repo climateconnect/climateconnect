@@ -9,18 +9,18 @@ import { apiRequest } from "./apiOperations";
  * Note that the response includes a list of requests
  * (with corresponding request ID), and the users themselves.
  */
- export async function getMembershipRequests(url_slug: string, locale: CcLocale, token: string) {
-  try{
+export async function getMembershipRequests(url_slug: string, locale: CcLocale, token: string) {
+  try {
     const resp = await apiRequest({
       method: "get",
       url: `/api/projects/${url_slug}/requesters/`,
       locale: locale,
-      token: token
+      token: token,
     });
-  
+
     // TODO: we should probably have an associated timestamp with each request too.
     return resp.data.results;
-  } catch(e) {
-    throw e
+  } catch (e) {
+    throw e;
   }
 }

@@ -64,7 +64,7 @@ export default function ProjectRequestersDialog({
   requesters,
   url,
   user,
-  user_permission
+  user_permission,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -78,51 +78,46 @@ export default function ProjectRequestersDialog({
     <GenericDialog onClose={handleClose} open={open} title={texts.project_requesters_dialog_title}>
       <>
         {
-        // If we don't have any permissions, we can't load the join requests
-        !user_permission ? (
-          <Typography className={classes.noOpenRequestsText}>
-            {texts.only_project_admins_can_view_join_requests}
-          </Typography>
-        ) :
-        loading ? (
-          <LinearProgress />
-        ) : !user ? (
-          <>
-            <Typography>
-              {texts.please_log_in + " " + texts.to_see_this_projects_requesters + "!"}
+          // If we don't have any permissions, we can't load the join requests
+          !user_permission ? (
+            <Typography className={classes.noOpenRequestsText}>
+              {texts.only_project_admins_can_view_join_requests}
             </Typography>
-            <Container className={classes.loginButtonContainer}>
-              <Button
-                className={classes.loginButton}
-                variant="contained"
-                color="primary"
-                href={getLocalePrefix(locale) + "/signin?redirect=" + encodeURIComponent(url)}
-              >
-                {texts.log_in}
-              </Button>
-            </Container>
-          </>
-        ) : // If there are users requesting to join and we have permission to view them: render them!
-        requesters && requesters.length > 0 ? (
-          <ProjectRequesters
-            onClose={onClose}
-            project={project}
-            initialRequesters={requesters}
-          />
-        ) : (
-          <Typography className={classes.noOpenRequestsText}>
-            {texts.no_open_project_join_requests}
-          </Typography>
-        )}
+          ) : loading ? (
+            <LinearProgress />
+          ) : !user ? (
+            <>
+              <Typography>
+                {texts.please_log_in + " " + texts.to_see_this_projects_requesters + "!"}
+              </Typography>
+              <Container className={classes.loginButtonContainer}>
+                <Button
+                  className={classes.loginButton}
+                  variant="contained"
+                  color="primary"
+                  href={getLocalePrefix(locale) + "/signin?redirect=" + encodeURIComponent(url)}
+                >
+                  {texts.log_in}
+                </Button>
+              </Container>
+            </>
+          ) : // If there are users requesting to join and we have permission to view them: render them!
+          requesters && requesters.length > 0 ? (
+            <ProjectRequesters onClose={onClose} project={project} initialRequesters={requesters} />
+          ) : (
+            <Typography className={classes.noOpenRequestsText}>
+              {texts.no_open_project_join_requests}
+            </Typography>
+          )
+        }
       </>
     </GenericDialog>
   );
 }
 
 const ProjectRequesters = ({ initialRequesters, project, onClose }) => {
-
   const [requesters, setRequesters] = useState(initialRequesters);
-  const { locale } = useContext(UserContext)
+  const { locale } = useContext(UserContext);
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
   /**
@@ -131,11 +126,11 @@ const ProjectRequesters = ({ initialRequesters, project, onClose }) => {
    * current list.
    */
   async function handleUpdateRequesters() {
-    try{
-      const newRequesters = await getMembershipRequests(project.url_slug, locale, token)
+    try {
+      const newRequesters = await getMembershipRequests(project.url_slug, locale, token);
       setRequesters(newRequesters);
-    } catch(e){
-      console.log(e)
+    } catch (e) {
+      console.log(e);
     }
   }
 
@@ -170,10 +165,12 @@ const ProjectRequesters = ({ initialRequesters, project, onClose }) => {
  */
 const Requester = ({ handleUpdateRequesters, locale, project, requester, requestId, token }) => {
   const classes = useStyles();
-  const { showFeedbackMessage } = useContext(FeedbackContext)
-  const texts = getTexts({"page": "general", "locale": locale})
-  async function handleRequest(approve: boolean) : Promise<void> {
-    const url = `/api/projects/${project.url_slug}/request_membership/${approve ? "approve" : "reject"}/${requestId}/`
+  const { showFeedbackMessage } = useContext(FeedbackContext);
+  const texts = getTexts({ page: "general", locale: locale });
+  async function handleRequest(approve: boolean): Promise<void> {
+    const url = `/api/projects/${project.url_slug}/request_membership/${
+      approve ? "approve" : "reject"
+    }/${requestId}/`;
     try {
       await apiRequest({
         method: "post",
@@ -182,24 +179,24 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
         headers: {
           Authorization: `Token ${token}`,
         },
-        payload: {}
+        payload: {},
       });
       showFeedbackMessage({
         message: texts.no_permission,
-        success: true
-      })
+        success: true,
+      });
       // Now notify parent list to update current list
       // of requesters to immediately
       // show the updated state in the UI.
       handleUpdateRequesters();
     } catch (e) {
-      if(e.response.status === 401) {
+      if (e.response.status === 401) {
         showFeedbackMessage({
           message: texts.no_permission,
-          error: true
-        })
+          error: true,
+        });
       }
-      console.log(e)
+      console.log(e);
     }
   }
 
@@ -234,7 +231,11 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
         </Tooltip>
 
         <Tooltip title="Deny">
-          <IconButton aria-label="deny project request" disableRipple onClick={() => handleRequest(false)}>
+          <IconButton
+            aria-label="deny project request"
+            disableRipple
+            onClick={() => handleRequest(false)}
+          >
             <BlockIcon />
           </IconButton>
         </Tooltip>

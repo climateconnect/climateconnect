@@ -147,23 +147,22 @@ export default function ProjectOverview({
   const classes = useStyles({});
 
   const texts = getTexts({ page: "project", locale: locale, project: project });
-  
+
   const getHasRequestedToJoin = async () => {
-    try{
+    try {
       const resp = await apiRequest({
         method: "get",
         url: `/api/projects/${project.url_slug}/have_i_requested_to_join/`,
         locale: locale,
         token: token,
       });
-    
+
       // TODO: we should probably have an associated timestamp with each request too.
-      handleSetRequestedToJoinProject(resp.data.has_requested)
-    } catch(e) {
-      throw e
+      handleSetRequestedToJoinProject(resp.data.has_requested);
+    } catch (e) {
+      throw e;
     }
-  }
-  
+  };
 
   const [gotParams, setGotParams] = useState(false);
   useEffect(() => {
@@ -178,8 +177,8 @@ export default function ProjectOverview({
     // For non-members, check whether the user has requested to join,
     // so that we can update the state of the button as "Requested"
     // for the user.
-    if(user) {
-      getHasRequestedToJoin()
+    if (user) {
+      getHasRequestedToJoin();
     }
   }, []);
 
