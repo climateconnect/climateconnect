@@ -1063,9 +1063,10 @@ class ListProjectRequestersView(ListAPIView):
 
         return open_membership_requests
 
+
 class HasUserRequested(APIView):
     def get(self, request, url_slug):
-        if(not request.user.is_authenticated):
+        if not request.user.is_authenticated:
             return Response(
                 data={"message": f"You need to be logged in to use this endpoint"},
                 status=status.HTTP_401_UNAUTHORIZED,
@@ -1081,13 +1082,14 @@ class HasUserRequested(APIView):
             target_project=project,
             rejected_at=None,
             approved_at=None,
-            user=self.request.user
+            user=self.request.user,
         ).exists()
 
         return Response(
-                data={"has_requested": has_open_membership_request},
-                status=status.HTTP_200_OK,
-            )
+            data={"has_requested": has_open_membership_request},
+            status=status.HTTP_200_OK,
+        )
+
 
 class ListProjectLikesView(ListAPIView):
     permission_classes = [IsAuthenticated]

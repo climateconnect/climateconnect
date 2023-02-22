@@ -322,7 +322,7 @@ class UserProfile(models.Model):
     restricted_profile = models.BooleanField(
         help_text="Restrict user profile to perform certain actions on the platform.",
         verbose_name="Is profile restricted?",
-        default=False
+        default=False,
     )
 
     class Meta:
