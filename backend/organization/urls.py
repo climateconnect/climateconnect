@@ -207,12 +207,12 @@ urlpatterns = [
         name="leave-project",
     ),
     path(
-        "projects/<str:project_slug>/request_membership/<str:user_slug>/",
+        "projects/<str:url_slug>/request_membership/<str:user_slug>/",
         project_views.RequestJoinProject.as_view(),
         name="request-join-entity",
     ),
     path(
-        "projects/<str:project_slug>/request_membership/<str:request_action>/<str:request_id>/",
+        "projects/<str:url_slug>/request_membership/<str:request_action>/<str:request_id>/",
         project_views.ManageJoinProjectView.as_view(),
         name="request-membership-action-entity",
     ),

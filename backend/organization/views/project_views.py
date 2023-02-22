@@ -1172,7 +1172,7 @@ class RequestJoinProject(RetrieveUpdateAPIView):
 
     permission_classes = (IsAuthenticated,)
 
-    def post(self, request, user_slug, project_slug):
+    def post(self, request, user_slug, url_slug):
         required_params = ["user_availability", "message"]
         missing_param = any([param not in request.data for param in required_params])
         if missing_param:
@@ -1193,7 +1193,7 @@ class RequestJoinProject(RetrieveUpdateAPIView):
             )
 
         try:
-            project = Project.objects.get(url_slug=project_slug)
+            project = Project.objects.get(url_slug=url_slug)
         except Project.DoesNotExist:
             return Response(
                 {"message": "Requested project does not exist"},
@@ -1262,11 +1262,11 @@ class ManageJoinProjectView(RetrieveUpdateDestroyAPIView):
 
     serializer_class = ProjectMemberSerializer
 
-    lookup_field = "project_slug"
+    lookup_field = "url_slug"
 
-    def post(self, request, project_slug, request_action, request_id):
+    def post(self, request, url_slug, request_action, request_id):
         try:
-            project = Project.objects.filter(url_slug=project_slug).first()
+            project = Project.objects.filter(url_slug=url_slug).first()
         except:
             return Response(
                 {"message": "Project Does Not Exist"}, status=status.HTTP_404_NOT_FOUND
