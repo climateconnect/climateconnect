@@ -128,7 +128,7 @@ export default function Share({
   };
 
   const getOrgObject = (org) => {
-    return userOrganizations.find((o) => o.name === org);
+    return userOrganizations.find((o) => o.name.trim() === org);
   };
 
   const onSubmit = (event, values) => {
