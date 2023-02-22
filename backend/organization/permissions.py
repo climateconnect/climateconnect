@@ -68,7 +68,6 @@ class ReadWriteSensibleProjectDataPermission(BasePermission):
             project = Project.objects.get(url_slug=str(view.kwargs.get("url_slug")))
         except Project.DoesNotExist:
             return False
-
         if ProjectMember.objects.filter(
             Q(user=request.user)
             & Q(
@@ -316,7 +315,7 @@ class ApproveDenyProjectMemberRequest(BasePermission):
             return False
 
         project = Project.objects.filter(
-            url_slug=str(view.kwargs.get("project_slug"))
+            url_slug=str(view.kwargs.get("url_slug"))
         ).first()
 
         # When calling from the POST in ManageJoinProjectView, Verify
