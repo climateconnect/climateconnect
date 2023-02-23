@@ -1065,12 +1065,8 @@ class ListProjectRequestersView(ListAPIView):
 
 
 class HasRequestedToJoinProjectView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request, url_slug):
-        if not request.user.is_authenticated:
-            return Response(
-                data={"message": f"You need to be logged in to use this endpoint"},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
         try:
             project = Project.objects.get(url_slug=self.kwargs["url_slug"])
         except Project.DoesNotExist:
