@@ -173,7 +173,7 @@ urlpatterns = [
     # calling it has an open join request
     path(
         "projects/<str:url_slug>/have_i_requested_to_join/",
-        project_views.HasUserRequested.as_view(),
+        project_views.HasRequestedToJoinProjectView.as_view(),
         name="have-i-requested-to-join-project",
     ),
     path(

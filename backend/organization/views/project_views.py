@@ -1064,7 +1064,7 @@ class ListProjectRequestersView(ListAPIView):
         return open_membership_requests
 
 
-class HasUserRequested(APIView):
+class HasRequestedToJoinProjectView(APIView):
     def get(self, request, url_slug):
         if not request.user.is_authenticated:
             return Response(
