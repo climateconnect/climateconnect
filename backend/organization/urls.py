@@ -138,14 +138,9 @@ urlpatterns = [
         name="set-like-view",
     ),
     path(
-        "projects/<str:url_slug>/am_i_following/",
-        project_views.IsUserFollowing.as_view(),
+        "projects/<str:url_slug>/my_interactions/",
+        project_views.GetUserInteractionsWithProjectView.as_view(),
         name="am-i-following-view",
-    ),
-    path(
-        "projects/<str:url_slug>/am_i_liking/",
-        project_views.IsUserLiking.as_view(),
-        name="am-i-liking-view",
     ),
     path(
         "projects/<str:url_slug>/comment/",
@@ -168,13 +163,6 @@ urlpatterns = [
         "projects/<str:url_slug>/requesters/",
         project_views.ListProjectRequestersView.as_view(),
         name="list-requesters-view",
-    ),
-    # This endpoint returns whether the user
-    # calling it has an open join request
-    path(
-        "projects/<str:url_slug>/have_i_requested_to_join/",
-        project_views.HasRequestedToJoinProjectView.as_view(),
-        name="have-i-requested-to-join-project",
     ),
     path(
         "projects/<str:url_slug>/likes/",

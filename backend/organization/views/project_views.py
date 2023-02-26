@@ -903,14 +903,7 @@ class SetLikeView(APIView):
             )
 
 
-class IsUserFollowing(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, url_slug):
-        return check_if_user_follows_project(request.user, url_slug)
-
-
-class IsUserLiking(APIView):
+class GetUserInteractionsWithProjectView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, url_slug):
@@ -920,10 +913,27 @@ class IsUserLiking(APIView):
             raise NotFound(
                 detail="Project not found:" + url_slug, code=status.HTTP_404_NOT_FOUND
             )
+        
         is_liking = ProjectLike.objects.filter(
             user=request.user, project=project
         ).exists()
-        return Response({"is_liking": is_liking}, status=status.HTTP_200_OK)
+
+        is_following = ProjectFollower.objects.filter(
+            user=request.user, project=project
+        ).exists()
+
+        has_open_membership_request = MembershipRequests.objects.filter(
+            target_project=project,
+            rejected_at=None,
+            approved_at=None,
+            user=self.request.user,
+        ).exists()
+
+        return Response({
+            "liking": is_liking,
+            "following": is_following,
+            "has_requested_to_join": has_open_membership_request
+        }, status=status.HTTP_200_OK)
 
 
 class ProjectCommentView(APIView):
@@ -1062,29 +1072,6 @@ class ListProjectRequestersView(ListAPIView):
         )
 
         return open_membership_requests
-
-
-class HasRequestedToJoinProjectView(APIView):
-    permission_classes = [IsAuthenticated]
-    def get(self, request, url_slug):
-        try:
-            project = Project.objects.get(url_slug=self.kwargs["url_slug"])
-        except Project.DoesNotExist:
-            return Response(
-                data={"message": f"Project does not exist"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        has_open_membership_request = MembershipRequests.objects.filter(
-            target_project=project,
-            rejected_at=None,
-            approved_at=None,
-            user=self.request.user,
-        ).exists()
-
-        return Response(
-            data={"has_requested": has_open_membership_request},
-            status=status.HTTP_200_OK,
-        )
 
 
 class ListProjectLikesView(ListAPIView):
