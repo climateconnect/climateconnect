@@ -59,6 +59,7 @@ type Props = {
   resetAlertMessage?: () => void;
   isHubPage?: boolean;
   hideDonationCampaign?: boolean;
+  customFooterImage?: string;
 };
 //Wrapper layout component for pages where the content takes the whole width of the screen
 export default function WideLayout({
@@ -85,6 +86,7 @@ export default function WideLayout({
   resetAlertMessage,
   isHubPage,
   hideDonationCampaign,
+  customFooterImage,
 }: Props) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);
@@ -174,6 +176,7 @@ export default function WideLayout({
           noAbsolutePosition={noSpaceBottom}
           showOnScrollUp={showOnScrollUp}
           large={isStaticPage || largeFooter}
+          customFooterImage={customFooterImage}
         />
       )}
     </LayoutWrapper>
