@@ -45,6 +45,7 @@ fi
 
 cd backend
 python manage.py migrate
+python3 manage.py create_test_data --number_of_rows 4
 
 cd backend/
 python manage.py shell -c "
