@@ -1,35 +1,34 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/javascript-node-postgres
 {
-  "name": "Node.js & PostgreSQL",
-  "dockerComposeFile": "docker-compose.yml",
+  "name": "Climate Connect Dev",
+  "dockerComposeFile": [
+    "../docker-compose.yml",
+    "docker-compose.yml"
+  ],
   "service": "app",
-  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "workspaceFolder": "/workspace",
   "customizations": {
     "vscode": {
       "extensions": [
-        "esbenp.prettier-vscode",
-        "dbaeumer.vscode-eslint",
-        "ms-python.python"
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-azuretools.vscode-docker",
+        "eamodio.gitlens"
       ]
     }
-  },
-  "containerEnv": {
-    "PGPASSWORD": "backend",
-    "PGHOST": "db",
-    "PGUSER": "backend"
   },
 
   // Features to add to the dev container. More info: https://containers.dev/features.
   // "features": {},
-  "overrideCommand": false,
+  // "overrideCommand": false,
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // This can be used to network with other containers or with the host.
   // "forwardPorts": [3000, 5432],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "./initial_dev_setup.sh"
+  "postCreateCommand": "./dev_init.sh"
 
   // Configure tool-specific properties.
   // "customizations": {},
