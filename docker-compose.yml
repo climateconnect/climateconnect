@@ -3,6 +3,7 @@ services:
     image: postgis/postgis:14-3.3
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./docker-postgres-init:/docker-entrypoint-initdb.d
     environment:
       - POSTGRES_DB=climateconnect_db
       - POSTGRES_USER=admin

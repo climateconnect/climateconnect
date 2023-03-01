@@ -106,6 +106,7 @@ else:
     MIDDLEWARE = SECURITY_MIDDLEWARE + NORMAL_MIDDLEWARE
 
 CORS_ORIGIN_WHITELIST = [
+    "http://0.0.0.0:3000",
     "http://localhost:3000",
     "https://frontend-dot-inbound-lexicon-271522.ey.r.appspot.com",
     "https://alpha.climateconnect.earth",

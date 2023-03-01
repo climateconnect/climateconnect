@@ -3,10 +3,10 @@
 # Setup frontend env file
 if [[ ! -f frontend/.env ]]; then
     cat >frontend/.env <<EOF
-API_HOST="localhost"
-API_URL="http://127.0.0.1:8000"
-BASE_URL_HOST="localhost"
-SOCKET_URL="ws://localhost"
+API_HOST="0.0.0.0"
+API_URL="http://0.0.0.0:8000"
+BASE_URL_HOST="0.0.0.0"
+SOCKET_URL="ws://0.0.0.0"
 ENVIRONMENT="development"
 EOF
 else
@@ -46,10 +46,3 @@ fi
 cd backend
 python manage.py migrate
 python3 manage.py create_test_data --number_of_rows 4
-
-cd backend/
-python manage.py shell -c "
-# create superuser so you can log in
-from django.contrib.auth.models import User
-if not User.objects.filter(username='admin').exists(): User.objects.create_superuser('admin', password='admin')
-"
