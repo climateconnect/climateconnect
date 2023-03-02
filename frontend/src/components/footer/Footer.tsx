@@ -80,6 +80,9 @@ const useStyles = makeStyles((theme) => ({
   link: {
     marginRight: theme.spacing(1),
   },
+  customFooterImage: {
+    height: 100
+  }
 }));
 
 //TODO: make footer stay on bottom on normal layout again
@@ -89,6 +92,7 @@ export default function Footer({
   noAbsolutePosition,
   showOnScrollUp,
   large,
+  customFooterImage,
 }: any) {
   if (!large)
     return (
@@ -97,12 +101,19 @@ export default function Footer({
         noSpacingTop={noSpacingTop}
         noAbsolutePosition={noAbsolutePosition}
         showOnScrollUp={showOnScrollUp}
+        customFooterImage={customFooterImage}
       />
     );
   else return <LargeFooter className={className} />;
 }
 
-const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScrollUp }) => {
+const SmallFooter = ({
+  className,
+  noSpacingTop,
+  noAbsolutePosition,
+  showOnScrollUp,
+  customFooterImage,
+}) => {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("xs"));
   const { locale } = useContext(UserContext);
@@ -162,12 +173,13 @@ const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScroll
         </Box>
         {!isNarrowScreen && (
           <Box component="span" className={classes.centerText}>
-            Made with <FavoriteIcon className={classes.heart} /> for{" "}
-            <img
-              className={classes.earth}
-              src="/images/earth.svg"
-              alt={texts.picture_of_our_earth}
-            />
+            {
+              customFooterImage ? (
+                <img src={customFooterImage} className={classes.customFooterImage}/>
+              ) : (
+                <MadeWithLoveForEarthSign />
+              )            
+            }
           </Box>
         )}
         <Box component="span" className={classes.rightBox}>
@@ -185,3 +197,19 @@ const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScroll
     </Box>
   );
 };
+
+const MadeWithLoveForEarthSign = () => {
+  const classes = useStyles()
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "navigation", locale: locale });
+  return (
+    <>
+      Made with <FavoriteIcon className={classes.heart} /> for{" "}
+      <img
+        className={classes.earth}
+        src="/images/earth.svg"
+        alt={texts.picture_of_our_earth}
+      />
+    </>
+  )
+}

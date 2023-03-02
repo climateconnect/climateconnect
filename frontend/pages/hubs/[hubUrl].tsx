@@ -245,8 +245,9 @@ export default function Hub({
         image={getImageUrl(image)}
         isHubPage
         hideDonationCampaign
+        customFooterImage={hubData.custom_footer_image && getImageUrl(hubData.custom_footer_image)}
       >
-        <div className={classes.contentUnderHeader}>
+        <div>
           <NavigationSubHeader hubName={name} allHubs={allHubs} isLocationHub={isLocationHub} />
           {<DonationCampaignInformation />}
           <HubHeaderImage
