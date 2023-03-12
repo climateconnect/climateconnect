@@ -21,7 +21,18 @@ export type Project = {
   name?: string;
   project_parents?: any[];
   tags?: any[];
+  type: ProjectType;
 };
+
+export type ProjectType = "project" | "idea" | "event";
+
+export type Organization = {
+  location: any;
+  name: string;
+  thumbnail_image: string;
+  url_slug: string;
+};
+
 export type CcLocale = "en" | "de";
 
 declare module "@material-ui/core/styles/createPalette" {

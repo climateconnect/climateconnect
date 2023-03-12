@@ -357,6 +357,7 @@ const getDefaultProjectValues = (
     team_members: [{ ...loggedInUser }],
     website: "",
     language: locale,
+    type: "project",
   };
 };
 
