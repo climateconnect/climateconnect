@@ -110,7 +110,7 @@ export default function ChatMemberManagementOverlay({
       url: "/api/chat/" + chat_uuid + "/update_member/" + m.participant_id + "/",
       token: token,
       locale: locale,
-    });
+    }).catch(console.error);
   };
 
   const updateMember = (m, locale) => {
@@ -120,7 +120,7 @@ export default function ChatMemberManagementOverlay({
       token: token,
       payload: parseMemberForUpdateRequest(m),
       locale: locale,
-    });
+    }).catch(console.error);
   };
 
   const createMembers = (chat_participants, locale) => {
@@ -130,7 +130,7 @@ export default function ChatMemberManagementOverlay({
       token: token,
       payload: parseMembersForCreateRequest(chat_participants),
       locale: locale,
-    });
+    }).catch(console.error);
   };
 
   const updateCreator = (new_creator, locale) => {
@@ -140,7 +140,7 @@ export default function ChatMemberManagementOverlay({
       token: token,
       payload: parseMemberForUpdateRequest(new_creator),
       locale: locale,
-    });
+    }).catch(console.error);
   };
 
   const parseMembersForCreateRequest = (members) => {

@@ -103,7 +103,7 @@ export default function ManageOrganizationMembers({
       url: "/api/organizations/" + organization.url_slug + "/update_member/" + m.member_id + "/",
       token: token,
       locale: locale,
-    });
+    }).catch(console.error);
   };
 
   const updateMember = (m) => {
@@ -113,7 +113,7 @@ export default function ManageOrganizationMembers({
       token: token,
       payload: parseMemberForUpdateRequest(m, organization),
       locale: locale,
-    });
+    }).catch(console.error);
   };
 
   const createMembers = (organization_members) => {
@@ -123,7 +123,7 @@ export default function ManageOrganizationMembers({
       token: token,
       payload: parseMembersForCreateRequest(organization_members, organization),
       locale: locale,
-    });
+    }).catch(console.error);
   };
 
   const updateCreator = (new_creator) => {
@@ -133,7 +133,7 @@ export default function ManageOrganizationMembers({
       token: token,
       payload: parseMemberForUpdateRequest(new_creator, organization),
       locale: locale,
-    });
+    }).catch(console.error);
   };
 
   return (

@@ -63,7 +63,8 @@ export default function InputWithMentions({ baseUrl, value, onChange, placeholde
           id: user.url_slug,
         }));
       })
-      .then(callback);
+      .then(callback)
+      .catch(console.error);
   }
 
   return (
