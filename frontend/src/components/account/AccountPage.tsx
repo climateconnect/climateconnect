@@ -246,7 +246,7 @@ export default function AccountPage({
   const toggleFollowOrganization = () => {
     handleFollow(isUserFollowing, false, true);
     apiRequest({
-      method: "post",
+      method: "POST",
       url: "/api/organizations/" + account.url_slug + "/set_follow/",
       payload: { following: !isUserFollowing },
       token: token,
@@ -576,7 +576,7 @@ export default function AccountPage({
 const getFollowers = async (organization, token, locale) => {
   try {
     const resp = await apiRequest({
-      method: "get",
+      method: "GET",
       url: "/api/organizations/" + organization.url_slug + "/followers/",
       token: token,
       locale: locale,

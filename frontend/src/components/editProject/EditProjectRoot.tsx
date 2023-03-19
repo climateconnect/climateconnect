@@ -107,7 +107,7 @@ export default function EditProjectRoot({
       translations
     );
     apiRequest({
-      method: "patch",
+      method: "PATCH",
       url: "/api/projects/" + project.url_slug + "/",
       payload: await parseProjectForRequest(
         getProjectWithoutRedundancies(project, oldProject),
@@ -173,7 +173,7 @@ export default function EditProjectRoot({
       translations
     );
     apiRequest({
-      method: "patch",
+      method: "PATCH",
       url: "/api/projects/" + project.url_slug + "/",
       payload: await parseProjectForRequest(
         getProjectWithoutRedundancies(project, oldProject),
@@ -200,7 +200,7 @@ export default function EditProjectRoot({
 
   const deleteProject = () => {
     apiRequest({
-      method: "delete",
+      method: "DELETE",
       url: "/api/projects/" + project.url_slug + "/",
       token: token,
       locale: locale,

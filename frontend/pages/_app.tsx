@@ -93,7 +93,7 @@ export default function MyApp({ Component, pageProps = {} }) {
     if (!develop) cookieProps.domain = "." + API_HOST;
     try {
       await apiRequest({
-        method: "post",
+        method: "POST",
         url: "/logout/",
         token: token,
         payload: {},
@@ -318,7 +318,7 @@ const setNotificationsRead = async (token, notifications, locale) => {
   if (token) {
     try {
       const resp = await apiRequest({
-        method: "post",
+        method: "POST",
         url: "/api/set_user_notifications_read/",
         payload: { notifications: notifications.map((n) => n.id) },
         token: token,
@@ -335,7 +335,7 @@ async function getLoggedInUser(token) {
   if (token) {
     try {
       const resp = await apiRequest({
-        method: "get",
+        method: "GET",
         url: "/api/my_profile/",
         token: token,
       });
@@ -360,7 +360,7 @@ async function getNotifications(token, locale) {
   if (token) {
     try {
       const resp = await apiRequest({
-        method: "get",
+        method: "GET",
         url: "/api/notifications/",
         locale: locale,
         token: token,
@@ -384,7 +384,7 @@ async function getDonationGoalData(locale) {
   }
   try {
     const resp = await apiRequest({
-      method: "get",
+      method: "GET",
       url: "/api/donation_goal_progress/",
       locale: locale,
     });

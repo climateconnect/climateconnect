@@ -73,14 +73,13 @@ export default function Signin() {
     event.preventDefault();
     setIsLoading(true);
     apiRequest({
-      method: "post",
+      method: "POST",
       url: "/login/",
       payload: {
         username: values.username.toLowerCase(),
         password: values.password,
       },
       locale: locale,
-      shouldThrowError: true,
     })
       .then(async function (response) {
         await signIn(response.data.token, response.data.expiry, redirectUrl);

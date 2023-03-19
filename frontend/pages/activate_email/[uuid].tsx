@@ -28,7 +28,7 @@ async function newEmailVerification(uuid, token, locale) {
   };
   try {
     const response = await apiRequest({
-      method: "post",
+      method: "POST",
       url: "/api/verify_new_email/",
       payload: payload,
       token: token,

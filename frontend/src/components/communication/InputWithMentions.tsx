@@ -52,7 +52,7 @@ export default function InputWithMentions({ baseUrl, value, onChange, placeholde
   function lookupUsers(searchValue, callback) {
     if (!searchValue) return;
     apiRequest({
-      method: "get",
+      method: "GET",
       url: (baseUrl + searchValue).replace(process.env.API_URL, ""),
       locale: locale,
     })

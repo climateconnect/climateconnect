@@ -19,7 +19,7 @@ export default function Blog({ bodyContent, headContent }) {
     <WebflowPage
       bodyContent={bodyContent}
       headContent={headContent}
-      pageKey="post"
+      pageKey="POST"
       className={classes.root}
     />
   );

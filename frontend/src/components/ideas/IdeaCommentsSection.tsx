@@ -72,10 +72,9 @@ export default function IdeaCommentsSection({
       const resp = await apiRequest({
         url: "/api/ideas/" + idea.url_slug + "/comment/",
         payload: payload,
-        method: "post",
+        method: "POST",
         token: token,
         locale: locale,
-        shouldThrowError: true,
       });
       handleAddComment(resp.data);
       if (setDisplayReplies) setDisplayReplies(true);
@@ -89,7 +88,7 @@ export default function IdeaCommentsSection({
   const onDeleteComment = async (post) => {
     try {
       await apiRequest({
-        method: "delete",
+        method: "DELETE",
         url: "/api/ideas/" + idea.url_slug + "/comments/" + post.id + "/",
         token: token,
         locale: locale,

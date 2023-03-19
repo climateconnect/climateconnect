@@ -200,7 +200,7 @@ export default function ClimateMatchResultsRoot() {
 const getSuggestions = async ({ token, page, climatematch_token, locale }) => {
   try {
     const args: any = {
-      method: "get",
+      method: "GET",
       url: `/api/climatematch_results/?range_start=${page * 10}&range_end=${(page + 1) * 10}`,
       locale: locale,
     };

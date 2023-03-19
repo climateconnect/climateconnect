@@ -50,7 +50,7 @@ export default function FeedbackButton({ justLink, children }: any) {
     const token = cookies.get("auth_token");
     try {
       const response = await apiRequest({
-        method: "post",
+        method: "POST",
         url: "/api/feedback/",
         payload: data,
         token: token,

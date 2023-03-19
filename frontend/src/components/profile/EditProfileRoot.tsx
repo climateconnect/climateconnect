@@ -100,12 +100,11 @@ export default function EditAccountRoot({
       )
     );
     apiRequest({
-      method: "post",
+      method: "POST",
       url: "/api/edit_profile/",
       payload: payload,
       token: token,
       locale: locale,
-      shouldThrowError: true,
     })
       .then(function (response) {
         Router.push({

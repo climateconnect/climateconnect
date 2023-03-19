@@ -98,7 +98,7 @@ export default function Inbox({ chatData, initialNextPage }) {
     const url = `/api/chat/?page=1&search=${filter}`;
     const response = await apiRequest({
       token: token,
-      method: "get",
+      method: "GET",
       url: url,
       locale: locale,
     });
@@ -118,7 +118,7 @@ export default function Inbox({ chatData, initialNextPage }) {
     const url = `/api/chat/?page=${searchedChatsState.nextPage}&search=${searchTerm}`;
     const response = await apiRequest({
       token: token,
-      method: "get",
+      method: "GET",
       url: url,
       locale: locale,
     });
@@ -295,7 +295,7 @@ async function getChatsOfLoggedInUser(token, nextPage, locale) {
   try {
     const url = `/api/chats/?page=${nextPage}`;
     const resp = await apiRequest({
-      method: "get",
+      method: "GET",
       url: url,
       token: token,
       locale: locale,

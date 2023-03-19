@@ -69,7 +69,7 @@ async function requestSetPassword(uuid, new_password, setErrorMessage, texts, lo
   };
   try {
     const response = await apiRequest({
-      method: "post",
+      method: "POST",
       url: "/api/set_new_password/",
       payload: payload,
       headers: headers,

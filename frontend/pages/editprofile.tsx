@@ -86,11 +86,10 @@ export default function EditProfilePage({ skillsOptions, availabilityOptions, us
 async function getSkillsOptions(token, locale) {
   try {
     const resp = await apiRequest({
-      method: "get",
+      method: "GET",
       url: "/skills/",
       token: token,
       locale: locale,
-      shouldThrowError: true,
     });
     if (resp.data.results.length === 0) return null;
     else {
@@ -110,7 +109,6 @@ async function getAvailabilityOptions(token, locale) {
       url: "/availability/",
       token: token,
       locale: locale,
-      shouldThrowError: true,
     });
     if (resp.data.results.length === 0) return null;
     else {
@@ -130,7 +128,6 @@ async function getUserProfile(token, locale) {
       url: "/api/edit_profile/",
       token: token,
       locale: locale,
-      shouldThrowError: true,
     });
     return resp.data;
   } catch (err: any) {

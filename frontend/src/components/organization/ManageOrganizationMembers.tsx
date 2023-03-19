@@ -99,43 +99,39 @@ export default function ManageOrganizationMembers({
 
   const deleteMember = (m, locale) => {
     apiRequest({
-      method: "delete",
+      method: "DELETE",
       url: "/api/organizations/" + organization.url_slug + "/update_member/" + m.member_id + "/",
       token: token,
-      shouldThrowError: true,
       locale: locale,
     });
   };
 
   const updateMember = (m) => {
     apiRequest({
-      method: "patch",
+      method: "PATCH",
       url: "/api/organizations/" + organization.url_slug + "/update_member/" + m.member_id + "/",
       token: token,
       payload: parseMemberForUpdateRequest(m, organization),
-      shouldThrowError: true,
       locale: locale,
     });
   };
 
   const createMembers = (organization_members) => {
     apiRequest({
-      method: "post",
+      method: "POST",
       url: "/api/organizations/" + organization.url_slug + "/add_members/",
       token: token,
       payload: parseMembersForCreateRequest(organization_members, organization),
-      shouldThrowError: true,
       locale: locale,
     });
   };
 
   const updateCreator = (new_creator) => {
     apiRequest({
-      method: "post",
+      method: "POST",
       url: "/api/organizations/" + organization.url_slug + "/change_creator/",
       token: token,
       payload: parseMemberForUpdateRequest(new_creator, organization),
-      shouldThrowError: true,
       locale: locale,
     });
   };

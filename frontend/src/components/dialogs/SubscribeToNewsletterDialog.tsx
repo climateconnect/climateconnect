@@ -110,7 +110,7 @@ const subscribeToNewsletter = (emailAddress, locale) => {
     "Content-Type": "application/json",
   };
   apiRequest({
-    method: "post",
+    method: "POST",
     url: url,
     payload: payload,
     headers: headers,

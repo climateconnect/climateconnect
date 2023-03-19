@@ -46,7 +46,7 @@ export default function Settings({ settings }) {
 const getSettings = async (token, locale) => {
   try {
     const resp = await apiRequest({
-      method: "get",
+      method: "GET",
       url: "/api/account_settings/",
       token: token,
       locale: locale,

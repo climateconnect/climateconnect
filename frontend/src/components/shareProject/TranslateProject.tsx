@@ -105,7 +105,7 @@ export default function TranslateProject({
     setWaitingForTranslation(true);
     try {
       const response = await apiRequest({
-        method: "post",
+        method: "POST",
         url: "/api/translate_many/",
         payload: {
           texts: {
@@ -117,7 +117,6 @@ export default function TranslateProject({
           target_language: "en",
         },
         locale: locale,
-        shouldThrowError: true,
       });
       const translations = response.data.translations;
       const translationsObject = Object.keys(translations).reduce(function (obj, key) {

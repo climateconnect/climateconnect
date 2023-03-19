@@ -131,12 +131,11 @@ export default function EditOrganizationRoot({
           translations
         );
       apiRequest({
-        method: "patch",
+        method: "PATCH",
         url: "/api/organizations/" + encodeURI(organization.url_slug) + "/",
         payload: payload,
         token: token,
         locale: locale,
-        shouldThrowError: true,
       })
         .then(function () {
           Router.push({
@@ -270,7 +269,7 @@ export default function EditOrganizationRoot({
 async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "get",
+      method: "GET",
       url: "/api/organizations/" + organizationUrl + "/",
       token: token,
       locale: locale,

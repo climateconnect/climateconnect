@@ -113,7 +113,7 @@ export default function Signup() {
     };
     setIsLoading(true);
     apiRequest({
-      method: "post",
+      method: "POST",
       url: "/signup/",
       payload: payload,
       headers: headers,

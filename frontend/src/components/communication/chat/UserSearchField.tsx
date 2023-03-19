@@ -88,7 +88,7 @@ export default function UserSearchField({ cancelUserSearch, setErrorMessage }) {
 
       console.log(payload);
       apiRequest({
-        method: "post",
+        method: "POST",
         url: urlPostfix,
         payload: payload,
         token: token,
