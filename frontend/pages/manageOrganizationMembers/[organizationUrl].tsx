@@ -1,5 +1,6 @@
 import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
+import { GetServerSidePropsContext } from "next";
 import Cookies from "next-cookies";
 import React, { useContext } from "react";
 
@@ -28,7 +29,7 @@ export async function getServerSideProps(ctx) {
   const texts = getTexts({ page: "organization", locale: ctx.locale });
   if (ctx.req && !auth_token) {
     const message = texts.you_have_to_log_in_to_manage_organization_members;
-    return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
+    return sendToLogin(ctx, message);
   }
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
   const [organization, members, rolesOptions, availabilityOptions] = await Promise.all([
@@ -87,7 +88,10 @@ export default function manageOrganizationMembers({
     members.find((m) => m.id === user.id).role.role_type !== ROLE_TYPES.read_write_type
   )
     return (
-      <WideLayout title={texts.no_permission_to_manage_members_of_this_org} hideHeadline={true}>
+      <WideLayout
+        title={texts.no_permission_to_manage_members_of_this_org}
+        //hideHeadline={true}
+      >
         <Typography variant="h4" color="primary" className={classes.headline}>
           {texts.need_to_be_admin_to_manage_org_members}
         </Typography>

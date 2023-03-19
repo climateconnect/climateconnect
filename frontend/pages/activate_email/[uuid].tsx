@@ -12,7 +12,7 @@ export async function getServerSideProps(ctx) {
   if (ctx.req && !auth_token) {
     const texts = getTexts({ page: "activate_email", locale: ctx.locale });
     const message = texts.log_in_to_verify_email;
-    return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
+    return sendToLogin(ctx, message);
   }
   return {
     props: {

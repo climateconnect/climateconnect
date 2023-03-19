@@ -34,7 +34,7 @@ export async function getServerSideProps(ctx) {
   const texts = getTexts({ page: "project", locale: ctx.locale });
   if (ctx.req && !auth_token) {
     const message = texts.please_log_in_to_edit_project;
-    return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
+    return sendToLogin(ctx, message);
   }
   const projectUrl = encodeURI(ctx.query.projectUrl);
   const [

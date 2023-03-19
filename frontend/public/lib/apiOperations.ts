@@ -4,6 +4,7 @@ import { CcLocale } from "../../src/types";
 import tokenConfig from "../config/tokenConfig";
 import type { UrlObject } from "url";
 import { ParsedUrlQueryInput } from "querystring";
+import { GetServerSidePropsContext } from "next/types";
 
 type Args = {
   method: Method;
@@ -71,13 +72,15 @@ export const redirect = (
   Router.push(payload);
 };
 
-export const sendToLogin = async (ctx, message, locale: CcLocale, relativePath: string) => {
-  const path = relativePath ? relativePath : ctx.asPath;
-  const pathName = path.substr(1, path.length);
+export const sendToLogin = async (
+  { resolvedUrl, locale, res }: GetServerSidePropsContext,
+  message: string
+) => {
+  const pathName = resolvedUrl.slice(1);
   const languagePrefix = locale === "en" ? "" : `/${locale}`;
   const url = languagePrefix + "/signin?redirect=" + pathName + "&message=" + message;
-  ctx.res.writeHead(302, { Location: url });
-  ctx.res.end();
+  res.writeHead(302, { Location: url });
+  res.end();
   return;
 };
 
