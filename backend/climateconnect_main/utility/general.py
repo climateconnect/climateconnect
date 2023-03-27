@@ -56,3 +56,12 @@ def get_allowed_hosts(ALLOWED_HOSTS_ENV):
             if not host in allowed_hosts:
                 allowed_hosts.append(host)
     return allowed_hosts
+
+
+def get_prop_in_language(obj, prop_name: str, language_code: str) -> str:
+    lang_translation_attr = "{}_{}_translation".format(prop_name, language_code)
+    if hasattr(obj, lang_translation_attr):
+        translation = getattr(obj, lang_translation_attr)
+        if language_code != "en" and translation != None:
+            return translation
+    return getattr(obj, prop_name)

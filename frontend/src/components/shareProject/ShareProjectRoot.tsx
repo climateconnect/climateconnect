@@ -75,6 +75,7 @@ export default function ShareProjectRoot({
   statusOptions,
   token,
   setMessage,
+  projectTypeOptions,
 }) {
   const classes = useStyles();
   const { locale, locales } = useContext(UserContext);
@@ -254,9 +255,8 @@ export default function ShareProjectRoot({
             <ShareProject
               project={project}
               handleSetProjectData={handleSetProject}
-              goToNextStep={goToNextStep}
               userOrganizations={userOrganizations}
-              setMessage={setMessage}
+              projectTypeOptions={projectTypeOptions}
             />
           )}
           {curStep.key === "selectCategory" && (

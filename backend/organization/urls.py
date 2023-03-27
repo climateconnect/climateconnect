@@ -180,6 +180,11 @@ urlpatterns = [
         name="list-project-status",
     ),
     path(
+        "project_type_options/",
+        project_views.ListProjectTypeOptions.as_view(),
+        name="list-project-types",
+    ),
+    path(
         "sitemap/organizations/",
         organization_views.ListOrganizationsForSitemap.as_view(),
         name="list-organizations-for-sitemap",

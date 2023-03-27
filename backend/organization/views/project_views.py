@@ -56,6 +56,9 @@ from organization.models import (
     OrganizationFollower,
 )
 
+from organization.models.status import ProjectTypes
+from organization.serializers.status import ProjectTypesSerializer
+
 from organization.models.members import MembershipRequests
 from organization.models.translations import ProjectTranslation
 
@@ -846,6 +849,14 @@ class ListProjectStatus(ListAPIView):
         return ProjectStatus.objects.all()
 
 
+class ListProjectTypeOptions(ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = ProjectTypesSerializer
+
+    def get_queryset(self):
+        return ProjectTypes.objects.all()
+
+
 class SetFollowView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -913,7 +924,7 @@ class GetUserInteractionsWithProjectView(APIView):
             raise NotFound(
                 detail="Project not found:" + url_slug, code=status.HTTP_404_NOT_FOUND
             )
-        
+
         is_liking = ProjectLike.objects.filter(
             user=request.user, project=project
         ).exists()
@@ -929,11 +940,14 @@ class GetUserInteractionsWithProjectView(APIView):
             user=self.request.user,
         ).exists()
 
-        return Response({
-            "liking": is_liking,
-            "following": is_following,
-            "has_requested_to_join": has_open_membership_request
-        }, status=status.HTTP_200_OK)
+        return Response(
+            {
+                "liking": is_liking,
+                "following": is_following,
+                "has_requested_to_join": has_open_membership_request,
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class ProjectCommentView(APIView):

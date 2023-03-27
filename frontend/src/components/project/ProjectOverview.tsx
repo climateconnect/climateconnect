@@ -140,7 +140,7 @@ export default function ProjectOverview({
   toggleShowFollowers,
   toggleShowLikes,
   token,
-  user
+  user,
 }) {
   const classes = useStyles({});
 

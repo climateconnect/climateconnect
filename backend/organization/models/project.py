@@ -5,6 +5,7 @@ from django.contrib.postgres.fields import ArrayField
 from organization.models import (
     Organization,
 )
+from organization.models.status import ProjectTypes
 from climateconnect_api.models import (
     Skill,
 )
@@ -51,6 +52,15 @@ class Project(models.Model):
         verbose_name="Project Status",
         related_name="project_status",
         on_delete=models.PROTECT,
+    )
+
+    project_type = models.ForeignKey(
+        "ProjectTypes",
+        help_text="Points to project's type",
+        verbose_name="Project Type",
+        related_name="project_type",
+        on_delete=models.PROTECT,
+        default=ProjectTypes.get_default_pk,
     )
 
     start_date = models.DateTimeField(

@@ -46,19 +46,16 @@ const useStyles = makeStyles((theme) => ({
 type Args = {
   project: Project;
   handleSetProjectData: Function;
-  goToNextStep: Function;
   userOrganizations: Array<Organization>;
-  setMessage: Function;
+  projectTypeOptions: Object;
 };
 
 export default function Share({
   project,
   handleSetProjectData,
-  goToNextStep,
   userOrganizations,
-  setMessage,
+  projectTypeOptions,
 }: Args) {
-  console.log(userOrganizations);
   const organizationOptions = !userOrganizations
     ? []
     : userOrganizations.map((org) => {
@@ -118,6 +115,7 @@ export default function Share({
         className={classes.field}
         value={project.type}
         onChange={onChangeProjectType}
+        types={projectTypeOptions}
       />
     </div>
   );

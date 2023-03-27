@@ -26,6 +26,7 @@ from organization.models import (
     ProjectLike,
     OrganizationFollower,
     OrgProjectPublished,
+    ProjectTypes,
 )
 
 
@@ -41,6 +42,7 @@ pass_through_models = (
     PostComment,
     ProjectComment,
     ProjectStatus,
+    ProjectTypes,
     ProjectCollaborators,
     ProjectFollower,
     OrganizationFieldTagging,
@@ -65,8 +67,12 @@ admin.site.register(Organization, OrganizationAdmin)
 
 class ProjectAdmin(admin.ModelAdmin):
     search_fields = (
-        "name", "url_slug", "loc__name",
-        "loc__city", "loc__state", "loc__country"
+        "name",
+        "url_slug",
+        "loc__name",
+        "loc__city",
+        "loc__state",
+        "loc__country",
     )
     list_filter = ("status",)
 

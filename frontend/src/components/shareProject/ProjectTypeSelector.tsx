@@ -1,15 +1,13 @@
 import {
   Card,
-  FormControlLabel,
   Grid,
   makeStyles,
   Radio,
   RadioGroup,
   Typography,
 } from "@material-ui/core";
-import { SportsRugbySharp } from "@material-ui/icons";
 import React from "react";
-import { ProjectType } from "../../types";
+import { getImageUrl } from "../../../public/lib/imageOperations";
 
 const useStyles = makeStyles((theme) => ({
   reset: {
@@ -62,32 +60,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProjectTypeSelector({ className, value, onChange }) {
+export default function ProjectTypeSelector({ className, value, types, onChange }) {
   const classes = useStyles();
-  const types = [
-    {
-      name: "Project",
-      value: "project",
-      icon: "project.png",
-      helpText: "Not an idea or event? Click here",
-    },
-    {
-      name: "Idea",
-      value: "idea",
-      icon: "idea.svg",
-      helpText: "Share your climate idea to find help and knowledge",
-    },
-    {
-      name: "Event",
-      value: "event",
-      icon: "calendar.png",
-      helpText: "Your project will show up in the event calendar",
-    },
-  ];
   return (
     <div className={className}>
       <RadioGroup>
-        <Grid container component="ul" spacing={2} className={`${classes.reset} ${classes.root}`}>
+        <Grid container component="ul" spacing={2} className={classes.reset}>
           {types.map((type) => (
             <Grid item xs={12} sm={6} md={6} lg={6} component="li">
               <ProjectTypeBox type={type} value={value} onChange={onChange} />
@@ -102,26 +80,26 @@ export default function ProjectTypeSelector({ className, value, onChange }) {
 const ProjectTypeBox = ({ type, value, onChange }) => {
   const classes = useStyles();
   const handleChangeValue = (e) => {
-    onChange(type.value);
+    onChange(type.type_id);
   };
   return (
     <Card
       variant="outlined"
-      className={`${classes.box} ${value === type.value && classes.boxActive}`}
+      className={`${classes.box} ${value === type.type_id && classes.boxActive}`}
       onClick={handleChangeValue}
     >
       <div className={classes.imageContainer}>
-        <img src={`/images/${type.icon}`} className={classes.image} />
+        <img src={getImageUrl(type.icon)} className={classes.image} />
       </div>
       <div className={classes.textBox}>
         <Typography className={classes.headline}>{type.name}</Typography>
-        <Typography className={classes.helpText}>{type.helpText}</Typography>
+        <Typography className={classes.helpText}>{type.help_text}</Typography>
       </div>
       <Radio
-        checked={value === type.value}
+        checked={value === type.type_id}
         onChange={handleChangeValue}
         name={type.name}
-        value={type.value}
+        value={type.type_id}
         className={classes.radioButton}
         color="primary"
       />
