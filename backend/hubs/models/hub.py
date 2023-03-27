@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 def hub_image_path(instance, filename):
     return "hubs/{}/{}".format(instance.id, filename)
 
+
 def hub_footer_image_path(instance, filename):
     return "hub_footers/{}/{}".format(instance.id, filename)
 

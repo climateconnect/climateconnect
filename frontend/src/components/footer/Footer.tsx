@@ -81,8 +81,8 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
   },
   customFooterImage: {
-    height: 100
-  }
+    height: 100,
+  },
 }));
 
 //TODO: make footer stay on bottom on normal layout again
@@ -173,13 +173,11 @@ const SmallFooter = ({
         </Box>
         {!isNarrowScreen && (
           <Box component="span" className={classes.centerText}>
-            {
-              customFooterImage ? (
-                <img src={customFooterImage} className={classes.customFooterImage}/>
-              ) : (
-                <MadeWithLoveForEarthSign />
-              )            
-            }
+            {customFooterImage ? (
+              <img src={customFooterImage} className={classes.customFooterImage} />
+            ) : (
+              <MadeWithLoveForEarthSign />
+            )}
           </Box>
         )}
         <Box component="span" className={classes.rightBox}>
@@ -199,17 +197,13 @@ const SmallFooter = ({
 };
 
 const MadeWithLoveForEarthSign = () => {
-  const classes = useStyles()
+  const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   return (
     <>
       Made with <FavoriteIcon className={classes.heart} /> for{" "}
-      <img
-        className={classes.earth}
-        src="/images/earth.svg"
-        alt={texts.picture_of_our_earth}
-      />
+      <img className={classes.earth} src="/images/earth.svg" alt={texts.picture_of_our_earth} />
     </>
-  )
-}
+  );
+};

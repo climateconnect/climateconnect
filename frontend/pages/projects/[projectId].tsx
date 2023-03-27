@@ -115,7 +115,7 @@ export default function ProjectPage({
   const [message, setMessage] = useState({});
   const [isUserFollowing, setIsUserFollowing] = useState(following);
   const [isUserLiking, setIsUserLiking] = useState(liking);
-  const [requestedToJoinProject, setRequestedToJoinProject] = useState(hasRequestedToJoin)
+  const [requestedToJoinProject, setRequestedToJoinProject] = useState(hasRequestedToJoin);
   const [followingChangePending, setFollowingChangePending] = useState(false);
   const [likingChangePending, setLikingChangePending] = useState(false);
   const [numberOfLikes, setNumberOfLikes] = useState(project?.number_of_likes);
@@ -176,8 +176,8 @@ export default function ProjectPage({
   };
 
   const handleJoinRequest = (newValue) => {
-    setRequestedToJoinProject(newValue)
-  }
+    setRequestedToJoinProject(newValue);
+  };
 
   const handleWindowClose = (e) => {
     if (
