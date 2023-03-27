@@ -1,4 +1,4 @@
-import { TextField, Typography } from "@material-ui/core";
+import { Button, TextField, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext, useRef } from "react";
 import { Project, Organization } from "../../types";
@@ -41,11 +41,16 @@ const useStyles = makeStyles((theme) => ({
   field: {
     marginTop: theme.spacing(3),
   },
+  button: {
+    float: "right",
+    marginTop: theme.spacing(2)
+  }
 }));
 
 type Args = {
   project: Project;
   handleSetProjectData: Function;
+  goToNextStep: Function;
   userOrganizations: Array<Organization>;
   projectTypeOptions: Object;
 };
@@ -55,6 +60,7 @@ export default function Share({
   handleSetProjectData,
   userOrganizations,
   projectTypeOptions,
+  goToNextStep
 }: Args) {
   const organizationOptions = !userOrganizations
     ? []
@@ -83,6 +89,10 @@ export default function Share({
   const onChangeProjectType = (newValue) => {
     handleSetProjectData({ type: newValue });
   };
+
+  const onClickNextStep = (e) => {
+    goToNextStep()
+  }
 
   return (
     <div className={classes.form}>
@@ -117,6 +127,14 @@ export default function Share({
         onChange={onChangeProjectType}
         types={projectTypeOptions}
       />
+      <Button
+        variant="contained"
+        color="primary"
+        className={classes.button}
+        onClick={onClickNextStep}
+      >
+        {texts.next_step}
+      </Button>
     </div>
   );
 }
