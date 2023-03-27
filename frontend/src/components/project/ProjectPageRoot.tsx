@@ -93,6 +93,8 @@ export default function ProjectPageRoot({
   similarProjects,
   showSimilarProjects,
   handleHideContent,
+  requestedToJoinProject,
+  handleJoinRequest,
 }) {
   const visibleFooterHeight = VisibleFooterHeight({});
   const tabContentRef = useRef(null);
@@ -163,12 +165,6 @@ export default function ProjectPageRoot({
     }
   });
 
-  const [requestedToJoinProject, setRequestedToJoinProject] = useState(false);
-
-  const handleSetRequestedToJoinProject = (newValue) => {
-    setRequestedToJoinProject(newValue);
-  };
-
   /**
    * Calls backend, sending a request to join this project based
    * on user token stored in cookies.
@@ -199,11 +195,18 @@ export default function ProjectPageRoot({
           Authorization: `Token ${token}`,
         },
       });
-
-      setRequestedToJoinProject(true);
+      showFeedbackMessage({
+        message: texts.your_request_has_been_sent,
+        success: true,
+      });
+      handleJoinRequest(true);
     } catch (error) {
+      showFeedbackMessage({
+        message: error?.response?.data?.message,
+        error: true,
+      });
       if (error?.response?.data?.message === "Request already exists to join project") {
-        setRequestedToJoinProject(true);
+        handleJoinRequest(true);
       }
     }
   };
@@ -475,8 +478,6 @@ export default function ProjectPageRoot({
         toggleShowLikes={toggleShowLikes}
         token={token}
         user={user}
-        requestedToJoinProject={requestedToJoinProject}
-        handleSetRequestedToJoinProject={handleSetRequestedToJoinProject}
       />
 
       <Container className={classes.tabsContainerWithoutPadding}>
@@ -551,6 +552,7 @@ export default function ProjectPageRoot({
             toggleShowRequests={toggleShowRequests}
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
             requestedToJoinProject={requestedToJoinProject}
+            token={token}
           />
         </TabContent>
         <TabContent value={tabValue} index={1}>

@@ -50,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
 const DESCRIPTION_WEBFLOW_LINKS = {
   energy: {
     en: "energy-en",
+    de: "energie-de"
   },
   mobility: {
     de: "mobilitat-de",
@@ -59,6 +60,10 @@ const DESCRIPTION_WEBFLOW_LINKS = {
     de: "biodiversitat",
     en: "biodiversity-en",
   },
+  landuse: {
+    de: "landuse-de",
+    en: "landuse-en"
+  }
 };
 
 //potentially switch back to getinitialprops here?!
@@ -245,8 +250,9 @@ export default function Hub({
         image={getImageUrl(image)}
         isHubPage
         hideDonationCampaign
+        customFooterImage={hubData.custom_footer_image && getImageUrl(hubData.custom_footer_image)}
       >
-        <div className={classes.contentUnderHeader}>
+        <div>
           <NavigationSubHeader hubName={name} allHubs={allHubs} isLocationHub={isLocationHub} />
           {<DonationCampaignInformation />}
           <HubHeaderImage

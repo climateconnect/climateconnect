@@ -1,6 +1,3 @@
-install:
-	pip3 install -r requirements.txt
-
 default: start
 
 start:
@@ -8,6 +5,9 @@ start:
 	$(info -- Starting server --)
 	$(info )
 	python3 manage.py runserver
+
+install:
+	pip3 install -r requirements.txt
 
 test:
 	python3 manage.py test
