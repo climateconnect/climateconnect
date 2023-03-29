@@ -120,7 +120,7 @@ export default function ProjectPreview({ project, projectRef, hubUrl, className 
           : `${getLocalePrefix(locale)}/projects/${project.url_slug}${queryString}`
       }
       className={classes.noUnderline}
-    >
+      underline="hover">
       <Card
         className={`${classes.root} ${className}`}
         variant="outlined"

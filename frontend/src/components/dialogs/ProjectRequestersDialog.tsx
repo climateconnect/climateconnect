@@ -205,7 +205,7 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
       <Link
         className={classes.user}
         href={getLocalePrefix(locale) + "/profiles/" + requester.user.url_slug}
-      >
+        underline="hover">
         <Avatar
           className={classes.avatar}
           src={getImageUrl(requester.user.image)}

@@ -360,7 +360,7 @@ export default function Header({
       }`}
     >
       <Container className={classes.container}>
-        <Link href={localePrefix + "/"} className={classes.logoLink}>
+        <Link href={localePrefix + "/"} className={classes.logoLink} underline="hover">
           <img src={logo} alt={texts.climate_connect_logo} className={classes.logo} />
         </Link>
         {isNarrowScreen ? (
@@ -639,7 +639,7 @@ function NarrowScreenLinks({
           ).map((link, index) => {
             const Icon = link.iconForDrawer;
             return (
-              <Link href={localePrefix + link.href} key={index}>
+              <Link href={localePrefix + link.href} key={index} underline="hover">
                 <ListItem button component="a" onClick={closeDrawer}>
                   <ListItemIcon>
                     <Icon color="primary" />
@@ -660,7 +660,7 @@ function NarrowScreenLinks({
               if (link.avatar)
                 return (
                   <div className={classes.mobileAvatarContainer}>
-                    <Link href={"/profiles/" + loggedInUser.url_slug}>
+                    <Link href={"/profiles/" + loggedInUser.url_slug} underline="hover">
                       {loggedInUser?.badges?.length > 0 ? (
                         <ProfileBadge
                           badge={loggedInUser?.badges[0]}
@@ -686,7 +686,7 @@ function NarrowScreenLinks({
                 );
               else
                 return (
-                  <Link href={localePrefix + link.href} key={index}>
+                  <Link href={localePrefix + link.href} key={index} underline="hover">
                     <ListItem button component="a" onClick={closeDrawer}>
                       <ListItemIcon>
                         <Icon color="primary" />

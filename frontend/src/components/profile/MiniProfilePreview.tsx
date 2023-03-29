@@ -64,7 +64,7 @@ export default function MiniProfilePreview({
           color="inherit"
           href={getLocalePrefix(locale) + "/profiles/" + profile.url_slug}
           className={`${"" /*TODO(undefined) classes.avatarWithInfo*/} ${className}`}
-        >
+          underline="hover">
           <Content profile={profile} avatarClassName={avatarClassName} size={size} />
         </Link>
         {onDelete && (

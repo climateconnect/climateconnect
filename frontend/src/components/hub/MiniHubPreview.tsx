@@ -87,7 +87,7 @@ export default function MiniHubPreview({
       href={hub && getLocalePrefix(locale) + `/hubs/${hub.url_slug}`}
       target="_blank"
       className={classes.link}
-    >
+      underline="hover">
       <Card className={classes.root}>
         {editMode && (
           <IconButton className={classes.closeIconButton} size="small" onClick={handleRemoveHub}>

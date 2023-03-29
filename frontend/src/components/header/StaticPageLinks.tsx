@@ -142,7 +142,7 @@ function StaticPageLink({ link }) {
       className={`${classes.staticPageLink} ${
         window.location.href.includes(link.href) && classes.currentStaticPageLink
       }`}
-    >
+      underline="hover">
       {link.text}
     </Link>
   );

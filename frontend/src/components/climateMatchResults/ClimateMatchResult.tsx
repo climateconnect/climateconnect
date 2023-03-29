@@ -140,7 +140,7 @@ export default function ClimateMatchResult({ suggestion, pos }) {
         className={classes.noUnderline}
         href={getSuggestionHref(locale, suggestion)}
         target="_blank"
-      >
+        underline="hover">
         <div className={classes.resultContainer}>
           <ClimateMatchResultFirstLine pos={pos} suggestion={suggestion} />
           <div className={classes.contentContainer}>

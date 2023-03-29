@@ -34,7 +34,7 @@ export default function PageNotFound({
           href={
             returnLink ? getLocalePrefix(locale) + returnLink : getLocalePrefix(locale) + "/browse"
           }
-        >
+          underline="hover">
           {returnText ? returnText : texts.return_to_home}
         </Link>
       </p>

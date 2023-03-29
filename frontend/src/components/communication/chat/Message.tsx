@@ -47,7 +47,7 @@ export default function Message({ message, classes, isPrivateChat }) {
           <Link
             href={getLocalePrefix(locale) + "/profiles/" + message.sender.url_slug}
             target="_blank"
-          >
+            underline="hover">
             <Typography className={ownClasses.senderName} color="primary" component="span">
               {message.sender.first_name + " " + message.sender.last_name}
             </Typography>

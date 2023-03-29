@@ -72,7 +72,10 @@ export default function HubLinks({
       {!isMediumScreen &&
         !onlyShowDropDown &&
         (showAllProjectsButton ? (
-          <Link className={linkClassName} href={getLocalePrefix(locale) + "/browse"}>
+          <Link
+            className={linkClassName}
+            href={getLocalePrefix(locale) + "/browse"}
+            underline="hover">
             {texts.all_projects}
           </Link>
         ) : (
@@ -81,7 +84,7 @@ export default function HubLinks({
               className={linkClassName}
               key={hub.url_slug}
               href={`${getLocalePrefix(locale)}/hubs/${hub.url_slug}`}
-            >
+              underline="hover">
               {hub.name}
             </Link>
           ))

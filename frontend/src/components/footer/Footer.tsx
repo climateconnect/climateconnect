@@ -161,13 +161,22 @@ const SmallFooter = ({
     >
       <Box className={classes.flexContainer}>
         <Box className={classes.leftBox}>
-          <Link href={getLocalePrefix(locale) + "/imprint"} color="inherit">
+          <Link
+            href={getLocalePrefix(locale) + "/imprint"}
+            color="inherit"
+            underline="hover">
             <span className={`${classes.inheritColor} ${classes.link}`}>{texts.imprint}</span>
           </Link>
-          <Link href={getLocalePrefix(locale) + "/privacy"} color="inherit">
+          <Link
+            href={getLocalePrefix(locale) + "/privacy"}
+            color="inherit"
+            underline="hover">
             <span className={`${classes.inheritColor} ${classes.link}`}>{texts.privacy}</span>
           </Link>
-          <Link href={getLocalePrefix(locale) + "/terms"} color="inherit">
+          <Link
+            href={getLocalePrefix(locale) + "/terms"}
+            color="inherit"
+            underline="hover">
             <span className={classes.inheritColor}>{texts.terms}</span>
           </Link>
         </Box>

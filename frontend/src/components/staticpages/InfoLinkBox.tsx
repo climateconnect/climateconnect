@@ -60,7 +60,7 @@ export default function InfoLinkBox({
 }: any) {
   const classes = useStyles({ centerContent: centerContent });
   return (
-    <Link href={link} className={classes.noUnderline}>
+    <Link href={link} className={classes.noUnderline} underline="hover">
       <div className={`${classes.infoLinkBox} ${className}`}>
         <img src={iconSrc} className={classes.icon} alt={iconAlt} />
         <div>

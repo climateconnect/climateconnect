@@ -104,7 +104,7 @@ export default function EditProjectPage({
       <Layout className={classes.root} title={texts.project_not_found}>
         <Typography className={classes.errorTitle} variant="h3">
           {texts.project_does_not_exist}{" "}
-          <Link href={getLocalePrefix(locale) + "/share"}>{texts.click_here}</Link>{" "}
+          <Link href={getLocalePrefix(locale) + "/share"} underline="hover">{texts.click_here}</Link>{" "}
           {texts.to_create_a_project}
         </Typography>
       </Layout>

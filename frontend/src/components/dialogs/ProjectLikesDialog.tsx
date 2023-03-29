@@ -82,39 +82,37 @@ export default function ProjectLikesDialog({ open, onClose, project, likes, load
 }
 const ProjectLikes = ({ likes, texts, locale }) => {
   const classes = useStyles();
-  return (
-    <>
-      <Divider />
-      <Table>
-        <TableBody>
-          {likes.map((l, index) => {
-            return (
-              <TableRow key={index}>
-                <TableCell>
-                  <Link
-                    className={classes.user}
-                    href={getLocalePrefix(locale) + "/profiles/" + l.user_profile.url_slug}
-                  >
-                    <Avatar
-                      className={classes.avatar}
-                      src={getImageUrl(l.user_profile.thumbnail_image)}
-                      alt={l.user_profile.first_name + " " + l.user_profile.last_name}
-                    />
-                    <Typography component="span" color="secondary" className={classes.username}>
-                      {l.user_profile.first_name + " " + l.user_profile.last_name}
-                    </Typography>
-                  </Link>
-                </TableCell>
-                <TableCell>
-                  <Typography className={classes.likedText}>
-                    {texts.liking_since} <ReactTimeago date={l.created_at} />
+  return <>
+    <Divider />
+    <Table>
+      <TableBody>
+        {likes.map((l, index) => {
+          return (
+            <TableRow key={index}>
+              <TableCell>
+                <Link
+                  className={classes.user}
+                  href={getLocalePrefix(locale) + "/profiles/" + l.user_profile.url_slug}
+                  underline="hover">
+                  <Avatar
+                    className={classes.avatar}
+                    src={getImageUrl(l.user_profile.thumbnail_image)}
+                    alt={l.user_profile.first_name + " " + l.user_profile.last_name}
+                  />
+                  <Typography component="span" color="secondary" className={classes.username}>
+                    {l.user_profile.first_name + " " + l.user_profile.last_name}
                   </Typography>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </>
-  );
+                </Link>
+              </TableCell>
+              <TableCell>
+                <Typography className={classes.likedText}>
+                  {texts.liking_since} <ReactTimeago date={l.created_at} />
+                </Typography>
+              </TableCell>
+            </TableRow>
+          );
+        })}
+      </TableBody>
+    </Table>
+  </>;
 };

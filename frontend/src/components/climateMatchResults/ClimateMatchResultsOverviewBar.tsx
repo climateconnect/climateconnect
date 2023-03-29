@@ -38,7 +38,11 @@ export default function ClimateMatchResultsOverviewBar({ suggestions }) {
     <div>
       <List className={classes.suggestionsOverviewContainer}>
         {suggestions?.map((suggestion, index) => (
-          <Link href={`#${suggestion.url_slug}`} className={classes.noUnderline} key={index}>
+          <Link
+            href={`#${suggestion.url_slug}`}
+            className={classes.noUnderline}
+            key={index}
+            underline="hover">
             <ListItem button className={classes.suggestionOverviewItem}>
               <ListItemIcon className={classes.suggestionsOverViewItemIcon}>
                 <Typography color="primary" className={classes.suggestionOverviewNumber}>

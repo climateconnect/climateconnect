@@ -85,7 +85,7 @@ export default function OurTeamBox({ h1ClassName }) {
         {texts.our_team}
       </Typography>
       <div className={classes.content}>
-        <Link href={link_to_team_page}>
+        <Link href={link_to_team_page} underline="hover">
           <img
             src="/images/team.jpg"
             className={classes.teamImage}

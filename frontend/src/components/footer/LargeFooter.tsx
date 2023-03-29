@@ -174,22 +174,40 @@ const SocialLinks = () => {
   const classes = useStyles();
   return (
     <div className={classes.socialIconsContainer}>
-      <Link target="_blank" href="https://www.instagram.com/climate_connect.earth/">
+      <Link
+        target="_blank"
+        href="https://www.instagram.com/climate_connect.earth/"
+        underline="hover">
         <InstagramIcon color="primary" className={classes.socialIcon} titleAccess="Instagram" />
       </Link>
-      <Link target="_blank" href="https://github.com/climateconnect/climateconnect">
+      <Link
+        target="_blank"
+        href="https://github.com/climateconnect/climateconnect"
+        underline="hover">
         <GitHubIcon className={classes.socialIcon} titleAccess="GitHub" />
       </Link>
-      <Link target="_blank" href="https://twitter.com/ConnectClimate">
+      <Link
+        target="_blank"
+        href="https://twitter.com/ConnectClimate"
+        underline="hover">
         <TwitterIcon color="primary" className={classes.socialIcon} titleAccess="Twitter" />
       </Link>
-      <Link target="_blank" href="https://www.linkedin.com/company/climateconnect">
+      <Link
+        target="_blank"
+        href="https://www.linkedin.com/company/climateconnect"
+        underline="hover">
         <LinkedInIcon color="primary" className={classes.socialIcon} titleAccess="LinkedIn" />
       </Link>
-      <Link target="_blank" href="https://www.facebook.com/climateconnect.earth">
+      <Link
+        target="_blank"
+        href="https://www.facebook.com/climateconnect.earth"
+        underline="hover">
         <FacebookIcon color="primary" className={classes.socialIcon} titleAccess="Facebook" />
       </Link>
-      <Link target="_blank" href="https://www.youtube.com/channel/UC10rPriptUxYilMfvt-8Tkw">
+      <Link
+        target="_blank"
+        href="https://www.youtube.com/channel/UC10rPriptUxYilMfvt-8Tkw"
+        underline="hover">
         <YouTubeIcon color="primary" className={classes.socialIcon} titleAccess="YouTube" />
       </Link>
     </div>

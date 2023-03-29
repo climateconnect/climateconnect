@@ -1,4 +1,4 @@
-import { Link, makeStyles, ThemeProvider, Typography } from "@material-ui/core";
+import { Link, makeStyles, ThemeProvider, Typography } from "@mui/material";
 import React, { useContext } from "react";
 import getTexts from "../../../../public/texts/texts";
 import hubTheme from "../../../themes/hubTheme";
@@ -151,12 +151,16 @@ export default function FoodDescription() {
           {texts.sources}:
           <ul>
             <li>
-              <Link href="https://ourworldindata.org/food-choice-vs-eating-local">
+              <Link
+                href="https://ourworldindata.org/food-choice-vs-eating-local"
+                underline="hover">
                 https://ourworldindata.org/food-choice-vs-eating-local
               </Link>
             </li>
             <li>
-              <Link href="https://ourworldindata.org/environmental-impacts-of-food">
+              <Link
+                href="https://ourworldindata.org/environmental-impacts-of-food"
+                underline="hover">
                 https://ourworldindata.org/environmental-impacts-of-food
               </Link>
             </li>

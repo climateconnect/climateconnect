@@ -80,7 +80,7 @@ const CarouselItem = ({ project }) => {
       href={`${getLocalePrefix(locale)}/projects/${project.url_slug}`}
       target="_blank"
       className={classes.noUnderline}
-    >
+      underline="hover">
       <div className={classes.carouselEntry}>
         {isSmallOrMediumScreen ? (
           <ProjectPreview project={project} className={classes.projectCard} />

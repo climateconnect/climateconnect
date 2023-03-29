@@ -52,11 +52,17 @@ export default function NavigationSubHeader({ hubName, allHubs, isLocationHub }:
         <Typography className={classes.path} component="div">
           {!isNarrowScreen && !(isLocationHub && isSmallMediumScreen) && (
             <>
-              <Link className={classes.link} href={getLocalePrefix(locale) + "/browse"}>
+              <Link
+                className={classes.link}
+                href={getLocalePrefix(locale) + "/browse"}
+                underline="hover">
                 {texts.browse}
               </Link>
               {" / "}
-              <Link className={classes.link} href={getLocalePrefix(locale) + "/hubs"}>
+              <Link
+                className={classes.link}
+                href={getLocalePrefix(locale) + "/hubs"}
+                underline="hover">
                 {texts.hubs}
               </Link>
               {hubName && (

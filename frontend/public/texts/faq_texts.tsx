@@ -25,7 +25,7 @@ export default function getFaqTexts({ classes, locale }) {
             className={classes?.topText}
             href="mailto:contact@climateconnect.earth"
             target="_blank"
-          >
+            underline="hover">
             contact@climateconnect.earth
           </Link>
         </>
@@ -37,7 +37,7 @@ export default function getFaqTexts({ classes, locale }) {
             className={classes?.topText}
             href="mailto:contact@climateconnect.earth"
             target="_blank"
-          >
+            underline="hover">
             contact@climateconnect.earth
           </Link>
         </>
@@ -59,7 +59,7 @@ export default function getFaqTexts({ classes, locale }) {
             className={classes?.faqLink}
             href={getLocalePrefix(locale) + "/faq"}
             target="_blank"
-          >
+            underline="hover">
             FAQ page
           </Link>
           .
@@ -72,7 +72,7 @@ export default function getFaqTexts({ classes, locale }) {
             className={classes?.faqLink}
             href={getLocalePrefix(locale) + "/faq"}
             target="_blank"
-          >
+            underline="hover">
             FAQ Seite
           </Link>
           .

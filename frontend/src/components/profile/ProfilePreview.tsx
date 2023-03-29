@@ -80,7 +80,7 @@ export default function ProfilePreview({ profile, allowMessage, showAdditionalIn
       <Link
         href={getLocalePrefix(locale) + "/profiles/" + profile.url_slug}
         className={classes.disableHover}
-      >
+        underline="hover">
         {profile.badges?.length > 0 ? (
           <ProfileBadge badge={profile.badges[0]} className={classes.badge}>
             <Avatar {...avatarProps} />

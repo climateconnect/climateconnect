@@ -40,7 +40,10 @@ export default function HubPreview({ hub, disableBoxShadow = false }) {
   const texts = getTexts({ page: "hub", locale: locale });
 
   return (
-    <Link href={getLocalePrefix(locale) + `/hubs/${hub.url_slug}`} className={classes.noUnderline}>
+    <Link
+      href={getLocalePrefix(locale) + `/hubs/${hub.url_slug}`}
+      className={classes.noUnderline}
+      underline="hover">
       <Card className={classes.root} variant="outlined">
         <CardMedia
           className={classes.media}

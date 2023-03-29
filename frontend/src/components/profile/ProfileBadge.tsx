@@ -58,7 +58,10 @@ const BadgeContent = ({ badge, size, className, withLink }: any) => {
     <Tooltip title={badge.name}>
       <div>
         {withLink ? (
-          <Link href={`${getLocalePrefix(locale)}/donorforest`} target="_blank">
+          <Link
+            href={`${getLocalePrefix(locale)}/donorforest`}
+            target="_blank"
+            underline="hover">
             <Content badge={badge} size={size} className={className} />
           </Link>
         ) : (

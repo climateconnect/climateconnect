@@ -65,7 +65,11 @@ export default function HubsSubHeader({ hubs, subHeaderRef, onlyShowDropDown }: 
         </div>
         <div className={classes.hubsContainer}>
           {!isNarrowScreen && !onlyShowDropDown && (
-            <Link className={classes.link} key={"/hubs"} href={`${getLocalePrefix(locale)}/hubs/`}>
+            <Link
+              className={classes.link}
+              key={"/hubs"}
+              href={`${getLocalePrefix(locale)}/hubs/`}
+              underline="hover">
               {texts.all_hubs}
             </Link>
           )}

@@ -79,7 +79,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
             href={getLocalePrefix(locale) + "/browse"}
             target="_blank"
             className={classes?.link}
-          >
+            underline="hover">
             browse
           </Link>{" "}
           page.
@@ -93,7 +93,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
             href={getLocalePrefix(locale) + "/browse"}
             target="_blank"
             className={classes?.link}
-          >
+            underline="hover">
             Browse
           </Link>{" "}
           Seite.
@@ -115,7 +115,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
             href={getLocalePrefix(locale) + "/browse"}
             target="_blank"
             className={classes?.link}
-          >
+            underline="hover">
             browse
           </Link>{" "}
           page.
@@ -129,7 +129,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
             href={getLocalePrefix(locale) + "/browse"}
             target="_blank"
             className={classes?.link}
-          >
+            underline="hover">
             Browse
           </Link>{" "}
           Seite.
@@ -149,7 +149,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
             href={getLocalePrefix(locale) + "/browse"}
             target="_blank"
             className={classes?.link}
-          >
+            underline="hover">
             browse
           </Link>{" "}
           page.
@@ -163,7 +163,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
             href={getLocalePrefix(locale) + "/browse"}
             target="_blank"
             className={classes?.link}
-          >
+            underline="hover">
             Browse
           </Link>{" "}
           Seite findest du einen Überblick aller Projekte.

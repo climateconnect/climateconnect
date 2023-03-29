@@ -933,7 +933,7 @@ export default function EditAccountPage({
             <InfoOutlinedIcon />
             {texts.if_you_wish_to_delete}
             <div className={classes.spaceStrings}> </div>
-            <Link href={`mailto:${deleteEmail}`}>{deleteEmail}</Link>
+            <Link href={`mailto:${deleteEmail}`} underline="hover">{deleteEmail}</Link>
           </Typography>
         )}
       </form>
@@ -1013,17 +1013,21 @@ const editErrorMessage = (
   else {
     const firstSentenceText = texts.someone_has_already_created_organization;
     const secondSentenceText = texts.please_join_org_or_use_diff_name_if_problems_contact;
-    return (
-      <>
-        {firstSentenceText}
-        <Link href={getLocalePrefix(locale) + "/organizations/" + existingUrlSlug} target="_blank">
-          {existingName}
-        </Link>
-        {secondSentenceText}
-        <Link href="mailto:support@climateconnect.earth" target="_blank">
-          support@climateconnect.earth
-        </Link>
-      </>
-    );
+    return <>
+      {firstSentenceText}
+      <Link
+        href={getLocalePrefix(locale) + "/organizations/" + existingUrlSlug}
+        target="_blank"
+        underline="hover">
+        {existingName}
+      </Link>
+      {secondSentenceText}
+      <Link
+        href="mailto:support@climateconnect.earth"
+        target="_blank"
+        underline="hover">
+        support@climateconnect.earth
+      </Link>
+    </>;
   }
 };

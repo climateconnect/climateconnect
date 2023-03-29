@@ -8,7 +8,7 @@ import {
   Paper,
   Popper,
   Typography,
-} from "@material-ui/core";
+} from "@mui/material";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import AssignmentIcon from "@material-ui/icons/Assignment";
@@ -181,7 +181,7 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
               key={item.url_slug}
               href={item.url_slug}
               onClick={() => handleClick(item.onClick)}
-            >
+              underline="hover">
               <MenuItem component="button" className={classes.climateHubOption}>
                 {item.name}
               </MenuItem>

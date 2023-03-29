@@ -1,4 +1,4 @@
-import { Link, makeStyles, ThemeProvider, Typography, useMediaQuery } from "@material-ui/core";
+import { Link, makeStyles, ThemeProvider, Typography, useMediaQuery } from "@mui/material";
 import React, { useContext } from "react";
 import Chart from "react-google-charts";
 import getTexts from "../../../../public/texts/texts";
@@ -91,7 +91,10 @@ export default function FashionDescription() {
         </div>
         <Typography>
           {texts.source}:{" "}
-          <Link href="https://www.nature.com/articles/s43017-020-0039-9.epdf" target="_blank">
+          <Link
+            href="https://www.nature.com/articles/s43017-020-0039-9.epdf"
+            target="_blank"
+            underline="hover">
             Nature
           </Link>{" "}
           (2020)

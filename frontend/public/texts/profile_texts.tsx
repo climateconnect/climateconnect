@@ -189,14 +189,18 @@ export default function getProfileTexts({ profile, locale }) {
       en: (
         <>
           If the email does not arrive after 5 minutes,{" "}
-          <Link href={getLocalePrefix(locale) + "/resend_verification_email"}>click here</Link> to
+          <Link
+            href={getLocalePrefix(locale) + "/resend_verification_email"}
+            underline="hover">click here</Link> to
           resend it.
         </>
       ),
       de: (
         <>
           Wenn die E-Mail nach 5 Minuten noch nicht angekommen ist,{" "}
-          <Link href={getLocalePrefix(locale) + "/resend_verification_email"}>klicke hier</Link>, um
+          <Link
+            href={getLocalePrefix(locale) + "/resend_verification_email"}
+            underline="hover">klicke hier</Link>, um
           sie erneut versenden zu lassen.
         </>
       ),
@@ -221,7 +225,10 @@ export default function getProfileTexts({ profile, locale }) {
       en: (
         <>
           You have not activated you account yet. Click the link in the email we sent you or{" "}
-          <Link href={getLocalePrefix(locale) + "/resend_verification_email"} target="_blank">
+          <Link
+            href={getLocalePrefix(locale) + "/resend_verification_email"}
+            target="_blank"
+            underline="hover">
             click here
           </Link>{" "}
           to send the verification link again.
@@ -231,7 +238,10 @@ export default function getProfileTexts({ profile, locale }) {
         <>
           Du hast dein Konto noch nicht aktiviert. Klicke auf den Link in der E-Mail, die wir dir
           geschickt haben, oder{" "}
-          <Link href={getLocalePrefix(locale) + "/resend_verification_email"} target="_blank">
+          <Link
+            href={getLocalePrefix(locale) + "/resend_verification_email"}
+            target="_blank"
+            underline="hover">
             klicke hier
           </Link>{" "}
           , um edie Bestätigungsemail mit dem Verifizierungslink erneut zu erhalten.

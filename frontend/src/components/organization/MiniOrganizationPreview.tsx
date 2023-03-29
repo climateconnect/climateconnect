@@ -56,7 +56,7 @@ export default function MiniOrganizationPreview({
         color="inherit"
         href={getLocalePrefix(locale) + "/organizations/" + organization.url_slug}
         target="_blank"
-      >
+        underline="hover">
         <Content
           organization={organization}
           size={size}

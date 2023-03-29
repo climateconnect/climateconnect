@@ -57,7 +57,10 @@ export default function DonorForestEntry({ donor }) {
         <div className={classes.treeImageContainer}>
           <img className={classes.treeImage} src={getImageUrl(badge.image)} />
         </div>
-        <Link href={`${getLocalePrefix(locale)}/profiles/${donor.url_slug}`} target="_blank">
+        <Link
+          href={`${getLocalePrefix(locale)}/profiles/${donor.url_slug}`}
+          target="_blank"
+          underline="hover">
           <Avatar
             /* TODO(unused) size="large" */
             src={getImageUrl(donor.thumbnail_image ?? donor.image)}

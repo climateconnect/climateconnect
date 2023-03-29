@@ -15,7 +15,10 @@ const displayedMention = (
     | null
     | undefined
 ) => (
-  <Link href={getLocalePrefix(locale) + "/profiles/" + id} target="_blank">
+  <Link
+    href={getLocalePrefix(locale) + "/profiles/" + id}
+    target="_blank"
+    underline="hover">
     @{display}
   </Link>
 );

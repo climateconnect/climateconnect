@@ -70,7 +70,7 @@ export default function Team({ headlineClass, className }) {
       </Typography>
 
       <div className={classes.contentWrapper}>
-        <Link href={link_to_team_page}>
+        <Link href={link_to_team_page} underline="hover">
           <div className={classes.imageContainer}>
             <div className={classes.imageWrapper}>
               <img
