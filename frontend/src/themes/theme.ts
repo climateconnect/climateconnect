@@ -1,4 +1,4 @@
-import { createTheme } from "@material-ui/core/styles";
+import { createTheme } from "@mui/material/styles";
 
 // Create core theme so we can access spacing etc. when customizing components
 const coreTheme = createTheme({
@@ -56,47 +56,37 @@ const coreTheme = createTheme({
  * across other files.
  */
 const theme = createTheme(coreTheme, {
-  overrides: {
+  components: {
     MuiButton: {
-      root: {
-        borderRadius: 3,
-        paddingLeft: coreTheme.spacing(4),
-        paddingRight: coreTheme.spacing(4),
-        paddingTop: coreTheme.spacing(1),
-        paddingBottom: coreTheme.spacing(1),
+      defaultProps: {
+        disableElevation: true,
       },
     },
     MuiTab: {
-      root: {
-        minWidth: 0,
-        [coreTheme.breakpoints.up("xs")]: {
+      styleOverrides: {
+        root: {
           minWidth: 0,
+          [coreTheme.breakpoints.up("xs")]: {
+            minWidth: 0,
+          },
         },
-      },
+      }
     },
     MuiTooltip: {
-      tooltip: {
-        fontSize: 14,
-      },
+      styleOverrides: {
+        tooltip: {
+          fontSize: 14,
+        },
+      }
     },
     MuiChip: {
-      root: {
-        // Have the same border-radius as the other UI controls, like
-        // the select dropdowns, buttons, etc.
-        borderRadius: 4,
-      },
-    },
-  },
-  // Note the "thick" semantic naming for this borders
-  // design token.
-  borders: {
-    thick: `3px solid ${coreTheme.palette.primary.main}`,
-    // TODO: we should add this light gray color to be consistent with our color system / theme
-    thin: `1px solid #e0e0e0`,
-  },
-  props: {
-    MuiButton: {
-      disableElevation: true,
+      styleOverrides: {
+        root: {
+          // Have the same border-radius as the other UI controls, like
+          // the select dropdowns, buttons, etc.
+          borderRadius: 4,
+        },
+      }
     },
   },
 });

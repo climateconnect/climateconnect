@@ -5,8 +5,9 @@ import {
   Theme,
   Typography,
   useMediaQuery,
-} from "@material-ui/core";
-import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
+} from "@mui/material";
+import { ThemeProvider, StyledEngineProvider } from "@mui/material/styles";
+import makeStyles from '@mui/styles/makeStyles';
 import Head from "next/head";
 import Router from "next/router";
 import React, { useContext, useEffect, useState } from "react";
@@ -17,6 +18,13 @@ import FeedbackButton from "../feedback/FeedbackButton";
 import CookieBanner from "../general/CookieBanner";
 import CloseSnackbarAction from "../snackbarActions/CloseSnackbarAction";
 import LogInAction from "../snackbarActions/LogInAction";
+
+
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
+
 
 const useStyles = makeStyles((theme) => ({
   leaveSpaceForFooter: {
@@ -73,7 +81,7 @@ export default function LayoutWrapper({
   });
   const classes = useStyles();
   const [initialized, setInitialized] = React.useState(false);
-  const isSmallerThanMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+  const isSmallerThanMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down('lg'));
   const [loading, setLoading] = React.useState(true);
   const [bannerOpen, setBannerOpen] = React.useState(true);
   const { acceptedNecessary, locale, isLoading } = useContext(UserContext);
@@ -135,26 +143,26 @@ export default function LayoutWrapper({
     handleUpdateHash: handleUpdateHash,
   };
 
-  return (
-    <>
-      <Head>
-        <title>{title ? title + " | Climate Connect" : "Climate Connect"}</title>
-        <link href="/fonts/openSans.css" rel="stylesheet" />
-        {useFloodStdFont && <link rel="stylesheet" href="https://use.typekit.net/hoy3dgi.css" />}
-        <meta
-          name="viewport"
-          content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
-        />
-        <meta
-          property="og:image"
-          content={image ? image : "https://climateconnect.earth/images/landing_image_small.jpg"}
-        />
-        <meta property="og:title" content={title ? title : texts.default_title} />
-        <meta property="og:type" content="website" />
+  return <>
+    <Head>
+      <title>{title ? title + " | Climate Connect" : "Climate Connect"}</title>
+      <link href="/fonts/openSans.css" rel="stylesheet" />
+      {useFloodStdFont && <link rel="stylesheet" href="https://use.typekit.net/hoy3dgi.css" />}
+      <meta
+        name="viewport"
+        content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
+      />
+      <meta
+        property="og:image"
+        content={image ? image : "https://climateconnect.earth/images/landing_image_small.jpg"}
+      />
+      <meta property="og:title" content={title ? title : texts.default_title} />
+      <meta property="og:type" content="website" />
 
-        <meta name="description" content={description ? description : defaultDescription} />
-      </Head>
-      {/* If theme is falsy, slience the MUI console.warning for having an undefined theme */}
+      <meta name="description" content={description ? description : defaultDescription} />
+    </Head>
+    {/* If theme is falsy, slience the MUI console.warning for having an undefined theme */}
+    <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
         {loading || isLoading ? (
           <div className={classes.spinnerContainer}>
@@ -197,6 +205,6 @@ export default function LayoutWrapper({
           </FeedbackContext.Provider>
         )}
       </ThemeProvider>
-    </>
-  );
+    </StyledEngineProvider>
+  </>;
 }

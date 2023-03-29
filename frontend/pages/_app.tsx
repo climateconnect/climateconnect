@@ -1,5 +1,6 @@
-import CssBaseline from "@material-ui/core/CssBaseline";
-import { ThemeProvider } from "@material-ui/core/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import { Theme, StyledEngineProvider } from "@mui/material/styles";
+import { ThemeProvider } from '@mui/material/styles';
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import ReactGA from "react-ga4";
@@ -12,6 +13,13 @@ import WebSocketService from "../public/lib/webSockets";
 import UserContext from "../src/components/context/UserContext";
 import theme from "../src/themes/theme";
 import { CcLocale } from "../src/types";
+
+
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
+
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
 
@@ -248,8 +256,8 @@ export default function MyApp({ Component, pageProps = {} }) {
     hideNotification: hideNotification,
   };
 
-  return (
-    <>
+  return <>
+    <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
@@ -257,8 +265,8 @@ export default function MyApp({ Component, pageProps = {} }) {
           <Component {...pageProps} />
         </UserContext.Provider>
       </ThemeProvider>
-    </>
-  );
+    </StyledEngineProvider>
+  </>;
 }
 
 const getNotificationsToSetRead = (notifications, pageProps) => {

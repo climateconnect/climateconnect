@@ -1,19 +1,10 @@
-import {
-  Box,
-  Button,
-  Link,
-  makeStyles,
-  MenuItem,
-  MenuList,
-  Paper,
-  Popper,
-  Typography,
-} from "@mui/material";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
-import AssignmentIcon from "@material-ui/icons/Assignment";
-import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
-import GroupAddIcon from "@material-ui/icons/GroupAdd";
+import { Box, Button, Link, MenuItem, MenuList, Paper, Popper, Typography } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -32,7 +23,7 @@ const useStyles = makeStyles((theme) => {
       minWidth: 300,
       width: "100%",
       borderRadius: 5,
-      border: theme.borders.thick,
+      border: `3px solid ${theme.palette.primary.main}`,
       color: "white",
       position: "relative",
       maxWidth: "800px",
@@ -54,7 +45,7 @@ const useStyles = makeStyles((theme) => {
       // TODO(design): what color should this actually be -- I
       // don't see it represented in the XD mockup? Ideally
       // it'd be from our emerging design system
-      border: theme.borders.thin,
+      border: `1px solid #e0e0e0`,
       borderRadius: "50%",
       height: "40px",
       width: "43px",
@@ -111,7 +102,7 @@ const useStyles = makeStyles((theme) => {
 // for consistency.
 const HorizontalSpacing = ({ children, size }) => {
   return (
-    <Box css={{ marginTop: theme.spacing(size), marginBottom: theme.spacing(size) }}>
+    <Box sx={{ marginTop: theme.spacing(size), marginBottom: theme.spacing(size) }}>
       {children}
     </Box>
   );
@@ -224,7 +215,7 @@ export default function Dashboard({ allHubs, hubData, className, headline, locat
           <div className={`${classes.welcomeSubsection}`}>
             <UserImage user={user} />
             {/* TODO: doing some left spacing here -- trying to keep spacing directly out of the UI components, and isolated within Box components directly  */}
-            <Box css={{ marginLeft: theme.spacing(1), width: "100%" }}>
+            <Box sx={{ marginLeft: theme.spacing(1), width: "100%" }}>
               <div className={`${classes.welcomeMessage}`}>
                 <Typography style={{ fontWeight: "600" }}>
                   {user ? texts.welcome_message_logged_in : texts.welcome_message_logged_out}

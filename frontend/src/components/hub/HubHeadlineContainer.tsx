@@ -1,4 +1,4 @@
-import { Button, Typography, useMediaQuery } from "@mui/material";
+import { Button, Theme, Typography, useMediaQuery } from "@mui/material";
 import makeStyles from '@mui/styles/makeStyles';
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
 
     maxWidth: "800px",
     borderRadius: 5,
-    border: theme.borders.thick,
+    border: `3px solid ${theme.palette.primary.main}`,
     marginTop: props.isLocationHub ? theme.spacing(8) : theme.spacing(-11),
     [theme.breakpoints.down('md')]: {
       marginTop: props.isLocationHub ? theme.spacing(-11) : theme.spacing(-11),
