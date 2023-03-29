@@ -1,4 +1,5 @@
-import { Container, makeStyles, Typography, Link } from "@material-ui/core";
+import { Container, Typography, Link } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import getTexts from "../../../../public/texts/texts";
@@ -9,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
   contentWrapper: {
     display: "flex",
     marginTop: theme.spacing(6),
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down('md')]: {
       flexDirection: "column",
       alignItems: "center",
       marginLeft: theme.spacing(1),
@@ -25,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down('md')]: {
       maxWidth: 600,
       padding: 0,
       margin: 0,

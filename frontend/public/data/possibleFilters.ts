@@ -1,9 +1,9 @@
-import CreateIcon from "@material-ui/icons/Create";
-import DoneAllOutlinedIcon from "@material-ui/icons/DoneAllOutlined";
-import ExploreIcon from "@material-ui/icons/Explore";
-import GroupIcon from "@material-ui/icons/Group";
-import GroupAddIcon from "@material-ui/icons/GroupAdd";
-import LocationOnOutlinedIcon from "@material-ui/icons/LocationOnOutlined";
+import CreateIcon from "@mui/icons-material/Create";
+import DoneAllOutlinedIcon from "@mui/icons-material/DoneAllOutlined";
+import ExploreIcon from "@mui/icons-material/Explore";
+import GroupIcon from "@mui/icons-material/Group";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
+import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import getTexts from "../texts/texts";
 
 export default function getFilters({ key, filterChoices, locale }) {

@@ -1,5 +1,5 @@
-import { Card, CardContent, CardMedia, Link, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Card, CardContent, CardMedia, Link, Typography } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import React, { useContext } from "react";
 import Truncate from "react-truncate";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";

@@ -1,4 +1,5 @@
-import { Button, Fade, makeStyles, Theme, Tooltip, useMediaQuery } from "@material-ui/core";
+import { Button, Fade, Theme, Tooltip, useMediaQuery } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import React, { useContext, useEffect, useRef } from "react";
 import Cookies from "universal-cookie";
 import get_steps from "../../../public/data/tutorial_steps";
@@ -42,7 +43,7 @@ export default function Tutorial({
   pointerRefs,
   typesByTabValue,
 }) {
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down('md'));
   const classes = useStyles();
   const cookies = new Cookies();
   const tutorialCookie = cookies.get("finishedTutorialSteps");

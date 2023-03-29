@@ -9,12 +9,12 @@ import {
   useMediaQuery,
   Link,
   Theme,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
-import ControlPointIcon from "@material-ui/icons/ControlPoint";
-import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
-import Alert from "@material-ui/lab/Alert";
+} from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
+import ControlPointIcon from "@mui/icons-material/ControlPoint";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import Alert from '@mui/material/Alert';
 import React, { useContext, useState } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import {
@@ -165,7 +165,7 @@ const useStyles = makeStyles<Theme, { background_image?: string }>((theme) => ({
     position: "absolute",
     right: theme.spacing(1),
     width: theme.spacing(18),
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down('md')]: {
       width: theme.spacing(14),
       fontSize: 10,
       textAlign: "center",
@@ -257,7 +257,7 @@ export default function EditAccountPage({
   const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });
   const [editedAccount, setEditedAccount] = React.useState({ ...account });
   const isOrganization = type === "organization" ? true : false;
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down('lg'));
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles(editedAccount);
   //used for previewing images in UploadImageDialog

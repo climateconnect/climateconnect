@@ -7,9 +7,9 @@ import {
   Switch,
   TextField,
   Typography,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
+} from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import Link from "next/link";
 import React from "react";
 

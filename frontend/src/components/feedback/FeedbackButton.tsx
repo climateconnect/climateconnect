@@ -1,5 +1,5 @@
-import { Button, Link } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Button, Link } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../../public/lib/apiOperations";

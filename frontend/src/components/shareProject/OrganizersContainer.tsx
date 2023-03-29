@@ -1,7 +1,7 @@
-import { IconButton, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
+import { IconButton, Typography } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -40,7 +40,7 @@ export default function OrganizersContainer({
   const renderSearchOption = (option) => {
     return (
       <React.Fragment>
-        <IconButton>
+        <IconButton size="large">
           <AddCircleOutlineIcon />
         </IconButton>
         {option.name}

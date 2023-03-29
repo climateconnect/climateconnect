@@ -11,9 +11,10 @@ import WideLayout from "../../src/components/layouts/WideLayout";
 import ProjectPageRoot from "../../src/components/project/ProjectPageRoot";
 import HubsSubHeader from "../../src/components/indexPage/hubsSubHeader/HubsSubHeader";
 import { getAllHubs } from "../../public/lib/hubOperations";
-import { useMediaQuery } from "@material-ui/core";
+import { useMediaQuery } from "@mui/material";
 import { getImageUrl } from "../../public/lib/imageOperations";
-import { makeStyles, Theme } from "@material-ui/core/styles";
+import { Theme } from "@mui/material/styles";
+import makeStyles from '@mui/styles/makeStyles';
 import ProjectSideBar from "../../src/components/project/ProjectSideBar";
 
 type StyleProps = {
@@ -25,13 +26,13 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
   },
   mainContent: (props) => ({
     width: props.showSimilarProjects ? "80%" : "100%",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down('md')]: {
       width: "100%",
     },
   }),
   secondaryContent: (props) => ({
     width: props.showSimilarProjects ? "20%" : "0%",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down('md')]: {
       width: "0%",
       marginTop: theme.spacing(0),
       marginRight: theme.spacing(0),
@@ -131,7 +132,7 @@ export default function ProjectPage({
     setShowSimilarProjects(!showSimilarProjects);
   };
 
-  const smallScreenSize = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const smallScreenSize = useMediaQuery<Theme>((theme) => theme.breakpoints.down('md'));
 
   // Handle remove bell icon notification
   const { notifications, setNotificationsRead, refreshNotifications } = useContext(UserContext);
@@ -199,7 +200,7 @@ export default function ProjectPage({
   });
 
   const hubsSubHeaderRef = useRef(null);
-  const tinyScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("xs"));
+  const tinyScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down('sm'));
 
   return (
     <WideLayout

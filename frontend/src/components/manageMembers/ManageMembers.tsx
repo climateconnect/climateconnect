@@ -1,5 +1,6 @@
-import { IconButton, makeStyles } from "@material-ui/core";
-import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import { IconButton } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import React, { useContext } from "react";
 import ROLE_TYPES from "../../../public/data/role_types";
 import { getRoleWeight } from "../../../public/lib/manageMembers";
@@ -58,7 +59,7 @@ export default function ManageMembers({
   const renderSearchOption = (option) => {
     return (
       <React.Fragment>
-        <IconButton>
+        <IconButton size="large">
           <AddCircleOutlineIcon />
         </IconButton>
         {option.first_name + " " + option.last_name}

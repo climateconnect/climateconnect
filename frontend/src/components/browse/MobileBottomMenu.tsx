@@ -1,10 +1,11 @@
 import React from "react";
-import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
-import { makeStyles, Tab, Tabs } from "@material-ui/core";
+import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
+import { Tab, Tabs } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import ContactAmbassadorButton from "../hub/ContactAmbassadorButton";
-import AssignmentIcon from "@material-ui/icons/Assignment";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import GroupIcon from "@material-ui/icons/Group";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import GroupIcon from "@mui/icons-material/Group";
 
 const useStyles = makeStyles(() => ({
   root: {

@@ -1,5 +1,5 @@
-import { Button, CircularProgress } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Button, CircularProgress } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => {
     },
     nextStepButtonsContainer: {
       float: "right",
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down('sm')]: {
         float: "none",
         marginTop: theme.spacing(2),
       },

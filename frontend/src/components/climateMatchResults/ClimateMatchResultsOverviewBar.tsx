@@ -1,4 +1,5 @@
-import { Link, List, ListItem, ListItemIcon, makeStyles, Typography } from "@material-ui/core";
+import { Link, List, ListItem, ListItemIcon, Typography } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import React from "react";
 
 const useStyles = makeStyles(() => ({

@@ -1,6 +1,6 @@
-import { Avatar, IconButton, Link, Theme, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import CloseIcon from "@material-ui/icons/Close";
+import { Avatar, IconButton, Link, Theme, Typography } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import CloseIcon from "@mui/icons-material/Close";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -108,7 +108,7 @@ function Content({ organization, size, onDelete, doNotShowName }) {
             </Typography>
           )}
           {onDelete && (
-            <IconButton onClick={() => onDelete(organization)}>
+            <IconButton onClick={() => onDelete(organization)} size="large">
               <CloseIcon />
             </IconButton>
           )}

@@ -1,5 +1,5 @@
-import { TextField } from "@material-ui/core";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import { TextField } from "@mui/material";
+import Autocomplete from '@mui/material/Autocomplete';
 import axios from "axios";
 import { debounce } from "lodash";
 import React, { useContext, useEffect } from "react";

@@ -1,5 +1,5 @@
-import { Button, Chip, IconButton, List, Tooltip, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Button, Chip, IconButton, List, Tooltip, Typography } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -101,87 +101,85 @@ export default function CollaborateSection({
       handleSetOpen({ connectionsDialog: false });
     }
   };
-  return (
-    <>
-      <div className={blockClassName}>
-        <Typography
-          component="h2"
-          variant="subtitle2"
-          color="primary"
-          className={subHeaderClassName}
-        >
-          {collaborationTexts.skills[projectData.status.status_type]}
-          <Tooltip title={helpTexts.addSkills} className={toolTipClassName}>
-            <IconButton>
-              <ToolTipIcon />
-            </IconButton>
-          </Tooltip>
-        </Typography>
-        <div>
-          {projectData.skills && (
-            <List className={classes.flexContainer}>
-              {projectData.skills.map((skill) => (
-                <Chip
-                  key={skill.key}
-                  label={skill.name}
-                  className={classes.skill}
-                  onDelete={() => handleSkillDelete(skill)}
-                />
-              ))}
-            </List>
-          )}
-          <Button variant="contained" color="primary" onClick={onClickSkillsDialogOpen}>
-            {projectData.skills && projectData.skills.length ? texts.edit_skills : texts.add_skills}
-          </Button>
-        </div>
-      </div>
-      <div className={blockClassName}>
-        <Typography
-          component="h2"
-          variant="subtitle2"
-          color="primary"
-          className={subHeaderClassName}
-        >
-          {collaborationTexts.connections[projectData.status.status_type]}
-          <Tooltip title={helpTexts.addConnections} className={toolTipClassName}>
-            <IconButton>
-              <ToolTipIcon />
-            </IconButton>
-          </Tooltip>
-        </Typography>
-        {projectData.helpful_connections && (
+  return <>
+    <div className={blockClassName}>
+      <Typography
+        component="h2"
+        variant="subtitle2"
+        color="primary"
+        className={subHeaderClassName}
+      >
+        {collaborationTexts.skills[projectData.status.status_type]}
+        <Tooltip title={helpTexts.addSkills} className={toolTipClassName}>
+          <IconButton size="large">
+            <ToolTipIcon />
+          </IconButton>
+        </Tooltip>
+      </Typography>
+      <div>
+        {projectData.skills && (
           <List className={classes.flexContainer}>
-            {projectData.helpful_connections.map((connection) => (
+            {projectData.skills.map((skill) => (
               <Chip
-                key={connection}
-                label={connection}
+                key={skill.key}
+                label={skill.name}
                 className={classes.skill}
-                onDelete={() => handleConnectionDelete(connection)}
+                onDelete={() => handleSkillDelete(skill)}
               />
             ))}
           </List>
         )}
-        <Button variant="contained" color="primary" onClick={onClickConnectionsDialogOpen}>
-          {texts.add_connections}
+        <Button variant="contained" color="primary" onClick={onClickSkillsDialogOpen}>
+          {projectData.skills && projectData.skills.length ? texts.edit_skills : texts.add_skills}
         </Button>
       </div>
-      <MultiLevelSelectDialog
-        open={open.skillsDialog}
-        onClose={handleSkillsDialogClose}
-        type="skills"
-        options={skillsOptions}
-        /* TODO(unused) items={projectData.skills} */
-        selectedItems={selectedItems}
-        setSelectedItems={setSelectedItems}
-      />
-      <EnterTextDialog
-        open={open.connectionsDialog}
-        onClose={handleConnectionsDialogClose}
-        maxLength={25}
-        applyText={texts.add}
-        inputLabel={texts.connection}
-        title={texts.add_a_helpful_connection}
-      />
-    </>
-  );
+    </div>
+    <div className={blockClassName}>
+      <Typography
+        component="h2"
+        variant="subtitle2"
+        color="primary"
+        className={subHeaderClassName}
+      >
+        {collaborationTexts.connections[projectData.status.status_type]}
+        <Tooltip title={helpTexts.addConnections} className={toolTipClassName}>
+          <IconButton size="large">
+            <ToolTipIcon />
+          </IconButton>
+        </Tooltip>
+      </Typography>
+      {projectData.helpful_connections && (
+        <List className={classes.flexContainer}>
+          {projectData.helpful_connections.map((connection) => (
+            <Chip
+              key={connection}
+              label={connection}
+              className={classes.skill}
+              onDelete={() => handleConnectionDelete(connection)}
+            />
+          ))}
+        </List>
+      )}
+      <Button variant="contained" color="primary" onClick={onClickConnectionsDialogOpen}>
+        {texts.add_connections}
+      </Button>
+    </div>
+    <MultiLevelSelectDialog
+      open={open.skillsDialog}
+      onClose={handleSkillsDialogClose}
+      type="skills"
+      options={skillsOptions}
+      /* TODO(unused) items={projectData.skills} */
+      selectedItems={selectedItems}
+      setSelectedItems={setSelectedItems}
+    />
+    <EnterTextDialog
+      open={open.connectionsDialog}
+      onClose={handleConnectionsDialogClose}
+      maxLength={25}
+      applyText={texts.add}
+      inputLabel={texts.connection}
+      title={texts.add_a_helpful_connection}
+    />
+  </>;
 }

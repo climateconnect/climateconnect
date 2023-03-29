@@ -1,4 +1,5 @@
-import { Avatar, Link, makeStyles, Theme, Tooltip } from "@material-ui/core";
+import { Avatar, Link, Theme, Tooltip } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { durationFromMiliseconds } from "../../../../public/lib/dateOperations";

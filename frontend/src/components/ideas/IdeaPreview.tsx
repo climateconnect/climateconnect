@@ -1,6 +1,7 @@
-import { Card, CardMedia, Link, makeStyles, Typography, Tooltip, Theme } from "@material-ui/core";
-import AddIcon from "@material-ui/icons/Add";
-import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
+import { Card, CardMedia, Link, Typography, Tooltip, Theme } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import AddIcon from "@mui/icons-material/Add";
+import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
 import React, { useContext, useState } from "react";
 import { getIdeaBorderColor } from "../../../public/lib/ideaOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
@@ -10,8 +11,8 @@ import UserContext from "../context/UserContext";
 import CreateIdeaDialog from "./createIdea/CreateIdeaDialog";
 import IdeaHubIcon from "./IdeaHubIcon";
 import IdeaRatingIcon from "./IdeaRatingIcon";
-import PersonAddIcon from "@material-ui/icons/PersonAdd";
-import ModeCommentIcon from "@material-ui/icons/ModeComment";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import ModeCommentIcon from "@mui/icons-material/ModeComment";
 
 const useStyles = makeStyles<Theme, { borderColor?: any }>((theme) => ({
   noUnderline: {

@@ -1,4 +1,5 @@
-import { Button, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { Button, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import OpenClimateMatchButton from "../climateMatch/OpenClimateMatchButton";
@@ -19,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 5,
     border: theme.borders.thick,
     marginTop: props.isLocationHub ? theme.spacing(8) : theme.spacing(-11),
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down('md')]: {
       marginTop: props.isLocationHub ? theme.spacing(-11) : theme.spacing(-11),
     },
 
@@ -34,10 +35,10 @@ const useStyles = makeStyles((theme) => ({
 
   headline: {
     fontWeight: 700,
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down('md')]: {
       fontSize: 25,
     },
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down('sm')]: {
       fontSize: 25,
     },
     color: "white",
@@ -89,7 +90,7 @@ export default function HubHeadlineContainer({ subHeadline, headline, isLocation
   const { locale, user } = useContext(UserContext);
 
   const texts = getTexts({ page: "climatematch", locale: locale });
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down('md'));
 
   return (
     <div className={classes.root}>

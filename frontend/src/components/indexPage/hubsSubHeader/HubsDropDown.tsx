@@ -1,5 +1,6 @@
-import { Button, ButtonProps, makeStyles } from "@material-ui/core";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import { Button, ButtonProps } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import React, { useContext, useRef } from "react";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";

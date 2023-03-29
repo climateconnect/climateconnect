@@ -1,6 +1,6 @@
-import { Button, IconButton, Theme, Tooltip, Typography, useMediaQuery } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
+import { Button, IconButton, Theme, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import React, { useContext } from "react";
 import { getImageDialogHeight } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -65,7 +65,7 @@ export default function AddPhotoSection({
   const texts = getTexts({ page: "project", locale: locale });
   const [tempImage, setTempImage] = React.useState(projectData.image);
   const inputFileRef = React.useRef(null as HTMLInputElement | null);
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down('md'));
 
   const handleDialogClickOpen = (dialogName) => {
     handleSetOpen({ [dialogName]: true });
@@ -105,52 +105,50 @@ export default function AddPhotoSection({
     }
   };
 
-  return (
-    <>
-      <div className={className}>
-        <Typography
-          component="h2"
-          variant="subtitle2"
-          color="primary"
-          className={subHeaderClassname}
-        >
-          {texts.add_photo}*
-          <Tooltip title={helpTexts.addPhoto} className={toolTipClassName}>
-            <IconButton>
-              <ToolTipIcon />
-            </IconButton>
-          </Tooltip>
-        </Typography>
-        <label htmlFor="photo" className={classes.imageZoneWrapper}>
-          <input
-            type="file"
-            name="photo"
-            ref={inputFileRef}
-            id="photo"
-            style={{ display: "none" }}
-            onChange={onImageChange}
-            accept=".png,.jpeg,.jpg"
-          />
-          <div className={classes.imageZone}>
-            <div className={classes.addPhotoWrapper}>
-              <div className={classes.addPhotoContainer}>
-                <AddAPhotoIcon className={classes.photoIcon} />
-                <Button variant="contained" color="primary" onClick={onUploadImageClick}>
-                  {!projectData.image ? texts.upload_image : texts.change_image}
-                </Button>
-              </div>
+  return <>
+    <div className={className}>
+      <Typography
+        component="h2"
+        variant="subtitle2"
+        color="primary"
+        className={subHeaderClassname}
+      >
+        {texts.add_photo}*
+        <Tooltip title={helpTexts.addPhoto} className={toolTipClassName}>
+          <IconButton size="large">
+            <ToolTipIcon />
+          </IconButton>
+        </Tooltip>
+      </Typography>
+      <label htmlFor="photo" className={classes.imageZoneWrapper}>
+        <input
+          type="file"
+          name="photo"
+          ref={inputFileRef}
+          id="photo"
+          style={{ display: "none" }}
+          onChange={onImageChange}
+          accept=".png,.jpeg,.jpg"
+        />
+        <div className={classes.imageZone}>
+          <div className={classes.addPhotoWrapper}>
+            <div className={classes.addPhotoContainer}>
+              <AddAPhotoIcon className={classes.photoIcon} />
+              <Button variant="contained" color="primary" onClick={onUploadImageClick}>
+                {!projectData.image ? texts.upload_image : texts.change_image}
+              </Button>
             </div>
           </div>
-        </label>
-      </div>
-      <UploadImageDialog
-        onClose={handleAvatarDialogClose}
-        open={open.avatarDialog}
-        imageUrl={tempImage}
-        borderRadius={0}
-        height={isNarrowScreen ? getImageDialogHeight(window.innerWidth) : 300}
-        ratio={16 / 9}
-      />
-    </>
-  );
+        </div>
+      </label>
+    </div>
+    <UploadImageDialog
+      onClose={handleAvatarDialogClose}
+      open={open.avatarDialog}
+      imageUrl={tempImage}
+      borderRadius={0}
+      height={isNarrowScreen ? getImageDialogHeight(window.innerWidth) : 300}
+      ratio={16 / 9}
+    />
+  </>;
 }

@@ -1,4 +1,5 @@
-import { Badge, Link, makeStyles, Theme, Tooltip } from "@material-ui/core";
+import { Badge, Link, Theme, Tooltip } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
@@ -44,7 +45,7 @@ export default function ProfileBadge({ className, badge, children, size, content
         horizontal: "left",
         vertical: "bottom",
       }}
-      overlap="circle"
+      overlap="circular"
     >
       {children}
     </Badge>

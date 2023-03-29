@@ -1,13 +1,5 @@
-import {
-  Badge,
-  Button,
-  Container,
-  Link,
-  makeStyles,
-  Theme,
-  Typography,
-  useMediaQuery,
-} from "@material-ui/core";
+import { Badge, Button, Container, Link, Theme, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -52,8 +44,8 @@ export default function NavigationSubHeader({ hubName, allHubs, isLocationHub }:
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
-  const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down('sm'));
+  const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down('md'));
   return (
     <div className={classes.root}>
       <Container className={classes.flexContainer}>

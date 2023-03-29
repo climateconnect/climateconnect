@@ -1,7 +1,7 @@
-import { Container, IconButton, TextField, Tooltip, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import Switch from "@material-ui/core/Switch";
-import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
+import { Container, IconButton, TextField, Tooltip, Typography } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import Switch from "@mui/material/Switch";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import React, { useContext } from "react";
 import getCollaborationTexts from "../../../public/data/collaborationTexts";
 import getTexts from "../../../public/texts/texts";
@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => {
       width: "50%",
       marginTop: theme.spacing(4),
       verticalAlign: "top",
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down('md')]: {
         width: "100%",
         padding: 0,
       },
@@ -165,165 +165,163 @@ export default function EnterDetails({
     handleSetProjectData({ collaborators_welcome: event.target.checked });
   };
 
-  return (
-    <>
-      <Container maxWidth="lg">
-        <form onSubmit={onClickNextStep}>
+  return <>
+    <Container maxWidth="lg">
+      <form onSubmit={onClickNextStep}>
+        <Typography
+          component="h2"
+          variant="subtitle2"
+          color="primary"
+          className={classes.subHeader}
+        >
+          {texts.general_information}*
+        </Typography>
+        <div className={classes.block}>
+          <Typography component="h2" variant="subtitle2" className={classes.inlineSubHeader}>
+            {texts.your_project_is}
+          </Typography>
+          <div className={classes.inlineBlock}>
+            <RadioButtons
+              value={projectData.status.name}
+              onChange={onStatusRadioChange}
+              values={statusValues}
+            />
+          </div>
+        </div>
+        <div>
+          <Typography component="h2" variant="subtitle2" className={classes.inlineSubHeader}>
+            {texts.date}
+          </Typography>
+          <div className={classes.inlineBlock}>
+            {statusesWithStartDate.includes(projectData.status.id) && (
+              <DatePicker
+                className={classes.datePicker}
+                label={texts.start_date}
+                date={projectData.start_date}
+                handleChange={onStartDateChange}
+                required
+              />
+            )}
+            {statusesWithEndDate.includes(projectData.status.id) && (
+              <DatePicker
+                className={classes.datePicker}
+                label={texts.end_date}
+                date={projectData.end_date}
+                handleChange={onEndDateChange}
+                required
+                minDate={projectData.start_date && new Date(projectData.start_date)}
+              />
+            )}
+          </div>
+        </div>
+        <div className={classes.block}>
+          <AddPhotoSection
+            projectData={projectData}
+            handleSetProjectData={handleSetProjectData}
+            className={`${classes.inlineBlock} ${classes.inlineOnBigScreens} ${classes.photoContainer}`}
+            subHeaderClassname={classes.subHeader}
+            toolTipClassName={classes.tooltip}
+            helpTexts={helpTexts}
+            ToolTipIcon={HelpOutlineIcon}
+            open={open}
+            handleSetOpen={handleSetOpen}
+          />
+          <AddSummarySection
+            projectData={projectData}
+            onDescriptionChange={onDescriptionChange}
+            className={`${classes.inlineBlock} ${classes.inlineOnBigScreens} ${classes.summaryContainer}`}
+            subHeaderClassname={classes.subHeader}
+            toolTipClassName={classes.tooltip}
+            helpTexts={helpTexts}
+            ToolTipIcon={HelpOutlineIcon}
+          />
+        </div>
+        <div className={classes.block}>
           <Typography
             component="h2"
             variant="subtitle2"
             color="primary"
             className={classes.subHeader}
           >
-            {texts.general_information}*
+            {texts.project_description}
+            <Tooltip title={helpTexts.description} className={classes.tooltip}>
+              <IconButton size="large">
+                <HelpOutlineIcon />
+              </IconButton>
+            </Tooltip>
           </Typography>
-          <div className={classes.block}>
-            <Typography component="h2" variant="subtitle2" className={classes.inlineSubHeader}>
-              {texts.your_project_is}
-            </Typography>
-            <div className={classes.inlineBlock}>
-              <RadioButtons
-                value={projectData.status.name}
-                onChange={onStatusRadioChange}
-                values={statusValues}
-              />
-            </div>
-          </div>
-          <div>
-            <Typography component="h2" variant="subtitle2" className={classes.inlineSubHeader}>
-              {texts.date}
-            </Typography>
-            <div className={classes.inlineBlock}>
-              {statusesWithStartDate.includes(projectData.status.id) && (
-                <DatePicker
-                  className={classes.datePicker}
-                  label={texts.start_date}
-                  date={projectData.start_date}
-                  handleChange={onStartDateChange}
-                  required
-                />
-              )}
-              {statusesWithEndDate.includes(projectData.status.id) && (
-                <DatePicker
-                  className={classes.datePicker}
-                  label={texts.end_date}
-                  date={projectData.end_date}
-                  handleChange={onEndDateChange}
-                  required
-                  minDate={projectData.start_date && new Date(projectData.start_date)}
-                />
-              )}
-            </div>
-          </div>
-          <div className={classes.block}>
-            <AddPhotoSection
-              projectData={projectData}
-              handleSetProjectData={handleSetProjectData}
-              className={`${classes.inlineBlock} ${classes.inlineOnBigScreens} ${classes.photoContainer}`}
-              subHeaderClassname={classes.subHeader}
-              toolTipClassName={classes.tooltip}
-              helpTexts={helpTexts}
-              ToolTipIcon={HelpOutlineIcon}
-              open={open}
-              handleSetOpen={handleSetOpen}
-            />
-            <AddSummarySection
-              projectData={projectData}
-              onDescriptionChange={onDescriptionChange}
-              className={`${classes.inlineBlock} ${classes.inlineOnBigScreens} ${classes.summaryContainer}`}
-              subHeaderClassname={classes.subHeader}
-              toolTipClassName={classes.tooltip}
-              helpTexts={helpTexts}
-              ToolTipIcon={HelpOutlineIcon}
-            />
-          </div>
-          <div className={classes.block}>
-            <Typography
-              component="h2"
-              variant="subtitle2"
-              color="primary"
-              className={classes.subHeader}
-            >
-              {texts.project_description}
-              <Tooltip title={helpTexts.description} className={classes.tooltip}>
-                <IconButton>
-                  <HelpOutlineIcon />
-                </IconButton>
-              </Tooltip>
-            </Typography>
-            <ProjectDescriptionHelp status={projectData.status} />
-            <TextField
-              variant="outlined"
-              fullWidth
-              multiline
-              rows={9}
-              onChange={(event) => onDescriptionChange(event, "description")}
-              helperText={texts.describe_your_project_in_detail_please_only_use_language}
-              placeholder={texts.describe_your_project_in_more_detail}
-              value={projectData.description}
-            />
-          </div>
-          <div className={classes.block}>
-            <Typography
-              component="h2"
-              variant="subtitle2"
-              color="primary"
-              className={classes.subHeader}
-            >
-              {texts.project_website}
-            </Typography>
-            <TextField
-              variant="outlined"
-              onChange={(event) => onWebsiteChange(event)}
-              placeholder={texts.project_website}
-              value={projectData.website}
-              helperText={texts.if_your_project_has_a_website_you_can_enter_it_here}
-            />
-          </div>
-          <div className={classes.block}>
-            <Typography
-              component="h2"
-              variant="subtitle2"
-              color="primary"
-              className={classes.subHeader}
-            >
-              {collaborationTexts.allow[projectData.status.status_type]}
-              <Tooltip title={helpTexts.collaboration} className={classes.tooltip}>
-                <IconButton>
-                  <HelpOutlineIcon />
-                </IconButton>
-              </Tooltip>
-            </Typography>
-            <Switch
-              checked={projectData.collaborators_welcome}
-              onChange={onAllowCollaboratorsChange}
-              name="checkedA"
-              inputProps={{ "aria-label": "secondary checkbox" }}
-              color="primary"
-            />
-          </div>
-          {projectData.collaborators_welcome && (
-            <CollaborateSection
-              projectData={projectData}
-              handleSetProjectData={handleSetProjectData}
-              blockClassName={classes.block}
-              subHeaderClassName={classes.subHeader}
-              toolTipClassName={classes.tooltip}
-              helpTexts={helpTexts}
-              ToolTipIcon={HelpOutlineIcon}
-              open={open}
-              handleSetOpen={handleSetOpen}
-              skillsOptions={skillsOptions}
-              collaborationTexts={collaborationTexts}
-            />
-          )}
-          <BottomNavigation
-            className={classes.block}
-            onClickPreviousStep={onClickPreviousStep}
-            nextStepButtonType="submit"
+          <ProjectDescriptionHelp status={projectData.status} />
+          <TextField
+            variant="outlined"
+            fullWidth
+            multiline
+            rows={9}
+            onChange={(event) => onDescriptionChange(event, "description")}
+            helperText={texts.describe_your_project_in_detail_please_only_use_language}
+            placeholder={texts.describe_your_project_in_more_detail}
+            value={projectData.description}
           />
-        </form>
-      </Container>
-    </>
-  );
+        </div>
+        <div className={classes.block}>
+          <Typography
+            component="h2"
+            variant="subtitle2"
+            color="primary"
+            className={classes.subHeader}
+          >
+            {texts.project_website}
+          </Typography>
+          <TextField
+            variant="outlined"
+            onChange={(event) => onWebsiteChange(event)}
+            placeholder={texts.project_website}
+            value={projectData.website}
+            helperText={texts.if_your_project_has_a_website_you_can_enter_it_here}
+          />
+        </div>
+        <div className={classes.block}>
+          <Typography
+            component="h2"
+            variant="subtitle2"
+            color="primary"
+            className={classes.subHeader}
+          >
+            {collaborationTexts.allow[projectData.status.status_type]}
+            <Tooltip title={helpTexts.collaboration} className={classes.tooltip}>
+              <IconButton size="large">
+                <HelpOutlineIcon />
+              </IconButton>
+            </Tooltip>
+          </Typography>
+          <Switch
+            checked={projectData.collaborators_welcome}
+            onChange={onAllowCollaboratorsChange}
+            name="checkedA"
+            inputProps={{ "aria-label": "secondary checkbox" }}
+            color="primary"
+          />
+        </div>
+        {projectData.collaborators_welcome && (
+          <CollaborateSection
+            projectData={projectData}
+            handleSetProjectData={handleSetProjectData}
+            blockClassName={classes.block}
+            subHeaderClassName={classes.subHeader}
+            toolTipClassName={classes.tooltip}
+            helpTexts={helpTexts}
+            ToolTipIcon={HelpOutlineIcon}
+            open={open}
+            handleSetOpen={handleSetOpen}
+            skillsOptions={skillsOptions}
+            collaborationTexts={collaborationTexts}
+          />
+        )}
+        <BottomNavigation
+          className={classes.block}
+          onClickPreviousStep={onClickPreviousStep}
+          nextStepButtonType="submit"
+        />
+      </form>
+    </Container>
+  </>;
 }

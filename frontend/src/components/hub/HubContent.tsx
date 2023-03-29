@@ -1,6 +1,7 @@
-import { Button, Collapse, Container, makeStyles, useMediaQuery } from "@material-ui/core";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { Button, Collapse, Container, useMediaQuery } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
@@ -30,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 600,
     fontSize: 22,
     marginBottom: theme.spacing(0.5),
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down('sm')]: {
       fontSize: 18,
     },
   },
@@ -60,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 800,
     height: 40,
     marginTop: theme.spacing(2),
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(1),
     },
   }),
@@ -107,7 +108,7 @@ export default function HubContent({
   const { locale, user } = useContext(UserContext);
   const classes = useStyles({ isLocationHub: isLocationHub, loggedOut: !user });
   const texts = getTexts({ page: "hub", locale: locale });
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down('md'));
   const [expanded, setExpanded] = React.useState(false);
   const handleClickExpand = () => {
     if (expanded === false) {

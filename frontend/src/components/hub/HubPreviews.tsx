@@ -1,5 +1,6 @@
 import React from "react";
-import { makeStyles, Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import HubPreview from "./HubPreview";
 
 const useStyles = makeStyles(() => ({

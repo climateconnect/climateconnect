@@ -1,4 +1,5 @@
-import { Container, Link, makeStyles, Theme, useMediaQuery } from "@material-ui/core";
+import { Container, Link, Theme, useMediaQuery } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import getTexts from "../../../../public/texts/texts";
@@ -29,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   hubsContainer: {
     display: "flex",
     justifyContent: "flex-end",
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down('sm')]: {
       justifyContent: "center",
     },
   },
@@ -46,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function HubsSubHeader({ hubs, subHeaderRef, onlyShowDropDown }: any) {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down('sm'));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   return (

@@ -1,5 +1,6 @@
-import { IconButton, makeStyles, Theme } from "@material-ui/core";
-import ShareIcon from "@material-ui/icons/Share";
+import { IconButton, Theme } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import ShareIcon from "@mui/icons-material/Share";
 import React from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import SocialMediaShareDialog from "./SocialMediaShareDialog";
@@ -106,26 +107,24 @@ export default function SocialMediaShareButton({
     }
   };
 
-  return (
-    <>
-      <div className={containerClassName}>
-        <IconButton className={classes.button} onClick={handleClick}>
-          {/*adjusted viewBox to center the icon*/}
-          <ShareIcon viewBox="2 0 24 24" />
-        </IconButton>
-      </div>
-      <SocialMediaShareDialog
-        open={showSocials}
-        onClose={toggleShowSocials}
-        createShareRecord={createShareRecord}
-        tinyScreen={tinyScreen}
-        SHARE_OPTIONS={SHARE_OPTIONS}
-        contentLink={contentLink}
-        messageTitle={messageTitle}
-        mailBody={mailBody}
-        texts={texts}
-        dialogTitle={dialogTitle}
-      />
-    </>
-  );
+  return <>
+    <div className={containerClassName}>
+      <IconButton className={classes.button} onClick={handleClick} size="large">
+        {/*adjusted viewBox to center the icon*/}
+        <ShareIcon viewBox="2 0 24 24" />
+      </IconButton>
+    </div>
+    <SocialMediaShareDialog
+      open={showSocials}
+      onClose={toggleShowSocials}
+      createShareRecord={createShareRecord}
+      tinyScreen={tinyScreen}
+      SHARE_OPTIONS={SHARE_OPTIONS}
+      contentLink={contentLink}
+      messageTitle={messageTitle}
+      mailBody={mailBody}
+      texts={texts}
+      dialogTitle={dialogTitle}
+    />
+  </>;
 }

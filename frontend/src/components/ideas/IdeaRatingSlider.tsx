@@ -1,4 +1,5 @@
-import { makeStyles, Slider, Theme, Typography } from "@material-ui/core";
+import { Slider, Theme, Typography } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import React from "react";
 
 const useStyles = makeStyles<Theme, { averageRating: any }>((theme) => ({
