@@ -166,17 +166,12 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         );
         return;
       }
-      // NOTE: response not being used anywhere, wrapping it in a try catch but it seems to be an unnecessary api call.
-      try {
-        const url = `/api/look_up_organization/?search=${values.organizationname}`;
-        const resp = await apiRequest({
-          method: "GET",
-          url: url,
-          locale: locale,
-        });
-      } catch (error) {
-        console.error(error);
-      }
+      const url = `/api/look_up_organization/?search=${values.organizationname}`;
+      const resp = await apiRequest({
+        method: "GET",
+        url: url,
+        locale: locale,
+      });
 
       const location = getLocationValue(values, "location");
       setOrganizationInfo({
