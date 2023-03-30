@@ -56,14 +56,14 @@ export default function ManageMembers({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
-  const renderSearchOption = (option) => {
+  const renderSearchOption = (props, option) => {
     return (
-      <React.Fragment>
+      <li {...props}>
         <IconButton size="large">
           <AddCircleOutlineIcon />
         </IconButton>
         {option.first_name + " " + option.last_name}
-      </React.Fragment>
+      </li>
     );
   };
 

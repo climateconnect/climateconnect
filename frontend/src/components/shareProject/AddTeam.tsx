@@ -104,14 +104,14 @@ export default function AddTeam({
     });
   };
 
-  const renderSearchOption = (option) => {
+  const renderSearchOption = (props, option) => {
     return (
-      <React.Fragment>
+      <li {...props}>
         <IconButton size="large">
           <AddCircleOutlineIcon />
         </IconButton>
         {option.first_name + " " + option.last_name}
-      </React.Fragment>
+      </li>
     );
   };
 

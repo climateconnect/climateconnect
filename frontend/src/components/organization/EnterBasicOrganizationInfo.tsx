@@ -7,14 +7,14 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import Form from "./../general/Form";
 
-const renderSearchOption = (option) => {
+const renderSearchOption = (props, option) => {
   return (
-    <React.Fragment>
+    <li {...props}>
       <IconButton size="large">
         <AddCircleOutlineIcon />
       </IconButton>
       {option.name}
-    </React.Fragment>
+    </li>
   );
 };
 

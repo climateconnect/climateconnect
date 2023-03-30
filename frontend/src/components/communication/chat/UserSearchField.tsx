@@ -52,17 +52,16 @@ export default function UserSearchField({ cancelUserSearch, setErrorMessage }) {
   };
   const getUsersToFilterOut = () => [user, ...newChatMembers];
 
-  const renderSearchOption = (option) => {
+  const renderSearchOption = (props, option) => {
     return (
-      <React.Fragment>
+      <li {...props}>
         <IconButton size="large">
           <AddCircleOutlineIcon />
         </IconButton>
         {option.first_name + " " + option.last_name}
-      </React.Fragment>
-    );
+      </li>
+    )
   };
-
   const handleRemoveMember = (member) => {
     setNewChatMembers([...newChatMembers.filter((m) => m.id !== member.id)]);
   };

@@ -37,14 +37,14 @@ export default function OrganizersContainer({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: projectData });
 
-  const renderSearchOption = (option) => {
+  const renderSearchOption = (props, option) => {
     return (
-      <React.Fragment>
+      <li {...props}>
         <IconButton size="large">
           <AddCircleOutlineIcon />
         </IconButton>
         {option.name}
-      </React.Fragment>
+      </li>
     );
   };
 
