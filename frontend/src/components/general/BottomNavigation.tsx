@@ -59,7 +59,7 @@ export default function BottomNavigation({
   return (
     <div className={`${classes.navigationButtonWrapper} ${className}`}>
       {onClickPreviousStep && (
-        <Button variant="contained" className={classes.backButton} onClick={onClickPreviousStep}>
+        <Button variant="contained" color="grey" className={classes.backButton} onClick={onClickPreviousStep}>
           {texts.back}
         </Button>
       )}

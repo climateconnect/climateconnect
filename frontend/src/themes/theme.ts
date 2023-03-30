@@ -1,4 +1,18 @@
 import { createTheme } from "@mui/material/styles";
+import { grey } from "@mui/material/colors";
+
+declare module "@mui/material/Button" {
+  interface ButtonPropsColorOverrides {
+    grey: true;
+  }
+}
+
+declare module "@mui/material" {
+  interface Color {
+    main: string;
+    dark: string;
+  }
+}
 
 // Create core theme so we can access spacing etc. when customizing components
 const coreTheme = createTheme({
@@ -23,6 +37,10 @@ const coreTheme = createTheme({
     action: {
       selected: "#387077",
     },
+    grey: {
+      main: grey[300],
+      dark: grey[400]
+    }
   },
   typography: {
     fontFamily: "Open Sans",
@@ -58,9 +76,26 @@ const coreTheme = createTheme({
 const theme = createTheme(coreTheme, {
   components: {
     MuiButton: {
+      variants: [
+        {
+          props: { variant: "contained", color: "grey" },
+          style: {
+            color: coreTheme.palette.getContrastText(coreTheme.palette.grey[300])
+          }
+        },
+      ],
       defaultProps: {
         disableElevation: true,
       },
+      styleOverrides: {
+        contained: {
+          borderRadius: 3,
+          paddingLeft: coreTheme.spacing(4),
+          paddingRight: coreTheme.spacing(4),
+          paddingTop: coreTheme.spacing(1),
+          paddingBottom: coreTheme.spacing(1),
+        },
+      }
     },
     MuiTab: {
       styleOverrides: {
@@ -87,7 +122,7 @@ const theme = createTheme(coreTheme, {
           borderRadius: 4,
         },
       }
-    },
+    }
   },
 });
 

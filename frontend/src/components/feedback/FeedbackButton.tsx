@@ -13,10 +13,15 @@ const useStyles = makeStyles((theme) => ({
     position: "fixed",
     bottom: "calc(50vh - 20px)",
     transform: "rotate(-90deg)",
-    right: -27.35,
-  },
-  buttonText: {
+    right: -34.75,
     color: theme.palette.primary.main,
+    background: "rgba(0,0,0,0.1)",
+    padding: 6,
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    "&:hover": {
+      background: "rgba(0,0,0,0.15)"
+    }
   },
   alert: {
     position: "absolute",
@@ -80,8 +85,7 @@ export default function FeedbackButton({ justLink, children }: any) {
           variant="contained"
           size="small"
           classes={{
-            root: classes.root,
-            label: classes.buttonText,
+            root: classes.root
           }}
           onClick={handleOpenDialog}
         >
