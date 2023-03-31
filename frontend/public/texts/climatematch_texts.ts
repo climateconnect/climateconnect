@@ -11,7 +11,7 @@ export default function getClimatematchTexts({ location, question }) {
     },
     loading_the_climatematch: {
       en: "Loading the ClimateMatch...",
-      de: "Loading the ClimateMatch...",
+      de: "Lade das ClimateMatch...",
     },
     calculating_your_results: {
       en: "Calculating your results...",
