@@ -35,9 +35,7 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import SettingsIcon from "@material-ui/icons/Settings";
 import noop from "lodash/noop";
 import React, { useContext, useEffect, useState } from "react";
-import { getStaticPageLinks } from "../../../public/data/getStaticPageLinks";
-
-// Relative imports
+import { getStaticPageLinks } from "../../../public/data/getStaticPageLinks"; // Relative imports
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -49,6 +47,7 @@ import ProfileBadge from "../profile/ProfileBadge";
 import DropDownButton from "./DropDownButton";
 import LanguageSelect from "./LanguageSelect";
 import StaticPageLinks from "./StaticPageLinks";
+import { HeaderProps } from "./types";
 
 type StyleProps = {
   transparentHeader?: boolean;
@@ -101,14 +100,23 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       justifyContent: "space-between",
       alignItems: "center",
     },
-    logoLink: {
-      [theme.breakpoints.down("sm")]: {
-        flex: `0 1 auto`,
-        width: "calc(1.1vw + 1.3em)",
-        maxWidth: "2.3rem",
-        minWidth: "1.3rem",
-      },
-    },
+    logoLink: (props) =>
+      props.isHubPage
+        ? {
+            [theme.breakpoints.down("sm")]: {
+              flex: `0.5 1 auto`,
+              width: "calc(1.1vw + 1.3em)",
+              minWidth: "1.3rem",
+            },
+          }
+        : {
+            [theme.breakpoints.down("sm")]: {
+              flex: `0 1 auto`,
+              width: "calc(1.1vw + 1.3em)",
+              maxWidth: "2.3rem",
+              minWidth: "1.3rem",
+            },
+          },
     logo: {
       [theme.breakpoints.down("sm")]: {
         height: "auto",
@@ -302,7 +310,8 @@ export default function Header({
   transparentHeader,
   background,
   isHubPage,
-}: any) {
+  hubName,
+}: HeaderProps) {
   const classes = useStyles({
     fixedHeader: fixedHeader,
     transparentHeader: transparentHeader,
@@ -310,7 +319,7 @@ export default function Header({
     background: background,
     isHubPage: isHubPage,
   });
-
+  console.log("hub name in header", hubName);
   const { user, signOut, notifications, pathName, locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
@@ -326,10 +335,20 @@ export default function Header({
   const onNotificationsClose = () => setAnchorEl(null);
 
   const getLogo = () => {
-    if (isMediumScreen) {
-      return transparentHeader ? "/images/logo_white_no_text.svg" : "/images/logo_no_text.svg";
+    let imageUrl = "/images";
+    console.log("hub name for logo", hubName);
+    if (isHubPage && hubName) {
+      imageUrl += `/hub_logos/ch_${hubName.toLowerCase()}_logo.svg`;
+      // imageUrl += transparentHeader ? "/logo_white_no_text.svg" : "/logo_no_text.svg";
+    } else {
+      if (isMediumScreen) {
+        imageUrl += transparentHeader ? "/logo_white_no_text.svg" : "/logo_no_text.svg";
+      } else {
+        imageUrl += transparentHeader ? "/logo_white.png" : "/logo.png";
+      }
     }
-    return transparentHeader ? "/images/logo_white.png" : "/images/logo.png";
+
+    return imageUrl;
   };
 
   const logo = getLogo();

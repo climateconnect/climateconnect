@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
 const DESCRIPTION_WEBFLOW_LINKS = {
   energy: {
     en: "energy-en",
-    de: "energie-de"
+    de: "energie-de",
   },
   mobility: {
     de: "mobilitat-de",
@@ -62,8 +62,8 @@ const DESCRIPTION_WEBFLOW_LINKS = {
   },
   landuse: {
     de: "landuse-de",
-    en: "landuse-en"
-  }
+    en: "landuse-en",
+  },
 };
 
 //potentially switch back to getinitialprops here?!
@@ -172,9 +172,11 @@ export default function Hub({
     setTabsWhereFiltersWereApplied([]);
   };
 
-  useEffect(async () => {
-    const retrievedHubAmbassador = await getHubAmbassadorData(hubUrl, locale);
-    setHubAmbassador(retrievedHubAmbassador);
+  useEffect(() => {
+    (async () => {
+      const retrievedHubAmbassador = await getHubAmbassadorData(hubUrl, locale);
+      setHubAmbassador(retrievedHubAmbassador);
+    })();
   }, []);
 
   //Refs and state for tutorial
@@ -249,6 +251,7 @@ export default function Hub({
         headerBackground="#FFF"
         image={getImageUrl(image)}
         isHubPage
+        hubName={name}
         hideDonationCampaign
         customFooterImage={hubData.custom_footer_image && getImageUrl(hubData.custom_footer_image)}
       >
