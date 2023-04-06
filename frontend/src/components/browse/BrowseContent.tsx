@@ -2,7 +2,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Container, Divider, Tab, Tabs, Theme, useMediaQuery } from "@material-ui/core";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import _ from "lodash";
-import React, { useContext, useEffect, useRef, useState, Suspense, useMemo } from "react";
+import React, { Suspense, useContext, useEffect, useMemo, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import getFilters from "../../../public/data/possibleFilters";
 import { splitFiltersFromQueryObject } from "../../../public/lib/filterOperations";
@@ -115,8 +115,8 @@ export default function BrowseContent({
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles();
   const TYPES_BY_TAB_VALUE = hideMembers
-    ? ["projects", "organizations"]
-    : ["projects", "organizations", "members"];
+    ? ["projects", "organizations", "events"]
+    : ["projects", "organizations", "events", "members"];
   if (showIdeas) {
     TYPES_BY_TAB_VALUE.push("ideas");
   }
@@ -254,35 +254,40 @@ export default function BrowseContent({
 
     //persist the old location filter when switching tabs
     const tabKey = TYPES_BY_TAB_VALUE[newValue];
-    const possibleFilters = getFilters({
-      key: tabKey,
-      filterChoices: filterChoices,
-      locale: locale,
-    });
-    const locationFilter: any = possibleFilters.find((f) => f.type === "location");
-    queryObject[locationFilter.key] = filters[locationFilter.key];
-    const splitQueryObject = splitFiltersFromQueryObject(
-      /*TODO(undefined) newFilters*/ queryObject,
-      possibleFilters
-    );
 
-    const newFilters = { ...emptyFilters, ...splitQueryObject.filters };
-    const tabValue = TYPES_BY_TAB_VALUE[newValue];
-    // Apply new filters with the query object immediately:
-    handleApplyNewFilters({
-      type: tabValue,
-      newFilters: newFilters,
-      closeFilters: false,
-      nonFilterParams: splitQueryObject.nonFilters,
-    });
+    if (tabKey === "events") {
+      // TODO: add event calendar here!
+    } else {
+      const possibleFilters = getFilters({
+        key: tabKey,
+        filterChoices: filterChoices,
+        locale: locale,
+      });
+      const locationFilter: any = possibleFilters.find((f) => f.type === "location");
+      queryObject[locationFilter.key] = filters[locationFilter.key];
+      const splitQueryObject = splitFiltersFromQueryObject(
+        /*TODO(undefined) newFilters*/ queryObject,
+        possibleFilters
+      );
+
+      const newFilters = { ...emptyFilters, ...splitQueryObject.filters };
+      const tabValue = TYPES_BY_TAB_VALUE[newValue];
+      // Apply new filters with the query object immediately:
+      handleApplyNewFilters({
+        type: tabValue,
+        newFilters: newFilters,
+        closeFilters: false,
+        nonFilterParams: splitQueryObject.nonFilters,
+      });
+    }
 
     window.location.hash = TYPES_BY_TAB_VALUE[newValue];
     setTabValue(newValue);
   };
 
   /* We always save filter values in the url in english.
-  Therefore we need to get the name in the current language
-  when retrieving them from the query object */
+        Therefore we need to get the name in the current language
+        when retrieving them from the query object */
   const getValueInCurrentLanguage = (metadata, value) => {
     return findOptionByNameDeep({
       filterChoices: metadata.options,

@@ -342,7 +342,7 @@ export default function Header({
   const onNotificationsClose = () => setAnchorEl(null);
 
   const getLogo = () => {
-    console.log('get logo called')
+    console.log("get logo called");
     let imageUrl = "/images";
     if (isHubPage && hubName) {
       imageUrl += `/hub_logos/ch_${hubName.toLowerCase()}_logo.svg`;
@@ -353,8 +353,9 @@ export default function Header({
     return imageUrl;
   };
 
-  const loadFallbackLogo = (ev) => // TODO: implementing better with re-rendering after screen size change
-    (ev.target.src = loadDefaultLogo(transparentHeader, isMediumScreen));
+  const loadFallbackLogo = (
+    ev // TODO: implementing better with re-rendering after screen size change
+  ) => (ev.target.src = loadDefaultLogo(transparentHeader, isMediumScreen));
 
   const loadDefaultLogo = (transparentHeader?: boolean, isMediumScreen?: boolean): string => {
     if (isMediumScreen) {
