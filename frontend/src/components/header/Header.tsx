@@ -100,23 +100,30 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       justifyContent: "space-between",
       alignItems: "center",
     },
-    logoLink: (props) =>
-      props.isHubPage
-        ? {
-            [theme.breakpoints.down("sm")]: {
-              flex: `0.5 1 auto`,
-              width: "calc(1.1vw + 1.3em)",
-              minWidth: "1.3rem",
-            },
-          }
-        : {
-            [theme.breakpoints.down("sm")]: {
-              flex: `0 1 auto`,
-              width: "calc(1.1vw + 1.3em)",
-              maxWidth: "2.3rem",
-              minWidth: "1.3rem",
-            },
-          },
+    logoLink: (props) => ({
+      [theme.breakpoints.down("sm")]: {
+        flex: `0 1 auto`,
+        width: "calc(1.1vw + 1.3em)",
+        maxWidth: "2.3rem",
+        minWidth: "1.3rem",
+      },
+    }),
+    // props.isHubPage
+    //   ? {
+    //       [theme.breakpoints.down("sm")]: {
+    //         flex: `0.5 1 auto`,
+    //         width: "calc(1.1vw + 1.3em)",
+    //         minWidth: "1.3rem",
+    //       },
+    //     }
+    //   : {
+    //       [theme.breakpoints.down("sm")]: {
+    //         flex: `0 1 auto`,
+    //         width: "calc(1.1vw + 1.3em)",
+    //         maxWidth: "2.3rem",
+    //         minWidth: "1.3rem",
+    //       },
+    //     },
     logo: {
       [theme.breakpoints.down("sm")]: {
         height: "auto",
@@ -319,7 +326,7 @@ export default function Header({
     background: background,
     isHubPage: isHubPage,
   });
-  console.log("hub name in header", hubName);
+
   const { user, signOut, notifications, pathName, locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
@@ -335,20 +342,26 @@ export default function Header({
   const onNotificationsClose = () => setAnchorEl(null);
 
   const getLogo = () => {
+    console.log('get logo called')
     let imageUrl = "/images";
-    console.log("hub name for logo", hubName);
     if (isHubPage && hubName) {
       imageUrl += `/hub_logos/ch_${hubName.toLowerCase()}_logo.svg`;
-      // imageUrl += transparentHeader ? "/logo_white_no_text.svg" : "/logo_no_text.svg";
     } else {
-      if (isMediumScreen) {
-        imageUrl += transparentHeader ? "/logo_white_no_text.svg" : "/logo_no_text.svg";
-      } else {
-        imageUrl += transparentHeader ? "/logo_white.png" : "/logo.png";
-      }
+      imageUrl = loadDefaultLogo(transparentHeader, isMediumScreen);
     }
 
     return imageUrl;
+  };
+
+  const loadFallbackLogo = (ev) => // TODO: implementing better with re-rendering after screen size change
+    (ev.target.src = loadDefaultLogo(transparentHeader, isMediumScreen));
+
+  const loadDefaultLogo = (transparentHeader?: boolean, isMediumScreen?: boolean): string => {
+    if (isMediumScreen) {
+      return transparentHeader ? "/images/logo_white_no_text.svg" : "/images/logo_no_text.svg";
+    } else {
+      return transparentHeader ? "/images/logo_white.png" : "/images/logo.png";
+    }
   };
 
   const logo = getLogo();
@@ -379,7 +392,12 @@ export default function Header({
     >
       <Container className={classes.container}>
         <Link href={localePrefix + "/"} className={classes.logoLink}>
-          <img src={logo} alt={texts.climate_connect_logo} className={classes.logo} />
+          <img
+            src={logo}
+            alt={texts.climate_connect_logo}
+            className={classes.logo}
+            onError={loadFallbackLogo}
+          />
         </Link>
         {isNarrowScreen ? (
           <NarrowScreenLinks

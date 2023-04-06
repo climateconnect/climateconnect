@@ -100,8 +100,6 @@ export default function WideLayout({
   const [showDonationBanner, setShowDonationBanner] = useState(false);
   const spaceToTop = ElementSpaceToTop({ el: alertEl });
 
-  console.log("hub name in wideLayout", hubName);
-
   useEffect(() => {
     const params = getParams(window.location.href);
     if (params.message) setInitialMessage(decodeURI(params.message));
