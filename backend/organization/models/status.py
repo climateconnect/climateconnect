@@ -81,32 +81,24 @@ class ProjectTypes(models.Model):
         help_text="Name of the project type",
         verbose_name="Name",
         max_length=512,
-        null=True,
-        blank=True,
     )
 
     name_de_translation = models.CharField(
         help_text="Translation of name column",
         verbose_name="Name DE translation",
         max_length=512,
-        null=True,
-        blank=True,
     )
 
     help_text = models.TextField(
         help_text="Small helper text that is shown under the name in the shrae project interface",
         verbose_name="Helptext",
         max_length=512,
-        null=True,
-        blank=True,
     )
 
     help_text_de = models.TextField(
         help_text="Translation of help_text column",
         verbose_name="Helptext DE translation",
         max_length=512,
-        null=True,
-        blank=True,
     )
 
     icon = models.FileField(
@@ -117,9 +109,9 @@ class ProjectTypes(models.Model):
         upload_to=project_type_image_path,
     )
 
-    PROJECT_PROJECT_TYPE = 0
-    IDEA_PROJECT_TYPE = 1
-    EVENT_PROJECT_TYPE = 2
+    PROJECT_PROJECT_TYPE = 'project'
+    IDEA_PROJECT_TYPE = 'idea'
+    EVENT_PROJECT_TYPE = 'event'
     POSSIBLE_PROJECT_TYPES = (
         (PROJECT_PROJECT_TYPE, "project"),
         (IDEA_PROJECT_TYPE, "idea"),
