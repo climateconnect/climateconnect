@@ -143,7 +143,7 @@ export default function WelcomeToClimateMatch({
       <Container className={`${classes.buttonBar} ${!unfixButtonBar && classes.fixedOnMobile}`}>
         <div className={classes.buttonBarLeft}>
           {hasDoneClimateMatch && (
-            <Button href="/climatematchresults" className={classes.lastResultButton}>
+            <Button href={`/${locale}/climatematchresults`} className={classes.lastResultButton}>
               <RestoreIcon className={classes.lastResultIcon} />
               {texts.your_last_result}
             </Button>
