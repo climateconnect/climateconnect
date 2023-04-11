@@ -6,7 +6,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { ThemeProvider, StyledEngineProvider } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import Head from "next/head";
 import Router from "next/router";
@@ -161,52 +161,50 @@ export default function LayoutWrapper({
         <meta name="description" content={description ? description : defaultDescription} />
       </Head>
       {/* If theme is falsy, slience the MUI console.warning for having an undefined theme */}
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>
-          {loading || isLoading ? (
-            <div className={classes.spinnerContainer}>
-              <div>
-                <img className={classes.spinner} src="/images/logo.png" />
-              </div>
-              <CircularProgress />
-              <Typography component="div">{texts.loading_and_waiting}</Typography>
+      <ThemeProvider theme={theme}>
+        {loading || isLoading ? (
+          <div className={classes.spinnerContainer}>
+            <div>
+              <img className={classes.spinner} src="/images/logo.png" />
             </div>
-          ) : (
-            <FeedbackContext.Provider value={contextValues}>
-              <div
-                className={`${!fixedHeight && !noSpaceForFooter && classes.leaveSpaceForFooter}`}
+            <CircularProgress />
+            <Typography component="div">{texts.loading_and_waiting}</Typography>
+          </div>
+        ) : (
+          <FeedbackContext.Provider value={contextValues}>
+            <div
+              className={`${!fixedHeight && !noSpaceForFooter && classes.leaveSpaceForFooter}`}
+            >
+              {children}
+              {!acceptedNecessary && bannerOpen && initialized && (
+                <CookieBanner closeBanner={closeBanner} />
+              )}
+              {!noFeedbackButton && !isSmallerThanMediumScreen && <FeedbackButton />}
+              <Snackbar
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "left",
+                }}
+                color="primary"
+                open={snackbarProps.open}
+                autoHideDuration={10000}
+                onClose={handleSnackbarClose}
               >
-                {children}
-                {!acceptedNecessary && bannerOpen && initialized && (
-                  <CookieBanner closeBanner={closeBanner} />
-                )}
-                {!noFeedbackButton && !isSmallerThanMediumScreen && <FeedbackButton />}
-                <Snackbar
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "left",
+                <SnackbarContent
+                  message={snackbarProps.message}
+                  action={snackbarProps.action}
+                  classes={{
+                    root: `${classes.snackBar} ${snackbarProps.error && classes.errorSnackBar} ${
+                      snackbarProps.success && classes.successSnackBar
+                    }`,
+                    message: classes.snackBarMessage,
                   }}
-                  color="primary"
-                  open={snackbarProps.open}
-                  autoHideDuration={10000}
-                  onClose={handleSnackbarClose}
-                >
-                  <SnackbarContent
-                    message={snackbarProps.message}
-                    action={snackbarProps.action}
-                    classes={{
-                      root: `${classes.snackBar} ${snackbarProps.error && classes.errorSnackBar} ${
-                        snackbarProps.success && classes.successSnackBar
-                      }`,
-                      message: classes.snackBarMessage,
-                    }}
-                  />
-                </Snackbar>
-              </div>
-            </FeedbackContext.Provider>
-          )}
-        </ThemeProvider>
-      </StyledEngineProvider>
+                />
+              </Snackbar>
+            </div>
+          </FeedbackContext.Provider>
+        )}
+      </ThemeProvider>
     </>
   );
 }

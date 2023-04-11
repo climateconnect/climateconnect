@@ -1,4 +1,4 @@
-import { Link, Theme, StyledEngineProvider, Typography } from "@mui/material";
+import { Link, Typography } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
@@ -6,11 +6,6 @@ import getTexts from "../../../../public/texts/texts";
 import hubTheme from "../../../themes/hubTheme";
 import UserContext from "../../context/UserContext";
 import SimpleBarChart from "../SimpleBarChart";
-
-declare module "@mui/styles/defaultTheme" {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme {}
-}
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -101,77 +96,75 @@ export default function FoodDescription() {
   };
 
   return (
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={hubTheme}>
-        <div className={classes.root}>
-          <Typography component="h2" variant="h2" className={classes.headline}>
-            {texts.food_headline}
-          </Typography>
-          <Typography className={classes.textContent}>{texts.food_introduction}</Typography>
-          <SimpleBarChart
-            config={chart2Config}
-            labelsOutSideBar
-            className={classes.chart}
-            title={texts.emissions_per_calories_chart_title}
-          />
-          <Typography component="h2" variant="h2" className={classes.headline}>
-            {texts.vegan_most_climate_friendly}
-          </Typography>
-          <Typography className={classes.textContent}>
-            {texts.vegan_most_climate_friendly_text}
-          </Typography>
-          <SimpleBarChart
-            config={chart1Config}
-            className={classes.chart}
-            labelsOutSideBar
-            title={texts.avg_daily_co2_emissions_chart_title}
-          />
-          <Typography component="h2" variant="h2" className={classes.headline}>
-            {texts.seasonal_more_important_than_local}
-          </Typography>
-          <Typography className={classes.textContent}>
-            {texts.seasonal_more_important_than_local_text}
-          </Typography>
-          <Typography component="h2" variant="h2" className={classes.headline}>
-            {texts.food_waste}
-          </Typography>
-          <Typography className={classes.textContent}>
-            <div>
-              <img src="/images/foodwaste.jpg" alt={texts.foodwaste_chart_alt} />
-            </div>
-            {texts.food_waste_text}
-          </Typography>
-          <Typography component="h2" variant="h2" className={classes.headline}>
-            {texts.lab_grown_meat_could_be_a_game_changer}
-          </Typography>
-          <Typography className={classes.textContent}>
-            {texts.lab_grown_meat_could_be_a_game_changer_text}
-          </Typography>
-          <Typography component="h2" variant="h2" className={classes.headline}>
-            {texts.scalable_solutions_needed}
-          </Typography>
-          <Typography className={classes.textContent}>
-            {texts.scalable_solutions_needed_text}
-            <br />
-            <Typography className={classes.callToAction}>{texts.food_call_to_action}</Typography>
-          </Typography>
-          <div className={classes.sources}>
-            {texts.sources}:
-            <ul>
-              <li>
-                <Link href="https://ourworldindata.org/food-choice-vs-eating-local">
-                  https://ourworldindata.org/food-choice-vs-eating-local
-                </Link>
-              </li>
-              <li>
-                <Link href="https://ourworldindata.org/environmental-impacts-of-food">
-                  https://ourworldindata.org/environmental-impacts-of-food
-                </Link>
-              </li>
-            </ul>
+    <ThemeProvider theme={hubTheme}>
+      <div className={classes.root}>
+        <Typography component="h2" variant="h2" className={classes.headline}>
+          {texts.food_headline}
+        </Typography>
+        <Typography className={classes.textContent}>{texts.food_introduction}</Typography>
+        <SimpleBarChart
+          config={chart2Config}
+          labelsOutSideBar
+          className={classes.chart}
+          title={texts.emissions_per_calories_chart_title}
+        />
+        <Typography component="h2" variant="h2" className={classes.headline}>
+          {texts.vegan_most_climate_friendly}
+        </Typography>
+        <Typography className={classes.textContent}>
+          {texts.vegan_most_climate_friendly_text}
+        </Typography>
+        <SimpleBarChart
+          config={chart1Config}
+          className={classes.chart}
+          labelsOutSideBar
+          title={texts.avg_daily_co2_emissions_chart_title}
+        />
+        <Typography component="h2" variant="h2" className={classes.headline}>
+          {texts.seasonal_more_important_than_local}
+        </Typography>
+        <Typography className={classes.textContent}>
+          {texts.seasonal_more_important_than_local_text}
+        </Typography>
+        <Typography component="h2" variant="h2" className={classes.headline}>
+          {texts.food_waste}
+        </Typography>
+        <Typography className={classes.textContent}>
+          <div>
+            <img src="/images/foodwaste.jpg" alt={texts.foodwaste_chart_alt} />
           </div>
+          {texts.food_waste_text}
+        </Typography>
+        <Typography component="h2" variant="h2" className={classes.headline}>
+          {texts.lab_grown_meat_could_be_a_game_changer}
+        </Typography>
+        <Typography className={classes.textContent}>
+          {texts.lab_grown_meat_could_be_a_game_changer_text}
+        </Typography>
+        <Typography component="h2" variant="h2" className={classes.headline}>
+          {texts.scalable_solutions_needed}
+        </Typography>
+        <Typography className={classes.textContent}>
+          {texts.scalable_solutions_needed_text}
+          <br />
+          <Typography className={classes.callToAction}>{texts.food_call_to_action}</Typography>
+        </Typography>
+        <div className={classes.sources}>
+          {texts.sources}:
+          <ul>
+            <li>
+              <Link href="https://ourworldindata.org/food-choice-vs-eating-local">
+                https://ourworldindata.org/food-choice-vs-eating-local
+              </Link>
+            </li>
+            <li>
+              <Link href="https://ourworldindata.org/environmental-impacts-of-food">
+                https://ourworldindata.org/environmental-impacts-of-food
+              </Link>
+            </li>
+          </ul>
         </div>
-      </ThemeProvider>
-    </StyledEngineProvider>
+      </div>
+    </ThemeProvider>
   );
 }
