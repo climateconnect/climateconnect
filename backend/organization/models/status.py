@@ -109,9 +109,9 @@ class ProjectTypes(models.Model):
         upload_to=project_type_image_path,
     )
 
-    PROJECT_PROJECT_TYPE = 'project'
-    IDEA_PROJECT_TYPE = 'idea'
-    EVENT_PROJECT_TYPE = 'event'
+    PROJECT_PROJECT_TYPE = 0
+    IDEA_PROJECT_TYPE = 1
+    EVENT_PROJECT_TYPE = 2
     POSSIBLE_PROJECT_TYPES = (
         (PROJECT_PROJECT_TYPE, "project"),
         (IDEA_PROJECT_TYPE, "idea"),
