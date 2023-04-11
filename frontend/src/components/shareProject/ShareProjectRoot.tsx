@@ -257,6 +257,7 @@ export default function ShareProjectRoot({
               handleSetProjectData={handleSetProject}
               userOrganizations={userOrganizations}
               projectTypeOptions={projectTypeOptions}
+              goToNextStep={goToNextStep}
             />
           )}
           {curStep.key === "selectCategory" && (

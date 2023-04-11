@@ -57,9 +57,11 @@ class ProjectTypesSerializer(serializers.ModelSerializer):
         return obj.name
 
     def get_type_id(self, obj):
+        TYPE_ID_INDEX = 0
+        PROJECT_TYPE_INDEX = 1
         project_type_id = list(
-            filter(lambda x: x[0] == obj.type_id, ProjectTypes.POSSIBLE_PROJECT_TYPES)
-        )[0][1]
+            filter(lambda x: x[TYPE_ID_INDEX] == obj.type_id, ProjectTypes.POSSIBLE_PROJECT_TYPES)
+        )[TYPE_ID_INDEX][PROJECT_TYPE_INDEX]
         return project_type_id
 
     def get_help_text(self, obj):
