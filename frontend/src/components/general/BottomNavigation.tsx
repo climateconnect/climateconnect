@@ -68,6 +68,7 @@ export default function BottomNavigation({
           <>
             <Button
               variant="contained"
+              color="grey"
               onClick={onClickCancelDialogOpen}
               className={`${classes.backButton} ${classes.draftButton}`}
             >
@@ -88,6 +89,7 @@ export default function BottomNavigation({
             <Button
               key={index}
               variant="contained"
+              color="grey"
               onClick={b.onClick}
               className={`${classes.backButton} ${classes.draftButton}`}
             >
@@ -97,6 +99,7 @@ export default function BottomNavigation({
         {saveAsDraft && (
           <Button
             variant="contained"
+            color="grey"
             onClick={saveAsDraft}
             className={`${classes.backButton} ${classes.draftButton}`}
             disabled={loadingSubmitDraft || loadingSubmit}

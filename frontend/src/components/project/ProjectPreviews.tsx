@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import Grid from "@mui/material/Unstable_Grid2";
 import makeStyles from '@mui/styles/makeStyles';
 import React, { useContext, useState } from "react";
 import getTexts from "../../../public/texts/texts";
@@ -113,7 +113,6 @@ function GridItem({
   return (
     <Grid
       key={project.url_slug}
-      item
       xs={columnValuesFromBreakpoint.xsValue}
       sm={columnValuesFromBreakpoint.smValue}
       md={columnValuesFromBreakpoint.mdValue}

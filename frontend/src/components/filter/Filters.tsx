@@ -207,6 +207,7 @@ export default function Filters({
                 <div key={filter.key}>
                   <Button
                     variant="outlined"
+                    color="grey"
                     className={`${classes.filterElement} ${isInOverlay && classes.overlayField}`}
                     onClick={() => handleClickDialogOpen(filter.key)}
                   >

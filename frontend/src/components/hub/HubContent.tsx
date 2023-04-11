@@ -1,4 +1,4 @@
-import { Button, Collapse, Container, useMediaQuery } from "@mui/material";
+import { Button, Collapse, Container, Theme, useMediaQuery } from "@mui/material";
 import makeStyles from '@mui/styles/makeStyles';
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";

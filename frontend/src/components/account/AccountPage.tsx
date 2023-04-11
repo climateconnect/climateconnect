@@ -346,12 +346,12 @@ export default function AccountPage({
             return <SelectWithText types={account.types} info={i} key={index} />;
           } else if (i.type === "array" && i?.value?.length > 0) {
             return (
-              <div key={index} className={classes.infoElement}>
+              <div key={index}>
                 <div className={classes.subtitle}>{i.name}:</div>
                 <div className={classes.marginBottom}>
                   {i && i.value && i.value.length > 0
                     ? i.value.map((entry) => (
-                        <Chip size="medium" label={entry} key={entry} className={classes.chip} />
+                        <Chip size="medium" color="secondary" label={entry} key={entry} className={classes.chip} />
                       ))
                     : i.missingMessage && <div className={classes.content}>{i.missingMessage}</div>}
                 </div>
@@ -497,7 +497,7 @@ export default function AccountPage({
           {account.types && (
             <Container className={classes.noPadding}>
               {account.types.map((type) => (
-                <Chip label={type.name} key={type.key} className={classes.chip} />
+                <Chip label={type.name} color="secondary" key={type.key} className={classes.chip} />
               ))}
             </Container>
           )}

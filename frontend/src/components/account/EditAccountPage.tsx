@@ -369,6 +369,7 @@ export default function EditAccountPage({
           {infoEl.value.map((entry) => (
             <Chip
               size="medium"
+              color="secondary"
               label={entry.name}
               key={entry.key}
               className={classes.chip}
@@ -483,7 +484,6 @@ export default function EditAccountPage({
               id={"checkbox" + i.key}
               checked={i.value}
               className={classes.inlineBlockElement}
-              color="primary"
               size="small"
               onChange={(e) => handleChange({ target: { value: e.target.checked } })}
             />

@@ -453,7 +453,6 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
                 checked={emailPreferences[key]}
                 onChange={() => handlePreferenceChange(event, key)}
                 name={key}
-                color="primary"
               />
             }
             key={key}
@@ -495,7 +494,6 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
                 checked={cookiePreferences[key]}
                 onChange={(event) => handleCookiePreferenceChange(event, key)}
                 name={key}
-                color="primary"
               />
             }
             key={key}

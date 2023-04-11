@@ -1,6 +1,6 @@
 import { Button, Container, Typography, useMediaQuery } from "@mui/material";
 import makeStyles from '@mui/styles/makeStyles';
-import { useTheme } from "@mui/material/styles";
+import { Theme, useTheme } from "@mui/material/styles";
 import Router from "next/router";
 import React, { useContext, useEffect, useRef } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";

@@ -1,16 +1,16 @@
-import { createTheme } from "@mui/material/styles";
+import { createTheme, alpha } from "@mui/material/styles";
 import { grey } from "@mui/material/colors";
-
-declare module "@mui/material/Button" {
-  interface ButtonPropsColorOverrides {
-    grey: true;
-  }
-}
 
 declare module "@mui/material" {
   interface Color {
     main: string;
     dark: string;
+  }
+}
+
+declare module "@mui/material/Button" {
+  interface ButtonPropsColorOverrides {
+    grey: true;
   }
 }
 
@@ -83,12 +83,35 @@ const theme = createTheme(coreTheme, {
             color: coreTheme.palette.getContrastText(coreTheme.palette.grey[300])
           }
         },
+        {
+          props: { variant: "outlined", color: "grey" },
+          style: {
+            color: coreTheme.palette.text.primary,
+            borderColor:
+            coreTheme.palette.mode === "light"
+                ? "rgba(0, 0, 0, 0.23)"
+                : "rgba(255, 255, 255, 0.23)",
+            "&.Mui-disabled": {
+              border: `1px solid ${coreTheme.palette.action.disabledBackground}`
+            },
+            "&:hover": {
+              borderColor:
+              coreTheme.palette.mode === "light"
+                  ? "rgba(0, 0, 0, 0.23)"
+                  : "rgba(255, 255, 255, 0.23)",
+              backgroundColor: alpha(
+                coreTheme.palette.text.primary,
+                coreTheme.palette.action.hoverOpacity
+              )
+            }
+          }
+        },
       ],
       defaultProps: {
         disableElevation: true,
       },
       styleOverrides: {
-        contained: {
+        containedSizeMedium: {
           borderRadius: 3,
           paddingLeft: coreTheme.spacing(4),
           paddingRight: coreTheme.spacing(4),
@@ -115,14 +138,28 @@ const theme = createTheme(coreTheme, {
       }
     },
     MuiChip: {
-      styleOverrides: {
+      variants: [
+        {
+          props: { variant: "filled", color: "secondary" },
+          style: {
+            background: "#e0e0e0",
+            color: coreTheme.palette.secondary.main
+          }
+        },
+      ],
+      styleOverrides: {        
         root: {
           // Have the same border-radius as the other UI controls, like
           // the select dropdowns, buttons, etc.
           borderRadius: 4,
         },
       }
-    }
+    },
+    MuiLink: {
+      defaultProps: {
+        underline: 'hover',
+      },
+    },
   },
 });
 

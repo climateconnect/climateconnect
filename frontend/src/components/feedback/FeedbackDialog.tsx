@@ -77,7 +77,6 @@ export default function FeedbackDialog({ onClose, open, title, inputLabel, maxLe
             id={"feedbackcheckbox"}
             className={classes.checkbox}
             checked={checked}
-            color="primary"
             size="small"
             onChange={(e) => setChecked(e.target.checked)}
           />

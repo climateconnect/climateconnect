@@ -293,7 +293,6 @@ export default function Form({
                   checked={values[field.key]}
                   required={field.required}
                   className={classes.inlineBlockElement}
-                  color="primary"
                   size="small"
                   onBlur={handleBlur}
                   onChange={(event) => handleValueChange(event, field.key, field.type)}

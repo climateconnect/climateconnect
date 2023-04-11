@@ -105,6 +105,7 @@ export default function FilterSection({
         {!hideFilterButton && (
           <Button
             variant="outlined"
+            color="grey"
             className={classes.filterButton}
             onClick={onClickExpandFilters}
             startIcon={

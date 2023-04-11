@@ -121,9 +121,9 @@ export default function CookieBanner({ closeBanner }) {
             {texts.terms_of_use}.
           </a>
         </Typography>
-        <Checkbox checked={checked.necessary} disabled color="primary" />
+        <Checkbox checked={checked.necessary} disabled />
         {texts.cookies_necessary}
-        <Checkbox color="primary" checked={checked.statistics} onChange={onStatisticsChange} />
+        <Checkbox checked={checked.statistics} onChange={onStatisticsChange} />
         {texts.cookies_statistics}
         <span className={classes.buttons}>
           <div className={classes.leftButtonContainer}>

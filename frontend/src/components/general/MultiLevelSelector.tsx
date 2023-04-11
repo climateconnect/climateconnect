@@ -36,7 +36,6 @@ const useStyles = makeStyles<
     }),
     list: {
       display: "inline-block",
-      maxWidth: "50%",
       [theme.breakpoints.down('lg')]: {
         marginLeft: theme.spacing(0),
       },
@@ -148,7 +147,7 @@ const useStyles = makeStyles<
       margin: "0 auto",
     },
     divider: {
-      backgroundColor: "black",
+      borderColor: "black",
       marginBottom: theme.spacing(1),
     },
     subListLastItem: {
