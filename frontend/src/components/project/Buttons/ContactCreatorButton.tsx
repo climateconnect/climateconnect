@@ -1,5 +1,5 @@
 import { Avatar, Button, Collapse, Fade, Theme, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import SendIcon from "@mui/icons-material/Send";
 import React, { useContext, useState } from "react";
 import { getImageUrl } from "../../../../public/lib/imageOperations";

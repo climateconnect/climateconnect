@@ -1,5 +1,5 @@
 import { Theme, Typography, useMediaQuery } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     margin: "0 auto",
     display: "flex",
     alignItems: "center",
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       width: "auto",
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(2),
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
     color: "white",
     fontSize: 18,
     fontWeight: 600,
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       fontSize: 16,
       fontWeight: 500,
       textAlign: "center",
@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 export default function DonationsBanner({ h1ClassName }) {
   const classes = useStyles();
-  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down('md'));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "donate", locale: locale, classes: classes });
   return (

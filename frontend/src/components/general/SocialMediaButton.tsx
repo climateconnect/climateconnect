@@ -1,5 +1,5 @@
 import { Theme } from "@mui/material/styles";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 
 const useStyles = makeStyles<Theme, { isFooterIcon?: boolean }>((theme) => ({

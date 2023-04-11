@@ -1,5 +1,5 @@
 import { Box, Collapse, Container, Theme, Tooltip, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import PlaceIcon from "@mui/icons-material/Place";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";

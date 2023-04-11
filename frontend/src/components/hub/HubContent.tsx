@@ -1,5 +1,5 @@
 import { Button, Collapse, Container, Theme, useMediaQuery } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React, { useContext } from "react";
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 600,
     fontSize: 22,
     marginBottom: theme.spacing(0.5),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       fontSize: 18,
     },
   },
@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 800,
     height: 40,
     marginTop: theme.spacing(2),
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       marginTop: theme.spacing(1),
     },
   }),
@@ -108,7 +108,7 @@ export default function HubContent({
   const { locale, user } = useContext(UserContext);
   const classes = useStyles({ isLocationHub: isLocationHub, loggedOut: !user });
   const texts = getTexts({ page: "hub", locale: locale });
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down('md'));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const [expanded, setExpanded] = React.useState(false);
   const handleClickExpand = () => {
     if (expanded === false) {

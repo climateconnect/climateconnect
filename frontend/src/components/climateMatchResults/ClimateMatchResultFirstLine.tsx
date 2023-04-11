@@ -1,5 +1,5 @@
 import { Theme, Typography, useMediaQuery } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: "100%",
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       width: 60,
       height: 60,
       fontSize: 45,
@@ -58,7 +58,7 @@ export default function ClimateMatchResultFirstLine({ pos, suggestion }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "climatematch", locale: locale });
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down('sm'));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   return (
     <div className={classes.rankAndTypeContainer}>
       <div className={classes.rankNumber}>{pos + 1}</div>

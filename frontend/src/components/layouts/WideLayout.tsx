@@ -1,6 +1,6 @@
 import { Collapse, Container, Theme } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
-import Alert from '@mui/material/Alert';
+import makeStyles from "@mui/styles/makeStyles";
+import Alert from "@mui/material/Alert";
 import React, { useEffect, useState } from "react";
 import { getParams } from "../../../public/lib/generalOperations";
 import { getMessageFromUrl } from "../../../public/lib/parsingOperations";

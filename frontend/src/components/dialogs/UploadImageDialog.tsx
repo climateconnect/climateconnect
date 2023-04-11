@@ -1,6 +1,6 @@
 import { Slider, Theme } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import PropTypes from "prop-types";
 import React, { useContext } from "react";
@@ -56,9 +56,9 @@ export default function UploadImageDialog({
   const classes = useStyles();
   const theme = useTheme();
   const defaultValue = 25;
-  const fullScreen = useMediaQuery<Theme>(theme.breakpoints.down('md'));
-  const mediumScreen = useMediaQuery<Theme>(theme.breakpoints.down('md'));
-  const smallScreen = useMediaQuery<Theme>(theme.breakpoints.down('sm'));
+  const fullScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
+  const mediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
+  const smallScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
 
   const [scale, setScale] = React.useState(1);
   const [editor, setEditor] = React.useState<any>(null);

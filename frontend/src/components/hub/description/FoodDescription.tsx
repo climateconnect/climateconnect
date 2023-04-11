@@ -1,18 +1,16 @@
 import { Link, Theme, StyledEngineProvider, Typography } from "@mui/material";
-import { ThemeProvider } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { ThemeProvider } from "@mui/material/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../../../../public/texts/texts";
 import hubTheme from "../../../themes/hubTheme";
 import UserContext from "../../context/UserContext";
 import SimpleBarChart from "../SimpleBarChart";
 
-
-declare module '@mui/styles/defaultTheme' {
+declare module "@mui/styles/defaultTheme" {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface DefaultTheme extends Theme {}
 }
-
 
 const useStyles = makeStyles((theme) => ({
   root: {

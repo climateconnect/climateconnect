@@ -8,7 +8,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
     fontWeight: 600,
     color: "white",
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       textAlign: "left",
     },
   },
@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(4),
     marginBottom: theme.spacing(1),
     background: "white",
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       marginTop: theme.spacing(-2),
       marginBottom: theme.spacing(1),
     },
@@ -105,7 +105,7 @@ export default function DonationCampaignInformation() {
   const [open, setOpen] = React.useState(!cookies.get("hideDonationCampaign"));
   const [expanded, setExpanded] = React.useState(false);
   const { donationGoal, locale } = useContext(UserContext);
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down('sm'));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const texts = getTexts({ page: "donate", locale: locale, classes: classes });
 
   const handleClose = () => {
@@ -119,82 +119,84 @@ export default function DonationCampaignInformation() {
     setExpanded(!expanded);
   };
   if (!donationGoal?.goal_amount) return <></>;
-  return <>
-    {open && (
-      <div className={classes.root}>
-        <IconButton className={classes.closeButton} onClick={handleClose} size="large">
-          <CloseIcon />
-        </IconButton>
-        <div className={classes.topLineContainer}>
-          <img src="/icons/christmas-icon.svg" className={classes.christmasIcon} />
-          <div className={classes.textAndBarContainer}>
-            <Typography className={classes.text}>
-              {isNarrowScreen
-                ? texts.donation_campaign_headline_short
-                : texts.donation_campaign_headline_long}
-            </Typography>
-            {!expanded && donationGoal && (
-              <DonationGoal
-                current={donationGoal?.current_amount}
-                goal={donationGoal?.goal_amount}
-                name={donationGoal?.goal_name}
-                embedded
-                barColor={theme.palette.primary.light}
-                barOnly
-                small
-              />
-            )}
+  return (
+    <>
+      {open && (
+        <div className={classes.root}>
+          <IconButton className={classes.closeButton} onClick={handleClose} size="large">
+            <CloseIcon />
+          </IconButton>
+          <div className={classes.topLineContainer}>
+            <img src="/icons/christmas-icon.svg" className={classes.christmasIcon} />
+            <div className={classes.textAndBarContainer}>
+              <Typography className={classes.text}>
+                {isNarrowScreen
+                  ? texts.donation_campaign_headline_short
+                  : texts.donation_campaign_headline_long}
+              </Typography>
+              {!expanded && donationGoal && (
+                <DonationGoal
+                  current={donationGoal?.current_amount}
+                  goal={donationGoal?.goal_amount}
+                  name={donationGoal?.goal_name}
+                  embedded
+                  barColor={theme.palette.primary.light}
+                  barOnly
+                  small
+                />
+              )}
+            </div>
           </div>
+          <Collapse in={expanded}>
+            <Container className={classes.expandableContent}>
+              {donationGoal && (
+                <DonationGoal
+                  current={donationGoal?.current_amount}
+                  goal={donationGoal?.goal_amount}
+                  name={donationGoal?.goal_name}
+                  embedded
+                  className={classes.donationGoal}
+                  barColor={theme.palette.primary.light}
+                />
+              )}
+              {isNarrowScreen && (
+                <Button
+                  href={getLocalePrefix(locale) + "/donate"}
+                  variant="contained"
+                  className={classes.donateButton}
+                >
+                  {texts.donate_now}
+                </Button>
+              )}
+              <Typography className={classes.textBlock}>
+                {texts.donation_campaing_info_text_first_sentence}
+              </Typography>
+              {!isNarrowScreen && (
+                <Button
+                  href={getLocalePrefix(locale) + "/donate"}
+                  variant="contained"
+                  className={classes.donateButton}
+                >
+                  {texts.donate_now}
+                </Button>
+              )}
+            </Container>
+          </Collapse>
+          <Button className={classes.showMoreButton} onClick={handleToggleExpanded}>
+            {expanded ? (
+              <>
+                <ExpandLessIcon /> {texts.show_less}
+              </>
+            ) : (
+              <>
+                <ExpandMoreIcon /> {texts.show_more}
+              </>
+            )}
+          </Button>
         </div>
-        <Collapse in={expanded}>
-          <Container className={classes.expandableContent}>
-            {donationGoal && (
-              <DonationGoal
-                current={donationGoal?.current_amount}
-                goal={donationGoal?.goal_amount}
-                name={donationGoal?.goal_name}
-                embedded
-                className={classes.donationGoal}
-                barColor={theme.palette.primary.light}
-              />
-            )}
-            {isNarrowScreen && (
-              <Button
-                href={getLocalePrefix(locale) + "/donate"}
-                variant="contained"
-                className={classes.donateButton}
-              >
-                {texts.donate_now}
-              </Button>
-            )}
-            <Typography className={classes.textBlock}>
-              {texts.donation_campaing_info_text_first_sentence}
-            </Typography>
-            {!isNarrowScreen && (
-              <Button
-                href={getLocalePrefix(locale) + "/donate"}
-                variant="contained"
-                className={classes.donateButton}
-              >
-                {texts.donate_now}
-              </Button>
-            )}
-          </Container>
-        </Collapse>
-        <Button className={classes.showMoreButton} onClick={handleToggleExpanded}>
-          {expanded ? (
-            <>
-              <ExpandLessIcon /> {texts.show_less}
-            </>
-          ) : (
-            <>
-              <ExpandMoreIcon /> {texts.show_more}
-            </>
-          )}
-        </Button>
-      </div>
-    )}
-  </>;
+      )}
+    </>
+  );
 }
 
 const daysInFuture = (numberOfDays) => {

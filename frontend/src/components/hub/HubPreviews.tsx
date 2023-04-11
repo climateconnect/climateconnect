@@ -1,6 +1,6 @@
 import React from "react";
 import Grid from "@mui/material/Unstable_Grid2";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import HubPreview from "./HubPreview";
 
 const useStyles = makeStyles(() => ({

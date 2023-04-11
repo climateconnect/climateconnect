@@ -1,4 +1,4 @@
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import LoadingSpinner from "../general/LoadingSpinner";
 import OrganizationPreview from "./OrganizationPreview";
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     display: "inline-block",
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
-    [theme.breakpoints.down('xl')]: {
+    [theme.breakpoints.down("xl")]: {
       marginLeft: theme.spacing(1),
       marginRight: theme.spacing(1),
     },

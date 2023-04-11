@@ -1,5 +1,5 @@
 import { MenuItem } from "@mui/material";
-import withStyles from '@mui/styles/withStyles';
+import withStyles from "@mui/styles/withStyles";
 const StyledMenuItem = withStyles(() => ({
   root: {
     color: "primary",

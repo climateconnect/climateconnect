@@ -1,5 +1,5 @@
 import { TextField } from "@mui/material";
-import Autocomplete from '@mui/material/Autocomplete';
+import Autocomplete from "@mui/material/Autocomplete";
 import axios from "axios";
 import { debounce } from "lodash";
 import React, { useContext, useEffect } from "react";
@@ -176,9 +176,7 @@ export default function LocationSearchBar({
   };
 
   const renderSearchOption = (props, option) => {
-    return <li {...props}>
-      {option}
-    </li>;
+    return <li {...props}>{option}</li>;
   };
 
   const handleInputChange = (event) => {

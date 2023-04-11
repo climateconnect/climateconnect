@@ -1,5 +1,5 @@
 import { Box, Link, Theme, useMediaQuery } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import GitHubIcon from "@mui/icons-material/GitHub";
@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       flexDirection: "column",
     },
   },
@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "auto",
     display: "flex",
     alignItems: "center",
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       marginLeft: 0,
       marginTop: theme.spacing(1),
       marginBottom: theme.spacing(2),
@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
   },
   leftBox: {
     marginRight: "auto",
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       marginRight: 0,
       marginBottom: theme.spacing(1),
     },
@@ -81,8 +81,8 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
   },
   customFooterImage: {
-    height: 100
-  }
+    height: 100,
+  },
 }));
 
 //TODO: make footer stay on bottom on normal layout again
@@ -115,7 +115,7 @@ const SmallFooter = ({
   customFooterImage,
 }) => {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down('sm'));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   const socialMediaLinks = [
@@ -161,34 +161,23 @@ const SmallFooter = ({
     >
       <Box className={classes.flexContainer}>
         <Box className={classes.leftBox}>
-          <Link
-            href={getLocalePrefix(locale) + "/imprint"}
-            color="inherit"
-            underline="hover">
+          <Link href={getLocalePrefix(locale) + "/imprint"} color="inherit" underline="hover">
             <span className={`${classes.inheritColor} ${classes.link}`}>{texts.imprint}</span>
           </Link>
-          <Link
-            href={getLocalePrefix(locale) + "/privacy"}
-            color="inherit"
-            underline="hover">
+          <Link href={getLocalePrefix(locale) + "/privacy"} color="inherit" underline="hover">
             <span className={`${classes.inheritColor} ${classes.link}`}>{texts.privacy}</span>
           </Link>
-          <Link
-            href={getLocalePrefix(locale) + "/terms"}
-            color="inherit"
-            underline="hover">
+          <Link href={getLocalePrefix(locale) + "/terms"} color="inherit" underline="hover">
             <span className={classes.inheritColor}>{texts.terms}</span>
           </Link>
         </Box>
         {!isNarrowScreen && (
           <Box component="span" className={classes.centerText}>
-            {
-              customFooterImage ? (
-                <img src={customFooterImage} className={classes.customFooterImage}/>
-              ) : (
-                <MadeWithLoveForEarthSign />
-              )            
-            }
+            {customFooterImage ? (
+              <img src={customFooterImage} className={classes.customFooterImage} />
+            ) : (
+              <MadeWithLoveForEarthSign />
+            )}
           </Box>
         )}
         <Box component="span" className={classes.rightBox}>
@@ -208,17 +197,13 @@ const SmallFooter = ({
 };
 
 const MadeWithLoveForEarthSign = () => {
-  const classes = useStyles()
+  const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   return (
     <>
       Made with <FavoriteIcon className={classes.heart} /> for{" "}
-      <img
-        className={classes.earth}
-        src="/images/earth.svg"
-        alt={texts.picture_of_our_earth}
-      />
+      <img className={classes.earth} src="/images/earth.svg" alt={texts.picture_of_our_earth} />
     </>
-  )
-}
+  );
+};

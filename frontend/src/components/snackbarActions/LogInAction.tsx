@@ -1,5 +1,5 @@
 import { Button, IconButton } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useContext } from "react";
 import { redirect } from "../../../public/lib/apiOperations";
@@ -27,12 +27,14 @@ export default function LogInAction({ onClose }) {
     redirect("/signin", { redirect: redirectUrl });
   };
 
-  return <>
-    <Button className={classes.signUpButton} variant="contained" onClick={onClickSignUp}>
-      {texts.log_in}
-    </Button>
-    <IconButton aria-label="close" color="inherit" onClick={onClose} size="large">
-      <CloseIcon fontSize="small" />
-    </IconButton>
-  </>;
+  return (
+    <>
+      <Button className={classes.signUpButton} variant="contained" onClick={onClickSignUp}>
+        {texts.log_in}
+      </Button>
+      <IconButton aria-label="close" color="inherit" onClick={onClose} size="large">
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </>
+  );
 }

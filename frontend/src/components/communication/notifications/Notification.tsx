@@ -1,6 +1,6 @@
 import { Link, ListItemText, MenuItem } from "@mui/material";
-import withStyles from '@mui/styles/withStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import withStyles from "@mui/styles/withStyles";
+import makeStyles from "@mui/styles/makeStyles";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import GroupIcon from "@mui/icons-material/Group";
 import React, { useContext } from "react";
@@ -219,7 +219,9 @@ const PlaceholderNotification = () => {
         <ListItemText className={classes.listItemText} disableTypography>
           {texts.placeholderNotification}
           <div>
-            <Link className={classes.goToInboxText} underline="hover">{texts.go_to_inbox}</Link>
+            <Link className={classes.goToInboxText} underline="hover">
+              {texts.go_to_inbox}
+            </Link>
           </div>
         </ListItemText>
       </StyledMenuItem>

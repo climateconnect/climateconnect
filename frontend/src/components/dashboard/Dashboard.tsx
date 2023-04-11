@@ -1,5 +1,5 @@
 import { Box, Button, Link, MenuItem, MenuList, Paper, Popper, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import AssignmentIcon from "@mui/icons-material/Assignment";
@@ -102,9 +102,7 @@ const useStyles = makeStyles((theme) => {
 // for consistency.
 const HorizontalSpacing = ({ children, size }) => {
   return (
-    <Box sx={{ marginTop: theme.spacing(size), marginBottom: theme.spacing(size) }}>
-      {children}
-    </Box>
+    <Box sx={{ marginTop: theme.spacing(size), marginBottom: theme.spacing(size) }}>{children}</Box>
   );
 };
 
@@ -172,7 +170,8 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
               key={item.url_slug}
               href={item.url_slug}
               onClick={() => handleClick(item.onClick)}
-              underline="hover">
+              underline="hover"
+            >
               <MenuItem component="button" className={classes.climateHubOption}>
                 {item.name}
               </MenuItem>

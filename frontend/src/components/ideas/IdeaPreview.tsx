@@ -1,5 +1,5 @@
 import { Card, CardMedia, Link, Typography, Tooltip, Theme } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import AddIcon from "@mui/icons-material/Add";
 import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
 import React, { useContext, useState } from "react";
@@ -158,32 +158,35 @@ export default function IdeaPreview({
     setOpen(false);
   };
 
-  return <>
-    <Link
-      className={classes.noUnderline}
-      onClick={handleCardClick}
-      href={
-        sendToIdeaPageOnClick
-          ? `${process.env.BASE_URL}/hubs/${idea?.hub_shared_in?.url_slug}?idea=${idea?.url_slug}#ideas`
-          : `${window.location.origin}${window.location.pathname}?idea=${idea?.url_slug}${window.location.hash}`
-      }
-      underline="hover">
-      <Card className={classes.root} variant="outlined">
-        {isCreateCard ? <CreateCardContent /> : <IdeaCardContent idea={idea} />}
-      </Card>
-    </Link>
-    {isCreateCard && (
-      <CreateIdeaDialog
-        allHubs={allHubs}
-        hubData={hubData}
-        hubLocation={hubLocation}
-        onClose={onClose}
-        open={open}
-        resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
-        userOrganizations={userOrganizations}
-      />
-    )}
-  </>;
+  return (
+    <>
+      <Link
+        className={classes.noUnderline}
+        onClick={handleCardClick}
+        href={
+          sendToIdeaPageOnClick
+            ? `${process.env.BASE_URL}/hubs/${idea?.hub_shared_in?.url_slug}?idea=${idea?.url_slug}#ideas`
+            : `${window.location.origin}${window.location.pathname}?idea=${idea?.url_slug}${window.location.hash}`
+        }
+        underline="hover"
+      >
+        <Card className={classes.root} variant="outlined">
+          {isCreateCard ? <CreateCardContent /> : <IdeaCardContent idea={idea} />}
+        </Card>
+      </Link>
+      {isCreateCard && (
+        <CreateIdeaDialog
+          allHubs={allHubs}
+          hubData={hubData}
+          hubLocation={hubLocation}
+          onClose={onClose}
+          open={open}
+          resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
+          userOrganizations={userOrganizations}
+        />
+      )}
+    </>
+  );
 }
 
 function CreateCardContent() {

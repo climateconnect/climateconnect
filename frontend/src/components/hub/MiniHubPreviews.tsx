@@ -1,5 +1,5 @@
 import Grid from "@mui/material/Unstable_Grid2";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import MiniHubPreview from "./MiniHubPreview";
 

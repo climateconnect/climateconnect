@@ -1,5 +1,5 @@
 import { Chip, Container, Theme, useMediaQuery } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import climateMatchStyles from "../../../public/styles/climateMatchStyles";
@@ -26,7 +26,7 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
     maxWidth: 700,
     display: "flex",
     flexDirection: "column",
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       maxWidth: 1000,
     },
   },
@@ -68,7 +68,7 @@ export default function OptionalQuestionTypeBody({ question, handleForwardClick,
     image: getImageUrl(question.image),
   });
   const answers = question.answers;
-  const isSmallerThanSm = useMediaQuery<Theme>(theme.breakpoints.down('md'));
+  const isSmallerThanSm = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
   const handleSelectAnswer = (a) => {
     handleForwardClick(a);

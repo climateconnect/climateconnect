@@ -189,19 +189,19 @@ export default function getProfileTexts({ profile, locale }) {
       en: (
         <>
           If the email does not arrive after 5 minutes,{" "}
-          <Link
-            href={getLocalePrefix(locale) + "/resend_verification_email"}
-            underline="hover">click here</Link> to
-          resend it.
+          <Link href={getLocalePrefix(locale) + "/resend_verification_email"} underline="hover">
+            click here
+          </Link>{" "}
+          to resend it.
         </>
       ),
       de: (
         <>
           Wenn die E-Mail nach 5 Minuten noch nicht angekommen ist,{" "}
-          <Link
-            href={getLocalePrefix(locale) + "/resend_verification_email"}
-            underline="hover">klicke hier</Link>, um
-          sie erneut versenden zu lassen.
+          <Link href={getLocalePrefix(locale) + "/resend_verification_email"} underline="hover">
+            klicke hier
+          </Link>
+          , um sie erneut versenden zu lassen.
         </>
       ),
     },
@@ -228,7 +228,8 @@ export default function getProfileTexts({ profile, locale }) {
           <Link
             href={getLocalePrefix(locale) + "/resend_verification_email"}
             target="_blank"
-            underline="hover">
+            underline="hover"
+          >
             click here
           </Link>{" "}
           to send the verification link again.
@@ -241,7 +242,8 @@ export default function getProfileTexts({ profile, locale }) {
           <Link
             href={getLocalePrefix(locale) + "/resend_verification_email"}
             target="_blank"
-            underline="hover">
+            underline="hover"
+          >
             klicke hier
           </Link>{" "}
           , um edie Bestätigungsemail mit dem Verifizierungslink erneut zu erhalten.

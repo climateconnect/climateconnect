@@ -1,5 +1,5 @@
 import { Button, IconButton } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import AddIcon from "@mui/icons-material/Add";
 import React, { useContext } from "react";
 
@@ -91,7 +91,8 @@ export default function JoinButton({
           className={classes.mediumScreenIconButton}
           disabled={requestedToJoin}
           onClick={handleSendProjectJoinRequest}
-          size="large">
+          size="large"
+        >
           <ButtonIcon icon="add" size={40} color={"primary"} />
         </IconButton>
       </span>

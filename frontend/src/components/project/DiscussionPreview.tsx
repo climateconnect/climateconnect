@@ -1,5 +1,5 @@
 import { ButtonBase, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 import React from "react";
 import Posts from "../communication/Posts";

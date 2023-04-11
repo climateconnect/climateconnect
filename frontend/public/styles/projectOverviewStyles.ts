@@ -1,6 +1,6 @@
 import { Theme } from "@mui/material";
 
-import { StyleRules } from '@mui/styles';
+import { StyleRules } from "@mui/styles";
 
 const projectOverviewStyles = (theme: Theme): StyleRules => {
   //general styling

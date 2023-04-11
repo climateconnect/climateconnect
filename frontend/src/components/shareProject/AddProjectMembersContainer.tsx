@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import React, { useContext } from "react";
 import ROLE_TYPES from "../../../public/data/role_types";

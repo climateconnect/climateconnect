@@ -1,5 +1,5 @@
 import { Button, Container, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 import NextCookies from "next-cookies";
@@ -27,19 +27,19 @@ const useStyles = makeStyles((theme) => {
     newChatButton: {
       marginBottom: theme.spacing(1),
       marginRight: theme.spacing(1),
-      [theme.breakpoints.down('lg')]: {
+      [theme.breakpoints.down("lg")]: {
         marginLeft: theme.spacing(1),
       },
     },
     searchChatButton: {
       marginBottom: theme.spacing(1),
-      [theme.breakpoints.down('lg')]: {
+      [theme.breakpoints.down("lg")]: {
         marginLeft: theme.spacing(1),
       },
     },
     searchSectionContainer: {
       marginBottom: theme.spacing(4),
-      [theme.breakpoints.down('lg')]: {
+      [theme.breakpoints.down("lg")]: {
         marginLeft: theme.spacing(2),
         marginRight: theme.spacing(2),
       },

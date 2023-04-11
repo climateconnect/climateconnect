@@ -8,7 +8,7 @@ import {
   Theme,
   Typography,
 } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import CloseIcon from "@mui/icons-material/Close";
@@ -29,14 +29,14 @@ const useStyles = makeStyles<
       margin: "0 auto",
       display: props.flexWrapper ? "flex" : "block",
       marginTop: props.marginTop ? theme.spacing(8) : 0,
-      [theme.breakpoints.down('md')]: {
+      [theme.breakpoints.down("md")]: {
         marginTop: theme.spacing(4),
         display: "block",
       },
     }),
     list: {
       display: "inline-block",
-      [theme.breakpoints.down('lg')]: {
+      [theme.breakpoints.down("lg")]: {
         marginLeft: theme.spacing(0),
       },
     },
@@ -93,7 +93,7 @@ const useStyles = makeStyles<
       display: "inline-block",
       verticalAlign: "top",
       marginLeft: theme.spacing(16),
-      [theme.breakpoints.down('lg')]: {
+      [theme.breakpoints.down("lg")]: {
         marginLeft: theme.spacing(2),
       },
     },
@@ -127,11 +127,11 @@ const useStyles = makeStyles<
     listWrapper: {
       display: "inline-block",
       width: 700,
-      [theme.breakpoints.down('lg')]: {
+      [theme.breakpoints.down("lg")]: {
         width: 650 - theme.spacing(8),
         margin: "0 auto",
       },
-      [theme.breakpoints.down('sm')]: {
+      [theme.breakpoints.down("sm")]: {
         width: "auto",
         margin: "0 auto",
       },
@@ -218,7 +218,7 @@ export default function MultiLevelSelector({
     setSelected(ret);
   };
 
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down('md'));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   return (
     <>
       <div className={classes.wrapper}>

@@ -1,5 +1,5 @@
 import { Button, TextField, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useState } from "react";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
   },
   uploadImageField: {
     marginBottom: theme.spacing(2),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       margin: "0 auto",
       marginTop: theme.spacing(1),
     },
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   },
   imageAnDescriptionWrapper: {
     display: "flex",
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       flexDirection: "column",
     },
   },

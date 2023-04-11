@@ -8,7 +8,7 @@ import {
   useMediaQuery,
   Theme,
 } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getCollaborationTexts from "../../../public/data/collaborationTexts";
 import ROLE_TYPES from "../../../public/data/role_types";
@@ -85,7 +85,7 @@ export default function EditProjectContent({
   const [selectedItems, setSelectedItems] = React.useState(
     project.skills ? [...project.skills] : []
   );
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down('sm'));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const [open, setOpen] = React.useState({ skills: false, connections: false, delete: false });
   const statusesWithStartDate = statusOptions.filter((s) => s.has_start_date).map((s) => s.id);
   const statusesWithEndDate = statusOptions.filter((s) => s.has_end_date).map((s) => s.id);

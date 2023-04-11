@@ -7,7 +7,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { ThemeProvider, StyledEngineProvider } from "@mui/material/styles";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import Head from "next/head";
 import Router from "next/router";
 import React, { useContext, useEffect, useState } from "react";
@@ -19,12 +19,10 @@ import CookieBanner from "../general/CookieBanner";
 import CloseSnackbarAction from "../snackbarActions/CloseSnackbarAction";
 import LogInAction from "../snackbarActions/LogInAction";
 
-
-declare module '@mui/styles/defaultTheme' {
+declare module "@mui/styles/defaultTheme" {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface DefaultTheme extends Theme {}
 }
-
 
 const useStyles = makeStyles((theme) => ({
   leaveSpaceForFooter: {
@@ -81,7 +79,7 @@ export default function LayoutWrapper({
   });
   const classes = useStyles();
   const [initialized, setInitialized] = React.useState(false);
-  const isSmallerThanMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down('lg'));
+  const isSmallerThanMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
   const [loading, setLoading] = React.useState(true);
   const [bannerOpen, setBannerOpen] = React.useState(true);
   const { acceptedNecessary, locale, isLoading } = useContext(UserContext);
@@ -143,68 +141,72 @@ export default function LayoutWrapper({
     handleUpdateHash: handleUpdateHash,
   };
 
-  return <>
-    <Head>
-      <title>{title ? title + " | Climate Connect" : "Climate Connect"}</title>
-      <link href="/fonts/openSans.css" rel="stylesheet" />
-      {useFloodStdFont && <link rel="stylesheet" href="https://use.typekit.net/hoy3dgi.css" />}
-      <meta
-        name="viewport"
-        content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
-      />
-      <meta
-        property="og:image"
-        content={image ? image : "https://climateconnect.earth/images/landing_image_small.jpg"}
-      />
-      <meta property="og:title" content={title ? title : texts.default_title} />
-      <meta property="og:type" content="website" />
+  return (
+    <>
+      <Head>
+        <title>{title ? title + " | Climate Connect" : "Climate Connect"}</title>
+        <link href="/fonts/openSans.css" rel="stylesheet" />
+        {useFloodStdFont && <link rel="stylesheet" href="https://use.typekit.net/hoy3dgi.css" />}
+        <meta
+          name="viewport"
+          content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
+        />
+        <meta
+          property="og:image"
+          content={image ? image : "https://climateconnect.earth/images/landing_image_small.jpg"}
+        />
+        <meta property="og:title" content={title ? title : texts.default_title} />
+        <meta property="og:type" content="website" />
 
-      <meta name="description" content={description ? description : defaultDescription} />
-    </Head>
-    {/* If theme is falsy, slience the MUI console.warning for having an undefined theme */}
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={theme}>
-        {loading || isLoading ? (
-          <div className={classes.spinnerContainer}>
-            <div>
-              <img className={classes.spinner} src="/images/logo.png" />
+        <meta name="description" content={description ? description : defaultDescription} />
+      </Head>
+      {/* If theme is falsy, slience the MUI console.warning for having an undefined theme */}
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          {loading || isLoading ? (
+            <div className={classes.spinnerContainer}>
+              <div>
+                <img className={classes.spinner} src="/images/logo.png" />
+              </div>
+              <CircularProgress />
+              <Typography component="div">{texts.loading_and_waiting}</Typography>
             </div>
-            <CircularProgress />
-            <Typography component="div">{texts.loading_and_waiting}</Typography>
-          </div>
-        ) : (
-          <FeedbackContext.Provider value={contextValues}>
-            <div className={`${!fixedHeight && !noSpaceForFooter && classes.leaveSpaceForFooter}`}>
-              {children}
-              {!acceptedNecessary && bannerOpen && initialized && (
-                <CookieBanner closeBanner={closeBanner} />
-              )}
-              {!noFeedbackButton && !isSmallerThanMediumScreen && <FeedbackButton />}
-              <Snackbar
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "left",
-                }}
-                color="primary"
-                open={snackbarProps.open}
-                autoHideDuration={10000}
-                onClose={handleSnackbarClose}
+          ) : (
+            <FeedbackContext.Provider value={contextValues}>
+              <div
+                className={`${!fixedHeight && !noSpaceForFooter && classes.leaveSpaceForFooter}`}
               >
-                <SnackbarContent
-                  message={snackbarProps.message}
-                  action={snackbarProps.action}
-                  classes={{
-                    root: `${classes.snackBar} ${snackbarProps.error && classes.errorSnackBar} ${
-                      snackbarProps.success && classes.successSnackBar
-                    }`,
-                    message: classes.snackBarMessage,
+                {children}
+                {!acceptedNecessary && bannerOpen && initialized && (
+                  <CookieBanner closeBanner={closeBanner} />
+                )}
+                {!noFeedbackButton && !isSmallerThanMediumScreen && <FeedbackButton />}
+                <Snackbar
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left",
                   }}
-                />
-              </Snackbar>
-            </div>
-          </FeedbackContext.Provider>
-        )}
-      </ThemeProvider>
-    </StyledEngineProvider>
-  </>;
+                  color="primary"
+                  open={snackbarProps.open}
+                  autoHideDuration={10000}
+                  onClose={handleSnackbarClose}
+                >
+                  <SnackbarContent
+                    message={snackbarProps.message}
+                    action={snackbarProps.action}
+                    classes={{
+                      root: `${classes.snackBar} ${snackbarProps.error && classes.errorSnackBar} ${
+                        snackbarProps.success && classes.successSnackBar
+                      }`,
+                      message: classes.snackBarMessage,
+                    }}
+                  />
+                </Snackbar>
+              </div>
+            </FeedbackContext.Provider>
+          )}
+        </ThemeProvider>
+      </StyledEngineProvider>
+    </>
+  );
 }

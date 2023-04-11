@@ -1,5 +1,5 @@
 import { Slider, Theme, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 
 const useStyles = makeStyles<Theme, { averageRating: any }>((theme) => ({
@@ -61,7 +61,7 @@ export default function IdeaRatingSlider(props) {
   const classes = useStyles({ averageRating: props.averageRating });
   return (
     <div className={classes.wrapper}>
-      <Slider {...props} classes={classes} size="small"/>
+      <Slider {...props} classes={classes} size="small" />
       <div className={classes.averageRatingContainer}>
         <Typography className={classes.averageCharacter}>Ø</Typography>
       </div>

@@ -1,5 +1,5 @@
 import { Menu } from "@mui/material";
-import withStyles from '@mui/styles/withStyles';
+import withStyles from "@mui/styles/withStyles";
 import React from "react";
 
 const StyledMenu: any = withStyles({

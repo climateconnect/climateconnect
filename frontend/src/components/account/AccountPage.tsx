@@ -1,14 +1,5 @@
-import {
-  Avatar,
-  Button,
-  Chip,
-  Container,
-  Link,
-  Tooltip,
-  Typography,
-  Divider,
-} from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import { Avatar, Button, Chip, Container, Link, Tooltip, Typography, Divider } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import PlaceIcon from "@mui/icons-material/Place";
 import React, { useContext, useState, useEffect } from "react";
 import Linkify from "react-linkify";
@@ -351,7 +342,13 @@ export default function AccountPage({
                 <div className={classes.marginBottom}>
                   {i && i.value && i.value.length > 0
                     ? i.value.map((entry) => (
-                        <Chip size="medium" color="secondary" label={entry} key={entry} className={classes.chip} />
+                        <Chip
+                          size="medium"
+                          color="secondary"
+                          label={entry}
+                          key={entry}
+                          className={classes.chip}
+                        />
                       ))
                     : i.missingMessage && <div className={classes.content}>{i.missingMessage}</div>}
                 </div>

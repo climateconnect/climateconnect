@@ -1,5 +1,5 @@
 import React from "react";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../../../src/components/context/UserContext";
 import { Button } from "@mui/material";

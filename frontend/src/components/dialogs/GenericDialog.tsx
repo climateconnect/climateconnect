@@ -1,5 +1,5 @@
 import { Button, Dialog, DialogTitle, IconButton, Theme, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
 import PropTypes from "prop-types";
 import React, { PropsWithChildren } from "react";
@@ -19,7 +19,7 @@ const useStyles = makeStyles<
   dialogContent: (props) => ({
     padding: theme.spacing(2),
     height: props.fullScreen ? "100%" : "auto",
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.down("lg")]: {
       padding: theme.spacing(2),
       paddingTop: 0,
     },

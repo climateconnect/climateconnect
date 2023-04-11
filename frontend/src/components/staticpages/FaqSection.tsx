@@ -1,5 +1,5 @@
 import { Button, Container, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import ContactSupportOutlinedIcon from "@mui/icons-material/ContactSupportOutlined";
 import ExpandLessOutlinedIcon from "@mui/icons-material/ExpandLessOutlined";
 import ExpandMoreOutlinedIcon from "@mui/icons-material/ExpandMoreOutlined";
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
   iconWrapper: {
     marginRight: theme.spacing(4),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       position: "absolute",
       opacity: 0,
     },
@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
   },
   questionText: {
     color: theme.palette.secondary.main,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       fontWeight: "bold",
     },
   },

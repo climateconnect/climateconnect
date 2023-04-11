@@ -1,5 +1,5 @@
 import { Avatar, Button, Link, Tooltip, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
@@ -80,7 +80,8 @@ export default function ProfilePreview({ profile, allowMessage, showAdditionalIn
       <Link
         href={getLocalePrefix(locale) + "/profiles/" + profile.url_slug}
         className={classes.disableHover}
-        underline="hover">
+        underline="hover"
+      >
         {profile.badges?.length > 0 ? (
           <ProfileBadge badge={profile.badges[0]} className={classes.badge}>
             <Avatar {...avatarProps} />

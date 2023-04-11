@@ -1,6 +1,6 @@
 import { Box, CardContent, Tooltip, Typography } from "@mui/material";
 import React, { useState } from "react";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import PlaceIcon from "@mui/icons-material/Place";
 
 const useStyles = makeStyles((theme) => {

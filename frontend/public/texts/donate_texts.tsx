@@ -212,7 +212,8 @@ export default function getDonateTexts({ classes, goal }) {
           <Link
             target="_blank"
             href="/documents/nonprofit_status_confirmation.pdf"
-            underline="hover">
+            underline="hover"
+          >
             here
           </Link>
           . (PDF in german language)
@@ -225,7 +226,8 @@ export default function getDonateTexts({ classes, goal }) {
           <Link
             target="_blank"
             href="/documents/nonprofit_status_confirmation.pdf"
-            underline="hover">
+            underline="hover"
+          >
             hier
           </Link>
           . (PDF in deutscher Sprache)
@@ -236,15 +238,20 @@ export default function getDonateTexts({ classes, goal }) {
       en: (
         <>
           For donors who donate over 300€ per year we issue a donation receipt.{" "}
-          <Link href="mailto:contact@climateconnect.earth" underline="hover">Contact us</Link> if you need any other
-          documents.
+          <Link href="mailto:contact@climateconnect.earth" underline="hover">
+            Contact us
+          </Link>{" "}
+          if you need any other documents.
         </>
       ),
       de: (
         <>
           Für Spender, die mehr als 300€ pro Jahr spenden, stellen wir eine Spendenbescheinigung
-          aus. <Link href="mailto:contact@climateconnect.earth" underline="hover">Kontaktiere uns</Link>, wenn du
-          weitere Unterlagen benötigst.
+          aus.{" "}
+          <Link href="mailto:contact@climateconnect.earth" underline="hover">
+            Kontaktiere uns
+          </Link>
+          , wenn du weitere Unterlagen benötigst.
         </>
       ),
     },

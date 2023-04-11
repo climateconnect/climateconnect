@@ -1,12 +1,6 @@
-import {
-  Link,
-  Theme,
-  StyledEngineProvider,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
-import { ThemeProvider } from '@mui/material/styles';
+import { Link, Theme, StyledEngineProvider, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import { ThemeProvider } from "@mui/material/styles";
 import React, { useContext } from "react";
 import Chart from "react-google-charts";
 import getTexts from "../../../../public/texts/texts";
@@ -14,12 +8,10 @@ import hubTheme from "../../../themes/hubTheme";
 import theme from "../../../themes/theme";
 import UserContext from "../../context/UserContext";
 
-
-declare module '@mui/styles/defaultTheme' {
+declare module "@mui/styles/defaultTheme" {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface DefaultTheme extends Theme {}
 }
-
 
 const useStyles = makeStyles((theme) => ({
   pieChart: {
@@ -50,8 +42,8 @@ export default function FashionDescription() {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale, hubName: "Fashion" });
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down('sm'));
-  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down('md'));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={hubTheme}>

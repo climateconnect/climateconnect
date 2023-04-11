@@ -1,5 +1,5 @@
 import { Container, Theme, Typography, useMediaQuery } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     maxWidth: 1000,
     marginTop: theme.spacing(2),
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       flexDirection: "column",
       justifyContent: "space-between",
       alignItems: "center",
@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
     top: -30,
     width: 135,
     height: 70,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       width: 100,
       height: 50,
       left: -50,
@@ -89,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 export default function ExplainerBox({ h1ClassName, className, hideHeadline }: any) {
   const classes = useStyles();
-  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down('md'));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "about", locale: locale });
 

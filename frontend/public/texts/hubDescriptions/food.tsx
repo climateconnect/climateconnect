@@ -40,7 +40,8 @@ export function getFoodHubDescription() {
           harmful to the climate is incentivized more than a climate friendly diet. According to{" "}
           <Link
             href="https://www.greenpeace.org/eu-unit/issues/nature-food/1803/feeding-problem-dangerous-intensification-animal-farming/"
-            underline="hover">
+            underline="hover"
+          >
             research by Greenpeace
           </Link>{" "}
           the EU is currently spending around 71% of its farmland to feed livestock which is only
@@ -58,7 +59,8 @@ export function getFoodHubDescription() {
           Laut{" "}
           <Link
             href="https://www.greenpeace.org/eu-unit/issues/nature-food/1803/feeding-problem-dangerous-intensification-animal-farming/"
-            underline="hover">
+            underline="hover"
+          >
             Forschung von Greenpeace
           </Link>{" "}
           werden in der EU derzeit rund 71% der landwirtschaftlichen Nutzfläche für die Fütterung
@@ -87,7 +89,8 @@ export function getFoodHubDescription() {
           your country but using greenhouses. To illustrate this with some numbers:{" "}
           <Link
             href="https://www.sciencedirect.com/science/article/abs/pii/S0921800902002616"
-            underline="hover">
+            underline="hover"
+          >
             a study{" "}
           </Link>{" "}
           from Sweden shows that tomatoes produced in local greenhouses in Sweden outside of the
@@ -106,7 +109,8 @@ export function getFoodHubDescription() {
           Gewächshäusern eingesetzt werden müsse. Um dies mit einigen Zahlen zu verdeutlichen:{" "}
           <Link
             href="https://www.sciencedirect.com/science/article/abs/pii/S0921800902002616"
-            underline="hover">
+            underline="hover"
+          >
             eine Studie{" "}
           </Link>{" "}
           aus Schweden zeigt, dass Tomaten, die in lokalen Gewächshäusern in Schweden außerhalb der
@@ -168,7 +172,8 @@ export function getFoodHubDescription() {
           was{" "}
           <Link
             href="https://www.theguardian.com/environment/2020/dec/02/no-kill-lab-grown-meat-to-go-on-sale-for-first-time"
-            underline="hover">
+            underline="hover"
+          >
             the first authority to approve a lab-grown meat product as safe for market
           </Link>
           . While lab-grown meat will be much more expensive when it starts being sold (likely in
@@ -176,7 +181,10 @@ export function getFoodHubDescription() {
           enters the market. According to{" "}
           <Link
             href="https://edu.gcfglobal.org/en/thenow/what-is-labgrown-meat/1/"
-            underline="hover">GCFGlobal</Link>{" "}
+            underline="hover"
+          >
+            GCFGlobal
+          </Link>{" "}
           Lab grown meat is significantly more climate-friendly as it requires 45% less energy,
           99%(!) less land use, and produces 96% fewer greenhouse gas emissions.
         </>
@@ -194,7 +202,8 @@ export function getFoodHubDescription() {
           genau dasselbe wie Fleisch von einem Tier ist. Erst kürzlich war die Singapore Food Acency{" "}
           <Link
             href="https://www.theguardian.com/environment/2020/dec/02/no-kill-lab-grown-meat-to-go-on-sale-for-first-time"
-            underline="hover">
+            underline="hover"
+          >
             die erste Behörde, die ein im Labor gezüchtetes Fleischprodukt als sicher für den Markt
             zugelassen hat
           </Link>
@@ -203,7 +212,10 @@ export function getFoodHubDescription() {
           produziert werden und mehr Konkurrenz auf den Markt kommt. Laut{" "}
           <Link
             href="https://edu.gcfglobal.org/en/thenow/what-is-labgrown-meat/1/"
-            underline="hover">GCFGlobal</Link>{" "}
+            underline="hover"
+          >
+            GCFGlobal
+          </Link>{" "}
           ist Fleisch aus dem Labor deutlich klimafreundlicher, da es 45% weniger Energie, 99%(!)
           weniger Landverbrauch benötigt und 96% weniger Treibhausgasemissionen produziert.
         </>

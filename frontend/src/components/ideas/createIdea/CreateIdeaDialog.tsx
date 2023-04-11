@@ -1,5 +1,5 @@
 import { Theme } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest, redirect } from "../../../../public/lib/apiOperations";
@@ -21,7 +21,7 @@ const useStyles = makeStyles<Theme, { userOrganizations?: any }>((theme) => ({
   titleText: {
     fontWeight: 600,
     color: theme.palette.secondary.main,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       fontSize: 18,
     },
   },

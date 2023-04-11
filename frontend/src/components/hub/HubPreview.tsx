@@ -1,5 +1,5 @@
 import { Card, CardMedia, Link, Theme, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
@@ -43,7 +43,8 @@ export default function HubPreview({ hub, disableBoxShadow = false }) {
     <Link
       href={getLocalePrefix(locale) + `/hubs/${hub.url_slug}`}
       className={classes.noUnderline}
-      underline="hover">
+      underline="hover"
+    >
       <Card className={classes.root} variant="outlined">
         <CardMedia
           className={classes.media}

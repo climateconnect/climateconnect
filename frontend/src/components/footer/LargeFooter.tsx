@@ -1,5 +1,5 @@
 import { Button, Container, Link, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import GitHubIcon from "@mui/icons-material/GitHub";
@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     padding: theme.spacing(6),
     justifyContent: "space-between",
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       flexWrap: "wrap",
       justifyContent: "space-around",
     },
@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
   },
   li: {
     fontWeight: 600,
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.down("lg")]: {
       fontSize: 14,
     },
   },
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 25,
     marginBottom: theme.spacing(2),
     fontWeight: "bold",
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.down("lg")]: {
       fontSize: 22,
     },
   },
@@ -128,7 +128,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
   linksSection: {
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       minWidth: 120,
       textAlign: "center",
       marginBottom: theme.spacing(2),
@@ -177,37 +177,35 @@ const SocialLinks = () => {
       <Link
         target="_blank"
         href="https://www.instagram.com/climate_connect.earth/"
-        underline="hover">
+        underline="hover"
+      >
         <InstagramIcon color="primary" className={classes.socialIcon} titleAccess="Instagram" />
       </Link>
       <Link
         target="_blank"
         href="https://github.com/climateconnect/climateconnect"
-        underline="hover">
+        underline="hover"
+      >
         <GitHubIcon className={classes.socialIcon} titleAccess="GitHub" />
       </Link>
-      <Link
-        target="_blank"
-        href="https://twitter.com/ConnectClimate"
-        underline="hover">
+      <Link target="_blank" href="https://twitter.com/ConnectClimate" underline="hover">
         <TwitterIcon color="primary" className={classes.socialIcon} titleAccess="Twitter" />
       </Link>
       <Link
         target="_blank"
         href="https://www.linkedin.com/company/climateconnect"
-        underline="hover">
+        underline="hover"
+      >
         <LinkedInIcon color="primary" className={classes.socialIcon} titleAccess="LinkedIn" />
       </Link>
-      <Link
-        target="_blank"
-        href="https://www.facebook.com/climateconnect.earth"
-        underline="hover">
+      <Link target="_blank" href="https://www.facebook.com/climateconnect.earth" underline="hover">
         <FacebookIcon color="primary" className={classes.socialIcon} titleAccess="Facebook" />
       </Link>
       <Link
         target="_blank"
         href="https://www.youtube.com/channel/UC10rPriptUxYilMfvt-8Tkw"
-        underline="hover">
+        underline="hover"
+      >
         <YouTubeIcon color="primary" className={classes.socialIcon} titleAccess="YouTube" />
       </Link>
     </div>

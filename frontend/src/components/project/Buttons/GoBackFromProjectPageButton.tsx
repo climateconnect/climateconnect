@@ -1,5 +1,5 @@
 import { Button, IconButton } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { useRouter } from "next/router";
@@ -8,7 +8,7 @@ import React from "react";
 const useStyles = makeStyles((theme) => ({
   button: {
     color: "white",
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       minWidth: 35,
       maxWidth: 35,
       minHeight: 35,

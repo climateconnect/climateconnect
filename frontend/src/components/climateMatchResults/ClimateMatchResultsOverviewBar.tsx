@@ -1,5 +1,5 @@
 import { Link, List, ListItem, ListItemIcon, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 
 const useStyles = makeStyles(() => ({
@@ -42,7 +42,8 @@ export default function ClimateMatchResultsOverviewBar({ suggestions }) {
             href={`#${suggestion.url_slug}`}
             className={classes.noUnderline}
             key={index}
-            underline="hover">
+            underline="hover"
+          >
             <ListItem button className={classes.suggestionOverviewItem}>
               <ListItemIcon className={classes.suggestionsOverViewItemIcon}>
                 <Typography color="primary" className={classes.suggestionOverviewNumber}>

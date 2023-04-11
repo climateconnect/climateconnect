@@ -1,6 +1,6 @@
 import React from "react";
-import makeStyles from '@mui/styles/makeStyles';
-import withStyles from '@mui/styles/withStyles';
+import makeStyles from "@mui/styles/makeStyles";
+import withStyles from "@mui/styles/withStyles";
 import { Stepper, Step, StepLabel, StepConnector, Typography } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 

@@ -1,5 +1,5 @@
 import { IconButton, Chip, Tooltip } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import React, { useContext, useState } from "react";
 import { getLocationFields } from "../../../public/lib/locationOperations";
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-evenly",
 
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       flexDirection: "column",
       marginTop: theme.spacing(0),
       alignItems: "center",
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     height: 30,
     width: "100%",
 
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       marginTop: theme.spacing(1),
     },
   },
@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     height: 30,
     width: "100%",
     marginLeft: theme.spacing(0.5),
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       marginTop: theme.spacing(1),
     },
   },

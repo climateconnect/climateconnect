@@ -1,13 +1,5 @@
-import {
-  Avatar,
-  Button,
-  CircularProgress,
-  Link,
-  Theme,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import { Avatar, Button, CircularProgress, Link, Theme, Tooltip, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React, { useContext, useState } from "react";
@@ -153,7 +145,8 @@ export default function Post({
             href={getLocalePrefix(locale) + "/profiles/" + post.author_user.url_slug}
             target="_blank"
             onClick={handleClick}
-            underline="hover">
+            underline="hover"
+          >
             <Avatar {...avatarProps} />
           </Link>
           <span className={classes.messageWithMetaData}>
@@ -163,7 +156,8 @@ export default function Post({
                 href={getLocalePrefix(locale) + "/profiles/" + post.author_user.url_slug}
                 target="_blank"
                 onClick={handleClick}
-                underline="hover">
+                underline="hover"
+              >
                 <Typography variant="body2" className={classes.username}>
                   {post.author_user.first_name + " " + post.author_user.last_name}
                 </Typography>
@@ -210,7 +204,8 @@ export default function Post({
                   <Link
                     className={classes.toggleReplies}
                     onClick={handleExpandText}
-                    underline="hover">
+                    underline="hover"
+                  >
                     {!isTextExpanded ? texts.read_more : texts.read_less}
                   </Link>
                 )}
@@ -241,7 +236,8 @@ export default function Post({
                 <Link
                   className={classes.toggleReplies}
                   onClick={handleViewRepliesClick}
-                  underline="hover">
+                  underline="hover"
+                >
                   {!displayReplies ? (
                     <>
                       <ExpandMoreIcon />

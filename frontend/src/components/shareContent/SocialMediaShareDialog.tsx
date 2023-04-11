@@ -1,5 +1,5 @@
 import { Button, InputAdornment, TextField } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import LinkIcon from "@mui/icons-material/Link";
 import React from "react";
 import {
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(2),
     display: "flex",
     justifyContent: "space-between",
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       justifyContent: "flex-start",
       flexWrap: "wrap",
     },

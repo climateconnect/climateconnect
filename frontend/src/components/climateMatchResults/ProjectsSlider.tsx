@@ -1,5 +1,5 @@
 import { Link, Theme, useMediaQuery } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import Carousel from "react-multi-carousel";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -16,11 +16,11 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 20,
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
-    [theme.breakpoints.down('xl')]: {
+    [theme.breakpoints.down("xl")]: {
       left: theme.spacing(1),
       right: theme.spacing(1),
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       border: "none",
       left: 0,
       right: 0,
@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(16),
     display: "flex",
     justifyContent: "center",
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       padding: 0,
     },
   },
@@ -73,14 +73,15 @@ export default function ProjectsSlider({ projects }) {
 
 const CarouselItem = ({ project }) => {
   const { locale } = useContext(UserContext);
-  const isSmallOrMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down('md'));
+  const isSmallOrMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const classes = useStyles();
   return (
     <Link
       href={`${getLocalePrefix(locale)}/projects/${project.url_slug}`}
       target="_blank"
       className={classes.noUnderline}
-      underline="hover">
+      underline="hover"
+    >
       <div className={classes.carouselEntry}>
         {isSmallOrMediumScreen ? (
           <ProjectPreview project={project} className={classes.projectCard} />

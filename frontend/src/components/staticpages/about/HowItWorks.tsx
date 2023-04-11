@@ -1,5 +1,5 @@
 import { Button, Container, Theme, Typography, useMediaQuery } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import React, { useContext } from "react";
@@ -19,7 +19,7 @@ const useStyles = makeStyles<Theme, { img?: string }>((theme) => ({
     display: "flex",
     paddingRight: theme.spacing(14),
     paddingLeft: theme.spacing(14),
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.down("lg")]: {
       flexDirection: "column",
       maxWidth: 440,
       justifyContent: "center",
@@ -37,7 +37,7 @@ const useStyles = makeStyles<Theme, { img?: string }>((theme) => ({
     [theme.breakpoints.up("md")]: {
       padding: theme.spacing(2),
     },
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.down("lg")]: {
       background: "transparent",
       flexBasis: 0,
     },
@@ -65,7 +65,7 @@ const useStyles = makeStyles<Theme, { img?: string }>((theme) => ({
   elementHeadline: {
     fontSize: 23,
     fontWeight: 600,
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.down("lg")]: {
       marginBottom: theme.spacing(3),
     },
   },
@@ -97,7 +97,7 @@ const responsive = {
 
 export default function HowItWorks({ headlineClass }) {
   const classes = useStyles({});
-  const isSmallerScreen = useMediaQuery<Theme>(theme.breakpoints.down('lg'));
+  const isSmallerScreen = useMediaQuery<Theme>(theme.breakpoints.down("lg"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "about", locale: locale });
   const pitch_elements = getPitchElements(texts);

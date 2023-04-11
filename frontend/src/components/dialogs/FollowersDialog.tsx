@@ -11,7 +11,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import ReactTimeago from "react-timeago";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 600,
   },
   followedText: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       fontSize: 13,
     },
   },
@@ -100,37 +100,40 @@ export default function FollowersDialog({
 
 const ProjectFollowers = ({ followers, followingSinceText, locale }) => {
   const classes = useStyles();
-  return <>
-    <Divider />
-    <Table>
-      <TableBody>
-        {followers.map((f, index) => {
-          return (
-            <TableRow key={index} /*TODO(undefined) className={classes.follower} */>
-              <TableCell>
-                <Link
-                  className={classes.user}
-                  href={getLocalePrefix(locale) + "/profiles/" + f.user_profile.url_slug}
-                  underline="hover">
-                  <Avatar
-                    className={classes.avatar}
-                    src={getImageUrl(f.user_profile.thumbnail_image)}
-                    alt={f.user_profile.first_name + " " + f.user_profile.last_name}
-                  />
-                  <Typography component="span" color="secondary" className={classes.username}>
-                    {f.user_profile.first_name + " " + f.user_profile.last_name}
+  return (
+    <>
+      <Divider />
+      <Table>
+        <TableBody>
+          {followers.map((f, index) => {
+            return (
+              <TableRow key={index} /*TODO(undefined) className={classes.follower} */>
+                <TableCell>
+                  <Link
+                    className={classes.user}
+                    href={getLocalePrefix(locale) + "/profiles/" + f.user_profile.url_slug}
+                    underline="hover"
+                  >
+                    <Avatar
+                      className={classes.avatar}
+                      src={getImageUrl(f.user_profile.thumbnail_image)}
+                      alt={f.user_profile.first_name + " " + f.user_profile.last_name}
+                    />
+                    <Typography component="span" color="secondary" className={classes.username}>
+                      {f.user_profile.first_name + " " + f.user_profile.last_name}
+                    </Typography>
+                  </Link>
+                </TableCell>
+                <TableCell>
+                  <Typography className={classes.followedText}>
+                    {followingSinceText} <ReactTimeago date={f.created_at} />
                   </Typography>
-                </Link>
-              </TableCell>
-              <TableCell>
-                <Typography className={classes.followedText}>
-                  {followingSinceText} <ReactTimeago date={f.created_at} />
-                </Typography>
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
-  </>;
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </>
+  );
 };

@@ -1,4 +1,4 @@
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getFilters from "../../../public/data/possibleFilters";
 import UserContext from "../context/UserContext";

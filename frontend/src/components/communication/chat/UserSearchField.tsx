@@ -1,5 +1,5 @@
 import React from "react";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import AutoCompleteSearchBar from "../../../../src/components/search/AutoCompleteSearchBar";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../../../src/components/context/UserContext";
@@ -60,7 +60,7 @@ export default function UserSearchField({ cancelUserSearch, setErrorMessage }) {
         </IconButton>
         {option.first_name + " " + option.last_name}
       </li>
-    )
+    );
   };
   const handleRemoveMember = (member) => {
     setNewChatMembers([...newChatMembers.filter((m) => m.id !== member.id)]);

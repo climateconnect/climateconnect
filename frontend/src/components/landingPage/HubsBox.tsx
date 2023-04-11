@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 25,
     fontWeight: 700,
     marginBottom: theme.spacing(1),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       fontSize: 21,
       marginBottom: theme.spacing(2),
     },

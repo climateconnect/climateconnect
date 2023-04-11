@@ -1,5 +1,5 @@
 import { Badge, Link, Theme, Tooltip } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
@@ -58,10 +58,7 @@ const BadgeContent = ({ badge, size, className, withLink }: any) => {
     <Tooltip title={badge.name}>
       <div>
         {withLink ? (
-          <Link
-            href={`${getLocalePrefix(locale)}/donorforest`}
-            target="_blank"
-            underline="hover">
+          <Link href={`${getLocalePrefix(locale)}/donorforest`} target="_blank" underline="hover">
             <Content badge={badge} size={size} className={className} />
           </Link>
         ) : (

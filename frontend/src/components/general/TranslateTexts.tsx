@@ -9,7 +9,7 @@ import {
   Tooltip,
   Theme,
 } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import _ from "lodash";
 import React, { useContext, useEffect, useState } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
@@ -48,7 +48,7 @@ const useStyles = makeStyles<Theme, { visibleFooterHeight?: number }>((theme) =>
     justifyContent: "space-between",
     marginBottom: theme.spacing(2),
 
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       flexDirection: "column",
       alignItems: "center",
       border: `1px solid ${theme.palette.grey[500]}`,
@@ -61,7 +61,7 @@ const useStyles = makeStyles<Theme, { visibleFooterHeight?: number }>((theme) =>
       flexGrow: 0.48,
       flexBasis: 400,
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       flexGrow: 0.48,
       width: "100%",
     },
@@ -72,14 +72,14 @@ const useStyles = makeStyles<Theme, { visibleFooterHeight?: number }>((theme) =>
     width: "100%",
     justifyContent: "center",
     marginTop: theme.spacing(2),
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       marginTop: theme.spacing(0),
     },
   },
   translateButton: {
     marginRight: theme.spacing(1),
     marginLeft: theme.spacing(1),
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       minWidth: 100,
     },
     width: 265,
@@ -172,7 +172,7 @@ export default function TranslateTexts({
   });
   const [waitingForTranslation, setWaitingForTranslation] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-  const belowSmall = useMediaQuery<Theme>((theme) => theme.breakpoints.down('md'));
+  const belowSmall = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
 
   useEffect(() => {
     initializeTranslationsObject();

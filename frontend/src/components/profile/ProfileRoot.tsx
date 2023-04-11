@@ -1,5 +1,5 @@
 import { Button, Container, Typography, useMediaQuery } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import { Theme, useTheme } from "@mui/material/styles";
 import Router from "next/router";
 import React, { useContext, useEffect, useRef } from "react";
@@ -78,7 +78,7 @@ const useStyles = makeStyles((theme) => {
     createButton: {
       right: theme.spacing(1),
       position: "absolute",
-      [theme.breakpoints.down('sm')]: {
+      [theme.breakpoints.down("sm")]: {
         position: "relative",
         marginTop: theme.spacing(2),
       },
@@ -121,8 +121,8 @@ export default function ProfileRoot({
   const scrollDownSmooth = (ref) => {
     ref.current.scrollIntoView({ behavior: "smooth" });
   };
-  const isTinyScreen = useMediaQuery<Theme>(theme.breakpoints.down('sm'));
-  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down('md'));
+  const isTinyScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
   useEffect(() => {
     const URL = window.location.href;

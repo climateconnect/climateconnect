@@ -1,5 +1,5 @@
 import { Avatar, Button } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { redirect } from "../../../public/lib/apiOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";

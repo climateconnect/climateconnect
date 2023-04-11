@@ -20,7 +20,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Theme } from "@mui/material/styles";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -81,7 +81,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       };
     },
     hideHeader: {
-      [theme.breakpoints.down('lg')]: {
+      [theme.breakpoints.down("lg")]: {
         transform: "translateY(-97px)",
       },
     },
@@ -92,10 +92,10 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       padding: theme.spacing(2),
       paddingRight: "auto",
       paddingLeft: "auto",
-      [theme.breakpoints.down('lg')]: {
+      [theme.breakpoints.down("lg")]: {
         padding: theme.spacing(2),
       },
-      [theme.breakpoints.down('md')]: {
+      [theme.breakpoints.down("md")]: {
         padding: `${theme.spacing(0.8)} ${theme.spacing(2)}`,
       },
       display: "flex",
@@ -103,7 +103,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       alignItems: "center",
     },
     logoLink: {
-      [theme.breakpoints.down('md')]: {
+      [theme.breakpoints.down("md")]: {
         flex: `0 1 auto`,
         width: "calc(1.1vw + 1.3em)",
         maxWidth: "2.3rem",
@@ -111,7 +111,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       },
     },
     logo: {
-      [theme.breakpoints.down('md')]: {
+      [theme.breakpoints.down("md")]: {
         height: "auto",
       },
       height: 60,
@@ -145,10 +145,10 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       display: "flex",
       alignItems: "center",
       maxWidth: "calc(100% - 200px)",
-      [theme.breakpoints.down('lg')]: {
+      [theme.breakpoints.down("lg")]: {
         maxWidth: "calc(100% - 150px)",
       },
-      [theme.breakpoints.down('md')]: {
+      [theme.breakpoints.down("md")]: {
         maxWidth: "calc(100% - 35px)",
       },
       justifyContent: "space-around",
@@ -315,8 +315,8 @@ export default function Header({
   const { user, signOut, notifications, pathName, locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down('sm'));
-  const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down('md'));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const LINKS = getLinks(pathName, texts);
   const toggleShowNotifications = (event) => {
     if (!anchorEl) setAnchorEl(event.currentTarget);
@@ -414,8 +414,8 @@ function NormalScreenLinks({
   isStaticPage,
 }) {
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
-  const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down('md'));
-  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down('lg'));
+  const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("lg"));
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts);
   return (
     <Box className={classes.linkContainer}>
@@ -538,168 +538,172 @@ function NarrowScreenLinks({
       !(loggedInUser && link.onlyShowLoggedOut) &&
       !(!loggedInUser && link.onlyShowLoggedIn)
   );
-  return <>
-    <Box>
-      {linksOutsideDrawer.map((link, index) => {
-        const Icon = link.iconForDrawer;
-        const buttonProps = getLinkButtonProps({
-          link: link,
-          index: index,
-          loggedInUser: loggedInUser,
-          classes: classes,
-          transparentHeader: transparentHeader,
-          toggleShowNotifications: toggleShowNotifications,
-          isNarrowScreen: true,
-          linksOutsideDrawer: linksOutsideDrawer,
-          localePrefix: localePrefix,
-        });
-        if (index === linksOutsideDrawer.length - 1) {
-          buttonProps.className = classes.marginRight;
-        }
-        return (
-          <React.Fragment key={index}>
-            {link.onlyShowIconOnMobile ? (
-              <>
-                <IconButton
-                  color="primary"
-                  className={classes.marginRight}
-                  {...buttonProps}
-                  size="large">
-                  {link.hasBadge && notifications && notifications.length > 0 ? (
-                    <Badge badgeContent={notifications.length} color="error">
-                      <Icon />
-                    </Badge>
-                  ) : (
-                    <Icon />
-                  )}
-                </IconButton>
-                {link.type === "notificationsButton" && anchorEl && (
-                  <NotificationsBox
-                    anchorEl={anchorEl}
-                    keepMounted
-                    open={Boolean(anchorEl)}
-                    onClose={onNotificationsClose}
+  return (
+    <>
+      <Box>
+        {linksOutsideDrawer.map((link, index) => {
+          const Icon = link.iconForDrawer;
+          const buttonProps = getLinkButtonProps({
+            link: link,
+            index: index,
+            loggedInUser: loggedInUser,
+            classes: classes,
+            transparentHeader: transparentHeader,
+            toggleShowNotifications: toggleShowNotifications,
+            isNarrowScreen: true,
+            linksOutsideDrawer: linksOutsideDrawer,
+            localePrefix: localePrefix,
+          });
+          if (index === linksOutsideDrawer.length - 1) {
+            buttonProps.className = classes.marginRight;
+          }
+          return (
+            <React.Fragment key={index}>
+              {link.onlyShowIconOnMobile ? (
+                <>
+                  <IconButton
+                    color="primary"
+                    className={classes.marginRight}
+                    {...buttonProps}
+                    size="large"
                   >
-                    <Typography
-                      className={classes.notificationsHeadline}
-                      component="h1"
-                      variant="h5"
-                    >
-                      {texts.notifications}
-                    </Typography>
-                    <Divider />
-                    {notifications && notifications.length > 0 ? (
-                      notifications.map((n, index) => (
-                        <Notification key={index} notification={n} />
-                      ))
+                    {link.hasBadge && notifications && notifications.length > 0 ? (
+                      <Badge badgeContent={notifications.length} color="error">
+                        <Icon />
+                      </Badge>
                     ) : (
-                      <Notification key={index} isPlaceholder />
+                      <Icon />
                     )}
-                  </NotificationsBox>
-                )}
-              </>
-            ) : (
-              <span className={classes.menuLink}>
-                {link.type === "languageSelect" ? (
-                  <LanguageSelect transparentHeader={transparentHeader} />
-                ) : (
-                  <Button color="primary" {...buttonProps} key={index}>
-                    {link.text}
-                  </Button>
-                )}
-              </span>
-            )}
-          </React.Fragment>
-        );
-      })}
-      <span className={classes.menuLink}>
-        <IconButton
-          edge="start"
-          color="inherit"
-          aria-label="menu"
-          onClick={openDrawer}
-          size="large">
-          <MenuIcon />
-        </IconButton>
-      </span>
-      <SwipeableDrawer
-        anchor="right"
-        open={isDrawerOpen}
-        // `onOpen` is a required property, even though we don't use it.
-        onOpen={noop}
-        onClose={closeDrawer}
-        disableBackdropTransition={true}
-      >
-        <List /*TODO(unused) styles={{ height: "100vh" }} */>
-          {LINKS.filter(
-            (link) =>
-              !link.alwaysDisplayDirectly &&
-              !(loggedInUser && link.onlyShowLoggedOut) &&
-              !(!loggedInUser && link.onlyShowLoggedIn)
-          ).map((link, index) => {
-            const Icon = link.iconForDrawer;
-            return (
-              <Link href={localePrefix + link.href} key={index} underline="hover">
-                <ListItem button component="a" onClick={closeDrawer}>
-                  <ListItemIcon>
-                    <Icon color="primary" />
-                  </ListItemIcon>
-                  <ListItemText primary={link.text} />
-                </ListItem>
-              </Link>
-            );
-          })}
-          {loggedInUser &&
-            getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts }).map((link, index) => {
-              const Icon: any = link.iconForDrawer;
-              const avatarProps = {
-                className: classes.loggedInAvatarMobile,
-                src: getImageUrl(loggedInUser.image),
-                alt: loggedInUser.name,
-              };
-              if (link.avatar)
-                return (
-                  <div className={classes.mobileAvatarContainer}>
-                    <Link href={"/profiles/" + loggedInUser.url_slug} underline="hover">
-                      {loggedInUser?.badges?.length > 0 ? (
-                        <ProfileBadge
-                          badge={loggedInUser?.badges[0]}
-                          size="medium"
-                          className={classes.badge}
-                        >
-                          <Avatar {...avatarProps} />
-                        </ProfileBadge>
+                  </IconButton>
+                  {link.type === "notificationsButton" && anchorEl && (
+                    <NotificationsBox
+                      anchorEl={anchorEl}
+                      keepMounted
+                      open={Boolean(anchorEl)}
+                      onClose={onNotificationsClose}
+                    >
+                      <Typography
+                        className={classes.notificationsHeadline}
+                        component="h1"
+                        variant="h5"
+                      >
+                        {texts.notifications}
+                      </Typography>
+                      <Divider />
+                      {notifications && notifications.length > 0 ? (
+                        notifications.map((n, index) => (
+                          <Notification key={index} notification={n} />
+                        ))
                       ) : (
-                        <Avatar {...avatarProps} />
+                        <Notification key={index} isPlaceholder />
                       )}
-                    </Link>
-                  </div>
-                );
-              else if (link.isLogoutButton)
-                return (
-                  <ListItem button component="a" key={index} onClick={handleLogout}>
+                    </NotificationsBox>
+                  )}
+                </>
+              ) : (
+                <span className={classes.menuLink}>
+                  {link.type === "languageSelect" ? (
+                    <LanguageSelect transparentHeader={transparentHeader} />
+                  ) : (
+                    <Button color="primary" {...buttonProps} key={index}>
+                      {link.text}
+                    </Button>
+                  )}
+                </span>
+              )}
+            </React.Fragment>
+          );
+        })}
+        <span className={classes.menuLink}>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={openDrawer}
+            size="large"
+          >
+            <MenuIcon />
+          </IconButton>
+        </span>
+        <SwipeableDrawer
+          anchor="right"
+          open={isDrawerOpen}
+          // `onOpen` is a required property, even though we don't use it.
+          onOpen={noop}
+          onClose={closeDrawer}
+          disableBackdropTransition={true}
+        >
+          <List /*TODO(unused) styles={{ height: "100vh" }} */>
+            {LINKS.filter(
+              (link) =>
+                !link.alwaysDisplayDirectly &&
+                !(loggedInUser && link.onlyShowLoggedOut) &&
+                !(!loggedInUser && link.onlyShowLoggedIn)
+            ).map((link, index) => {
+              const Icon = link.iconForDrawer;
+              return (
+                <Link href={localePrefix + link.href} key={index} underline="hover">
+                  <ListItem button component="a" onClick={closeDrawer}>
                     <ListItemIcon>
                       <Icon color="primary" />
                     </ListItemIcon>
                     <ListItemText primary={link.text} />
                   </ListItem>
-                );
-              else
-                return (
-                  <Link href={localePrefix + link.href} key={index} underline="hover">
-                    <ListItem button component="a" onClick={closeDrawer}>
+                </Link>
+              );
+            })}
+            {loggedInUser &&
+              getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts }).map((link, index) => {
+                const Icon: any = link.iconForDrawer;
+                const avatarProps = {
+                  className: classes.loggedInAvatarMobile,
+                  src: getImageUrl(loggedInUser.image),
+                  alt: loggedInUser.name,
+                };
+                if (link.avatar)
+                  return (
+                    <div className={classes.mobileAvatarContainer}>
+                      <Link href={"/profiles/" + loggedInUser.url_slug} underline="hover">
+                        {loggedInUser?.badges?.length > 0 ? (
+                          <ProfileBadge
+                            badge={loggedInUser?.badges[0]}
+                            size="medium"
+                            className={classes.badge}
+                          >
+                            <Avatar {...avatarProps} />
+                          </ProfileBadge>
+                        ) : (
+                          <Avatar {...avatarProps} />
+                        )}
+                      </Link>
+                    </div>
+                  );
+                else if (link.isLogoutButton)
+                  return (
+                    <ListItem button component="a" key={index} onClick={handleLogout}>
                       <ListItemIcon>
                         <Icon color="primary" />
                       </ListItemIcon>
                       <ListItemText primary={link.text} />
                     </ListItem>
-                  </Link>
-                );
-            })}
-        </List>
-      </SwipeableDrawer>
-    </Box>
-  </>;
+                  );
+                else
+                  return (
+                    <Link href={localePrefix + link.href} key={index} underline="hover">
+                      <ListItem button component="a" onClick={closeDrawer}>
+                        <ListItemIcon>
+                          <Icon color="primary" />
+                        </ListItemIcon>
+                        <ListItemText primary={link.text} />
+                      </ListItem>
+                    </Link>
+                  );
+              })}
+          </List>
+        </SwipeableDrawer>
+      </Box>
+    </>
+  );
 }
 
 const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader, texts, localePrefix }) => {

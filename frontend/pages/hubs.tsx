@@ -1,5 +1,5 @@
 import { Container, Theme, Typography, useMediaQuery } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getAllHubs } from "../public/lib/hubOperations";
 import getTexts from "../public/texts/texts";
@@ -16,10 +16,10 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 700,
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(0.5),
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       fontSize: 25,
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       fontSize: 20,
     },
   },
@@ -51,7 +51,7 @@ export async function getServerSideProps(ctx: { locale: any }) {
 
 export default function Hubs({ hubs }) {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down('sm'));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
   return (

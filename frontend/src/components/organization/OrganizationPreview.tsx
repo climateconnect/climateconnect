@@ -1,5 +1,5 @@
 import { Box, Card, CardActions, Link, Tooltip, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import UserContext from "../context/UserContext";
@@ -79,7 +79,8 @@ export default function OrganizationPreview({ organization }) {
     <Link
       href={getLocalePrefix(locale) + `/organizations/${organization.url_slug}`}
       className={classes.noUnderline}
-      underline="hover">
+      underline="hover"
+    >
       <Card className={classes.root} variant="outlined">
         <OrganizationPreviewHeader organization={organization} />
         <OrganizationPreviewBody organization={organization} />

@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import Router from "next/router";
 import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";

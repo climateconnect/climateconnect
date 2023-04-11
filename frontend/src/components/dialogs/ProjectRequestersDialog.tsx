@@ -13,7 +13,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import BlockIcon from "@mui/icons-material/Block";
 import CheckIcon from "@mui/icons-material/Check";
 import React, { useContext, useState } from "react";
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 600,
   },
   followedText: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       fontSize: 13,
     },
   },
@@ -200,44 +200,49 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
     }
   }
 
-  return <>
-    <TableCell>
-      <Link
-        className={classes.user}
-        href={getLocalePrefix(locale) + "/profiles/" + requester.user.url_slug}
-        underline="hover">
-        <Avatar
-          className={classes.avatar}
-          src={getImageUrl(requester.user.image)}
-          alt={requester.user.first_name + " " + requester.user.last_name}
-        />
-        <Typography component="span" color="secondary" className={classes.username}>
-          {requester.user.first_name + " " + requester.user.last_name}
-        </Typography>
-      </Link>
-    </TableCell>
+  return (
+    <>
+      <TableCell>
+        <Link
+          className={classes.user}
+          href={getLocalePrefix(locale) + "/profiles/" + requester.user.url_slug}
+          underline="hover"
+        >
+          <Avatar
+            className={classes.avatar}
+            src={getImageUrl(requester.user.image)}
+            alt={requester.user.first_name + " " + requester.user.last_name}
+          />
+          <Typography component="span" color="secondary" className={classes.username}>
+            {requester.user.first_name + " " + requester.user.last_name}
+          </Typography>
+        </Link>
+      </TableCell>
 
-    <TableCell>
-      <Tooltip title="Approve">
-        <IconButton
-          aria-label="approve project request"
-          color="primary"
-          disableRipple
-          onClick={() => handleRequest(true)}
-          size="large">
-          <CheckIcon />
-        </IconButton>
-      </Tooltip>
+      <TableCell>
+        <Tooltip title="Approve">
+          <IconButton
+            aria-label="approve project request"
+            color="primary"
+            disableRipple
+            onClick={() => handleRequest(true)}
+            size="large"
+          >
+            <CheckIcon />
+          </IconButton>
+        </Tooltip>
 
-      <Tooltip title="Deny">
-        <IconButton
-          aria-label="deny project request"
-          disableRipple
-          onClick={() => handleRequest(false)}
-          size="large">
-          <BlockIcon />
-        </IconButton>
-      </Tooltip>
-    </TableCell>
-  </>;
+        <Tooltip title="Deny">
+          <IconButton
+            aria-label="deny project request"
+            disableRipple
+            onClick={() => handleRequest(false)}
+            size="large"
+          >
+            <BlockIcon />
+          </IconButton>
+        </Tooltip>
+      </TableCell>
+    </>
+  );
 };

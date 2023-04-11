@@ -78,7 +78,8 @@ export default function getOrganizationTexts({ organization, locale }) {
           Go to the{" "}
           <Link
             href={getLocalePrefix(locale) + "/organizations/" + organization?.url_slug}
-            underline="hover">
+            underline="hover"
+          >
             organization page
           </Link>{" "}
           and click join to join it.
@@ -89,7 +90,8 @@ export default function getOrganizationTexts({ organization, locale }) {
           Gehe auf die{" "}
           <Link
             href={getLocalePrefix(locale) + "/organizations/" + organization?.url_slug}
-            underline="hover">
+            underline="hover"
+          >
             Organisationsseite
           </Link>{" "}
           und klicke auf {"Join"} um der Organisation beizutreten.

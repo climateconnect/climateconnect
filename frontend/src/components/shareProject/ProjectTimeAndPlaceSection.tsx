@@ -9,30 +9,30 @@ type Args = {
   handleSetProjectData: Function;
 };
 
-export default function ProjectTimeAndPlaceSection({projectData, handleSetProjectData}: Args) {
-  console.log(projectData.type)
-  const { locale } = useContext(UserContext)
-  const texts = getTexts({locale: locale, page: "project"})
+export default function ProjectTimeAndPlaceSection({ projectData, handleSetProjectData }: Args) {
+  console.log(projectData.type);
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ locale: locale, page: "project" });
 
   const ProjectDateAndTimePicker = () => {
     return (
-      <div>  
-        <DatePicker required label={texts.start_date} variant="outlined"/>
+      <div>
+        <DatePicker required label={texts.start_date} variant="outlined" />
       </div>
-    )
-  }
+    );
+  };
 
   const ProjectLocationSearchBar = () => {
-    return <div></div>
-  }
+    return <div></div>;
+  };
 
-  return <div>
-    {
-      //Don't display a date for ideas. We'll assume the person sharing just had the idea
-      projectData.type !== "idea" && (
-        <ProjectDateAndTimePicker/>
-      )
-    }
-    <ProjectLocationSearchBar/>
-  </div>
+  return (
+    <div>
+      {
+        //Don't display a date for ideas. We'll assume the person sharing just had the idea
+        projectData.type !== "idea" && <ProjectDateAndTimePicker />
+      }
+      <ProjectLocationSearchBar />
+    </div>
+  );
 }

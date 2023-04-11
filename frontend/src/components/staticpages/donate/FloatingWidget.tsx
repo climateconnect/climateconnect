@@ -1,5 +1,5 @@
 import { Container } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import BottomOfPage from "../../hooks/BottomOfPage";
 import ElementOnScreen from "../../hooks/ElementOnScreen";
@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => {
       width: 400,
       height: 660,
       maxHeight: "95vh",
-      [theme.breakpoints.down('lg')]: {
+      [theme.breakpoints.down("lg")]: {
         right: theme.spacing(2),
       },
       zIndex: 2,

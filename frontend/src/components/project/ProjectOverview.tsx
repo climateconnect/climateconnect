@@ -1,6 +1,6 @@
 import { Button, Container, Link, Tooltip, Typography } from "@mui/material";
 import { Theme } from "@mui/material/styles";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import ExploreIcon from "@mui/icons-material/Explore";
 import LanguageIcon from "@mui/icons-material/Language";
 import Linkify from "react-linkify";
@@ -141,7 +141,7 @@ export default function ProjectOverview({
   toggleShowFollowers,
   toggleShowLikes,
   token,
-  user
+  user,
 }) {
   const classes = useStyles({});
 

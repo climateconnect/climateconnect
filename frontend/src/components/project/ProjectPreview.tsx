@@ -1,5 +1,5 @@
 import { Card, CardContent, CardMedia, Link, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import Truncate from "react-truncate";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -120,7 +120,8 @@ export default function ProjectPreview({ project, projectRef, hubUrl, className 
           : `${getLocalePrefix(locale)}/projects/${project.url_slug}${queryString}`
       }
       className={classes.noUnderline}
-      underline="hover">
+      underline="hover"
+    >
       <Card
         className={`${classes.root} ${className}`}
         variant="outlined"

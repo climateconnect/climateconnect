@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import Router from "next/router";
 import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";
@@ -17,7 +17,7 @@ import UserContext from "../context/UserContext";
 import PageNotFound from "../general/PageNotFound";
 import TranslateTexts from "../general/TranslateTexts";
 
-import Alert from '@mui/material/Alert';
+import Alert from "@mui/material/Alert";
 
 import { parseOrganization } from "../../../public/lib/organizationOperations";
 

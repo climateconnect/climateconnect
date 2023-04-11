@@ -10,11 +10,11 @@ import {
   Link,
   Theme,
 } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import Alert from '@mui/material/Alert';
+import Alert from "@mui/material/Alert";
 import React, { useContext, useState } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import {
@@ -165,7 +165,7 @@ const useStyles = makeStyles<Theme, { background_image?: string }>((theme) => ({
     position: "absolute",
     right: theme.spacing(1),
     width: theme.spacing(18),
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       width: theme.spacing(14),
       fontSize: 10,
       textAlign: "center",
@@ -257,7 +257,7 @@ export default function EditAccountPage({
   const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });
   const [editedAccount, setEditedAccount] = React.useState({ ...account });
   const isOrganization = type === "organization" ? true : false;
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down('lg'));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles(editedAccount);
   //used for previewing images in UploadImageDialog
@@ -495,11 +495,7 @@ export default function EditAccountPage({
         i.key === "parent_organization" &&
         (!i.show_if_ticked || editedAccount.info[i.show_if_ticked] === true)
       ) {
-        const renderSearchOption = (props, option) => (
-          <li {...props}>
-            {option.name}
-          </li>
-        );
+        const renderSearchOption = (props, option) => <li {...props}>{option.name}</li>;
         return (
           <div className={classes.infoElement}>
             {i.value && (
@@ -935,7 +931,9 @@ export default function EditAccountPage({
             <InfoOutlinedIcon />
             {texts.if_you_wish_to_delete}
             <div className={classes.spaceStrings}> </div>
-            <Link href={`mailto:${deleteEmail}`} underline="hover">{deleteEmail}</Link>
+            <Link href={`mailto:${deleteEmail}`} underline="hover">
+              {deleteEmail}
+            </Link>
           </Typography>
         )}
       </form>
@@ -1015,21 +1013,21 @@ const editErrorMessage = (
   else {
     const firstSentenceText = texts.someone_has_already_created_organization;
     const secondSentenceText = texts.please_join_org_or_use_diff_name_if_problems_contact;
-    return <>
-      {firstSentenceText}
-      <Link
-        href={getLocalePrefix(locale) + "/organizations/" + existingUrlSlug}
-        target="_blank"
-        underline="hover">
-        {existingName}
-      </Link>
-      {secondSentenceText}
-      <Link
-        href="mailto:support@climateconnect.earth"
-        target="_blank"
-        underline="hover">
-        support@climateconnect.earth
-      </Link>
-    </>;
+    return (
+      <>
+        {firstSentenceText}
+        <Link
+          href={getLocalePrefix(locale) + "/organizations/" + existingUrlSlug}
+          target="_blank"
+          underline="hover"
+        >
+          {existingName}
+        </Link>
+        {secondSentenceText}
+        <Link href="mailto:support@climateconnect.earth" target="_blank" underline="hover">
+          support@climateconnect.earth
+        </Link>
+      </>
+    );
   }
 };

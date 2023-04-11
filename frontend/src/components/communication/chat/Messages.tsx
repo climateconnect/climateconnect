@@ -1,4 +1,4 @@
-import withStyles from '@mui/styles/withStyles';
+import withStyles from "@mui/styles/withStyles";
 import PropTypes from "prop-types";
 import React from "react";
 import InfiniteScroll from "react-infinite-scroller";

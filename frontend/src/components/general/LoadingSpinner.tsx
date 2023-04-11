@@ -1,7 +1,7 @@
 import { Theme, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import CircularProgress from "@mui/material/CircularProgress";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import LoadingContext from "../context/LoadingContext";
 

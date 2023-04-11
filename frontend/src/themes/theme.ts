@@ -39,8 +39,8 @@ const coreTheme = createTheme({
     },
     grey: {
       main: grey[300],
-      dark: grey[400]
-    }
+      dark: grey[400],
+    },
   },
   typography: {
     fontFamily: "Open Sans",
@@ -80,31 +80,31 @@ const theme = createTheme(coreTheme, {
         {
           props: { variant: "contained", color: "grey" },
           style: {
-            color: coreTheme.palette.getContrastText(coreTheme.palette.grey[300])
-          }
+            color: coreTheme.palette.getContrastText(coreTheme.palette.grey[300]),
+          },
         },
         {
           props: { variant: "outlined", color: "grey" },
           style: {
             color: coreTheme.palette.text.primary,
             borderColor:
-            coreTheme.palette.mode === "light"
+              coreTheme.palette.mode === "light"
                 ? "rgba(0, 0, 0, 0.23)"
                 : "rgba(255, 255, 255, 0.23)",
             "&.Mui-disabled": {
-              border: `1px solid ${coreTheme.palette.action.disabledBackground}`
+              border: `1px solid ${coreTheme.palette.action.disabledBackground}`,
             },
             "&:hover": {
               borderColor:
-              coreTheme.palette.mode === "light"
+                coreTheme.palette.mode === "light"
                   ? "rgba(0, 0, 0, 0.23)"
                   : "rgba(255, 255, 255, 0.23)",
               backgroundColor: alpha(
                 coreTheme.palette.text.primary,
                 coreTheme.palette.action.hoverOpacity
-              )
-            }
-          }
+              ),
+            },
+          },
         },
       ],
       defaultProps: {
@@ -118,7 +118,7 @@ const theme = createTheme(coreTheme, {
           paddingTop: coreTheme.spacing(1),
           paddingBottom: coreTheme.spacing(1),
         },
-      }
+      },
     },
     MuiTab: {
       styleOverrides: {
@@ -128,14 +128,14 @@ const theme = createTheme(coreTheme, {
             minWidth: 0,
           },
         },
-      }
+      },
     },
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
           fontSize: 14,
         },
-      }
+      },
     },
     MuiChip: {
       variants: [
@@ -143,21 +143,21 @@ const theme = createTheme(coreTheme, {
           props: { variant: "filled", color: "secondary" },
           style: {
             background: "#e0e0e0",
-            color: coreTheme.palette.secondary.main
-          }
+            color: coreTheme.palette.secondary.main,
+          },
         },
       ],
-      styleOverrides: {        
+      styleOverrides: {
         root: {
           // Have the same border-radius as the other UI controls, like
           // the select dropdowns, buttons, etc.
           borderRadius: 4,
         },
-      }
+      },
     },
     MuiLink: {
       defaultProps: {
-        underline: 'hover',
+        underline: "hover",
       },
     },
   },

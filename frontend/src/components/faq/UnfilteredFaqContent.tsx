@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Tabs, Tab, Divider } from "@mui/material";
 
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 
 import FaqQuestionElement from "./FaqQuestionElement";
 

@@ -1,6 +1,6 @@
 import { Container, Tab, Tabs, Typography } from "@mui/material";
 import { Theme } from "@mui/material/styles";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
     width: 145,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       width: 125,
     },
   },
@@ -114,8 +114,8 @@ export default function ProjectPageRoot({
   });
 
   const screenSize = {
-    belowTiny: useMediaQuery<Theme>((theme) => theme.breakpoints.down('sm')),
-    belowSmall: useMediaQuery<Theme>((theme) => theme.breakpoints.down('md')),
+    belowTiny: useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm")),
+    belowSmall: useMediaQuery<Theme>((theme) => theme.breakpoints.down("md")),
     belowMedium: showSimilarProjects
       ? useMediaQuery<Theme>("(max-width:1300px)")
       : useMediaQuery<Theme>("(max-width:1100px)"),

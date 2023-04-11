@@ -1,5 +1,5 @@
 import { Button, Link } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../../public/lib/apiOperations";
@@ -20,8 +20,8 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
     "&:hover": {
-      background: "rgba(0,0,0,0.15)"
-    }
+      background: "rgba(0,0,0,0.15)",
+    },
   },
   alert: {
     position: "absolute",
@@ -85,7 +85,7 @@ export default function FeedbackButton({ justLink, children }: any) {
           variant="contained"
           size="small"
           classes={{
-            root: classes.root
+            root: classes.root,
           }}
           onClick={handleOpenDialog}
         >

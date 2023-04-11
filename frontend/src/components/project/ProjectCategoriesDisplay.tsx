@@ -1,5 +1,5 @@
 import { Theme, Tooltip, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import ExploreIcon from "@mui/icons-material/Explore";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";

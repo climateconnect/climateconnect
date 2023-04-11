@@ -1,5 +1,5 @@
 import { Collapse, Container, Theme, Typography, useMediaQuery } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React, { useContext } from "react";
@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     paddingLeft: 0,
     paddingRight: 0,
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       marginTop: theme.spacing(2),
     },
   },
@@ -23,16 +23,16 @@ const useStyles = makeStyles((theme) => ({
     backgroundRepeat: "no-repeat",
     backgroundSize: "contain",
     width: "100%",
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.down("lg")]: {
       minHeight: 350,
       backgroundSize: "cover",
       backgroundPosition: "-300px 5px",
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       minHeight: 220,
       backgroundPosition: "-150px 5px",
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       minHeight: 180,
     },
   },
@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(7),
     paddingBottom: theme.spacing(3),
     paddingTop: theme.spacing(3),
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       flexDirection: "column",
       paddingLeft: 0,
       paddingTop: theme.spacing(1),
@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 330,
     fontWeight: 600,
     textAlign: "center",
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       width: "100%",
       maxWidth: 600,
       paddingBottom: theme.spacing(3),
@@ -110,7 +110,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Challenge({ headlineClass, showContent, className }) {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down('sm'));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "about", locale: locale, classes: classes });
   return (

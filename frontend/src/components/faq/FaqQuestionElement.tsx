@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import React, { useState } from "react";
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => {
       fontWeight: "bold",
       fontSize: 19,
       width: "100%",
-      [theme.breakpoints.down('sm')]: {
+      [theme.breakpoints.down("sm")]: {
         fontSize: 16,
         fontWeight: "normal",
       },
@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => {
       paddingRight: theme.spacing(3),
       fontSize: 17,
       lineHeight: 1.5,
-      [theme.breakpoints.down('sm')]: {
+      [theme.breakpoints.down("sm")]: {
         fontSize: 16,
       },
     },

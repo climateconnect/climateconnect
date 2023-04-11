@@ -1,5 +1,5 @@
 import { Chip, Theme, Typography, useMediaQuery } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useContext } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -140,8 +140,8 @@ export default function RankingQuestionTypeBody({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const { showFeedbackMessage } = useContext(FeedbackContext);
-  const isSmallerThanLg = theme.breakpoints.down('xl');
-  const isSmallerThanMd = theme.breakpoints.down('lg');
+  const isSmallerThanLg = theme.breakpoints.down("xl");
+  const isSmallerThanMd = theme.breakpoints.down("lg");
   const isMobileScreen = useMediaQuery<Theme>("(max-width:760px)");
   const texts = getTexts({ page: "climatematch", locale: locale, climateMatchQuestion: question });
   // This will be used to set weight for each answer

@@ -1,5 +1,5 @@
 import { Button, Theme, Typography, useMediaQuery } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import React, { useContext } from "react";
 import { parseLocation } from "../../../../public/lib/locationOperations";
@@ -59,7 +59,7 @@ export default function IdeaMetadataStep({
   const isTinyScreen = useMediaQuery<Theme>("(max-width:400px");
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale });
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down('md'));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   return (
     <form onSubmit={onSubmitIdea}>
       <Typography className={classes.motivationText}>

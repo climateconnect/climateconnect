@@ -1,4 +1,4 @@
-import { ClassNameMap } from '@mui/styles';
+import { ClassNameMap } from "@mui/styles";
 import { User, CcLocale } from "../../src/types";
 import getAboutTexts from "./about_texts";
 import account_texts from "./account_texts.json";

@@ -1,5 +1,5 @@
 import { Card, IconButton, Link, Theme, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -87,7 +87,8 @@ export default function MiniHubPreview({
       href={hub && getLocalePrefix(locale) + `/hubs/${hub.url_slug}`}
       target="_blank"
       className={classes.link}
-      underline="hover">
+      underline="hover"
+    >
       <Card className={classes.root}>
         {editMode && (
           <IconButton className={classes.closeIconButton} size="small" onClick={handleRemoveHub}>

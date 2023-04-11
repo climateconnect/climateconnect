@@ -1,7 +1,7 @@
 import React from "react";
 import { Typography, Link, Theme } from "@mui/material";
 
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 
 const useStyles = makeStyles<Theme, { centerContent?: boolean }>((theme) => ({
   infoLinkBox: (props) => ({
@@ -11,7 +11,7 @@ const useStyles = makeStyles<Theme, { centerContent?: boolean }>((theme) => ({
     marginLeft: props.centerContent ? theme.spacing(5) : 0,
     background: "#E6E5E5",
     padding: theme.spacing(3),
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       width: "100%",
       maxWidth: 700,
       margin: "0 auto",

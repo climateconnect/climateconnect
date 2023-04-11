@@ -1,7 +1,7 @@
 import React from "react";
 import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
 import { Tab, Tabs } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import ContactAmbassadorButton from "../hub/ContactAmbassadorButton";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";

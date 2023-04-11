@@ -80,9 +80,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: (
         <>
           Go to{" "}
-          <Link
-            href={getLocalePrefix(locale) + "/projects/" + project?.url_slug}
-            underline="hover">
+          <Link href={getLocalePrefix(locale) + "/projects/" + project?.url_slug} underline="hover">
             the project page
           </Link>{" "}
           and click join to join it.
@@ -91,9 +89,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: (
         <>
           Gehe auf{" "}
-          <Link
-            href={getLocalePrefix(locale) + "/projects/" + project?.url_slug}
-            underline="hover">
+          <Link href={getLocalePrefix(locale) + "/projects/" + project?.url_slug} underline="hover">
             die Projektseite
           </Link>{" "}
           und klicke auf {"Mitmachen"}.

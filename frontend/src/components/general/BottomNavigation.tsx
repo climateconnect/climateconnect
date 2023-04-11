@@ -1,5 +1,5 @@
 import { Button, CircularProgress } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => {
     },
     nextStepButtonsContainer: {
       float: "right",
-      [theme.breakpoints.down('sm')]: {
+      [theme.breakpoints.down("sm")]: {
         float: "none",
         marginTop: theme.spacing(2),
       },
@@ -59,7 +59,12 @@ export default function BottomNavigation({
   return (
     <div className={`${classes.navigationButtonWrapper} ${className}`}>
       {onClickPreviousStep && (
-        <Button variant="contained" color="grey" className={classes.backButton} onClick={onClickPreviousStep}>
+        <Button
+          variant="contained"
+          color="grey"
+          className={classes.backButton}
+          onClick={onClickPreviousStep}
+        >
           {texts.back}
         </Button>
       )}

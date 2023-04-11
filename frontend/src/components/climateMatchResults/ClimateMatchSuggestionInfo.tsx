@@ -1,5 +1,5 @@
 import { Theme, Typography, useMediaQuery } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import React, { useContext } from "react";
@@ -99,7 +99,7 @@ const useStyles = makeStyles<Theme, { displayContactButton?: boolean }>((theme) 
   },
   contactCreatorButton: {
     marginTop: theme.spacing(2),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       width: "100%",
       marginLeft: theme.spacing(2),
       marginRight: theme.spacing(2),
@@ -109,7 +109,7 @@ const useStyles = makeStyles<Theme, { displayContactButton?: boolean }>((theme) 
     display: "flex",
     justifyContent: "flex-end",
     marginBottom: theme.spacing(2),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       justifyContent: "center",
     },
   },
@@ -130,7 +130,7 @@ export default function ClimateMatchSuggestionInfo({
 }: any) {
   const classes = useStyles({ displayContactButton: displayContactButton });
   const suggestionInfoUnderImage = isInSlider || useMediaQuery<Theme>("(max-width:1525px)");
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down('sm'));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   return (
     <div className={classes.wrapper}>
       <div className={`${className} ${classes.root}`}>

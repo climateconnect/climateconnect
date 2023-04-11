@@ -7,7 +7,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useState } from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -66,7 +66,7 @@ function CommentInput({
   const [curComment, setCurComment] = React.useState("");
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "communication", locale: locale });
-  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down('md'));
+  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const [showSendHelper, setShowSendHelper] = useState(false);
 
   const onCurCommentChange = (e) => {
@@ -155,7 +155,8 @@ function CommentInput({
                   //TODO(unused) variant="contained"
                   className={classes.commentButton}
                   onClick={(event) => handleSendComment(event)}
-                  size="large">
+                  size="large"
+                >
                   <SendIcon /*TODO(undefined) className={classes.sendButtonIcon} */ />
                 </IconButton>
               </Tooltip>

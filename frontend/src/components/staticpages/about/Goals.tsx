@@ -1,5 +1,5 @@
 import { Container, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     marginTop: theme.spacing(3),
     position: "relative",
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       justifyContent: "center",
       height: 300,
     },
@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     width: "50%",
     paddingLeft: theme.spacing(15),
     paddingRight: theme.spacing(5),
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       position: "absolute",
       width: 325,
       height: 300,
@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-around",
     paddingRight: theme.spacing(15),
     paddingLeft: theme.spacing(5),
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       padding: theme.spacing(2),
       justifyContent: "space-between",
       height: "100%",

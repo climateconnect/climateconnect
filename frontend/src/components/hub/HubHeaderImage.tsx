@@ -1,5 +1,5 @@
 import { Theme, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -11,7 +11,7 @@ const useStyles = makeStyles<Theme, any>((theme) => ({
     backgroundPosition: "bottom center",
     zIndex: -1,
     width: "100%",
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       minHeight: 100,
       backgroundSize: "cover",
     },

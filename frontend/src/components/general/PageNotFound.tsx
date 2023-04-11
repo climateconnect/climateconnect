@@ -1,5 +1,5 @@
 import { Link, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -34,7 +34,8 @@ export default function PageNotFound({
           href={
             returnLink ? getLocalePrefix(locale) + returnLink : getLocalePrefix(locale) + "/browse"
           }
-          underline="hover">
+          underline="hover"
+        >
           {returnText ? returnText : texts.return_to_home}
         </Link>
       </p>

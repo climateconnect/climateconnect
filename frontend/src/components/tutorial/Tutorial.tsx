@@ -1,5 +1,5 @@
 import { Button, Fade, Theme, Tooltip, useMediaQuery } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useEffect, useRef } from "react";
 import Cookies from "universal-cookie";
 import get_steps from "../../../public/data/tutorial_steps";
@@ -26,8 +26,8 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
     "&:hover": {
-      background: "rgba(0,0,0,0.15)"
-    }
+      background: "rgba(0,0,0,0.15)",
+    },
   },
   fixedPosition: {
     position: "fixed",
@@ -48,7 +48,7 @@ export default function Tutorial({
   pointerRefs,
   typesByTabValue,
 }) {
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down('md'));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const classes = useStyles();
   const cookies = new Cookies();
   const tutorialCookie = cookies.get("finishedTutorialSteps");

@@ -1,5 +1,5 @@
 import { Button, Container, Theme, Typography, useMediaQuery } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import RestoreIcon from "@mui/icons-material/Restore";
 import React, { useContext, useRef } from "react";
 import { capitalizeFirstLetter } from "../../../public/lib/parsingOperations";
@@ -14,7 +14,7 @@ const useStyles = makeStyles<Theme, { unfixButtonBar: boolean; isLoading: boolea
   root: (props) => ({
     position: "relative",
     paddingBottom: theme.spacing(4),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       paddingBottom: theme.spacing(2),
     },
     visibility: props.isLoading ? "hidden" : undefined,
@@ -23,7 +23,7 @@ const useStyles = makeStyles<Theme, { unfixButtonBar: boolean; isLoading: boolea
     paddingTop: theme.spacing(4),
     maxWidth: 1050,
     margin: "0 auto",
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       paddingTop: theme.spacing(2),
     },
   },
@@ -32,7 +32,7 @@ const useStyles = makeStyles<Theme, { unfixButtonBar: boolean; isLoading: boolea
   },
   headline: {
     marginBottom: theme.spacing(4),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       marginBottom: theme.spacing(2),
     },
   },
@@ -69,12 +69,12 @@ const useStyles = makeStyles<Theme, { unfixButtonBar: boolean; isLoading: boolea
     justifyContent: "space-between",
     margin: "0 auto",
     marginTop: theme.spacing(4),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       marginTop: theme.spacing(1),
     },
   },
   fixedOnMobile: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       position: "fixed",
       bottom: 0,
       width: "auto",
@@ -108,7 +108,7 @@ export default function WelcomeToClimateMatch({
   });
   const classes = useStyles({ unfixButtonBar: unfixButtonBar, isLoading: isLoading });
   const { locale } = useContext(UserContext);
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down('sm'));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
 
   const texts = getTexts({
     page: "climatematch",

@@ -14,7 +14,7 @@ import { getAllHubs } from "../../public/lib/hubOperations";
 import { useMediaQuery } from "@mui/material";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { Theme } from "@mui/material/styles";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import ProjectSideBar from "../../src/components/project/ProjectSideBar";
 
 type StyleProps = {
@@ -26,13 +26,13 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
   },
   mainContent: (props) => ({
     width: props.showSimilarProjects ? "80%" : "100%",
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       width: "100%",
     },
   }),
   secondaryContent: (props) => ({
     width: props.showSimilarProjects ? "20%" : "0%",
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       width: "0%",
       marginTop: theme.spacing(0),
       marginRight: theme.spacing(0),
@@ -116,7 +116,7 @@ export default function ProjectPage({
   const [message, setMessage] = useState({});
   const [isUserFollowing, setIsUserFollowing] = useState(following);
   const [isUserLiking, setIsUserLiking] = useState(liking);
-  const [requestedToJoinProject, setRequestedToJoinProject] = useState(hasRequestedToJoin)
+  const [requestedToJoinProject, setRequestedToJoinProject] = useState(hasRequestedToJoin);
   const [followingChangePending, setFollowingChangePending] = useState(false);
   const [likingChangePending, setLikingChangePending] = useState(false);
   const [numberOfLikes, setNumberOfLikes] = useState(project?.number_of_likes);
@@ -132,7 +132,7 @@ export default function ProjectPage({
     setShowSimilarProjects(!showSimilarProjects);
   };
 
-  const smallScreenSize = useMediaQuery<Theme>((theme) => theme.breakpoints.down('md'));
+  const smallScreenSize = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
 
   // Handle remove bell icon notification
   const { notifications, setNotificationsRead, refreshNotifications } = useContext(UserContext);
@@ -177,8 +177,8 @@ export default function ProjectPage({
   };
 
   const handleJoinRequest = (newValue) => {
-    setRequestedToJoinProject(newValue)
-  }
+    setRequestedToJoinProject(newValue);
+  };
 
   const handleWindowClose = (e) => {
     if (
@@ -200,7 +200,7 @@ export default function ProjectPage({
   });
 
   const hubsSubHeaderRef = useRef(null);
-  const tinyScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down('sm'));
+  const tinyScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
 
   return (
     <WideLayout

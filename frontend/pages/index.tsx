@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { IconButton } from "@mui/material";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
@@ -31,13 +31,13 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: theme.spacing(2),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       fontSize: 22,
     },
   },
   explainerBox: {
     marginTop: theme.spacing(6),
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       marginTop: theme.spacing(2),
     },
   },
@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     marginTop: theme.spacing(10),
     marginBottom: theme.spacing(10),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       marginTop: theme.spacing(0),
       marginBottom: theme.spacing(7),
     },
@@ -188,7 +188,8 @@ export default function Index() {
             className={classes.scrollToTop}
             onClick={scrollToTop}
             ref={scrollToTopRef}
-            size="large">
+            size="large"
+          >
             <ArrowUpwardIcon />
           </IconButton>
         )}

@@ -1,5 +1,5 @@
 import { Container, Theme, Typography, useMediaQuery } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -14,14 +14,14 @@ const useStyles = makeStyles((theme) => ({
     height: 700,
     marginTop: theme.spacing(-20),
     paddingTop: theme.spacing(23),
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       height: 850,
     },
   },
   content: {
     display: "flex",
     alignItems: "center",
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       flexDirection: "column",
     },
   },
@@ -39,16 +39,16 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
     position: "relative",
-    [theme.breakpoints.down('xl')]: {
+    [theme.breakpoints.down("xl")]: {
       marginLeft: -100,
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       marginLeft: -300,
       marginTop: -100,
       minWidth: 400,
       justifyContent: "flex-end",
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       maxWidth: 475,
     },
   },
@@ -61,14 +61,14 @@ const useStyles = makeStyles((theme) => ({
     backgroundRepeat: "no-repeat",
     backgroundSize: "contain",
     backgroundPosition: "right center",
-    [theme.breakpoints.down('xl')]: {
+    [theme.breakpoints.down("xl")]: {
       maxWidth: "65%",
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       maxWidth: "65%",
       marginRight: 50,
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       maxWidth: "55%",
     },
     ["@media (max-width: 400px)"]: {
@@ -83,7 +83,7 @@ const useStyles = makeStyles((theme) => ({
   textContainer: {
     color: "white",
     marginLeft: theme.spacing(5),
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       marginLeft: 0,
     },
   },
@@ -97,7 +97,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(-5),
     marginTop: theme.spacing(5),
     zIndex: 10,
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       justifyContent: "flex-end",
       marginBottom: 0,
     },
@@ -105,11 +105,11 @@ const useStyles = makeStyles((theme) => ({
   bePartOfCommunityText: {
     fontSize: 18,
     maxWidth: 580,
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       fontWeight: 600,
       fontSize: 17,
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       fontSize: 15,
     },
   },
@@ -119,11 +119,11 @@ const useStyles = makeStyles((theme) => ({
     right: 150,
     width: 120,
     height: 80,
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       top: -60,
       right: 200,
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       display: "none",
     },
   },
@@ -131,7 +131,7 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     top: -80,
     right: 0,
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       top: -60,
     },
   },
@@ -139,7 +139,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function JoinCommunityBox({ h1ClassName }) {
   const classes = useStyles();
-  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down('md'));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "landing_page", locale: locale, classes: classes });
   return (

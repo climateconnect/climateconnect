@@ -1,5 +1,5 @@
 import { Link, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 
 import getTexts from "../../../public/texts/texts";
@@ -47,7 +47,8 @@ export default function StatBox({ title, stats }) {
           className={classes.link}
           target="_blank"
           href={stats[0]?.source_link}
-          underline="hover">
+          underline="hover"
+        >
           {stats[0]?.source_name}
         </Link>
       </Typography>

@@ -1,5 +1,5 @@
 import { IconButton, Link, Tooltip } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
@@ -56,7 +56,8 @@ export default function ChatHeader({
           <IconButton
             className={classes.backIcon}
             href={getLocalePrefix(locale) + "/inbox"}
-            size="large">
+            size="large"
+          >
             <KeyboardArrowLeftIcon />
           </IconButton>
         </Tooltip>
@@ -73,7 +74,8 @@ export default function ChatHeader({
           <IconButton
             className={classes.manageMembersButton}
             onClick={handleToggleMemberManagementExpanded}
-            size="large">
+            size="large"
+          >
             <GroupAddIcon />
           </IconButton>
         </Tooltip>

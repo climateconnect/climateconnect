@@ -1,5 +1,5 @@
 import { Container, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
@@ -12,14 +12,14 @@ const useStyles = makeStyles((theme) => ({
   wrapper: {
     display: "flex",
     alignItems: "center",
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       flexDirection: "column",
     },
   },
   textBlock: {
     color: "white",
     fontWeight: 600,
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       textAlign: "center",
       fontWeight: 500,
       fontSize: 18,
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
   textWrapper: {
     marginRight: theme.spacing(3),
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       marginRight: 0,
       marginTop: theme.spacing(3),
     },
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     padding: theme.spacing(6),
     maxHeight: 300,
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       maxHeight: 400,
       padding: 0,
       marginTop: theme.spacing(7),
@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   hoverImage: {
     width: 300,
     height: 200,
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       width: "100%",
       height: "auto",
     },

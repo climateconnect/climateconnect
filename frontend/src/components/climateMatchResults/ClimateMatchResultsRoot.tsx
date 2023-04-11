@@ -1,5 +1,5 @@
 import { Button, Container, Theme, useMediaQuery } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import SettingsBackupRestoreIcon from "@mui/icons-material/SettingsBackupRestore";
 import Router from "next/router";
@@ -78,8 +78,8 @@ export default function ClimateMatchResultsRoot() {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "climatematch", locale: locale });
   const headerContainerRef = useRef(null);
-  const screenIsSmallerThanMd = useMediaQuery<Theme>((theme) => theme.breakpoints.down('lg'));
-  const screenIsSmallerThanSm = useMediaQuery<Theme>((theme) => theme.breakpoints.down('md'));
+  const screenIsSmallerThanMd = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
+  const screenIsSmallerThanSm = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   useEffect(() => {
     (async () => {
       try {

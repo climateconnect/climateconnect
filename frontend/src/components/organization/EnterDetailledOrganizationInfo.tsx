@@ -1,5 +1,5 @@
-import makeStyles from '@mui/styles/makeStyles';
-import Alert from '@mui/material/Alert';
+import makeStyles from "@mui/styles/makeStyles";
+import Alert from "@mui/material/Alert";
 import Router from "next/router";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";

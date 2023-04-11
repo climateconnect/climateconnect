@@ -1,5 +1,5 @@
 import { Avatar, Link, Theme, Tooltip } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { durationFromMiliseconds } from "../../../../public/lib/dateOperations";
@@ -60,7 +60,8 @@ export default function DonorForestEntry({ donor }) {
         <Link
           href={`${getLocalePrefix(locale)}/profiles/${donor.url_slug}`}
           target="_blank"
-          underline="hover">
+          underline="hover"
+        >
           <Avatar
             /* TODO(unused) size="large" */
             src={getImageUrl(donor.thumbnail_image ?? donor.image)}

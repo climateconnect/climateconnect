@@ -1,6 +1,6 @@
 import { Button, Container, Divider, Typography, useMediaQuery } from "@mui/material";
 import { Theme } from "@mui/material/styles";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import NextCookies from "next-cookies";
@@ -239,8 +239,8 @@ function OrganizationLayout({
 
   const membersWithAdditionalInfo = getMembersWithAdditionalInfo(members);
 
-  const isTinyScreen = useMediaQuery<Theme>(theme.breakpoints.down('sm'));
-  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down('md'));
+  const isTinyScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   return (
     <AccountPage
       numberOfFollowers={numberOfFollowers}
@@ -309,7 +309,8 @@ function OrganizationLayout({
                 href={
                   getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug
                 }
-                size="large">
+                size="large"
+              >
                 <GroupAddIcon className={classes.button} color="primary" />
               </IconButton>
             ) : (
