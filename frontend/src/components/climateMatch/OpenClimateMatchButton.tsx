@@ -1,4 +1,4 @@
-import { Badge, Button } from "@material-ui/core";
+import { Badge, Button } from "@mui/material";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";

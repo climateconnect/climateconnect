@@ -1,4 +1,5 @@
-import { makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
+import { Theme, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getPitchElements from "../../../public/data/pitch_elements";
 import getTexts from "../../../public/texts/texts";
@@ -14,7 +15,7 @@ const useStyles = makeStyles<Theme, { alternate?: boolean }>((theme) => ({
   },
   pitchElementsWrapper: {
     marginTop: theme.spacing(8),
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       marginTop: theme.spacing(5),
     },
   },
@@ -28,7 +29,7 @@ const useStyles = makeStyles<Theme, { alternate?: boolean }>((theme) => ({
     textAlign: "center",
     marginBottom: theme.spacing(3),
     position: "relative",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       flexDirection: "column",
       justifyContent: "space-between",
       minHeight: 500,
@@ -49,7 +50,7 @@ const useStyles = makeStyles<Theme, { alternate?: boolean }>((theme) => ({
     justifyContent: "center",
     marginRight: props.alternate ? 0 : theme.spacing(3),
     marginLeft: props.alternate ? theme.spacing(3) : 0,
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       background: "none",
       height: "auto",
       maxHeight: 230,
@@ -102,7 +103,7 @@ const useStyles = makeStyles<Theme, { alternate?: boolean }>((theme) => ({
   },
   pitchElementText: {
     maxWidth: 500,
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       paddingBottom: theme.spacing(4),
     },
   },
@@ -112,7 +113,7 @@ const useStyles = makeStyles<Theme, { alternate?: boolean }>((theme) => ({
     top: -30,
     width: 120,
     height: 80,
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       left: -60,
     },
   },
@@ -143,7 +144,7 @@ const useStyles = makeStyles<Theme, { alternate?: boolean }>((theme) => ({
     position: "absolute",
     bottom: -60,
     left: 0,
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       display: "none",
     },
   },
@@ -154,7 +155,7 @@ export default function PitchBox({ h1ClassName, className }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "about", locale: locale });
   const pitch_elements = getPitchElements(texts);
-  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   return (
     <div className={`${classes.root} ${className}`}>
       {!isMediumScreen && (

@@ -1,4 +1,5 @@
-import { Container, makeStyles } from "@material-ui/core";
+import { Container } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import DonorForestEntry from "./DonorForestEntry";
 
@@ -12,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     justifyItems: "center",
     "& div": {
       gridColumn: "span 2",
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down("md")]: {
         gridColumn: "span 3",
       },
     },
@@ -22,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
       },
     },
     "& div:nth-child(7n+5), & div:nth-child(7n+6), div:nth-child(7n+7)": {
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down("md")]: {
         gridColumn: "span 4",
       },
     },

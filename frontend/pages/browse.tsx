@@ -1,5 +1,5 @@
 // 3rd party or built-in imports
-import useScrollTrigger from "@material-ui/core/useScrollTrigger";
+import useScrollTrigger from "@mui/material/useScrollTrigger";
 import NextCookies from "next-cookies";
 import React, { useContext, useRef, useState } from "react";
 import Cookies from "universal-cookie";

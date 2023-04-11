@@ -1,6 +1,7 @@
-import { Grid, Theme, Typography } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { makeStyles } from "@material-ui/core/styles";
+import { Theme, Typography } from "@mui/material";
+import Grid from "@mui/material/Unstable_Grid2";
+import CircularProgress from "@mui/material/CircularProgress";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import LoadingContext from "../context/LoadingContext";
 
@@ -39,7 +40,7 @@ const LoadingSpinner = ({ isLoading = false, className, color, noMarginTop, mess
       <Grid
         direction="column"
         container
-        justify="center"
+        justifyContent="center"
         alignContent="center"
         className={className}
       >
@@ -57,7 +58,7 @@ const LoadingSpinner = ({ isLoading = false, className, color, noMarginTop, mess
   }
 
   return (
-    <Grid container justify="center" className={className}>
+    <Grid container justifyContent="center" className={className}>
       <CircularProgress className={classes.spinner} />
     </Grid>
   );

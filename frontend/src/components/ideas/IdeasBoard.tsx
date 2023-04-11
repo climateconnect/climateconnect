@@ -1,4 +1,5 @@
-import { makeStyles, Theme, useMediaQuery } from "@material-ui/core";
+import { Theme, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useEffect, useState } from "react";
 import { getCommentsObjectAfterAddingComments } from "../../../public/lib/communicationOperations";
 import { getInfoMetadataByType } from "../../../public/lib/parsingOperations";
@@ -50,7 +51,7 @@ export default function IdeasBoard({
   const [ideaContainerEl, setIdeaContainerEl] = useState<HTMLDivElement | null>(null);
   const containerOffsetTop = ElementSpaceToTop({ el: ideaContainerEl });
   const classes = useStyles({ ideaOpen: idea !== null });
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   useEffect(
     function () {
       if (idea && ideas.filter((i) => i.url_slug === idea.url_slug).length === 1) {

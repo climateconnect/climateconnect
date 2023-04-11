@@ -1,4 +1,5 @@
-import { Button, makeStyles, TextField, Typography, useMediaQuery } from "@material-ui/core";
+import { Button, TextField, Typography, useMediaQuery, Theme } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -18,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
       height: 56,
       width: 150,
     },
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       width: 250,
       marginTop: theme.spacing(1),
       marginLeft: 0,
@@ -28,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("md")]: {
       width: 340,
     },
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       width: 250,
     },
   },
@@ -48,8 +49,8 @@ export default function SubscribeToNewsletterDialog({ onClose, open }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "communication", locale: locale });
   const [emailAddress, setEmailAddress] = React.useState("");
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
-  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const [loading, setLoading] = React.useState(false);
   const handleSubscribe = async (e) => {
     e.preventDefault();

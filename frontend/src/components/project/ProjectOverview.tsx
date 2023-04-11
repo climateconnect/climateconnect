@@ -1,9 +1,10 @@
-import { Button, Container, Link, Tooltip, Typography } from "@material-ui/core";
-import { makeStyles, Theme } from "@material-ui/core/styles";
-import ExploreIcon from "@material-ui/icons/Explore";
-import LanguageIcon from "@material-ui/icons/Language";
+import { Button, Container, Link, Tooltip, Typography } from "@mui/material";
+import { Theme } from "@mui/material/styles";
+import makeStyles from "@mui/styles/makeStyles";
+import ExploreIcon from "@mui/icons-material/Explore";
+import LanguageIcon from "@mui/icons-material/Language";
 import Linkify from "react-linkify";
-import PlaceIcon from "@material-ui/icons/Place";
+import PlaceIcon from "@mui/icons-material/Place";
 import React, { useEffect, useState } from "react";
 
 // Relative imports

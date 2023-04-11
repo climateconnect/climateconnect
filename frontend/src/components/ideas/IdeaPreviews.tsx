@@ -1,4 +1,5 @@
-import { Grid, makeStyles } from "@material-ui/core";
+import Grid from "@mui/material/Unstable_Grid2";
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import NoItemsFound from "../browse/NoItemsFound";
@@ -14,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   noItemsFound: {
-    marginTop: `${theme.spacing(1)}px !important`,
+    marginTop: `${theme.spacing(1)} !important`,
     marginBottom: theme.spacing(2),
     width: "100%",
   },

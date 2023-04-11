@@ -1,5 +1,5 @@
-import { IconButton, TextField, Tooltip, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { IconButton, TextField, Tooltip, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 
 import getTexts from "../../../public/texts/texts";
@@ -43,7 +43,7 @@ export default function AddSummarySection({
       <Typography component="h2" variant="subtitle2" color="primary" className={subHeaderClassname}>
         {texts.summarize_your_project}*
         <Tooltip title={helpTexts.short_description} className={toolTipClassName}>
-          <IconButton>
+          <IconButton size="large">
             <ToolTipIcon />
           </IconButton>
         </Tooltip>

@@ -2,7 +2,7 @@
 //The other part comes from webflow pages that our design team built
 //The skeleton for this page was built using this tutorial: https://dev.to/kennedyrose/integrating-webflow-and-next-js-39kk
 
-import { makeStyles } from "@material-ui/core";
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import WebflowPage from "../../src/components/webflow/WebflowPage";
 import { retrievePage } from "../../src/utils/webflow";

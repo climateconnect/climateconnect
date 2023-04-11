@@ -1,11 +1,5 @@
-import {
-  Container,
-  LinearProgress,
-  makeStyles,
-  Theme,
-  Typography,
-  useMediaQuery,
-} from "@material-ui/core";
+import { Container, LinearProgress, Theme, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { String } from "lodash";
 import React, { useContext } from "react";
 import getTexts from "../../../../public/texts/texts";
@@ -31,7 +25,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
     left: 0,
     width: "100%",
     height: props.embedded ? "auto" : 95,
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       position: props.embedded ? undefined : "fixed",
       top: "auto",
       bottom: 42,
@@ -59,8 +53,8 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
   barContainer: (props) => ({
     height: props.small || props.isInWidget ? 15 : 25,
     borderRadius: 15,
-    backgroundColor: theme.palette.grey[theme.palette.type === "light" ? 200 : 700],
-    [theme.breakpoints.down("xs")]: {
+    backgroundColor: theme.palette.grey[theme.palette.mode === "light" ? 200 : 700],
+    [theme.breakpoints.down("sm")]: {
       height: 15,
     },
   }),
@@ -90,7 +84,7 @@ export default function DonationGoal({
     isInWidget: isInWidget,
   });
   const { locale } = useContext(UserContext);
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const texts = getTexts({ page: "donate", locale: locale, classes: classes, goal: goal });
   return (
     <div className={`${className} ${classes.root}`}>

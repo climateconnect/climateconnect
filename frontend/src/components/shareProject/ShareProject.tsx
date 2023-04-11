@@ -1,5 +1,5 @@
-import { TextField, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { TextField, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useRef } from "react";
 import { Project, Organization } from "../../types";
 import ProjectTypeSelector from "./ProjectTypeSelector";

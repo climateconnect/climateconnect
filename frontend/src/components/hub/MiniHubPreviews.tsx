@@ -1,4 +1,5 @@
-import { Grid, makeStyles } from "@material-ui/core";
+import Grid from "@mui/material/Unstable_Grid2";
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import MiniHubPreview from "./MiniHubPreview";
 

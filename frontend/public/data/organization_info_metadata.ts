@@ -1,9 +1,9 @@
-import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
-import DescriptionIcon from "@material-ui/icons/Description";
-import LanguageIcon from "@material-ui/icons/Language";
-import PlaceIcon from "@material-ui/icons/Place";
-import SchoolIcon from "@material-ui/icons/School";
-import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import DescriptionIcon from "@mui/icons-material/Description";
+import LanguageIcon from "@mui/icons-material/Language";
+import PlaceIcon from "@mui/icons-material/Place";
+import SchoolIcon from "@mui/icons-material/School";
+import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import getTexts from "../texts/texts";
 
 export default function getOrganizationInfoMetadata(locale, organization?, isEditing?) {

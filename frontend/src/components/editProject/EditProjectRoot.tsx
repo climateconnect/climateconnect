@@ -1,5 +1,6 @@
-import { Container, Divider, Typography, useMediaQuery } from "@material-ui/core";
-import { makeStyles, Theme } from "@material-ui/core/styles";
+import { Container, Divider, Typography, useMediaQuery } from "@mui/material";
+import { Theme } from "@mui/material/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import Router from "next/router";
 import React, { useContext, useRef, useState } from "react";
 
@@ -50,7 +51,7 @@ export default function EditProjectRoot({
   const classes = useStyles();
   const { locale, locales } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
   const draftReqiredProperties = {
     name: texts.project_name,

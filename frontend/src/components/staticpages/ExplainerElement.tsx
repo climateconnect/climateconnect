@@ -1,5 +1,7 @@
 import React, { PropsWithChildren } from "react";
-import { Typography, makeStyles, Theme } from "@material-ui/core";
+import { Typography, Theme } from "@mui/material";
+
+import makeStyles from "@mui/styles/makeStyles";
 
 const useStyles = makeStyles<Theme, { horizontal?: boolean }>((theme) => ({
   explainerElementWrapper: (props) => ({

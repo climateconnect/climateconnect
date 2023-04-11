@@ -6,16 +6,16 @@ import {
   IconButton,
   LinearProgress,
   Link,
-  makeStyles,
   Table,
   TableBody,
   TableCell,
   TableRow,
   Tooltip,
   Typography,
-} from "@material-ui/core";
-import BlockIcon from "@material-ui/icons/Block";
-import CheckIcon from "@material-ui/icons/Check";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import BlockIcon from "@mui/icons-material/Block";
+import CheckIcon from "@mui/icons-material/Check";
 import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";
 
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 600,
   },
   followedText: {
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       fontSize: 13,
     },
   },
@@ -206,6 +206,7 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
         <Link
           className={classes.user}
           href={getLocalePrefix(locale) + "/profiles/" + requester.user.url_slug}
+          underline="hover"
         >
           <Avatar
             className={classes.avatar}
@@ -225,6 +226,7 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
             color="primary"
             disableRipple
             onClick={() => handleRequest(true)}
+            size="large"
           >
             <CheckIcon />
           </IconButton>
@@ -235,6 +237,7 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
             aria-label="deny project request"
             disableRipple
             onClick={() => handleRequest(false)}
+            size="large"
           >
             <BlockIcon />
           </IconButton>
