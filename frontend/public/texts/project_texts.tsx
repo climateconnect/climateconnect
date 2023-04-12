@@ -976,5 +976,13 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "We notified the project owner that you would like to join this project.",
       de: "Die Projektverantwortlichen wurden benachrichtigt, dass du gerne mitmachen möchtest.",
     },
+    event_start_date: {
+      en: "Event Start Time",
+      de: "Start des Events"
+    },
+    event_finish_date: {
+      en: "Event Finish Time",
+      de: "Ende des Events"
+    }
   };
 }

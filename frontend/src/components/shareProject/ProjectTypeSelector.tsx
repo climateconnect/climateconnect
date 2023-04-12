@@ -1,11 +1,5 @@
-import {
-  Card,
-  Grid,
-  makeStyles,
-  Radio,
-  RadioGroup,
-  Typography,
-} from "@material-ui/core";
+import { Card, Grid, Radio, RadioGroup, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 

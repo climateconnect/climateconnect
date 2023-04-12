@@ -7,8 +7,7 @@ import getCollaborationTexts from "../../../public/data/collaborationTexts";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import BottomNavigation from "../general/BottomNavigation";
-import DatePicker from "../general/DatePicker";
-import RadioButtons from "../general/RadioButtons";
+import ProjectTimeAndPlaceSection from "./TimeAndPlaceSection";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import AddPhotoSection from "./AddPhotoSection";
 import AddSummarySection from "./AddSummarySection";
@@ -169,52 +168,10 @@ export default function EnterDetails({
     <>
       <Container maxWidth="lg">
         <form onSubmit={onClickNextStep}>
-          <Typography
-            component="h2"
-            variant="subtitle2"
-            color="primary"
-            className={classes.subHeader}
-          >
-            {texts.general_information}*
-          </Typography>
-          <div className={classes.block}>
-            <Typography component="h2" variant="subtitle2" className={classes.inlineSubHeader}>
-              {texts.your_project_is}
-            </Typography>
-            <div className={classes.inlineBlock}>
-              <RadioButtons
-                value={projectData.status.name}
-                onChange={onStatusRadioChange}
-                values={statusValues}
-              />
-            </div>
-          </div>
-          <div>
-            <Typography component="h2" variant="subtitle2" className={classes.inlineSubHeader}>
-              {texts.date}
-            </Typography>
-            <div className={classes.inlineBlock}>
-              {statusesWithStartDate.includes(projectData.status.id) && (
-                <DatePicker
-                  className={classes.datePicker}
-                  label={texts.start_date}
-                  date={projectData.start_date}
-                  handleChange={onStartDateChange}
-                  required
-                />
-              )}
-              {statusesWithEndDate.includes(projectData.status.id) && (
-                <DatePicker
-                  className={classes.datePicker}
-                  label={texts.end_date}
-                  date={projectData.end_date}
-                  handleChange={onEndDateChange}
-                  required
-                  minDate={projectData.start_date && new Date(projectData.start_date)}
-                />
-              )}
-            </div>
-          </div>
+          <ProjectTimeAndPlaceSection
+            projectData={projectData}
+            handleSetProjectData={handleSetProjectData}
+          />
           <div className={classes.block}>
             <AddPhotoSection
               projectData={projectData}
