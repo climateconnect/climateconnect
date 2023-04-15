@@ -1,4 +1,5 @@
-import { Button, CircularProgress, makeStyles } from "@material-ui/core";
+import { Button, CircularProgress } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import Router from "next/router";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";

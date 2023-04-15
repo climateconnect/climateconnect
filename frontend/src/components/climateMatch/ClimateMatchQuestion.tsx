@@ -1,4 +1,5 @@
-import { makeStyles, Theme } from "@material-ui/core";
+import { Theme } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import OptionalQuestionTypeBody from "./OptionalQuestionTypeBody";
@@ -20,10 +21,10 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
     backgroundPositionY: props.questionType === "optional" ? "bottom" : "auto",
     height: 500,
     minWidth: props.questionType === "optional" ? 400 : 300,
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("lg")]: {
       minWidth: props.questionType !== "optional" ? 200 : undefined,
     },
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       display: "none",
     },
   }),

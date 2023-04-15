@@ -1,7 +1,8 @@
-import { Button, Container, Divider, Typography, useMediaQuery } from "@material-ui/core";
-import { makeStyles, Theme } from "@material-ui/core/styles";
-import AccountBoxIcon from "@material-ui/icons/AccountBox";
-import LocationOnIcon from "@material-ui/icons/LocationOn";
+import { Button, Container, Divider, Typography, useMediaQuery } from "@mui/material";
+import { Theme } from "@mui/material/styles";
+import makeStyles from "@mui/styles/makeStyles";
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 import NextCookies from "next-cookies";
 import Router from "next/router";
 import React, { useContext } from "react";
@@ -22,9 +23,9 @@ import ProjectPreviews from "../../src/components/project/ProjectPreviews";
 import theme from "../../src/themes/theme";
 import getOrganizationInfoMetadata from "./../../public/data/organization_info_metadata";
 import UserContext from "./../../src/components/context/UserContext";
-import IconButton from "@material-ui/core/IconButton";
-import GroupAddIcon from "@material-ui/icons/GroupAdd";
-import ControlPointSharpIcon from "@material-ui/icons/ControlPointSharp";
+import IconButton from "@mui/material/IconButton";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
+import ControlPointSharpIcon from "@mui/icons-material/ControlPointSharp";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -238,8 +239,8 @@ function OrganizationLayout({
 
   const membersWithAdditionalInfo = getMembersWithAdditionalInfo(members);
 
-  const isTinyScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
-  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isTinyScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   return (
     <AccountPage
       numberOfFollowers={numberOfFollowers}
@@ -274,7 +275,7 @@ function OrganizationLayout({
             {texts.this_organizations_projects}
           </Typography>
           {isTinyScreen ? (
-            <IconButton href={getLocalePrefix(locale) + "/share"}>
+            <IconButton href={getLocalePrefix(locale) + "/share"} size="large">
               <ControlPointSharpIcon
                 className={classes.button}
                 /*TODO(unused) variant="contained" */
@@ -308,6 +309,7 @@ function OrganizationLayout({
                 href={
                   getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug
                 }
+                size="large"
               >
                 <GroupAddIcon className={classes.button} color="primary" />
               </IconButton>

@@ -1,4 +1,18 @@
-import { createTheme } from "@material-ui/core/styles";
+import { createTheme, alpha } from "@mui/material/styles";
+import { grey } from "@mui/material/colors";
+
+declare module "@mui/material" {
+  interface Color {
+    main: string;
+    dark: string;
+  }
+}
+
+declare module "@mui/material/Button" {
+  interface ButtonPropsColorOverrides {
+    grey: true;
+  }
+}
 
 // Create core theme so we can access spacing etc. when customizing components
 const coreTheme = createTheme({
@@ -22,6 +36,10 @@ const coreTheme = createTheme({
     },
     action: {
       selected: "#387077",
+    },
+    grey: {
+      main: grey[300],
+      dark: grey[400],
     },
   },
   typography: {
@@ -56,47 +74,91 @@ const coreTheme = createTheme({
  * across other files.
  */
 const theme = createTheme(coreTheme, {
-  overrides: {
+  components: {
     MuiButton: {
-      root: {
-        borderRadius: 3,
-        paddingLeft: coreTheme.spacing(4),
-        paddingRight: coreTheme.spacing(4),
-        paddingTop: coreTheme.spacing(1),
-        paddingBottom: coreTheme.spacing(1),
+      variants: [
+        {
+          props: { variant: "contained", color: "grey" },
+          style: {
+            color: coreTheme.palette.getContrastText(coreTheme.palette.grey[300]),
+          },
+        },
+        {
+          props: { variant: "outlined", color: "grey" },
+          style: {
+            color: coreTheme.palette.text.primary,
+            borderColor:
+              coreTheme.palette.mode === "light"
+                ? "rgba(0, 0, 0, 0.23)"
+                : "rgba(255, 255, 255, 0.23)",
+            "&.Mui-disabled": {
+              border: `1px solid ${coreTheme.palette.action.disabledBackground}`,
+            },
+            "&:hover": {
+              borderColor:
+                coreTheme.palette.mode === "light"
+                  ? "rgba(0, 0, 0, 0.23)"
+                  : "rgba(255, 255, 255, 0.23)",
+              backgroundColor: alpha(
+                coreTheme.palette.text.primary,
+                coreTheme.palette.action.hoverOpacity
+              ),
+            },
+          },
+        },
+      ],
+      defaultProps: {
+        disableElevation: true,
+      },
+      styleOverrides: {
+        containedSizeMedium: {
+          borderRadius: 3,
+          paddingLeft: coreTheme.spacing(4),
+          paddingRight: coreTheme.spacing(4),
+          paddingTop: coreTheme.spacing(1),
+          paddingBottom: coreTheme.spacing(1),
+        },
       },
     },
     MuiTab: {
-      root: {
-        minWidth: 0,
-        [coreTheme.breakpoints.up("xs")]: {
+      styleOverrides: {
+        root: {
           minWidth: 0,
+          [coreTheme.breakpoints.up("xs")]: {
+            minWidth: 0,
+          },
         },
       },
     },
     MuiTooltip: {
-      tooltip: {
-        fontSize: 14,
+      styleOverrides: {
+        tooltip: {
+          fontSize: 14,
+        },
       },
     },
     MuiChip: {
-      root: {
-        // Have the same border-radius as the other UI controls, like
-        // the select dropdowns, buttons, etc.
-        borderRadius: 4,
+      variants: [
+        {
+          props: { variant: "filled", color: "secondary" },
+          style: {
+            background: "#e0e0e0",
+            color: coreTheme.palette.secondary.main,
+          },
+        },
+      ],
+      styleOverrides: {
+        root: {
+          // Have the same border-radius as the other UI controls, like
+          // the select dropdowns, buttons, etc.
+          borderRadius: 4,
+        },
       },
     },
-  },
-  // Note the "thick" semantic naming for this borders
-  // design token.
-  borders: {
-    thick: `3px solid ${coreTheme.palette.primary.main}`,
-    // TODO: we should add this light gray color to be consistent with our color system / theme
-    thin: `1px solid #e0e0e0`,
-  },
-  props: {
-    MuiButton: {
-      disableElevation: true,
+    MuiLink: {
+      defaultProps: {
+        underline: "hover",
+      },
     },
   },
 });

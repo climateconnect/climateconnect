@@ -1,4 +1,5 @@
-import { Container, Link, makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
+import { Badge, Button, Container, Link, Theme, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -62,8 +63,8 @@ export default function NavigationSubHeader(props: NavigationSubHeaderProps) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
-  const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   return (
     <div className={classes.root}>
       <Container className={classes.flexContainer}>
@@ -74,6 +75,7 @@ export default function NavigationSubHeader(props: NavigationSubHeaderProps) {
                 className={classes.link}
                 href={createNavigationUrl(locale, props.hubUrl, "projects")}
                 onClick={() => props.navigationRequested("projects")}
+                underline="hover"
               >
                 {texts.projects}
               </Link>
@@ -81,18 +83,21 @@ export default function NavigationSubHeader(props: NavigationSubHeaderProps) {
                 className={classes.link}
                 href={createNavigationUrl(locale, props.hubUrl, "organizations")}
                 onClick={() => props.navigationRequested("organizations")}
+                underline="hover"
               >
                 {texts.organizations}
               </Link>
               <Link
                 className={classes.link}
                 href={createNavigationUrl(locale, props.hubUrl, "ideas")}
+                underline="hover"
               >
                 {texts.ideas}
               </Link>
               <Link
                 className={classes.link}
                 href={`${getLocalePrefix(locale)}/climatematch?from_hub=${props.hubName}`}
+                underline="hover"
               >
                 {texts.get_active}
               </Link>
@@ -102,6 +107,7 @@ export default function NavigationSubHeader(props: NavigationSubHeaderProps) {
             <Link
               className={classes.link}
               href={`${getLocalePrefix(locale)}/climatematch?from_hub=${props.hubName}`}
+              underline="hover"
             >
               {texts.get_active}
             </Link>

@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core";
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import LoadingSpinner from "../general/LoadingSpinner";
 import HubPreview from "../hub/HubPreview";
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: 20,
       },
     },
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("lg")]: {
       display: "block",
       minWidth: 0,
     },
@@ -39,11 +39,11 @@ const useStyles = makeStyles((theme) => ({
     width: 300,
     display: "inline-block",
     whiteSpace: "normal",
-    [theme.breakpoints.down("lg")]: {
+    [theme.breakpoints.down("xl")]: {
       marginLeft: theme.spacing(1),
       marginRight: theme.spacing(1),
     },
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("lg")]: {
       width: 268,
       marginLeft: theme.spacing(2),
       marginRight: theme.spacing(2),

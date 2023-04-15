@@ -1,6 +1,6 @@
-import { Container, IconButton } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import { Container, IconButton } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import React, { useContext } from "react";
 import ROLE_TYPES from "../../../public/data/role_types";
 import getTexts from "../../../public/texts/texts";
@@ -104,14 +104,14 @@ export default function AddTeam({
     });
   };
 
-  const renderSearchOption = (option) => {
+  const renderSearchOption = (props, option) => {
     return (
-      <React.Fragment>
-        <IconButton>
+      <li {...props}>
+        <IconButton size="large">
           <AddCircleOutlineIcon />
         </IconButton>
         {option.first_name + " " + option.last_name}
-      </React.Fragment>
+      </li>
     );
   };
 

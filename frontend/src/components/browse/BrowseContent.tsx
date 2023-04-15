@@ -1,5 +1,6 @@
-import { makeStyles } from "@material-ui/core/styles";
-import { Container, Divider, Tab, Tabs, Theme, useMediaQuery } from "@material-ui/core";
+import makeStyles from "@mui/styles/makeStyles";
+import { Container, Divider, Tab, Tabs, Theme, useMediaQuery } from "@mui/material";
+import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
 import _ from "lodash";
 import React, { Suspense, useContext, useEffect, useMemo, useRef, useState } from "react";
 import Cookies from "universal-cookie";
@@ -127,8 +128,8 @@ export default function BrowseContent({
   const [hash, setHash] = useState<string | null>(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
 
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
-  const isMobileScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+  const isMobileScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const type_names = {
     projects: texts.projects,
     organizations: isNarrowScreen ? texts.orgs : texts.organizations,

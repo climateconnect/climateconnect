@@ -1,6 +1,7 @@
-import { Button, makeStyles } from "@material-ui/core";
-import HighlightOffIcon from "@material-ui/icons/HighlightOff";
-import TuneIcon from "@material-ui/icons/Tune";
+import { Button } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import TuneIcon from "@mui/icons-material/Tune";
 import React, { useContext, useEffect, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -104,6 +105,7 @@ export default function FilterSection({
         {!hideFilterButton && (
           <Button
             variant="outlined"
+            color="grey"
             className={classes.filterButton}
             onClick={onClickExpandFilters}
             startIcon={

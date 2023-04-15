@@ -1,5 +1,6 @@
-import { Button, IconButton, makeStyles, TextField, Tooltip, Typography } from "@material-ui/core";
-import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
+import { Button, IconButton, TextField, Tooltip, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import React, { useContext, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../../../public/lib/apiOperations";
@@ -132,7 +133,7 @@ export default function EditIdeaRoot({ idea, cancelEdit, userOrganizations, allH
         <>
           <form className={classes.root} onSubmit={onSubmit}>
             <Tooltip title={texts.cancel}>
-              <IconButton className={classes.backIcon} onClick={onClickCancel}>
+              <IconButton className={classes.backIcon} onClick={onClickCancel} size="large">
                 <KeyboardArrowLeftIcon />
               </IconButton>
             </Tooltip>

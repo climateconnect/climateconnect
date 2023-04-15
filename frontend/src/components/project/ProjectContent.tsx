@@ -1,7 +1,7 @@
-import { Button, Typography, Badge } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { Button, Typography, Badge } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import humanizeDuration from "humanize-duration";
 import React, { useState, useEffect, useContext } from "react";
 import TimeAgo from "react-timeago";

@@ -1,4 +1,5 @@
-import { Button, makeStyles, Theme, useMediaQuery } from "@material-ui/core";
+import { Button, Theme, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";
 import { joinIdeaGroupChat } from "../../../public/lib/messagingOperations";
@@ -24,7 +25,7 @@ export default function IdeaJoinButton({ idea, has_joined, chat_uuid, onJoinIdea
   const texts = getTexts({ page: "idea", locale: locale });
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("lg"));
 
   const onClickJoinButton = (e) => {
     e.preventDefault();

@@ -1,6 +1,6 @@
 import React from "react";
-import { RadioGroup, Radio, FormControlLabel } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { RadioGroup, Radio, FormControlLabel } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 
 const useStyles = makeStyles({
   root: {

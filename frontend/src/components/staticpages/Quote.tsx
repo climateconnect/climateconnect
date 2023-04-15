@@ -1,13 +1,14 @@
 import React from "react";
-import { makeStyles, Typography, Container, Theme } from "@material-ui/core";
-import FormatQuoteIcon from "@material-ui/icons/FormatQuote";
+import { Typography, Container, Theme } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 
 const useStyles = makeStyles<Theme, { noPadding?: boolean }>((theme) => ({
   root: {
     display: "flex",
     position: "relative",
     textAlign: "center",
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       flexDirection: "column",
     },
   },
@@ -27,7 +28,7 @@ const useStyles = makeStyles<Theme, { noPadding?: boolean }>((theme) => ({
   closeQuoteIconContainer: (props) => ({
     alignItems: "flex-end",
     paddingLeft: props.noPadding ? 0 : theme.spacing(3),
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       marginLeft: "auto",
       display: "flex",
       justifyContent: "flex-end",
@@ -36,7 +37,7 @@ const useStyles = makeStyles<Theme, { noPadding?: boolean }>((theme) => ({
   openQuoteIconContainer: (props) => ({
     alignItems: "flex-start",
     paddingRight: props.noPadding ? 0 : theme.spacing(3),
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       display: "flex",
       justifyContent: "flex-start",
     },
@@ -45,7 +46,7 @@ const useStyles = makeStyles<Theme, { noPadding?: boolean }>((theme) => ({
     fontSize: 80,
   },
   textBody: {
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       paddingLeft: theme.spacing(3),
       paddingRight: theme.spacing(3),
     },

@@ -1,6 +1,6 @@
-import { IconButton, InputAdornment, TextField } from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
-import SearchIcon from "@material-ui/icons/Search";
+import { IconButton, InputAdornment, TextField } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import SearchIcon from "@mui/icons-material/Search";
 import React from "react";
 
 export default function FilterSearchBar({

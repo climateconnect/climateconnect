@@ -1,5 +1,6 @@
-import { Button, InputAdornment, makeStyles, TextField } from "@material-ui/core";
-import LinkIcon from "@material-ui/icons/Link";
+import { Button, InputAdornment, TextField } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import LinkIcon from "@mui/icons-material/Link";
 import React from "react";
 import {
   EmailIcon,
@@ -24,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(2),
     display: "flex",
     justifyContent: "space-between",
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       justifyContent: "flex-start",
       flexWrap: "wrap",
     },

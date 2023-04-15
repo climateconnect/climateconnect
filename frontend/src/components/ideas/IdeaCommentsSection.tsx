@@ -1,4 +1,5 @@
-import { Divider, makeStyles, Typography } from "@material-ui/core";
+import { Divider, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../../public/lib/apiOperations";

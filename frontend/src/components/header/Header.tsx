@@ -18,21 +18,22 @@ import {
   Popper,
   SwipeableDrawer,
   Typography,
-} from "@material-ui/core";
-import { makeStyles, Theme } from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
-import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
-import GroupWorkIcon from "@material-ui/icons/GroupWork";
-import HomeIcon from "@material-ui/icons/Home";
-import InfoIcon from "@material-ui/icons/Info";
-import MailOutlineIcon from "@material-ui/icons/MailOutline";
-import MenuIcon from "@material-ui/icons/Menu";
-import NotificationsIcon from "@material-ui/icons/Notifications";
-import SettingsIcon from "@material-ui/icons/Settings";
+} from "@mui/material";
+import { Theme } from "@mui/material/styles";
+import makeStyles from "@mui/styles/makeStyles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import GroupWorkIcon from "@mui/icons-material/GroupWork";
+import HomeIcon from "@mui/icons-material/Home";
+import InfoIcon from "@mui/icons-material/Info";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import MenuIcon from "@mui/icons-material/Menu";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import SettingsIcon from "@mui/icons-material/Settings";
 import noop from "lodash/noop";
 import React, { useContext, useEffect, useState } from "react";
 import { getStaticPageLinks } from "../../../public/data/getStaticPageLinks"; // Relative imports
@@ -79,7 +80,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       };
     },
     hideHeader: {
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         transform: "translateY(-97px)",
       },
     },
@@ -90,18 +91,18 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       padding: theme.spacing(2),
       paddingRight: "auto",
       paddingLeft: "auto",
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         padding: theme.spacing(2),
       },
-      [theme.breakpoints.down("sm")]: {
-        padding: `${theme.spacing(0.8)}px ${theme.spacing(2)}px`,
+      [theme.breakpoints.down("md")]: {
+        padding: `${theme.spacing(0.8)} ${theme.spacing(2)}`,
       },
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
     },
-    logoLink: (props) => ({
-      [theme.breakpoints.down("sm")]: {
+    logoLink: {
+      [theme.breakpoints.down("md")]: {
         flex: `0 1 auto`,
         width: "calc(1.1vw + 1.3em)",
         maxWidth: "2.3rem",
@@ -125,7 +126,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
     //       },
     //     },
     logo: {
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down("md")]: {
         height: "auto",
       },
       height: 60,
@@ -159,10 +160,10 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       display: "flex",
       alignItems: "center",
       maxWidth: "calc(100% - 200px)",
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         maxWidth: "calc(100% - 150px)",
       },
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down("md")]: {
         maxWidth: "calc(100% - 35px)",
       },
       justifyContent: "space-around",
@@ -330,8 +331,8 @@ export default function Header({
   const { user, signOut, notifications, pathName, locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("xs"));
-  const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const LINKS = getLinks(pathName, texts);
   const toggleShowNotifications = (event) => {
     if (!anchorEl) setAnchorEl(event.currentTarget);
@@ -391,11 +392,11 @@ export default function Header({
       }`}
     >
       <Container className={classes.container}>
-        <Link href={localePrefix + "/"} className={classes.logoLink}>
-          <img
-            src={logo}
-            alt={texts.climate_connect_logo}
-            className={classes.logo}
+        <Link href={localePrefix + "/"} className={classes.logoLink} underline="hover">
+          <img 
+            src={logo} 
+            alt={texts.climate_connect_logo} 
+            className={classes.logo} 
             onError={loadFallbackLogo}
           />
         </Link>
@@ -450,8 +451,8 @@ function NormalScreenLinks({
   isStaticPage,
 }) {
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
-  const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
-  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
+  const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("lg"));
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts);
   return (
     <Box className={classes.linkContainer}>
@@ -483,7 +484,7 @@ function NormalScreenLinks({
                   <LanguageSelect transparentHeader={transparentHeader} />
                 ) : link.onlyShowIconOnNormalScreen ? (
                   <>
-                    <IconButton {...buttonProps} className={classes.link}>
+                    <IconButton {...buttonProps} className={classes.link} size="large">
                       {link.hasBadge && notifications && notifications.length > 0 ? (
                         <Badge badgeContent={notifications.length} color="error">
                           <Icon />
@@ -522,7 +523,7 @@ function NormalScreenLinks({
                     {isMediumScreen && link.mediumScreenText ? link.mediumScreenText : link.text}
                   </DropDownButton>
                 ) : link?.showJustIconUnderSm && isSmallMediumScreen ? (
-                  <IconButton {...buttonProps} className={classes.link}>
+                  <IconButton {...buttonProps} className={classes.link} size="large">
                     <link.showJustIconUnderSm />
                   </IconButton>
                 ) : (
@@ -597,7 +598,12 @@ function NarrowScreenLinks({
             <React.Fragment key={index}>
               {link.onlyShowIconOnMobile ? (
                 <>
-                  <IconButton color="primary" className={classes.marginRight} {...buttonProps}>
+                  <IconButton
+                    color="primary"
+                    className={classes.marginRight}
+                    {...buttonProps}
+                    size="large"
+                  >
                     {link.hasBadge && notifications && notifications.length > 0 ? (
                       <Badge badgeContent={notifications.length} color="error">
                         <Icon />
@@ -646,7 +652,13 @@ function NarrowScreenLinks({
           );
         })}
         <span className={classes.menuLink}>
-          <IconButton edge="start" color="inherit" aria-label="menu" onClick={openDrawer}>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={openDrawer}
+            size="large"
+          >
             <MenuIcon />
           </IconButton>
         </span>
@@ -667,7 +679,7 @@ function NarrowScreenLinks({
             ).map((link, index) => {
               const Icon = link.iconForDrawer;
               return (
-                <Link href={localePrefix + link.href} key={index}>
+                <Link href={localePrefix + link.href} key={index} underline="hover">
                   <ListItem button component="a" onClick={closeDrawer}>
                     <ListItemIcon>
                       <Icon color="primary" />
@@ -688,7 +700,7 @@ function NarrowScreenLinks({
                 if (link.avatar)
                   return (
                     <div className={classes.mobileAvatarContainer}>
-                      <Link href={"/profiles/" + loggedInUser.url_slug}>
+                      <Link href={"/profiles/" + loggedInUser.url_slug} underline="hover">
                         {loggedInUser?.badges?.length > 0 ? (
                           <ProfileBadge
                             badge={loggedInUser?.badges[0]}
@@ -714,7 +726,7 @@ function NarrowScreenLinks({
                   );
                 else
                   return (
-                    <Link href={localePrefix + link.href} key={index}>
+                    <Link href={localePrefix + link.href} key={index} underline="hover">
                       <ListItem button component="a" onClick={closeDrawer}>
                         <ListItemIcon>
                           <Icon color="primary" />

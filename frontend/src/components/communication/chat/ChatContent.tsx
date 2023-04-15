@@ -1,6 +1,7 @@
-import { Button, IconButton, makeStyles, TextField, Tooltip } from "@material-ui/core";
-import GroupAddIcon from "@material-ui/icons/GroupAdd";
-import SendIcon from "@material-ui/icons/Send";
+import { Button, IconButton, TextField, Tooltip } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
+import SendIcon from "@mui/icons-material/Send";
 import React, { useContext } from "react";
 import ROLE_TYPES from "../../../../public/data/role_types";
 import getTexts from "../../../../public/texts/texts";

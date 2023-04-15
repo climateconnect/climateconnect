@@ -1,4 +1,4 @@
-import { Link } from "@material-ui/core";
+import { Link } from "@mui/material";
 import React from "react";
 
 export default function getDonateTexts({ classes, goal }) {
@@ -209,7 +209,11 @@ export default function getDonateTexts({ classes, goal }) {
         <>
           You can find a document explaining a simplified proof of grant and confirming our
           nonprofit status{" "}
-          <Link target="_blank" href="/documents/nonprofit_status_confirmation.pdf">
+          <Link
+            target="_blank"
+            href="/documents/nonprofit_status_confirmation.pdf"
+            underline="hover"
+          >
             here
           </Link>
           . (PDF in german language)
@@ -219,7 +223,11 @@ export default function getDonateTexts({ classes, goal }) {
         <>
           Hier findest Du ein Dokument, das einen vereinfachten Zuwendungsnachweis und die
           Bestätigung unseres Gemeinnützigkeitsstatus erklärt{" "}
-          <Link target="_blank" href="/documents/nonprofit_status_confirmation.pdf">
+          <Link
+            target="_blank"
+            href="/documents/nonprofit_status_confirmation.pdf"
+            underline="hover"
+          >
             hier
           </Link>
           . (PDF in deutscher Sprache)
@@ -230,15 +238,20 @@ export default function getDonateTexts({ classes, goal }) {
       en: (
         <>
           For donors who donate over 300€ per year we issue a donation receipt.{" "}
-          <Link href="mailto:contact@climateconnect.earth">Contact us</Link> if you need any other
-          documents.
+          <Link href="mailto:contact@climateconnect.earth" underline="hover">
+            Contact us
+          </Link>{" "}
+          if you need any other documents.
         </>
       ),
       de: (
         <>
           Für Spender, die mehr als 300€ pro Jahr spenden, stellen wir eine Spendenbescheinigung
-          aus. <Link href="mailto:contact@climateconnect.earth">Kontaktiere uns</Link>, wenn du
-          weitere Unterlagen benötigst.
+          aus.{" "}
+          <Link href="mailto:contact@climateconnect.earth" underline="hover">
+            Kontaktiere uns
+          </Link>
+          , wenn du weitere Unterlagen benötigst.
         </>
       ),
     },

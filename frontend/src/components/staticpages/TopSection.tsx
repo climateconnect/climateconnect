@@ -1,4 +1,5 @@
-import { Container, makeStyles, Theme, Typography } from "@material-ui/core";
+import { Container, Theme, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import SmallCloud from "./SmallCloud";
 
@@ -13,7 +14,7 @@ const useStyles = makeStyles<Theme, { fixedHeight?: boolean; noMarginBottom?: bo
       padding: props.fixedHeight ? 0 : theme.spacing(3),
       position: "relative",
       height: props.fixedHeight ? 0 : undefined,
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         padding: 0,
       },
     }),
@@ -25,11 +26,11 @@ const useStyles = makeStyles<Theme, { fixedHeight?: boolean; noMarginBottom?: bo
       padding: theme.spacing(2),
       border: `2px solid ${theme.palette.primary.light}`,
       boxShadow: "5px 5px 5px #00000029",
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         padding: theme.spacing(1),
         left: theme.spacing(1),
       },
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         width: 350,
         left: theme.spacing(0.5),
       },
@@ -38,10 +39,10 @@ const useStyles = makeStyles<Theme, { fixedHeight?: boolean; noMarginBottom?: bo
       color: theme.palette.yellow.main,
       fontSize: 40,
       fontWeight: "bold",
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         fontSize: 25,
       },
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         fontSize: 20,
       },
     },
@@ -49,10 +50,10 @@ const useStyles = makeStyles<Theme, { fixedHeight?: boolean; noMarginBottom?: bo
       fontSize: 19,
       fontWeight: 600,
       color: "white",
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         fontSize: 17,
       },
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down("md")]: {
         fontSize: 16,
         fontWeight: 500,
       },
