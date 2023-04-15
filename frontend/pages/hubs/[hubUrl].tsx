@@ -1,4 +1,5 @@
-import { makeStyles, Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import parseHtml from "html-react-parser";
 import Head from "next/head";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -31,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   contentRefContainer: {
     paddingTop: theme.spacing(4),
     position: "relative",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       paddingTop: theme.spacing(1),
     },
   },
@@ -50,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
 const DESCRIPTION_WEBFLOW_LINKS = {
   energy: {
     en: "energy-en",
-    de: "energie-de"
+    de: "energie-de",
   },
   mobility: {
     de: "mobilitat-de",
@@ -62,8 +63,8 @@ const DESCRIPTION_WEBFLOW_LINKS = {
   },
   landuse: {
     de: "landuse-de",
-    en: "landuse-en"
-  }
+    en: "landuse-en",
+  },
 };
 
 //potentially switch back to getinitialprops here?!

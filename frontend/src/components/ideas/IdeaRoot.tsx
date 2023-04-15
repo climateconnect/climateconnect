@@ -1,14 +1,7 @@
-import {
-  Button,
-  Card,
-  makeStyles,
-  Theme,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-} from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
-import LocationOnIcon from "@material-ui/icons/LocationOn";
+import { Button, Card, Theme, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import CloseIcon from "@mui/icons-material/Close";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 import React, { useContext, useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../../public/lib/apiOperations";
@@ -48,7 +41,7 @@ const useStyles = makeStyles<
     top: props.offsetTop < 110 && props.offsetTop !== null ? 110 - props.offsetTop : 0,
     bottom: props.offsetTop < 110 ? props.offsetBottom + theme.spacing(1) : "default",
     overflowY: "auto",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       borderRadius: "30px 30px 0px 0px",
       borderWidth: 0,
       position: "relative",
@@ -58,7 +51,7 @@ const useStyles = makeStyles<
     padding: theme.spacing(1),
     background: "white",
     paddingBottom: theme.spacing(3),
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       paddingTop: theme.spacing(0),
       paddingLeft: theme.spacing(3),
       paddingRight: theme.spacing(3),
@@ -70,7 +63,7 @@ const useStyles = makeStyles<
   ideaInfo: {
     marginLeft: theme.spacing(4),
     marginRight: theme.spacing(2.5),
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       marginLeft: 0,
       marginRight: 0,
     },
@@ -150,9 +143,9 @@ export default function IdeaRoot({
     UserContext
   );
   const { showFeedbackMessage } = useContext(FeedbackContext);
-  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
-  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
-  const isTinyScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("lg"));
+  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
+  const isTinyScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const handleIdeaClose = (e) => {
     onIdeaClose(e);
   };
@@ -168,7 +161,7 @@ export default function IdeaRoot({
     };
   }, []);
 
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const [loading, setLoading] = useState(!!token);
   const [userRating, setUserRating] = useState({
     rating_score: 0,

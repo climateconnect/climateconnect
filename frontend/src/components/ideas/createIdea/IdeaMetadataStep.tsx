@@ -1,5 +1,6 @@
-import { Button, makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import { Button, Theme, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import React, { useContext } from "react";
 import { parseLocation } from "../../../../public/lib/locationOperations";
 import getTexts from "../../../../public/texts/texts";
@@ -58,7 +59,7 @@ export default function IdeaMetadataStep({
   const isTinyScreen = useMediaQuery<Theme>("(max-width:400px");
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale });
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   return (
     <form onSubmit={onSubmitIdea}>
       <Typography className={classes.motivationText}>

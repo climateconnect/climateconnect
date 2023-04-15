@@ -1,6 +1,7 @@
 import React from "react";
-import { makeStyles, Theme, Typography } from "@material-ui/core";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import { Theme, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { string } from "prop-types";
 
 const useStyles = makeStyles<Theme, { background?: string; image?: string }>((theme) => ({

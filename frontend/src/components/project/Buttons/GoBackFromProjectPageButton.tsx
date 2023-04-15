@@ -1,13 +1,14 @@
-import { Button, IconButton, makeStyles } from "@material-ui/core";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import { Button, IconButton } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { useRouter } from "next/router";
 import React from "react";
 
 const useStyles = makeStyles((theme) => ({
   button: {
     color: "white",
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       minWidth: 35,
       maxWidth: 35,
       minHeight: 35,
@@ -44,7 +45,7 @@ export default function GoBackFromProjectPageButton({
   if (tinyScreen)
     return (
       <div className={containerClassName}>
-        <IconButton onClick={goBack} className={classes.button}>
+        <IconButton onClick={goBack} className={classes.button} size="large">
           {/*adjusted viewBox to center the icon*/}
           <ArrowBackIosIcon fontSize="small" viewBox="-4.5 0 24 24" />
         </IconButton>

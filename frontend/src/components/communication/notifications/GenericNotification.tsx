@@ -5,15 +5,15 @@ import {
   ListItemAvatar,
   ListItemIcon,
   ListItemText,
-  makeStyles,
   Theme,
-} from "@material-ui/core";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../../public/lib/imageOperations";
 import UserContext from "../../context/UserContext";
 import { StyledMenuItem } from "./Notification";
-import CloseIcon from "@material-ui/icons/Close";
+import CloseIcon from "@mui/icons-material/Close";
 import Cookies from "universal-cookie";
 
 const useStyles = makeStyles<Theme, {}>((theme) => {
@@ -108,7 +108,7 @@ export default function GenericNotification({
           />
         </div>
       </Link>
-      <IconButton onClick={deleteNotification} className={classes.deleteIcon}>
+      <IconButton onClick={deleteNotification} className={classes.deleteIcon} size="large">
         <CloseIcon />
       </IconButton>
     </StyledMenuItem>

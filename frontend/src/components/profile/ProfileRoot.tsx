@@ -1,5 +1,6 @@
-import { Button, Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
-import { useTheme } from "@material-ui/core/styles";
+import { Button, Container, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import { Theme, useTheme } from "@mui/material/styles";
 import Router from "next/router";
 import React, { useContext, useEffect, useRef } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -9,8 +10,8 @@ import LoginNudge from "../general/LoginNudge";
 import IdeaPreviews from "../ideas/IdeaPreviews";
 import OrganizationPreviews from "../organization/OrganizationPreviews";
 import ProjectPreviews from "../project/ProjectPreviews";
-import ControlPointSharpIcon from "@material-ui/icons/ControlPointSharp";
-import IconButton from "@material-ui/core/IconButton";
+import ControlPointSharpIcon from "@mui/icons-material/ControlPointSharp";
+import IconButton from "@mui/material/IconButton";
 import FeedbackContext from "../context/FeedbackContext";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_user.jpg";
@@ -77,7 +78,7 @@ const useStyles = makeStyles((theme) => {
     createButton: {
       right: theme.spacing(1),
       position: "absolute",
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         position: "relative",
         marginTop: theme.spacing(2),
       },
@@ -120,8 +121,8 @@ export default function ProfileRoot({
   const scrollDownSmooth = (ref) => {
     ref.current.scrollIntoView({ behavior: "smooth" });
   };
-  const isTinyScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
-  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isTinyScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
   useEffect(() => {
     const URL = window.location.href;
@@ -163,7 +164,7 @@ export default function ProfileRoot({
         <div className={classes.sectionHeadlineWithButtonContainer}>
           <h2>{isOwnAccount ? texts.your_projects : texts.this_users_projects}</h2>
           {isTinyScreen ? (
-            <IconButton href={getLocalePrefix(locale) + "/share"}>
+            <IconButton href={getLocalePrefix(locale) + "/share"} size="large">
               <ControlPointSharpIcon
                 className={classes.button}
                 variant="contained"
@@ -207,7 +208,7 @@ export default function ProfileRoot({
         <div className={classes.sectionHeadlineWithButtonContainer}>
           <h2>{isOwnAccount ? texts.your_organizations : texts.this_users_organizations}</h2>
           {isTinyScreen ? (
-            <IconButton href={getLocalePrefix(locale) + "/createorganization"}>
+            <IconButton href={getLocalePrefix(locale) + "/createorganization"} size="large">
               <ControlPointSharpIcon
                 className={classes.button}
                 variant="contained"

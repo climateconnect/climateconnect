@@ -1,5 +1,6 @@
-import { IconButton, makeStyles, TextField, Tooltip, Typography } from "@material-ui/core";
-import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
+import { IconButton, TextField, Tooltip, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import React from "react";
 
 const useStyles = makeStyles((theme) => ({
@@ -21,7 +22,7 @@ export default function DetailledDescriptionInput({ title, helpText, value, onCh
       <Typography color="primary" variant="h2" className={classes.headline}>
         {title}
         <Tooltip title={helpText} /*TODO(unused) className={classes.tooltip} */>
-          <IconButton>
+          <IconButton size="large">
             <HelpOutlineIcon />
           </IconButton>
         </Tooltip>

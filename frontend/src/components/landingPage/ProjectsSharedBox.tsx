@@ -1,5 +1,6 @@
-import { Button, makeStyles, Typography } from "@material-ui/core";
-import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
+import { Button, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -16,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 25,
     fontWeight: 700,
     marginBottom: theme.spacing(1),
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       fontSize: 21,
       marginBottom: theme.spacing(2),
     },

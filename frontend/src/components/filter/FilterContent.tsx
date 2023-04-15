@@ -1,5 +1,5 @@
-import { Theme } from "@material-ui/core";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { Theme } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { getLocationFilterKeys } from "../../../public/data/locationFilters";
@@ -99,8 +99,8 @@ export default function FilterContent({
   handleUpdateFilters,
   nonFilterParams,
 }) {
-  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.between("xs", "md"));
-  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.between("xs", "lg"));
+  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
 
   const possibleFiltersFirstHalf = possibleFilters.slice(0, Math.ceil(possibleFilters.length / 2));
   const possibleFiltersSecondHalf = possibleFilters.slice(

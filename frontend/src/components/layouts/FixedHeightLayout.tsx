@@ -1,5 +1,5 @@
-import { makeStyles } from "@material-ui/core/styles";
-import Alert from "@material-ui/lab/Alert";
+import makeStyles from "@mui/styles/makeStyles";
+import Alert from "@mui/material/Alert";
 import React, { useEffect, useState } from "react";
 import { getParams } from "../../../public/lib/generalOperations";
 import { getMessageFromUrl } from "../../../public/lib/parsingOperations";

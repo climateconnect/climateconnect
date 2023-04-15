@@ -1,7 +1,9 @@
 import React from "react";
 import "date-fns";
-import DateFnsUtils from "@date-io/date-fns";
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+
+import { DatePicker as DatePickerComponent } from "@mui/x-date-pickers/DatePicker";
 
 type Props = {
   label?: any;
@@ -25,8 +27,8 @@ export default function DatePicker({
     handleChange(selectedDate);
   };
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <KeyboardDatePicker
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <DatePickerComponent
         className={className}
         disableToolbar
         variant="inline"
@@ -43,6 +45,6 @@ export default function DatePicker({
         autoOk
         required={required}
       />
-    </MuiPickersUtilsProvider>
+    </LocalizationProvider>
   );
 }

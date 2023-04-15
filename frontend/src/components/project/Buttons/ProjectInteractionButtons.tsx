@@ -1,5 +1,5 @@
-import { AppBar, Container, Toolbar } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { AppBar, Container, Toolbar } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import ContactCreatorButton from "./ContactCreatorButton";
 import FollowButton from "../../general/FollowButton";

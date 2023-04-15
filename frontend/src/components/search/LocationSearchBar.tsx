@@ -1,5 +1,5 @@
-import { TextField } from "@material-ui/core";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import { TextField } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
 import axios from "axios";
 import { debounce } from "lodash";
 import React, { useContext, useEffect } from "react";
@@ -175,8 +175,8 @@ export default function LocationSearchBar({
     else handleSetOpen(newOpenValue);
   };
 
-  const renderSearchOption = (option) => {
-    return <React.Fragment>{option}</React.Fragment>;
+  const renderSearchOption = (props, option) => {
+    return <li {...props}>{option}</li>;
   };
 
   const handleInputChange = (event) => {
@@ -198,7 +198,7 @@ export default function LocationSearchBar({
   );
 
   const handleChange = (event, value, reason) => {
-    if (reason === "select-option") {
+    if (reason === "selectOption") {
       setInputValue(value);
       if (onSelect) {
         onSelect(options.filter((o) => o.simple_name === value)[0]);

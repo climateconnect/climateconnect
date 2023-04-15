@@ -1,5 +1,6 @@
-import { Button, makeStyles, Theme, useMediaQuery } from "@material-ui/core";
-import LanguageIcon from "@material-ui/icons/Language";
+import { Button, Theme, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import LanguageIcon from "@mui/icons-material/Language";
 import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
@@ -39,8 +40,8 @@ export default function LanguageSelect({ transparentHeader }) {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(buttonRef.current);
   const [open, setOpen] = useState(false);
-  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const router = useRouter();
   useEffect(function () {
     setAnchorEl(buttonRef.current);

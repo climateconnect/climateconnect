@@ -1,19 +1,20 @@
-import { IconButton, makeStyles, Chip, Tooltip } from "@material-ui/core";
-import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import { IconButton, Chip, Tooltip } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import React, { useContext, useState } from "react";
 import { getLocationFields } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import Form from "./../general/Form";
 
-const renderSearchOption = (option) => {
+const renderSearchOption = (props, option) => {
   return (
-    <React.Fragment>
-      <IconButton>
+    <li {...props}>
+      <IconButton size="large">
         <AddCircleOutlineIcon />
       </IconButton>
       {option.name}
-    </React.Fragment>
+    </li>
   );
 };
 
@@ -23,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-evenly",
 
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       flexDirection: "column",
       marginTop: theme.spacing(0),
       alignItems: "center",
@@ -33,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     height: 30,
     width: "100%",
 
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       marginTop: theme.spacing(1),
     },
   },
@@ -41,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     height: 30,
     width: "100%",
     marginLeft: theme.spacing(0.5),
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       marginTop: theme.spacing(1),
     },
   },

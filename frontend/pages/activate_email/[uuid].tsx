@@ -1,4 +1,4 @@
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 import cookies from "next-cookies";
 import React, { useContext, useEffect } from "react";
 import { apiRequest, redirect, sendToLogin } from "../../public/lib/apiOperations";

@@ -1,5 +1,5 @@
-import { Button, CircularProgress } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Button, CircularProgress } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => {
     },
     nextStepButtonsContainer: {
       float: "right",
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         float: "none",
         marginTop: theme.spacing(2),
       },
@@ -59,7 +59,12 @@ export default function BottomNavigation({
   return (
     <div className={`${classes.navigationButtonWrapper} ${className}`}>
       {onClickPreviousStep && (
-        <Button variant="contained" className={classes.backButton} onClick={onClickPreviousStep}>
+        <Button
+          variant="contained"
+          color="grey"
+          className={classes.backButton}
+          onClick={onClickPreviousStep}
+        >
           {texts.back}
         </Button>
       )}
@@ -68,6 +73,7 @@ export default function BottomNavigation({
           <>
             <Button
               variant="contained"
+              color="grey"
               onClick={onClickCancelDialogOpen}
               className={`${classes.backButton} ${classes.draftButton}`}
             >
@@ -88,6 +94,7 @@ export default function BottomNavigation({
             <Button
               key={index}
               variant="contained"
+              color="grey"
               onClick={b.onClick}
               className={`${classes.backButton} ${classes.draftButton}`}
             >
@@ -97,6 +104,7 @@ export default function BottomNavigation({
         {saveAsDraft && (
           <Button
             variant="contained"
+            color="grey"
             onClick={saveAsDraft}
             className={`${classes.backButton} ${classes.draftButton}`}
             disabled={loadingSubmitDraft || loadingSubmit}

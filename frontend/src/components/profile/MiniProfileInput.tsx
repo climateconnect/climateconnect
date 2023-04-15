@@ -1,7 +1,7 @@
-import { Avatar, Button, IconButton, TextField, Tooltip, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import DeleteIcon from "@material-ui/icons/Delete";
-import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
+import { Avatar, Button, IconButton, TextField, Tooltip, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import DeleteIcon from "@mui/icons-material/Delete";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import React, { useContext, useEffect } from "react";
 
 import ROLE_TYPES from "../../../public/data/role_types";
@@ -138,7 +138,7 @@ export default function MiniProfileInput({
       <Typography className={classes.fieldLabel} color="primary">
         {texts.permissions}
         <Tooltip title={texts.choose_what_permissions_the_user_should_have}>
-          <IconButton>
+          <IconButton size="large">
             <HelpOutlineIcon className={classes.tooltip} />
           </IconButton>
         </Tooltip>
@@ -174,7 +174,7 @@ export default function MiniProfileInput({
                   : texts.pick_or_describe_role_in_project
               }
             >
-              <IconButton>
+              <IconButton size="large">
                 <HelpOutlineIcon className={classes.tooltip} />
               </IconButton>
             </Tooltip>
@@ -201,7 +201,7 @@ export default function MiniProfileInput({
                   : texts.pick_how_many_hours_user_contributes_to_project
               }
             >
-              <IconButton>
+              <IconButton size="large">
                 <HelpOutlineIcon className={classes.tooltip} />
               </IconButton>
             </Tooltip>

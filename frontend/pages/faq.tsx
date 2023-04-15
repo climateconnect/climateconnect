@@ -1,5 +1,5 @@
-import { Container, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Container, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import Cookies from "next-cookies";
 import React, { useContext } from "react";
 
@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => {
   return {
     headerImageContainer: {
       marginBottom: theme.spacing(3),
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         marginBottom: theme.spacing(2),
       },
     },
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => {
       background: "rgba(255, 255, 255, 0.6)",
       width: "100%",
       height: "100%",
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         background: "rgba(255, 255, 255, 0.8)",
       },
     },
@@ -42,10 +42,10 @@ const useStyles = makeStyles((theme) => {
     headerTextBig: {
       fontWeight: "bold",
       fontSize: 80,
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         fontSize: 60,
       },
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         fontSize: 40,
       },
       textAlign: "center",
@@ -54,10 +54,10 @@ const useStyles = makeStyles((theme) => {
       color: "white",
       fontWeight: "bold",
       textAlign: "left",
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         fontSize: 40,
       },
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         fontSize: 25,
       },
       textShadow: "3px 3px 3px #484848C2",
@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme) => {
       fontWeight: "bold",
       fontSize: 19,
       textAlign: "center",
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         fontSize: 14,
         fontWeight: "normal",
       },

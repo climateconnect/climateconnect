@@ -1,6 +1,6 @@
-import { Avatar, IconButton, Link, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import ClearIcon from "@material-ui/icons/Clear";
+import { Avatar, IconButton, Link, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import ClearIcon from "@mui/icons-material/Clear";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import UserContext from "../context/UserContext";
@@ -64,11 +64,12 @@ export default function MiniProfilePreview({
           color="inherit"
           href={getLocalePrefix(locale) + "/profiles/" + profile.url_slug}
           className={`${"" /*TODO(undefined) classes.avatarWithInfo*/} ${className}`}
+          underline="hover"
         >
           <Content profile={profile} avatarClassName={avatarClassName} size={size} />
         </Link>
         {onDelete && (
-          <IconButton onClick={() => onDelete(profile)}>
+          <IconButton onClick={() => onDelete(profile)} size="large">
             <ClearIcon />
           </IconButton>
         )}

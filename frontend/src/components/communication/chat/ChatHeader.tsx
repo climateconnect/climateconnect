@@ -1,7 +1,8 @@
-import { IconButton, Link, makeStyles, Tooltip } from "@material-ui/core";
-import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import GroupAddIcon from "@material-ui/icons/GroupAdd";
-import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
+import { IconButton, Link, Tooltip } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import getTexts from "../../../../public/texts/texts";
@@ -52,14 +53,18 @@ export default function ChatHeader({
     <div className={`${classes.topBar} ${className}`}>
       {!memberManagementExpanded && (
         <Tooltip title={texts.back_to_inbox}>
-          <IconButton className={classes.backIcon} href={getLocalePrefix(locale) + "/inbox"}>
+          <IconButton
+            className={classes.backIcon}
+            href={getLocalePrefix(locale) + "/inbox"}
+            size="large"
+          >
             <KeyboardArrowLeftIcon />
           </IconButton>
         </Tooltip>
       )}
       {!isPrivateChat && (
         <Tooltip title={texts.leave_group_chat}>
-          <IconButton className={classes.manageMembersButton} onClick={leaveChat}>
+          <IconButton className={classes.manageMembersButton} onClick={leaveChat} size="large">
             <ExitToAppIcon />
           </IconButton>
         </Tooltip>
@@ -69,6 +74,7 @@ export default function ChatHeader({
           <IconButton
             className={classes.manageMembersButton}
             onClick={handleToggleMemberManagementExpanded}
+            size="large"
           >
             <GroupAddIcon />
           </IconButton>

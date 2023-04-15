@@ -1,6 +1,6 @@
-import { Box, Collapse, Container, Theme, Tooltip, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import PlaceIcon from "@material-ui/icons/Place";
+import { Box, Collapse, Container, Theme, Tooltip, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import PlaceIcon from "@mui/icons-material/Place";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -8,8 +8,8 @@ import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import LocationDisplay from "./LocationDisplay";
 import ProjectCategoriesDisplay from "./ProjectCategoriesDisplay";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import ModeCommentIcon from "@material-ui/icons/ModeComment";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import { Project } from "../../types";
 
 const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
