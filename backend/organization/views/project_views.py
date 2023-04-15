@@ -1,5 +1,6 @@
 import logging
 import traceback
+from organization.utility.project_ranking import ProjectRanking
 from organization.utility.follow import (
     get_list_of_project_followers,
     set_user_following_project,
@@ -139,7 +140,13 @@ class ListProjectsView(ListAPIView):
     serializer_class = ProjectStubSerializer
 
     def get_queryset(self):
-        projects = Project.objects.filter(is_draft=False, is_active=True)
+        user = self.request.user
+        user_profile = None
+        if user.is_authenticated and user.user_profile:
+            user_profile = user.user_profile
+        # Get project ranking
+        projects = ProjectRanking(user_profile=user_profile).ranked_projects()
+
         if "hub" in self.request.query_params:
             hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
             if hub.exists():
