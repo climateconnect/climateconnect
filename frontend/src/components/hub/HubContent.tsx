@@ -6,11 +6,11 @@ import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import MessageContent from "../communication/MessageContent";
 import UserContext from "../context/UserContext";
-import Dashboard from "../dashboard/Dashboard";
 import ElementOnScreen from "../hooks/ElementOnScreen";
 import HubHeadlineContainer from "./HubHeadlineContainer";
 import StatBox from "./StatBox";
 import ContactAmbassadorButton from "./ContactAmbassadorButton";
+import Dashboard from "../dashboard/Dashboard";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -144,7 +144,8 @@ export default function HubContent({
                     headline={headline}
                     hubUrl={hubUrl}
                   />
-                ) : (
+                )
+                    : (
                   <HubHeadlineContainer
                     subHeadline={subHeadline}
                     headline={headline}
@@ -173,13 +174,6 @@ export default function HubContent({
           </Container>
         ) : (
           <div>
-            <HubHeadlineContainer
-              subHeadline={subHeadline}
-              headline={headline}
-              headlineClassName={classes.h1}
-              isLocationHub={isLocationHub}
-              hubUrl={hubUrl}
-            />
             <BottomContent
               hubQuickInfoRef={hubQuickInfoRef}
               detailledInfo={detailledInfo}

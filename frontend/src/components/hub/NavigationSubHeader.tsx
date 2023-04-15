@@ -1,19 +1,25 @@
-import {
-  Badge,
-  Button,
-  Container,
-  Link,
-  makeStyles,
-  Theme,
-  Typography,
-  useMediaQuery,
-} from "@material-ui/core";
+import { Container, Link, makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import HubLinks from "../indexPage/hubsSubHeader/HubLinks";
+
+type NavigationSubHeaderProps =
+  | {
+      type: "hub";
+      hubName: string;
+      isLocationHub: boolean;
+      allHubs: Array<any>; // TODO: use correct Hub typing here
+      hubUrl: string;
+      navigationRequested: (target: string) => void;
+    }
+  | {
+      type: "browse";
+      allHubs: Array<any>; // TODO: use correct Hub typing here
+    };
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,7 +54,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function NavigationSubHeader({ hubName, allHubs, isLocationHub }: any) {
+function createNavigationUrl(locale: string, urlSlug: string, target: string): string {
+  return `${getLocalePrefix(locale)}/hubs/${urlSlug}#${target}`; // ?hubPage=${urlSlug}
+}
+
+export default function NavigationSubHeader(props: NavigationSubHeaderProps) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
@@ -58,45 +68,53 @@ export default function NavigationSubHeader({ hubName, allHubs, isLocationHub }:
     <div className={classes.root}>
       <Container className={classes.flexContainer}>
         <Typography className={classes.path} component="div">
-          {!isNarrowScreen && !(isLocationHub && isSmallMediumScreen) && (
+          {!isNarrowScreen && props.type === "hub" && (
             <>
-              <Link className={classes.link} href={getLocalePrefix(locale) + "/browse"}>
-                {texts.browse}
+              <Link
+                className={classes.link}
+                href={createNavigationUrl(locale, props.hubUrl, "projects")}
+                onClick={() => props.navigationRequested("projects")}
+              >
+                {texts.projects}
               </Link>
-              {" / "}
-              <Link className={classes.link} href={getLocalePrefix(locale) + "/hubs"}>
-                {texts.hubs}
+              <Link
+                className={classes.link}
+                href={createNavigationUrl(locale, props.hubUrl, "organizations")}
+                onClick={() => props.navigationRequested("organizations")}
+              >
+                {texts.organizations}
               </Link>
-              {hubName && (
-                <>
-                  {" / "}
-                  <Typography className={classes.link}>{hubName}</Typography>
-                </>
-              )}
-            </>
-          )}
-          {isLocationHub && isSmallMediumScreen && (
-            <Badge badgeContent={texts.new} color="error">
-              <Button
-                href={`${getLocalePrefix(locale)}/climatematch?from_hub=erlangen`}
-                variant="contained"
-                color="primary"
-                size="small"
-                className={classes.climateMatchButton}
+              <Link
+                className={classes.link}
+                href={createNavigationUrl(locale, props.hubUrl, "ideas")}
+              >
+                {texts.ideas}
+              </Link>
+              <Link
+                className={classes.link}
+                href={`${getLocalePrefix(locale)}/climatematch?from_hub=${props.hubName}`}
               >
                 {texts.get_active}
-              </Button>
-            </Badge>
+              </Link>
+            </>
+          )}
+          {props.type === "hub" && props.isLocationHub && isSmallMediumScreen && (
+            <Link
+              className={classes.link}
+              href={`${getLocalePrefix(locale)}/climatematch?from_hub=${props.hubName}`}
+            >
+              {texts.get_active}
+            </Link>
           )}
         </Typography>
         <Typography component="div" className={classes.rightSideContainer}>
           <HubLinks
-            hubs={allHubs}
+            hubs={props.allHubs}
             locale={locale}
             isNarrowScreen={isNarrowScreen}
             showAllProjectsButton
             linkClassName={classes.link}
-            isLocationHub={isLocationHub}
+            isLocationHub={props.type === "hub" && props.isLocationHub}
           />
         </Typography>
       </Container>

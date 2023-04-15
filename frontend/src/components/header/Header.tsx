@@ -342,7 +342,6 @@ export default function Header({
   const onNotificationsClose = () => setAnchorEl(null);
 
   const getLogo = () => {
-    console.log("get logo called");
     let imageUrl = "/images";
     if (isHubPage && hubName) {
       imageUrl += `/hub_logos/ch_${hubName.toLowerCase()}_logo.svg`;

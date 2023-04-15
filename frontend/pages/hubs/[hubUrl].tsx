@@ -183,6 +183,12 @@ export default function Hub({
   const hubQuickInfoRef = useRef(null);
   const hubProjectsButtonRef = useRef(null);
   const [nextStepTriggeredBy, setNextStepTriggeredBy] = useState(false);
+  const [requestTabNavigation, tabNavigationRequested] = useState('foo');
+  
+  const navRequested = tabKey => {
+    console.log('navBar callback', tabKey);
+    tabNavigationRequested(tabKey);
+  }
 
   const scrollToSolutions = () => {
     setNextStepTriggeredBy("showProjectsButton");
@@ -256,7 +262,6 @@ export default function Hub({
         customFooterImage={hubData.custom_footer_image && getImageUrl(hubData.custom_footer_image)}
       >
         <div>
-          <NavigationSubHeader hubName={name} allHubs={allHubs} isLocationHub={isLocationHub} />
           {<DonationCampaignInformation />}
           <HubHeaderImage
             image={getImageUrl(image)}
@@ -265,6 +270,14 @@ export default function Hub({
             isLocationHub={isLocationHub}
             statBoxTitle={statBoxTitle}
             stats={stats}
+          />
+          <NavigationSubHeader
+              type={"hub"}
+            hubName={name}
+            allHubs={allHubs}
+            isLocationHub={isLocationHub}
+            hubUrl={hubUrl}
+              navigationRequested={navRequested}
           />
           <HubContent
             hubQuickInfoRef={hubQuickInfoRef}
@@ -318,6 +331,7 @@ export default function Hub({
               hubData={hubData}
               resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
               hubUrl={hubUrl}
+              tabNavigationRequested={requestTabNavigation}
             />
           </div>
         </div>

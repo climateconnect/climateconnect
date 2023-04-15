@@ -1,6 +1,5 @@
 import { makeStyles } from "@material-ui/core/styles";
 import { Container, Divider, Tab, Tabs, Theme, useMediaQuery } from "@material-ui/core";
-import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import _ from "lodash";
 import React, { Suspense, useContext, useEffect, useMemo, useRef, useState } from "react";
 import Cookies from "universal-cookie";
@@ -25,6 +24,7 @@ import LoadingContext from "../context/LoadingContext";
 import UserContext from "../context/UserContext";
 import LoadingSpinner from "../general/LoadingSpinner";
 import MobileBottomMenu from "./MobileBottomMenu";
+import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 
 const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
 const IdeasBoard = React.lazy(() => import("../ideas/IdeasBoard"));
@@ -82,6 +82,7 @@ export default function BrowseContent({
   resetTabsWhereFiltersWereApplied,
   hubUrl,
   hubAmbassador,
+    tabNavigationRequested
 }: any) {
   const initialState = {
     items: {
@@ -115,8 +116,8 @@ export default function BrowseContent({
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles();
   const TYPES_BY_TAB_VALUE = hideMembers
-    ? ["projects", "organizations", "events"]
-    : ["projects", "organizations", "events", "members"];
+    ? ["projects", "organizations"] // TODO: add "events" here, after implementing event calendar
+    : ["projects", "organizations", "members"]; // TODO: add "events" here, after implementing event calendar
   if (showIdeas) {
     TYPES_BY_TAB_VALUE.push("ideas");
   }
@@ -136,7 +137,7 @@ export default function BrowseContent({
   };
   // Always default to filters being expanded
   const [filtersExpanded, setFiltersExpanded] = useState(true);
-  // On mobile filters take up the whole screen so they aren't expanded by default
+  // On mobile filters take up the whole screen, so they aren't expanded by default
   const [filtersExandedOnMobile, setFiltersExpandedOnMobile] = useState(false);
   const [state, setState] = useState(initialState);
   const locationInputRefs = {
@@ -230,7 +231,10 @@ export default function BrowseContent({
       setInitialized(true);
     }
   }, []);
-
+  
+  const myFunction = (tabKey) => {
+    console.log('function triggered', tabKey);
+  }
   const handleTabChange = (event, newValue) => {
     // Update the state of the visual filters, like Select, Dialog, etc
     // Then actually fetch the data. We need a way to map what's
@@ -286,8 +290,8 @@ export default function BrowseContent({
   };
 
   /* We always save filter values in the url in english.
-        Therefore we need to get the name in the current language
-        when retrieving them from the query object */
+                Therefore we need to get the name in the current language
+                when retrieving them from the query object */
   const getValueInCurrentLanguage = (metadata, value) => {
     return findOptionByNameDeep({
       filterChoices: metadata.options,
