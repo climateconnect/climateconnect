@@ -25,7 +25,6 @@ import LoadingContext from "../context/LoadingContext";
 import UserContext from "../context/UserContext";
 import LoadingSpinner from "../general/LoadingSpinner";
 import MobileBottomMenu from "./MobileBottomMenu";
-import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 
 const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
 const IdeasBoard = React.lazy(() => import("../ideas/IdeasBoard"));

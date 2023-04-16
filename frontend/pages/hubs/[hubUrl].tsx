@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Fab, Typography, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import parseHtml from "html-react-parser";
 import Head from "next/head";
@@ -27,6 +27,9 @@ import NavigationSubHeader from "../../src/components/hub/NavigationSubHeader";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import DonationCampaignInformation from "../../src/components/staticpages/donate/DonationCampaignInformation";
 import { retrievePage } from "../../src/utils/webflow";
+import AddIcon from "@mui/icons-material/Add";
+import { Theme } from "@mui/material/styles";
+import theme from "../../src/themes/theme";
 
 const useStyles = makeStyles((theme) => ({
   contentRefContainer: {
@@ -45,6 +48,14 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 800,
     marginTop: theme.spacing(2),
     textAlign: "center",
+  },
+}));
+
+const shareProjectFabStyle = makeStyles((theme) => ({
+  fabShareProject: {
+    position: "fixed",
+    // bottom: theme.spacing(5),
+    right: theme.spacing(3),
   },
 }));
 
@@ -142,6 +153,7 @@ export default function Hub({
   hubDescription,
 }) {
   const classes = useStyles();
+  let fabClass = shareProjectFabStyle(false);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
   const token = new Cookies().get("auth_token");
@@ -180,16 +192,17 @@ export default function Hub({
     })();
   }, []);
 
+  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
+
   //Refs and state for tutorial
   const hubQuickInfoRef = useRef(null);
   const hubProjectsButtonRef = useRef(null);
   const [nextStepTriggeredBy, setNextStepTriggeredBy] = useState(false);
-  const [requestTabNavigation, tabNavigationRequested] = useState('foo');
-  
-  const navRequested = tabKey => {
-    console.log('navBar callback', tabKey);
+  const [requestTabNavigation, tabNavigationRequested] = useState("foo");
+
+  const navRequested = (tabKey) => {
     tabNavigationRequested(tabKey);
-  }
+  };
 
   const scrollToSolutions = () => {
     setNextStepTriggeredBy("showProjectsButton");
@@ -273,12 +286,12 @@ export default function Hub({
             stats={stats}
           />
           <NavigationSubHeader
-              type={"hub"}
+            type={"hub"}
             hubName={name}
             allHubs={allHubs}
             isLocationHub={isLocationHub}
             hubUrl={hubUrl}
-              navigationRequested={navRequested}
+            navigationRequested={navRequested}
           />
           <HubContent
             hubQuickInfoRef={hubQuickInfoRef}
@@ -336,6 +349,17 @@ export default function Hub({
             />
           </div>
         </div>
+        {isSmallScreen && (
+          <Fab
+            className={fabClass.fabShareProject}
+            size="small"
+            color="primary"
+            sx={{ bottom: (theme) => (hubAmbassador ? theme.spacing(11.5) : theme.spacing(5)) }}
+            // onClick={}
+          >
+            <AddIcon />
+          </Fab>
+        )}
       </WideLayout>
     </>
   );

@@ -108,7 +108,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
         maxWidth: "2.3rem",
         minWidth: "1.3rem",
       },
-    }),
+    },
     // props.isHubPage
     //   ? {
     //       [theme.breakpoints.down("sm")]: {

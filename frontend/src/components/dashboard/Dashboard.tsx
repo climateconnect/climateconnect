@@ -10,7 +10,6 @@ import Cookies from "universal-cookie";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
-import OpenClimateMatchButton from "../climateMatch/OpenClimateMatchButton";
 import UserContext from "../context/UserContext";
 import UserImage from "./UserImage";
 import CreateIdeaDialog from "../ideas/createIdea/CreateIdeaDialog";
@@ -296,7 +295,6 @@ export default function Dashboard({ allHubs, hubData, className, headline, locat
                   },
                 ]}
               />
-              <OpenClimateMatchButton hubUrl={hubUrl} />
               {/* TODO: restore Climate Match icon and link once CM is live  */}
               {/* <Button type="submit">Climate Match</Button> */}
             </>
