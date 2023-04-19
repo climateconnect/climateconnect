@@ -9,6 +9,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 18,
     marginBottom: theme.spacing(2),
     textAlign: "center",
+    marginTop: theme.spacing(4),
   },
   headline: {
     color: theme.palette.primary.main,

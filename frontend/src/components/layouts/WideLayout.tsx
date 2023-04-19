@@ -11,6 +11,7 @@ import Header from "../header/Header";
 import ElementSpaceToTop from "../hooks/ElementSpaceToTop";
 import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
 import LayoutWrapper from "./LayoutWrapper";
+
 type ThemeProps = { noSpaceBottom?: boolean; isStaticPage?: boolean };
 const useStyles = makeStyles<Theme, ThemeProps>((theme) => ({
   main: (props) => ({
@@ -58,8 +59,10 @@ type Props = {
   hideFooter?: boolean;
   resetAlertMessage?: () => void;
   isHubPage?: boolean;
+  hubName?: string;
   hideDonationCampaign?: boolean;
   customFooterImage?: string;
+  isLocationHub?: boolean;
 };
 //Wrapper layout component for pages where the content takes the whole width of the screen
 export default function WideLayout({
@@ -85,6 +88,8 @@ export default function WideLayout({
   hideFooter,
   resetAlertMessage,
   isHubPage,
+  hubName,
+  isLocationHub,
   hideDonationCampaign,
   customFooterImage,
 }: Props) {
@@ -96,6 +101,7 @@ export default function WideLayout({
   //Atm this is simply used to slide in the donation campaign banner after a certain timeout
   const [showDonationBanner, setShowDonationBanner] = useState(false);
   const spaceToTop = ElementSpaceToTop({ el: alertEl });
+
   useEffect(() => {
     const params = getParams(window.location.href);
     if (params.message) setInitialMessage(decodeURI(params.message));
@@ -127,6 +133,8 @@ export default function WideLayout({
         noSpacingBottom={isStaticPage}
         background={headerBackground}
         isHubPage={isHubPage}
+        hubName={hubName}
+        isLocationHub={isLocationHub}
       />
       {isLoading ? (
         <LoadingContainer headerHeight={113} footerHeight={80} />

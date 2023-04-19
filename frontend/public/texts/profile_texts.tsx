@@ -207,7 +207,7 @@ export default function getProfileTexts({ profile, locale }) {
     },
     you_have_successfully_updated_your_profile: {
       en: "You have successfully updated your profile!",
-      de: "Du habst dein Profil erfolgreich aktualisiert!",
+      de: "Du hast dein Profil erfolgreich aktualisiert!",
     },
     new_to_climate_connect: {
       en: "New to Climate Connect?",

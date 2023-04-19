@@ -5,6 +5,7 @@ declare module "@mui/material" {
   interface Color {
     main: string;
     dark: string;
+    light?: string;
   }
 }
 
@@ -38,6 +39,7 @@ const coreTheme = createTheme({
       selected: "#387077",
     },
     grey: {
+      light: grey[100],
       main: grey[300],
       dark: grey[400],
     },

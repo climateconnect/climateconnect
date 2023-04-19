@@ -56,12 +56,12 @@ export default function Hubs({ hubs }) {
   const texts = getTexts({ page: "hub", locale: locale });
   return (
     <WideLayout largeFooter noSpaceBottom title={texts.climate_action_hubs}>
-      <NavigationSubHeader allHubs={hubs} />
       <HubHeaderImage
         image="/images/hubs_background.jpg"
         // TODO(unused) alt={texts.hubs_overview_image_alt}
         fullWidth
       />
+      <NavigationSubHeader type={"browse"} allHubs={hubs} />
       <Container>
         <Typography color="primary" component="h1" className={classes.h1}>
           {texts.find_climate_solutions_in_each_hub}
