@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(4),
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
-    maxHeight: 500 - theme.spacing(8),
+    maxHeight: `500 - ${theme.spacing(8)}`,
     ["@media (max-width: 760px)"]: {
       flexDirection: "column-reverse",
       maxHeight: "calc(100vh - 138px)",

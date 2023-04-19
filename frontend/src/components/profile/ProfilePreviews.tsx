@@ -80,7 +80,7 @@ export default function ProfilePreviews({
 
 function GridItem({ profile, showAdditionalInfo }) {
   return (
-    <Grid item xs={12} sm={6} md={4} lg={3} component="li">
+    <Grid xs={12} sm={6} md={4} lg={3} component="li">
       <ProfilePreview profile={profile} showAdditionalInfo={showAdditionalInfo} />
     </Grid>
   );
