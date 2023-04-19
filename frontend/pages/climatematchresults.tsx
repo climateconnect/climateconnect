@@ -8,7 +8,7 @@ export default function ClimateMatchResults() {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "climatematch", locale: locale });
   return (
-    <WideLayout useFloodStdFont title={texts.your_climate_match_results}>
+    <WideLayout title={texts.your_climate_match_results}>
       <ClimateMatchResultsRoot />
     </WideLayout>
   );
