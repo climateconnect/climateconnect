@@ -182,7 +182,23 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
   );
 };
 
-export default function Dashboard({ allHubs, hubData, className, headline, location, hubUrl }) {
+type Props = {
+  allHubs?: Array<any>;
+  hubData?: Object;
+  className?: any;
+  headline?: string;
+  location?: any;
+  hubUrl?: string;
+};
+
+export default function Dashboard({
+  allHubs,
+  hubData,
+  className,
+  headline,
+  location,
+  hubUrl,
+}: Props) {
   const classes = useStyles();
 
   const [userOrganizations, setUserOrganizations] = useState(null);
@@ -202,12 +218,6 @@ export default function Dashboard({ allHubs, hubData, className, headline, locat
 
   return (
     <div className={`${classes.welcomeBanner} ${className}`}>
-      <HorizontalSpacing size={1}>
-        <Typography variant="h4" component="h1" className={`${classes.headingText}`}>
-          {headline}
-        </Typography>
-      </HorizontalSpacing>
-
       <div className={`${classes.subsection}`}>
         <HorizontalSpacing size={1}>
           <div className={`${classes.welcomeSubsection}`}>

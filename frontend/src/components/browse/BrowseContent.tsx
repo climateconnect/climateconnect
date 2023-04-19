@@ -25,6 +25,7 @@ import LoadingContext from "../context/LoadingContext";
 import UserContext from "../context/UserContext";
 import LoadingSpinner from "../general/LoadingSpinner";
 import MobileBottomMenu from "./MobileBottomMenu";
+import HubTabsNavigation from "../hub/HubTabsNavigation";
 
 const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
 const IdeasBoard = React.lazy(() => import("../ideas/IdeasBoard"));
@@ -36,6 +37,17 @@ const TabContentWrapper = React.lazy(() => import("./TabContentWrapper"));
 
 const useStyles = makeStyles((theme) => {
   return {
+    contentRefContainer: {
+      paddingTop: theme.spacing(4),
+      position: "relative",
+      [theme.breakpoints.down("md")]: {
+        paddingTop: theme.spacing(2),
+      },
+    },
+    contentRef: {
+      position: "absolute",
+      top: -90,
+    },
     tab: {
       width: 200,
       paddingLeft: theme.spacing(2),
@@ -51,6 +63,11 @@ const useStyles = makeStyles((theme) => {
     ideasIcon: {
       marginRight: theme.spacing(1),
       color: theme.palette.primary.main,
+    },
+    hubsTabNavigation: {
+      top: -45,
+      left: 0,
+      right: 0,
     },
   };
 });
@@ -82,7 +99,7 @@ export default function BrowseContent({
   resetTabsWhereFiltersWereApplied,
   hubUrl,
   hubAmbassador,
-    tabNavigationRequested
+  contentRef,
 }: any) {
   const initialState = {
     items: {
@@ -128,7 +145,6 @@ export default function BrowseContent({
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
 
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
-  const isMobileScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const type_names = {
     projects: texts.projects,
     organizations: isNarrowScreen ? texts.orgs : texts.organizations,
@@ -231,10 +247,10 @@ export default function BrowseContent({
       setInitialized(true);
     }
   }, []);
-  
+
   const myFunction = (tabKey) => {
-    console.log('function triggered', tabKey);
-  }
+    console.log("function triggered", tabKey);
+  };
   const handleTabChange = (event, newValue) => {
     // Update the state of the visual filters, like Select, Dialog, etc
     // Then actually fetch the data. We need a way to map what's
@@ -409,7 +425,7 @@ export default function BrowseContent({
       nonFilterParams: nonFilterParams,
     });
     if (res?.closeFilters) {
-      if (isMobileScreen) setFiltersExpandedOnMobile(false);
+      if (isNarrowScreen) setFiltersExpandedOnMobile(false);
       else setFiltersExpanded(false);
     }
 
@@ -482,12 +498,12 @@ export default function BrowseContent({
   const tabContentWrapperProps = {
     tabValue: tabValue,
     TYPES_BY_TAB_VALUE: TYPES_BY_TAB_VALUE,
-    filtersExpanded: filtersExpanded,
+    filtersExpanded: isNarrowScreen ? filtersExandedOnMobile : filtersExpanded,
     handleApplyNewFilters: handleApplyNewFilters,
     filters: filters,
     handleUpdateFilterValues: handleUpdateFilterValues,
     errorMessage: errorMessage,
-    isMobileScreen: isMobileScreen,
+    isMobileScreen: isNarrowScreen,
     filtersExandedOnMobile: filtersExandedOnMobile,
     handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
     locationInputRefs: locationInputRefs,
@@ -501,28 +517,44 @@ export default function BrowseContent({
     hubName: hubName,
     nonFilterParams: nonFilterParams,
   };
+  console.log(isNarrowScreen);
+  console.log(isNarrowScreen ? filtersExandedOnMobile : filtersExpanded);
   return (
     <LoadingContext.Provider
       value={{
         spinning: isFetchingMoreData || isFiltering,
       }}
     >
-      <Container maxWidth="lg">
+      {hubData?.hub_type === "location hub" && (
+        <HubTabsNavigation
+          TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
+          tabValue={tabValue}
+          handleTabChange={handleTabChange}
+          type_names={type_names}
+          organizationsTabRef={organizationsTabRef}
+          hubUrl={hubUrl}
+          className={classes.hubsTabNavigation}
+          allHubs={allHubs}
+        />
+      )}
+      <Container maxWidth="lg" className={classes.contentRefContainer}>
+        <div ref={contentRef} className={classes.contentRef} />
         <Suspense fallback={null}>
           <FilterSection
-            filtersExpanded={isMobileScreen ? filtersExandedOnMobile : filtersExpanded}
+            filtersExpanded={isNarrowScreen ? filtersExandedOnMobile : filtersExpanded}
             onSubmit={handleSearchSubmit}
-            setFiltersExpanded={isMobileScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
+            setFiltersExpanded={isNarrowScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
             type={TYPES_BY_TAB_VALUE[tabValue]}
             customSearchBarLabels={customSearchBarLabels}
             filterButtonRef={filterButtonRef}
             searchValue={filters.search}
             hideFilterButton={tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas")}
+            applyBackgroundColor={hubData?.hub_type === "location hub"}
           />
         </Suspense>
         {/* Desktop screens: show tabs under the search bar */}
         {/* Mobile screens: show tabs fixed to the bottom of the screen */}
-        {!isNarrowScreen ? (
+        {!isNarrowScreen && hubData?.hub_type !== "location hub" && (
           <Tabs
             variant={isNarrowScreen ? "fullWidth" : "standard"}
             value={tabValue}
@@ -547,7 +579,8 @@ export default function BrowseContent({
               return <Tab {...tabProps} key={index} />;
             })}
           </Tabs>
-        ) : (
+        )}
+        {isNarrowScreen && (
           <MobileBottomMenu
             tabValue={tabValue}
             handleTabChange={handleTabChange}
@@ -558,7 +591,7 @@ export default function BrowseContent({
           />
         )}
 
-        <Divider className={classes.mainContentDivider} />
+        {hubData?.hub_type !== "location hub" && <Divider className={classes.mainContentDivider} />}
 
         <Suspense fallback={<LoadingSpinner isLoading />}>
           <TabContentWrapper type={"projects"} {...tabContentWrapperProps}>

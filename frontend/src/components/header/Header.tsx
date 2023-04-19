@@ -56,6 +56,7 @@ type StyleProps = {
   background?: string;
   isStaticPage?: boolean;
   isHubPage?: boolean;
+  isLocationHub?: boolean;
 };
 
 const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
@@ -125,12 +126,13 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
     //         minWidth: "1.3rem",
     //       },
     //     },
-    logo: {
+    logo: (props) => ({
       [theme.breakpoints.down("md")]: {
-        height: "auto",
+        height: props.isLocationHub ? 35 : "auto",
       },
       height: 60,
-    },
+      maxWidth: 180,
+    }),
     buttonMarginLeft: {
       marginLeft: theme.spacing(1),
     },
@@ -199,13 +201,17 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(2),
     },
+    languageSelectMobile: {
+      display: "flex",
+      justifyContent: "center",
+    },
   };
 });
 
-const getLinks = (path_to_redirect, texts) => [
+const getLinks = (path_to_redirect, texts, isLocationHub) => [
   {
     href: "/browse",
-    text: texts.browse,
+    text: isLocationHub ? texts.projects_worldwide : texts.browse,
     iconForDrawer: HomeIcon,
     showJustIconUnderSm: HomeIcon,
   },
@@ -225,6 +231,7 @@ const getLinks = (path_to_redirect, texts) => [
     hideDesktopIconUnderSm: true,
     vanillaIfLoggedOut: true,
     hideOnStaticPages: true,
+    alwaysDisplayDirectly: "loggedIn",
   },
   {
     href: "/share",
@@ -234,10 +241,10 @@ const getLinks = (path_to_redirect, texts) => [
     isFilledInHeader: true,
     className: "shareProjectButton",
     vanillaIfLoggedOut: true,
+    hideOnMediumScreen: isLocationHub,
   },
   {
     type: "languageSelect",
-    alwaysDisplayDirectly: true,
   },
   {
     type: "notificationsButton",
@@ -319,6 +326,7 @@ export default function Header({
   background,
   isHubPage,
   hubName,
+  isLocationHub,
 }: HeaderProps) {
   const classes = useStyles({
     fixedHeader: fixedHeader,
@@ -326,6 +334,7 @@ export default function Header({
     isStaticPage: isStaticPage,
     background: background,
     isHubPage: isHubPage,
+    isLocationHub: isLocationHub,
   });
 
   const { user, signOut, notifications, pathName, locale } = useContext(UserContext);
@@ -333,7 +342,7 @@ export default function Header({
   const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
-  const LINKS = getLinks(pathName, texts);
+  const LINKS = getLinks(pathName, texts, isLocationHub);
   const toggleShowNotifications = (event) => {
     if (!anchorEl) setAnchorEl(event.currentTarget);
     else setAnchorEl(null);
@@ -393,14 +402,14 @@ export default function Header({
     >
       <Container className={classes.container}>
         <Link href={localePrefix + "/"} className={classes.logoLink} underline="hover">
-          <img 
-            src={logo} 
-            alt={texts.climate_connect_logo} 
-            className={classes.logo} 
+          <img
+            src={logo}
+            alt={texts.climate_connect_logo}
+            className={classes.logo}
             onError={loadFallbackLogo}
           />
         </Link>
-        {isNarrowScreen ? (
+        {isNarrowScreen || (isLocationHub && isMediumScreen) ? (
           <NarrowScreenLinks
             loggedInUser={user}
             handleLogout={signOut}
@@ -571,7 +580,7 @@ function NarrowScreenLinks({
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
   const linksOutsideDrawer = LINKS.filter(
     (link) =>
-      link.alwaysDisplayDirectly &&
+      link.alwaysDisplayDirectly === true &&
       !(loggedInUser && link.onlyShowLoggedOut) &&
       !(!loggedInUser && link.onlyShowLoggedIn)
   );
@@ -671,23 +680,30 @@ function NarrowScreenLinks({
           disableBackdropTransition={true}
         >
           <List /*TODO(unused) styles={{ height: "100vh" }} */>
+            <ListItem className={classes.languageSelectMobile}>
+              <LanguageSelect transparentHeader={transparentHeader} />
+            </ListItem>
             {LINKS.filter(
               (link) =>
-                !link.alwaysDisplayDirectly &&
+                (!link.alwaysDisplayDirectly ||
+                  !(loggedInUser && link.alwaysDisplayDirectly === "loggedIn")) &&
                 !(loggedInUser && link.onlyShowLoggedOut) &&
                 !(!loggedInUser && link.onlyShowLoggedIn)
             ).map((link, index) => {
               const Icon = link.iconForDrawer;
-              return (
-                <Link href={localePrefix + link.href} key={index} underline="hover">
-                  <ListItem button component="a" onClick={closeDrawer}>
-                    <ListItemIcon>
-                      <Icon color="primary" />
-                    </ListItemIcon>
-                    <ListItemText primary={link.text} />
-                  </ListItem>
-                </Link>
-              );
+              console.log(link);
+              if (link.type !== "languageSelect") {
+                return (
+                  <Link href={localePrefix + link.href} key={index} underline="hover">
+                    <ListItem button component="a" onClick={closeDrawer}>
+                      <ListItemIcon>
+                        <Icon color="primary" />
+                      </ListItemIcon>
+                      <ListItemText primary={link.text} />
+                    </ListItem>
+                  </Link>
+                );
+              }
             })}
             {loggedInUser &&
               getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts }).map((link, index) => {

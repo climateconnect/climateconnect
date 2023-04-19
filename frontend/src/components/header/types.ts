@@ -7,4 +7,5 @@ export interface HeaderProps {
   background?: string;
   isHubPage?: boolean;
   hubName?: string;
+  isLocationHub?: boolean;
 }

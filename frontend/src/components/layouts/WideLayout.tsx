@@ -62,6 +62,7 @@ type Props = {
   hubName?: string;
   hideDonationCampaign?: boolean;
   customFooterImage?: string;
+  isLocationHub?: boolean;
 };
 //Wrapper layout component for pages where the content takes the whole width of the screen
 export default function WideLayout({
@@ -88,6 +89,7 @@ export default function WideLayout({
   resetAlertMessage,
   isHubPage,
   hubName,
+  isLocationHub,
   hideDonationCampaign,
   customFooterImage,
 }: Props) {
@@ -132,6 +134,7 @@ export default function WideLayout({
         background={headerBackground}
         isHubPage={isHubPage}
         hubName={hubName}
+        isLocationHub={isLocationHub}
       />
       {isLoading ? (
         <LoadingContainer headerHeight={113} footerHeight={80} />

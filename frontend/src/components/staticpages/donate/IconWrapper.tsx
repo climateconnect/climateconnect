@@ -8,15 +8,15 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     width: "100%",
   },
-  leftWrapper: {
-    padding: theme.spacing(4),
-    paddingTop: theme.spacing(1),
+  leftWrapper: (props) => ({
+    padding: props.noPadding ? 0 : theme.spacing(4),
+    paddingTop: props.noPadding ? 0 : theme.spacing(1),
     paddingBottom: 0,
-  },
+  }),
 }));
 
-export default function IconWrapper({ src }) {
-  const classes = useStyles();
+export default function IconWrapper({ src, noPadding }) {
+  const classes = useStyles({ noPadding: noPadding });
   return (
     <div className={classes.leftWrapper}>
       <div className={classes.iconContainer}>

@@ -11,6 +11,9 @@ const useStyles = makeStyles<Theme, any>((theme) => ({
     backgroundPosition: "bottom center",
     zIndex: -1,
     width: "100%",
+    isLocationHub: {
+      marginTop: 200,
+    },
     [theme.breakpoints.down("md")]: {
       minHeight: 100,
       backgroundSize: "cover",
@@ -19,19 +22,9 @@ const useStyles = makeStyles<Theme, any>((theme) => ({
     [theme.breakpoints.up("md")]: {
       position: props.isLocationHub ? "absolute" : "relative", // we want to have absolute positioning when its a location hub and user is not logged out
       zIndex: -1,
+      minHeight: 200,
     },
   }),
-  dashboardContainer: {
-    marginTop: theme.spacing(4),
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-  },
-  infoBoxContainer: {
-    marginTop: theme.spacing(6),
-    marginLeft: theme.spacing(2),
-    float: "right",
-  },
   img: (props) => ({
     width: props.fullWidth ? "80%" : "50%",
     visibility: "hidden",
