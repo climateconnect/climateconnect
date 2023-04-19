@@ -252,7 +252,7 @@ export default function RankingQuestionTypeBody({
                         )}
                       </Draggable>
                     ) : (
-                      <Chip className={classes.selectedAnswerChip} color="secondary"/>
+                      <Chip className={classes.selectedAnswerChip} color="secondary" />
                     )}
                   </div>
                 ))}

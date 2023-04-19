@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     position: "relative",
     width: "100%",
-    height: "100vh"
+    height: "100vh",
   },
   loadingOverlay: {
     background: theme.palette.primary.main,
@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: theme.spacing(4),
     zIndex: 10,
     display: "flex",
-    justifyContent: "center"
+    justifyContent: "center",
   },
 }));
 
@@ -71,7 +71,7 @@ export default function ClimateMatchResultsRoot({}) {
   const token = cookies.get("auth_token");
   const climatematch_token = cookies.get("climatematch_token");
   const [loading, setLoading] = useState(true);
-  const classes = useStyles({loading: loading});
+  const classes = useStyles({ loading: loading });
 
   const [suggestions, setSuggestions] = useState<any>({
     hasMore: true,
@@ -105,7 +105,7 @@ export default function ClimateMatchResultsRoot({}) {
           page: page,
           //TODO(unused) texts: texts,
           locale: locale,
-          hubUrl: params.from_hub ? params.from_hub : fromHub
+          hubUrl: params.from_hub ? params.from_hub : fromHub,
         });
         setPage(page + 1);
         setFromHub(result.hub);
@@ -133,7 +133,7 @@ export default function ClimateMatchResultsRoot({}) {
         page: page,
         //TODO(unused) texts: texts,
         locale: locale,
-        hubUrl: fromHub
+        hubUrl: fromHub,
       });
       setPage(page + 1);
       setSuggestions({
@@ -207,8 +207,10 @@ export default function ClimateMatchResultsRoot({}) {
 
 const getSuggestions = async ({ token, page, climatematch_token, locale, hubUrl }) => {
   try {
-    const hubParameter = hubUrl ? `&hub=${hubUrl}` : ""
-    const url = `/api/climatematch_results/?range_start=${page * 10}&range_end=${(page + 1) * 10}${hubParameter}`
+    const hubParameter = hubUrl ? `&hub=${hubUrl}` : "";
+    const url = `/api/climatematch_results/?range_start=${page * 10}&range_end=${
+      (page + 1) * 10
+    }${hubParameter}`;
     const args: any = {
       method: "get",
       url: url,

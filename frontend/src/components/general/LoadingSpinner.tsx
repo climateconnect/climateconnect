@@ -13,7 +13,7 @@ const useStyles = makeStyles<Theme, { noMarginTop?: boolean; color?: string }>((
   text: (props) => ({
     marginTop: theme.spacing(2),
     textAlign: "center",
-    color: props.color
+    color: props.color,
   }),
   progressAndMessageContainer: {
     textAlign: "center",

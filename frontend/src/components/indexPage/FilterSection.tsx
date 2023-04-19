@@ -53,16 +53,16 @@ const useStyles = makeStyles((theme) => {
 });
 
 type Props = {
-  filtersExpanded: boolean,
-  onSubmit: Function,
-  setFiltersExpanded: Function,
-  type?: any,
-  customSearchBarLabels?: any,
-  filterButtonRef?: any,
-  searchValue?: any,
-  hideFilterButton?: boolean,
-  applyBackgroundColor?: boolean,
-}
+  filtersExpanded: boolean;
+  onSubmit: Function;
+  setFiltersExpanded: Function;
+  type?: any;
+  customSearchBarLabels?: any;
+  filterButtonRef?: any;
+  searchValue?: any;
+  hideFilterButton?: boolean;
+  applyBackgroundColor?: boolean;
+};
 
 export default function FilterSection({
   filtersExpanded,

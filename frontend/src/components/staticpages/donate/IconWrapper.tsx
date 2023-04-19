@@ -5,7 +5,6 @@ type MakeStylesProps = {
   noPadding?: boolean;
 };
 
-
 const useStyles = makeStyles((theme) => ({
   iconContainer: {
     width: 40,
@@ -21,9 +20,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type Props = {
-  src: string,
-  noPadding?: boolean
-}
+  src: string;
+  noPadding?: boolean;
+};
 
 export default function IconWrapper({ src, noPadding }: Props) {
   const classes = useStyles({ noPadding: noPadding });

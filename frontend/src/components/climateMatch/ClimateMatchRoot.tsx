@@ -120,8 +120,8 @@ export default function ClimateMatchRoot() {
         if (!user) {
           handleSetClimateMatchCookie(response.data);
         }
-        const fromHubParam = fromHub ? `?from_hub=${fromHub}` : ""
-        const url = `/climatematchresults${fromHubParam}`
+        const fromHubParam = fromHub ? `?from_hub=${fromHub}` : "";
+        const url = `/climatematchresults${fromHubParam}`;
         Router.push(url);
       })
       .catch(function (error) {
