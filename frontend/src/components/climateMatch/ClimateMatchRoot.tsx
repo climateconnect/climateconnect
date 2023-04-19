@@ -177,7 +177,7 @@ export default function ClimateMatchRoot() {
         <WelcomeToClimateMatch
           isLoading={isLoading}
           goToNextStep={goToNextStep}
-          //TODO(unused) hub={fromHub}
+          fromHub={fromHub}
           hasDoneClimateMatch={hasDoneClimateMatch}
         />
       ) : (
