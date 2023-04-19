@@ -77,7 +77,7 @@ export default function OrganizationPreviews({
 
 function GridItem({ organization }) {
   return (
-    <Grid key={organization.url_slug} item xs={12} sm={6} md={4} lg={3} component="li">
+    <Grid key={organization.url_slug} xs={12} sm={6} md={4} lg={3} component="li">
       <OrganizationPreview organization={organization} />
     </Grid>
   );
