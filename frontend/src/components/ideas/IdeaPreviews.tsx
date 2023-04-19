@@ -1,4 +1,4 @@
-import Grid from '@mui/material/Grid';
+import Grid from "@mui/material/Unstable_Grid2";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import InfiniteScroll from "react-infinite-scroller";
@@ -148,7 +148,6 @@ function GridItem({
   return (
     <Grid
       key={idea ? idea.url_slug : "createCard"}
-      item
       xs={6}
       sm={4}
       md={hasIdeaOpen ? 6 : 3}

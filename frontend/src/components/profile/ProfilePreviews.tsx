@@ -1,4 +1,4 @@
-import Grid from '@mui/material/Grid';
+import Grid from "@mui/material/Unstable_Grid2";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import InfiniteScroll from "react-infinite-scroller";
@@ -80,7 +80,7 @@ export default function ProfilePreviews({
 
 function GridItem({ profile, showAdditionalInfo }) {
   return (
-    <Grid item xs={12} sm={6} md={4} lg={3} component="li">
+    <Grid xs={12} sm={6} md={4} lg={3} component="li">
       <ProfilePreview profile={profile} showAdditionalInfo={showAdditionalInfo} />
     </Grid>
   );

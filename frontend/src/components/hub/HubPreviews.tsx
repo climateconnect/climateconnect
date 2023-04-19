@@ -1,5 +1,5 @@
 import React from "react";
-import Grid from '@mui/material/Grid';
+import Grid from "@mui/material/Unstable_Grid2";
 import makeStyles from "@mui/styles/makeStyles";
 import HubPreview from "./HubPreview";
 
@@ -17,7 +17,7 @@ export default function HubPreviews({ hubs, className }) {
   return (
     <Grid className={`${classes.reset} ${className}`} spacing={2} container component="ul">
       {hubs.map((hub, index) => (
-        <Grid key={index} item xs={12} sm={6} md={4} lg={3} component="li">
+        <Grid key={index} xs={12} sm={6} md={4} lg={3} component="li">
           <HubPreview hub={hub} />
         </Grid>
       ))}
