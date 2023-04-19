@@ -7,7 +7,7 @@ import UserContext from "../../context/UserContext";
 import DropDownList from "../../header/DropDownList";
 
 type MakeStylesProps = {
-  height: Number;
+  height: number;
 };
 
 const useStyles = makeStyles((theme) => ({

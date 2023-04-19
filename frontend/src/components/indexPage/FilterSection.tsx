@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, Theme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import TuneIcon from "@mui/icons-material/Tune";
@@ -8,7 +8,7 @@ import UserContext from "../context/UserContext";
 import FilterSearchBar from "../filter/FilterSearchBar";
 
 type MakeStylesProps = {
-  applyBackgroundColor: boolean;
+  applyBackgroundColor?: boolean;
 };
 
 const useStyles = makeStyles((theme) => {
@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => {
     filterButton: (props: MakeStylesProps) => ({
       borderColor: "#707070",
       height: 40,
-      background: props.applyBackgroundColor && "rgba(255, 255, 255, 0.9)",
+      background: props.applyBackgroundColor ? "rgba(255, 255, 255, 0.9)" : "default",
     }),
     rightSidePlaceholder: {
       width: 100,
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => {
       maxWidth: 650,
       margin: "0 auto",
       borderColor: "#000",
-      background: props.applyBackgroundColor && "rgba(255, 255, 255, 0.9)",
+      background: props.applyBackgroundColor ? "rgba(255, 255, 255, 0.9)" : "default",
     }),
     filterSectionTabsWithContent: {
       marginBottom: theme.spacing(3),
@@ -52,6 +52,18 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
+type Props = {
+  filtersExpanded: boolean;
+  onSubmit: Function;
+  setFiltersExpanded: Function;
+  type?: any;
+  customSearchBarLabels?: any;
+  filterButtonRef?: any;
+  searchValue?: any;
+  hideFilterButton?: boolean;
+  applyBackgroundColor?: boolean;
+};
+
 export default function FilterSection({
   filtersExpanded,
   onSubmit,
@@ -62,7 +74,7 @@ export default function FilterSection({
   searchValue,
   hideFilterButton,
   applyBackgroundColor,
-}) {
+}: Props) {
   const classes = useStyles({
     applyBackgroundColor: applyBackgroundColor,
   });

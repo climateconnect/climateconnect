@@ -10,10 +10,11 @@ const useStyles = makeStyles<Theme, { noMarginTop?: boolean; color?: string }>((
     marginTop: props.noMarginTop ? 0 : "48px",
     color: props.color ? props.color : "default",
   }),
-  text: {
+  text: (props) => ({
     marginTop: theme.spacing(2),
     textAlign: "center",
-  },
+    color: props.color,
+  }),
   progressAndMessageContainer: {
     textAlign: "center",
   },

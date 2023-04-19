@@ -13,6 +13,7 @@ import UserContext from "../context/UserContext";
 import LoadingSpinner from "../general/LoadingSpinner";
 import ClimateMatchResult from "./ClimateMatchResult";
 import ClimateMatchResultsOverviewBar from "./ClimateMatchResultsOverviewBar";
+import { getParams } from "../../../public/lib/generalOperations";
 
 const useStyles = makeStyles((theme) => ({
   headerContainer: {
@@ -43,6 +44,11 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
   },
+  root: {
+    position: "relative",
+    width: "100%",
+    height: "100vh",
+  },
   loadingOverlay: {
     background: theme.palette.primary.main,
     position: "absolute",
@@ -53,19 +59,19 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: theme.spacing(4),
     zIndex: 10,
     display: "flex",
-    alignItems: "center",
+    justifyContent: "center",
   },
 }));
 
 //TODO: Replace by locationhub select as first step of climatematch if no hub is passed
 const FALLBACK_HUB = "test";
 
-export default function ClimateMatchResultsRoot() {
-  const classes = useStyles();
+export default function ClimateMatchResultsRoot({}) {
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
   const climatematch_token = cookies.get("climatematch_token");
   const [loading, setLoading] = useState(true);
+  const classes = useStyles({ loading: loading });
 
   const [suggestions, setSuggestions] = useState<any>({
     hasMore: true,
@@ -84,6 +90,7 @@ export default function ClimateMatchResultsRoot() {
     (async () => {
       try {
         setIsFetchingMore(true);
+        const params = getParams(window.location.href);
         if (!token && !climatematch_token) {
           return Router.push({
             pathname: "/climatematch",
@@ -98,6 +105,7 @@ export default function ClimateMatchResultsRoot() {
           page: page,
           //TODO(unused) texts: texts,
           locale: locale,
+          hubUrl: params.from_hub ? params.from_hub : fromHub,
         });
         setPage(page + 1);
         setFromHub(result.hub);
@@ -113,7 +121,6 @@ export default function ClimateMatchResultsRoot() {
       }
     })();
   }, []);
-
   const loadMore = async () => {
     // Sometimes InfiniteScroll calls loadMore twice really fast. Therefore
     // to improve performance, we aim to guard against subsequent
@@ -126,6 +133,7 @@ export default function ClimateMatchResultsRoot() {
         page: page,
         //TODO(unused) texts: texts,
         locale: locale,
+        hubUrl: fromHub,
       });
       setPage(page + 1);
       setSuggestions({
@@ -138,7 +146,7 @@ export default function ClimateMatchResultsRoot() {
   };
 
   return (
-    <div /*TODO(unused) className={classes.root} */>
+    <div className={classes.root}>
       {loading ? (
         <div className={classes.loadingOverlay}>
           <LoadingSpinner
@@ -197,11 +205,15 @@ export default function ClimateMatchResultsRoot() {
   );
 }
 
-const getSuggestions = async ({ token, page, climatematch_token, locale }) => {
+const getSuggestions = async ({ token, page, climatematch_token, locale, hubUrl }) => {
   try {
+    const hubParameter = hubUrl ? `&hub=${hubUrl}` : "";
+    const url = `/api/climatematch_results/?range_start=${page * 10}&range_end=${
+      (page + 1) * 10
+    }${hubParameter}`;
     const args: any = {
       method: "get",
-      url: `/api/climatematch_results/?range_start=${page * 10}&range_end=${(page + 1) * 10}`,
+      url: url,
       locale: locale,
     };
     if (token) {
