@@ -30,20 +30,20 @@ export default function DatePicker({
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <DatePickerComponent
         className={className}
-        disableToolbar
-        variant="inline"
+        // disableToolbar
+        // variant="inline"
         format="MM/dd/yyyy"
-        margin="normal"
+        // margin="normal"
         label={label}
         value={date ? date : null}
         onChange={handleDateChange}
-        KeyboardButtonProps={{
-          "aria-label": "change date",
-        }}
+        // KeyboardButtonProps={{
+        //   "aria-label": "change date",
+        // }}
         maxDate={maxDate && maxDate}
         minDate={minDate && minDate}
-        autoOk
-        required={required}
+        // autoOk
+        // required={required}
       />
     </LocalizationProvider>
   );
