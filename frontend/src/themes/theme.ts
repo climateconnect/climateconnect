@@ -88,8 +88,8 @@ const theme = createTheme(coreTheme, {
         }
 
         .tk-flood-std { font-family: "flood-std",sans-serif; }
-      `
-   },
+      `,
+    },
     MuiButton: {
       variants: [
         {

@@ -8,27 +8,31 @@ import IconWrapper from "../staticpages/donate/IconWrapper";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 
 type MakeStylesProps = {
   isLocationHub: boolean;
 };
 
 const useStyles = makeStyles((theme) => ({
-  root: (props: MakeStylesProps) => ({
+  root: {
+    display: "flex",
+    flexDirection: "column",
+    [theme.breakpoints.down("md")]: {
+      marginTop: theme.spacing(0),
+      marginBottom: theme.spacing(-6),
+    },
+  },
+  contentContainer: (props: MakeStylesProps) => ({
     minWidth: 300,
     background: theme.palette.primary.main,
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-around",
-
     maxWidth: "800px",
     borderRadius: 5,
     border: `3px solid ${theme.palette.primary.main}`,
     marginTop: props.isLocationHub ? theme.spacing(2) : theme.spacing(-11),
-    [theme.breakpoints.down("md")]: {
-      marginTop: theme.spacing(0),
-      marginBottom: theme.spacing(-6),
-    },
 
     ["@media(max-width:960px)"]: {
       maxWidth: 550,
@@ -164,9 +168,9 @@ export default function LoggedOutLocationHubBox({ headline, isLocationHub, locat
   }
 
   return (
-    <>
+    <div className={classes.root}>
       {isNarrowScreen && <Headline />}
-      <div className={classes.root}>
+      <div className={classes.contentContainer}>
         {!isNarrowScreen && <Headline />}
         <div className={classes.lowerBoxWrapper}>
           <div className={classes.advantagesBox}>
@@ -176,11 +180,15 @@ export default function LoggedOutLocationHubBox({ headline, isLocationHub, locat
           </div>
         </div>
         <div className={classes.buttonContainer}>
-          <Button variant="contained" className={classes.signUpButton}>
+          <Button
+            variant="contained"
+            href={`${getLocalePrefix(locale)}/signup`}
+            className={classes.signUpButton}
+          >
             {isNarrowScreen ? texts.sign_up_now : texts.sign_up_now_to_make_a_difference}
           </Button>
         </div>
       </div>
-    </>
+    </div>
   );
 }

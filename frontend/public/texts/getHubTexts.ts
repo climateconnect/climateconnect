@@ -136,7 +136,8 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
       de: "Brauchst du Unterstützung?",
     },
     local_ambassador_is_there_for_you: {
-      en: `${hubAmbassador?.user?.first_name} is responsible for the ClimateHub ${hubName} and is there for you`,
+      en: `${hubAmbassador?.user?.first_name} is responsible for the ClimateHub ${hubName} and is there for you.`,
+      de: `${hubAmbassador?.user?.first_name} koordiniert den ClimateHub ${hubName} und ist für dich da.`,
     },
   };
 

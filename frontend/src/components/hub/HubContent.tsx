@@ -178,7 +178,6 @@ export default function HubContent({
                   <LoggedOutLocationHubBox
                     headline={headline}
                     isLocationHub={isLocationHub}
-                    hubUrl={hubUrl}
                     location={hubData.name}
                   />
                 )}
