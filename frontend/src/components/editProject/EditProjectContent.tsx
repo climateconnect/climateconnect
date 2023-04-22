@@ -253,7 +253,6 @@ export default function EditProjectContent({
           )}
           {statusesWithEndDate.includes(project.status.id) && (
             <DatePicker
-              className={classes.datePicker}
               label={texts.end_date}
               date={project.end_date}
               handleChange={(newDate) => handleChangeProject(newDate, "end_date")}
