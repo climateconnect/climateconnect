@@ -1,5 +1,5 @@
-import { Link, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Link, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import NextCookies from "next-cookies";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
@@ -104,7 +104,9 @@ export default function EditProjectPage({
       <Layout className={classes.root} title={texts.project_not_found}>
         <Typography className={classes.errorTitle} variant="h3">
           {texts.project_does_not_exist}{" "}
-          <Link href={getLocalePrefix(locale) + "/share"}>{texts.click_here}</Link>{" "}
+          <Link href={getLocalePrefix(locale) + "/share"} underline="hover">
+            {texts.click_here}
+          </Link>{" "}
           {texts.to_create_a_project}
         </Typography>
       </Layout>

@@ -4,14 +4,14 @@ import {
   Container,
   IconButton,
   Link,
-  makeStyles,
   Theme,
   Typography,
   useMediaQuery,
-} from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import CloseIcon from "@mui/icons-material/Close";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
     fontWeight: 600,
     color: "white",
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       textAlign: "left",
     },
   },
@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(4),
     marginBottom: theme.spacing(1),
     background: "white",
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       marginTop: theme.spacing(-2),
       marginBottom: theme.spacing(1),
     },
@@ -105,7 +105,7 @@ export default function DonationCampaignInformation() {
   const [open, setOpen] = React.useState(!cookies.get("hideDonationCampaign"));
   const [expanded, setExpanded] = React.useState(false);
   const { donationGoal, locale } = useContext(UserContext);
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const texts = getTexts({ page: "donate", locale: locale, classes: classes });
 
   const handleClose = () => {
@@ -123,7 +123,7 @@ export default function DonationCampaignInformation() {
     <>
       {open && (
         <div className={classes.root}>
-          <IconButton className={classes.closeButton} onClick={handleClose}>
+          <IconButton className={classes.closeButton} onClick={handleClose} size="large">
             <CloseIcon />
           </IconButton>
           <div className={classes.topLineContainer}>

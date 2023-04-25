@@ -1,6 +1,7 @@
-import { Button, makeStyles, Typography } from "@material-ui/core";
-import AccountBoxIcon from "@material-ui/icons/AccountBox";
-import LocationOnIcon from "@material-ui/icons/LocationOn";
+import { Button, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 import React, { useContext, useEffect } from "react";
 
 import ROLE_TYPES from "../../../public/data/role_types";

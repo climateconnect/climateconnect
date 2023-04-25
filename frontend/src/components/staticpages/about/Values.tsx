@@ -1,6 +1,7 @@
-import { Container, makeStyles, Typography } from "@material-ui/core";
-import GroupWorkOutlinedIcon from "@material-ui/icons/GroupWorkOutlined";
-import LockOpenIcon from "@material-ui/icons/LockOpen";
+import { Container, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import GroupWorkOutlinedIcon from "@mui/icons-material/GroupWorkOutlined";
+import LockOpenIcon from "@mui/icons-material/LockOpen";
 import React, { useContext } from "react";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
@@ -12,14 +13,14 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(5),
     paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(2),
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       paddingTop: theme.spacing(4),
     },
   },
   wrapper: {
     display: "flex",
     alignItems: "center",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       flexDirection: "column",
       alignItems: "center",
     },
@@ -29,10 +30,10 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 600,
     maxWidth: 700,
     marginBottom: theme.spacing(2),
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       textAlign: "center",
     },
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       marginBottom: 0,
     },
   },
@@ -43,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     paddingLeft: theme.spacing(16),
     position: "relative",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       paddingLeft: 0,
       paddingTop: 40,
       width: "100%",
@@ -66,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundSize: "contain",
     backgroundRepeat: "no-repeat",
     width: 550,
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       left: 0,
       right: 0,
       marginLeft: "auto",
@@ -74,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
       width: 550,
       top: 0,
     },
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       left: -30,
       top: 5,
     },

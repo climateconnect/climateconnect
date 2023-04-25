@@ -1,4 +1,4 @@
-import { Link } from "@material-ui/core";
+import { Link } from "@mui/material";
 import React from "react";
 
 export function getFoodHubDescription() {
@@ -38,7 +38,10 @@ export function getFoodHubDescription() {
           vegan or vegatarian diet. But even lowering meat and dairy products can have a great
           impact and at scale can be more effective than a few people going vegan. Currently a diet
           harmful to the climate is incentivized more than a climate friendly diet. According to{" "}
-          <Link href="https://www.greenpeace.org/eu-unit/issues/nature-food/1803/feeding-problem-dangerous-intensification-animal-farming/">
+          <Link
+            href="https://www.greenpeace.org/eu-unit/issues/nature-food/1803/feeding-problem-dangerous-intensification-animal-farming/"
+            underline="hover"
+          >
             research by Greenpeace
           </Link>{" "}
           the EU is currently spending around 71% of its farmland to feed livestock which is only
@@ -54,7 +57,10 @@ export function getFoodHubDescription() {
           Ganzen effektiver sein, als wenn sich nur wenige Menschen komplett vegan ernähren. Derzeit
           wird eine klimaschädliche Ernährung mehr gefördert als eine klimafreundliche Ernährung.
           Laut{" "}
-          <Link href="https://www.greenpeace.org/eu-unit/issues/nature-food/1803/feeding-problem-dangerous-intensification-animal-farming/">
+          <Link
+            href="https://www.greenpeace.org/eu-unit/issues/nature-food/1803/feeding-problem-dangerous-intensification-animal-farming/"
+            underline="hover"
+          >
             Forschung von Greenpeace
           </Link>{" "}
           werden in der EU derzeit rund 71% der landwirtschaftlichen Nutzfläche für die Fütterung
@@ -81,7 +87,10 @@ export function getFoodHubDescription() {
           on what actually makes a difference. It’s even sometimes more climate friendly to buy
           products from other countries, produced in acquaintance with the local climate, than in
           your country but using greenhouses. To illustrate this with some numbers:{" "}
-          <Link href="https://www.sciencedirect.com/science/article/abs/pii/S0921800902002616">
+          <Link
+            href="https://www.sciencedirect.com/science/article/abs/pii/S0921800902002616"
+            underline="hover"
+          >
             a study{" "}
           </Link>{" "}
           from Sweden shows that tomatoes produced in local greenhouses in Sweden outside of the
@@ -98,7 +107,10 @@ export function getFoodHubDescription() {
           Unterschied macht. Manchmal ist es sogar klimafreundlicher, Produkte aus anderen Ländern
           zu kaufen, die im Einklang mit dem lokalen Klima produziert werden, als in deinem Land, wo
           Gewächshäusern eingesetzt werden müsse. Um dies mit einigen Zahlen zu verdeutlichen:{" "}
-          <Link href="https://www.sciencedirect.com/science/article/abs/pii/S0921800902002616">
+          <Link
+            href="https://www.sciencedirect.com/science/article/abs/pii/S0921800902002616"
+            underline="hover"
+          >
             eine Studie{" "}
           </Link>{" "}
           aus Schweden zeigt, dass Tomaten, die in lokalen Gewächshäusern in Schweden außerhalb der
@@ -158,13 +170,21 @@ export function getFoodHubDescription() {
           forcing animals to grow up in horrible conditions while still being able to eat a product
           that is exactly the same as meat from an animal. Just recently the Singapore Food Acency
           was{" "}
-          <Link href="https://www.theguardian.com/environment/2020/dec/02/no-kill-lab-grown-meat-to-go-on-sale-for-first-time">
+          <Link
+            href="https://www.theguardian.com/environment/2020/dec/02/no-kill-lab-grown-meat-to-go-on-sale-for-first-time"
+            underline="hover"
+          >
             the first authority to approve a lab-grown meat product as safe for market
           </Link>
           . While lab-grown meat will be much more expensive when it starts being sold (likely in
           2021) the price will rapidly decrease as larger amounts are produced and more competition
           enters the market. According to{" "}
-          <Link href="https://edu.gcfglobal.org/en/thenow/what-is-labgrown-meat/1/">GCFGlobal</Link>{" "}
+          <Link
+            href="https://edu.gcfglobal.org/en/thenow/what-is-labgrown-meat/1/"
+            underline="hover"
+          >
+            GCFGlobal
+          </Link>{" "}
           Lab grown meat is significantly more climate-friendly as it requires 45% less energy,
           99%(!) less land use, and produces 96% fewer greenhouse gas emissions.
         </>
@@ -180,14 +200,22 @@ export function getFoodHubDescription() {
           Verschwendung von Land und Energie und das Zwingen von Tieren, unter schrecklichen
           Bedingungen aufzuwachsen, zu beenden und wir können immer noch ein Produkt essen, das
           genau dasselbe wie Fleisch von einem Tier ist. Erst kürzlich war die Singapore Food Acency{" "}
-          <Link href="https://www.theguardian.com/environment/2020/dec/02/no-kill-lab-grown-meat-to-go-on-sale-for-first-time">
+          <Link
+            href="https://www.theguardian.com/environment/2020/dec/02/no-kill-lab-grown-meat-to-go-on-sale-for-first-time"
+            underline="hover"
+          >
             die erste Behörde, die ein im Labor gezüchtetes Fleischprodukt als sicher für den Markt
             zugelassen hat
           </Link>
           . Während Fleisch aus dem Labor zu Beginn viel teurer sein wird (Verkaufsstart
           wahrscheinlich im Jahr 2021), wird der Preis schnell sinken, wenn größere Mengen
           produziert werden und mehr Konkurrenz auf den Markt kommt. Laut{" "}
-          <Link href="https://edu.gcfglobal.org/en/thenow/what-is-labgrown-meat/1/">GCFGlobal</Link>{" "}
+          <Link
+            href="https://edu.gcfglobal.org/en/thenow/what-is-labgrown-meat/1/"
+            underline="hover"
+          >
+            GCFGlobal
+          </Link>{" "}
           ist Fleisch aus dem Labor deutlich klimafreundlicher, da es 45% weniger Energie, 99%(!)
           weniger Landverbrauch benötigt und 96% weniger Treibhausgasemissionen produziert.
         </>

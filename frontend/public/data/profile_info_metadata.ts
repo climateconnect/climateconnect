@@ -1,4 +1,4 @@
-import PlaceIcon from "@material-ui/icons/Place";
+import PlaceIcon from "@mui/icons-material/Place";
 import getTexts from "../texts/texts";
 
 export default function getProfileInfoMetadata(locale) {

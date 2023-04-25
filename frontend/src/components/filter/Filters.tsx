@@ -1,5 +1,5 @@
-import { Button, TextField, Theme, Tooltip, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Button, TextField, Theme, Tooltip, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getRadiusFilterOptions from "../../../public/data/radiusFilterOptions";
 import getTexts from "../../../public/texts/texts";
@@ -207,6 +207,7 @@ export default function Filters({
                 <div key={filter.key}>
                   <Button
                     variant="outlined"
+                    color="grey"
                     className={`${classes.filterElement} ${isInOverlay && classes.overlayField}`}
                     onClick={() => handleClickDialogOpen(filter.key)}
                   >

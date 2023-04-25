@@ -1,5 +1,5 @@
-import { Grid } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import Grid from "@mui/material/Unstable_Grid2";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import getTexts from "../../../public/texts/texts";
@@ -77,7 +77,7 @@ export default function OrganizationPreviews({
 
 function GridItem({ organization }) {
   return (
-    <Grid key={organization.url_slug} item xs={12} sm={6} md={4} lg={3} component="li">
+    <Grid key={organization.url_slug} xs={12} sm={6} md={4} lg={3} component="li">
       <OrganizationPreview organization={organization} />
     </Grid>
   );

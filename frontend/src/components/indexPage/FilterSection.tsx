@@ -1,17 +1,23 @@
-import { Button, makeStyles } from "@material-ui/core";
-import HighlightOffIcon from "@material-ui/icons/HighlightOff";
-import TuneIcon from "@material-ui/icons/Tune";
+import { Button, Theme } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import TuneIcon from "@mui/icons-material/Tune";
 import React, { useContext, useEffect, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import FilterSearchBar from "../filter/FilterSearchBar";
 
+type MakeStylesProps = {
+  applyBackgroundColor?: boolean;
+};
+
 const useStyles = makeStyles((theme) => {
   return {
-    filterButton: {
+    filterButton: (props: MakeStylesProps) => ({
       borderColor: "#707070",
       height: 40,
-    },
+      background: props.applyBackgroundColor ? "rgba(255, 255, 255, 0.9)" : "default",
+    }),
     rightSidePlaceholder: {
       width: 100,
     },
@@ -28,13 +34,14 @@ const useStyles = makeStyles((theme) => {
       alignItems: "center",
       justifyContent: "center",
     },
-    filterSearchbar: {
+    filterSearchbar: (props: MakeStylesProps) => ({
       marginRight: theme.spacing(2),
       width: "100%",
       maxWidth: 650,
       margin: "0 auto",
       borderColor: "#000",
-    },
+      background: props.applyBackgroundColor ? "rgba(255, 255, 255, 0.9)" : "default",
+    }),
     filterSectionTabsWithContent: {
       marginBottom: theme.spacing(3),
     },
@@ -45,6 +52,18 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
+type Props = {
+  filtersExpanded: boolean;
+  onSubmit: Function;
+  setFiltersExpanded: Function;
+  type?: any;
+  customSearchBarLabels?: any;
+  filterButtonRef?: any;
+  searchValue?: any;
+  hideFilterButton?: boolean;
+  applyBackgroundColor?: boolean;
+};
+
 export default function FilterSection({
   filtersExpanded,
   onSubmit,
@@ -54,8 +73,11 @@ export default function FilterSection({
   filterButtonRef,
   searchValue,
   hideFilterButton,
-}) {
-  const classes = useStyles();
+  applyBackgroundColor,
+}: Props) {
+  const classes = useStyles({
+    applyBackgroundColor: applyBackgroundColor,
+  });
   const { locale } = useContext(UserContext);
   const [value, setValue] = useState(searchValue);
   useEffect(
@@ -104,6 +126,7 @@ export default function FilterSection({
         {!hideFilterButton && (
           <Button
             variant="outlined"
+            color="grey"
             className={classes.filterButton}
             onClick={onClickExpandFilters}
             startIcon={

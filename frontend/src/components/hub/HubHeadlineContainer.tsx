@@ -1,7 +1,7 @@
-import { Button, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { Button, Theme, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
-import OpenClimateMatchButton from "../climateMatch/OpenClimateMatchButton";
 import UserContext from "../context/UserContext";
 import theme from "../../themes/theme";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -17,9 +17,9 @@ const useStyles = makeStyles((theme) => ({
 
     maxWidth: "800px",
     borderRadius: 5,
-    border: theme.borders.thick,
+    border: `3px solid ${theme.palette.primary.main}`,
     marginTop: props.isLocationHub ? theme.spacing(8) : theme.spacing(-11),
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       marginTop: props.isLocationHub ? theme.spacing(-11) : theme.spacing(-11),
     },
 
@@ -34,10 +34,10 @@ const useStyles = makeStyles((theme) => ({
 
   headline: {
     fontWeight: 700,
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       fontSize: 25,
     },
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       fontSize: 25,
     },
     color: "white",
@@ -89,7 +89,7 @@ export default function HubHeadlineContainer({ subHeadline, headline, isLocation
   const { locale, user } = useContext(UserContext);
 
   const texts = getTexts({ page: "climatematch", locale: locale });
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
   return (
     <div className={classes.root}>
@@ -106,7 +106,7 @@ export default function HubHeadlineContainer({ subHeadline, headline, isLocation
         {isLocationHub && (
           <>
             {!isNarrowScreen && <hr />}
-            {isNarrowScreen && !user ? (
+            {isNarrowScreen && !user && (
               <div className={classes.signUpContainer}>
                 <Button
                   href={getLocalePrefix(locale) + "/signup"}
@@ -115,16 +115,6 @@ export default function HubHeadlineContainer({ subHeadline, headline, isLocation
                 >
                   {texts.sign_up_now}
                 </Button>
-              </div>
-            ) : (
-              // not sure to add this button or have nothing here since there is this climatematch button on the headerbar
-              // for small screen sizes
-
-              <div className={classes.climateMatchButtonContainer}>
-                <OpenClimateMatchButton
-                  hubUrl={hubUrl}
-                  text={texts.get_active_now_with_climatematch}
-                />
               </div>
             )}
           </>

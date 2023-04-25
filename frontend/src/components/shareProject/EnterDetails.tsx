@@ -1,7 +1,7 @@
-import { Container, IconButton, TextField, Tooltip, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import Switch from "@material-ui/core/Switch";
-import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
+import { Container, IconButton, TextField, Tooltip, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import Switch from "@mui/material/Switch";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import React, { useContext } from "react";
 import getCollaborationTexts from "../../../public/data/collaborationTexts";
 import getTexts from "../../../public/texts/texts";
@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => {
       width: "50%",
       marginTop: theme.spacing(4),
       verticalAlign: "top",
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down("md")]: {
         width: "100%",
         padding: 0,
       },
@@ -246,7 +246,7 @@ export default function EnterDetails({
             >
               {texts.project_description}
               <Tooltip title={helpTexts.description} className={classes.tooltip}>
-                <IconButton>
+                <IconButton size="large">
                   <HelpOutlineIcon />
                 </IconButton>
               </Tooltip>
@@ -289,7 +289,7 @@ export default function EnterDetails({
             >
               {collaborationTexts.allow[projectData.status.status_type]}
               <Tooltip title={helpTexts.collaboration} className={classes.tooltip}>
-                <IconButton>
+                <IconButton size="large">
                   <HelpOutlineIcon />
                 </IconButton>
               </Tooltip>

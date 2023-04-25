@@ -2,14 +2,14 @@ import {
   Button,
   CircularProgress,
   Container,
-  makeStyles,
   TextField,
   Typography,
   AppBar,
   Toolbar,
   Tooltip,
   Theme,
-} from "@material-ui/core";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import _ from "lodash";
 import React, { useContext, useEffect, useState } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
@@ -17,10 +17,10 @@ import { getNestedValue } from "../../../public/lib/generalOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import VisibleFooterHeight from "../hooks/VisibleFooterHeight";
-import SaveIcon from "@material-ui/icons/Save";
-import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
+import SaveIcon from "@mui/icons-material/Save";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 
 const useStyles = makeStyles<Theme, { visibleFooterHeight?: number }>((theme) => ({
   root: {
@@ -48,7 +48,7 @@ const useStyles = makeStyles<Theme, { visibleFooterHeight?: number }>((theme) =>
     justifyContent: "space-between",
     marginBottom: theme.spacing(2),
 
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       flexDirection: "column",
       alignItems: "center",
       border: `1px solid ${theme.palette.grey[500]}`,
@@ -61,7 +61,7 @@ const useStyles = makeStyles<Theme, { visibleFooterHeight?: number }>((theme) =>
       flexGrow: 0.48,
       flexBasis: 400,
     },
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       flexGrow: 0.48,
       width: "100%",
     },
@@ -72,14 +72,14 @@ const useStyles = makeStyles<Theme, { visibleFooterHeight?: number }>((theme) =>
     width: "100%",
     justifyContent: "center",
     marginTop: theme.spacing(2),
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       marginTop: theme.spacing(0),
     },
   },
   translateButton: {
     marginRight: theme.spacing(1),
     marginLeft: theme.spacing(1),
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       minWidth: 100,
     },
     width: 265,
@@ -172,7 +172,7 @@ export default function TranslateTexts({
   });
   const [waitingForTranslation, setWaitingForTranslation] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-  const belowSmall = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const belowSmall = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
 
   useEffect(() => {
     initializeTranslationsObject();
@@ -440,7 +440,7 @@ function TranslationBlockElement({
 
       <TextField
         rows={rows}
-        rowsMax={50}
+        maxRows={50}
         variant="outlined"
         fullWidth
         multiline

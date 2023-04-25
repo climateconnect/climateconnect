@@ -1,5 +1,5 @@
-import { Button, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Button, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest, getLocalePrefix, redirect } from "../../../public/lib/apiOperations";

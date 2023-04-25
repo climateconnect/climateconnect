@@ -91,9 +91,9 @@ class StartPrivateChat(APIView):
         print("checking whether user can send message")
         can_start_chat = check_can_start_chat(request.user.user_profile)
         if not can_start_chat == True:
-            return Response({
-                "message": can_start_chat
-            }, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"message": can_start_chat}, status=status.HTTP_403_FORBIDDEN
+            )
 
         chatting_partner_user = user_profile.user
         participants = [request.user, chatting_partner_user]
@@ -113,7 +113,9 @@ class StartPrivateChat(APIView):
         if private_chat_with_both_users.exists():
             private_chat = private_chat_with_both_users[0]
         else:
-            private_chat = MessageParticipants.objects.create(chat_uuid=str(uuid4()), created_by=request.user)
+            private_chat = MessageParticipants.objects.create(
+                chat_uuid=str(uuid4()), created_by=request.user
+            )
             basic_role = Role.objects.get(role_type=0)
             for participant in participants:
                 Participant.objects.create(
@@ -138,9 +140,9 @@ class StartGroupChatView(APIView):
             )
         can_start_chat = check_can_start_chat(request.user.user_profile)
         if not can_start_chat == True:
-            return Response({
-                "message": can_start_chat
-            }, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"message": can_start_chat}, status=status.HTTP_403_FORBIDDEN
+            )
 
         if "participants" not in request.data or "group_chat_name" not in request.data:
             return Response(
@@ -157,7 +159,9 @@ class StartGroupChatView(APIView):
             )
 
         chat = MessageParticipants.objects.create(
-            chat_uuid=str(uuid4()), name=request.data["group_chat_name"], created_by=request.user
+            chat_uuid=str(uuid4()),
+            name=request.data["group_chat_name"],
+            created_by=request.user,
         )
         creator_role = Role.objects.get(role_type=2)
         member_role = Role.objects.get(role_type=0)
@@ -432,17 +436,21 @@ class SendChatMessage(APIView):
         if chat:
             # Check if this is a first message and restrict sending a message
             # if its a cold-message.
-            message_count = Message.objects.filter(
-                message_participant=chat
-            ).count()
-            num_of_words_on_a_message = len(request.data.get('message_content').split())
+            message_count = Message.objects.filter(message_participant=chat).count()
+            num_of_words_on_a_message = len(request.data.get("message_content").split())
 
-            if message_count == 0 and num_of_words_on_a_message < NUM_OF_WORDS_REQUIRED_FOR_FIRST_MESSAGE:
-                return Response({
-                    'detail': f'Dear {user.user_profile.name}, This is your first'
-                    f' interaction with a member on the platform. Please introduce yourself and the reason for'
-                    f' your outreach in {NUM_OF_WORDS_REQUIRED_FOR_FIRST_MESSAGE} or more words.'
-                }, status=status.HTTP_411_LENGTH_REQUIRED)
+            if (
+                message_count == 0
+                and num_of_words_on_a_message < NUM_OF_WORDS_REQUIRED_FOR_FIRST_MESSAGE
+            ):
+                return Response(
+                    {
+                        "detail": f"Dear {user.user_profile.name}, This is your first"
+                        f" interaction with a member on the platform. Please introduce yourself and the reason for"
+                        f" your outreach in {NUM_OF_WORDS_REQUIRED_FOR_FIRST_MESSAGE} or more words."
+                    },
+                    status=status.HTTP_411_LENGTH_REQUIRED,
+                )
             receiver_user_ids = Participant.objects.filter(
                 chat=chat, is_active=True
             ).values_list("user", flat=True)

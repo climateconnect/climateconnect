@@ -24,7 +24,7 @@ export type Project = {
 };
 export type CcLocale = "en" | "de";
 
-declare module "@material-ui/core/styles/createPalette" {
+declare module "@mui/material/styles/createPalette" {
   // augment theme type with climateconnect custom properties
   interface Palette {
     yellow: PaletteColor;

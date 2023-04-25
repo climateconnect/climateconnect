@@ -1,4 +1,5 @@
-import { Button, makeStyles, Theme, useMediaQuery } from "@material-ui/core";
+import { Button, Theme, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useRef, useState } from "react";
 import {
   getCompressedJPG,
@@ -57,7 +58,7 @@ export default function UploadImageField({ image, className, updateImages }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
 
   const handleClickInput = () => {
     setSelectedFile("");

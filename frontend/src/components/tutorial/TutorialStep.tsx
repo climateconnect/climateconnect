@@ -1,8 +1,9 @@
-import { Button, makeStyles, Popper, Typography } from "@material-ui/core";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
-import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
-import ArrowLeftIcon from "@material-ui/icons/ArrowLeft";
-import CloseIcon from "@material-ui/icons/Close";
+import { Button, Popper, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
+import CloseIcon from "@mui/icons-material/Close";
 import React, { useContext, useEffect } from "react";
 import Typist from "react-typist";
 import {
@@ -160,15 +161,15 @@ export default function TutorialStep({
             curStep.placement as any
           ) && classes.vertical
         }`}
-        modifiers={{
-          preventOverflow: {
-            enabled: false,
-            boundariesElement: "scrollParent",
-          },
-          flip: {
-            enabled: false,
-          },
-        }}
+        // modifiers={{
+        //   preventOverflow: {
+        //     enabled: false,
+        //     boundariesElement: "scrollParent",
+        //   },
+        //   flip: {
+        //     enabled: false,
+        //   },
+        // }}
       >
         {(!curStep.placement || curStep.placement === "right") && (
           <ArrowLeftIcon color="primary" className={classes.arrowLeftIcon} />

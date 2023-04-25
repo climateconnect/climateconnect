@@ -1,5 +1,5 @@
-import { Avatar, Button } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Avatar, Button } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { redirect } from "../../../public/lib/apiOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
@@ -9,7 +9,7 @@ import getTexts from "../../../public/texts/texts";
 import Cookies from "universal-cookie";
 import ContactCreatorButtonInfo from "../communication/contactcreator/ContactCreatorButtonInfo";
 import { getImageUrl } from "../../../public/lib/imageOperations";
-import SendIcon from "@material-ui/icons/Send";
+import SendIcon from "@mui/icons-material/Send";
 import theme from "../../themes/theme";
 
 const useStyles = makeStyles(() => ({

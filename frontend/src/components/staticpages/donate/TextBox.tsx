@@ -1,4 +1,5 @@
-import { Container, makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
+import { Container, Theme, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import theme from "../../../themes/theme";
 import IconWrapper from "./IconWrapper";
@@ -37,7 +38,7 @@ export default function TextBox({
   subHeadlineClass,
 }: Props) {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   return (
     <Container className={`${className} ${classes.root}`}>
       {!isNarrowScreen && <IconWrapper src={icon} />}

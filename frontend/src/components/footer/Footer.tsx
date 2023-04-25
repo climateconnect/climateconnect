@@ -1,11 +1,11 @@
-import { Box, Link, Theme, useMediaQuery } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import FacebookIcon from "@material-ui/icons/Facebook";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import GitHubIcon from "@material-ui/icons/GitHub";
-import InstagramIcon from "@material-ui/icons/Instagram";
-import TwitterIcon from "@material-ui/icons/Twitter";
-import YouTubeIcon from "@material-ui/icons/YouTube";
+import { Box, Link, Theme, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import FacebookIcon from "@mui/icons-material/Facebook";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import YouTubeIcon from "@mui/icons-material/YouTube";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       flexDirection: "column",
     },
   },
@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "auto",
     display: "flex",
     alignItems: "center",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       marginLeft: 0,
       marginTop: theme.spacing(1),
       marginBottom: theme.spacing(2),
@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
   },
   leftBox: {
     marginRight: "auto",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       marginRight: 0,
       marginBottom: theme.spacing(1),
     },
@@ -80,6 +80,9 @@ const useStyles = makeStyles((theme) => ({
   link: {
     marginRight: theme.spacing(1),
   },
+  customFooterImage: {
+    height: 100,
+  },
 }));
 
 //TODO: make footer stay on bottom on normal layout again
@@ -89,6 +92,7 @@ export default function Footer({
   noAbsolutePosition,
   showOnScrollUp,
   large,
+  customFooterImage,
 }: any) {
   if (!large)
     return (
@@ -97,14 +101,21 @@ export default function Footer({
         noSpacingTop={noSpacingTop}
         noAbsolutePosition={noAbsolutePosition}
         showOnScrollUp={showOnScrollUp}
+        customFooterImage={customFooterImage}
       />
     );
   else return <LargeFooter className={className} />;
 }
 
-const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScrollUp }) => {
+const SmallFooter = ({
+  className,
+  noSpacingTop,
+  noAbsolutePosition,
+  showOnScrollUp,
+  customFooterImage,
+}) => {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   const socialMediaLinks = [
@@ -150,24 +161,23 @@ const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScroll
     >
       <Box className={classes.flexContainer}>
         <Box className={classes.leftBox}>
-          <Link href={getLocalePrefix(locale) + "/imprint"} color="inherit">
+          <Link href={getLocalePrefix(locale) + "/imprint"} color="inherit" underline="hover">
             <span className={`${classes.inheritColor} ${classes.link}`}>{texts.imprint}</span>
           </Link>
-          <Link href={getLocalePrefix(locale) + "/privacy"} color="inherit">
+          <Link href={getLocalePrefix(locale) + "/privacy"} color="inherit" underline="hover">
             <span className={`${classes.inheritColor} ${classes.link}`}>{texts.privacy}</span>
           </Link>
-          <Link href={getLocalePrefix(locale) + "/terms"} color="inherit">
+          <Link href={getLocalePrefix(locale) + "/terms"} color="inherit" underline="hover">
             <span className={classes.inheritColor}>{texts.terms}</span>
           </Link>
         </Box>
         {!isNarrowScreen && (
           <Box component="span" className={classes.centerText}>
-            Made with <FavoriteIcon className={classes.heart} /> for{" "}
-            <img
-              className={classes.earth}
-              src="/images/earth.svg"
-              alt={texts.picture_of_our_earth}
-            />
+            {customFooterImage ? (
+              <img src={customFooterImage} className={classes.customFooterImage} />
+            ) : (
+              <MadeWithLoveForEarthSign />
+            )}
           </Box>
         )}
         <Box component="span" className={classes.rightBox}>
@@ -183,5 +193,17 @@ const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScroll
         </Box>
       </Box>
     </Box>
+  );
+};
+
+const MadeWithLoveForEarthSign = () => {
+  const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "navigation", locale: locale });
+  return (
+    <>
+      Made with <FavoriteIcon className={classes.heart} /> for{" "}
+      <img className={classes.earth} src="/images/earth.svg" alt={texts.picture_of_our_earth} />
+    </>
   );
 };

@@ -1,4 +1,6 @@
-import { Link, makeStyles, ThemeProvider, Typography } from "@material-ui/core";
+import { Link, Typography } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../../../../public/texts/texts";
 import hubTheme from "../../../themes/hubTheme";

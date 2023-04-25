@@ -1,6 +1,6 @@
-import { Avatar, Card, CardHeader, Typography } from "@material-ui/core";
+import { Avatar, Card, CardHeader, Typography } from "@mui/material";
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 
 const useStyles = makeStyles({
   slideInCard: {

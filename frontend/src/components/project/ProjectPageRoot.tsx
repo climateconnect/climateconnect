@@ -1,6 +1,7 @@
-import { Container, Tab, Tabs, Typography } from "@material-ui/core";
-import { makeStyles, Theme } from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { Container, Tab, Tabs, Typography } from "@mui/material";
+import { Theme } from "@mui/material/styles";
+import makeStyles from "@mui/styles/makeStyles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
@@ -57,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
     width: 145,
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       width: 125,
     },
   },
@@ -93,6 +94,8 @@ export default function ProjectPageRoot({
   similarProjects,
   showSimilarProjects,
   handleHideContent,
+  requestedToJoinProject,
+  handleJoinRequest,
 }) {
   const visibleFooterHeight = VisibleFooterHeight({});
   const tabContentRef = useRef(null);
@@ -111,8 +114,8 @@ export default function ProjectPageRoot({
   });
 
   const screenSize = {
-    belowTiny: useMediaQuery<Theme>((theme) => theme.breakpoints.down("xs")),
-    belowSmall: useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm")),
+    belowTiny: useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm")),
+    belowSmall: useMediaQuery<Theme>((theme) => theme.breakpoints.down("md")),
     belowMedium: showSimilarProjects
       ? useMediaQuery<Theme>("(max-width:1300px)")
       : useMediaQuery<Theme>("(max-width:1100px)"),
@@ -163,12 +166,6 @@ export default function ProjectPageRoot({
     }
   });
 
-  const [requestedToJoinProject, setRequestedToJoinProject] = useState(false);
-
-  const handleSetRequestedToJoinProject = (newValue) => {
-    setRequestedToJoinProject(newValue);
-  };
-
   /**
    * Calls backend, sending a request to join this project based
    * on user token stored in cookies.
@@ -199,11 +196,18 @@ export default function ProjectPageRoot({
           Authorization: `Token ${token}`,
         },
       });
-
-      setRequestedToJoinProject(true);
+      showFeedbackMessage({
+        message: texts.your_request_has_been_sent,
+        success: true,
+      });
+      handleJoinRequest(true);
     } catch (error) {
+      showFeedbackMessage({
+        message: error?.response?.data?.message,
+        error: true,
+      });
       if (error?.response?.data?.message === "Request already exists to join project") {
-        setRequestedToJoinProject(true);
+        handleJoinRequest(true);
       }
     }
   };
@@ -475,8 +479,6 @@ export default function ProjectPageRoot({
         toggleShowLikes={toggleShowLikes}
         token={token}
         user={user}
-        requestedToJoinProject={requestedToJoinProject}
-        handleSetRequestedToJoinProject={handleSetRequestedToJoinProject}
       />
 
       <Container className={classes.tabsContainerWithoutPadding}>
@@ -551,6 +553,7 @@ export default function ProjectPageRoot({
             toggleShowRequests={toggleShowRequests}
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
             requestedToJoinProject={requestedToJoinProject}
+            token={token}
           />
         </TabContent>
         <TabContent value={tabValue} index={1}>

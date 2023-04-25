@@ -1,4 +1,4 @@
-import { Link } from "@material-ui/core";
+import { Link } from "@mui/material";
 import React from "react";
 import { getLocalePrefix } from "../lib/apiOperations";
 
@@ -76,7 +76,10 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: (
         <>
           Go to the{" "}
-          <Link href={getLocalePrefix(locale) + "/organizations/" + organization?.url_slug}>
+          <Link
+            href={getLocalePrefix(locale) + "/organizations/" + organization?.url_slug}
+            underline="hover"
+          >
             organization page
           </Link>{" "}
           and click join to join it.
@@ -85,7 +88,10 @@ export default function getOrganizationTexts({ organization, locale }) {
       de: (
         <>
           Gehe auf die{" "}
-          <Link href={getLocalePrefix(locale) + "/organizations/" + organization?.url_slug}>
+          <Link
+            href={getLocalePrefix(locale) + "/organizations/" + organization?.url_slug}
+            underline="hover"
+          >
             Organisationsseite
           </Link>{" "}
           und klicke auf {"Join"} um der Organisation beizutreten.

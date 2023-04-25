@@ -1,6 +1,6 @@
 import React from "react";
-import { Avatar, Box, Chip, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Avatar, Box, Chip, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import Truncate from "react-truncate";
 

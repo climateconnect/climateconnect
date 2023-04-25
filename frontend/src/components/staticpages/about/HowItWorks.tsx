@@ -1,6 +1,7 @@
-import { Button, Container, makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
+import { Button, Container, Theme, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import React, { useContext } from "react";
 import Carousel from "react-multi-carousel";
 import getPitchElements from "../../../../public/data/pitch_elements";
@@ -18,7 +19,7 @@ const useStyles = makeStyles<Theme, { img?: string }>((theme) => ({
     display: "flex",
     paddingRight: theme.spacing(14),
     paddingLeft: theme.spacing(14),
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("lg")]: {
       flexDirection: "column",
       maxWidth: 440,
       justifyContent: "center",
@@ -36,7 +37,7 @@ const useStyles = makeStyles<Theme, { img?: string }>((theme) => ({
     [theme.breakpoints.up("md")]: {
       padding: theme.spacing(2),
     },
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("lg")]: {
       background: "transparent",
       flexBasis: 0,
     },
@@ -64,7 +65,7 @@ const useStyles = makeStyles<Theme, { img?: string }>((theme) => ({
   elementHeadline: {
     fontSize: 23,
     fontWeight: 600,
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("lg")]: {
       marginBottom: theme.spacing(3),
     },
   },
@@ -96,7 +97,7 @@ const responsive = {
 
 export default function HowItWorks({ headlineClass }) {
   const classes = useStyles({});
-  const isSmallerScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
+  const isSmallerScreen = useMediaQuery<Theme>(theme.breakpoints.down("lg"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "about", locale: locale });
   const pitch_elements = getPitchElements(texts);

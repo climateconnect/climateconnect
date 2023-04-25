@@ -1,4 +1,4 @@
-import { Link } from "@material-ui/core";
+import { Link } from "@mui/material";
 import React from "react";
 import { getLocalePrefix } from "../../public/lib/apiOperations";
 
@@ -15,7 +15,7 @@ const displayedMention = (
     | null
     | undefined
 ) => (
-  <Link href={getLocalePrefix(locale) + "/profiles/" + id} target="_blank">
+  <Link href={getLocalePrefix(locale) + "/profiles/" + id} target="_blank" underline="hover">
     @{display}
   </Link>
 );

@@ -1,4 +1,5 @@
-import { Button, makeStyles, Typography } from "@material-ui/core";
+import { Button, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import Carousel from "react-multi-carousel";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -11,7 +12,7 @@ const useStyles = makeStyles((theme) => {
       paddingTop: theme.spacing(2),
       maxWidth: 1280,
       margin: "0 auto",
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         paddingTop: theme.spacing(1),
       },
     },
@@ -36,7 +37,7 @@ const useStyles = makeStyles((theme) => {
       alignItems: "top",
       justifyContent: "space-between",
       marginTop: theme.spacing(1),
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         marginBottom: theme.spacing(2),
       },
     },
@@ -57,7 +58,7 @@ const useStyles = makeStyles((theme) => {
       textAlign: "center",
       fontSize: 20,
       color: theme.palette.secondary.main,
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         fontSize: 15,
       },
     },

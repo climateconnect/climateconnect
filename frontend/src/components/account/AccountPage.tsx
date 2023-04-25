@@ -1,15 +1,6 @@
-import {
-  Avatar,
-  Button,
-  Chip,
-  Container,
-  Link,
-  Tooltip,
-  Typography,
-  Divider,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import PlaceIcon from "@material-ui/icons/Place";
+import { Avatar, Button, Chip, Container, Link, Tooltip, Typography, Divider } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import PlaceIcon from "@mui/icons-material/Place";
 import React, { useContext, useState, useEffect } from "react";
 import Linkify from "react-linkify";
 import Cookies from "universal-cookie";
@@ -23,8 +14,8 @@ import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import ProfileBadge from "../profile/ProfileBadge";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import UserContext from "../context/UserContext";
-import EditSharpIcon from "@material-ui/icons/EditSharp";
-import IconButton from "@material-ui/core/IconButton";
+import EditSharpIcon from "@mui/icons-material/EditSharp";
+import IconButton from "@mui/material/IconButton";
 
 import ConfirmDialog from "../dialogs/ConfirmDialog";
 import FollowersDialog from "../dialogs/FollowersDialog";
@@ -346,12 +337,18 @@ export default function AccountPage({
             return <SelectWithText types={account.types} info={i} key={index} />;
           } else if (i.type === "array" && i?.value?.length > 0) {
             return (
-              <div key={index} className={classes.infoElement}>
+              <div key={index}>
                 <div className={classes.subtitle}>{i.name}:</div>
                 <div className={classes.marginBottom}>
                   {i && i.value && i.value.length > 0
                     ? i.value.map((entry) => (
-                        <Chip size="medium" label={entry} key={entry} className={classes.chip} />
+                        <Chip
+                          size="medium"
+                          color="secondary"
+                          label={entry}
+                          key={entry}
+                          className={classes.chip}
+                        />
                       ))
                     : i.missingMessage && <div className={classes.content}>{i.missingMessage}</div>}
                 </div>
@@ -448,7 +445,7 @@ export default function AccountPage({
       >
         <div className={classes.smallIconContainer}>
           {isOwnAccount && isSmallScreen && (
-            <IconButton href={editHref} className={classes.editButton}>
+            <IconButton href={editHref} className={classes.editButton} size="large">
               <EditSharpIcon />
             </IconButton>
           )}
@@ -497,7 +494,7 @@ export default function AccountPage({
           {account.types && (
             <Container className={classes.noPadding}>
               {account.types.map((type) => (
-                <Chip label={type.name} key={type.key} className={classes.chip} />
+                <Chip label={type.name} color="secondary" key={type.key} className={classes.chip} />
               ))}
             </Container>
           )}

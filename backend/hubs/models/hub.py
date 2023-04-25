@@ -8,6 +8,9 @@ from django.contrib.auth.models import User
 def hub_image_path(instance, filename):
     return "hubs/{}/{}".format(instance.id, filename)
 
+def hub_footer_image_path(instance, filename):
+    return "hub_footers/{}/{}".format(instance.id, filename)
+
 
 class HubStat(models.Model):
     name = models.CharField(
@@ -202,6 +205,14 @@ class Hub(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
+    )
+
+    custom_footer_image = models.ImageField(
+        help_text="Custom image to show in the footer of this specific hub, e.g. to display a grant to financed the start of the hub",
+        verbose_name="Custom footer image",
+        null=True,
+        blank=True,
+        upload_to=hub_footer_image_path,
     )
 
     class Meta:

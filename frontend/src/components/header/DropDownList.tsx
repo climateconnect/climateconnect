@@ -1,4 +1,5 @@
-import { Link, makeStyles, MenuItem, MenuList, Paper, Popper } from "@material-ui/core";
+import { Link, MenuItem, MenuList, Paper, Popper } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import UserContext from "../context/UserContext";
@@ -42,6 +43,7 @@ export default function DropDownList({
               key={index}
               href={`${getLocalePrefix(locale)}${item.href}`}
               onClick={loadOnClick && handleClickLink}
+              underline="hover"
             >
               <MenuItem component="button" className={classes.climateHubOption}>
                 {item.text}

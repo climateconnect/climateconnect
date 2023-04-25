@@ -1,4 +1,4 @@
-import LocationOnIcon from "@material-ui/icons/LocationOn";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { apiRequest } from "./apiOperations";
 import { parseOptions } from "./selectOptionsOperations";
 

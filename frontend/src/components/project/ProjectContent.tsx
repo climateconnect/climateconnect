@@ -1,7 +1,7 @@
-import { Button, Typography, Badge } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { Button, Typography, Badge } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import humanizeDuration from "humanize-duration";
 import React, { useState, useEffect, useContext } from "react";
 import TimeAgo from "react-timeago";
@@ -22,6 +22,7 @@ import ProjectStatus from "./ProjectStatus";
 import ROLE_TYPES from "../../../public/data/role_types";
 import UserContext from "../context/UserContext";
 import JoinButton from "./Buttons/JoinButton";
+import { getMembershipRequests } from "../../../public/lib/projectOperations";
 
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
@@ -169,28 +170,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-/**
- * Calls endpoint to return a current list
- * of users that have requested to
- * join a specific project (i.e. requested membership).
- *
- * Note that the response includes a list of requests
- * (with corresponding request ID), and the users themselves.
- */
-async function getMembershipRequests(url_slug) {
-  const resp = await apiRequest({
-    method: "get",
-    url: `/api/projects/${url_slug}/requesters/`,
-  });
-
-  if (!resp?.data?.results) {
-    // TODO: error appropriately here
-  }
-
-  // TODO: we should probably have an associated timestamp with each request too.
-  return resp.data.results;
-}
-
 export default function ProjectContent({
   collaborationSectionRef,
   discussionTabLabel,
@@ -205,6 +184,7 @@ export default function ProjectContent({
   toggleShowRequests,
   handleSendProjectJoinRequest,
   requestedToJoinProject,
+  token,
 }) {
   const classes = useStyles({ isPersonalProject: project.isPersonalProject });
   const { user, locale } = useContext(UserContext);
@@ -221,20 +201,27 @@ export default function ProjectContent({
   const [requestersRetrieved, setRequestersRetrieved] = useState(false);
   // Fetch and populate requesters on initial load
   useEffect(async () => {
+    //short circuit if the user doesn't have the necessary permissions to see join requests
+    if (!(user_permission && hasAdminPermissions)) {
+      return;
+    }
     // Returns an array of objects with an ID (request ID) and
     // associated user profile.
-    const membershipRequests = await getMembershipRequests(project.url_slug);
-
-    // Now transform to a shape of objects where a specific request ID is
-    // alongside a user profile.
-    const userRequests = membershipRequests.map((r) => {
-      const user = {};
-      user.requestId = r.id;
-      user.user = r.user_profile;
-      return user;
-    });
-    setRequesters(userRequests);
-    setRequestersRetrieved(true);
+    try {
+      const membershipRequests = await getMembershipRequests(project.url_slug, locale, token);
+      // Now transform to a shape of objects where a specific request ID is
+      // alongside a user profile.
+      const userRequests = membershipRequests.map((r) => {
+        const user = {};
+        user.requestId = r.id;
+        user.user = r.user_profile;
+        return user;
+      });
+      setRequesters(userRequests);
+      setRequestersRetrieved(true);
+    } catch (e) {
+      console.log(e.response.data);
+    }
   }, []);
 
   const CalculateMaxDisplayedDescriptionLength = (description) => {
@@ -317,6 +304,7 @@ export default function ProjectContent({
             onClose={toggleShowRequests}
             user={user}
             loading={!requestersRetrieved}
+            user_permission={user_permission}
           />
 
           {/* Note: created date is not the same as the start date, for projects */}

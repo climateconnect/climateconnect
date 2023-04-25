@@ -5,13 +5,13 @@ import {
   Divider,
   LinearProgress,
   Link,
-  makeStyles,
   Table,
   TableBody,
   TableCell,
   TableRow,
   Typography,
-} from "@material-ui/core";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import ReactTimeago from "react-timeago";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 600,
   },
   followedText: {
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       fontSize: 13,
     },
   },
@@ -112,6 +112,7 @@ const ProjectFollowers = ({ followers, followingSinceText, locale }) => {
                   <Link
                     className={classes.user}
                     href={getLocalePrefix(locale) + "/profiles/" + f.user_profile.url_slug}
+                    underline="hover"
                   >
                     <Avatar
                       className={classes.avatar}

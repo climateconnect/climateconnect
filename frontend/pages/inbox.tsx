@@ -1,7 +1,7 @@
-import { Button, Container, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import AddIcon from "@material-ui/icons/Add";
-import SearchIcon from "@material-ui/icons/Search";
+import { Button, Container, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import AddIcon from "@mui/icons-material/Add";
+import SearchIcon from "@mui/icons-material/Search";
 import NextCookies from "next-cookies";
 import React, { useEffect, useState, useContext } from "react";
 import Cookies from "universal-cookie";
@@ -27,19 +27,19 @@ const useStyles = makeStyles((theme) => {
     newChatButton: {
       marginBottom: theme.spacing(1),
       marginRight: theme.spacing(1),
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         marginLeft: theme.spacing(1),
       },
     },
     searchChatButton: {
       marginBottom: theme.spacing(1),
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         marginLeft: theme.spacing(1),
       },
     },
     searchSectionContainer: {
       marginBottom: theme.spacing(4),
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         marginLeft: theme.spacing(2),
         marginRight: theme.spacing(2),
       },

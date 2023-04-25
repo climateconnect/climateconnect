@@ -1,4 +1,5 @@
-import { Link, makeStyles, Theme, useMediaQuery } from "@material-ui/core";
+import { Link, Theme, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useState } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import getTexts from "../../../../public/texts/texts";
@@ -31,7 +32,7 @@ export default function HubLinks({
   const texts = getTexts({ page: "navigation", locale: locale });
   const sectorHubs = hubs.filter((h) => h.hub_type === "sector hub");
   const locationHubs = hubs.filter((h) => h.hub_type === "location hub");
-  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
   const handleOpen = (e, type) => {
     e.preventDefault();
@@ -71,7 +72,11 @@ export default function HubLinks({
       {!isMediumScreen &&
         !onlyShowDropDown &&
         (showAllProjectsButton ? (
-          <Link className={linkClassName} href={getLocalePrefix(locale) + "/browse"}>
+          <Link
+            className={linkClassName}
+            href={getLocalePrefix(locale) + "/browse"}
+            underline="hover"
+          >
             {texts.all_projects}
           </Link>
         ) : (
@@ -80,6 +85,7 @@ export default function HubLinks({
               className={linkClassName}
               key={hub.url_slug}
               href={`${getLocalePrefix(locale)}/hubs/${hub.url_slug}`}
+              underline="hover"
             >
               {hub.name}
             </Link>

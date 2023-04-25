@@ -1,4 +1,5 @@
-import { Button, Fade, makeStyles, Theme, Tooltip, useMediaQuery } from "@material-ui/core";
+import { Button, Fade, Theme, Tooltip, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useEffect, useRef } from "react";
 import Cookies from "universal-cookie";
 import get_steps from "../../../public/data/tutorial_steps";
@@ -15,19 +16,24 @@ import TutorialStep from "./TutorialStep";
 const useStyles = makeStyles((theme) => ({
   openTutorialButton: {
     position: "fixed",
-    bottom: "calc(50vh - 110px)",
+    bottom: "calc(50vh - 120px)",
     transform: "rotate(-90deg)",
-    right: -27.35,
     zIndex: 10,
+    right: -34.75,
+    color: theme.palette.primary.main,
+    background: "#e6e6e6",
+    padding: 6,
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    "&:hover": {
+      background: "#d6d6d6",
+    },
   },
   fixedPosition: {
     position: "fixed",
     bottom: theme.spacing(2),
     right: "calc(50vw - 225px)",
     zIndex: 102,
-  },
-  buttonText: {
-    color: theme.palette.primary.main,
   },
   leaveSpaceForCookieBanner: {
     bottom: theme.spacing(20),
@@ -42,7 +48,7 @@ export default function Tutorial({
   pointerRefs,
   typesByTabValue,
 }) {
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const classes = useStyles();
   const cookies = new Cookies();
   const tutorialCookie = cookies.get("finishedTutorialSteps");
@@ -206,7 +212,6 @@ export default function Tutorial({
             size="small"
             classes={{
               root: classes.openTutorialButton,
-              label: classes.buttonText,
             }}
             onClick={resetSteps}
           >

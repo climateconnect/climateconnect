@@ -1,5 +1,5 @@
 import NextCookies from "next-cookies";
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest } from "../../public/lib/apiOperations";
@@ -11,9 +11,10 @@ import WideLayout from "../../src/components/layouts/WideLayout";
 import ProjectPageRoot from "../../src/components/project/ProjectPageRoot";
 import HubsSubHeader from "../../src/components/indexPage/hubsSubHeader/HubsSubHeader";
 import { getAllHubs } from "../../public/lib/hubOperations";
-import { useMediaQuery } from "@material-ui/core";
+import { useMediaQuery } from "@mui/material";
 import { getImageUrl } from "../../public/lib/imageOperations";
-import { makeStyles, Theme } from "@material-ui/core/styles";
+import { Theme } from "@mui/material/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import ProjectSideBar from "../../src/components/project/ProjectSideBar";
 
 type StyleProps = {
@@ -25,13 +26,13 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
   },
   mainContent: (props) => ({
     width: props.showSimilarProjects ? "80%" : "100%",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       width: "100%",
     },
   }),
   secondaryContent: (props) => ({
     width: props.showSimilarProjects ? "20%" : "0%",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       width: "0%",
       marginTop: theme.spacing(0),
       marginRight: theme.spacing(0),
@@ -72,8 +73,7 @@ export async function getServerSideProps(ctx) {
     members,
     posts,
     comments,
-    following,
-    liking,
+    userInteractions,
     hubs,
     similarProjects,
   ] = await Promise.all([
@@ -81,8 +81,7 @@ export async function getServerSideProps(ctx) {
     getProjectMembersByIdIfExists(projectUrl, ctx.locale),
     getPostsByProject(projectUrl, auth_token, ctx.locale),
     getCommentsByProject(projectUrl, auth_token, ctx.locale),
-    auth_token ? getIsUserFollowing(projectUrl, auth_token, ctx.locale) : false,
-    auth_token ? getIsUserLiking(projectUrl, auth_token, ctx.locale) : false,
+    auth_token ? getUsersInteractionWithProject(projectUrl, auth_token, ctx.locale) : false,
     getAllHubs(ctx.locale),
     getSimilarProjects(projectUrl, ctx.locale),
   ]);
@@ -92,8 +91,9 @@ export async function getServerSideProps(ctx) {
       members: members,
       posts: posts,
       comments: comments,
-      following: following,
-      liking: liking,
+      following: userInteractions.following,
+      liking: userInteractions.liking,
+      hasRequestedToJoin: userInteractions.has_requested_to_join,
       hubs: hubs,
       similarProjects: similarProjects,
     }),
@@ -107,21 +107,23 @@ export default function ProjectPage({
   comments,
   following,
   liking,
+  hasRequestedToJoin,
   hubs,
   similarProjects,
 }) {
   const token = new Cookies().get("auth_token");
-  const [curComments, setCurComments] = React.useState(parseComments(comments));
-  const [message, setMessage] = React.useState({});
-  const [isUserFollowing, setIsUserFollowing] = React.useState(following);
-  const [isUserLiking, setIsUserLiking] = React.useState(liking);
-  const [followingChangePending, setFollowingChangePending] = React.useState(false);
-  const [likingChangePending, setLikingChangePending] = React.useState(false);
-  const [numberOfLikes, setNumberOfLikes] = React.useState(project?.number_of_likes);
-  const [numberOfFollowers, setNumberOfFollowers] = React.useState(project?.number_of_followers);
+  const [curComments, setCurComments] = useState(parseComments(comments));
+  const [message, setMessage] = useState({});
+  const [isUserFollowing, setIsUserFollowing] = useState(following);
+  const [isUserLiking, setIsUserLiking] = useState(liking);
+  const [requestedToJoinProject, setRequestedToJoinProject] = useState(hasRequestedToJoin);
+  const [followingChangePending, setFollowingChangePending] = useState(false);
+  const [likingChangePending, setLikingChangePending] = useState(false);
+  const [numberOfLikes, setNumberOfLikes] = useState(project?.number_of_likes);
+  const [numberOfFollowers, setNumberOfFollowers] = useState(project?.number_of_followers);
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
-  const [showSimilarProjects, setShowSimilarProjects] = React.useState(true);
+  const [showSimilarProjects, setShowSimilarProjects] = useState(true);
   const classes = useStyles({
     showSimilarProjects: showSimilarProjects,
   });
@@ -130,7 +132,7 @@ export default function ProjectPage({
     setShowSimilarProjects(!showSimilarProjects);
   };
 
-  const smallScreenSize = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const smallScreenSize = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
 
   // Handle remove bell icon notification
   const { notifications, setNotificationsRead, refreshNotifications } = useContext(UserContext);
@@ -174,6 +176,10 @@ export default function ProjectPage({
     setLikingChangePending(pending);
   };
 
+  const handleJoinRequest = (newValue) => {
+    setRequestedToJoinProject(newValue);
+  };
+
   const handleWindowClose = (e) => {
     if (
       curComments.filter((c) => c.unconfirmed).length > 0 ||
@@ -194,7 +200,7 @@ export default function ProjectPage({
   });
 
   const hubsSubHeaderRef = useRef(null);
-  const tinyScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("xs"));
+  const tinyScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
 
   return (
     <WideLayout
@@ -221,7 +227,6 @@ export default function ProjectPage({
               setCurComments={setCurComments}
               followingChangePending={followingChangePending}
               likingChangePending={likingChangePending}
-              texts={texts}
               projectAdmin={members?.find((m) => m.permission === ROLE_TYPES.all_type)}
               isUserLiking={isUserLiking}
               numberOfLikes={numberOfLikes}
@@ -231,6 +236,8 @@ export default function ProjectPage({
               similarProjects={similarProjects}
               handleHideContent={handleHideContent}
               showSimilarProjects={showSimilarProjects}
+              requestedToJoinProject={requestedToJoinProject}
+              handleJoinRequest={handleJoinRequest}
             />
           </div>
           <div className={classes.secondaryContent}>
@@ -270,36 +277,17 @@ async function getProjectByIdIfExists(projectUrl, token, locale) {
   }
 }
 
-async function getIsUserFollowing(projectUrl, token, locale) {
+async function getUsersInteractionWithProject(projectUrl, token, locale) {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/projects/" + projectUrl + "/am_i_following/",
+      url: "/api/projects/" + projectUrl + "/my_interactions/",
       token: token,
       locale: locale,
     });
     if (resp.data.length === 0) return null;
     else {
-      //TODO: get comments and timeline posts and project taggings
-      return resp.data.is_following;
-    }
-  } catch (err) {
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-}
-
-async function getIsUserLiking(projectUrl, token, locale) {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: "/api/projects/" + projectUrl + "/am_i_liking/",
-      token: token,
-      locale: locale,
-    });
-    if (resp.data.length === 0) return null;
-    else {
-      return resp.data.is_liking;
+      return resp.data;
     }
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
@@ -352,7 +340,6 @@ async function getProjectMembersByIdIfExists(projectUrl, locale) {
     });
     if (resp.data.results.length === 0) return null;
     else {
-      console.log(resp);
       return parseProjectMembers(resp.data.results);
     }
   } catch (err) {
@@ -370,7 +357,6 @@ async function getSimilarProjects(projectUrl, locale) {
     });
     if (resp.data.results.length === 0) return null;
     else {
-      console.log(resp);
       return resp.data.results;
     }
   } catch (err) {

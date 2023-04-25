@@ -1,12 +1,12 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import AutoCompleteSearchBar from "../../../../src/components/search/AutoCompleteSearchBar";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../../../src/components/context/UserContext";
-import { TextField, Button, IconButton } from "@material-ui/core";
+import { TextField, Button, IconButton } from "@mui/material";
 import { apiRequest } from "../../../../public/lib/apiOperations";
 import MiniProfilePreview from "../../profile/MiniProfilePreview";
-import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import Cookies from "universal-cookie";
 import Router from "next/router";
 
@@ -52,17 +52,16 @@ export default function UserSearchField({ cancelUserSearch, setErrorMessage }) {
   };
   const getUsersToFilterOut = () => [user, ...newChatMembers];
 
-  const renderSearchOption = (option) => {
+  const renderSearchOption = (props, option) => {
     return (
-      <React.Fragment>
-        <IconButton>
+      <li {...props}>
+        <IconButton size="large">
           <AddCircleOutlineIcon />
         </IconButton>
         {option.first_name + " " + option.last_name}
-      </React.Fragment>
+      </li>
     );
   };
-
   const handleRemoveMember = (member) => {
     setNewChatMembers([...newChatMembers.filter((m) => m.id !== member.id)]);
   };

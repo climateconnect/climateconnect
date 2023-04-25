@@ -1,5 +1,5 @@
-import { makeStyles } from "@material-ui/core";
-import Alert from "@material-ui/lab/Alert";
+import makeStyles from "@mui/styles/makeStyles";
+import Alert from "@mui/material/Alert";
 import React, { useContext, useState } from "react";
 import ROLE_TYPES from "../../../../public/data/role_types";
 import getTexts from "../../../../public/texts/texts";

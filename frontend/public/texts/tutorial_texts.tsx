@@ -1,4 +1,4 @@
-import { Link } from "@material-ui/core";
+import { Link } from "@mui/material";
 import React from "react";
 import { getLocalePrefix } from "../lib/apiOperations";
 
@@ -79,6 +79,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
             href={getLocalePrefix(locale) + "/browse"}
             target="_blank"
             className={classes?.link}
+            underline="hover"
           >
             browse
           </Link>{" "}
@@ -93,6 +94,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
             href={getLocalePrefix(locale) + "/browse"}
             target="_blank"
             className={classes?.link}
+            underline="hover"
           >
             Browse
           </Link>{" "}
@@ -115,6 +117,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
             href={getLocalePrefix(locale) + "/browse"}
             target="_blank"
             className={classes?.link}
+            underline="hover"
           >
             browse
           </Link>{" "}
@@ -129,6 +132,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
             href={getLocalePrefix(locale) + "/browse"}
             target="_blank"
             className={classes?.link}
+            underline="hover"
           >
             Browse
           </Link>{" "}
@@ -149,6 +153,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
             href={getLocalePrefix(locale) + "/browse"}
             target="_blank"
             className={classes?.link}
+            underline="hover"
           >
             browse
           </Link>{" "}
@@ -163,6 +168,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
             href={getLocalePrefix(locale) + "/browse"}
             target="_blank"
             className={classes?.link}
+            underline="hover"
           >
             Browse
           </Link>{" "}

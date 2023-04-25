@@ -1,4 +1,5 @@
-import { Container, makeStyles, Typography, useMediaQuery, Link, Theme } from "@material-ui/core";
+import { Container, Typography, useMediaQuery, Link, Theme } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
@@ -12,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(10),
     marginBottom: theme.spacing(10),
     position: "relative",
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       marginTop: theme.spacing(5),
       marginBottom: theme.spacing(5),
     },
@@ -20,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
   content: {
     display: "flex",
     maxWidth: 1280,
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       flexDirection: "column",
       width: "100%",
     },
@@ -36,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
   teamImage: {
     maxWidth: "100%",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       width: "100%",
       maxWidth: "100%",
     },
@@ -47,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
     top: 160,
     width: 120,
     height: 90,
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("lg")]: {
       display: "none",
     },
   },
@@ -57,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
     height: 90,
     top: -60,
     left: 100,
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       left: 30,
       top: -30,
       width: 80,
@@ -67,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function OurTeamBox({ h1ClassName }) {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const { locale } = useContext(UserContext);
   const link_to_team_page = getLocalePrefix(locale) + "/team";
   const link_to_about_page = getLocalePrefix(locale) + "/about";
@@ -84,7 +85,7 @@ export default function OurTeamBox({ h1ClassName }) {
         {texts.our_team}
       </Typography>
       <div className={classes.content}>
-        <Link href={link_to_team_page}>
+        <Link href={link_to_team_page} underline="hover">
           <img
             src="/images/team.jpg"
             className={classes.teamImage}

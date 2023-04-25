@@ -344,5 +344,5 @@ sentry_sdk.init(
 )
 
 CLIMATE_CONNECT_CONTACT_EMAIL = env(
-    'CLIMATE_CONNECT_CONTACT_EMAIL', 'contact@climateconnect.earth'
+    "CLIMATE_CONNECT_CONTACT_EMAIL", "contact@climateconnect.earth"
 )

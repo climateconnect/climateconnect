@@ -1,15 +1,7 @@
-import {
-  Avatar,
-  Button,
-  CircularProgress,
-  Link,
-  Theme,
-  Tooltip,
-  Typography,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { Avatar, Button, CircularProgress, Link, Theme, Tooltip, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React, { useContext, useState } from "react";
 import Truncate from "react-truncate";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -153,6 +145,7 @@ export default function Post({
             href={getLocalePrefix(locale) + "/profiles/" + post.author_user.url_slug}
             target="_blank"
             onClick={handleClick}
+            underline="hover"
           >
             <Avatar {...avatarProps} />
           </Link>
@@ -163,6 +156,7 @@ export default function Post({
                 href={getLocalePrefix(locale) + "/profiles/" + post.author_user.url_slug}
                 target="_blank"
                 onClick={handleClick}
+                underline="hover"
               >
                 <Typography variant="body2" className={classes.username}>
                   {post.author_user.first_name + " " + post.author_user.last_name}
@@ -207,7 +201,11 @@ export default function Post({
                 </Typography>
 
                 {isTextTruncated && (
-                  <Link className={classes.toggleReplies} onClick={handleExpandText}>
+                  <Link
+                    className={classes.toggleReplies}
+                    onClick={handleExpandText}
+                    underline="hover"
+                  >
                     {!isTextExpanded ? texts.read_more : texts.read_less}
                   </Link>
                 )}
@@ -235,7 +233,11 @@ export default function Post({
             </>
             <>
               {type !== "reply" && !!post.replies && post.replies.length > 0 && type !== "preview" && (
-                <Link className={classes.toggleReplies} onClick={handleViewRepliesClick}>
+                <Link
+                  className={classes.toggleReplies}
+                  onClick={handleViewRepliesClick}
+                  underline="hover"
+                >
                   {!displayReplies ? (
                     <>
                       <ExpandMoreIcon />

@@ -98,5 +98,9 @@
   "transparency": {
     "en": "Transparency",
     "de": "Transparenz"
+  },
+  "projects_worldwide": {
+    "en": "Projects worldwide",
+    "de": "Projekte weltweit"
   }
 }

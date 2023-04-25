@@ -1,4 +1,5 @@
-import { Drawer, makeStyles } from "@material-ui/core";
+import { Drawer } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import IdeaRoot from "./IdeaRoot";
 

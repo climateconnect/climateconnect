@@ -1,8 +1,9 @@
 import React from "react";
-import { makeStyles, Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import theme from "../../themes/theme";
 import { PieChart } from "react-minimal-pie-chart";
-import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 const useStyles = makeStyles((theme) => ({
   pieChartContainer: {

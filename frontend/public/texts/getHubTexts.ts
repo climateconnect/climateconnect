@@ -47,8 +47,7 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
     },
     browse_explainer_text: {
       en: "Find impactful climate change solutions created by Climate Connect users.",
-      de:
-        "Finde wirksame Lösungen für den Klimawandel, die von Climate Connect Nutzern erstellt wurden.",
+      de: "Finde wirksame Klimaschutzprojekte von anderen Climate Connect Nutzer:innen.",
     },
     loading_chart: {
       en: "Loading Chart",
@@ -131,6 +130,14 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
     all_locations: {
       en: "All Locations",
       de: "Alle Orte",
+    },
+    do_you_need_support: {
+      en: "Do you need support?",
+      de: "Brauchst du Unterstützung?",
+    },
+    local_ambassador_is_there_for_you: {
+      en: `${hubAmbassador?.user?.first_name} is responsible for the ClimateHub ${hubName} and is there for you.`,
+      de: `${hubAmbassador?.user?.first_name} koordiniert den ClimateHub ${hubName} und ist für dich da.`,
     },
   };
 

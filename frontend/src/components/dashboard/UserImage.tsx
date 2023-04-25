@@ -1,4 +1,4 @@
-import { Avatar } from "@material-ui/core";
+import { Avatar } from "@mui/material";
 import React from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 

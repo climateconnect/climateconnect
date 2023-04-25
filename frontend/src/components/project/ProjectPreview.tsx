@@ -1,5 +1,5 @@
-import { Card, CardContent, CardMedia, Link, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Card, CardContent, CardMedia, Link, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import Truncate from "react-truncate";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -43,6 +43,7 @@ const useStyles = makeStyles((theme) => {
       overflow: "hidden",
       lineHeight: 1.5,
       fontSize: 15,
+      color: "rgba(0, 0, 0, 0.87)",
       ["&span"]: {
         whiteSpace: "nowrap",
       },
@@ -120,6 +121,7 @@ export default function ProjectPreview({ project, projectRef, hubUrl, className 
           : `${getLocalePrefix(locale)}/projects/${project.url_slug}${queryString}`
       }
       className={classes.noUnderline}
+      underline="hover"
     >
       <Card
         className={`${classes.root} ${className}`}

@@ -1,6 +1,6 @@
-import { Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
+import { Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import React, { useContext } from "react";
 import ROLE_TYPES from "../../../public/data/role_types";
 import getTexts from "../../../public/texts/texts";

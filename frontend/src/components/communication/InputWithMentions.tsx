@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useRef } from "react";
 import { Mention, MentionsInput } from "react-mentions";
 import { apiRequest } from "../../../public/lib/apiOperations";
@@ -47,7 +47,6 @@ const useStyles = makeStyles((theme) => ({
 export default function InputWithMentions({ baseUrl, value, onChange, placeholder, onKeyDown }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const mentionsInputRef = useRef(null);
 
   //TODO: This function might have to be throttled in the future
   function lookupUsers(searchValue, callback) {
@@ -72,7 +71,6 @@ export default function InputWithMentions({ baseUrl, value, onChange, placeholde
       <div className={classes.InputWithMentionsBox}>
         <MentionsInput
           value={value}
-          ref={mentionsInputRef}
           className={classes.messageInput}
           onChange={onChange}
           placeholder={placeholder}

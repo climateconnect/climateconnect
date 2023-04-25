@@ -1,4 +1,5 @@
-import { makeStyles, Tooltip, Typography } from "@material-ui/core";
+import { Tooltip, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 
 const useStyles = makeStyles((theme) => ({

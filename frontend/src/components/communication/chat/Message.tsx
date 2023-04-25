@@ -1,5 +1,5 @@
-import { CircularProgress, Link, Tooltip, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { CircularProgress, Link, Tooltip, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getDateTime } from "../../../../public/lib/dateOperations";
@@ -47,6 +47,7 @@ export default function Message({ message, classes, isPrivateChat }) {
           <Link
             href={getLocalePrefix(locale) + "/profiles/" + message.sender.url_slug}
             target="_blank"
+            underline="hover"
           >
             <Typography className={ownClasses.senderName} color="primary" component="span">
               {message.sender.first_name + " " + message.sender.last_name}

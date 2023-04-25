@@ -1,5 +1,7 @@
 import React from "react";
-import { makeStyles, Typography, Link, Theme } from "@material-ui/core";
+import { Typography, Link, Theme } from "@mui/material";
+
+import makeStyles from "@mui/styles/makeStyles";
 
 const useStyles = makeStyles<Theme, { centerContent?: boolean }>((theme) => ({
   infoLinkBox: (props) => ({
@@ -9,7 +11,7 @@ const useStyles = makeStyles<Theme, { centerContent?: boolean }>((theme) => ({
     marginLeft: props.centerContent ? theme.spacing(5) : 0,
     background: "#E6E5E5",
     padding: theme.spacing(3),
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       width: "100%",
       maxWidth: 700,
       margin: "0 auto",
@@ -58,7 +60,7 @@ export default function InfoLinkBox({
 }: any) {
   const classes = useStyles({ centerContent: centerContent });
   return (
-    <Link href={link} className={classes.noUnderline}>
+    <Link href={link} className={classes.noUnderline} underline="hover">
       <div className={`${classes.infoLinkBox} ${className}`}>
         <img src={iconSrc} className={classes.icon} alt={iconAlt} />
         <div>

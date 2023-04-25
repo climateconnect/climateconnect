@@ -1,6 +1,7 @@
-import { Button, makeStyles } from "@material-ui/core";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import SaveIcon from "@material-ui/icons/Save";
+import { Button } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import SaveIcon from "@mui/icons-material/Save";
 import React, { useContext } from "react";
 import ROLE_TYPES from "../../../../public/data/role_types";
 import { apiRequest } from "../../../../public/lib/apiOperations";

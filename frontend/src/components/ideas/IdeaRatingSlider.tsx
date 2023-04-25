@@ -1,4 +1,5 @@
-import { makeStyles, Slider, Theme, Typography } from "@material-ui/core";
+import { Slider, Theme, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 
 const useStyles = makeStyles<Theme, { averageRating: any }>((theme) => ({
@@ -16,11 +17,9 @@ const useStyles = makeStyles<Theme, { averageRating: any }>((theme) => ({
     backgroundSize: "100% auto",
     borderRadius: 0,
     zIndex: 1,
-    marginTop: -14,
     ["&:hover"]: {
       boxShadow: "none",
     },
-    marginLeft: -23,
   },
   active: {
     boxShadow: "none !important",
@@ -62,7 +61,7 @@ export default function IdeaRatingSlider(props) {
   const classes = useStyles({ averageRating: props.averageRating });
   return (
     <div className={classes.wrapper}>
-      <Slider {...props} classes={classes} />
+      <Slider {...props} classes={classes} size="small" />
       <div className={classes.averageRatingContainer}>
         <Typography className={classes.averageCharacter}>Ø</Typography>
       </div>

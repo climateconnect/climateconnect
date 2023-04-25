@@ -1,4 +1,5 @@
-import { Grid, makeStyles } from "@material-ui/core";
+import Grid from "@mui/material/Unstable_Grid2";
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import MiniHubPreview from "./MiniHubPreview";
 
@@ -66,7 +67,6 @@ function GridItem({
   return (
     <Grid
       key={hub ? hub.url_slug : "create"}
-      item
       xs={12}
       sm={editMode ? 6 : 12}
       md={8}

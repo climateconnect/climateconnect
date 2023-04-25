@@ -1,11 +1,11 @@
-import { Box, Card, CardActions, Link, Tooltip, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Box, Card, CardActions, Link, Tooltip, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import UserContext from "../context/UserContext";
 import OrganizationPreviewHeader from "./OrganizationPreviewHeader";
 import OrganizationPreviewBody from "./OrganizationPreviewBody";
-import { AssignmentSharp, GroupSharp } from "@material-ui/icons";
+import { AssignmentSharp, GroupSharp } from "@mui/icons-material";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -79,6 +79,7 @@ export default function OrganizationPreview({ organization }) {
     <Link
       href={getLocalePrefix(locale) + `/organizations/${organization.url_slug}`}
       className={classes.noUnderline}
+      underline="hover"
     >
       <Card className={classes.root} variant="outlined">
         <OrganizationPreviewHeader organization={organization} />

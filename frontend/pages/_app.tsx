@@ -1,8 +1,9 @@
-import CssBaseline from "@material-ui/core/CssBaseline";
-import { ThemeProvider } from "@material-ui/core/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import { Theme, StyledEngineProvider } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 // Add global styles
 import "react-multi-carousel/lib/styles.css";
 import Cookies from "universal-cookie";
@@ -12,6 +13,24 @@ import WebSocketService from "../public/lib/webSockets";
 import UserContext from "../src/components/context/UserContext";
 import theme from "../src/themes/theme";
 import { CcLocale } from "../src/types";
+import * as Sentry from "@sentry/react";
+
+// initialize sentry
+
+Sentry.init({
+  dsn: process.env.FRONTEND_SENTRY_DSN,
+  integrations: [new Sentry.BrowserTracing(), new Sentry.Replay()],
+  // Performance Monitoring
+  tracesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!
+  // Session Replay
+  replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
+  replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
+});
+
+declare module "@mui/styles/defaultTheme" {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
 
@@ -20,7 +39,6 @@ export default function MyApp({ Component, pageProps = {} }) {
   // Cookies
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
-
   const [gaInitialized, setGaInitialized] = useState(false);
   const [isLoading, setLoading] = useState(true);
 
@@ -44,7 +62,6 @@ export default function MyApp({ Component, pageProps = {} }) {
         anonymizeIp: true,
       },
     } as any);
-    ReactGA.pageview(pathName ? pathName : "/");
     setGaInitialized(true);
   }
 
@@ -252,13 +269,15 @@ export default function MyApp({ Component, pageProps = {} }) {
 
   return (
     <>
-      <ThemeProvider theme={theme}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline />
-        <UserContext.Provider value={contextValues}>
-          <Component {...pageProps} />
-        </UserContext.Provider>
-      </ThemeProvider>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+          <CssBaseline />
+          <UserContext.Provider value={contextValues}>
+            <Component {...pageProps} />
+          </UserContext.Provider>
+        </ThemeProvider>
+      </StyledEngineProvider>
     </>
   );
 }

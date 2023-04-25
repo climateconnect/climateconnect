@@ -1,6 +1,6 @@
 //global imports
-import { Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { apiRequest } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => {
       textAlign: "left",
       fontWeight: "bold",
       marginBottom: theme.spacing(2),
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down("md")]: {
         textAlign: "center",
         fontSize: 25,
       },

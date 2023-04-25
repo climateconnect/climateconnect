@@ -1,5 +1,5 @@
-import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
 import throttle from "lodash/throttle";
 import React, { useContext } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
@@ -89,7 +89,7 @@ export default function AutoCompleteSearchBar({
   );
 
   const handleChange = (event, value, reason) => {
-    if (reason === "select-option") {
+    if (reason === "selectOption") {
       if (onSelect) onSelect(value);
       if (clearOnSelect) {
         setInputValue("");

@@ -1,7 +1,8 @@
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getStaticPageLinks } from "../../../public/data/getStaticPageLinks";
-import { Container, Link, makeStyles, Theme, useMediaQuery } from "@material-ui/core";
+import { Container, Link, Theme, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import theme from "../../themes/theme";
@@ -23,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     display: "inline-flex",
     height: "100%",
     alignItems: "center",
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       width: "100%",
       justifyContent: "space-between",
     },
@@ -37,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 600,
     textDecoration: "inherit",
     color: "white",
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       padding: 0,
     },
   },
@@ -54,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
 export default function StaticPageLinks() {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
   const texts = getTexts({ page: "navigation", locale: locale });
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts);
@@ -141,6 +142,7 @@ function StaticPageLink({ link }) {
       className={`${classes.staticPageLink} ${
         window.location.href.includes(link.href) && classes.currentStaticPageLink
       }`}
+      underline="hover"
     >
       {link.text}
     </Link>

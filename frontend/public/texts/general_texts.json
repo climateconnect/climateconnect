@@ -732,8 +732,8 @@
     "de": "Neu"
   },
   "get_active": {
-    "en": "Act now",
-    "de": "Engagieren"
+    "en": "ClimateMatch",
+    "de": "ClimateMatch"
   },
   "more": {
     "en": "More",
@@ -778,5 +778,9 @@
   "participants": {
     "en": "Participants",
     "de": "Teilnehmer"
+  },
+  "no_permission": {
+    "en": "You do not have permission to do this.",
+    "de": "Dir fehlen die Berechtigungen für diese Aktion."
   }
 }

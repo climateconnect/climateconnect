@@ -1,5 +1,6 @@
-import { Chip, makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
+import { Chip, Theme, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import CloseIcon from "@mui/icons-material/Close";
 import React, { useContext } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import climateMatchStyles from "../../../public/styles/climateMatchStyles";
@@ -18,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(4),
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
-    maxHeight: 500 - theme.spacing(8),
+    maxHeight: 436,
     ["@media (max-width: 760px)"]: {
       flexDirection: "column-reverse",
       maxHeight: "calc(100vh - 138px)",
@@ -139,8 +140,8 @@ export default function RankingQuestionTypeBody({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const { showFeedbackMessage } = useContext(FeedbackContext);
-  const isSmallerThanLg = theme.breakpoints.down("lg");
-  const isSmallerThanMd = theme.breakpoints.down("md");
+  const isSmallerThanLg = theme.breakpoints.down("xl");
+  const isSmallerThanMd = theme.breakpoints.down("lg");
   const isMobileScreen = useMediaQuery<Theme>("(max-width:760px)");
   const texts = getTexts({ page: "climatematch", locale: locale, climateMatchQuestion: question });
   // This will be used to set weight for each answer
@@ -236,6 +237,7 @@ export default function RankingQuestionTypeBody({
                           <>
                             <Chip
                               label={userAnswer[i].text}
+                              color="secondary"
                               className={classes.possibleAnswerChip}
                               ref={provided.innerRef}
                               onClick={(event) => onRemoveAnswer(event, i)}
@@ -250,7 +252,7 @@ export default function RankingQuestionTypeBody({
                         )}
                       </Draggable>
                     ) : (
-                      <Chip className={classes.selectedAnswerChip} />
+                      <Chip className={classes.selectedAnswerChip} color="secondary" />
                     )}
                   </div>
                 ))}

@@ -1,6 +1,6 @@
-import { Button, IconButton } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import AddIcon from "@material-ui/icons/Add";
+import { Button, IconButton } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import AddIcon from "@mui/icons-material/Add";
 import React, { useContext } from "react";
 
 import ButtonIcon from "../../general/ButtonIcon";
@@ -77,7 +77,7 @@ export default function JoinButton({
         className={`${className} ${classes.mobileButtonContainer}`}
         onClick={handleSendProjectJoinRequest}
       >
-        <IconButton className={classes.iconButton} disabled={requestedToJoin}>
+        <IconButton className={classes.iconButton} disabled={requestedToJoin} size="large">
           <ButtonIcon icon="add" size={40} color={"primary"} />
         </IconButton>
       </span>
@@ -91,6 +91,7 @@ export default function JoinButton({
           className={classes.mediumScreenIconButton}
           disabled={requestedToJoin}
           onClick={handleSendProjectJoinRequest}
+          size="large"
         >
           <ButtonIcon icon="add" size={40} color={"primary"} />
         </IconButton>

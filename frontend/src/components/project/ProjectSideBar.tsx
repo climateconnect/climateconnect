@@ -1,12 +1,12 @@
 import React from "react";
-import { Button, IconButton, Typography, Divider } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import { Button, IconButton, Typography, Divider } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import ProjectPreviews from "./ProjectPreviews";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import SearchIcon from "@material-ui/icons/Search";
-import MenuIcon from "@material-ui/icons/Menu";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import SearchIcon from "@mui/icons-material/Search";
+import MenuIcon from "@mui/icons-material/Menu";
 
 const useStyles = makeStyles((theme) => ({
   projectCard: {

@@ -1,7 +1,8 @@
-import { Button, Container, makeStyles, Typography } from "@material-ui/core";
-import ContactSupportOutlinedIcon from "@material-ui/icons/ContactSupportOutlined";
-import ExpandLessOutlinedIcon from "@material-ui/icons/ExpandLessOutlined";
-import ExpandMoreOutlinedIcon from "@material-ui/icons/ExpandMoreOutlined";
+import { Button, Container, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import ContactSupportOutlinedIcon from "@mui/icons-material/ContactSupportOutlined";
+import ExpandLessOutlinedIcon from "@mui/icons-material/ExpandLessOutlined";
+import ExpandMoreOutlinedIcon from "@mui/icons-material/ExpandMoreOutlined";
 import React, { useContext, useState } from "react";
 
 import getTexts from "../../../public/texts/texts";
@@ -43,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
   iconWrapper: {
     marginRight: theme.spacing(4),
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       position: "absolute",
       opacity: 0,
     },
@@ -65,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
   },
   questionText: {
     color: theme.palette.secondary.main,
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       fontWeight: "bold",
     },
   },

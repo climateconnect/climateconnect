@@ -1,4 +1,4 @@
-import { Link } from "@material-ui/core";
+import { Link } from "@mui/material";
 import React from "react";
 import { getLocalePrefix } from "../lib/apiOperations";
 
@@ -80,7 +80,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: (
         <>
           Go to{" "}
-          <Link href={getLocalePrefix(locale) + "/projects/" + project?.url_slug}>
+          <Link href={getLocalePrefix(locale) + "/projects/" + project?.url_slug} underline="hover">
             the project page
           </Link>{" "}
           and click join to join it.
@@ -89,7 +89,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: (
         <>
           Gehe auf{" "}
-          <Link href={getLocalePrefix(locale) + "/projects/" + project?.url_slug}>
+          <Link href={getLocalePrefix(locale) + "/projects/" + project?.url_slug} underline="hover">
             die Projektseite
           </Link>{" "}
           und klicke auf {"Mitmachen"}.
@@ -967,6 +967,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     view_all_projects: {
       en: "View all projects",
       de: "Alle Projekte anzeigen",
+    },
+    only_project_admins_can_view_join_requests: {
+      en: "Only project admins can view join requests.",
+      de: "Nur Projektadministratoren können sehen, wer mitmachen möchte.",
+    },
+    your_request_has_been_sent: {
+      en: "We notified the project owner that you would like to join this project.",
+      de: "Die Projektverantwortlichen wurden benachrichtigt, dass du gerne mitmachen möchtest.",
     },
   };
 }

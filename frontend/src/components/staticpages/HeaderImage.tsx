@@ -1,11 +1,13 @@
 import React from "react";
-import { makeStyles, Theme } from "@material-ui/core/styles";
+import { Theme } from "@mui/material/styles";
+
+import makeStyles from "@mui/styles/makeStyles";
 
 const useStyles = makeStyles<Theme, { image: string }>((theme) => {
   return {
     imageContainer: (props) => ({
       width: "100%",
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         marginBottom: theme.spacing(1),
       },
       position: "relative",
@@ -13,7 +15,7 @@ const useStyles = makeStyles<Theme, { image: string }>((theme) => {
       backgroundImage: "url(" + props.image + ")",
       backgroundSize: "cover",
       height: 250,
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         height: 180,
       },
     }),

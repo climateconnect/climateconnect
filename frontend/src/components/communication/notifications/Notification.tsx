@@ -1,7 +1,8 @@
-import { Link, ListItemText, MenuItem, withStyles } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import AlternateEmailIcon from "@material-ui/icons/AlternateEmail";
-import GroupIcon from "@material-ui/icons/Group";
+import { Link, ListItemText, MenuItem } from "@mui/material";
+import withStyles from "@mui/styles/withStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
+import GroupIcon from "@mui/icons-material/Group";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import getTexts from "../../../../public/texts/texts";
@@ -218,7 +219,9 @@ const PlaceholderNotification = () => {
         <ListItemText className={classes.listItemText} disableTypography>
           {texts.placeholderNotification}
           <div>
-            <Link className={classes.goToInboxText}>{texts.go_to_inbox}</Link>
+            <Link className={classes.goToInboxText} underline="hover">
+              {texts.go_to_inbox}
+            </Link>
           </div>
         </ListItemText>
       </StyledMenuItem>

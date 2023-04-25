@@ -1,5 +1,6 @@
-import { Button, makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
-import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
+import { Button, Theme, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -20,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 25,
     fontWeight: 700,
     marginBottom: theme.spacing(1),
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       fontSize: 21,
     },
   },
@@ -53,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function OrganizationsSharedBox({ organizations, isLoading }) {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({
     page: "landing_page",

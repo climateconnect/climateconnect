@@ -1,5 +1,6 @@
-import { Button, Container, makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
-import RestoreIcon from "@material-ui/icons/Restore";
+import { Button, Container, Theme, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import RestoreIcon from "@mui/icons-material/Restore";
 import React, { useContext, useRef } from "react";
 import { capitalizeFirstLetter } from "../../../public/lib/parsingOperations";
 import getTexts from "../../../public/texts/texts";
@@ -13,7 +14,7 @@ const useStyles = makeStyles<Theme, { unfixButtonBar: boolean; isLoading: boolea
   root: (props) => ({
     position: "relative",
     paddingBottom: theme.spacing(4),
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       paddingBottom: theme.spacing(2),
     },
     visibility: props.isLoading ? "hidden" : undefined,
@@ -22,7 +23,7 @@ const useStyles = makeStyles<Theme, { unfixButtonBar: boolean; isLoading: boolea
     paddingTop: theme.spacing(4),
     maxWidth: 1050,
     margin: "0 auto",
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       paddingTop: theme.spacing(2),
     },
   },
@@ -31,7 +32,7 @@ const useStyles = makeStyles<Theme, { unfixButtonBar: boolean; isLoading: boolea
   },
   headline: {
     marginBottom: theme.spacing(4),
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       marginBottom: theme.spacing(2),
     },
   },
@@ -55,7 +56,7 @@ const useStyles = makeStyles<Theme, { unfixButtonBar: boolean; isLoading: boolea
   questionsGraphic: {
     position: "absolute",
     top: theme.spacing(2),
-    height: `calc(100% - ${theme.spacing(4)}px)`,
+    height: `calc(100% - ${theme.spacing(4)})`,
   },
   lastResultIcon: {
     color: "white",
@@ -68,12 +69,12 @@ const useStyles = makeStyles<Theme, { unfixButtonBar: boolean; isLoading: boolea
     justifyContent: "space-between",
     margin: "0 auto",
     marginTop: theme.spacing(4),
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       marginTop: theme.spacing(1),
     },
   },
   fixedOnMobile: {
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       position: "fixed",
       bottom: 0,
       width: "auto",
@@ -98,6 +99,7 @@ export default function WelcomeToClimateMatch({
   goToNextStep,
   location,
   hasDoneClimateMatch,
+  fromHub,
   isLoading,
 }: any) {
   const bottomRef = useRef(null);
@@ -107,7 +109,7 @@ export default function WelcomeToClimateMatch({
   });
   const classes = useStyles({ unfixButtonBar: unfixButtonBar, isLoading: isLoading });
   const { locale } = useContext(UserContext);
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
 
   const texts = getTexts({
     page: "climatematch",
@@ -143,7 +145,10 @@ export default function WelcomeToClimateMatch({
       <Container className={`${classes.buttonBar} ${!unfixButtonBar && classes.fixedOnMobile}`}>
         <div className={classes.buttonBarLeft}>
           {hasDoneClimateMatch && (
-            <Button href="/climatematchresults" className={classes.lastResultButton}>
+            <Button
+              href={`/${locale}/climatematchresults?from_hub=${fromHub}`}
+              className={classes.lastResultButton}
+            >
               <RestoreIcon className={classes.lastResultIcon} />
               {texts.your_last_result}
             </Button>

@@ -1,5 +1,5 @@
-import { Button, Checkbox, Container, Theme, Typography, useMediaQuery } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Button, Checkbox, Container, Theme, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -18,20 +18,20 @@ const useStyles = makeStyles((theme) => {
       background: "white",
       borderTop: `1px solid ${theme.palette.secondary.main}`,
       paddingTop: theme.spacing(1),
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         height: 200,
       },
     },
     headline: {
       fontWeight: "bold",
       marginBottom: theme.spacing(1),
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         fontSize: 15,
       },
     },
     buttons: {
       float: "right",
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         float: "none",
         display: "block",
       },
@@ -40,27 +40,27 @@ const useStyles = makeStyles((theme) => {
       [theme.breakpoints.up("md")]: {
         marginRight: theme.spacing(1),
       },
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         paddingLeft: theme.spacing(2),
         paddingRight: theme.spacing(2),
       },
     },
     rightButton: {
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         paddingLeft: theme.spacing(2),
         paddingRight: theme.spacing(2),
       },
     },
     leftButtonContainer: {
       display: "inline-block",
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         width: "50%",
         padding: theme.spacing(0.5),
       },
     },
     rightButtonContainer: {
       display: "inline-block",
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         width: "50%",
         padding: theme.spacing(0.5),
       },
@@ -74,7 +74,7 @@ export default function CookieBanner({ closeBanner }) {
   const texts = getTexts({ page: "cookie", locale: locale });
   const [checked, setChecked] = React.useState({ necessary: true, statistics: false });
   const cookies = new Cookies();
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const onStatisticsChange = () => {
     setChecked({ ...checked, statistics: !checked.statistics });
   };
@@ -121,9 +121,9 @@ export default function CookieBanner({ closeBanner }) {
             {texts.terms_of_use}.
           </a>
         </Typography>
-        <Checkbox checked={checked.necessary} disabled color="primary" />
+        <Checkbox checked={checked.necessary} disabled />
         {texts.cookies_necessary}
-        <Checkbox color="primary" checked={checked.statistics} onChange={onStatisticsChange} />
+        <Checkbox checked={checked.statistics} onChange={onStatisticsChange} />
         {texts.cookies_statistics}
         <span className={classes.buttons}>
           <div className={classes.leftButtonContainer}>

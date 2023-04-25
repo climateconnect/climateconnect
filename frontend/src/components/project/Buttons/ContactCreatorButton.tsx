@@ -1,6 +1,6 @@
-import { Avatar, Button, Collapse, Fade, Theme, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import SendIcon from "@material-ui/icons/Send";
+import { Avatar, Button, Collapse, Fade, Theme, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import SendIcon from "@mui/icons-material/Send";
 import React, { useContext, useState } from "react";
 import { getImageUrl } from "../../../../public/lib/imageOperations";
 import getTexts from "../../../../public/texts/texts";
@@ -35,7 +35,7 @@ const useStyles = makeStyles<
   textContainer: {
     // theme.spacing(2): the right margin of the card's avatar (mui default)
     // 50px: the width of the card's avatar (see class 'avatar')
-    maxWidth: `calc(100% - (${theme.spacing(2)}px + 50px))`,
+    maxWidth: `calc(100% - (${theme.spacing(2)} + 50px))`,
   },
   slideInSubheader: {
     color: "black",

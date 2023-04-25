@@ -7,13 +7,13 @@ import {
   ListItemText,
   Theme,
   Typography,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
-import CloseIcon from "@material-ui/icons/Close";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import CloseIcon from "@mui/icons-material/Close";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React, { useContext } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import getTexts from "../../../public/texts/texts";
@@ -29,15 +29,14 @@ const useStyles = makeStyles<
       margin: "0 auto",
       display: props.flexWrapper ? "flex" : "block",
       marginTop: props.marginTop ? theme.spacing(8) : 0,
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down("md")]: {
         marginTop: theme.spacing(4),
         display: "block",
       },
     }),
     list: {
       display: "inline-block",
-      maxWidth: "50%",
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         marginLeft: theme.spacing(0),
       },
     },
@@ -94,7 +93,7 @@ const useStyles = makeStyles<
       display: "inline-block",
       verticalAlign: "top",
       marginLeft: theme.spacing(16),
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         marginLeft: theme.spacing(2),
       },
     },
@@ -128,17 +127,17 @@ const useStyles = makeStyles<
     listWrapper: {
       display: "inline-block",
       width: 700,
-      [theme.breakpoints.down("md")]: {
-        width: 650 - theme.spacing(8),
+      [theme.breakpoints.down("lg")]: {
+        width: `650 - ${theme.spacing(8)}`,
         margin: "0 auto",
       },
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         width: "auto",
         margin: "0 auto",
       },
     },
     narrowScreenListWrapper: {
-      maxWidth: 650 - theme.spacing(8),
+      maxWidth: `650 - ${theme.spacing(8)}`,
       width: "auto",
       display: "block",
       margin: "0 auto",
@@ -148,7 +147,7 @@ const useStyles = makeStyles<
       margin: "0 auto",
     },
     divider: {
-      backgroundColor: "black",
+      borderColor: "black",
       marginBottom: theme.spacing(1),
     },
     subListLastItem: {
@@ -219,7 +218,7 @@ export default function MultiLevelSelector({
     setSelected(ret);
   };
 
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   return (
     <>
       <div className={classes.wrapper}>

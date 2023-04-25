@@ -6,23 +6,25 @@ import {
   IconButton,
   LinearProgress,
   Link,
-  makeStyles,
   Table,
   TableBody,
   TableCell,
   TableRow,
   Tooltip,
   Typography,
-} from "@material-ui/core";
-import BlockIcon from "@material-ui/icons/Block";
-import CheckIcon from "@material-ui/icons/Check";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import BlockIcon from "@mui/icons-material/Block";
+import CheckIcon from "@mui/icons-material/Check";
 import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";
 
 // Relative imports
 import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
+import { getMembershipRequests } from "../../../public/lib/projectOperations";
 import getTexts from "../../../public/texts/texts";
+import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
 import GenericDialog from "./GenericDialog";
 
@@ -38,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 600,
   },
   followedText: {
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       fontSize: 13,
     },
   },
@@ -62,6 +64,7 @@ export default function ProjectRequestersDialog({
   requesters,
   url,
   user,
+  user_permission,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -74,65 +77,61 @@ export default function ProjectRequestersDialog({
   return (
     <GenericDialog onClose={handleClose} open={open} title={texts.project_requesters_dialog_title}>
       <>
-        {loading ? (
-          <LinearProgress />
-        ) : !user ? (
-          <>
-            <Typography>
-              {texts.please_log_in + " " + texts.to_see_this_projects_requesters + "!"}
+        {
+          // If we don't have any permissions, we can't load the join requests
+          !user_permission ? (
+            <Typography className={classes.noOpenRequestsText}>
+              {texts.only_project_admins_can_view_join_requests}
             </Typography>
-            <Container className={classes.loginButtonContainer}>
-              <Button
-                className={classes.loginButton}
-                variant="contained"
-                color="primary"
-                href={getLocalePrefix(locale) + "/signin?redirect=" + encodeURIComponent(url)}
-              >
-                {texts.log_in}
-              </Button>
-            </Container>
-          </>
-        ) : // If we have some users requesting to join, then render them
-        requesters && requesters.length > 0 ? (
-          <ProjectRequesters
-            locale={locale}
-            onClose={onClose}
-            project={project}
-            initialRequesters={requesters}
-            texts={texts}
-          />
-        ) : (
-          <Typography className={classes.noOpenRequestsText}>
-            {texts.no_open_project_join_requests}
-          </Typography>
-        )}
+          ) : loading ? (
+            <LinearProgress />
+          ) : !user ? (
+            <>
+              <Typography>
+                {texts.please_log_in + " " + texts.to_see_this_projects_requesters + "!"}
+              </Typography>
+              <Container className={classes.loginButtonContainer}>
+                <Button
+                  className={classes.loginButton}
+                  variant="contained"
+                  color="primary"
+                  href={getLocalePrefix(locale) + "/signin?redirect=" + encodeURIComponent(url)}
+                >
+                  {texts.log_in}
+                </Button>
+              </Container>
+            </>
+          ) : // If there are users requesting to join and we have permission to view them: render them!
+          requesters && requesters.length > 0 ? (
+            <ProjectRequesters onClose={onClose} project={project} initialRequesters={requesters} />
+          ) : (
+            <Typography className={classes.noOpenRequestsText}>
+              {texts.no_open_project_join_requests}
+            </Typography>
+          )
+        }
       </>
     </GenericDialog>
   );
 }
 
-const ProjectRequesters = ({ locale, initialRequesters, project }) => {
-  const classes = useStyles();
-
+const ProjectRequesters = ({ initialRequesters, project, onClose }) => {
   const [requesters, setRequesters] = useState(initialRequesters);
-
+  const { locale } = useContext(UserContext);
+  const cookies = new Cookies();
+  const token = cookies.get("auth_token");
   /**
    * After any update is made to approve
    * or reject, we call the backend to update the
    * current list.
    */
   async function handleUpdateRequesters() {
-    const resp = await apiRequest({
-      method: "get",
-      url: `/api/projects/${project.url_slug}/requesters/`,
-    });
-
-    if (!resp?.data?.results) {
-      // TODO: error appropriately here
+    try {
+      const newRequesters = await getMembershipRequests(project.url_slug, locale, token);
+      setRequesters(newRequesters);
+    } catch (e) {
+      console.log(e);
     }
-
-    const newRequesters = resp.data.results;
-    setRequesters(newRequesters);
   }
 
   return (
@@ -142,13 +141,14 @@ const ProjectRequesters = ({ locale, initialRequesters, project }) => {
         <TableBody>
           {requesters.map((requester, index) => {
             return (
-              <TableRow key={index} className={classes.requester}>
+              <TableRow key={index}>
                 <Requester
                   project={project}
                   locale={locale}
                   requester={requester}
                   requestId={requester.requestId}
                   handleUpdateRequesters={handleUpdateRequesters}
+                  token={token}
                 />
               </TableRow>
             );
@@ -163,63 +163,41 @@ const ProjectRequesters = ({ locale, initialRequesters, project }) => {
  * Separate cohesive component that encapsulates
  * all the requester state and functionality together.
  */
-const Requester = ({ handleUpdateRequesters, locale, project, requester, requestId }) => {
+const Requester = ({ handleUpdateRequesters, locale, project, requester, requestId, token }) => {
   const classes = useStyles();
-
-  /**
-   * Sends a POST to the backend to approve
-   * the membership request into the organizations_membershiprequests
-   * table. The API expects 2 dynamic parameters: the current project
-   * URL slug, and the ID of the original request, which is generated
-   * and returned to the client during the initial request.
-   *
-   * See https://github.com/climateconnect/climateconnect/issues/672
-   */
-  async function handleApproveRequest() {
-    const cookies = new Cookies();
-    const token = cookies.get("auth_token");
-
-    const response = await apiRequest({
-      method: "post",
-      url: `/api/projects/${project.url_slug}/request_membership/approve/${requestId}/`,
-      headers: {
-        Authorization: `Token ${token}`,
-      },
-    });
-
-    if (!response?.data?.results) {
-      // TODO: error appropriately here
-    } else {
-      console.log("Approved!");
+  const { showFeedbackMessage } = useContext(FeedbackContext);
+  const texts = getTexts({ page: "general", locale: locale });
+  async function handleRequest(approve: boolean): Promise<void> {
+    const url = `/api/projects/${project.url_slug}/request_membership/${
+      approve ? "approve" : "reject"
+    }/${requestId}/`;
+    try {
+      await apiRequest({
+        method: "post",
+        url: url,
+        locale: locale,
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+        payload: {},
+      });
+      showFeedbackMessage({
+        message: texts.no_permission,
+        success: true,
+      });
+      // Now notify parent list to update current list
+      // of requesters to immediately
+      // show the updated state in the UI.
+      handleUpdateRequesters();
+    } catch (e) {
+      if (e.response.status === 401) {
+        showFeedbackMessage({
+          message: texts.no_permission,
+          error: true,
+        });
+      }
+      console.log(e);
     }
-
-    // Now notify parent list to update current list
-    // of requesters to immediately
-    // show the updated state in the UI.
-    handleUpdateRequesters();
-  }
-
-  // See https://github.com/climateconnect/climateconnect/issues/672
-  async function handleRejectRequest() {
-    const cookies = new Cookies();
-    const token = cookies.get("auth_token");
-
-    const response = await apiRequest({
-      method: "post",
-      url: `/api/projects/${project.url_slug}/request_membership/reject/${requestId}/`,
-      token: token,
-    });
-
-    if (!response?.data?.results) {
-      // TODO: error appropriately here
-    } else {
-      console.log("Denied request.");
-    }
-
-    // Now notify parent list to update current list
-    // of requesters to immediately
-    // show the updated state in the UI.
-    handleUpdateRequesters();
   }
 
   return (
@@ -228,6 +206,7 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
         <Link
           className={classes.user}
           href={getLocalePrefix(locale) + "/profiles/" + requester.user.url_slug}
+          underline="hover"
         >
           <Avatar
             className={classes.avatar}
@@ -246,14 +225,20 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
             aria-label="approve project request"
             color="primary"
             disableRipple
-            onClick={handleApproveRequest}
+            onClick={() => handleRequest(true)}
+            size="large"
           >
             <CheckIcon />
           </IconButton>
         </Tooltip>
 
         <Tooltip title="Deny">
-          <IconButton aria-label="deny project request" disableRipple onClick={handleRejectRequest}>
+          <IconButton
+            aria-label="deny project request"
+            disableRipple
+            onClick={() => handleRequest(false)}
+            size="large"
+          >
             <BlockIcon />
           </IconButton>
         </Tooltip>

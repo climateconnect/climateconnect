@@ -1,5 +1,5 @@
-import { Button, Chip, IconButton, List, Tooltip, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Button, Chip, IconButton, List, Tooltip, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -112,7 +112,7 @@ export default function CollaborateSection({
         >
           {collaborationTexts.skills[projectData.status.status_type]}
           <Tooltip title={helpTexts.addSkills} className={toolTipClassName}>
-            <IconButton>
+            <IconButton size="large">
               <ToolTipIcon />
             </IconButton>
           </Tooltip>
@@ -144,7 +144,7 @@ export default function CollaborateSection({
         >
           {collaborationTexts.connections[projectData.status.status_type]}
           <Tooltip title={helpTexts.addConnections} className={toolTipClassName}>
-            <IconButton>
+            <IconButton size="large">
               <ToolTipIcon />
             </IconButton>
           </Tooltip>

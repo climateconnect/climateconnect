@@ -1,4 +1,4 @@
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 import React, { useContext } from "react";
 import TextLoop from "react-text-loop";
 import getTexts from "../../../public/texts/texts";

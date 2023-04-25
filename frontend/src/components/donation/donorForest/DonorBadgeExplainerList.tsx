@@ -1,4 +1,5 @@
-import { List, ListItem, ListItemIcon, makeStyles, Typography } from "@material-ui/core";
+import { List, ListItem, ListItemIcon, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import UserContext from "../../context/UserContext";
 import ProfileBadge from "../../profile/ProfileBadge";
@@ -17,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     gridTemplateColumns: "repeat(2, 1fr)",
     gridColumnGap: 2,
     gridRowGap: 5,
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       gridTemplateColumns: "repeat(1, 1fr)",
     },
   },

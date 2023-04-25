@@ -1,4 +1,5 @@
-import { Container, makeStyles } from "@material-ui/core";
+import { Container } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import Router from "next/router";
 import React, { useContext, useEffect, useState } from "react";
 import Cookies from "universal-cookie";
@@ -75,7 +76,7 @@ export default function ClimateMatchRoot() {
       const retrievedQuestionsData = await getQuestions(
         token,
         locale,
-        params.location,
+        params.from_hub,
         climatematch_token
       );
       setHasDoneClimateMatch(retrievedQuestionsData.has_done_climatematch);
@@ -119,7 +120,9 @@ export default function ClimateMatchRoot() {
         if (!user) {
           handleSetClimateMatchCookie(response.data);
         }
-        Router.push("/climatematchresults");
+        const fromHubParam = fromHub ? `?from_hub=${fromHub}` : "";
+        const url = `/climatematchresults${fromHubParam}`;
+        Router.push(url);
       })
       .catch(function (error) {
         console.log(error);
@@ -174,7 +177,7 @@ export default function ClimateMatchRoot() {
         <WelcomeToClimateMatch
           isLoading={isLoading}
           goToNextStep={goToNextStep}
-          //TODO(unused) hub={fromHub}
+          fromHub={fromHub}
           hasDoneClimateMatch={hasDoneClimateMatch}
         />
       ) : (

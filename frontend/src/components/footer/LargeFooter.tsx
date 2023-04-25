@@ -1,11 +1,12 @@
-import { Button, Container, Link, makeStyles, Typography } from "@material-ui/core";
-import FacebookIcon from "@material-ui/icons/Facebook";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import GitHubIcon from "@material-ui/icons/GitHub";
-import InstagramIcon from "@material-ui/icons/Instagram";
-import LinkedInIcon from "@material-ui/icons/LinkedIn";
-import TwitterIcon from "@material-ui/icons/Twitter";
-import YouTubeIcon from "@material-ui/icons/YouTube";
+import { Button, Container, Link, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import FacebookIcon from "@mui/icons-material/Facebook";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import YouTubeIcon from "@mui/icons-material/YouTube";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -20,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     padding: theme.spacing(6),
     justifyContent: "space-between",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       flexWrap: "wrap",
       justifyContent: "space-around",
     },
@@ -34,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
   },
   li: {
     fontWeight: 600,
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("lg")]: {
       fontSize: 14,
     },
   },
@@ -50,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 25,
     marginBottom: theme.spacing(2),
     fontWeight: "bold",
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("lg")]: {
       fontSize: 22,
     },
   },
@@ -127,7 +128,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
   linksSection: {
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       minWidth: 120,
       textAlign: "center",
       marginBottom: theme.spacing(2),
@@ -173,22 +174,38 @@ const SocialLinks = () => {
   const classes = useStyles();
   return (
     <div className={classes.socialIconsContainer}>
-      <Link target="_blank" href="https://www.instagram.com/climate_connect.earth/">
+      <Link
+        target="_blank"
+        href="https://www.instagram.com/climate_connect.earth/"
+        underline="hover"
+      >
         <InstagramIcon color="primary" className={classes.socialIcon} titleAccess="Instagram" />
       </Link>
-      <Link target="_blank" href="https://github.com/climateconnect/climateconnect">
+      <Link
+        target="_blank"
+        href="https://github.com/climateconnect/climateconnect"
+        underline="hover"
+      >
         <GitHubIcon className={classes.socialIcon} titleAccess="GitHub" />
       </Link>
-      <Link target="_blank" href="https://twitter.com/ConnectClimate">
+      <Link target="_blank" href="https://twitter.com/ConnectClimate" underline="hover">
         <TwitterIcon color="primary" className={classes.socialIcon} titleAccess="Twitter" />
       </Link>
-      <Link target="_blank" href="https://www.linkedin.com/company/climateconnect">
+      <Link
+        target="_blank"
+        href="https://www.linkedin.com/company/climateconnect"
+        underline="hover"
+      >
         <LinkedInIcon color="primary" className={classes.socialIcon} titleAccess="LinkedIn" />
       </Link>
-      <Link target="_blank" href="https://www.facebook.com/climateconnect.earth">
+      <Link target="_blank" href="https://www.facebook.com/climateconnect.earth" underline="hover">
         <FacebookIcon color="primary" className={classes.socialIcon} titleAccess="Facebook" />
       </Link>
-      <Link target="_blank" href="https://www.youtube.com/channel/UC10rPriptUxYilMfvt-8Tkw">
+      <Link
+        target="_blank"
+        href="https://www.youtube.com/channel/UC10rPriptUxYilMfvt-8Tkw"
+        underline="hover"
+      >
         <YouTubeIcon color="primary" className={classes.socialIcon} titleAccess="YouTube" />
       </Link>
     </div>

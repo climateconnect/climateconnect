@@ -5,8 +5,9 @@ import {
   Theme,
   Typography,
   useMediaQuery,
-} from "@material-ui/core";
-import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
+} from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import Head from "next/head";
 import Router from "next/router";
 import React, { useContext, useEffect, useState } from "react";
@@ -17,6 +18,11 @@ import FeedbackButton from "../feedback/FeedbackButton";
 import CookieBanner from "../general/CookieBanner";
 import CloseSnackbarAction from "../snackbarActions/CloseSnackbarAction";
 import LogInAction from "../snackbarActions/LogInAction";
+
+declare module "@mui/styles/defaultTheme" {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
 
 const useStyles = makeStyles((theme) => ({
   leaveSpaceForFooter: {
@@ -73,7 +79,7 @@ export default function LayoutWrapper({
   });
   const classes = useStyles();
   const [initialized, setInitialized] = React.useState(false);
-  const isSmallerThanMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+  const isSmallerThanMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
   const [loading, setLoading] = React.useState(true);
   const [bannerOpen, setBannerOpen] = React.useState(true);
   const { acceptedNecessary, locale, isLoading } = useContext(UserContext);
@@ -140,7 +146,6 @@ export default function LayoutWrapper({
       <Head>
         <title>{title ? title + " | Climate Connect" : "Climate Connect"}</title>
         <link href="/fonts/openSans.css" rel="stylesheet" />
-        {useFloodStdFont && <link rel="stylesheet" href="https://use.typekit.net/hoy3dgi.css" />}
         <meta
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"

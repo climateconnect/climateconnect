@@ -1,4 +1,5 @@
-import { Chip, makeStyles, Tooltip } from "@material-ui/core";
+import { Chip, Tooltip } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import { getLocationFilterKeys } from "../../../public/data/locationFilters";
 

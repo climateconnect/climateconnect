@@ -1,5 +1,5 @@
-import { Button, CircularProgress, IconButton, Link, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Button, CircularProgress, IconButton, Link, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import ButtonIcon from "../../general/ButtonIcon";
 
@@ -98,6 +98,7 @@ export default function LikeButton({
           className={classes.iconButton}
           color={isUserLiking ? "secondary" : "primary"}
           disabled={likingChangePending}
+          size="large"
         >
           <ButtonIcon icon="like" size={40} color={isUserLiking ? "earth" : "primary"} />
         </IconButton>
@@ -114,6 +115,7 @@ export default function LikeButton({
           color={isUserLiking ? "secondary" : "primary"}
           disabled={likingChangePending}
           className={classes.mediumScreenIconButton}
+          size="large"
         >
           <ButtonIcon icon="like" size={40} color={isUserLiking ? "earth" : "primary"} />
         </IconButton>

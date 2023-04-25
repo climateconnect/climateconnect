@@ -1,4 +1,4 @@
-import { Link, Typography } from "@material-ui/core";
+import { Link, Typography } from "@mui/material";
 import React, { useContext, useEffect } from "react";
 import { apiRequest, getLocalePrefix } from "../../public/lib/apiOperations";
 import { redirectOnLogin } from "../../public/lib/profileOperations";
@@ -68,7 +68,9 @@ export default function ProfileVerified({ successMessage, errorMessage }) {
             {successMessage}
           </Typography>
           <Typography align="center" variant="h5" color="primary" component="h2">
-            <Link href={getLocalePrefix(locale) + "/signin"}>{texts.click_here_to_log_in}</Link>
+            <Link href={getLocalePrefix(locale) + "/signin"} underline="hover">
+              {texts.click_here_to_log_in}
+            </Link>
           </Typography>
         </div>
       ) : null}

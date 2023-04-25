@@ -1,4 +1,4 @@
-import CommentIcon from "@material-ui/icons/Comment";
+import CommentIcon from "@mui/icons-material/Comment";
 import React, { useContext } from "react";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";

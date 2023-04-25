@@ -1,4 +1,5 @@
-import { Container, makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
+import { Container, Theme, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getAllHubs } from "../public/lib/hubOperations";
 import getTexts from "../public/texts/texts";
@@ -15,10 +16,10 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 700,
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(0.5),
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       fontSize: 25,
     },
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       fontSize: 20,
     },
   },
@@ -50,17 +51,17 @@ export async function getServerSideProps(ctx: { locale: any }) {
 
 export default function Hubs({ hubs }) {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
   return (
     <WideLayout largeFooter noSpaceBottom title={texts.climate_action_hubs}>
-      <NavigationSubHeader allHubs={hubs} />
       <HubHeaderImage
         image="/images/hubs_background.jpg"
         // TODO(unused) alt={texts.hubs_overview_image_alt}
         fullWidth
       />
+      <NavigationSubHeader type={"browse"} allHubs={hubs} />
       <Container>
         <Typography color="primary" component="h1" className={classes.h1}>
           {texts.find_climate_solutions_in_each_hub}

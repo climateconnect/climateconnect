@@ -1,5 +1,6 @@
-import { Avatar, Badge, Divider, ListItem, ListItemText, makeStyles } from "@material-ui/core";
-import GroupIcon from "@material-ui/icons/Group";
+import { Avatar, Badge, Divider, ListItem, ListItemText } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import GroupIcon from "@mui/icons-material/Group";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getDateTime } from "../../../../public/lib/dateOperations";

@@ -1,7 +1,7 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core";
-import InsertInvitationIcon from "@material-ui/icons/InsertInvitation";
-import GroupIcon from "@material-ui/icons/Group";
+import makeStyles from "@mui/styles/makeStyles";
+import InsertInvitationIcon from "@mui/icons-material/InsertInvitation";
+import GroupIcon from "@mui/icons-material/Group";
 import SubTitleWithContent from "../general/SubTitleWithContent";
 
 const useStyles = makeStyles((theme) => ({
@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
   selectContainer: {
     display: "flex",
     flexDirection: "row",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       flexDirection: "column",
     },
   },
@@ -20,14 +20,14 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     marginRight: theme.spacing(10),
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       marginRight: theme.spacing(0),
     },
   },
   sizeContainer: {
     display: "flex",
     flexDirection: "column",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       marginRight: theme.spacing(0),
     },
   },

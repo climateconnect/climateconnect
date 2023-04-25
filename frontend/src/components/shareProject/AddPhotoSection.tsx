@@ -1,6 +1,6 @@
-import { Button, IconButton, Theme, Tooltip, Typography, useMediaQuery } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
+import { Button, IconButton, Theme, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import React, { useContext } from "react";
 import { getImageDialogHeight } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -65,7 +65,7 @@ export default function AddPhotoSection({
   const texts = getTexts({ page: "project", locale: locale });
   const [tempImage, setTempImage] = React.useState(projectData.image);
   const inputFileRef = React.useRef(null as HTMLInputElement | null);
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
 
   const handleDialogClickOpen = (dialogName) => {
     handleSetOpen({ [dialogName]: true });
@@ -116,7 +116,7 @@ export default function AddPhotoSection({
         >
           {texts.add_photo}*
           <Tooltip title={helpTexts.addPhoto} className={toolTipClassName}>
-            <IconButton>
+            <IconButton size="large">
               <ToolTipIcon />
             </IconButton>
           </Tooltip>

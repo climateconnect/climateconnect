@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core";
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import SmallCloud from "../../staticpages/SmallCloud";
 import DonorForestExplainer from "./DonorForestExplainer";
@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
   },
   transition: {
     height: 100,
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       height: 40,
     },
   },
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "flex-end",
     position: "relative",
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       justifyContent: "center",
     },
   },
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundSize: "contain",
     backgroundRepeat: "no-repeat",
     backgroundPosition: "bottom",
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       display: "none",
     },
   },
@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
     left: 150,
     width: 45,
     height: 30,
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       display: "none",
     },
   },
@@ -53,11 +53,11 @@ const useStyles = makeStyles((theme) => ({
     left: 350,
     width: 39,
     height: 26,
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       left: 50,
       top: 50,
     },
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       display: "none",
     },
   },
@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
     right: 350,
     width: 39,
     height: 26,
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       display: "none",
     },
   },

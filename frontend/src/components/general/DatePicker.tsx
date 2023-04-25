@@ -1,7 +1,9 @@
 import React from "react";
 import "date-fns";
-import DateFnsUtils from "@date-io/date-fns";
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+
+import { DatePicker as DatePickerComponent } from "@mui/x-date-pickers/DatePicker";
 
 type Props = {
   label?: any;
@@ -25,24 +27,24 @@ export default function DatePicker({
     handleChange(selectedDate);
   };
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <KeyboardDatePicker
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <DatePickerComponent
         className={className}
-        disableToolbar
-        variant="inline"
+        // disableToolbar
+        // variant="inline"
         format="MM/dd/yyyy"
-        margin="normal"
+        // margin="normal"
         label={label}
         value={date ? date : null}
         onChange={handleDateChange}
-        KeyboardButtonProps={{
-          "aria-label": "change date",
-        }}
+        // KeyboardButtonProps={{
+        //   "aria-label": "change date",
+        // }}
         maxDate={maxDate && maxDate}
         minDate={minDate && minDate}
-        autoOk
-        required={required}
+        // autoOk
+        // required={required}
       />
-    </MuiPickersUtilsProvider>
+    </LocalizationProvider>
   );
 }

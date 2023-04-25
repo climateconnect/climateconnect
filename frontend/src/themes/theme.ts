@@ -1,4 +1,19 @@
-import { createTheme } from "@material-ui/core/styles";
+import { createTheme, alpha } from "@mui/material/styles";
+import { grey } from "@mui/material/colors";
+
+declare module "@mui/material" {
+  interface Color {
+    main: string;
+    dark: string;
+    light?: string;
+  }
+}
+
+declare module "@mui/material/Button" {
+  interface ButtonPropsColorOverrides {
+    grey: true;
+  }
+}
 
 // Create core theme so we can access spacing etc. when customizing components
 const coreTheme = createTheme({
@@ -22,6 +37,11 @@ const coreTheme = createTheme({
     },
     action: {
       selected: "#387077",
+    },
+    grey: {
+      light: grey[100],
+      main: grey[300],
+      dark: grey[400],
     },
   },
   typography: {
@@ -56,47 +76,104 @@ const coreTheme = createTheme({
  * across other files.
  */
 const theme = createTheme(coreTheme, {
-  overrides: {
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: `
+        @import url("https://p.typekit.net/p.css?s=1&k=hoy3dgi&ht=tk&f=18085&a=35847266&app=typekit&e=css");
+
+        @font-face {
+        font-family:"flood-std";
+        src:url("https://use.typekit.net/af/6da923/000000000000000000012fc3/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3") format("woff2"),url("https://use.typekit.net/af/6da923/000000000000000000012fc3/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3") format("woff"),url("https://use.typekit.net/af/6da923/000000000000000000012fc3/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3") format("opentype");
+        font-display:auto;font-style:normal;font-weight:400;font-stretch:normal;
+        }
+
+        .tk-flood-std { font-family: "flood-std",sans-serif; }
+      `,
+    },
     MuiButton: {
-      root: {
-        borderRadius: 3,
-        paddingLeft: coreTheme.spacing(4),
-        paddingRight: coreTheme.spacing(4),
-        paddingTop: coreTheme.spacing(1),
-        paddingBottom: coreTheme.spacing(1),
+      variants: [
+        {
+          props: { variant: "contained", color: "grey" },
+          style: {
+            color: coreTheme.palette.getContrastText(coreTheme.palette.grey[300]),
+          },
+        },
+        {
+          props: { variant: "outlined", color: "grey" },
+          style: {
+            color: coreTheme.palette.text.primary,
+            borderColor:
+              coreTheme.palette.mode === "light"
+                ? "rgba(0, 0, 0, 0.23)"
+                : "rgba(255, 255, 255, 0.23)",
+            "&.Mui-disabled": {
+              border: `1px solid ${coreTheme.palette.action.disabledBackground}`,
+            },
+            "&:hover": {
+              borderColor:
+                coreTheme.palette.mode === "light"
+                  ? "rgba(0, 0, 0, 0.23)"
+                  : "rgba(255, 255, 255, 0.23)",
+              backgroundColor: alpha(
+                coreTheme.palette.text.primary,
+                coreTheme.palette.action.hoverOpacity
+              ),
+            },
+          },
+        },
+      ],
+      defaultProps: {
+        disableElevation: true,
+      },
+      styleOverrides: {
+        containedSizeMedium: {
+          borderRadius: 3,
+          paddingLeft: coreTheme.spacing(4),
+          paddingRight: coreTheme.spacing(4),
+          paddingTop: coreTheme.spacing(1),
+          paddingBottom: coreTheme.spacing(1),
+        },
       },
     },
     MuiTab: {
-      root: {
-        minWidth: 0,
-        [coreTheme.breakpoints.up("xs")]: {
+      styleOverrides: {
+        root: {
           minWidth: 0,
+          [coreTheme.breakpoints.up("xs")]: {
+            minWidth: 0,
+          },
         },
       },
     },
     MuiTooltip: {
-      tooltip: {
-        fontSize: 14,
+      styleOverrides: {
+        tooltip: {
+          fontSize: 14,
+        },
       },
     },
     MuiChip: {
-      root: {
-        // Have the same border-radius as the other UI controls, like
-        // the select dropdowns, buttons, etc.
-        borderRadius: 4,
+      variants: [
+        {
+          props: { variant: "filled", color: "secondary" },
+          style: {
+            background: "#e0e0e0",
+            color: coreTheme.palette.secondary.main,
+          },
+        },
+      ],
+      styleOverrides: {
+        root: {
+          // Have the same border-radius as the other UI controls, like
+          // the select dropdowns, buttons, etc.
+          borderRadius: 4,
+        },
       },
     },
-  },
-  // Note the "thick" semantic naming for this borders
-  // design token.
-  borders: {
-    thick: `3px solid ${coreTheme.palette.primary.main}`,
-    // TODO: we should add this light gray color to be consistent with our color system / theme
-    thin: `1px solid #e0e0e0`,
-  },
-  props: {
-    MuiButton: {
-      disableElevation: true,
+    MuiLink: {
+      defaultProps: {
+        underline: "hover",
+      },
     },
   },
 });

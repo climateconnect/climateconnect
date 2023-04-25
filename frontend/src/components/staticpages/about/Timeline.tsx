@@ -1,11 +1,5 @@
-import {
-  Container,
-  Divider,
-  makeStyles,
-  Theme,
-  Typography,
-  useMediaQuery,
-} from "@material-ui/core";
+import { Container, Divider, Theme, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import Carousel from "react-multi-carousel";
 import getTexts from "../../../../public/texts/texts";
@@ -63,9 +57,9 @@ export default function Timeline({ headlineClass }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "about", locale: locale });
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.only("md"));
-  const useCarousel = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const useCarousel = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const responsive = {
     all: {
       breakpoint: { max: 10000, min: 0 },

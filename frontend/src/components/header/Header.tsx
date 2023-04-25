@@ -18,26 +18,25 @@ import {
   Popper,
   SwipeableDrawer,
   Typography,
-} from "@material-ui/core";
-import { makeStyles, Theme } from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
-import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
-import GroupWorkIcon from "@material-ui/icons/GroupWork";
-import HomeIcon from "@material-ui/icons/Home";
-import InfoIcon from "@material-ui/icons/Info";
-import MailOutlineIcon from "@material-ui/icons/MailOutline";
-import MenuIcon from "@material-ui/icons/Menu";
-import NotificationsIcon from "@material-ui/icons/Notifications";
-import SettingsIcon from "@material-ui/icons/Settings";
+} from "@mui/material";
+import { Theme } from "@mui/material/styles";
+import makeStyles from "@mui/styles/makeStyles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import GroupWorkIcon from "@mui/icons-material/GroupWork";
+import HomeIcon from "@mui/icons-material/Home";
+import InfoIcon from "@mui/icons-material/Info";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import MenuIcon from "@mui/icons-material/Menu";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import SettingsIcon from "@mui/icons-material/Settings";
 import noop from "lodash/noop";
 import React, { useContext, useEffect, useState } from "react";
-import { getStaticPageLinks } from "../../../public/data/getStaticPageLinks";
-
-// Relative imports
+import { getStaticPageLinks } from "../../../public/data/getStaticPageLinks"; // Relative imports
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -49,6 +48,7 @@ import ProfileBadge from "../profile/ProfileBadge";
 import DropDownButton from "./DropDownButton";
 import LanguageSelect from "./LanguageSelect";
 import StaticPageLinks from "./StaticPageLinks";
+import { HeaderProps } from "./types";
 
 type StyleProps = {
   transparentHeader?: boolean;
@@ -56,6 +56,7 @@ type StyleProps = {
   background?: string;
   isStaticPage?: boolean;
   isHubPage?: boolean;
+  isLocationHub?: boolean;
 };
 
 const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
@@ -80,7 +81,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       };
     },
     hideHeader: {
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         transform: "translateY(-97px)",
       },
     },
@@ -91,30 +92,47 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       padding: theme.spacing(2),
       paddingRight: "auto",
       paddingLeft: "auto",
-      [theme.breakpoints.down("md")]: {
-        padding: theme.spacing(2),
-      },
-      [theme.breakpoints.down("sm")]: {
-        padding: `${theme.spacing(0.8)}px ${theme.spacing(2)}px`,
-      },
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
+      [theme.breakpoints.down("lg")]: {
+        padding: theme.spacing(2),
+      },
+      [theme.breakpoints.down("md")]: {
+        padding: `${theme.spacing(0.8)} ${theme.spacing(2)}`,
+      },
     },
     logoLink: {
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down("md")]: {
         flex: `0 1 auto`,
         width: "calc(1.1vw + 1.3em)",
         maxWidth: "2.3rem",
         minWidth: "1.3rem",
       },
     },
-    logo: {
-      [theme.breakpoints.down("sm")]: {
-        height: "auto",
+    // props.isHubPage
+    //   ? {
+    //       [theme.breakpoints.down("sm")]: {
+    //         flex: `0.5 1 auto`,
+    //         width: "calc(1.1vw + 1.3em)",
+    //         minWidth: "1.3rem",
+    //       },
+    //     }
+    //   : {
+    //       [theme.breakpoints.down("sm")]: {
+    //         flex: `0 1 auto`,
+    //         width: "calc(1.1vw + 1.3em)",
+    //         maxWidth: "2.3rem",
+    //         minWidth: "1.3rem",
+    //       },
+    //     },
+    logo: (props) => ({
+      [theme.breakpoints.down("md")]: {
+        height: props.isLocationHub ? 35 : "auto",
       },
       height: 60,
-    },
+      maxWidth: 180,
+    }),
     buttonMarginLeft: {
       marginLeft: theme.spacing(1),
     },
@@ -144,10 +162,10 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       display: "flex",
       alignItems: "center",
       maxWidth: "calc(100% - 200px)",
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         maxWidth: "calc(100% - 150px)",
       },
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down("md")]: {
         maxWidth: "calc(100% - 35px)",
       },
       justifyContent: "space-around",
@@ -183,13 +201,17 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(2),
     },
+    languageSelectMobile: {
+      display: "flex",
+      justifyContent: "center",
+    },
   };
 });
 
-const getLinks = (path_to_redirect, texts) => [
+const getLinks = (path_to_redirect, texts, isLocationHub) => [
   {
     href: "/browse",
-    text: texts.browse,
+    text: isLocationHub ? texts.projects_worldwide : texts.browse,
     iconForDrawer: HomeIcon,
     showJustIconUnderSm: HomeIcon,
   },
@@ -209,6 +231,7 @@ const getLinks = (path_to_redirect, texts) => [
     hideDesktopIconUnderSm: true,
     vanillaIfLoggedOut: true,
     hideOnStaticPages: true,
+    alwaysDisplayDirectly: "loggedIn",
   },
   {
     href: "/share",
@@ -218,10 +241,10 @@ const getLinks = (path_to_redirect, texts) => [
     isFilledInHeader: true,
     className: "shareProjectButton",
     vanillaIfLoggedOut: true,
+    hideOnMediumScreen: isLocationHub,
   },
   {
     type: "languageSelect",
-    alwaysDisplayDirectly: true,
   },
   {
     type: "notificationsButton",
@@ -302,21 +325,24 @@ export default function Header({
   transparentHeader,
   background,
   isHubPage,
-}: any) {
+  hubName,
+  isLocationHub,
+}: HeaderProps) {
   const classes = useStyles({
     fixedHeader: fixedHeader,
     transparentHeader: transparentHeader,
     isStaticPage: isStaticPage,
     background: background,
     isHubPage: isHubPage,
+    isLocationHub: isLocationHub,
   });
 
   const { user, signOut, notifications, pathName, locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("xs"));
-  const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
-  const LINKS = getLinks(pathName, texts);
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+  const LINKS = getLinks(pathName, texts, isLocationHub);
   const toggleShowNotifications = (event) => {
     if (!anchorEl) setAnchorEl(event.currentTarget);
     else setAnchorEl(null);
@@ -326,10 +352,26 @@ export default function Header({
   const onNotificationsClose = () => setAnchorEl(null);
 
   const getLogo = () => {
+    let imageUrl = "/images";
+    if (isHubPage && hubName) {
+      imageUrl += `/hub_logos/ch_${hubName.toLowerCase()}_logo.svg`;
+    } else {
+      imageUrl = loadDefaultLogo(transparentHeader, isMediumScreen);
+    }
+
+    return imageUrl;
+  };
+
+  const loadFallbackLogo = (
+    ev // TODO: implementing better with re-rendering after screen size change
+  ) => (ev.target.src = loadDefaultLogo(transparentHeader, isMediumScreen));
+
+  const loadDefaultLogo = (transparentHeader?: boolean, isMediumScreen?: boolean): string => {
     if (isMediumScreen) {
       return transparentHeader ? "/images/logo_white_no_text.svg" : "/images/logo_no_text.svg";
+    } else {
+      return transparentHeader ? "/images/logo_white.png" : "/images/logo.png";
     }
-    return transparentHeader ? "/images/logo_white.png" : "/images/logo.png";
   };
 
   const logo = getLogo();
@@ -359,10 +401,15 @@ export default function Header({
       }`}
     >
       <Container className={classes.container}>
-        <Link href={localePrefix + "/"} className={classes.logoLink}>
-          <img src={logo} alt={texts.climate_connect_logo} className={classes.logo} />
+        <Link href={localePrefix + "/"} className={classes.logoLink} underline="hover">
+          <img
+            src={logo}
+            alt={texts.climate_connect_logo}
+            className={classes.logo}
+            onError={loadFallbackLogo}
+          />
         </Link>
-        {isNarrowScreen ? (
+        {isNarrowScreen || (isLocationHub && isMediumScreen) ? (
           <NarrowScreenLinks
             loggedInUser={user}
             handleLogout={signOut}
@@ -413,8 +460,8 @@ function NormalScreenLinks({
   isStaticPage,
 }) {
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
-  const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
-  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
+  const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
+  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("lg"));
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts);
   return (
     <Box className={classes.linkContainer}>
@@ -446,7 +493,7 @@ function NormalScreenLinks({
                   <LanguageSelect transparentHeader={transparentHeader} />
                 ) : link.onlyShowIconOnNormalScreen ? (
                   <>
-                    <IconButton {...buttonProps} className={classes.link}>
+                    <IconButton {...buttonProps} className={classes.link} size="large">
                       {link.hasBadge && notifications && notifications.length > 0 ? (
                         <Badge badgeContent={notifications.length} color="error">
                           <Icon />
@@ -485,7 +532,7 @@ function NormalScreenLinks({
                     {isMediumScreen && link.mediumScreenText ? link.mediumScreenText : link.text}
                   </DropDownButton>
                 ) : link?.showJustIconUnderSm && isSmallMediumScreen ? (
-                  <IconButton {...buttonProps} className={classes.link}>
+                  <IconButton {...buttonProps} className={classes.link} size="large">
                     <link.showJustIconUnderSm />
                   </IconButton>
                 ) : (
@@ -533,7 +580,7 @@ function NarrowScreenLinks({
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
   const linksOutsideDrawer = LINKS.filter(
     (link) =>
-      link.alwaysDisplayDirectly &&
+      link.alwaysDisplayDirectly === true &&
       !(loggedInUser && link.onlyShowLoggedOut) &&
       !(!loggedInUser && link.onlyShowLoggedIn)
   );
@@ -560,7 +607,12 @@ function NarrowScreenLinks({
             <React.Fragment key={index}>
               {link.onlyShowIconOnMobile ? (
                 <>
-                  <IconButton color="primary" className={classes.marginRight} {...buttonProps}>
+                  <IconButton
+                    color="primary"
+                    className={classes.marginRight}
+                    {...buttonProps}
+                    size="large"
+                  >
                     {link.hasBadge && notifications && notifications.length > 0 ? (
                       <Badge badgeContent={notifications.length} color="error">
                         <Icon />
@@ -609,7 +661,13 @@ function NarrowScreenLinks({
           );
         })}
         <span className={classes.menuLink}>
-          <IconButton edge="start" color="inherit" aria-label="menu" onClick={openDrawer}>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={openDrawer}
+            size="large"
+          >
             <MenuIcon />
           </IconButton>
         </span>
@@ -622,23 +680,30 @@ function NarrowScreenLinks({
           disableBackdropTransition={true}
         >
           <List /*TODO(unused) styles={{ height: "100vh" }} */>
+            <ListItem className={classes.languageSelectMobile}>
+              <LanguageSelect transparentHeader={transparentHeader} />
+            </ListItem>
             {LINKS.filter(
               (link) =>
-                !link.alwaysDisplayDirectly &&
+                (!link.alwaysDisplayDirectly ||
+                  !(loggedInUser && link.alwaysDisplayDirectly === "loggedIn")) &&
                 !(loggedInUser && link.onlyShowLoggedOut) &&
                 !(!loggedInUser && link.onlyShowLoggedIn)
             ).map((link, index) => {
               const Icon = link.iconForDrawer;
-              return (
-                <Link href={localePrefix + link.href} key={index}>
-                  <ListItem button component="a" onClick={closeDrawer}>
-                    <ListItemIcon>
-                      <Icon color="primary" />
-                    </ListItemIcon>
-                    <ListItemText primary={link.text} />
-                  </ListItem>
-                </Link>
-              );
+              console.log(link);
+              if (link.type !== "languageSelect") {
+                return (
+                  <Link href={localePrefix + link.href} key={index} underline="hover">
+                    <ListItem button component="a" onClick={closeDrawer}>
+                      <ListItemIcon>
+                        <Icon color="primary" />
+                      </ListItemIcon>
+                      <ListItemText primary={link.text} />
+                    </ListItem>
+                  </Link>
+                );
+              }
             })}
             {loggedInUser &&
               getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts }).map((link, index) => {
@@ -651,7 +716,7 @@ function NarrowScreenLinks({
                 if (link.avatar)
                   return (
                     <div className={classes.mobileAvatarContainer}>
-                      <Link href={"/profiles/" + loggedInUser.url_slug}>
+                      <Link href={"/profiles/" + loggedInUser.url_slug} underline="hover">
                         {loggedInUser?.badges?.length > 0 ? (
                           <ProfileBadge
                             badge={loggedInUser?.badges[0]}
@@ -677,7 +742,7 @@ function NarrowScreenLinks({
                   );
                 else
                   return (
-                    <Link href={localePrefix + link.href} key={index}>
+                    <Link href={localePrefix + link.href} key={index} underline="hover">
                       <ListItem button component="a" onClick={closeDrawer}>
                         <ListItemIcon>
                           <Icon color="primary" />

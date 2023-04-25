@@ -1,5 +1,5 @@
-import { Button, Link } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Button, Link } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../../public/lib/apiOperations";
@@ -13,10 +13,15 @@ const useStyles = makeStyles((theme) => ({
     position: "fixed",
     bottom: "calc(50vh - 20px)",
     transform: "rotate(-90deg)",
-    right: -27.35,
-  },
-  buttonText: {
+    right: -34.75,
     color: theme.palette.primary.main,
+    background: "#e6e6e6",
+    padding: 6,
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    "&:hover": {
+      background: "#d6d6d6",
+    },
   },
   alert: {
     position: "absolute",
@@ -81,7 +86,6 @@ export default function FeedbackButton({ justLink, children }: any) {
           size="small"
           classes={{
             root: classes.root,
-            label: classes.buttonText,
           }}
           onClick={handleOpenDialog}
         >

@@ -1,7 +1,8 @@
 import React from "react";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import { Stepper, Step, StepLabel, StepConnector, Typography } from "@material-ui/core";
-import CheckIcon from "@material-ui/icons/Check";
+import makeStyles from "@mui/styles/makeStyles";
+import withStyles from "@mui/styles/withStyles";
+import { Stepper, Step, StepLabel, StepConnector, Typography } from "@mui/material";
+import CheckIcon from "@mui/icons-material/Check";
 
 const ICON_OFFSET = 3; //offset required to center icons horizontally in px.
 

@@ -1,4 +1,5 @@
-import { Box, Link, makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
+import { Box, Link, Theme, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import Router from "next/router";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
@@ -33,7 +34,7 @@ const useStyles = makeStyles<Theme, { addBackground?: boolean }>((theme) => ({
   contentContainerLeftSide: {
     display: "flex",
     marginLeft: theme.spacing(2),
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       marginLeft: 0,
     },
   },
@@ -43,7 +44,7 @@ const useStyles = makeStyles<Theme, { addBackground?: boolean }>((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     marginRight: theme.spacing(3),
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       marginRight: theme.spacing(0),
       marginLeft: theme.spacing(-1),
     },
@@ -64,13 +65,13 @@ const useStyles = makeStyles<Theme, { addBackground?: boolean }>((theme) => ({
     position: "relative",
     height: 200,
     width: "100%",
-    [theme.breakpoints.down("lg")]: {
+    [theme.breakpoints.down("xl")]: {
       height: 250,
     },
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("lg")]: {
       height: 270,
     },
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       height: 360,
     },
   },
@@ -78,7 +79,7 @@ const useStyles = makeStyles<Theme, { addBackground?: boolean }>((theme) => ({
     marginLeft: theme.spacing(10),
     marginBottom: theme.spacing(1),
     fontSize: 18,
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       marginLeft: 0,
       fontWeight: 600,
     },
@@ -96,7 +97,7 @@ const useStyles = makeStyles<Theme, { addBackground?: boolean }>((theme) => ({
       flexDirection: "column",
       alignItems: "center",
     },
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       width: "100%",
     },
   },
@@ -105,10 +106,10 @@ const useStyles = makeStyles<Theme, { addBackground?: boolean }>((theme) => ({
     ["@media(max-width:1500px)"]: {
       width: 1000,
     },
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("lg")]: {
       width: 920,
     },
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       width: "100%",
     },
   },
@@ -139,6 +140,7 @@ export default function ClimateMatchResult({ suggestion, pos }) {
         className={classes.noUnderline}
         href={getSuggestionHref(locale, suggestion)}
         target="_blank"
+        underline="hover"
       >
         <div className={classes.resultContainer}>
           <ClimateMatchResultFirstLine pos={pos} suggestion={suggestion} />

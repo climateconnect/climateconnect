@@ -1,5 +1,6 @@
-import { MenuItem, withStyles } from "@material-ui/core";
-const StyledMenuItem = withStyles(() => ({
+import { MenuItem } from "@mui/material";
+import withStyles from "@mui/styles/withStyles";
+const StyledMenuItem = withStyles((theme) => ({
   root: {
     color: "primary",
     textAlign: "center",
@@ -7,6 +8,7 @@ const StyledMenuItem = withStyles(() => ({
   },
   selected: {
     color: "white",
+    backgroundColor: `${theme.palette.primary.main} !important`,
   },
 }))(MenuItem);
 

@@ -8,6 +8,7 @@ from organization.models import (
     ProjectParents,
 )
 from climateconnect_api.models import Role
+from django.db.models import Q
 
 
 class OrganizationProjectCreationPermission(BasePermission):
@@ -61,15 +62,19 @@ class ProjectReadWritePermission(BasePermission):
         return False
 
 
-class ReadSensibleProjectDataPermission(BasePermission):
+class ReadWriteSensibleProjectDataPermission(BasePermission):
     def has_permission(self, request, view):
         try:
             project = Project.objects.get(url_slug=str(view.kwargs.get("url_slug")))
         except Project.DoesNotExist:
             return False
-
         if ProjectMember.objects.filter(
-            user=request.user, role__role_type=Role.ALL_TYPE, project=project
+            Q(user=request.user)
+            & Q(
+                Q(role__role_type=Role.ALL_TYPE)
+                | Q(role__role_type=Role.READ_WRITE_TYPE)
+            )
+            & Q(project=project)
         ).exists():
             return True
         return False
@@ -310,7 +315,7 @@ class ApproveDenyProjectMemberRequest(BasePermission):
             return False
 
         project = Project.objects.filter(
-            url_slug=str(view.kwargs.get("project_slug"))
+            url_slug=str(view.kwargs.get("url_slug"))
         ).first()
 
         # When calling from the POST in ManageJoinProjectView, Verify

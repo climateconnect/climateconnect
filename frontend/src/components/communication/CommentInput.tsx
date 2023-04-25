@@ -6,8 +6,8 @@ import {
   Tooltip,
   Typography,
   useMediaQuery,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useState } from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -16,7 +16,7 @@ import UserContext from "../context/UserContext";
 import LoginNudge from "../general/LoginNudge";
 import ProfileBadge from "../profile/ProfileBadge";
 import InputWithMentions from "./InputWithMentions";
-import SendIcon from "@material-ui/icons/Send";
+import SendIcon from "@mui/icons-material/Send";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -66,7 +66,7 @@ function CommentInput({
   const [curComment, setCurComment] = React.useState("");
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "communication", locale: locale });
-  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const [showSendHelper, setShowSendHelper] = useState(false);
 
   const onCurCommentChange = (e) => {
@@ -155,6 +155,7 @@ function CommentInput({
                   //TODO(unused) variant="contained"
                   className={classes.commentButton}
                   onClick={(event) => handleSendComment(event)}
+                  size="large"
                 >
                   <SendIcon /*TODO(undefined) className={classes.sendButtonIcon} */ />
                 </IconButton>

@@ -1,5 +1,5 @@
-import { Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useRef } from "react";
 
 // Relative imports
@@ -128,7 +128,7 @@ export default function Share({
   };
 
   const getOrgObject = (org) => {
-    return userOrganizations.find((o) => o.name === org);
+    return userOrganizations.find((o) => o.name.trim() === org);
   };
 
   const onSubmit = (event, values) => {

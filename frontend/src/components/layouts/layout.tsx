@@ -1,6 +1,6 @@
-import { Container, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import Alert from "@material-ui/lab/Alert";
+import { Container, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import Alert from "@mui/material/Alert";
 import React, { useEffect } from "react";
 import { getParams } from "../../../public/lib/generalOperations";
 import { getMessageFromUrl } from "../../../public/lib/parsingOperations";
@@ -14,7 +14,7 @@ import LayoutWrapper from "./LayoutWrapper";
 const useStyles = makeStyles((theme) => ({
   mainHeading: {
     textAlign: "center",
-    margin: `${theme.spacing(4)}px 0`,
+    margin: `${theme.spacing(4)} 0`,
   },
   alert: () => ({
     width: "100%",

@@ -1,5 +1,5 @@
-import { Container, Theme, Typography, useMediaQuery } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Container, Theme, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { apiRequest } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
@@ -25,15 +25,15 @@ const useStyles = makeStyles((theme) => {
       backgroundRepeat: "no-repeat",
       backgroundSize: "100% auto",
       backgroundPosition: "0px 50%",
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         height: 350,
         backgroundPosition: "0px 70%",
       },
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down("md")]: {
         height: 260,
         backgroundPosition: "0px 85%",
       },
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         height: 160,
         display: "none",
       },
@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => {
       fontWeight: 700,
       marginBottom: theme.spacing(1.5),
       color: theme.palette.primary.main,
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         fontSize: 20,
       },
     },
@@ -58,13 +58,13 @@ const useStyles = makeStyles((theme) => {
       color: theme.palette.yellow.main,
       paddingRight: `max(24px, 472px - ((100% - 1280px) / 2))`,
       marginBottom: 0,
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         paddingRight: 472,
       },
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down("md")]: {
         padding: 0,
       },
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         display: "none",
       },
     },
@@ -75,13 +75,13 @@ const useStyles = makeStyles((theme) => {
       marginTop: theme.spacing(5),
       marginBottom: theme.spacing(5),
       paddingRight: `max(24px, 472px - ((100% - 1280px) / 2))`,
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("lg")]: {
         paddingRight: 472,
       },
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down("md")]: {
         padding: theme.spacing(4),
       },
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
         paddingTop: theme.spacing(3),
@@ -94,7 +94,7 @@ const useStyles = makeStyles((theme) => {
       marginBottom: theme.spacing(1),
       fontWeight: 700,
       fontSize: 20,
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         fontSize: 16,
       },
     },
@@ -102,6 +102,10 @@ const useStyles = makeStyles((theme) => {
 });
 
 export async function getServerSideProps(ctx) {
+  if (process.env.DONATION_CAMPAIGN_RUNNING !== "true")
+    return {
+      props: {},
+    };
   const { goal_name, goal_amount, current_amount } = (await getDonations(ctx.locale))!;
   return {
     props: {
@@ -115,7 +119,7 @@ export async function getServerSideProps(ctx) {
 export default function Donate({ goal_name, goal_amount, current_amount }) {
   const classes = useStyles();
   const isLargeScreen = useMediaQuery<Theme>(theme.breakpoints.up("md"));
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const [overlayOpen, setOverlayOpen] = React.useState(false);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "donate", locale: locale });

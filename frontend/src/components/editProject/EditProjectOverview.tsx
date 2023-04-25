@@ -1,6 +1,7 @@
-import { Button, Chip, Container, List, TextField, Typography } from "@material-ui/core";
-import { makeStyles, Theme } from "@material-ui/core/styles";
-import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
+import { Button, Chip, Container, List, TextField, Typography } from "@mui/material";
+import { Theme } from "@mui/material/styles";
+import makeStyles from "@mui/styles/makeStyles";
+import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import React, { useContext } from "react";
 
 // Relative imports

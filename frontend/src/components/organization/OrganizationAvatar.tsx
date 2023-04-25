@@ -1,4 +1,5 @@
-import { Avatar, Chip, makeStyles, Theme, Typography, useMediaQuery } from "@material-ui/core";
+import { Avatar, Chip, Theme, Typography, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 
@@ -7,14 +8,14 @@ const useStyles = makeStyles<Theme, { inlineVersionOnMobile?: boolean }>((theme)
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       flexDirection: props.inlineVersionOnMobile ? "row" : "column",
     },
   }),
   avatar: (props) => ({
     width: 120,
     height: 120,
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       marginRight: props.inlineVersionOnMobile ? theme.spacing(2) : undefined,
     },
     ["@media(max-width: 500px)"]: {
@@ -27,7 +28,7 @@ const useStyles = makeStyles<Theme, { inlineVersionOnMobile?: boolean }>((theme)
     width: 145,
     marginTop: theme.spacing(-3),
     zIndex: 1,
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       marginTop: props.inlineVersionOnMobile ? 0 : theme.spacing(-3),
     },
   }),
@@ -43,7 +44,7 @@ const useStyles = makeStyles<Theme, { inlineVersionOnMobile?: boolean }>((theme)
 
 export default function OrganizationAvatar({ organization, inlineVersionOnMobile }) {
   const classes = useStyles({ inlineVersionOnMobile: inlineVersionOnMobile });
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const type = organization?.types[0]?.organization_tag;
   return (
     <div className={classes.root}>

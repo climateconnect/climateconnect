@@ -1,4 +1,5 @@
-import { Container, makeStyles, Typography } from "@material-ui/core";
+import { Container, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -8,6 +9,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 18,
     marginBottom: theme.spacing(2),
     textAlign: "center",
+    marginTop: theme.spacing(4),
   },
   headline: {
     color: theme.palette.primary.main,

@@ -1,4 +1,6 @@
-import { StyleRules, Theme } from "@material-ui/core";
+import { Theme } from "@mui/material";
+
+import { StyleRules } from "@mui/styles";
 
 const projectOverviewStyles = (theme: Theme): StyleRules => {
   //general styling

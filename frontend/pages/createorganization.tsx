@@ -1,4 +1,5 @@
-import { makeStyles, Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import NextCookies from "next-cookies";
 import Router from "next/router";
 import React, { useContext, useRef, useState } from "react";
@@ -21,7 +22,7 @@ import Layout from "./../src/components/layouts/layout";
 import WideLayout from "./../src/components/layouts/WideLayout";
 import EnterBasicOrganizationInfo from "./../src/components/organization/EnterBasicOrganizationInfo";
 import EnterDetailledOrganizationInfo from "./../src/components/organization/EnterDetailledOrganizationInfo";
-import Alert from "@material-ui/lab/Alert";
+import Alert from "@mui/material/Alert";
 
 const useStyles = makeStyles((theme) => ({
   headline: {

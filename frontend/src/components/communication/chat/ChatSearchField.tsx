@@ -1,8 +1,8 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../../../src/components/context/UserContext";
-import { Button } from "@material-ui/core";
+import { Button } from "@mui/material";
 import ApplyFilterSearchBar from "../../search/ApplyFilterSearchBar";
 
 const useStyles = makeStyles(() => {
