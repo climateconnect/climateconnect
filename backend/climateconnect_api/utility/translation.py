@@ -9,6 +9,8 @@ import requests
 from django.conf import settings
 from rest_framework.exceptions import ValidationError
 
+logger = logging.getLogger(__name__)
+
 
 def get_locale(language_code):
     LANGUAGE_CODE_MAP = {
@@ -51,19 +53,17 @@ def get_attribute_in_correct_language(obj, attr, language_code):
 
 
 def translate(text, target_lang):
-    if len(text) == 0:
+    if text is None or len(text) == 0:
         return {"text": text}
+    if not settings.DEEPL_API_KEY:
+        logger.warning("DEEPL_API_KEY not set, not translating")
+        return {"text": text}
+
     payload = {"text": text, "target_lang": target_lang}
     if target_lang == "de":
         payload["formality"] = "less"
 
-    # TODO: DEEPL_API_KEY wasn't set here, causing a 500. We should
-    # add docs on how to update DEEPL_API_KEY
-    url = (
-        "https://api.deepl.com/v2/translate?auth_key=" + settings.DEEPL_API_KEY
-        if settings.DEEPL_API_KEY
-        else ""
-    )
+    url = "https://api.deepl.com/v2/translate?auth_key=" + settings.DEEPL_API_KEY
     translation = requests.post(url, payload)
     return json.loads(translation.content)["translations"][0]
 

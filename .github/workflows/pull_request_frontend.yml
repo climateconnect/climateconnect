@@ -1,0 +1,30 @@
+name: Lint and format fronted code
+on: [pull_request]
+
+# https://docs.github.com/en/actions/using-jobs/using-jobs-in-a-workflow
+jobs:
+  pull-request-checks:
+    defaults:
+      run:
+        working-directory: frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check out Git repository
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: yarn
+          cache-dependency-path: frontend/yarn.lock
+
+      # Install deps as we need to invoke ESLint and Prettier
+      # in the next steps
+      - name: Install Node.js dependencies
+        run: yarn --immutable
+
+      - name: Lint frontend
+        run: yarn lint
+      - name: Format-check frontend
+        run: yarn prettier '**/*.{js,jsx,ts,tsx,json,md}' --check
+      - name: Typescript Compile frontend
+        run: yarn tsc 

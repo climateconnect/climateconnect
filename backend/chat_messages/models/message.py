@@ -45,6 +45,16 @@ class MessageParticipants(models.Model):
         blank=True,
     )
 
+    created_by = models.ForeignKey(
+        User,
+        related_name="created_by_user",
+        help_text="Points to the user that created the chat",
+        verbose_name="Created By",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
+
     created_at = models.DateTimeField(
         help_text="Time when participants started a messaging",
         verbose_name="Created at",

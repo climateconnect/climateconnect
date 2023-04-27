@@ -14,10 +14,8 @@ from climateconnect_api.models import (
     Role,
     Skill,
     UserProfile,
-    ContentShares,
 )
 from climateconnect_api.models.language import Language
-from climateconnect_api.permissions import UserPermission
 from climateconnect_api.utility.translation import (
     edit_translation,
     edit_translations,
@@ -63,7 +61,6 @@ from organization.models.translations import ProjectTranslation
 
 from organization.pagination import (
     MembersPagination,
-    ProjectCommentPagination,
     ProjectPostPagination,
     ProjectsPagination,
     ProjectsSitemapPagination,
@@ -73,7 +70,7 @@ from organization.permissions import (
     ChangeProjectCreatorPermission,
     ProjectMemberReadWritePermission,
     ProjectReadWritePermission,
-    ReadSensibleProjectDataPermission,
+    ReadWriteSensibleProjectDataPermission,
     ApproveDenyProjectMemberRequest,
 )
 from organization.serializers.content import PostSerializer, ProjectCommentSerializer
@@ -340,10 +337,6 @@ class CreateProjectView(APIView):
             )
             translations = translations_object["translations"]
 
-        source_language = Language.objects.get(
-            language_code=translations_object["source_language"]
-        )
-        translations = translations_object["translations"]
         project = create_new_project(request.data, source_language)
 
         if not translations_failed:
@@ -910,14 +903,7 @@ class SetLikeView(APIView):
             )
 
 
-class IsUserFollowing(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, url_slug):
-        return check_if_user_follows_project(request.user, url_slug)
-
-
-class IsUserLiking(APIView):
+class GetUserInteractionsWithProjectView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, url_slug):
@@ -927,10 +913,27 @@ class IsUserLiking(APIView):
             raise NotFound(
                 detail="Project not found:" + url_slug, code=status.HTTP_404_NOT_FOUND
             )
+        
         is_liking = ProjectLike.objects.filter(
             user=request.user, project=project
         ).exists()
-        return Response({"is_liking": is_liking}, status=status.HTTP_200_OK)
+
+        is_following = ProjectFollower.objects.filter(
+            user=request.user, project=project
+        ).exists()
+
+        has_open_membership_request = MembershipRequests.objects.filter(
+            target_project=project,
+            rejected_at=None,
+            approved_at=None,
+            user=self.request.user,
+        ).exists()
+
+        return Response({
+            "liking": is_liking,
+            "following": is_following,
+            "has_requested_to_join": has_open_membership_request
+        }, status=status.HTTP_200_OK)
 
 
 class ProjectCommentView(APIView):
@@ -1041,6 +1044,7 @@ class ListProjectFollowersView(ListAPIView):
 
 
 class ListProjectRequestersView(ListAPIView):
+    permission_classes = [ReadWriteSensibleProjectDataPermission]
     """This is the endpoint view to return a list of users
     who have requested membership for a specific project, including their request IDs."""
 
@@ -1153,7 +1157,7 @@ class RequestJoinProject(RetrieveUpdateAPIView):
 
     permission_classes = (IsAuthenticated,)
 
-    def post(self, request, user_slug, project_slug):
+    def post(self, request, user_slug, url_slug):
         required_params = ["user_availability", "message"]
         missing_param = any([param not in request.data for param in required_params])
         if missing_param:
@@ -1174,7 +1178,7 @@ class RequestJoinProject(RetrieveUpdateAPIView):
             )
 
         try:
-            project = Project.objects.get(url_slug=project_slug)
+            project = Project.objects.get(url_slug=url_slug)
         except Project.DoesNotExist:
             return Response(
                 {"message": "Requested project does not exist"},
@@ -1239,15 +1243,15 @@ class ManageJoinProjectView(RetrieveUpdateDestroyAPIView):
     # Keep in mind that when we redefine class attributes at the View level,
     # we're overwriting the default permission and authentication classes
     # that're defined within settings.py.
-    authentication_classes = [TokenAuthentication]
+    permission_classes = [ReadWriteSensibleProjectDataPermission]
 
     serializer_class = ProjectMemberSerializer
 
-    lookup_field = "project_slug"
+    lookup_field = "url_slug"
 
-    def post(self, request, project_slug, request_action, request_id):
+    def post(self, request, url_slug, request_action, request_id):
         try:
-            project = Project.objects.filter(url_slug=project_slug).first()
+            project = Project.objects.filter(url_slug=url_slug).first()
         except:
             return Response(
                 {"message": "Project Does Not Exist"}, status=status.HTTP_404_NOT_FOUND

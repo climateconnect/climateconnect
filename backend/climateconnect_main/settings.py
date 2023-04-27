@@ -177,7 +177,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
-
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
@@ -209,7 +208,6 @@ MEDIA_ROOT = env("MEDIA_ROOT")
 MEDIA_URL = "/media/"
 
 REST_KNOX = {"TOKEN_TTL": timedelta(days=120)}
-
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "knox.auth.TokenAuthentication",
@@ -340,4 +338,8 @@ sentry_sdk.init(
     # SENTRY ENVIRONMENT for local env is "development"
     # and for prod env is "production"
     environment=SENTRY_ENVIRONMENT,
+)
+
+CLIMATE_CONNECT_CONTACT_EMAIL = env(
+    "CLIMATE_CONNECT_CONTACT_EMAIL", "contact@climateconnect.earth"
 )

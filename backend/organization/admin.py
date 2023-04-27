@@ -64,7 +64,10 @@ admin.site.register(Organization, OrganizationAdmin)
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    search_fields = ("name", "slug")
+    search_fields = (
+        "name", "url_slug", "loc__name",
+        "loc__city", "loc__state", "loc__country"
+    )
     list_filter = ("status",)
 
 

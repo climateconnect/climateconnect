@@ -319,6 +319,12 @@ class UserProfile(models.Model):
         on_delete=models.SET_NULL,
     )
 
+    restricted_profile = models.BooleanField(
+        help_text="Restrict user profile to perform certain actions on the platform.",
+        verbose_name="Is profile restricted?",
+        default=False,
+    )
+
     class Meta:
         app_label = "climateconnect_api"
         verbose_name = "User Profile"

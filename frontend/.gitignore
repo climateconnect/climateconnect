@@ -12,3 +12,5 @@
 
 # production
 /build
+
+*.tsbuildinfo
