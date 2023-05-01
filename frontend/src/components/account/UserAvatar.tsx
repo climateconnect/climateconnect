@@ -25,7 +25,7 @@ interface UserAvatarProps {
   thumbnailImageUrl?: string;
   alternativeText?: string;
   isNarrowScreen: boolean;
-  onAvatarChanged: (image: AvatarImage) => void;
+  onAvatarChanged?: (image: AvatarImage) => void;
 }
 
 const dimensions = 150;
