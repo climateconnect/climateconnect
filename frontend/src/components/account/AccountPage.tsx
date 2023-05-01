@@ -1,7 +1,7 @@
-import { Button, Chip, Container, Divider, Link, Tooltip, Typography } from "@mui/material";
+import { Button, Chip, Container, Divider, Link, Theme, Tooltip, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import PlaceIcon from "@mui/icons-material/Place";
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Linkify from "react-linkify";
 import Cookies from "universal-cookie";
 import FeedbackContext from "../context/FeedbackContext";
@@ -28,7 +28,7 @@ import SelectWithText from "./SelectWithText";
 import SubTitleWithContent from "../general/SubTitleWithContent";
 import { UserAvatar } from "./UserAvatar";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme>((theme) => ({
   avatarContainer: {
     [theme.breakpoints.up("sm")]: {
       marginRight: theme.spacing(5),
@@ -495,7 +495,6 @@ export default function AccountPage({
                 bindFollow={bindFollow}
                 numberOfFollowers={numberOfFollowers}
                 texts={organizationTexts}
-                shouldBeFullWidth={true}
                 followingChangePending={followingChangePending}
                 isLoggedIn={user}
                 showLinkUnderButton
