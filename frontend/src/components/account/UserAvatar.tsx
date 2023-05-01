@@ -5,17 +5,27 @@ import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import CloseIcon from "@mui/icons-material/Close";
 import {
   getCompressedJPG,
+  getImageDialogHeight,
   getResizedImage,
   whitenTransparentPixels,
 } from "../../../public/lib/imageOperations";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
 import UserContext from "../context/UserContext";
 import getTexts from "../../../public/texts/texts";
+import ConfirmDialog from "../dialogs/ConfirmDialog";
+
+export interface AvatarImage {
+  imageUrl?: string;
+  thumbnailImageUrl?: string;
+}
 
 interface UserAvatarProps {
   mode: "read" | "edit";
   imageUrl?: string;
+  thumbnailImageUrl?: string;
   alternativeText?: string;
+  isNarrowScreen: boolean;
+  onAvatarChanged: (image: AvatarImage) => void;
 }
 
 const dimensions = 150;
@@ -59,11 +69,14 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
 
   const [tempImage, setTempImage] = useState<string | undefined>(undefined);
-  const [uploadDialogOpen, setUploadDialogOpen] = useState<boolean>(false);
+  const [dialogStates, setDialogStates] = useState<{
+    uploadOpen: boolean;
+    confirmDeleteOpen: boolean;
+  }>({ uploadOpen: false, confirmDeleteOpen: false });
 
-  const [avatarImage, setAvatarImage] = useState<{ imageUrl: string; thumbnailUrl: string }>({
-    imageUrl: "",
-    thumbnailUrl: "",
+  const [avatarImage, setAvatarImage] = useState<AvatarImage>({
+    imageUrl: props.imageUrl,
+    thumbnailImageUrl: props.thumbnailImageUrl,
   });
 
   const onImageChanged = async (avatarEvent) => {
@@ -76,15 +89,22 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
       try {
         const compressedImage = await getCompressedJPG(file, 0.5);
         setTempImage(() => compressedImage);
-        setUploadDialogOpen(true);
+        setDialogStates({ ...dialogStates, uploadOpen: true });
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     }
   };
 
+  const removeAvatarImage = (confirm) => {
+    if (confirm) {
+      setAvatarImage({ imageUrl: undefined, thumbnailImageUrl: undefined });
+    }
+    setDialogStates({ ...dialogStates, confirmDeleteOpen: false });
+  };
+
   const handleAvatarClose = async (image) => {
-    setUploadDialogOpen(false);
+    setDialogStates({ ...dialogStates, uploadOpen: false });
     if (image && image instanceof HTMLCanvasElement) {
       whitenTransparentPixels(image);
       image.toBlob(async function (blob) {
@@ -95,7 +115,10 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
           120,
           "image/jpeg"
         );
-        setAvatarImage({ imageUrl, thumbnailUrl });
+        
+        const image = { imageUrl, thumbnailUrl };
+        setAvatarImage(image);
+        props.onAvatarChanged(image)
       }, "image/jpeg");
     }
   };
@@ -114,11 +137,15 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
           <AddAPhotoIcon
             className={classes.editIcon}
             onClick={() => inputFileRef.current?.click()}
+            aria-label={texts.edit_avatar}
           />
-          <CloseIcon
-            className={classes.editIcon}
-            onClick={() => console.log("delete photo clicked")}
-          />
+          {avatarImage.imageUrl && (
+            <CloseIcon
+              className={classes.editIcon}
+              onClick={() => setDialogStates({ ...dialogStates, confirmDeleteOpen: true })}
+              aria-label={texts.remove_avatar}
+            />
+          )}
         </div>
       )}
 
@@ -134,11 +161,20 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
 
       <UploadImageDialog
         onClose={handleAvatarClose}
-        open={uploadDialogOpen}
+        open={dialogStates.uploadOpen}
         imageUrl={tempImage}
         borderRadius={10000}
-        height={/*isNarrowScreen ? getImageDialogHeight(window.innerWidth) : */ 200}
+        height={props.isNarrowScreen ? getImageDialogHeight(window.innerWidth) : 200}
         ratio={1}
+      />
+
+      <ConfirmDialog
+        open={dialogStates.confirmDeleteOpen}
+        onClose={removeAvatarImage}
+        title={texts.remove_avatar}
+        text={texts.do_you_really_want_to_remove_avatar}
+        cancelText={texts.no}
+        confirmText={texts.yes}
       />
     </>
   );
