@@ -1,14 +1,13 @@
 import {
-  Avatar,
   Button,
   Checkbox,
   Chip,
   Container,
+  Link,
   TextField,
+  Theme,
   Typography,
   useMediaQuery,
-  Link,
-  Theme,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
@@ -35,8 +34,9 @@ import LocationSearchBar from "../search/LocationSearchBar";
 import ConfirmDialog from "./../dialogs/ConfirmDialog";
 import SelectDialog from "./../dialogs/SelectDialog";
 import UploadImageDialog from "./../dialogs/UploadImageDialog";
-import SelectField from "./../general/SelectField";
 import DetailledDescriptionInput from "./DetailledDescriptionInput";
+import SelectField from "../general/SelectField";
+import { UserAvatar } from "./UserAvatar";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -47,12 +47,6 @@ const useStyles = makeStyles<Theme, { background_image?: string }>((theme) => ({
     width: "100%",
     height: 305,
     position: "relative",
-    cursor: "pointer",
-  },
-  photoIcon: {
-    position: "absolute",
-    left: "-50%",
-    top: "-50%",
     cursor: "pointer",
   },
   backgroundImage: (props) => ({
@@ -102,13 +96,10 @@ const useStyles = makeStyles<Theme, { background_image?: string }>((theme) => ({
     },
   },
   avatarContainer: {
-    height: theme.spacing(20),
-    width: theme.spacing(20),
-    margin: "0 auto",
     marginTop: theme.spacing(-11),
-    position: "relative",
-    borderRadius: 100,
-    cursor: "pointer",
+    marginBottom: theme.spacing(2),
+    display: "flex",
+    justifyContent: "center",
   },
   avatar: {
     height: "100%",
@@ -378,9 +369,10 @@ export default function EditAccountPage({
           ))}
           {editedAccount.info[key].length < infoEl.maxEntries && (
             <Chip
-              label="Add"
+              label={texts.add}
               icon={<ControlPointIcon />}
               className={classes.chip}
+              color="primary"
               onClick={handleSkillsDialogClickOpen}
             />
           )}
@@ -400,8 +392,8 @@ export default function EditAccountPage({
 
   /*Generates all the possible info a user can put about their account e.g. website, location, summary, bio, ...*/
   /* Since this component is generic and is used for both personal profiles and organizations 
-    we pass an info element to it. 
-  */
+      we pass an info element to it. 
+    */
   const displayAccountInfo = (info) => {
     //For each info object we want to return the correct input so users can change this info
     return Object.keys(info).map((key) => {
@@ -602,8 +594,8 @@ export default function EditAccountPage({
         //This is the fallback for normal textfields
       } else if (key != "parent_organization" && ["text", "bio"].includes(i.type)) {
         /* By checking the attribute of the types assigned to an organization, determine if the textfield should be displayed on
-        the edit account page. Should any of the type's attribute "hide get involved" be true or no type is selected, we hide the field. 
-        */
+                the edit account page. Should any of the type's attribute "hide get involved" be true or no type is selected, we hide the field. 
+                */
         const hideGetInvolvedField =
           i.key === "get_involved"
             ? editedAccount.types.map((type) => type.hide_get_involved).includes(true) ||
@@ -787,7 +779,7 @@ export default function EditAccountPage({
             variant="contained"
             type="submit"
           >
-            {loadingSubmit ? <ButtonLoader /> : submitMessage ? submitMessage : "Save"}
+            {loadingSubmit ? <ButtonLoader /> : submitMessage ? submitMessage : texts.save}
           </Button>
           <Button
             className={`${classes.cancelButton} ${classes.actionButton}`}
@@ -797,8 +789,11 @@ export default function EditAccountPage({
           >
             {texts.cancel}
           </Button>
+
           <Container className={classes.avatarWithInfo}>
             <div className={classes.avatarContainer}>
+              <UserAvatar mode="edit" imageUrl={editedAccount.image}
+              alternativeText={editedAccount.name}/>
               <label htmlFor="avatarPhoto">
                 <input
                   type="file"
@@ -811,28 +806,14 @@ export default function EditAccountPage({
                   onClick={() => handleFileInputClick("avatar")}
                   onSubmit={(event) => handleFileSubmit(event, "avatar")}
                 />
-                <Avatar
-                  alt={editedAccount.name}
-                  component="div"
-                  //TODO(unused) size="large"
-                  src={editedAccount.image}
-                  className={classes.avatar}
-                />
 
-                {editedAccount.image ? (
-                  <div className={classes.avatarPhotoIconContainer}>
-                    <AddAPhotoIcon className={`${classes.photoIcon} ${classes.avatarPhotoIcon}`} />
-                  </div>
-                ) : (
-                  <div className={classes.avatarButtonContainer}>
-                    <Chip
-                      label={texts.add_image}
-                      color="primary"
-                      icon={<ControlPointIcon />}
-                      className={classes.cursorPointer}
-                    />
-                  </div>
-                )}
+                {/*<Avatar*/}
+                {/*  alt={editedAccount.name}*/}
+                {/*  component="div"*/}
+                {/*  //TODO(unused) size="large"*/}
+                {/*  src={editedAccount.image}*/}
+                {/*  className={classes.avatar}*/}
+                {/*/>*/}
               </label>
             </div>
 
@@ -930,7 +911,7 @@ export default function EditAccountPage({
           <Typography variant="subtitle2" className={classes.deleteMessage}>
             <InfoOutlinedIcon />
             {texts.if_you_wish_to_delete}
-            <div className={classes.spaceStrings}> </div>
+            <div className={classes.spaceStrings}></div>
             <Link href={`mailto:${deleteEmail}`} underline="hover">
               {deleteEmail}
             </Link>
