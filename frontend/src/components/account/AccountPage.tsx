@@ -451,10 +451,10 @@ export default function AccountPage({
             {account.badges?.length > 0 ? (
               <ProfileBadge badge={account.badges[0]}>
                 <UserAvatar
-                    mode={"read"}
-                    isNarrowScreen={isSmallScreen}
-                    imageUrl={account.image}
-                    alternativeText={account.name}
+                  mode={"read"}
+                  isNarrowScreen={isSmallScreen}
+                  imageUrl={account.image}
+                  alternativeText={account.name}
                 />
               </ProfileBadge>
             ) : (

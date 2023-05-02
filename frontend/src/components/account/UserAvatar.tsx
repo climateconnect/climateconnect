@@ -115,10 +115,10 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
           120,
           "image/jpeg"
         );
-        
+
         const image = { imageUrl, thumbnailUrl };
         setAvatarImage(image);
-        props.onAvatarChanged(image)
+        props.onAvatarChanged(image);
       }, "image/jpeg");
     }
   };
