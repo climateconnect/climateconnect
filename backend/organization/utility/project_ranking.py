@@ -1,5 +1,7 @@
 from typing import Optional
-from django.db.models import QuerySet, Count
+from django.db.models import (
+    QuerySet, Count, Value, F, ExpressionWrapper, IntegerField
+)
 from climateconnect_api.models.user import UserProfile
 from organization.models import Project
 
@@ -26,8 +28,20 @@ class ProjectRanking:
     #   
     def ranked_projects(self) -> QuerySet[Project]:
         projects = Project.objects.filter(
-            is_draft=False, is_active=True
+            is_draft=False, is_active=True,
         ).annotate(
-            rank=Count(100)
-        ).order_by('updated_at', 'created_at')
+            total_comments=Count('project_comment', distinct=True),
+            total_likes=Count('project_liked', distinct=True),
+            total_followers=Count('project_following', distinct=True),
+            rank=Value(0)
+        ).annotate(
+            total_interactions=ExpressionWrapper(
+                F('total_likes') + F('total_comments') + F('total_followers'),
+                output_field=IntegerField()
+            )
+        ).order_by('-total_interactions', 'updated_at', 'created_at')
+
+        # ).annotate(
+        #     rank=Count(100))
+        # ).order_by('updated_at', 'created_at')
         return projects
