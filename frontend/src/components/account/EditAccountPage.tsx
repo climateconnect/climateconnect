@@ -14,7 +14,7 @@ import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Alert from "@mui/material/Alert";
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import {
   getCompressedJPG,
@@ -36,6 +36,7 @@ import UploadImageDialog from "./../dialogs/UploadImageDialog";
 import DetailledDescriptionInput from "./DetailledDescriptionInput";
 import SelectField from "../general/SelectField";
 import { AvatarImage, UserAvatar } from "./UserAvatar";
+import CloseIcon from "@mui/icons-material/Close";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
@@ -55,25 +56,13 @@ const useStyles = makeStyles<Theme, { background_image?: string }>((theme) => ({
   backgroundColor: {
     backgroundColor: "#e0e0e0",
   },
-  backgroundPhotoIcon: {
-    fontSize: 80,
+  backgroundImageButton: {
+    fontSize: "2.5rem",
   },
-  backgroundPhotoIconContainer: {
+  backgroundImageButtonContainer: {
     position: "absolute",
-    left: "calc(50% - 40px)",
-    top: "calc(50% - 40px)",
-  },
-  backgroundLabel: {
-    width: "100%",
-    height: "100%",
-    display: "block",
-    cursor: "pointer",
-  },
-  avatarButtonContainer: {
-    position: "absolute",
-    left: "50%",
-    top: "50%",
-    transform: "translate(-50%,-50%)",
+    left: "calc(50% - 20px)",
+    top: "calc(50% - 20px)",
   },
   avatarWithInfo: {
     textAlign: "center",
@@ -221,7 +210,9 @@ export default function EditAccountPage({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
   const organizationTexts = getTexts({ page: "organization", locale: locale });
-  const [selectedFiles, setSelectedFiles] = React.useState({ background: "" });
+
+  const imageInputFileRef = useRef<HTMLInputElement | null>(null);
+
   const [editedAccount, setEditedAccount] = React.useState({ ...account });
   const isOrganization = type === "organization" ? true : false;
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
@@ -236,6 +227,7 @@ export default function EditAccountPage({
 
   const [open, setOpen] = useState({
     backgroundDialog: false,
+    removeBackgroundDialog: false,
     addTypeDialog: false,
     confirmExitDialog: false,
   });
@@ -254,6 +246,13 @@ export default function EditAccountPage({
         }, "image/jpeg");
       }
     }
+  };
+
+  const removeBackgroundImage = (confirm: boolean) => {
+    if (confirm) {
+      setEditedAccount({ ...editedAccount, background_image: null });
+    }
+    setOpen({ ...open, removeBackgroundDialog: false });
   };
 
   const handleTextFieldChange = (key, newValue, isInfoElement = false) => {
@@ -347,10 +346,10 @@ export default function EditAccountPage({
     );
   };
 
-  /*Generates all the possible info a user can put about their account e.g. website, location, summary, bio, ...*/
-  /* Since this component is generic and is used for both personal profiles and organizations 
-                    we pass an info element to it. 
-                  */
+  /**Generates all the possible info a user can put about their account e.g. website, location, summary, bio, ...
+     Since this component is generic and is used for both personal profiles and organizations
+     we pass an info element to it.
+     */
   const displayAccountInfo = (info) => {
     //For each info object we want to return the correct input so users can change this info
     return Object.keys(info).map((key) => {
@@ -550,9 +549,10 @@ export default function EditAccountPage({
         );
         //This is the fallback for normal textfields
       } else if (key != "parent_organization" && ["text", "bio"].includes(i.type)) {
-        /* By checking the attribute of the types assigned to an organization, determine if the textfield should be displayed on
-                                                                        the edit account page. Should any of the type's attribute "hide get involved" be true or no type is selected, we hide the field. 
-                                                                        */
+        // By checking the attribute of the types assigned to an organization, determine if the textfield should be displayed on
+        //   the edit account page. Should any of the type's attribute "hide get involved" be true or no type is selected,
+        //   we hide the field.
+
         const hideGetInvolvedField =
           i.key === "get_involved"
             ? editedAccount.types.map((type) => type.hide_get_involved).includes(true) ||
@@ -628,10 +628,6 @@ export default function EditAccountPage({
     setEditedAccount(tempEditedAccount);
   };
 
-  const handleFileInputClick = (type) => {
-    setSelectedFiles({ ...selectedFiles, [type]: "" });
-  };
-
   const handleFileSubmit = (event, type) => {
     console.log(event.target.value);
     console.log(type);
@@ -662,11 +658,11 @@ export default function EditAccountPage({
     });
   };
 
-  const handleAvatarImageChange = (changedimage: AvatarImage) => {
+  const handleAvatarImageChange = (changedImage?: AvatarImage) => {
     setEditedAccount({
       ...editedAccount,
-      image: changedimage.imageUrl,
-      thumbnail_image: changedimage.thumbnailImageUrl,
+      image: changedImage?.imageUrl || null,
+      thumbnail_image: changedImage?.thumbnailImageUrl || null,
     });
   };
 
@@ -691,33 +687,39 @@ export default function EditAccountPage({
             editedAccount.background_image ? classes.backgroundImage : classes.backgroundColor
           }`}
         >
-          <label htmlFor="backgroundPhoto" className={classes.backgroundLabel}>
-            <input
-              type="file"
-              name="backgroundPhoto"
-              id="backgroundPhoto"
-              style={{ display: "none" }}
-              onChange={onBackgroundChange}
-              accept=".png,.jpeg,.jpg"
-              value={selectedFiles.background}
-              onClick={() => handleFileInputClick("background")}
-              onSubmit={() => handleFileSubmit(event, "background")}
+          <div className={classes.backgroundImageButtonContainer}>
+            <AddAPhotoIcon
+              className={classes.backgroundImageButton}
+              onClick={() => imageInputFileRef.current?.click()}
             />
-            {editedAccount.background_image ? (
-              <div className={classes.backgroundPhotoIconContainer}>
-                <AddAPhotoIcon className={`${classes.photoIcon} ${classes.backgroundPhotoIcon}`} />
-              </div>
-            ) : (
-              <div className={classes.avatarButtonContainer}>
-                <Chip
-                  color="primary"
-                  label={texts.add_background_image}
-                  icon={<ControlPointIcon />}
-                />
-              </div>
+            {editedAccount.background_image && (
+              <CloseIcon
+                className={classes.backgroundImageButton}
+                onClick={() => setOpen({ ...open, removeBackgroundDialog: true })}
+              />
             )}
-          </label>
+          </div>
+          <input
+            type="file"
+            name="backgroundPhoto"
+            id="backgroundPhoto"
+            ref={imageInputFileRef}
+            style={{ display: "none" }}
+            onChange={onBackgroundChange}
+            accept=".png,.jpeg,.jpg"
+            // onSubmit={() => handleFileSubmit(event, "background")}
+          />
         </div>
+
+        <ConfirmDialog
+          open={open.removeBackgroundDialog}
+          onClose={removeBackgroundImage}
+          title={texts.remove_background_image}
+          text={texts.do_you_really_want_to_remove_background_image}
+          cancelText={texts.no}
+          confirmText={texts.yes}
+        />
+
         <Container className={classes.infoContainer}>
           <Button
             className={`${classes.saveButton} ${classes.actionButton}`}

@@ -25,7 +25,7 @@ interface UserAvatarProps {
   thumbnailImageUrl?: string;
   alternativeText?: string;
   isNarrowScreen: boolean;
-  onAvatarChanged?: (image: AvatarImage) => void;
+  onAvatarChanged?: (image?: AvatarImage) => void;
 }
 
 const dimensions = 150;
@@ -99,6 +99,7 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
   const removeAvatarImage = (confirm) => {
     if (confirm) {
       setAvatarImage({ imageUrl: undefined, thumbnailImageUrl: undefined });
+      props.onAvatarChanged && props.onAvatarChanged(undefined);
     }
     setDialogStates({ ...dialogStates, confirmDeleteOpen: false });
   };
@@ -118,7 +119,7 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
 
         const image = { imageUrl, thumbnailUrl };
         setAvatarImage(image);
-        props.onAvatarChanged(image);
+        props.onAvatarChanged && props.onAvatarChanged(image);
       }, "image/jpeg");
     }
   };
