@@ -790,6 +790,7 @@ export default function EditAccountPage({
                   ).map((typeObject) => (
                     <Chip
                       label={typeObject.name}
+                      color="secondary"
                       key={typeObject.key}
                       className={classes.chip}
                       onDelete={() => handleTypeDelete(typeObject.key)}
@@ -801,7 +802,7 @@ export default function EditAccountPage({
                     <Chip
                       label={texts.add_type}
                       color={
-                        editedAccount.types && editedAccount.types.length ? "default" : "primary"
+                        editedAccount.types && editedAccount.types.length ? "secondary" : "primary"
                       }
                       icon={<ControlPointIcon />}
                       onClick={() => handleDialogClickOpen("addTypeDialog")}

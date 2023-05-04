@@ -159,6 +159,7 @@ const theme = createTheme(coreTheme, {
           style: {
             background: "#e0e0e0",
             color: coreTheme.palette.secondary.main,
+            
           },
         },
       ],
@@ -168,6 +169,17 @@ const theme = createTheme(coreTheme, {
           // the select dropdowns, buttons, etc.
           borderRadius: 4,
         },
+        deleteIconColorSecondary: {
+          color: coreTheme.palette.secondary.main,
+          "&:hover": {
+            color: coreTheme.palette.secondary.light
+          }
+        },
+        clickable: {
+          "&:hover": {
+            background: "#cacaca"
+          }
+        }
       },
     },
     MuiLink: {
