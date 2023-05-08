@@ -53,6 +53,7 @@ const useStyles = makeStyles<Theme>((theme) => ({
     height: `${dimensions}px`,
     alignItems: "center",
     justifyContent: "center",
+    cursor: "pointer",
     columnGap: theme.spacing(1),
   },
   editIcon: {
@@ -123,7 +124,6 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
       }, "image/jpeg");
     }
   };
-
   return (
     <>
       <Avatar
@@ -134,10 +134,9 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
       {props.mode === "edit" && <div className={classes.imageOverlay}></div>}
 
       {props.mode === "edit" && (
-        <div className={classes.editIconContainer}>
+        <div className={classes.editIconContainer} onClick = {() => inputFileRef.current?.click()}>
           <AddAPhotoIcon
             className={classes.editIcon}
-            onClick={() => inputFileRef.current?.click()}
             aria-label={texts.edit_avatar}
           />
           {avatarImage.imageUrl && (

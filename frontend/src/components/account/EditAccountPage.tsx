@@ -686,11 +686,11 @@ export default function EditAccountPage({
           className={`${classes.backgroundContainer} ${
             editedAccount.background_image ? classes.backgroundImage : classes.backgroundColor
           }`}
+          onClick={() => imageInputFileRef.current?.click()}
         >
-          <div className={classes.backgroundImageButtonContainer}>
+          <div className={classes.backgroundImageButtonContainer} >
             <AddAPhotoIcon
               className={classes.backgroundImageButton}
-              onClick={() => imageInputFileRef.current?.click()}
             />
             {editedAccount.background_image && (
               <CloseIcon
