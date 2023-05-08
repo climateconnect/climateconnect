@@ -1,7 +1,7 @@
 {
   "login_required": {
     "en": "You need to be logged in to see your chats",
-    "de": "Du musst eingeloggt sein, um deine Chats sehen zu können"
+    "de": "Du musst eingeloggt sein, um deine Chats zu sehen"
   },
   "cannot_leave_private_chats": {
     "en": "You can only leave group chats, not private chats",
