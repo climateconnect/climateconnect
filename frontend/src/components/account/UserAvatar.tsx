@@ -68,7 +68,9 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
   const texts = getTexts({ page: "account", locale: locale });
 
   const inputFileRef = useRef<HTMLInputElement | null>(null);
+  const closeIconRef = useRef(null);
 
+  
   const [tempImage, setTempImage] = useState<string | undefined>(undefined);
   const [dialogStates, setDialogStates] = useState<{
     uploadOpen: boolean;
@@ -124,6 +126,16 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
       }, "image/jpeg");
     }
   };
+
+  const onClickChangeImage = (e) => {
+    if(e.target === closeIconRef.current) {
+      //If we clicked on the remove image button don't open the interface to change your image
+      return
+    } else {
+      inputFileRef.current?.click()
+    }
+  }
+
   return (
     <>
       <Avatar
@@ -134,7 +146,7 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
       {props.mode === "edit" && <div className={classes.imageOverlay}></div>}
 
       {props.mode === "edit" && (
-        <div className={classes.editIconContainer} onClick = {() => inputFileRef.current?.click()}>
+        <div className={classes.editIconContainer} onClick = {onClickChangeImage}>
           <AddAPhotoIcon
             className={classes.editIcon}
             aria-label={texts.edit_avatar}
@@ -144,6 +156,7 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
               className={classes.editIcon}
               onClick={() => setDialogStates({ ...dialogStates, confirmDeleteOpen: true })}
               aria-label={texts.remove_avatar}
+              ref={closeIconRef}
             />
           )}
         </div>

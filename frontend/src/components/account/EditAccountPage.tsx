@@ -212,6 +212,7 @@ export default function EditAccountPage({
   const organizationTexts = getTexts({ page: "organization", locale: locale });
 
   const imageInputFileRef = useRef<HTMLInputElement | null>(null);
+  const closeIconRef = useRef(null);
 
   const [editedAccount, setEditedAccount] = React.useState({ ...account });
   const isOrganization = type === "organization" ? true : false;
@@ -309,6 +310,7 @@ export default function EditAccountPage({
     };
 
     const handleSkillsDialogClickOpen = () => setSkillsDialogOpen(true);
+
     return (
       <div key={key} className={classes.infoElement}>
         <div className={classes.subtitle}>{infoEl.name}:</div>
@@ -666,6 +668,16 @@ export default function EditAccountPage({
     });
   };
 
+
+  const onClickBackgroundImage = (e) => {
+    if(e.target === closeIconRef.current) {
+      //If we clicked on the remove image button don't open the interface to change your image
+      return
+    } else {
+      imageInputFileRef.current?.click()
+    }
+  }
+
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <form onSubmit={handleFormSubmit}>
@@ -686,7 +698,7 @@ export default function EditAccountPage({
           className={`${classes.backgroundContainer} ${
             editedAccount.background_image ? classes.backgroundImage : classes.backgroundColor
           }`}
-          onClick={() => imageInputFileRef.current?.click()}
+          onClick={onClickBackgroundImage}
         >
           <div className={classes.backgroundImageButtonContainer} >
             <AddAPhotoIcon
@@ -696,6 +708,7 @@ export default function EditAccountPage({
               <CloseIcon
                 className={classes.backgroundImageButton}
                 onClick={() => setOpen({ ...open, removeBackgroundDialog: true })}
+                ref={closeIconRef}
               />
             )}
           </div>
