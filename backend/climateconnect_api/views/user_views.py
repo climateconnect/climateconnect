@@ -381,18 +381,30 @@ class EditUserProfile(APIView):
         user_profile.name = user.first_name + " " + user.last_name
         user.save()
 
+        
         if "image" in request.data:
-            user_profile.image = get_image_from_data_url(request.data["image"])[0]
+            if request.data["image"] is not None:
+                user_profile.image = get_image_from_data_url(request.data["image"])[0]
+            elif request.data["image"] is None:
+                 user_profile.image = None
 
         if "thumbnail_image" in request.data:
-            user_profile.thumbnail_image = get_image_from_data_url(
+            
+            if request.data["thumbnail_image"] is not None:
+                user_profile.thumbnail_image = get_image_from_data_url(
                 request.data["thumbnail_image"]
-            )[0]
+                )[0]
+            elif request.data["thumbnail_image"] is None:
+                user_profile.thumbnail_image = None
 
         if "background_image" in request.data:
-            user_profile.background_image = get_image_from_data_url(
-                request.data["background_image"], True, 1280
-            )[0]
+            if request.data["background_image"] is not None:
+                user_profile.background_image = get_image_from_data_url(
+                    request.data["background_image"], True, 1280
+                )[0]
+
+            elif request.data["background_image"] is None:
+                user_profile.background_image = None
 
         if "location" in request.data:
             geo_location = get_location(request.data["location"])
