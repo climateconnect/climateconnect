@@ -35,7 +35,7 @@ const useStyles = makeStyles<Theme>((theme) => ({
       marginLeft: theme.spacing(5),
     },
     marginTop: theme.spacing(-11),
-    marginBottom: theme.spacing(2)
+    marginBottom: theme.spacing(2),
   },
   avatarWithInfo: {
     textAlign: "center",
@@ -451,20 +451,10 @@ export default function AccountPage({
           <div className={classes.avatarContainer}>
             {account.badges?.length > 0 ? (
               <ProfileBadge badge={account.badges[0]}>
-                <UserAvatar
-                  mode={"read"}
-                  isNarrowScreen={isSmallScreen}
-                  imageUrl={account.image}
-                  alternativeText={account.name}
-                />
+                <UserAvatar mode={"read"} imageUrl={account.image} alternativeText={account.name} />
               </ProfileBadge>
             ) : (
-              <UserAvatar
-                mode={"read"}
-                isNarrowScreen={isSmallScreen}
-                imageUrl={account.image}
-                alternativeText={account.name}
-              />
+              <UserAvatar mode={"read"} imageUrl={account.image} alternativeText={account.name} />
             )}
           </div>
           <Typography variant="h5" className={classes.name}>

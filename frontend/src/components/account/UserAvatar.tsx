@@ -1,4 +1,4 @@
-import { Avatar, Theme } from "@mui/material";
+import { Avatar, Theme, useMediaQuery } from "@mui/material";
 import React, { useContext, useRef, useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
@@ -24,7 +24,6 @@ interface UserAvatarProps {
   imageUrl?: string;
   thumbnailImageUrl?: string;
   alternativeText?: string;
-  isNarrowScreen: boolean;
   onAvatarChanged?: (image?: AvatarImage) => void;
 }
 
@@ -66,6 +65,7 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
 
   const inputFileRef = useRef<HTMLInputElement | null>(null);
   const closeIconRef = useRef<typeof CloseIcon | null>(null);
@@ -173,7 +173,7 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
         open={dialogStates.uploadOpen}
         imageUrl={tempImage}
         borderRadius={10000}
-        height={props.isNarrowScreen ? getImageDialogHeight(window.innerWidth) : 200}
+        height={isNarrowScreen ? getImageDialogHeight(window.innerWidth) : 200}
         ratio={1}
       />
 

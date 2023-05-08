@@ -755,7 +755,6 @@ export default function EditAccountPage({
                 imageUrl={editedAccount.image}
                 thumbnailImageUrl={editedAccount.thumbnail_image}
                 alternativeText={editedAccount.name}
-                isNarrowScreen
                 onAvatarChanged={handleAvatarImageChange}
               />
             </div>
