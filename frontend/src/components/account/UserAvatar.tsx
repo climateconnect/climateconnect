@@ -29,7 +29,7 @@ interface UserAvatarProps {
 
 const dimensions = 150;
 
-const useStyles = makeStyles<Theme>((theme) => ({
+const useStyles = makeStyles<Theme, { avatarImage?: string }>((theme) => ({
   avatarImage: {
     width: `${dimensions}px`,
     height: `${dimensions}px`,
@@ -51,7 +51,7 @@ const useStyles = makeStyles<Theme>((theme) => ({
     height: `${dimensions}px`,
     alignItems: "center",
     justifyContent: "center",
-    cursor: "pointer",
+    cursor: (props) => (!props.avatarImage ? "pointer" : "default"),
     columnGap: theme.spacing(1),
   },
   editIcon: {
@@ -61,13 +61,12 @@ const useStyles = makeStyles<Theme>((theme) => ({
 }));
 
 export function UserAvatar(props: UserAvatarProps): JSX.Element {
-  const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
 
   const inputFileRef = useRef<HTMLInputElement | null>(null);
-  const closeIconRef = useRef<typeof CloseIcon | null>(null);
+  const closeIconRef = useRef<SVGSVGElement | null>(null);
 
   const [tempImage, setTempImage] = useState<string | undefined>(undefined);
   const [dialogStates, setDialogStates] = useState<{
@@ -80,10 +79,11 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
     thumbnailImageUrl: props.thumbnailImageUrl,
   });
 
+  const classes = useStyles({ avatarImage: avatarImage.imageUrl });
+
   const onImageChanged = async (avatarEvent) => {
     const file = avatarEvent.target.files[0];
     if (file && file.type) {
-
       try {
         const compressedImage = await getCompressedJPG(file, 0.5);
         setTempImage(() => compressedImage);
@@ -123,6 +123,7 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
   };
 
   const onClickChangeImage = (e) => {
+    console.log("target", e.target);
     if (e.target === closeIconRef.current) {
       //If we clicked on the remove image button don't open the interface to change your image
       return;
@@ -141,8 +142,15 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
       {props.mode === "edit" && <div className={classes.imageOverlay}></div>}
 
       {props.mode === "edit" && (
-        <div className={classes.editIconContainer} onClick={onClickChangeImage}>
-          <AddAPhotoIcon className={classes.editIcon} aria-label={texts.edit_avatar} />
+        <div
+          className={classes.editIconContainer}
+          onClick={avatarImage.imageUrl ? () => void 0 : onClickChangeImage}
+        >
+          <AddAPhotoIcon
+            className={classes.editIcon}
+            aria-label={texts.edit_avatar}
+            onClick={avatarImage.imageUrl ? onClickChangeImage : () => void 0}
+          />
           {avatarImage.imageUrl && (
             <CloseIcon
               className={classes.editIcon}

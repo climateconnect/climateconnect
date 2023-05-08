@@ -38,7 +38,6 @@ import SelectField from "../general/SelectField";
 import { AvatarImage, UserAvatar } from "./UserAvatar";
 import CloseIcon from "@mui/icons-material/Close";
 
-const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
 const useStyles = makeStyles<Theme, { background_image?: string }>((theme) => ({
@@ -46,7 +45,7 @@ const useStyles = makeStyles<Theme, { background_image?: string }>((theme) => ({
     width: "100%",
     height: 305,
     position: "relative",
-    cursor: "pointer",
+    cursor: (props) => (!props.background_image ? "pointer" : "default"),
   },
   backgroundImage: (props) => ({
     backgroundImage: `url(${props.background_image})`,
@@ -58,6 +57,7 @@ const useStyles = makeStyles<Theme, { background_image?: string }>((theme) => ({
   },
   backgroundImageButton: {
     fontSize: "2.5rem",
+    cursor: "pointer",
   },
   backgroundImageButtonContainer: {
     position: "absolute",
@@ -212,7 +212,7 @@ export default function EditAccountPage({
   const organizationTexts = getTexts({ page: "organization", locale: locale });
 
   const imageInputFileRef = useRef<HTMLInputElement | null>(null);
-  const closeIconRef = useRef<typeof CloseIcon | null>(null);
+  const closeIconRef = useRef<SVGSVGElement | null>(null);
 
   const [editedAccount, setEditedAccount] = React.useState({ ...account });
   const isOrganization = type === "organization";
@@ -596,8 +596,9 @@ export default function EditAccountPage({
 
   const onBackgroundChange = async (backgroundEvent) => {
     const file = backgroundEvent.target.files[0];
-    if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
-      alert(texts.please_upload_either_a_png_or_a_jpg_file);
+    if (!file) {
+      return;
+    }
 
     try {
       const compressedImage = await getCompressedJPG(file, 1);
@@ -692,10 +693,13 @@ export default function EditAccountPage({
           className={`${classes.backgroundContainer} ${
             editedAccount.background_image ? classes.backgroundImage : classes.backgroundColor
           }`}
-          onClick={onClickBackgroundImage}
+          onClick={editedAccount.background_image ? () => void 0 : onClickBackgroundImage}
         >
           <div className={classes.backgroundImageButtonContainer}>
-            <AddAPhotoIcon className={classes.backgroundImageButton} />
+            <AddAPhotoIcon
+              className={classes.backgroundImageButton}
+              onClick={editedAccount.background_image ? onClickBackgroundImage : () => void 0}
+            />
             {editedAccount.background_image && (
               <CloseIcon
                 className={classes.backgroundImageButton}
@@ -712,7 +716,6 @@ export default function EditAccountPage({
             style={{ display: "none" }}
             onChange={onBackgroundChange}
             accept=".png,.jpeg,.jpg"
-            // onSubmit={() => handleFileSubmit(event, "background")}
           />
         </div>
 
