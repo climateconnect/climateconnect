@@ -35,6 +35,7 @@ const useStyles = makeStyles<Theme>((theme) => ({
       marginLeft: theme.spacing(5),
     },
     marginTop: theme.spacing(-11),
+    marginBottom: theme.spacing(2)
   },
   avatarWithInfo: {
     textAlign: "center",
