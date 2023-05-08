@@ -281,6 +281,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         )
 
     def get_name(self, obj):
+        print(obj.id, obj.rank)
         return get_project_name(obj, get_language())
 
     def get_short_description(self, obj):
