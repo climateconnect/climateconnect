@@ -28,7 +28,6 @@ interface UserAvatarProps {
 }
 
 const dimensions = 150;
-const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
 const useStyles = makeStyles<Theme>((theme) => ({
   avatarImage: {
@@ -84,9 +83,6 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
   const onImageChanged = async (avatarEvent) => {
     const file = avatarEvent.target.files[0];
     if (file && file.type) {
-      if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-        alert(texts.please_upload_either_a_png_or_a_jpg_file);
-      }
 
       try {
         const compressedImage = await getCompressedJPG(file, 0.5);

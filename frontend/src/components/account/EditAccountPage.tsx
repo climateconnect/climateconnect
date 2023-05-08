@@ -215,7 +215,7 @@ export default function EditAccountPage({
   const closeIconRef = useRef<typeof CloseIcon | null>(null);
 
   const [editedAccount, setEditedAccount] = React.useState({ ...account });
-  const isOrganization = type === "organization" ? true : false;
+  const isOrganization = type === "organization";
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles(editedAccount);
@@ -265,7 +265,7 @@ export default function EditAccountPage({
   const handleAddTypeClose = (type, additionalInfo) => {
     setOpen({ ...open, addTypeDialog: false });
     const tempAccount = editedAccount;
-    if (additionalInfo && additionalInfo !== undefined) {
+    if (additionalInfo) {
       for (const info of additionalInfo) {
         tempAccount.info[info.key] = info.value;
       }
@@ -628,11 +628,6 @@ export default function EditAccountPage({
 
     tempEditedAccount.types = tempEditedAccount.types.filter((t) => t.key !== typeToDelete);
     setEditedAccount(tempEditedAccount);
-  };
-
-  const handleFileSubmit = (event, type) => {
-    console.log(event.target.value);
-    console.log(type);
   };
 
   const handleFormSubmit = (event) => {
