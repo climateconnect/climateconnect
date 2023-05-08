@@ -212,7 +212,7 @@ export default function EditAccountPage({
   const organizationTexts = getTexts({ page: "organization", locale: locale });
 
   const imageInputFileRef = useRef<HTMLInputElement | null>(null);
-  const closeIconRef = useRef(null);
+  const closeIconRef = useRef<typeof CloseIcon | null>(null);
 
   const [editedAccount, setEditedAccount] = React.useState({ ...account });
   const isOrganization = type === "organization" ? true : false;
@@ -668,15 +668,14 @@ export default function EditAccountPage({
     });
   };
 
-
   const onClickBackgroundImage = (e) => {
-    if(e.target === closeIconRef.current) {
+    if (e.target === closeIconRef.current) {
       //If we clicked on the remove image button don't open the interface to change your image
-      return
+      return;
     } else {
-      imageInputFileRef.current?.click()
+      imageInputFileRef.current?.click();
     }
-  }
+  };
 
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
@@ -700,10 +699,8 @@ export default function EditAccountPage({
           }`}
           onClick={onClickBackgroundImage}
         >
-          <div className={classes.backgroundImageButtonContainer} >
-            <AddAPhotoIcon
-              className={classes.backgroundImageButton}
-            />
+          <div className={classes.backgroundImageButtonContainer}>
+            <AddAPhotoIcon className={classes.backgroundImageButton} />
             {editedAccount.background_image && (
               <CloseIcon
                 className={classes.backgroundImageButton}
