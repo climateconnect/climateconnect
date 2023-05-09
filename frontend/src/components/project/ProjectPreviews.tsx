@@ -40,7 +40,7 @@ export default function ProjectPreviews({
         displayOnePreviewInRow={displayOnePreviewInRow}
       />
     ));
-console.log('projects', projects);
+  console.log("projects", projects);
   const [gridItems, setGridItems] = useState(toProjectPreviews(projects));
   const [isFetchingMore, setIsFetchingMore] = React.useState(false);
 
