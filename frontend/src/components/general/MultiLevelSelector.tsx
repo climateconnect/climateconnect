@@ -122,7 +122,7 @@ const useStyles = makeStyles<
     },
     selectedItemIcon: {
       paddingLeft: theme.spacing(2),
-      color: "red",
+      color: "white",
     },
     listWrapper: {
       display: "inline-block",
