@@ -30,7 +30,7 @@ export default function ProjectPreviews({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const toProjectPreviews = (projects) =>
-    (projects || [])?.map((p) => (
+    (projects || []).map((p) => (
       <GridItem
         key={p.url_slug}
         project={p}
@@ -40,7 +40,7 @@ export default function ProjectPreviews({
         displayOnePreviewInRow={displayOnePreviewInRow}
       />
     ));
-  console.log("projects", projects);
+
   const [gridItems, setGridItems] = useState(toProjectPreviews(projects));
   const [isFetchingMore, setIsFetchingMore] = React.useState(false);
 
