@@ -210,6 +210,16 @@ You can analyze size of the (frontend) bundle with
 yarn analyze-bundle
 ```
 
+### Pre-Commit Hooks
+
+For a better code quality, prettier-checks are running in the pipeline actions. Please run
+```sh
+yarn prepare
+```
+
+to add husky pre-commit hooks to your local workspace. After that, every commit in frontend code will run prettier
+on staged files to increase the code quality and match our formatting rules.
+
 ## Deploy
 
 Currently the project is utilizing credits to deploy onto Azure. That deployment utilizes the two scripts in the root of the project, `start_backend.sh` and `start_frontend.sh`.
