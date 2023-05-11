@@ -291,6 +291,7 @@ export default function EditAccountPage({
 
   const displayInfoArrayData = (key, infoEl) => {
     const [skillsDialogOpen, setSkillsDialogOpen] = React.useState(false);
+
     const [selectedItems, setSelectedItems] = React.useState(
       editedAccount.info.skills ? [...editedAccount.info.skills] : []
     );
@@ -336,7 +337,8 @@ export default function EditAccountPage({
           )}
           <MultiLevelSelectDialog
             open={skillsDialogOpen}
-            onClose={handleSkillsDialogClose}
+            onClose={() => setSkillsDialogOpen(false)}
+            onSave={handleSkillsDialogClose}
             type="skills"
             options={skillsOptions}
             items={editedAccount.info.skills}
