@@ -4,8 +4,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "prepare": "cd .. && husky install frontend/.husky",
-    "precommit": "lint-staged",
+    "prepare": "cd .. && husky install frontend/.husky && cd frontend && npx husky add .husky/pre-commit \"cd frontend && npm run pre-commit\"",
+    "pre-commit": "lint-staged",
     "analyze-bundle": "ANALYZE=true yarn build",
     "build-storybook": "build-storybook",
     "build": "next build",
@@ -24,7 +24,7 @@
     "test": "jest"
   },
   "lint-staged": {
-    "!**/*.{js,ts,jsx,tsx}": "prettier --write -u"
+    "**/*.{js,ts,jsx,tsx}": "prettier --write -u"
   },
   "jest": {
     "setupFiles": [
