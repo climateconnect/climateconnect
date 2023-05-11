@@ -143,7 +143,7 @@ Or a specific test file or test class:
 python manage.py test <file_path> or <file_path + class_name>
 ```
 
-For linting, we use [flake8](https://flake8.pycqa.org/en/latest/). Lint with
+For linting, we use [ruff](https://ruff.rs). Lint with
 
 ```sh
 make lint
