@@ -1,5 +1,3 @@
-
-
 from asgiref.sync import async_to_sync
 from organization.serializers.project import ProjectNotificationSerializer
 from organization.serializers.organization import OrganizationNotificationSerializer

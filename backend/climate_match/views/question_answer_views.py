@@ -114,9 +114,7 @@ class UserQuestionAnswersView(APIView):
             "answers",
             "answer_type",
         ]
-        for (index, question_answer) in enumerate(
-            request.data["user_question_answers"]
-        ):
+        for index, question_answer in enumerate(request.data["user_question_answers"]):
             for param in required_params:
                 if param not in question_answer:
                     logger.error(f"ClimateMatchError: Missing parameter -> {param}")

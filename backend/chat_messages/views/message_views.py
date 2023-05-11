@@ -37,6 +37,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 # Connect members of a private 1-on-1 chat
 class GetChatView(APIView):
     permission_classes = [IsAuthenticated]
@@ -170,7 +171,6 @@ class GetChatsView(ListAPIView):
     pagination_class = ChatsPagination
 
     def get_queryset(self):
-
         chat_ids = Participant.objects.filter(
             user=self.request.user, is_active=True
         ).values_list("chat", flat=True)

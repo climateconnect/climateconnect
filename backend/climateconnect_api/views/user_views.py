@@ -380,18 +380,16 @@ class EditUserProfile(APIView):
         user_profile.name = user.first_name + " " + user.last_name
         user.save()
 
-        
         if "image" in request.data:
             if request.data["image"] is not None:
                 user_profile.image = get_image_from_data_url(request.data["image"])[0]
             elif request.data["image"] is None:
-                 user_profile.image = None
+                user_profile.image = None
 
         if "thumbnail_image" in request.data:
-            
             if request.data["thumbnail_image"] is not None:
                 user_profile.thumbnail_image = get_image_from_data_url(
-                request.data["thumbnail_image"]
+                    request.data["thumbnail_image"]
                 )[0]
             elif request.data["thumbnail_image"] is None:
                 user_profile.thumbnail_image = None

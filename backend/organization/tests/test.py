@@ -7,13 +7,11 @@ import logging
 log = logging.getLogger(__name__)
 
 
-
 class TestUserProjects(APITestCase):
     def setUp(self):
         self.user = UserFactory(username="fnayouseif+001@gmail.com", password="123456")
 
     def test_user_leave_project(self):
-
         url = "http://localhost:8000/api/projects/leaveproject/"  # resolve('projects/leaveproject/')
         data = {
             "project_id": "455",

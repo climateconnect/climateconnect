@@ -1,7 +1,6 @@
 import re
 
 
-
 from organization.models.organization_project_published import OrgProjectPublished
 from organization.models.members import MembershipRequests
 from organization.utility.email import (
@@ -117,7 +116,6 @@ def create_organization_follower_notification(organization_follower):
 def create_organization_project_published_notification(
     followers, organization, project
 ):
-
     for follower in followers:
         org_project_published = OrgProjectPublished.objects.create(
             organization=organization, project=project, user=follower.user

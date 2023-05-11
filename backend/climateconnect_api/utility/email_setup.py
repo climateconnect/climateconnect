@@ -44,7 +44,6 @@ def send_email(
         return
 
     if should_send_email_setting:
-
         try:
             user_profile = UserProfile.objects.get(user=user)
             # short circuit if the user has changed his settings to not

@@ -4,7 +4,6 @@ from organization.utility.project import get_project_name
 from organization.utility.organization import get_organization_name
 
 
-
 from climateconnect_api.utility.email_setup import send_email
 from climateconnect_api.utility.translation import get_user_lang_code, get_user_lang_url
 from django.conf import settings

@@ -18,8 +18,6 @@ from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.utility.common import create_unique_slug
 
 
-
-
 # Django imports
 from django.contrib.auth.models import User
 from django.contrib.gis.db.models.functions import Distance
@@ -390,9 +388,7 @@ class CreateOrganizationView(APIView):
                     logger.info("Organization member created {}".format(user.id))
 
             if "organization_tags" in request.data:
-
                 for organization_tag in request.data["organization_tags"]:
-
                     try:
                         organization_tag = OrganizationTags.objects.get(
                             id=int(organization_tag["key"])
@@ -528,12 +524,12 @@ class OrganizationAPIView(APIView):
         if "background_image" in request.data:
             if request.data["background_image"] is not None:
                 organization.background_image = get_image_from_data_url(
-                request.data["background_image"]
+                    request.data["background_image"]
                 )[0]
 
             elif request.data["background_image"] is None:
                 organization.background_image = None
-           
+
         if "hubs" in request.data:
             for hub in organization.hubs.all():
                 if hub.url_slug not in request.data["hubs"]:

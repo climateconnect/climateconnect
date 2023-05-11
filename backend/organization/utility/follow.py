@@ -12,6 +12,7 @@ from rest_framework.exceptions import ValidationError
 
 from django.utils.translation import gettext as _
 
+
 #  IsUserFollowing View functions
 def check_if_user_follows_project(
     user,
@@ -64,7 +65,6 @@ def check_if_user_follows(
 
 # SetFollow View functions
 def set_user_following_project(request, url_slug):
-
     return set_user_following(
         request_data=request.data,
         user=request.user,
@@ -76,7 +76,6 @@ def set_user_following_project(request, url_slug):
 
 
 def set_user_following_organization(request, url_slug):
-
     return set_user_following(
         request_data=request.data,
         user=request.user,
@@ -184,7 +183,6 @@ def set_user_following(
 
 # ListFollowerView functions
 def get_list_of_organization_followers(self):
-
     return get_list_of_followers(
         list_of_followers_for_entity_model=Organization,
         follower_model=OrganizationFollower,
@@ -194,7 +192,6 @@ def get_list_of_organization_followers(self):
 
 
 def get_list_of_project_followers(self):
-
     return get_list_of_followers(
         list_of_followers_for_entity_model=Project,
         follower_model=ProjectFollower,

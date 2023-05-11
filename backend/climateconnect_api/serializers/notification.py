@@ -97,7 +97,6 @@ class NotificationSerializer(serializers.ModelSerializer):
             return comment
 
     def get_project(self, obj):
-
         if obj.project_comment:
             return get_project_info(obj.project_comment.project)
 
@@ -114,7 +113,6 @@ class NotificationSerializer(serializers.ModelSerializer):
             return get_project_info(obj.org_project_published.project)
 
     def get_organization(self, obj):
-
         if obj.org_project_published:
             return get_organization_info(obj.org_project_published.organization)
 

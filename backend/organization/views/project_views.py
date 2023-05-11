@@ -903,7 +903,7 @@ class GetUserInteractionsWithProjectView(APIView):
             raise NotFound(
                 detail="Project not found:" + url_slug, code=status.HTTP_404_NOT_FOUND
             )
-        
+
         is_liking = ProjectLike.objects.filter(
             user=request.user, project=project
         ).exists()
@@ -919,11 +919,14 @@ class GetUserInteractionsWithProjectView(APIView):
             user=self.request.user,
         ).exists()
 
-        return Response({
-            "liking": is_liking,
-            "following": is_following,
-            "has_requested_to_join": has_open_membership_request
-        }, status=status.HTTP_200_OK)
+        return Response(
+            {
+                "liking": is_liking,
+                "following": is_following,
+                "has_requested_to_join": has_open_membership_request,
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class ProjectCommentView(APIView):
@@ -1086,7 +1089,6 @@ class LeaveProject(RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, url_slug):
-
         updatable_records = list()
         try:
             project = Project.objects.get(url_slug=url_slug)

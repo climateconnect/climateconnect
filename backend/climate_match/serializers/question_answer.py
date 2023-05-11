@@ -60,7 +60,6 @@ class QuestionAnswerSerializer(serializers.ModelSerializer):
         else:
             for resource in resource_mapping:
                 if obj.answer_type.model == resource["resource_type"]:
-
                     resource_objects = obj.answer_type.get_all_objects_for_this_type(
                         **resource["filter"]
                     )

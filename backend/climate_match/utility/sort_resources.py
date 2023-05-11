@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 from django.db import connection
 
 
-
 def sort_user_resource_preferences(
     user: User, climatematch_token: UUID, hub_id: int
 ) -> List:

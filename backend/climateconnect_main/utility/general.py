@@ -20,7 +20,6 @@ def get_image_from_data_url(data_url, resize=False, base_width=500):
     file = ContentFile(base64.b64decode(_dataurl), name=f"{_filename}.{_extension}")
     # resizing the image, reducing quality and size
     if resize:
-
         # opening the file with the pillow
         image = Image.open(file)
         # using BytesIO to rewrite the new content without using the filesystem
