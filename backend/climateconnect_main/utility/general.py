@@ -53,6 +53,6 @@ def get_allowed_hosts(ALLOWED_HOSTS_ENV):
     ]
     if ALLOWED_HOSTS_ENV:
         for host in ALLOWED_HOSTS_ENV.split(","):
-            if not host in allowed_hosts:
+            if host not in allowed_hosts:
                 allowed_hosts.append(host)
     return allowed_hosts

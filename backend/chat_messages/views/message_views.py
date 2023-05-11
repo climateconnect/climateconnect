@@ -1,6 +1,3 @@
-from heapq import merge
-from itertools import chain
-import itertools
 from chat_messages.utility.notification import create_chat_message_notification
 from climateconnect_api.utility.notification import (
     create_email_notification,
@@ -10,14 +7,10 @@ from chat_messages.models.message import MessageReceiver
 from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import NotFound, PermissionDenied
-from rest_framework.filters import SearchFilter
-from django.db.models import Prefetch
-from django.db.models import Value as V
-from django.db.models.functions import Concat
 from django.conf import settings
 
 from uuid import uuid4
@@ -90,7 +83,7 @@ class StartPrivateChat(APIView):
             )
         print("checking whether user can send message")
         can_start_chat = check_can_start_chat(request.user.user_profile)
-        if not can_start_chat == True:
+        if can_start_chat is not True:
             return Response(
                 {"message": can_start_chat}, status=status.HTTP_403_FORBIDDEN
             )
@@ -139,7 +132,7 @@ class StartGroupChatView(APIView):
                 {"message": "Participant not found"}, status=status.HTTP_404_NOT_FOUND
             )
         can_start_chat = check_can_start_chat(request.user.user_profile)
-        if not can_start_chat == True:
+        if can_start_chat is not True:
             return Response(
                 {"message": can_start_chat}, status=status.HTTP_403_FORBIDDEN
             )

@@ -114,7 +114,7 @@ def set_user_following(
     field_look_up_input = {
         lookup_up_field_name: entity_model
     }  # this syntax is used for field_name=value in the .filter(s) lookup below
-    if request_data["following"] == True:
+    if request_data["following"] is True:
         if follower_model.objects.filter(user=user, **field_look_up_input).exists():
             message = (
                 _("You're already following this organization.")
@@ -147,7 +147,7 @@ def set_user_following(
                 },
                 status=status.HTTP_200_OK,
             )
-    if request_data["following"] == False:
+    if request_data["following"] is False:
         try:
             follower_object = follower_model.objects.get(
                 user=user, **field_look_up_input

@@ -1,12 +1,9 @@
 import logging
 import traceback
 from organization.utility.follow import (
-    check_if_user_follows_project,
     get_list_of_project_followers,
     set_user_following_project,
 )
-from climateconnect_api.models.notification import Notification
-from organization.utility.email import send_organization_follower_email
 from organization.serializers.project import ProjectRequesterSerializer
 
 from climateconnect_api.models import (
@@ -17,9 +14,7 @@ from climateconnect_api.models import (
 )
 from climateconnect_api.models.language import Language
 from climateconnect_api.utility.translation import (
-    edit_translation,
     edit_translations,
-    translate_text,
 )
 from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_main.utility.general import get_image_from_data_url
@@ -28,7 +23,6 @@ from dateutil.parser import parse
 
 from django.contrib.auth.models import User
 from django.contrib.gis.db.models.functions import Distance
-from django.contrib.gis.geos.geometry import GEOSGeometry
 from django.db import transaction
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
@@ -71,7 +65,6 @@ from organization.permissions import (
     ProjectMemberReadWritePermission,
     ProjectReadWritePermission,
     ReadWriteSensibleProjectDataPermission,
-    ApproveDenyProjectMemberRequest,
 )
 from organization.serializers.content import PostSerializer, ProjectCommentSerializer
 from organization.serializers.project import (
@@ -79,7 +72,6 @@ from organization.serializers.project import (
     InsertProjectMemberSerializer,
     ProjectFollowerSerializer,
     ProjectMemberSerializer,
-    ProjectMinimalSerializer,
     ProjectSerializer,
     ProjectSitemapEntrySerializer,
     ProjectStubSerializer,
@@ -106,7 +98,6 @@ from organization.utility.project import (
     get_similar_projects,
 )
 from rest_framework import status
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import (
@@ -117,7 +108,6 @@ from rest_framework.generics import (
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.utils.translation import get_language
 
 from organization.utility.requests import MembershipRequestsManager
 from organization.utility import MembershipTarget
@@ -254,7 +244,7 @@ class ListProjectsView(ListAPIView):
 
         if (
             "city" in self.request.query_params
-            and not "country" in self.request.query_params
+            and "country" not in self.request.query_params
         ):
             location_ids = Location.objects.filter(
                 city=self.request.query_params.get("city")
@@ -263,7 +253,7 @@ class ListProjectsView(ListAPIView):
 
         if (
             "country" in self.request.query_params
-            and not "city" in self.request.query_params
+            and "city" not in self.request.query_params
         ):
             location_ids = Location.objects.filter(
                 country=self.request.query_params.get("country")
@@ -507,7 +497,7 @@ class ProjectAPIView(APIView):
 
         if "skills" in request.data:
             for skill in project.skills.all():
-                if not skill.id in request.data["skills"]:
+                if skill.id not in request.data["skills"]:
                     logger.error("this skill needs to be deleted: " + skill.name)
                     project.skills.remove(skill)
             for skill_id in request.data["skills"]:
@@ -522,7 +512,7 @@ class ProjectAPIView(APIView):
         if "project_tags" in request.data:
             order = len(request.data["project_tags"])
             for tag in old_project_tags:
-                if not tag["project_tag"] in request.data["project_tags"]:
+                if tag["project_tag"] not in request.data["project_tags"]:
                     tag_to_delete = ProjectTags.objects.get(id=tag["project_tag"])
                     ProjectTagging.objects.filter(
                         project=project, project_tag=tag_to_delete
@@ -569,7 +559,7 @@ class ProjectAPIView(APIView):
         if "is_draft" in request.data:
             project.is_draft = False
         if "is_personal_project" in request.data:
-            if request.data["is_personal_project"] == True:
+            if request.data["is_personal_project"] is True:
                 project_parents = ProjectParents.objects.get(project=project)
                 project_parents.parent_organization = None
                 project_parents.save()
@@ -869,7 +859,7 @@ class SetLikeView(APIView):
         except Project.DoesNotExist:
             raise NotFound(detail="Project not found.", code=status.HTTP_404_NOT_FOUND)
 
-        if request.data["liking"] == True:
+        if request.data["liking"] is True:
             if ProjectLike.objects.filter(user=request.user, project=project).exists():
                 raise ValidationError("You've already liked this project.")
             else:
@@ -881,7 +871,7 @@ class SetLikeView(APIView):
                     {"message": "You have liked this project.", "liking": True},
                     status=status.HTTP_201_CREATED,
                 )
-        if request.data["liking"] == False:
+        if request.data["liking"] is False:
             try:
                 liking_user_object = ProjectLike.objects.get(
                     user=request.user, project=project
@@ -1141,7 +1131,7 @@ class LeaveProject(RetrieveUpdateAPIView):
                 data={"message": f"We ran into some issues processing your request."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-        except:
+        except Exception:
             # Send E to dev
             # send to dev logs E= traceback.format_exc()
             return Response(
@@ -1217,7 +1207,7 @@ class RequestJoinProject(RetrieveUpdateAPIView):
 
             # Now pass the requestId back to the client.
             return Response({"requestId": request.id}, status=status.HTTP_200_OK)
-        except:
+        except Exception:
             logging.error(traceback.format_exc())
             return Response(
                 {"message": f"Internal Server Error {traceback.format_exc()}"},
@@ -1252,7 +1242,7 @@ class ManageJoinProjectView(RetrieveUpdateDestroyAPIView):
     def post(self, request, url_slug, request_action, request_id):
         try:
             project = Project.objects.filter(url_slug=url_slug).first()
-        except:
+        except Exception:
             return Response(
                 {"message": "Project Does Not Exist"}, status=status.HTTP_404_NOT_FOUND
             )
@@ -1290,7 +1280,7 @@ class ManageJoinProjectView(RetrieveUpdateDestroyAPIView):
             return Response(
                 data={"message": "Operation succeeded"}, status=status.HTTP_200_OK
             )
-        except:
+        except Exception:
             return Response(
                 {"message": f"Internal Server Error"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,

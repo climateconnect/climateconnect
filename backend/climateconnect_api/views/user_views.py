@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 
 from climateconnect_api.models import Availability, Skill, UserProfile
 from climateconnect_api.models.language import Language
-from climateconnect_api.models.user import UserProfileTranslation
 from climateconnect_api.pagination import MembersPagination, MembersSitemapPagination
 from climateconnect_api.permissions import UserPermission
 from climateconnect_api.serializers.user import (
@@ -157,7 +156,7 @@ class SignUpView(APIView):
             user_profile.last_completed_tutorial_step = request.data[
                 "last_completed_tutorial_step"
             ]
-        if settings.AUTO_VERIFY == True:
+        if settings.AUTO_VERIFY is True:
             user_profile.is_profile_verified = True
             message = "Congratulations! Your account has been created"
         else:
@@ -273,7 +272,7 @@ class ListMemberProfilesView(ListAPIView):
 
         if (
             "city" in self.request.query_params
-            and not "country" in self.request.query_params
+            and "country" not in self.request.query_params
         ):
             location_ids = Location.objects.filter(
                 city=self.request.query_params.get("city")
@@ -282,7 +281,7 @@ class ListMemberProfilesView(ListAPIView):
 
         if (
             "country" in self.request.query_params
-            and not "city" in self.request.query_params
+            and "city" not in self.request.query_params
         ):
             location_ids = Location.objects.filter(
                 country=self.request.query_params.get("country")
@@ -431,7 +430,7 @@ class EditUserProfile(APIView):
 
         if "skills" in request.data:
             for skill in user_profile.skills.all():
-                if not skill.id in request.data["skills"]:
+                if skill.id not in request.data["skills"]:
                     user_profile.skills.remove(skill)
             for skill_id in request.data["skills"]:
                 try:
@@ -445,7 +444,7 @@ class EditUserProfile(APIView):
         items_to_translate = [
             {"key": "biography", "translation_key": "biography_translation"},
         ]
-        if not "translations" in request.data:
+        if "translations" not in request.data:
             request.data["translations"] = {}
         edit_translations(
             items_to_translate, request.data, user_profile, "user_profile"

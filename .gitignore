@@ -31,7 +31,7 @@ backend/.azure
 backend/dump.rdb
 
 yarn.lock
-/backend/celerybeat-schedule
+/backend/celerybeat-schedule*
 frontend/.eslintcache
 
 media/

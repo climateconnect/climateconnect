@@ -1,12 +1,11 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
+from climateconnect_api.factories import UserFactory
 
-from django.urls import reverse, resolve
 import logging
 
 log = logging.getLogger(__name__)
 
-from climateconnect_api.factories import UserFactory
 
 
 class TestUserProjects(APITestCase):

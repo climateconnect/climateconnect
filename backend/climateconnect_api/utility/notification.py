@@ -1,12 +1,7 @@
-from datetime import datetime, timedelta
-from typing import List
 
-from yaml import serialize
 
 from asgiref.sync import async_to_sync
-from organization.models.project import Project
 from organization.serializers.project import ProjectNotificationSerializer
-from organization.models.organization import Organization
 from organization.serializers.organization import OrganizationNotificationSerializer
 from channels.layers import get_channel_layer
 from chat_messages.models import Participant
@@ -106,7 +101,7 @@ def create_user_notification(user, notification):
     if not old_notification_object.exists():
         UserNotification.objects.create(user=user, notification=notification)
     else:
-        if not old_notification_object[0].read_at is None:
+        if old_notification_object[0].read_at is not None:
             old_notification = old_notification_object[0]
             old_notification.read_at = None
             old_notification.save()
@@ -167,7 +162,7 @@ def send_comment_notification(
         for thread_comment in comments_in_thread:
             if (
                 not thread_comment["author_user"] == sender.id
-                and not thread_comment["author_user"] in ids_to_ignore
+                and thread_comment["author_user"] not in ids_to_ignore
             ):
                 user = User.objects.filter(id=thread_comment["author_user"])[0]
                 create_user_notification(user, notification)
@@ -193,8 +188,8 @@ def send_comment_notification(
     for member in team:
         if (
             not member["user"] == sender.id
-            and not member["user"] in users_notification_sent
-            and not member["user"] in ids_to_ignore
+            and member["user"] not in users_notification_sent
+            and member["user"] not in ids_to_ignore
         ):
             user = User.objects.filter(id=member["user"])[0]
             create_user_notification(user, notification)

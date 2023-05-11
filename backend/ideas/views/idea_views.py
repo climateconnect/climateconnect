@@ -4,9 +4,7 @@ from ideas.models.support import IdeaSupporter
 import logging
 
 # Django/Django REST imports
-from django.utils.translation import get_language
-from django.db.models import Case, Value, When
-from django.db.models.query import QuerySet
+from django.db.models import Case, When
 from rest_framework import status
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.filters import SearchFilter
@@ -16,7 +14,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 # Climate connect imports
-from climateconnect_api.models import Language, Role, ContentShares
+from climateconnect_api.models import Language, Role
 from climateconnect_api.utility.translation import get_translations
 from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_main.utility.general import get_image_from_data_url

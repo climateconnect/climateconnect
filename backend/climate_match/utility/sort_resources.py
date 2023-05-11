@@ -4,7 +4,6 @@ from uuid import UUID
 from django.contrib.auth.models import User
 from django.db import connection
 
-from climate_match.models.user import UserQuestionAnswer
 
 
 def sort_user_resource_preferences(
