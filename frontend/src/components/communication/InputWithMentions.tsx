@@ -46,6 +46,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function InputWithMentions({ baseUrl, value, onChange, placeholder, onKeyDown }) {
   const classes = useStyles();
+  console.log("test");
   const { locale } = useContext(UserContext);
 
   //TODO: This function might have to be throttled in the future
