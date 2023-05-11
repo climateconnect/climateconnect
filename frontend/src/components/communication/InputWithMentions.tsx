@@ -82,7 +82,7 @@ export default function InputWithMentions({ baseUrl, value, onChange, placeholde
           onKeyDown={onKeyDown}
         >
           <Mention
-              className={classes.mention}
+            className={classes.mention}
             displayTransform={(login) => `@${login}`}
             trigger="@"
             markup={`@@@____id__^^____display__@@@^^^`}
