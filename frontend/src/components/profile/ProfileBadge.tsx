@@ -8,7 +8,7 @@ import UserContext from "../context/UserContext";
 const useStyles = makeStyles<Theme, { size: string; image?: string }>((theme) => ({
   badgeRoot: (props) => ({
     left: props.size === "small" ? "10%" : props.size === "medium" ? "10%" : "20%",
-    bottom: props.size === "small" ? "10%" : props.size === "medium" ? "10%" : "40%",
+    bottom: props.size === "small" ? "10%" : props.size === "medium" ? "10%" : "10%",
   }),
   badgeContainer: {
     background: "white",

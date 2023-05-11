@@ -148,7 +148,6 @@ function GridItem({
   return (
     <Grid
       key={idea ? idea.url_slug : "createCard"}
-      item
       xs={6}
       sm={4}
       md={hasIdeaOpen ? 6 : 3}

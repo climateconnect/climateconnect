@@ -91,6 +91,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "url_slug",
             "image",
             "background_image",
+            "thumbnail_image", # I had to add this to get the change to it being set to null when restting the avatar
             "biography",
             "is_profile_verified",
             "availability",

@@ -122,13 +122,13 @@ const useStyles = makeStyles<
     },
     selectedItemIcon: {
       paddingLeft: theme.spacing(2),
-      color: "red",
+      color: "white",
     },
     listWrapper: {
       display: "inline-block",
       width: 700,
       [theme.breakpoints.down("lg")]: {
-        width: 650 - theme.spacing(8),
+        width: `650 - ${theme.spacing(8)}`,
         margin: "0 auto",
       },
       [theme.breakpoints.down("sm")]: {
@@ -137,7 +137,7 @@ const useStyles = makeStyles<
       },
     },
     narrowScreenListWrapper: {
-      maxWidth: 650 - theme.spacing(8),
+      maxWidth: `650 - ${theme.spacing(8)}`,
       width: "auto",
       display: "block",
       margin: "0 auto",

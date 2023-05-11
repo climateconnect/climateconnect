@@ -161,15 +161,15 @@ export default function TutorialStep({
             curStep.placement as any
           ) && classes.vertical
         }`}
-        modifiers={{
-          preventOverflow: {
-            enabled: false,
-            boundariesElement: "scrollParent",
-          },
-          flip: {
-            enabled: false,
-          },
-        }}
+        // modifiers={{
+        //   preventOverflow: {
+        //     enabled: false,
+        //     boundariesElement: "scrollParent",
+        //   },
+        //   flip: {
+        //     enabled: false,
+        //   },
+        // }}
       >
         {(!curStep.placement || curStep.placement === "right") && (
           <ArrowLeftIcon color="primary" className={classes.arrowLeftIcon} />

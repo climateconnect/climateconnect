@@ -52,7 +52,6 @@ class UserResourcesMatchView(APIView):
             return Response(
                 {"message": "Missing parameters"}, status=status.HTTP_400_BAD_REQUEST
             )
-
         range_start = int(request.query_params.get("range_start"))
         range_end = int(request.query_params.get("range_end"))
         LOGGER_PREFIX = "ResourceNotFound"
@@ -65,9 +64,18 @@ class UserResourcesMatchView(APIView):
         else:
             uqa = UserQuestionAnswer.objects.filter(token=climatematch_token)
 
-        if uqa.exists() and uqa[0].hub:
-            hub = uqa[0].hub
+        # If the user passes a hub in the query string use that hub
+        # This could also mean showing results in a hub where this user has never done the ClimateMatch
+        # If there are ever different questions in different hubs this logic will need to be changed
+        if request.query_params.get("hub"):
+            try:
+                hub = Hub.objects.get(url_slug=request.query_params.get("hub"))
+            except Hub.DoesNotExist:
+                if uqa.exists() and uqa[0].hub:
+                    hub = uqa[0].hub
         else:
+            if uqa.exists() and uqa[0].hub:
+                hub = uqa[0].hub
             hub = Hub.objects.get(url_slug=FALLBACK_HUB_URL_SLUG)
         user_resources = sort_user_resource_preferences(
             user=request.user, climatematch_token=climatematch_token, hub_id=hub.id

@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(4),
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
-    maxHeight: 500 - theme.spacing(8),
+    maxHeight: 436,
     ["@media (max-width: 760px)"]: {
       flexDirection: "column-reverse",
       maxHeight: "calc(100vh - 138px)",
@@ -237,6 +237,7 @@ export default function RankingQuestionTypeBody({
                           <>
                             <Chip
                               label={userAnswer[i].text}
+                              color="secondary"
                               className={classes.possibleAnswerChip}
                               ref={provided.innerRef}
                               onClick={(event) => onRemoveAnswer(event, i)}
@@ -251,7 +252,7 @@ export default function RankingQuestionTypeBody({
                         )}
                       </Draggable>
                     ) : (
-                      <Chip className={classes.selectedAnswerChip} />
+                      <Chip className={classes.selectedAnswerChip} color="secondary" />
                     )}
                   </div>
                 ))}

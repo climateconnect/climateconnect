@@ -539,9 +539,14 @@ class OrganizationAPIView(APIView):
                 request.data["thumbnail_image"]
             )[0]
         if "background_image" in request.data:
-            organization.background_image = get_image_from_data_url(
+            if request.data["background_image"] is not None:
+                organization.background_image = get_image_from_data_url(
                 request.data["background_image"]
-            )[0]
+                )[0]
+
+            elif request.data["background_image"] is None:
+                organization.background_image = None
+           
         if "hubs" in request.data:
             for hub in organization.hubs.all():
                 if not hub.url_slug in request.data["hubs"]:

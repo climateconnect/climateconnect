@@ -67,7 +67,6 @@ function GridItem({
   return (
     <Grid
       key={hub ? hub.url_slug : "create"}
-      item
       xs={12}
       sm={editMode ? 6 : 12}
       md={8}
