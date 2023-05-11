@@ -4,6 +4,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prepare": "cd .. && husky install frontend/.husky",
+    "precommit": "lint-staged",
     "analyze-bundle": "ANALYZE=true yarn build",
     "build-storybook": "build-storybook",
     "build": "next build",
@@ -20,6 +22,9 @@
     "storybook": "start-storybook -p 6006",
     "test:watch": "jest --watch",
     "test": "jest"
+  },
+  "lint-staged": {
+    "!**/*.{js,ts,jsx,tsx}": "prettier --write -u"
   },
   "jest": {
     "setupFiles": [
@@ -52,6 +57,7 @@
     "globby": "^11.0.1",
     "html-react-parser": "^1.4.0",
     "humanize-duration": "^3.22.0",
+    "lint-staged": "^13.2.2",
     "lodash": "^4.17.21",
     "next": "^12.1.0",
     "next-cookies": "^2.0.3",
@@ -104,6 +110,7 @@
     "eslint": "^6.6.0",
     "eslint-plugin-react": "^7.16.0",
     "eslint-watch": "^7.0.0",
+    "husky": "^8.0.3",
     "jest": "^26.6.3",
     "next-compose-plugins": "^2.2.0",
     "prettier": "2.2.0"
