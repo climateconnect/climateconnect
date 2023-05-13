@@ -6,13 +6,13 @@ import React, { useContext, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   white: {
     color: "white",
   },
   selectedItem: {
-    backgroundColor: `${theme.palette.primary.main} !important`
-  }
+    backgroundColor: `${theme.palette.primary.main} !important`,
+  },
 }));
 
 type Props = {
@@ -118,7 +118,7 @@ export default function SelectField({
         options.map((value, index) => {
           if (multiple) {
             return (
-              <MenuItem key={index} value={value.name} classes={{selected: classes.selectedItem}}>
+              <MenuItem key={index} value={value.name} classes={{ selected: classes.selectedItem }}>
                 <Checkbox
                   checked={values.indexOf(value.name) > -1}
                   checkedIcon={<CheckBoxIcon className={classes.white} />}

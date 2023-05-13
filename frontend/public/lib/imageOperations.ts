@@ -14,7 +14,13 @@ export function getImageDialogHeight(screenWidth) {
   return (screenWidth / 16) * 9 * 0.7;
 }
 
-export async function getResizedImage(blob, width, height, type, forceExactSize?: boolean) {
+export async function getResizedImage(
+  blob: string,
+  width,
+  height,
+  type,
+  forceExactSize?: boolean
+): Promise<string> {
   //only resize by factors of 2, otherwise we'll lose quality
   const image = new Image();
   image.src = blob;
@@ -33,7 +39,7 @@ export async function getResizedImage(blob, width, height, type, forceExactSize?
   });
 }
 
-function getResizedBlob(image, width, height, type) {
+function getResizedBlob(image, width, height, type): Promise<string> {
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d")!;
   canvas.width = width;
@@ -69,7 +75,7 @@ export function whitenTransparentPixels(canvas) {
   ctx.putImageData(imgd, 0, 0);
 }
 
-export async function getCompressedJPG(file, maxSizeMB) {
+export async function getCompressedJPG(file, maxSizeMB): Promise<string> {
   const canvas = document.createElement("canvas");
   const image = new Image();
   return new Promise(function (resolve, reject) {

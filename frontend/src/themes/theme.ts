@@ -1,4 +1,4 @@
-import { createTheme, alpha } from "@mui/material/styles";
+import { alpha, createTheme } from "@mui/material/styles";
 import { grey } from "@mui/material/colors";
 
 declare module "@mui/material" {
@@ -61,9 +61,9 @@ const coreTheme = createTheme({
       fontWeight: 600,
     },
     /* TOOD: climateMatch: {
-      fontFamily: "flood-std, sans-serif",
-      fontWeight: 300,
-    },*/
+          fontFamily: "flood-std, sans-serif",
+          fontWeight: 300,
+        },*/
   },
 });
 
@@ -160,8 +160,8 @@ const theme = createTheme(coreTheme, {
             background: "#e0e0e0",
             color: coreTheme.palette.secondary.main,
             "&:hover": {
-              background: "#cacaca"
-            }
+              background: "#cacaca",
+            },
           },
         },
       ],
@@ -170,6 +170,17 @@ const theme = createTheme(coreTheme, {
           // Have the same border-radius as the other UI controls, like
           // the select dropdowns, buttons, etc.
           borderRadius: 4,
+        },
+        deleteIconColorSecondary: {
+          color: coreTheme.palette.secondary.main,
+          "&:hover": {
+            color: coreTheme.palette.secondary.light,
+          },
+        },
+        clickable: {
+          "&:hover": {
+            background: "#cacaca",
+          },
         },
       },
     },

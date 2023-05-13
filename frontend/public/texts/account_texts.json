@@ -42,5 +42,33 @@
   "do_you_really_want_to_exit_without_saving": {
     "en": "Do you really want to exit without saving?",
     "de": "Möchtest du die Seite wirklich verlassen, ohne zu speichern?"
+  },
+  "edit": {
+    "en": "Edit",
+    "de": "Bearbeiten"
+  },
+  "edit_avatar": {
+    "en": "Edit Avatar",
+    "de": "Profilbild Bearbeiten"
+  },
+  "remove_avatar": {
+    "en": "Remove Avatar",
+    "de": "Profilbild entfernen"
+  },
+  "add_avatar": {
+    "en": "Add Avatar",
+    "de": "Profilbild hinzufügen"
+  },
+  "do_you_really_want_to_remove_avatar": {
+    "en": "Do you really want to remove your avatar image?",
+    "de": "Möchtest du wirklich dein Profilbild entfernen?"
+  },
+  "remove_background_image": {
+    "en": "Remove background image",
+    "de": "Hintergrundbild entfernen"
+  },
+  "do_you_really_want_to_remove_background_image": {
+    "en": "Do you really want to remove your background image?",
+    "de": "Möchtest du wirklich dein Hintergrundbild entfernen?"
   }
 }

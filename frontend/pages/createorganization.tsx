@@ -178,7 +178,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         name: values.organizationname,
         parentorganization: values.parentorganizationname,
         location: parseLocation(location),
-        types: values.types
+        types: values.types,
       });
       /* This is required in the case that the user first inputs a name that is taken 
       then later submits with a valid name. Should they then edit the name to another taken name in the detailed view (German page)
