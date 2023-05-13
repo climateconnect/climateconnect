@@ -379,6 +379,7 @@ export default function EditAccountPage({
           {editedAccount.info[key].length < infoEl.maxEntries && (
             <Chip
               label="Add"
+              color="secondary"
               icon={<ControlPointIcon />}
               className={classes.chip}
               onClick={handleSkillsDialogClickOpen}
@@ -877,6 +878,7 @@ export default function EditAccountPage({
                     infoMetadata
                   ).map((typeObject) => (
                     <Chip
+                      color="secondary"
                       label={typeObject.name}
                       key={typeObject.key}
                       className={classes.chip}
@@ -889,7 +891,7 @@ export default function EditAccountPage({
                     <Chip
                       label={texts.add_type}
                       color={
-                        editedAccount.types && editedAccount.types.length ? "default" : "primary"
+                        editedAccount.types && editedAccount.types.length ? "secondary" : "primary"
                       }
                       icon={<ControlPointIcon />}
                       onClick={() => handleDialogClickOpen("addTypeDialog")}

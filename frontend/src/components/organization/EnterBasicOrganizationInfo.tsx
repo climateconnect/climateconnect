@@ -135,6 +135,7 @@ export default function EnterBasicOrganizationInfo({
               <Chip
                 className={index === 1 ? classes.lastChip : classes.chip}
                 label={selectedType}
+                color="secondary"
                 onDelete={() => handleRemoveType(selectedType)}
                 key={index}
               />
@@ -165,7 +166,7 @@ export default function EnterBasicOrganizationInfo({
         handleSubmit(event, {
           ...account,
           parentOrganization: parentOrganization,
-          orgtypes: convertTypeNamesToObject(selectedTypes, tagOptions),
+          types: convertTypeNamesToObject(selectedTypes, tagOptions),
         })
       }
       errorMessage={errorMessage}
