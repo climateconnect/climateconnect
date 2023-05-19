@@ -6,9 +6,6 @@ start:
 	$(info )
 	python3 manage.py runserver
 
-install:
-	pip3 install -r requirements.txt
-
 test:
 	python3 manage.py test
 
