@@ -65,8 +65,10 @@ class QuestionAnswerSerializer(serializers.ModelSerializer):
         else:
             for resource in resource_mapping:
                 if obj.answer_type.model == resource["resource_type"]:
-                    resource_objects: Any = obj.answer_type.get_all_objects_for_this_type(
-                        **resource["filter"]
+                    resource_objects: Any = (
+                        obj.answer_type.get_all_objects_for_this_type(
+                            **resource["filter"]
+                        )
                     )
                     if resource["resource_type"] == "hub":
                         resource_objects = (
@@ -126,7 +128,7 @@ class UserQuestionAnswerSerializer(serializers.ModelSerializer):
     def get_answers(self, obj: UserQuestionAnswer):
         answers = []
         for answer in obj.answers.all():
-            resource: ContentType = answer.resource_type.get_object_for_this_type( # type: ignore
+            resource: ContentType = answer.resource_type.get_object_for_this_type(  # type: ignore
                 id=answer.reference_id
             )
             answers.append(

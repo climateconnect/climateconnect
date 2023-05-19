@@ -137,7 +137,9 @@ class Command(BaseCommand):
                 if "number_of_choices" in question:
                     question_in_db.number_of_choices = question["number_of_choices"]
                     if "minimum_choices_required" in question:
-                        question_in_db.minimum_choices_required = question["minimum_choices_required"]
+                        question_in_db.minimum_choices_required = question[
+                            "minimum_choices_required"
+                        ]
                     question_in_db.save()
                 print("inserted question #{}".format(question["step"]))
                 if "translations" in question:

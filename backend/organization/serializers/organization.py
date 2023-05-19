@@ -181,7 +181,7 @@ class EditOrganizationSerializer(OrganizationSerializer):
         return get_organization_name(obj, get_language())
 
     class Meta(OrganizationSerializer.Meta):
-        fields = OrganizationSerializer.Meta.fields + ("location", "translations") # type: ignore
+        fields = OrganizationSerializer.Meta.fields + ("location", "translations")  # type: ignore
 
 
 class OrganizationCardSerializer(serializers.ModelSerializer):

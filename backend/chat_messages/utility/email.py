@@ -3,7 +3,7 @@ import logging
 from climateconnect_api.utility.email_setup import send_email
 from climateconnect_api.utility.translation import get_user_lang_code, get_user_lang_url
 from django.conf import settings
-from mailjet_rest import Client # type: ignore
+from mailjet_rest import Client  # type: ignore
 
 logger = logging.getLogger(__name__)
 

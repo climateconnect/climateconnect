@@ -128,7 +128,7 @@ class ProjectsOrderingFilter(OrderingFilter):
 
 class ListProjectsView(ListAPIView):
     permission_classes = [AllowAny]
-    filter_backends = [SearchFilter, DjangoFilterBackend, ProjectsOrderingFilter] # type: ignore
+    filter_backends = [SearchFilter, DjangoFilterBackend, ProjectsOrderingFilter]  # type: ignore
     search_fields = ["name", "translation_project__name_translation"]
     filterset_fields = ["collaborators_welcome"]
     pagination_class = ProjectsPagination

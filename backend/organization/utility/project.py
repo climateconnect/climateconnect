@@ -67,13 +67,19 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
     return project
 
 
-def get_translation(project: Project, language_code: str) -> Optional[ProjectTranslation]:
+def get_translation(
+    project: Project, language_code: str
+) -> Optional[ProjectTranslation]:
     if project.language and language_code != project.language.language_code:
-        return project.translation_project.filter(language__language_code=language_code).first()
+        return project.translation_project.filter(
+            language__language_code=language_code
+        ).first()
     return None
 
 
-def get_project_helpful_connections(project: Project, language_code: str) -> Optional[list[str]]:
+def get_project_helpful_connections(
+    project: Project, language_code: str
+) -> Optional[list[str]]:
     if translation := get_translation(project, language_code):
         return translation.helpful_connections_translation
 
@@ -87,7 +93,9 @@ def get_project_name(project: Project, language_code: str) -> Optional[str]:
     return project.name
 
 
-def get_project_short_description(project: Project, language_code: str) -> Optional[str]:
+def get_project_short_description(
+    project: Project, language_code: str
+) -> Optional[str]:
     if translation := get_translation(project, language_code):
         return translation.short_description_translation
 
@@ -216,7 +224,7 @@ def get_similar_projects(url_slug: str, return_count=5):
         "language",
     )  # project_parent__id 'tag_project' 'skills'
 
-    df = pd.DataFrame.from_dict(target_projects)# type: ignore
+    df = pd.DataFrame.from_dict(target_projects)  # type: ignore
 
     # calcaulte skills match %
     # since skills are 1 to Many to projects, we need to group the skills in a list

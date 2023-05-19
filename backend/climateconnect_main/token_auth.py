@@ -1,7 +1,7 @@
-from channels.auth import AuthMiddlewareStack # type: ignore
+from channels.auth import AuthMiddlewareStack  # type: ignore
 from django.contrib.auth.models import AnonymousUser
-from knox.auth import TokenAuthentication # type: ignore
-from channels.sessions import CookieMiddleware # type: ignore
+from knox.auth import TokenAuthentication  # type: ignore
+from channels.sessions import CookieMiddleware  # type: ignore
 from rest_framework.exceptions import AuthenticationFailed
 import logging
 

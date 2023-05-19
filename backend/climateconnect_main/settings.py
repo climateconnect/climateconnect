@@ -196,9 +196,9 @@ STATIC_URL = (
     "/static/"
     if env("ENVIRONMENT") in ("development", "test")
     else "https://"  # type: ignore
-    + env("AZURE_ACCOUNT_NAME") 
+    + env("AZURE_ACCOUNT_NAME")
     + "."
-    + env("AZURE_HOST") 
+    + env("AZURE_HOST")
     + "/{}/".format(env("AZURE_CONTAINER"))
 )
 STATIC_ROOT = (

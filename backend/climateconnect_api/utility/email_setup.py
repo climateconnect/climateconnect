@@ -7,7 +7,7 @@ from climateconnect_api.models import UserNotification, UserProfile
 from climateconnect_api.models.notification import EmailNotification
 from climateconnect_api.utility.translation import get_user_lang_code, get_user_lang_url
 from django.conf import settings
-from mailjet_rest import Client # type: ignore
+from mailjet_rest import Client  # type: ignore
 
 logger = logging.getLogger(__name__)
 
