@@ -1,24 +1,23 @@
-name: Python linting with flake8
+name: Python linting
 on: [pull_request]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - name: Install Python
+        uses: actions/setup-python@v4
         with:
-          # Note: be aware of specific Python versions. This version should always
-          # match what version we specif in our other setup files, like start_backend.sh.
-          # 3.6.9 started breaking GitHub actions, see related issue:
-          # https://github.com/actions/setup-python/issues/162#issuecomment-1324176396
-          python-version: 3.8
+          python-version: "3.11"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flake8
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      - name: Lint with flake8
-        run: |
-          flake8 backend --count --select=E9,F6,F7,F8 --show-source --statistics
+          pip install ruff
+      - name: Run Black
+        uses: psf/black@stable
+        with:
+          src: backend
+      # Include `--format=github` to enable automatic inline annotations.
+      - name: Run Ruff
+        run: ruff check --format=github backend
