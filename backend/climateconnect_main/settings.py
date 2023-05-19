@@ -192,14 +192,15 @@ if env("ENVIRONMENT") not in ("development", "test"):
     AZURE_ACCOUNT_KEY = env("AZURE_ACCOUNT_KEY")
     AZURE_CONTAINER = env("AZURE_CONTAINER")
 
+
 STATIC_URL = (
     "/static/"
     if env("ENVIRONMENT") in ("development", "test")
     else "https://"  # type: ignore
-    + env("AZURE_ACCOUNT_NAME")
-    + "."
-    + env("AZURE_HOST")
-    + "/{}/".format(env("AZURE_CONTAINER"))
+    + env("AZURE_ACCOUNT_NAME")  # type: ignore
+    + "."  # type: ignore
+    + env("AZURE_HOST")  # type: ignore
+    + "/{}/".format(env("AZURE_CONTAINER"))  # type: ignore
 )
 STATIC_ROOT = (
     env("STATIC_ROOT") if env("ENVIRONMENT") in ("development", "test") else "static/"
