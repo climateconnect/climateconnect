@@ -36,7 +36,7 @@ class OrganizationStubSerializer(serializers.ModelSerializer):
         return get_organization_name(obj, get_language())
 
     def get_location(self, obj):
-        if obj.location == None:
+        if obj.location is None:
             return None
         return obj.location.name
 
@@ -153,7 +153,7 @@ class EditOrganizationSerializer(OrganizationSerializer):
         if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
             return {"city": obj.location.city, "country": obj.location.country}
         else:
-            if obj.location == None:
+            if obj.location is None:
                 return None
             return obj.location.name
 
@@ -210,7 +210,7 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
         return get_organization_name(obj, get_language())
 
     def get_location(self, obj):
-        if obj.location == None:
+        if obj.location is None:
             return None
         return obj.location.name
 

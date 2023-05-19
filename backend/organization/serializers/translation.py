@@ -1,5 +1,4 @@
 from organization.models.translations import ProjectTranslation
-from climateconnect_api.models import Language
 from organization.models import OrganizationTranslation
 from rest_framework import serializers
 

@@ -97,7 +97,6 @@ class NotificationSerializer(serializers.ModelSerializer):
             return comment
 
     def get_project(self, obj):
-
         if obj.project_comment:
             return get_project_info(obj.project_comment.project)
 
@@ -107,14 +106,13 @@ class NotificationSerializer(serializers.ModelSerializer):
         if obj.project_like:
             return get_project_info(obj.project_like.project)
 
-        if obj.membership_request and not obj.membership_request.target_project == None:
+        if obj.membership_request and obj.membership_request.target_project is not None:
             return get_project_info(obj.membership_request.target_project)
 
         if obj.org_project_published:
             return get_project_info(obj.org_project_published.project)
 
     def get_organization(self, obj):
-
         if obj.org_project_published:
             return get_organization_info(obj.org_project_published.organization)
 

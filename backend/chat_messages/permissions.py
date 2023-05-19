@@ -81,7 +81,6 @@ class AddParticipantsPermission(BasePermission):
 
 class ChangeChatCreatorPermission(BasePermission):
     def has_permission(self, request, view):
-
         try:
             chat = MessageParticipants.objects.get(
                 chat_uuid=str(view.kwargs.get("chat_uuid"))

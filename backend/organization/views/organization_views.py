@@ -6,26 +6,16 @@ from organization.utility.follow import (
 )
 
 # Backend app imports
-from climateconnect_api.models import Role, UserProfile, ContentShares
+from climateconnect_api.models import Role, UserProfile
 from climateconnect_api.models.language import Language
 from climateconnect_api.pagination import MembersPagination
-from climateconnect_api.serializers.user import UserProfileStubSerializer
 from climateconnect_api.utility.translation import (
     edit_translations,
     get_translations,
-    translate_text,
 )
 from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.utility.common import create_unique_slug
-
-
-from climateconnect_api.utility.notification import (
-    create_email_notification,
-    create_user_notification,
-    send_comment_notification,
-    send_out_live_notification,
-)
 
 
 # Django imports
@@ -35,7 +25,6 @@ from django.db.models import Q, Prefetch
 from django.utils.translation import gettext as _
 from django_filters.rest_framework import DjangoFilterBackend
 from hubs.models.hub import Hub
-from location.models import Location
 from location.utility import get_location, get_location_with_range
 from organization.models import (
     Organization,
@@ -43,7 +32,6 @@ from organization.models import (
     OrganizationTagging,
     OrganizationTags,
     ProjectParents,
-    OrganizationFollower,
 )
 from organization.models.tags import ProjectTags
 from organization.models.translations import OrganizationTranslation
@@ -78,18 +66,15 @@ from rest_framework import status
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import (
     ListAPIView,
-    ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
 )
-from rest_framework.pagination import PageNumberPagination
 
 # REST imports
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.exceptions import NotFound
 
-from django.utils.translation import get_language
 
 logger = logging.getLogger(__name__)
 
@@ -237,7 +222,7 @@ class ListOrganizationsAPIView(ListAPIView):
 
         if (
             "city" in self.request.query_params
-            and not "country" in self.request.query_params
+            and "country" not in self.request.query_params
         ):
             organizations = organizations.filter(
                 location__city=self.request.query_params.get("city")
@@ -245,7 +230,7 @@ class ListOrganizationsAPIView(ListAPIView):
 
         if (
             "country" in self.request.query_params
-            and not "city" in self.request.query_params
+            and "city" not in self.request.query_params
         ):
             organizations = organizations.filter(
                 location__country=self.request.query_params.get("country")
@@ -403,9 +388,7 @@ class CreateOrganizationView(APIView):
                     logger.info("Organization member created {}".format(user.id))
 
             if "organization_tags" in request.data:
-
                 for organization_tag in request.data["organization_tags"]:
-
                     try:
                         organization_tag = OrganizationTags.objects.get(
                             id=int(organization_tag["key"])
@@ -541,15 +524,15 @@ class OrganizationAPIView(APIView):
         if "background_image" in request.data:
             if request.data["background_image"] is not None:
                 organization.background_image = get_image_from_data_url(
-                request.data["background_image"]
+                    request.data["background_image"]
                 )[0]
 
             elif request.data["background_image"] is None:
                 organization.background_image = None
-           
+
         if "hubs" in request.data:
             for hub in organization.hubs.all():
-                if not hub.url_slug in request.data["hubs"]:
+                if hub.url_slug not in request.data["hubs"]:
                     organization.hubs.remove(hub)
             for hub_url_slug in request.data["hubs"]:
                 try:
@@ -560,7 +543,7 @@ class OrganizationAPIView(APIView):
         if "parent_organization" in request.data:
             if (
                 "has_parent_organization" in request.data
-                and request.data["has_parent_organization"] == False
+                and request.data["has_parent_organization"] is False
             ):
                 organization.parent_organization = None
             else:
@@ -601,7 +584,7 @@ class OrganizationAPIView(APIView):
         ).values("organization_tag")
         if "types" in request.data:
             for tag in old_organization_taggings:
-                if not tag["organization_tag"] in request.data["types"]:
+                if tag["organization_tag"] not in request.data["types"]:
                     tag_to_delete = OrganizationTags.objects.get(
                         id=tag["organization_tag"]
                     )

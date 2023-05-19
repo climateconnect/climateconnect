@@ -9,8 +9,6 @@ from climateconnect_api.serializers.role import RoleSerializer
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from django.conf import settings
 from django.utils.translation import get_language
-from location.models import Location
-from location.serializers import LocationStubSerializer
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 
@@ -26,7 +24,7 @@ from organization.models.content import ProjectComment
 from organization.models.translations import ProjectTranslation
 from organization.serializers.organization import OrganizationStubSerializer
 from organization.serializers.status import ProjectStatusSerializer
-from organization.serializers.tags import OrganizationTagging, ProjectTaggingSerializer
+from organization.serializers.tags import ProjectTaggingSerializer
 from organization.serializers.translation import ProjectTranslationSerializer
 from organization.utility.project import (
     get_project_description,
@@ -34,7 +32,6 @@ from organization.utility.project import (
     get_project_name,
     get_project_short_description,
 )
-from organization.utility.status import get_project_status
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -114,12 +111,12 @@ class ProjectSerializer(serializers.ModelSerializer):
         return obj.project_liked.count()
 
     def get_loc(self, obj):
-        if obj.loc == None:
+        if obj.loc is None:
             return None
         return obj.loc.name
 
     def get_location(self, obj):
-        if obj.loc == None:
+        if obj.loc is None:
             return None
         return obj.loc.name
 
@@ -146,7 +143,7 @@ class EditProjectSerializer(ProjectSerializer):
         if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
             return {"city": obj.loc.city, "country": obj.loc.country}
         else:
-            if obj.loc == None:
+            if obj.loc is None:
                 return None
             return obj.loc.name
 
@@ -304,7 +301,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             return None
 
     def get_location(self, obj):
-        if obj.loc == None:
+        if obj.loc is None:
             return None
         return obj.loc.name
 

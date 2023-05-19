@@ -53,6 +53,7 @@ else
 fi
 
 pushd backend
+source .venv/bin/activate
 make migrate
 make test-data
 popd

@@ -1,5 +1,4 @@
 from rest_framework.exceptions import NotFound
-from ideas.models.ideas import Idea
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -7,7 +6,6 @@ from rest_framework import status
 
 from ideas.models import IdeaRating, IdeaSupporter
 from ideas.permissions import IdeaRatingPermission, IdeaSupporterPermission
-from ideas.serializers.support import IdeaRatingSerializer
 from ideas.utility.idea import verify_idea
 from rest_framework.permissions import IsAuthenticated
 

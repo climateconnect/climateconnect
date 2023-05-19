@@ -8,7 +8,7 @@ from chat_messages.models import (
     MessageReceiver,
     Participant,
 )
-from climateconnect_api.models import UserProfile, Role
+from climateconnect_api.models import UserProfile
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from django.utils import timezone
 

@@ -6,7 +6,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from climateconnect_api.serializers.user import (
     DonorProfileSerializer,
-    UserProfileStubSerializer,
 )
 import pytz
 import datetime
