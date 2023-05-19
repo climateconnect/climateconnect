@@ -1,3 +1,9 @@
 {
-  "recommendations": ["esbenp.prettier-vscode", "charliermarsh.ruff"]
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "ms-python.python",
+    "charliermarsh.ruff",
+    "tamasfe.even-better-toml"
+  ]
 }

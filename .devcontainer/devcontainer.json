@@ -8,11 +8,12 @@
   "customizations": {
     "vscode": {
       "extensions": [
-		"esbenp.prettier-vscode",
-		"dbaeumer.vscode-eslint",
-		"ms-python.python",
-		"charliermarsh.ruff"
-	]
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "tamasfe.even-better-toml"
+      ]
     }
   },
   "containerEnv": {

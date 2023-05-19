@@ -69,7 +69,7 @@ Run `./install_deps.sh` to install the JavaScript dependencies and the Python de
 #### First Time Setup
 
 1.  Go to backend directory: `cd backend`
-1.  Run `make install` to install all backend libraries.
+1.  Run `pdm install` to install all backend libraries.
 1.  Create `.backend_env` to set environment variables.
     - You can find up-to-date sample env variables in [`backend/local-env-setup.md`](https://github.com/climateconnect/climateconnect/blob/master/backend/local-env-setup.md).
     - For the [Django `SECRET_KEY`](https://docs.djangoproject.com/en/3.1/ref/settings/#std:setting-SECRET_KEY), run `openssl rand -base64 32` to create a 32 char random secret.
