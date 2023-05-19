@@ -21,3 +21,5 @@ jobs:
       # Include `--format=github` to enable automatic inline annotations.
       - name: Run Ruff
         run: ruff check --format=github backend
+      - name: Run Mypy
+        run: mypy backend

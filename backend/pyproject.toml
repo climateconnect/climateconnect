@@ -16,3 +16,10 @@ extend-exclude = '''
 # ^/foo.py  # exclude a file named foo.py in the root of the project (in addition to the defaults)
 ^.*\b(migrations)\b.*$
 '''
+
+[tool.mypy]
+mypy_path = ['.']
+plugins = 'mypy_django_plugin.main'
+
+[tool.django-stubs]
+django_settings_module = "climateconnect_main.settings"
