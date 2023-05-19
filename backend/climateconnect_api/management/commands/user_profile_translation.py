@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 
 from climateconnect_api.models.language import Language
 from climateconnect_api.utility.translation import get_translations
-from climateconnect_api.models import UserProfile, UserProfileTranslation, user
+from climateconnect_api.models import UserProfile, UserProfileTranslation
 
 
 def translate_user_profile(user_profile: UserProfile) -> None:

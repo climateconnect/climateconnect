@@ -8,10 +8,7 @@ from organization.models import (
     OrganizationMember,
 )
 from organization.models.tags import OrganizationTags
-from rest_framework.response import Response
-from rest_framework import status
 from django.utils.translation import gettext as _
-from django.utils.html import format_html
 
 
 def check_organization(organization_id: str) -> Organization:
@@ -101,7 +98,7 @@ def get_organizationtag_name(tag: OrganizationTags, language_code: str) -> str:
     lang_translation_attr = "name_{}_translation".format(language_code)
     if hasattr(tag, lang_translation_attr):
         translation = getattr(tag, lang_translation_attr)
-        if language_code != "en" and translation != None:
+        if language_code != "en" and translation is not None:
             return translation
     return tag.name
 

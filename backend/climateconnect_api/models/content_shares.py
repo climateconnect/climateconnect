@@ -4,6 +4,7 @@ from organization.models.organization import Organization
 from ideas.models.ideas import Idea
 from django.contrib.auth.models import User
 
+
 # Note: Clicking on a specific share button/copying the link or opening a device's native share dialog counts as sharing,
 # but we don't know whether the user follows through with it.
 class ContentShares(models.Model):

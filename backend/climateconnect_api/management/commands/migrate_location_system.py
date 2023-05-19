@@ -53,11 +53,11 @@ def migrate_table(name, num_elements, elements, location_key, unknown_location):
     for element in elements:
         print("City:" + str(element.city) + " country:" + str(element.country))
         locations = Location.objects.filter(city=element.city, country=element.country)
-        if locations.exists() and locations[0].is_formatted == True:
+        if locations.exists() and locations[0].is_formatted is True:
             print("it exists and is formatted!")
             setattr(element, location_key, locations[0])
             element.save()
-        elif element.city == None or element.country == None:
+        elif element.city is None or element.country is None:
             setattr(element, location_key, unknown_location)
             print(
                 "no city and country. assigning unknown location to element "
@@ -78,7 +78,7 @@ def migrate_table(name, num_elements, elements, location_key, unknown_location):
             else:
                 location_object = location_results[0]
                 location = get_location(location_object)
-                if location.is_formatted == False:
+                if location.is_formatted is False:
                     print(location)
                     print("formatting location " + location_object["name"])
                     if not location_object["type"] == "Point":

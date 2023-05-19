@@ -281,7 +281,7 @@ def edit_translation(
         if translation_keys["key"] in passed_translation:
             if (
                 len(passed_translation[translation_keys["key"]]) == 0
-                or db_translation.is_manual_translation == False
+                or db_translation.is_manual_translation is False
             ):
                 if translation_keys["key"] in changed_properties:
                     setattr(
@@ -301,7 +301,7 @@ def edit_translation(
                 )
         elif (
             translation_keys["key"] in changed_properties
-            and db_translation.is_manual_translation == False
+            and db_translation.is_manual_translation is False
         ):
             setattr(
                 db_translation,

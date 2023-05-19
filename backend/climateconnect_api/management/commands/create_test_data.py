@@ -233,7 +233,6 @@ def create_project_test_data(number_of_rows: int):
 
 
 def create_skills():
-
     skills = [
         {"id": 3, "name": "Communication & Marketing", "parent_skill_id": None},
         {"id": 4, "name": "Advertising", "parent_skill_id": 3},

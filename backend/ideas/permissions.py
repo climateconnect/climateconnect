@@ -1,8 +1,6 @@
 from ideas.utility.idea import verify_idea
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
-from ideas.models import Idea
-
 
 class IdeaReadWritePermission(BasePermission):
     def has_permission(self, request, view):

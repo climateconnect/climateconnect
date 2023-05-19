@@ -13,7 +13,6 @@ from django.utils.translation import gettext as _
 from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -73,7 +72,7 @@ class UserAccountSettingsView(APIView):
 
         if "send_newsletter" in request.data:
             for value in email_preference_values:
-                if not value in request.data:
+                if value not in request.data:
                     return Response(
                         {"message": "Required parameter missing"},
                         status=status.HTTP_400_BAD_REQUEST,
@@ -84,8 +83,8 @@ class UserAccountSettingsView(APIView):
             ):
                 register_newsletter_contact(user.email)
             if (
-                user.user_profile.send_newsletter == True
-                and request.data["send_newsletter"] == False
+                user.user_profile.send_newsletter is True
+                and request.data["send_newsletter"] is False
             ):
                 unregister_newsletter_contact(user.email)
             user.user_profile.send_newsletter = request.data["send_newsletter"]
