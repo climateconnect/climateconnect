@@ -36,7 +36,7 @@ def translate_organization(organization: Organization) -> None:
             if "school" in texts:
                 org_translation.school_translation = texts["school"]
             if "about" in texts:
-                org_translation.about = texts["about"]
+                org_translation.about_translation = texts["about"]
             org_translation.save()
             print(
                 "Organization {} translation successful in language {}".format(

@@ -155,7 +155,7 @@ class EditUserProfileSerializer(UserProfileSerializer):
         return obj.biography
 
     class Meta(UserProfileSerializer.Meta):
-        fields = UserProfileSerializer.Meta.fields + ("location", "translations")
+        fields = UserProfileSerializer.Meta.fields + ("location", "translations")# type: ignore
 
 
 class UserProfileMinimalSerializer(serializers.ModelSerializer):
@@ -248,7 +248,7 @@ class DonorProfileSerializer(UserProfileStubSerializer):
     started_donating = serializers.SerializerMethodField()
 
     class Meta(UserProfileSerializer.Meta):
-        fields = UserProfileStubSerializer.Meta.fields + ("started_donating",)
+        fields = UserProfileStubSerializer.Meta.fields + ("started_donating",) # type: ignore
 
     def get_started_donating(self, obj):
         donations = Donation.objects.filter(user=obj.user)

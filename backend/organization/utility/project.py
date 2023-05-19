@@ -1,5 +1,5 @@
 import logging
-from typing import Dict
+from typing import Dict, Optional
 
 from climateconnect_api.models import Skill
 from climateconnect_api.models.language import Language
@@ -13,6 +13,7 @@ from organization.models.tags import ProjectTags
 
 from django.db.models import Q
 from climateconnect_api.models import Role
+from organization.models.translations import ProjectTranslation
 
 import pandas as pd
 
@@ -66,61 +67,36 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
     return project
 
 
-def get_project_helpful_connections(project: Project, language_code: str) -> str:
-    if (
-        language_code != project.language.language_code
-        and project.translation_project.filter(
-            language__language_code=language_code
-        ).exists()
-    ):
-        return project.translation_project.get(
-            language__language_code=language_code
-        ).helpful_connections_translation
+def get_translation(project: Project, language_code: str) -> Optional[ProjectTranslation]:
+    if project.language and language_code != project.language.language_code:
+        return project.translation_project.filter(language__language_code=language_code).first()
+    return None
+
+
+def get_project_helpful_connections(project: Project, language_code: str) -> Optional[list[str]]:
+    if translation := get_translation(project, language_code):
+        return translation.helpful_connections_translation
 
     return project.helpful_connections
 
 
-def get_project_name(project: Project, language_code: str) -> str:
-    if (
-        project.language
-        and language_code != project.language.language_code
-        and project.translation_project.filter(
-            language__language_code=language_code
-        ).exists()
-    ):
-        return project.translation_project.get(
-            language__language_code=language_code
-        ).name_translation
+def get_project_name(project: Project, language_code: str) -> Optional[str]:
+    if translation := get_translation(project, language_code):
+        return translation.name_translation
 
     return project.name
 
 
-def get_project_short_description(project: Project, language_code: str) -> str:
-    if (
-        project.language
-        and language_code != project.language.language_code
-        and project.translation_project.filter(
-            language__language_code=language_code
-        ).exists()
-    ):
-        return project.translation_project.get(
-            language__language_code=language_code
-        ).short_description_translation
+def get_project_short_description(project: Project, language_code: str) -> Optional[str]:
+    if translation := get_translation(project, language_code):
+        return translation.short_description_translation
 
     return project.short_description
 
 
-def get_project_description(project: Project, language_code: str) -> str:
-    if (
-        project.language
-        and language_code != project.language.language_code
-        and project.translation_project.filter(
-            language__language_code=language_code
-        ).exists()
-    ):
-        return project.translation_project.get(
-            language__language_code=language_code
-        ).description_translation
+def get_project_description(project: Project, language_code: str) -> Optional[str]:
+    if translation := get_translation(project, language_code):
+        return translation.description_translation
 
     return project.description
 
@@ -240,7 +216,7 @@ def get_similar_projects(url_slug: str, return_count=5):
         "language",
     )  # project_parent__id 'tag_project' 'skills'
 
-    df = pd.DataFrame.from_dict(target_projects)
+    df = pd.DataFrame.from_dict(target_projects)# type: ignore
 
     # calcaulte skills match %
     # since skills are 1 to Many to projects, we need to group the skills in a list

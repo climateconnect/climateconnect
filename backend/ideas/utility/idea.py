@@ -125,30 +125,22 @@ def idea_translations(
             idea_translation.save()
 
 
-def get_idea_name(idea: Idea, language_code: str) -> str:
-    if (
-        language_code != idea.language.language_code
-        and idea.translate_idea.filter(language__language_code=language_code).exists()
-    ):
-        return (
-            idea.translate_idea.filter(language__language_code=language_code)
-            .first()
-            .name_translation
-        )
+def get_translation(idea: Idea, language_code: str) -> Optional[IdeaTranslation]:
+    if idea.language and language_code != idea.language.language_code:
+        return idea.translate_idea.filter(language__language_code=language_code).first()
+    return None
+
+
+def get_idea_name(idea: Idea, language_code: str) -> Optional[str]:
+    if translation := get_translation(idea, language_code):
+        return translation.name_translation
 
     return idea.name
 
 
-def get_idea_short_description(idea: Idea, language_code: str) -> str:
-    if (
-        language_code != idea.language.language_code
-        and idea.translate_idea.filter(language__language_code=language_code).exists()
-    ):
-        return (
-            idea.translate_idea.filter(language__language_code=language_code)
-            .first()
-            .short_description_translation
-        )
+def get_idea_short_description(idea: Idea, language_code: str) -> Optional[str]:
+    if translation := get_translation(idea, language_code):
+        return translation.short_description_translation
 
     return idea.short_description
 

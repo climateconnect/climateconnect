@@ -114,9 +114,10 @@ class UpdateDestroyIdeaCommentView(APIView):
 
     def verfiy_author_permission(
         self, idea_comment: IdeaComment, user: User
-    ) -> Optional[PermissionDenied]:
+    ) -> None:
         if idea_comment.author_user != user:
             raise PermissionDenied(detail="Cannot update or delete this comment.")
+        
 
     def patch(self, request, url_slug, comment_id):
         idea = verify_idea(url_slug=url_slug)

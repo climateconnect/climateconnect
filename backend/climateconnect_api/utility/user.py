@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Optional
 from climateconnect_api.models import UserProfile, UserProfileTranslation, Language
 
 
@@ -20,15 +20,20 @@ def create_user_profile_translation(
     user_profile_translation.save()
 
 
-def get_user_profile_biography(user_profile: UserProfile, language_code: str) -> str:
-    if (
-        language_code != user_profile.language.language_code
-        and user_profile.profile_translation.filter(
+def get_translation(
+    user_profile: UserProfile, language_code: str
+) -> Optional[UserProfileTranslation]:
+    if language_code != user_profile.language:
+        return user_profile.profile_translation.filter(
             language__language_code=language_code
-        ).exists()
-    ):
-        return user_profile.profile_translation.get(
-            language__language_code=language_code
-        ).biography_translation
+        ).first()
+    return None
+
+
+def get_user_profile_biography(
+    user_profile: UserProfile, language_code: str
+) -> Optional[str]:
+    if translation := get_translation(user_profile, language_code):
+        return translation.biography_translation
 
     return user_profile.biography

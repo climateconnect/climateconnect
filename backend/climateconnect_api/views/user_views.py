@@ -35,7 +35,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from hubs.models.hub import Hub
 from ideas.models.support import IdeaSupporter
 from ideas.serializers.idea import IdeaFromIdeaSupporterSerializer
-from knox.views import LoginView as KnoxLoginView
+from knox.views import LoginView as KnoxLoginView # type: ignore
 from location.models import Location
 from location.utility import get_location, get_location_with_range
 from organization.models.members import OrganizationMember, ProjectMember

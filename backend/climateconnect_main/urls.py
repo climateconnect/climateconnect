@@ -27,7 +27,7 @@ from climateconnect_api.views import (
     donation_views,
     translation_views,
 )
-from knox import views as knox_views
+from knox import views as knox_views # type: ignore
 from django.conf import settings
 from django.conf.urls.static import static
 

@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, cast
 import datetime
 
 from django.core.management.base import BaseCommand
@@ -10,7 +10,7 @@ class Command(BaseCommand):
     help = "Create badges data for users"
 
     def handle(self, *args: Any, **options: Any) -> None:
-        donor_badges = [
+        donor_badges: list[dict[str, Any]] = [
             {
                 "min_duration_in_days": 0,
                 "image": "../frontend/images/donor_badges/badge_1.svg",
@@ -67,7 +67,7 @@ class Command(BaseCommand):
                     name_de=badge["name_de"],
                     image=badge["image"],
                     regular_donor_minimum_duration=datetime.timedelta(
-                        days=badge["min_duration_in_days"]
+                        days=cast(float, badge["min_duration_in_days"])
                     ),
                     is_active=False,
                 )

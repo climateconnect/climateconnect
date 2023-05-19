@@ -1,6 +1,6 @@
 import json
 from django.utils import timezone
-from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer  # type: ignore
 from chat_messages.models import (
     Message,
     MessageParticipants,

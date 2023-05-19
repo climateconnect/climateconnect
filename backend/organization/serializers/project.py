@@ -168,7 +168,7 @@ class EditProjectSerializer(ProjectSerializer):
         return obj.helpful_connections
 
     class Meta(ProjectSerializer.Meta):
-        fields = ProjectSerializer.Meta.fields + ("loc", "translations")
+        fields = ProjectSerializer.Meta.fields + ("loc", "translations") # type: ignore
 
 
 class ProjectParentsSerializer(serializers.ModelSerializer):
@@ -324,7 +324,7 @@ class ProjectSuggestionSerializer(ProjectStubSerializer):
     project_creator = serializers.SerializerMethodField()
 
     class Meta(ProjectStubSerializer.Meta):
-        fields = ProjectStubSerializer.Meta.fields + ("project_creator",)
+        fields = ProjectStubSerializer.Meta.fields + ("project_creator",) # type: ignore
 
     def get_project_creator(self, obj):
         member = ProjectMember.objects.filter(

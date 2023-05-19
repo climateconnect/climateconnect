@@ -1,3 +1,4 @@
+# type: ignore
 from organization.models.status import ProjectStatus
 from organization.models.tags import OrganizationTags
 from climateconnect_api.models.common import Skill

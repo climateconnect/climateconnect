@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Optional
 
 from climateconnect_api.models.language import Language
 
@@ -11,7 +11,7 @@ from organization.models.tags import OrganizationTags
 from django.utils.translation import gettext as _
 
 
-def check_organization(organization_id: str) -> Organization:
+def check_organization(organization_id: str) -> Optional[Organization]:
     try:
         organization = Organization.objects.get(id=int(organization_id))
     except Organization.DoesNotExist:
@@ -19,19 +19,19 @@ def check_organization(organization_id: str) -> Organization:
     return organization
 
 
-def get_organization_name(organization: Organization, language_code: str) -> str:
-    if (
-        organization.language
-        and language_code != organization.language.language_code
-        and organization.translation_org.filter(
+def get_translation(
+    organization: Organization, language_code: str
+) -> Optional[OrganizationTranslation]:
+    if organization.language and language_code != organization.language.language_code:
+        return organization.translation_org.filter(
             language__language_code=language_code
-        ).exists()
-    ):
-        name_translation = (
-            organization.translation_org.filter(language__language_code=language_code)
-            .first()
-            .name_translation
-        )
+        ).first()
+    return None
+
+
+def get_organization_name(organization: Organization, language_code: str) -> str:
+    if translation := get_translation(organization, language_code):
+        name_translation = translation.name_translation
 
         if name_translation and len(name_translation) > 0:
             return name_translation
@@ -41,55 +41,27 @@ def get_organization_name(organization: Organization, language_code: str) -> str
 
 def get_organization_short_description(
     organization: Organization, language_code: str
-) -> str:
-    if (
-        organization.language
-        and language_code != organization.language.language_code
-        and organization.translation_org.filter(
-            language__language_code=language_code
-        ).exists()
-    ):
-        return (
-            organization.translation_org.filter(language__language_code=language_code)
-            .first()
-            .short_description_translation
-        )
+) -> Optional[str]:
+    if translation := get_translation(organization, language_code):
+        return translation.short_description_translation
 
     return organization.short_description
 
 
 def get_organization_get_involved(
     organization: Organization, language_code: str
-) -> str:
-    if (
-        organization.language
-        and language_code != organization.language.language_code
-        and organization.translation_org.filter(
-            language__language_code=language_code
-        ).exists()
-    ):
-        return (
-            organization.translation_org.filter(language__language_code=language_code)
-            .first()
-            .get_involved_translation
-        )
+) -> Optional[str]:
+    if translation := get_translation(organization, language_code):
+        return translation.get_involved_translation
 
     return organization.get_involved
 
 
 def get_organization_about_section(
     organization: Organization, language_code: str
-) -> str:
-    if (
-        organization.language
-        and language_code != organization.language.language_code
-        and organization.translation_org.filter(
-            language__language_code=language_code
-        ).exists()
-    ):
-        return organization.translation_org.get(
-            language__language_code=language_code
-        ).about_translation
+) -> Optional[str]:
+    if translation := get_translation(organization, language_code):
+        return translation.about_translation
 
     return organization.about
 

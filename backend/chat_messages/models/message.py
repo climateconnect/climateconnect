@@ -78,7 +78,7 @@ class MessageParticipants(models.Model):
         verbose_name_plural = "Chats"
         ordering = ["-last_message_at", "-created_at"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.name:
             return 'Chat: "%s"' % self.name
         else:
@@ -210,7 +210,7 @@ class Participant(models.Model):
         help_text="Points to the chat that this user is a part of",
         verbose_name="Chat",
         null=False,
-        blank="False",
+        blank=False,
         on_delete=models.CASCADE,
     )
 

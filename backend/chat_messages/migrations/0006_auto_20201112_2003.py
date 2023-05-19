@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when the user joined the chat created', verbose_name='Created At')),
                 ('updated_at', models.DateTimeField(auto_now=True, help_text="Time when the user's role in the chat updated", verbose_name='Updated At')),
-                ('chat', models.ForeignKey(blank='False', help_text='Points to the chat that this user is a part of', on_delete=django.db.models.deletion.CASCADE, related_name='participant_participants', to='chat_messages.MessageParticipants', verbose_name='Chat')),
+                ('chat', models.ForeignKey(blank='False', help_text='Points to the chat that this user is a part of', on_delete=django.db.models.deletion.CASCADE, related_name='participant_participants', to='chat_messages.MessageParticipants', verbose_name='Chat')), # type: ignore
                 ('role', models.ForeignKey(help_text="Points to the user's role (creator, admin, member)", on_delete=django.db.models.deletion.PROTECT, related_name='participant_role', to='climateconnect_api.Role', verbose_name='Role(permissions)')),
                 ('user', models.ForeignKey(help_text='Points to the user that is part of the chat', on_delete=django.db.models.deletion.CASCADE, related_name='participant_user', to=settings.AUTH_USER_MODEL, verbose_name='User')),
             ],

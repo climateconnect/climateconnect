@@ -11,7 +11,7 @@ def get_field_translation(
 
 
 def get_section_name(faq_question: FaqQuestion, language_code: str) -> str:
-    return get_field_translation("name", language_code, faq_question.section)
+    return get_field_translation("name", language_code, faq_question.section) # type: ignore
 
 
 def get_question(faq_question: FaqQuestion, language_code: str) -> str:

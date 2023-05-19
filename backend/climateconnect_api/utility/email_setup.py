@@ -1,13 +1,13 @@
 import logging
 from datetime import datetime, timedelta
-from typing import List
 
 from django.contrib.auth.models import User
+from django.db.models import QuerySet
 from climateconnect_api.models import UserNotification, UserProfile
 from climateconnect_api.models.notification import EmailNotification
 from climateconnect_api.utility.translation import get_user_lang_code, get_user_lang_url
 from django.conf import settings
-from mailjet_rest import Client
+from mailjet_rest import Client # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -291,7 +291,7 @@ def send_test_mail_to_engineering_email(subject, text_body):
 
 
 def send_email_reminder_for_unread_notifications(
-    user: User, user_notifications: List[UserNotification]
+    user: User, user_notifications: QuerySet[UserNotification]
 ):
     total_notifications = user_notifications.count()
     language_code = get_user_lang_code(user=user)

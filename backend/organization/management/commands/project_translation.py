@@ -7,7 +7,7 @@ from organization.utility.project import get_project_translations
 
 
 def translate_project(project: Project) -> None:
-    data = {
+    data: dict[str, Any] = {
         "name": project.name,
         "short_description": project.short_description,
         "translations": {},

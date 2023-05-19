@@ -1,3 +1,4 @@
+# type: ignore
 from organization.models.organization import Organization
 from climateconnect_api.models.language import Language
 from typing import Any

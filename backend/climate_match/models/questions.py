@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from climateconnect_api.models import Language
 
 
-def upload_question_image(instance: models.QuerySet, filename: str) -> str:
+def upload_question_image(instance: "Question", filename: str) -> str:
     return f"climate_match/questions/{instance.id}/{filename}"
 
 

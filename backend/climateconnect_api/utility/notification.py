@@ -1,7 +1,7 @@
 from asgiref.sync import async_to_sync
 from organization.serializers.project import ProjectNotificationSerializer
 from organization.serializers.organization import OrganizationNotificationSerializer
-from channels.layers import get_channel_layer
+from channels.layers import get_channel_layer # type: ignore
 from chat_messages.models import Participant
 from chat_messages.utility.email import (
     send_group_chat_message_notification_email,

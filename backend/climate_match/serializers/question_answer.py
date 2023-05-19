@@ -1,4 +1,5 @@
-from typing import List
+from typing import Any, Optional
+from uuid import UUID
 
 from climate_match.models import Answer, Question, UserQuestionAnswer
 from climateconnect_api.serializers.common import SkillSerializer
@@ -6,6 +7,7 @@ from django.utils.translation import get_language
 from hubs.models.hub import Hub
 from hubs.serializers.hub import HubClimateMatchSerializer
 from rest_framework import serializers
+from django.contrib.contenttypes.models import ContentType
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -34,33 +36,36 @@ class QuestionAnswerSerializer(serializers.ModelSerializer):
 
     def get_text(self, obj: Question) -> str:
         user_language_code = get_language()
+        assert obj.language
         if obj.language.language_code != user_language_code:
             return (
                 obj.translate_question.filter(
                     language__language_code=user_language_code
                 )
                 .first()
-                .text
+                .text  # type: ignore
             )
         return obj.text
 
     def get_answer_type(self, obj: Question) -> str:
+        assert obj.answer_type
         return obj.answer_type.model
 
-    def get_answers(self, obj: Question) -> List:
+    def get_answers(self, obj: Question) -> Any:
         answers = []
-        resource_mapping = [
+        resource_mapping: list[Any] = [
             {"resource_type": "hub", "filter": {"hub_type": Hub.SECTOR_HUB_TYPE}},
             {"resource_type": "skill", "filter": {"parent_skill": None}},
         ]
 
+        assert obj.answer_type is not None
         if obj.answer_type.model == "answer":
             predefined_answers = obj.answer_question.all()
             return AnswerSerializer(predefined_answers, many=True).data
         else:
             for resource in resource_mapping:
                 if obj.answer_type.model == resource["resource_type"]:
-                    resource_objects = obj.answer_type.get_all_objects_for_this_type(
+                    resource_objects: Any = obj.answer_type.get_all_objects_for_this_type(
                         **resource["filter"]
                     )
                     if resource["resource_type"] == "hub":
@@ -86,12 +91,16 @@ class AnswerSerializer(serializers.ModelSerializer):
 
     def get_text(self, obj: Answer) -> str:
         user_language_code = get_language()
-        if obj.language and obj.language.language_code != user_language_code:
-            return (
-                obj.translate_answer.filter(language__language_code=user_language_code)
-                .first()
-                .text
+        if (
+            obj.language
+            and obj.language.language_code != user_language_code
+            and (
+                translation := obj.translate_answer.filter(
+                    language__language_code=user_language_code
+                ).first()
             )
+        ):
+            return translation.text
 
         return obj.text
 
@@ -117,7 +126,7 @@ class UserQuestionAnswerSerializer(serializers.ModelSerializer):
     def get_answers(self, obj: UserQuestionAnswer):
         answers = []
         for answer in obj.answers.all():
-            resource = answer.resource_type.get_object_for_this_type(
+            resource: ContentType = answer.resource_type.get_object_for_this_type( # type: ignore
                 id=answer.reference_id
             )
             answers.append(
@@ -125,8 +134,9 @@ class UserQuestionAnswerSerializer(serializers.ModelSerializer):
             )
         return answers
 
-    def get_answer_type(self, obj: UserQuestionAnswer) -> str:
+    def get_answer_type(self, obj: UserQuestionAnswer) -> Any:
+        assert obj.question.answer_type
         return obj.question.answer_type.model
 
-    def get_climatematch_token(self, obj: UserQuestionAnswer) -> str:
+    def get_climatematch_token(self, obj: UserQuestionAnswer) -> Optional[UUID]:
         return obj.token

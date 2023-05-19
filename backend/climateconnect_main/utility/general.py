@@ -2,6 +2,7 @@
 import base64
 import io
 import secrets
+from typing import Any
 
 from django.core.files.base import ContentFile
 
@@ -10,7 +11,7 @@ from PIL import Image
 
 
 # source: https://dev.to/ageumatheus/creating-image-from-dataurl-base64-with-pyhton-django-454g
-def get_image_from_data_url(data_url, resize=False, base_width=500):
+def get_image_from_data_url(data_url, resize=False, base_width=500) -> tuple[ContentFile, tuple[str, Any]]:
     # getting the file format and the necessary dataURl for the file
     _format, _dataurl = data_url.split(";base64,")
     # file name and extension

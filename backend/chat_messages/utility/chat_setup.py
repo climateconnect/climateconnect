@@ -1,6 +1,6 @@
 # Python imports
 from ideas.models.ideas import Idea
-from typing import Optional
+from typing import Optional, Union
 import uuid
 from datetime import datetime, timedelta
 
@@ -69,7 +69,7 @@ def create_private_or_group_chat(
             )
 
 
-def check_can_start_chat(user_profile: UserProfile) -> bool:
+def check_can_start_chat(user_profile: UserProfile) -> Union[str, bool]:
     if user_profile.restricted_profile:
         print("forbidden because user profile is restricted")
         return "User profile restricted"

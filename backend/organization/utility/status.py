@@ -1,7 +1,8 @@
+from typing import Optional
 from organization.models import ProjectStatus
 
 
-def get_project_status(status: ProjectStatus, language_code: str) -> str:
+def get_project_status(status: ProjectStatus, language_code: str) -> Optional[str]:
     lang_translation_attr = "name_{}_translation".format(language_code)
     if hasattr(status, lang_translation_attr):
         translation = getattr(status, lang_translation_attr)

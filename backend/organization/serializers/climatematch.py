@@ -8,7 +8,7 @@ class OrganizationSuggestionSerializer(OrganizationSerializer):
     projects = serializers.SerializerMethodField()
 
     class Meta(OrganizationSerializer.Meta):
-        fields = OrganizationSerializer.Meta.fields + ("projects",)
+        fields = OrganizationSerializer.Meta.fields + ("projects",)#type: ignore
 
     def get_projects(self, obj):
         project_ids = obj.project_parent_org.all().values_list("project", flat=True)

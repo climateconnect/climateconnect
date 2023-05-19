@@ -4,18 +4,18 @@ from django.contrib.auth.models import User
 from climateconnect_api.models import UserProfile
 
 
-class UserFactory(factory.DjangoModelFactory):
+class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
 
     is_active = True
 
 
-class UserProfileFactory(factory.DjangoModelFactory):
+class UserProfileFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = UserProfile
 
-    user = factory.SubFactory(UserFactory)
+    user: factory.SubFactory = factory.SubFactory(UserFactory)
     url_slug = "testing"
     image = "profile.png"
     background_image = "background.png"

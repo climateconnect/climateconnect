@@ -1,3 +1,4 @@
+from datetime import timedelta
 from organization.models.members import ProjectMember
 from climateconnect_api.models.language import Language
 from organization.models.tags import ProjectTagging, ProjectTags, OrganizationTags
@@ -193,7 +194,7 @@ def create_project_test_data(number_of_rows: int):
             # timeago would round up to 2 years, when a project
             # is only 1 year and 1 day old. This should create the
             # UTC timestamp, e.g. 2020-02-04T01:33:45.276997Z
-            one_year_and_one_day_ago = timezone.now() - timezone.timedelta(days=366)
+            one_year_and_one_day_ago = timezone.now() - timedelta(days=366)
 
             project = Project.objects.create(
                 name=name,
@@ -409,7 +410,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser) -> None:
         parser.add_argument("--number_of_rows", dest="number_of_rows", type=int)
 
-    def handle(self, *args, **options) -> str:
+    def handle(self, *args, **options) -> None:
         number_of_rows = options["number_of_rows"]
 
         create_language_test_data()
