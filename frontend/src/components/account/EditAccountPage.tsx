@@ -802,7 +802,6 @@ export default function EditAccountPage({
                     <Chip
                       color="secondary"
                       label={typeObject.name}
-                      color="secondary"
                       key={typeObject.key}
                       className={classes.chip}
                       onDelete={() => handleTypeDelete(typeObject.key)}
