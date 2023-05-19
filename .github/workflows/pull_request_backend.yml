@@ -10,7 +10,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
-      - name: Install dependencies
+      - name: Install ruff
         run: |
           python -m pip install --upgrade pip
           pip install ruff
@@ -28,7 +28,7 @@ jobs:
       - name: Run Ruff
         run: ruff check --format=github backend
       - name: Install dependencies
-        run: pdm install
+        run: pdm sync
         working-directory: backend
       - name: Run Mypy
         run: pdm run mypy .
