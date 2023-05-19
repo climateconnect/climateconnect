@@ -8,8 +8,8 @@ curl -sSL https://raw.githubusercontent.com/pdm-project/pdm/main/install-pdm.py 
 # Go to backend folder
 cd backend
 
-# install dependencies
-pdm install
+# install dependencies (no dev dependencies)
+pdm install --prod
 
 # activate venv
 $(pdm venv activate)
