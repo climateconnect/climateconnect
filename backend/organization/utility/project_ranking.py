@@ -18,14 +18,18 @@ from organization.models import (
 class ProjectRanking:
     def __init__(self, user_profile: Optional[UserProfile] = None):
         self.user_profile = user_profile
+    
+    def _randomize(self) -> int:
+        # a random number gives a boost to different projects to get the top of the list
+        return int(random.triangular(1, 100))
 
     def _weights(self) -> Dict:
         return {
-            'total_comments': 0.6,
+            'total_comments': 0.5,
             'total_likes': 0.5,
-            'total_followers': 0.7,
-            'last_project_comment': 0.9,
-            'last_project_like': 0.9,
+            'total_followers': 0.5,
+            'last_project_comment': 0.7,
+            'last_project_like': 0.8,
             'last_project_follower': 0.9,
             'total_tags': 0.1,
             'location_weight': 0.1
@@ -51,9 +55,6 @@ class ProjectRanking:
         total_likes: int
     ) -> int:
         weights =  self._weights()
-        # a random number gives a boost to different projects to get the top of the list
-        random_number = int(random.triangular(1, 100))
-        print('dip', random_number)
 
         last_project_comment = ProjectComment.objects.filter(
             project_id=project_id
@@ -104,8 +105,4 @@ class ProjectRanking:
                 total_likes=F('total_likes')
             )
         ).order_by('-rank', '-updated_at', '-created_at')
-
-        # ).annotate(
-        #     rank=Count(100))
-        # ).order_by('updated_at', 'created_at')
         return projects
