@@ -159,6 +159,9 @@ const theme = createTheme(coreTheme, {
           style: {
             background: "#e0e0e0",
             color: coreTheme.palette.secondary.main,
+            "&:hover": {
+              background: "#cacaca",
+            },
           },
         },
       ],

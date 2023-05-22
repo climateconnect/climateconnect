@@ -108,14 +108,14 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
       whitenTransparentPixels(image);
       image.toBlob(async function (blob) {
         const imageUrl = URL.createObjectURL(blob!);
-        const thumbnailUrl = await getResizedImage(
+        const thumbnailImageUrl = await getResizedImage(
           URL.createObjectURL(blob!),
           120,
           120,
           "image/jpeg"
         );
 
-        const image = { imageUrl, thumbnailUrl };
+        const image = { imageUrl, thumbnailImageUrl };
         setAvatarImage(image);
         props.onAvatarChanged && props.onAvatarChanged(image);
       }, "image/jpeg");

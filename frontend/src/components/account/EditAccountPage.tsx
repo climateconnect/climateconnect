@@ -800,8 +800,8 @@ export default function EditAccountPage({
                     infoMetadata
                   ).map((typeObject) => (
                     <Chip
-                      label={typeObject.name}
                       color="secondary"
+                      label={typeObject.name}
                       key={typeObject.key}
                       className={classes.chip}
                       onDelete={() => handleTypeDelete(typeObject.key)}
