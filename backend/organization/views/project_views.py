@@ -1,6 +1,6 @@
 import logging
 import traceback
-from organization.utility.project_ranking import ProjectRanking
+from django.db.models import Count
 from organization.utility.follow import (
     get_list_of_project_followers,
     set_user_following_project,
@@ -137,7 +137,6 @@ class ListProjectsView(ListAPIView):
     search_fields = ["name", "translation_project__name_translation"]
     filterset_fields = ["collaborators_welcome"]
     pagination_class = ProjectsPagination
-    serializer_class = ProjectStubSerializer
 
     def get_queryset(self):
         user = self.request.user
@@ -145,7 +144,17 @@ class ListProjectsView(ListAPIView):
         if user.is_authenticated and user.user_profile:
             user_profile = user.user_profile
         # Get project ranking
-        projects = ProjectRanking(user_profile=user_profile).ranked_projects()
+        projects = (
+            Project.objects.filter(
+                is_draft=False,
+                is_active=True,
+            )
+            .annotate(
+                total_comments=Count("project_comment", distinct=True),
+                total_likes=Count("project_liked", distinct=True),
+                total_followers=Count("project_following", distinct=True),
+            )
+        )
 
         if "hub" in self.request.query_params:
             hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
@@ -270,7 +279,10 @@ class ListProjectsView(ListAPIView):
                 country=self.request.query_params.get("country")
             )
             projects = projects.filter(loc__in=location_ids)
-        return projects
+
+        projects = sorted(projects, key=lambda project: project.ranking)
+        serializer = ProjectStubSerializer(projects, many=True)
+        return serializer.data
 
 
 class CreateProjectView(APIView):

@@ -1,3 +1,4 @@
+from organization.utility.project_ranking import ProjectRanking
 from location.models import Location
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
@@ -195,6 +196,16 @@ class Project(models.Model):
         null=True,
         blank=True,
     )
+
+    @property
+    def ranking(self) -> int:
+        return ProjectRanking().calculate_ranking(
+            location=self.loc,
+            project_id=self.id,
+            total_comments=self.total_comments,
+            total_followers=self.total_followers,
+            total_likes=self.total_likes
+        )
 
     class Meta:
         app_label = "organization"
