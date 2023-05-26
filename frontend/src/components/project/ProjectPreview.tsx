@@ -43,6 +43,7 @@ const useStyles = makeStyles((theme) => {
       overflow: "hidden",
       lineHeight: 1.5,
       fontSize: 15,
+      color: "rgba(0, 0, 0, 0.87)",
       ["&span"]: {
         whiteSpace: "nowrap",
       },

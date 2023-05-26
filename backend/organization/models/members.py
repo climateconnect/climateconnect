@@ -147,7 +147,6 @@ class OrganizationMember(models.Model):
 
 
 class MembershipRequests(models.Model):
-
     user = models.ForeignKey(
         User,
         verbose_name="Requesting user",

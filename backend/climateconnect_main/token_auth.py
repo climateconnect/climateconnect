@@ -1,6 +1,5 @@
 from channels.auth import AuthMiddlewareStack
 from django.contrib.auth.models import AnonymousUser
-from django.db import close_old_connections
 from knox.auth import TokenAuthentication
 from channels.sessions import CookieMiddleware
 from rest_framework.exceptions import AuthenticationFailed
@@ -35,6 +34,5 @@ class TokenAuthMiddleware:
         return self.inner(scope)
 
 
-TokenAuthMiddlewareStack = lambda inner: CookieMiddleware(
-    TokenAuthMiddleware(AuthMiddlewareStack(inner))
-)
+def TokenAuthMiddlewareStack(inner):
+    return CookieMiddleware(TokenAuthMiddleware(AuthMiddlewareStack(inner)))

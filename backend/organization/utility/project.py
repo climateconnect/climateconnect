@@ -129,7 +129,7 @@ def get_projecttag_name(tag: ProjectTags, language_code: str) -> str:
     lang_translation_attr = "name_{}_translation".format(language_code)
     if hasattr(tag, lang_translation_attr):
         translation = getattr(tag, lang_translation_attr)
-        if language_code != "en" and translation != None:
+        if language_code != "en" and translation is not None:
             return translation
     return tag.name
 

@@ -6,6 +6,7 @@ import ContactAmbassadorButton from "../hub/ContactAmbassadorButton";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import GroupIcon from "@mui/icons-material/Group";
+import DateRangeRoundedIcon from "@mui/icons-material/DateRangeRounded";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -28,6 +29,7 @@ export default function MobileBottomMenu({
   const type_icons = {
     projects: AssignmentIcon,
     organizations: GroupIcon,
+    events: DateRangeRoundedIcon, // TODO: after updating material-icon to v5+, replace with "CalendarMonthRoundedIcon"
     members: AccountCircleIcon,
     ideas: EmojiObjectsIcon,
   };

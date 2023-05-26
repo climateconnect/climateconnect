@@ -1,8 +1,7 @@
-import React from "react";
-
 import makeStyles from "@mui/styles/makeStyles";
+import { Theme } from "@mui/material";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme>((theme) => ({
   subtitleWithIcon: {
     display: "flex",
     alignItems: "center",
@@ -31,7 +30,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SubTitleWithContent({ subTitleIcon, subtitle, content }) {
+export default function SubTitleWithContent({
+  subTitleIcon,
+  subtitle,
+  content,
+}: {
+  subTitleIcon?: { icon: any };
+  subtitle: string;
+  content: string;
+}) {
   const classes = useStyles();
   return (
     <>

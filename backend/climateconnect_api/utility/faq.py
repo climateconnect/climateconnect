@@ -1,4 +1,3 @@
-from xml.dom.minidom import TypeInfo
 from climateconnect_api.models.faq import FaqQuestion
 
 

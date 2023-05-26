@@ -1,7 +1,7 @@
 from climateconnect_api.models import UserProfile
 from climateconnect_api.models.donation import Donation
 from climateconnect_api.models.user import UserProfileTranslation
-from climateconnect_api.serializers.badge import BadgeSerializer, DonorBadgeSerializer
+from climateconnect_api.serializers.badge import BadgeSerializer
 from climateconnect_api.serializers.common import (
     AvailabilitySerializer,
     SkillSerializer,
@@ -12,7 +12,6 @@ from climateconnect_api.utility.user import get_user_profile_biography
 from django.conf import settings
 from django.utils.translation import get_language
 from rest_framework import serializers
-from rest_framework.fields import SerializerMethodField
 
 
 class PersonalProfileSerializer(serializers.ModelSerializer):
@@ -91,6 +90,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "url_slug",
             "image",
             "background_image",
+            "thumbnail_image",  # I had to add this to get the change to it being set to null when restting the avatar
             "biography",
             "is_profile_verified",
             "availability",
@@ -111,7 +111,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return obj.user.last_name
 
     def get_location(self, obj):
-        if obj.location == None:
+        if obj.location is None:
             return None
         return obj.location.name
 
@@ -139,7 +139,7 @@ class EditUserProfileSerializer(UserProfileSerializer):
         if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
             return {"city": obj.location.city, "country": obj.location.country}
         else:
-            if obj.location == None:
+            if obj.location is None:
                 return None
             return obj.location.name
 
@@ -231,7 +231,7 @@ class UserProfileStubSerializer(serializers.ModelSerializer):
         return obj.user.last_name
 
     def get_location(self, obj):
-        if obj.location == None:
+        if obj.location is None:
             return None
         return obj.location.name
 

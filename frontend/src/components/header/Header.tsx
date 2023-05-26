@@ -36,9 +36,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import SettingsIcon from "@mui/icons-material/Settings";
 import noop from "lodash/noop";
 import React, { useContext, useEffect, useState } from "react";
-import { getStaticPageLinks } from "../../../public/data/getStaticPageLinks";
-
-// Relative imports
+import { getStaticPageLinks } from "../../../public/data/getStaticPageLinks"; // Relative imports
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -50,6 +48,7 @@ import ProfileBadge from "../profile/ProfileBadge";
 import DropDownButton from "./DropDownButton";
 import LanguageSelect from "./LanguageSelect";
 import StaticPageLinks from "./StaticPageLinks";
+import { HeaderProps } from "./types";
 
 type StyleProps = {
   transparentHeader?: boolean;
@@ -57,6 +56,7 @@ type StyleProps = {
   background?: string;
   isStaticPage?: boolean;
   isHubPage?: boolean;
+  isLocationHub?: boolean;
 };
 
 const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
@@ -101,6 +101,12 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
+      [theme.breakpoints.down("lg")]: {
+        padding: theme.spacing(2),
+      },
+      [theme.breakpoints.down("md")]: {
+        padding: `${theme.spacing(0.8)} ${theme.spacing(2)}`,
+      },
     },
     logoLink: {
       [theme.breakpoints.down("md")]: {
@@ -110,12 +116,29 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
         minWidth: "1.3rem",
       },
     },
-    logo: {
+    // props.isHubPage
+    //   ? {
+    //       [theme.breakpoints.down("sm")]: {
+    //         flex: `0.5 1 auto`,
+    //         width: "calc(1.1vw + 1.3em)",
+    //         minWidth: "1.3rem",
+    //       },
+    //     }
+    //   : {
+    //       [theme.breakpoints.down("sm")]: {
+    //         flex: `0 1 auto`,
+    //         width: "calc(1.1vw + 1.3em)",
+    //         maxWidth: "2.3rem",
+    //         minWidth: "1.3rem",
+    //       },
+    //     },
+    logo: (props) => ({
       [theme.breakpoints.down("md")]: {
-        height: "auto",
+        height: props.isLocationHub ? 35 : "auto",
       },
       height: 60,
-    },
+      maxWidth: 180,
+    }),
     buttonMarginLeft: {
       marginLeft: theme.spacing(1),
     },
@@ -184,13 +207,17 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(2),
     },
+    languageSelectMobile: {
+      display: "flex",
+      justifyContent: "center",
+    },
   };
 });
 
-const getLinks = (path_to_redirect, texts) => [
+const getLinks = (path_to_redirect, texts, isLocationHub) => [
   {
     href: "/browse",
-    text: texts.browse,
+    text: isLocationHub ? texts.projects_worldwide : texts.browse,
     iconForDrawer: HomeIcon,
     showJustIconUnderSm: HomeIcon,
   },
@@ -210,6 +237,7 @@ const getLinks = (path_to_redirect, texts) => [
     hideDesktopIconUnderSm: true,
     vanillaIfLoggedOut: true,
     hideOnStaticPages: true,
+    alwaysDisplayDirectly: "loggedIn",
   },
   {
     href: "/share",
@@ -219,10 +247,10 @@ const getLinks = (path_to_redirect, texts) => [
     isFilledInHeader: true,
     className: "shareProjectButton",
     vanillaIfLoggedOut: true,
+    hideOnMediumScreen: isLocationHub,
   },
   {
     type: "languageSelect",
-    alwaysDisplayDirectly: true,
   },
   {
     type: "notificationsButton",
@@ -303,13 +331,16 @@ export default function Header({
   transparentHeader,
   background,
   isHubPage,
-}: any) {
+  hubName,
+  isLocationHub,
+}: HeaderProps) {
   const classes = useStyles({
     fixedHeader: fixedHeader,
     transparentHeader: transparentHeader,
     isStaticPage: isStaticPage,
     background: background,
     isHubPage: isHubPage,
+    isLocationHub: isLocationHub,
   });
 
   const { user, signOut, notifications, pathName, locale } = useContext(UserContext);
@@ -317,7 +348,7 @@ export default function Header({
   const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
-  const LINKS = getLinks(pathName, texts);
+  const LINKS = getLinks(pathName, texts, isLocationHub);
   const toggleShowNotifications = (event) => {
     if (!anchorEl) setAnchorEl(event.currentTarget);
     else setAnchorEl(null);
@@ -327,10 +358,26 @@ export default function Header({
   const onNotificationsClose = () => setAnchorEl(null);
 
   const getLogo = () => {
+    let imageUrl = "/images";
+    if (isHubPage && hubName) {
+      imageUrl += `/hub_logos/ch_${hubName.toLowerCase()}_logo.svg`;
+    } else {
+      imageUrl = loadDefaultLogo(transparentHeader, isMediumScreen);
+    }
+
+    return imageUrl;
+  };
+
+  const loadFallbackLogo = (
+    ev // TODO: implementing better with re-rendering after screen size change
+  ) => (ev.target.src = loadDefaultLogo(transparentHeader, isMediumScreen));
+
+  const loadDefaultLogo = (transparentHeader?: boolean, isMediumScreen?: boolean): string => {
     if (isMediumScreen) {
       return transparentHeader ? "/images/logo_white_no_text.svg" : "/images/logo_no_text.svg";
+    } else {
+      return transparentHeader ? "/images/logo_white.png" : "/images/logo.png";
     }
-    return transparentHeader ? "/images/logo_white.png" : "/images/logo.png";
   };
 
   const logo = getLogo();
@@ -361,9 +408,14 @@ export default function Header({
     >
       <Container className={classes.container}>
         <Link href={localePrefix + "/"} className={classes.logoLink} underline="hover">
-          <img src={logo} alt={texts.climate_connect_logo} className={classes.logo} />
+          <img
+            src={logo}
+            alt={texts.climate_connect_logo}
+            className={classes.logo}
+            onError={loadFallbackLogo}
+          />
         </Link>
-        {isNarrowScreen ? (
+        {isNarrowScreen || (isLocationHub && isMediumScreen) ? (
           <NarrowScreenLinks
             loggedInUser={user}
             handleLogout={signOut}
@@ -534,7 +586,7 @@ function NarrowScreenLinks({
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
   const linksOutsideDrawer = LINKS.filter(
     (link) =>
-      link.alwaysDisplayDirectly &&
+      link.alwaysDisplayDirectly === true &&
       !(loggedInUser && link.onlyShowLoggedOut) &&
       !(!loggedInUser && link.onlyShowLoggedIn)
   );
@@ -634,23 +686,30 @@ function NarrowScreenLinks({
           disableBackdropTransition={true}
         >
           <List /*TODO(unused) styles={{ height: "100vh" }} */>
+            <ListItem className={classes.languageSelectMobile}>
+              <LanguageSelect transparentHeader={transparentHeader} />
+            </ListItem>
             {LINKS.filter(
               (link) =>
-                !link.alwaysDisplayDirectly &&
+                (!link.alwaysDisplayDirectly ||
+                  !(loggedInUser && link.alwaysDisplayDirectly === "loggedIn")) &&
                 !(loggedInUser && link.onlyShowLoggedOut) &&
                 !(!loggedInUser && link.onlyShowLoggedIn)
             ).map((link, index) => {
               const Icon = link.iconForDrawer;
-              return (
-                <Link href={localePrefix + link.href} key={index} underline="hover">
-                  <ListItem button component="a" onClick={closeDrawer}>
-                    <ListItemIcon>
-                      <Icon color="primary" />
-                    </ListItemIcon>
-                    <ListItemText primary={link.text} />
-                  </ListItem>
-                </Link>
-              );
+              console.log(link);
+              if (link.type !== "languageSelect") {
+                return (
+                  <Link href={localePrefix + link.href} key={index} underline="hover">
+                    <ListItem button component="a" onClick={closeDrawer}>
+                      <ListItemIcon>
+                        <Icon color="primary" />
+                      </ListItemIcon>
+                      <ListItemText primary={link.text} />
+                    </ListItem>
+                  </Link>
+                );
+              }
             })}
             {loggedInUser &&
               getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts }).map((link, index) => {

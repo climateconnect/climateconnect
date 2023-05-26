@@ -1,10 +1,10 @@
-from typing import Dict, List
+from typing import List
 
-from climate_match.models import Answer, AnswerMetaData, Question, UserQuestionAnswer
+from climate_match.models import Answer, Question, UserQuestionAnswer
 from climateconnect_api.serializers.common import SkillSerializer
 from django.utils.translation import get_language
 from hubs.models.hub import Hub
-from hubs.serializers.hub import HubClimateMatchSerializer, HubStubSerializer
+from hubs.serializers.hub import HubClimateMatchSerializer
 from rest_framework import serializers
 
 
@@ -60,7 +60,6 @@ class QuestionAnswerSerializer(serializers.ModelSerializer):
         else:
             for resource in resource_mapping:
                 if obj.answer_type.model == resource["resource_type"]:
-
                     resource_objects = obj.answer_type.get_all_objects_for_this_type(
                         **resource["filter"]
                     )

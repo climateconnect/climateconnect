@@ -1,6 +1,5 @@
 from django.utils.translation import get_language
 from climateconnect_api.utility.translation import translate_text
-from django.conf import settings
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny

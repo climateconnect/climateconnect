@@ -27,10 +27,11 @@ Make sure you have the [Remote Development Extension Pack](https://marketplace.v
 1. Run the command "Reopen in Container"
 
    ![](doc/devcontainer-reopen.png)
+
 1. Wait for it to be done setting up the Dev Container and running the setup scripts. This will take 1-5 minutes the first time and 10 seconds after that. It should look something like this:
    ![](doc/devcontainer-done.png)
 1. Start the frontend dev server using `cd frontend && yarn dev`
-1. Start the backend server using `cd backend && make start`. If you get a "Django is not installed" error run `Ctrl+Shift+P` (or `Cmd+Shift+P`) "Select Python interpreter" -> Recommended so it uses the Python venv.
+1. Start the backend server using `cd backend && make start`. If you get a "Django is not installed" error run `Ctrl+Shift+P` (or `Cmd+Shift+P`) "Python: Select interpreter" -> Recommended so it uses the Python venv. Then reopen your vscode terminal to apply the change. `which python3` should show `backend/.venv/bin/python` now.
 1. Open http://localhost:3000
 
 You can get a Redis REPL using `redis-cli -h redis` and a PostgreSQL REPL using `psql`.
@@ -142,7 +143,7 @@ Or a specific test file or test class:
 python manage.py test <file_path> or <file_path + class_name>
 ```
 
-For linting, we use [flake8](https://flake8.pycqa.org/en/latest/). Lint with
+For linting, we use [ruff](https://ruff.rs). Lint with
 
 ```sh
 make lint

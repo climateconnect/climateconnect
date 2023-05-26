@@ -5,7 +5,6 @@ from organization.models import (
     OrganizationMember,
     Project,
     ProjectMember,
-    ProjectParents,
 )
 from climateconnect_api.models import Role
 from django.db.models import Q

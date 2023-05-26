@@ -178,6 +178,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         name: values.organizationname,
         parentorganization: values.parentorganizationname,
         location: parseLocation(location),
+        types: values.types,
       });
       /* This is required in the case that the user first inputs a name that is taken 
       then later submits with a valid name. Should they then edit the name to another taken name in the detailed view (German page)
@@ -232,7 +233,6 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
   const handleSetOrganizationInfo = (newOrganizationData) => {
     setOrganizationInfo({ ...setOrganizationInfo, ...newOrganizationData });
   };
-
   const handleDetailledInfoSubmit = async (account) => {
     //If the language is not language, short circuit and allow users to check the english translations for their texts
 
@@ -339,7 +339,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
     );
   else if (curStep === "basicorganizationinfo")
     return (
-      <Layout title={texts.create_an_organization}>
+      <WideLayout title={texts.create_an_organization}>
         <EnterBasicOrganizationInfo
           errorMessage={errorMessages.basicOrganizationInfo}
           handleSubmit={handleBasicInfoSubmit}
@@ -349,7 +349,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           tagOptions={tagOptions}
         />
-      </Layout>
+      </WideLayout>
     );
   else if (curStep === "detailledorganizationinfo")
     return (

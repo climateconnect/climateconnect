@@ -21,12 +21,12 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 10,
     right: -34.75,
     color: theme.palette.primary.main,
-    background: "rgba(0,0,0,0.1)",
+    background: "#e6e6e6",
     padding: 6,
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
     "&:hover": {
-      background: "rgba(0,0,0,0.15)",
+      background: "#d6d6d6",
     },
   },
   fixedPosition: {

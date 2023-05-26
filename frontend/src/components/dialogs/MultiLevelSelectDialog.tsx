@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -19,14 +18,16 @@ export default function MultiLevelSelectDialog({
 }: any) {
   /**
    * When clicking "Save" we want to apply the filters,
-   * update the persisted URL, refetch the data,
+   * update the persisted URL, re-fetch the data,
    * and close the dialog.
    */
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
 
-  const applySkills = () => {
-    if (onSave) onSave(selectedItems);
+  const applySkills = (shouldSave: boolean) => {
+    if (onSave && shouldSave) {
+      onSave(selectedItems);
+    }
     onClose(selectedItems);
   };
 
@@ -50,8 +51,8 @@ export default function MultiLevelSelectDialog({
   return (
     <GenericDialog
       applyText={texts.save}
-      onApply={applySkills}
-      onClose={onClose}
+      onApply={() => applySkills(true)}
+      onClose={() => applySkills(false)}
       open={open}
       title={title ? title : texts.add + " " + itemNamePlural}
       topBarFixed

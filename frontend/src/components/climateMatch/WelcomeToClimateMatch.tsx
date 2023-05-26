@@ -99,6 +99,7 @@ export default function WelcomeToClimateMatch({
   goToNextStep,
   location,
   hasDoneClimateMatch,
+  fromHub,
   isLoading,
 }: any) {
   const bottomRef = useRef(null);
@@ -144,7 +145,10 @@ export default function WelcomeToClimateMatch({
       <Container className={`${classes.buttonBar} ${!unfixButtonBar && classes.fixedOnMobile}`}>
         <div className={classes.buttonBarLeft}>
           {hasDoneClimateMatch && (
-            <Button href={`/${locale}/climatematchresults`} className={classes.lastResultButton}>
+            <Button
+              href={`/${locale}/climatematchresults?from_hub=${fromHub}`}
+              className={classes.lastResultButton}
+            >
               <RestoreIcon className={classes.lastResultIcon} />
               {texts.your_last_result}
             </Button>

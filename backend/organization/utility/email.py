@@ -4,10 +4,7 @@ from organization.utility.project import get_project_name
 from organization.utility.organization import get_organization_name
 
 
-from organization.models.translations import OrganizationTranslation, ProjectTranslation
-
-from climateconnect_api.models.user import UserProfile
-from climateconnect_api.utility.email_setup import get_template_id, send_email
+from climateconnect_api.utility.email_setup import send_email
 from climateconnect_api.utility.translation import get_user_lang_code, get_user_lang_url
 from django.conf import settings
 from mailjet_rest import Client
