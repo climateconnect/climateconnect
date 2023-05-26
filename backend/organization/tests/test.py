@@ -10,7 +10,6 @@ from climateconnect_api.factories import UserFactory
 
 
 class TestUserProjects(APITestCase):
-
     def setUp(self):
         print("Test !!! 💜")
         self.user = UserFactory(username="fnayouseif+001@gmail.com", password="123456")
