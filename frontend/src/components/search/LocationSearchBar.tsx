@@ -75,7 +75,7 @@ export default function LocationSearchBar({
     (async () => {
       if (searchValue) {
         const config = {
-          method: "get",
+          method: "GET",
           mode: "no-cors",
           referrerPolicy: "origin",
         };

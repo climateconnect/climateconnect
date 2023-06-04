@@ -68,7 +68,7 @@ export default function ManageProjectMembers({
     const allChangedMembers = getAllChangedMembers();
     return Promise.all(
       allChangedMembers.map((m) => {
-        if (m.operation === "DELETE") deleteMember(m, locale);
+        if (m.operation === "delete") deleteMember(m, locale);
         if (m.operation === "update") updateMember(m, locale);
         if (m.operation === "create") {
           createMembers(m.team_members, locale);
