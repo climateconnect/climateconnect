@@ -46,7 +46,7 @@ export default function AutoCompleteSearchBar({
       if (searchValue) {
         try {
           const response = await apiRequest({
-            method: "GET",
+            method: "get",
             url: (baseUrl + searchValue).replace(process.env.API_URL!, ""),
             locale: locale,
           });

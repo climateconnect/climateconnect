@@ -168,7 +168,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       }
       const url = `/api/look_up_organization/?search=${values.organizationname}`;
       const resp = await apiRequest({
-        method: "GET",
+        method: "get",
         url: url,
         locale: locale,
       });
@@ -298,7 +298,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
 
   const makeCreateOrganizationRequest = (organizationToSubmit) => {
     apiRequest({
-      method: "POST",
+      method: "post",
       url: "/api/create_organization/",
       payload: organizationToSubmit,
       token: token,
@@ -447,7 +447,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
 const getRolesOptions = async (token, locale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/roles/",
       token: token,
       locale: locale,
@@ -466,7 +466,7 @@ const getRolesOptions = async (token, locale) => {
 async function getTags(token: string | undefined, locale: any) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/organizationtags/",
       token: token,
       locale: locale,

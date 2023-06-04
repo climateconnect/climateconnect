@@ -131,7 +131,7 @@ export default function EditOrganizationRoot({
           translations
         );
       apiRequest({
-        method: "PATCH",
+        method: "patch",
         url: "/api/organizations/" + encodeURI(organization.url_slug) + "/",
         payload: payload,
         token: token,
@@ -269,7 +269,7 @@ export default function EditOrganizationRoot({
 async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/organizations/" + organizationUrl + "/",
       token: token,
       locale: locale,

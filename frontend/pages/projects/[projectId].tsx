@@ -262,7 +262,7 @@ export default function ProjectPage({
 async function getProjectByIdIfExists(projectUrl, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/projects/" + projectUrl + "/",
       token: token,
       locale: locale,
@@ -280,7 +280,7 @@ async function getProjectByIdIfExists(projectUrl, token, locale) {
 async function getUsersInteractionWithProject(projectUrl, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/projects/" + projectUrl + "/my_interactions/",
       token: token,
       locale: locale,
@@ -298,7 +298,7 @@ async function getUsersInteractionWithProject(projectUrl, token, locale) {
 async function getPostsByProject(projectUrl, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/projects/" + projectUrl + "/posts/",
       token: token,
       locale: locale,
@@ -316,7 +316,7 @@ async function getPostsByProject(projectUrl, token, locale) {
 async function getCommentsByProject(projectUrl, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/projects/" + projectUrl + "/comments/",
       token: token,
       locale: locale,
@@ -334,7 +334,7 @@ async function getCommentsByProject(projectUrl, token, locale) {
 async function getProjectMembersByIdIfExists(projectUrl, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/projects/" + projectUrl + "/members/",
       locale: locale,
     });
@@ -351,7 +351,7 @@ async function getProjectMembersByIdIfExists(projectUrl, locale) {
 async function getSimilarProjects(projectUrl, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/projects/" + projectUrl + "/similar/",
       locale: locale,
     });

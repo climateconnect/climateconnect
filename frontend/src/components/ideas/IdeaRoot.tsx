@@ -269,7 +269,7 @@ export default function IdeaRoot({
     };
     try {
       const response = await apiRequest({
-        method: "POST",
+        method: "post",
         url: `/api/ideas/${idea.url_slug}/ratings/`,
         payload: payload,
         token: token,
@@ -424,7 +424,7 @@ export default function IdeaRoot({
 const getUserRatingFromServer = async (idea, token, locale) => {
   try {
     const response = await apiRequest({
-      method: "GET",
+      method: "get",
       url: `/api/ideas/${idea.url_slug}/my_rating/`,
       token: token,
       locale: locale,
@@ -442,7 +442,7 @@ const getIdeaCommentsFromServer = async (idea, token, locale) => {
   console.log("Getting idea comments!");
   try {
     const response = await apiRequest({
-      method: "GET",
+      method: "get",
       url: `/api/ideas/${idea.url_slug}/comments/`,
       locale: locale,
     });
@@ -455,7 +455,7 @@ const getIdeaCommentsFromServer = async (idea, token, locale) => {
 const getHasJoinedIdea = async (idea, token, locale) => {
   try {
     const response = await apiRequest({
-      method: "GET",
+      method: "get",
       url: `/api/ideas/${idea.url_slug}/have_i_joined/`,
       token: token,
       locale: locale,

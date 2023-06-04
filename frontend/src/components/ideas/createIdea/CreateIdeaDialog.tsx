@@ -112,7 +112,7 @@ export default function CreateIdeaDialog({
       setWaitingForCreation(true);
       const payload = await parseIdeaForCreateRequest(idea, locale);
       const response = await apiRequest({
-        method: "POST",
+        method: "post",
         url: "/api/create_idea/",
         payload: payload,
         token: token,

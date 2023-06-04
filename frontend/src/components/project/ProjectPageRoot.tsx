@@ -183,7 +183,7 @@ export default function ProjectPageRoot({
 
     try {
       await apiRequest({
-        method: "POST",
+        method: "post",
         url: `/api/projects/${strippedProjectName}/request_membership/${user.url_slug}/`,
         payload: {
           message: "Would like to join the project!",
@@ -264,7 +264,7 @@ export default function ProjectPageRoot({
   const leaveProject = async () => {
     try {
       const resp = await apiRequest({
-        method: "POST",
+        method: "post",
         url: "/api/projects/" + project.url_slug + "/leave/",
         payload: {},
         token: token,
@@ -309,7 +309,7 @@ export default function ProjectPageRoot({
   const toggleFollowProject = () => {
     handleFollow(isUserFollowing, false, true);
     apiRequest({
-      method: "POST",
+      method: "post",
       url: "/api/projects/" + project.url_slug + "/set_follow/",
       payload: { following: !isUserFollowing },
       token: token,
@@ -342,7 +342,7 @@ export default function ProjectPageRoot({
   const toggleLikeProject = () => {
     handleLike(isUserLiking, false, true);
     apiRequest({
-      method: "POST",
+      method: "post",
       url: "/api/projects/" + project.url_slug + "/set_like/",
       payload: { liking: !isUserLiking },
       token: token,
@@ -650,7 +650,7 @@ function TabContent({ value, index, children }) {
 const getFollowers = async (project, token, locale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/projects/" + project.url_slug + "/followers/",
       token: token,
       locale: locale,
@@ -665,7 +665,7 @@ const getFollowers = async (project, token, locale) => {
 const getLikes = async (project, token, locale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/projects/" + project.url_slug + "/likes/",
       token: token,
       locale: locale,

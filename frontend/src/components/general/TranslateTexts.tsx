@@ -246,7 +246,7 @@ export default function TranslateTexts({
         return obj;
       }, {});
       const response = await apiRequest({
-        method: "POST",
+        method: "post",
         url: "/api/translate_many/",
         payload: {
           texts: payloadTexts,

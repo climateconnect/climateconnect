@@ -91,7 +91,7 @@ export default function Share({
 const getAvailabilityOptions = async (token, locale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/availability/",
       token: token,
       locale: locale,
@@ -110,7 +110,7 @@ const getAvailabilityOptions = async (token, locale) => {
 const getCategoryOptions = async (token, locale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/projecttags/",
       token: token,
       locale: locale,
@@ -129,7 +129,7 @@ const getCategoryOptions = async (token, locale) => {
 const getSkillsOptions = async (token, locale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/skills/",
       token: token,
       locale: locale,
@@ -148,7 +148,7 @@ const getSkillsOptions = async (token, locale) => {
 const getRolesOptions = async (token, locale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/roles/",
       token: token,
       locale: locale,
@@ -167,7 +167,7 @@ const getRolesOptions = async (token, locale) => {
 const getStatusOptions = async (token, locale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/projectstatus/",
       token: token,
       locale: locale,
@@ -186,7 +186,7 @@ const getStatusOptions = async (token, locale) => {
 const getUserOrganizations = async (token, locale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/my_organizations/",
       token: token,
       locale: locale,

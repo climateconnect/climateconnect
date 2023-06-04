@@ -212,7 +212,7 @@ const getSuggestions = async ({ token, page, climatematch_token, locale, hubUrl 
       (page + 1) * 10
     }${hubParameter}`;
     const args: any = {
-      method: "GET",
+      method: "get",
       url: url,
       locale: locale,
     };

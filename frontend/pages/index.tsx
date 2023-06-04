@@ -202,7 +202,7 @@ export default function Index() {
 const getProjects = async (locale: CcLocale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: `/api/featured_projects/`,
       locale,
     });
@@ -223,7 +223,7 @@ const getProjects = async (locale: CcLocale) => {
 const getOrganizations = async (locale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/featured_organizations/",
       locale: locale,
     });
@@ -258,7 +258,7 @@ const parseOrganizations = (organizations) => {
 const getHubs = async (locale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: `/api/hubs/`,
       locale: locale,
     });

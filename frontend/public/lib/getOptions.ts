@@ -5,7 +5,7 @@ import { parseOptions } from "./selectOptionsOperations";
 export async function getSkillsOptions(locale, parentSkillsOnly?: boolean) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: parentSkillsOnly ? "/parentskills/" : "/skills/",
       locale: locale,
     });
@@ -26,7 +26,7 @@ export async function getSkillsOptions(locale, parentSkillsOnly?: boolean) {
 export async function getStatusOptions(locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/projectstatus/",
       locale: locale,
     });
@@ -45,7 +45,7 @@ export async function getProjectTagsOptions(hub, locale) {
   const url = hub ? `/api/projecttags/?hub=${hub}` : `/api/projecttags/`;
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: url,
       locale: locale,
     });
@@ -63,7 +63,7 @@ export async function getProjectTagsOptions(hub, locale) {
 export async function getOrganizationTagsOptions(locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/organizationtags/",
       locale: locale,
     });

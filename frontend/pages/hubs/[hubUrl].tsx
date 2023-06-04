@@ -393,7 +393,7 @@ const retrieveDescriptionFromWebflow = async (query, locale) => {
 const getHubData = async (url_slug, locale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: `/api/hubs/${url_slug}/`,
       locale: locale,
     });
@@ -409,7 +409,7 @@ const getHubData = async (url_slug, locale) => {
 const getHubAmbassadorData = async (url_slug, locale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: `/api/hubs/${url_slug}/ambassador/`,
       locale: locale,
     });

@@ -96,7 +96,7 @@ export default function EditOrganizationPage({ organization, tagOptions, allHubs
 async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/organizations/" + organizationUrl + "/?edit_view=true",
       token: token,
       locale: locale,

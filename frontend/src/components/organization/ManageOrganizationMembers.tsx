@@ -99,7 +99,7 @@ export default function ManageOrganizationMembers({
 
   const deleteMember = (m, locale) => {
     apiRequest({
-      method: "DELETE",
+      method: "delete",
       url: "/api/organizations/" + organization.url_slug + "/update_member/" + m.member_id + "/",
       token: token,
       locale: locale,
@@ -108,7 +108,7 @@ export default function ManageOrganizationMembers({
 
   const updateMember = (m) => {
     apiRequest({
-      method: "PATCH",
+      method: "patch",
       url: "/api/organizations/" + organization.url_slug + "/update_member/" + m.member_id + "/",
       token: token,
       payload: parseMemberForUpdateRequest(m, organization),
@@ -118,7 +118,7 @@ export default function ManageOrganizationMembers({
 
   const createMembers = (organization_members) => {
     apiRequest({
-      method: "POST",
+      method: "post",
       url: "/api/organizations/" + organization.url_slug + "/add_members/",
       token: token,
       payload: parseMembersForCreateRequest(organization_members, organization),
@@ -128,7 +128,7 @@ export default function ManageOrganizationMembers({
 
   const updateCreator = (new_creator) => {
     apiRequest({
-      method: "POST",
+      method: "post",
       url: "/api/organizations/" + organization.url_slug + "/change_creator/",
       token: token,
       payload: parseMemberForUpdateRequest(new_creator, organization),

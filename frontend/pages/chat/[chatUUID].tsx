@@ -179,7 +179,7 @@ export default function Chat({
   const sendChatMessageThroughPostRequest = async (message, chat_uuid, token) => {
     try {
       const resp = await apiRequest({
-        method: "POST",
+        method: "post",
         url: "/api/chat/" + chat_uuid + "/send_message/",
         payload: { message_content: message },
         token: token,
@@ -221,7 +221,7 @@ export default function Chat({
     if (!title) setErrorMessage(texts.cannot_leave_private_chats);
     try {
       const res = await apiRequest({
-        method: "POST",
+        method: "post",
         url: "/api/chat/" + chatUUID + "/leave/",
         payload: {},
         token: token,
@@ -292,7 +292,7 @@ const parseParticipantsWithRole = (participants, rolesOptions) => {
 async function getChat(chat_uuid, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/chat/" + chat_uuid + "/",
       token: token,
       locale: locale,
@@ -324,7 +324,7 @@ async function getChatMessagesByUUID(chat_uuid, token, page, link, locale) {
       ? link
       : process.env.API_URL + "/api/messages/?chat_uuid=" + chat_uuid + "&page=" + page;
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: url.replace(process.env.API_URL, ""),
       token: token,
       locale: locale,
@@ -344,7 +344,7 @@ async function getChatMessagesByUUID(chat_uuid, token, page, link, locale) {
 const getRolesOptions = async (locale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/roles/",
       locale: locale,
     });

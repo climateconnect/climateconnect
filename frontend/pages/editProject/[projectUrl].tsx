@@ -167,7 +167,7 @@ export default function EditProjectPage({
 async function getProjectByIdIfExists(projectUrl, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/projects/" + projectUrl + "/?edit_view=true",
       token: token,
       locale: locale,
@@ -195,7 +195,7 @@ const parseProject = (project) => ({
 const getUserOrganizations = async (token, locale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/my_organizations/",
       token: token,
       locale: locale,
@@ -214,7 +214,7 @@ const getUserOrganizations = async (token, locale) => {
 async function getMembersByProject(projectUrl, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/projects/" + projectUrl + "/members/",
       token: token,
       locale: locale,

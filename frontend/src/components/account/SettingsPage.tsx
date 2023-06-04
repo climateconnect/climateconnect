@@ -185,7 +185,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
     } else {
       setErrors({ ...errors, passworderror: "" });
       apiRequest({
-        method: "POST",
+        method: "post",
         url: "/api/account_settings/",
         payload: {
           password: passwordInputs.newpassword,
@@ -231,7 +231,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
     else {
       setErrors({ ...errors, newemailerror: "" });
       apiRequest({
-        method: "POST",
+        method: "post",
         url: "/api/account_settings/",
         payload: { email: newEmail },
         token: token,
@@ -265,7 +265,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       setEmailPreferencesLoading(true);
       try {
         const response = await apiRequest({
-          method: "POST",
+          method: "post",
           url: "/api/account_settings/",
           payload: emailPreferences,
           token: token,

@@ -41,7 +41,7 @@ export async function getUserOrganizations(token, locale) {
   if (!token) return null;
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/my_organizations/",
       token: token,
       locale: locale,

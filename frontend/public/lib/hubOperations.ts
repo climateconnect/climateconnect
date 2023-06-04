@@ -4,7 +4,7 @@ export async function getAllHubs(locale: any, just_sector_hubs?: boolean) {
   const url = just_sector_hubs ? `/api/sector_hubs/` : `/api/hubs/`;
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: url,
       locale: locale,
     });

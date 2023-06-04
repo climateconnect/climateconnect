@@ -158,7 +158,7 @@ export default function Faq({ questionsBySection, questions }) {
 const getQuestionsWithAnswers = async (token, locale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/list_faq/",
       token: token,
       locale: locale,

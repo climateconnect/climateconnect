@@ -52,7 +52,7 @@ export default function DonorForest({ donorsWithBadges, possibleBadges }) {
 const getDonorsWithBadges = async (token, locale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: `/api/donors_with_badges/`,
       token: token,
       locale: locale,
@@ -66,7 +66,7 @@ const getDonorsWithBadges = async (token, locale) => {
 const getPossibleDonorBadges = async (token, locale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: `/api/donor_badges/`,
       token: token,
       locale: locale,

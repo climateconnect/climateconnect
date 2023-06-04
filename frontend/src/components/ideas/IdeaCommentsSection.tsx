@@ -72,7 +72,7 @@ export default function IdeaCommentsSection({
       const resp = await apiRequest({
         url: "/api/ideas/" + idea.url_slug + "/comment/",
         payload: payload,
-        method: "POST",
+        method: "post",
         token: token,
         locale: locale,
       });
@@ -88,7 +88,7 @@ export default function IdeaCommentsSection({
   const onDeleteComment = async (post) => {
     try {
       await apiRequest({
-        method: "DELETE",
+        method: "delete",
         url: "/api/ideas/" + idea.url_slug + "/comments/" + post.id + "/",
         token: token,
         locale: locale,

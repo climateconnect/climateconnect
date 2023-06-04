@@ -85,7 +85,7 @@ export default function EditProfilePage({ skillsOptions, availabilityOptions, us
 async function getSkillsOptions(token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/skills/",
       token: token,
       locale: locale,

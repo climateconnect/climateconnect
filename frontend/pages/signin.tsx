@@ -73,7 +73,7 @@ export default function Signin() {
     event.preventDefault();
     setIsLoading(true);
     apiRequest({
-      method: "POST",
+      method: "post",
       url: "/login/",
       payload: {
         username: values.username.toLowerCase(),

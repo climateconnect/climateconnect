@@ -238,7 +238,7 @@ export async function getLocationFilteredBy(query) {
     loc_type: query.loc_type,
   };
   try {
-    const res = await apiRequest({ method: "POST", url: url, payload: payload });
+    const res = await apiRequest({ method: "post", url: url, payload: payload });
     const full_location = {
       ...res.data,
       place_id: query.place,

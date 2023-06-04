@@ -78,7 +78,7 @@ export default function AddInfo({
 
   const formAction = {
     href: getLocalePrefix(locale) + "/addinfo",
-    method: "GET",
+    method: "get",
   };
 
   return (

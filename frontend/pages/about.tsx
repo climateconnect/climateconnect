@@ -118,7 +118,7 @@ export default function About({ questionsFromSection }) {
 const getQuestionsWithAnswers = async (locale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/about_faq/",
 
       locale: locale,

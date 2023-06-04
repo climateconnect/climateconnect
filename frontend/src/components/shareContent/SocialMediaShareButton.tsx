@@ -56,7 +56,7 @@ export default function SocialMediaShareButton({
   const createShareRecord = (sharedVia) => {
     if (sharedVia === SHARE_OPTIONS.link && linkShared) return; //only create a share-record for the link once per session
     apiRequest({
-      method: "POST",
+      method: "post",
       url: apiEndpoint,
       payload: { shared_via: sharedVia },
       token: token,

@@ -160,7 +160,7 @@ export default function ShareProjectRoot({
 
     try {
       const resp = await apiRequest({
-        method: "POST",
+        method: "post",
         url: "/api/create_project/",
         payload: payload,
         token: token,
@@ -182,7 +182,7 @@ export default function ShareProjectRoot({
     event.preventDefault();
     setLoadingSubmitDraft(true);
     apiRequest({
-      method: "POST",
+      method: "post",
       url: "/api/create_project/",
       payload: await formatProjectForRequest({ ...project, is_draft: true }, translations),
       token: token,

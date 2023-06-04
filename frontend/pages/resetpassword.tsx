@@ -28,7 +28,7 @@ export default function ResetPassword() {
     if (values.email) {
       try {
         const response = await apiRequest({
-          method: "POST",
+          method: "post",
           url: "/api/send_reset_password_email/",
           payload: { email: values.email },
           locale: locale,

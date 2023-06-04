@@ -106,7 +106,7 @@ export default function ChatMemberManagementOverlay({
 
   const deleteMember = (m, locale) => {
     apiRequest({
-      method: "DELETE",
+      method: "delete",
       url: "/api/chat/" + chat_uuid + "/update_member/" + m.participant_id + "/",
       token: token,
       locale: locale,
@@ -115,7 +115,7 @@ export default function ChatMemberManagementOverlay({
 
   const updateMember = (m, locale) => {
     apiRequest({
-      method: "PATCH",
+      method: "patch",
       url: "/api/chat/" + chat_uuid + "/update_member/" + m.participant_id + "/",
       token: token,
       payload: parseMemberForUpdateRequest(m),
@@ -125,7 +125,7 @@ export default function ChatMemberManagementOverlay({
 
   const createMembers = (chat_participants, locale) => {
     apiRequest({
-      method: "POST",
+      method: "post",
       url: "/api/chat/" + chat_uuid + "/add_members/",
       token: token,
       payload: parseMembersForCreateRequest(chat_participants),
@@ -135,7 +135,7 @@ export default function ChatMemberManagementOverlay({
 
   const updateCreator = (new_creator, locale) => {
     apiRequest({
-      method: "POST",
+      method: "post",
       url: "/api/chat/" + chat_uuid + "/change_creator/",
       token: token,
       payload: parseMemberForUpdateRequest(new_creator),

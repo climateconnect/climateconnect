@@ -91,7 +91,7 @@ export function getLocalePrefix(locale: string) {
 export const getRolesOptions = async (token: string | undefined, locale: CcLocale) => {
   try {
     const { data } = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/roles/",
       token,
       locale,

@@ -113,7 +113,7 @@ export default function manageProjectMembers({
 async function getProjectByUrlIfExists(projectUrl, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/projects/" + projectUrl + "/",
       token: token,
       locale: locale,
@@ -129,7 +129,7 @@ async function getProjectByUrlIfExists(projectUrl, token, locale) {
 async function getMembersByProject(projectUrl, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/projects/" + projectUrl + "/members/",
       token: token,
       locale: locale,
@@ -193,7 +193,7 @@ function parseProject(project) {
 const getRolesOptions = async (token, locale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/roles/",
       token: token,
       locale: locale,
@@ -212,7 +212,7 @@ const getRolesOptions = async (token, locale) => {
 const getAvailabilityOptions = async (token, locale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/availability/",
       token: token,
       locale: locale,

@@ -158,7 +158,7 @@ const getEntries = async (entryTypePlural, locale, language_code_for_url) => {
   } else {
     try {
       const resp = await apiRequest({
-        method: "GET",
+        method: "get",
         url: "/api/sitemap/" + entryTypePlural + "/?page_size=1000",
         locale: locale,
       });

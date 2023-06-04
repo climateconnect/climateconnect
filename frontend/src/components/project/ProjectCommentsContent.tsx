@@ -66,7 +66,7 @@ export default function CommentsContent({ user, project, token, setCurComments }
       const resp = await apiRequest({
         url: "/api/projects/" + project.url_slug + "/comment/",
         payload: payload,
-        method: "POST",
+        method: "post",
         token: token,
         locale: locale,
       });
@@ -82,7 +82,7 @@ export default function CommentsContent({ user, project, token, setCurComments }
   const onDeleteComment = async (post) => {
     try {
       await apiRequest({
-        method: "DELETE",
+        method: "delete",
         url: "/api/projects/" + project.url_slug + "/comment/" + post.id + "/",
         token: token,
         locale: locale,

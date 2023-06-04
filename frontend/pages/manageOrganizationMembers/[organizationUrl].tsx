@@ -118,7 +118,7 @@ export default function manageOrganizationMembers({
 async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/organizations/" + organizationUrl + "/",
       token: token,
       locale: locale,
@@ -134,7 +134,7 @@ async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
 async function getMembersByOrganization(organizationUrl, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/organizations/" + organizationUrl + "/members/?page=1&page_size=24",
       token: token,
       locale: locale,
@@ -170,7 +170,7 @@ function parseOrganizationMembers(members) {
 const getAvailabilityOptions = async (token, locale) => {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/availability/",
       token: token,
       locale: locale,

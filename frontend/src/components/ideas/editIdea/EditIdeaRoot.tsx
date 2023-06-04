@@ -101,7 +101,7 @@ export default function EditIdeaRoot({ idea, cancelEdit, userOrganizations, allH
         const payload = await parseIdeaForEditRequest(changes, locale);
         try {
           await apiRequest({
-            method: "PATCH",
+            method: "patch",
             url: `/api/ideas/${idea.url_slug}/`,
             payload: payload,
             token: token,

@@ -131,7 +131,7 @@ export default function ManageProjectMembers({
 
   const deleteMember = (m, locale) => {
     apiRequest({
-      method: "DELETE",
+      method: "delete",
       url: "/api/projects/" + project.url_slug + "/members/" + m.member_id + "/",
       token: token,
       locale: locale,
@@ -140,7 +140,7 @@ export default function ManageProjectMembers({
 
   const updateMember = (m, locale) => {
     apiRequest({
-      method: "PATCH",
+      method: "patch",
       url: "/api/projects/" + project.url_slug + "/members/" + m.member_id + "/",
       token: token,
       payload: parseMemberForUpdateRequest(m, project),
@@ -150,7 +150,7 @@ export default function ManageProjectMembers({
 
   const createMembers = (team_members, locale) => {
     apiRequest({
-      method: "POST",
+      method: "post",
       url: "/api/projects/" + project.url_slug + "/add_members/",
       token: token,
       payload: parseMembersForCreateRequest(team_members, project),
@@ -160,7 +160,7 @@ export default function ManageProjectMembers({
 
   const updateCreator = (new_creator, locale) => {
     apiRequest({
-      method: "POST",
+      method: "post",
       url: "/api/projects/" + project.url_slug + "/change_creator/",
       token: token,
       payload: parseMemberForUpdateRequest(new_creator, project),

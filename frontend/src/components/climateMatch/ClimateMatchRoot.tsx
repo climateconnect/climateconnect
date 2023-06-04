@@ -102,7 +102,7 @@ export default function ClimateMatchRoot() {
   const submitUserQuestionAnswerForClimateMatch = (userAnswers, token, locale) => {
     const climatematch_token = cookies.get("climatematch_token");
     const payload: any = {
-      method: "POST",
+      method: "post",
       url: `/api/climatematch_question_answers/`,
       payload: {
         ...parseUserQuestionAnswers(userAnswers, questions, user, climatematch_token),
@@ -217,7 +217,7 @@ const getQuestions = async (token, locale, fromHub, climatematch_token) => {
   // "fromHub" determines what images to show and could lead to different questions
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: url,
       locale: locale,
       token: token,

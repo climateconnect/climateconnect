@@ -341,7 +341,7 @@ function OrganizationLayout({
 async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/organizations/" + organizationUrl + "/",
       token: token,
       locale: locale,
@@ -357,7 +357,7 @@ async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
 async function getProjectsByOrganization(organizationUrl, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/organizations/" + organizationUrl + "/projects/",
       token: token,
       locale: locale,
@@ -376,7 +376,7 @@ async function getProjectsByOrganization(organizationUrl, token, locale) {
 async function getIsUserFollowing(organizationUrl, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/organizations/" + organizationUrl + "/am_i_following/",
       token: token,
       locale: locale,
@@ -394,7 +394,7 @@ async function getIsUserFollowing(organizationUrl, token, locale) {
 async function getMembersByOrganization(organizationUrl, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/organizations/" + organizationUrl + "/members/?page=1&page_size=24",
       token: token,
       locale: locale,

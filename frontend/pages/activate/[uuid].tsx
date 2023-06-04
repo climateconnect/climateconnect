@@ -27,7 +27,7 @@ async function profileVerification(uuid, locale) {
   };
   try {
     const response = await apiRequest({
-      method: "POST",
+      method: "post",
       url: "/api/verify_profile/",
       payload: payload,
       headers: headers,

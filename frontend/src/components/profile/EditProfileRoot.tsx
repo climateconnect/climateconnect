@@ -100,7 +100,7 @@ export default function EditAccountRoot({
       )
     );
     apiRequest({
-      method: "POST",
+      method: "post",
       url: "/api/edit_profile/",
       payload: payload,
       token: token,

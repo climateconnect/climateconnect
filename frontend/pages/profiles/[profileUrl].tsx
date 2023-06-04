@@ -66,7 +66,7 @@ export default function ProfilePage({ profile, projects, organizations, ideas })
 async function getProfileByUrlIfExists(profileUrl, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/member/" + profileUrl + "/",
       token: token,
       locale: locale,
@@ -83,7 +83,7 @@ async function getProfileByUrlIfExists(profileUrl, token, locale) {
 async function getIdeasByUser(profileUrl, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/member/" + profileUrl + "/ideas/",
       token: token,
       locale: locale,
@@ -102,7 +102,7 @@ async function getIdeasByUser(profileUrl, token, locale) {
 async function getProjectsByUser(profileUrl, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/member/" + profileUrl + "/projects/",
       token: token,
       locale: locale,
@@ -121,7 +121,7 @@ async function getProjectsByUser(profileUrl, token, locale) {
 async function getOrganizationsByUser(profileUrl, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/member/" + profileUrl + "/organizations/",
       token: token,
       locale: locale,

@@ -3,7 +3,7 @@ import { apiRequest } from "./apiOperations";
 export async function getMessageFromServer(message_id, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "GET",
+      method: "get",
       url: "/api/message/" + message_id + "/",
       token: token,
       locale: locale,
@@ -17,7 +17,7 @@ export async function getMessageFromServer(message_id, token, locale) {
 export async function startPrivateChat(profile, token, locale) {
   try {
     const resp = await apiRequest({
-      method: "POST",
+      method: "post",
       url: "/api/start_private_chat/",
       payload: { profile_url_slug: profile.url_slug },
       token: token,
@@ -32,7 +32,7 @@ export async function startPrivateChat(profile, token, locale) {
 export async function joinIdeaGroupChat({ idea, token, locale }) {
   try {
     const resp = await apiRequest({
-      method: "POST",
+      method: "post",
       url: `/api/ideas/${idea.url_slug}/join_chat/`,
       payload: {},
       token: token,
