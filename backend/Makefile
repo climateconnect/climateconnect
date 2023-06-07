@@ -6,6 +6,9 @@ start:
 	$(info )
 	python3 manage.py runserver
 
+install:
+	pdm install
+
 test:
 	python3 manage.py test
 

@@ -69,8 +69,10 @@ Run `./install_deps.sh` to install the JavaScript dependencies and the Python de
 #### First Time Setup
 
 1.  Go to backend directory: `cd backend`
-1.  Run `pdm install` to install all backend libraries.
+1. Make sure `pdm` is installed: https://pdm.fming.dev/latest/#recommended-installation-method
+1.  Run `make install` to install all backend libraries.
 1.  Create `.backend_env` to set environment variables.
+    - You can use the script [./initial_dev_setup.sh](./initial_dev_setup.sh) as inspiration.
     - You can find up-to-date sample env variables in [`backend/local-env-setup.md`](https://github.com/climateconnect/climateconnect/blob/master/backend/local-env-setup.md).
     - For the [Django `SECRET_KEY`](https://docs.djangoproject.com/en/3.1/ref/settings/#std:setting-SECRET_KEY), run `openssl rand -base64 32` to create a 32 char random secret.
 1.  Run `make migrate` to run Django migrations.
@@ -167,7 +169,7 @@ More configuration for Black can be found in the `pyproject.toml` file.
 
 1. `cd frontend`.
 1. `yarn` to download all npm packages.
-1. Add a `.env` file for frontend environment variables. You can find variables you need to set in [`/frontend/next.config.js/`](https://github.com/climateconnect/climateconnect/blob/master/frontend/next.config.js)
+1. Add a `.env` file for frontend environment variables. You can find variables you need to set in [`/frontend/next.config.js/`](https://github.com/climateconnect/climateconnect/blob/master/frontend/next.config.js).
 
 For local development, use the following for `.env`:
 
