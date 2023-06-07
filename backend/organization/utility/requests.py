@@ -21,7 +21,6 @@ class MembershipRequestsManager:
     """
 
     def __init__(self, **kwargs):
-
         self.validation_failed = False
         self.duplicate_request = False
 

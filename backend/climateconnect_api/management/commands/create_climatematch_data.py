@@ -1,13 +1,9 @@
 from django.contrib.contenttypes.models import ContentType
-from organization.models.project import Project
-from organization.models.organization import Organization
-from ideas.models.ideas import Idea
 from climate_match.models.answers import Answer, AnswerMetaData
 from climate_match.models.translation import AnswerTranslation, QuestionTranslation
-from hubs.models.hub import Hub
 from climate_match.models.questions import Question
 from typing import Any
-from django.core.management.base import BaseCommand, CommandParser
+from django.core.management.base import BaseCommand
 
 from climateconnect_api.models.language import Language
 

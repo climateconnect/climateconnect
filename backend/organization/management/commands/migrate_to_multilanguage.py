@@ -13,7 +13,7 @@ def migrate_elements(type: str, object: Project, language: Language):
 
     for object in object:
         print(object.language)
-        if object.language == None:
+        if object.language is None:
             object.language = language
             object.save()
         objects_counter = objects_counter + 1

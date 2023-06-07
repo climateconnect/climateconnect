@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from ideas.models import IdeaRating, IdeaSupporter
+from ideas.models import IdeaRating
 from ideas.serializers.idea import IdeaMinimalSerializer
 
 

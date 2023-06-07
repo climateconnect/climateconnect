@@ -2,7 +2,7 @@ import logging
 import urllib.parse
 from typing import Dict, Optional
 
-from chat_messages.models.message import MessageParticipants, Participant
+from chat_messages.models.message import Participant
 
 from ideas.models.comment import IdeaComment
 from climateconnect_api.models.language import Language

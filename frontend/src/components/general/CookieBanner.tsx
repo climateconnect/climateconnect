@@ -127,7 +127,12 @@ export default function CookieBanner({ closeBanner }) {
         {texts.cookies_statistics}
         <span className={classes.buttons}>
           <div className={classes.leftButtonContainer}>
-            <Button variant="contained" className={classes.leftButton} onClick={confirmSelection}>
+            <Button
+              variant="contained"
+              color="secondary"
+              className={classes.leftButton}
+              onClick={confirmSelection}
+            >
               {texts.confirm_selection}
             </Button>
           </div>

@@ -10,7 +10,6 @@ from django.contrib.gis.geos import (
     Polygon,
 )
 from django.contrib.gis.measure import D
-from django.db.models import Q
 from rest_framework.exceptions import ValidationError
 
 from location.models import Location
