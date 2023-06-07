@@ -1,7 +1,7 @@
 
 [project]
 name = ""
-version = ""
+version = "1.0.0"
 description = ""
 authors = [{ name = "climateconnect-authors" }]
 dependencies = [
@@ -139,6 +139,6 @@ extend-exclude = '''
 
 [tool.pdm.dev-dependencies]
 dev = [
-    "ruff>=0.0.269",
+    "ruff>=0.0.271",
     "django-debug-toolbar>=3.5.0",
 ]
