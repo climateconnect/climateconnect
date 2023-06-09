@@ -95,7 +95,7 @@ class ProjectTypes(models.Model):
         max_length=512,
     )
 
-    help_text_de = models.TextField(
+    help_text_de_translation = models.TextField(
         help_text="Translation of help_text column",
         verbose_name="Helptext DE translation",
         max_length=512,
