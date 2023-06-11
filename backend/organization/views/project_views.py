@@ -1,6 +1,6 @@
 import logging
 import traceback
-from django.db.models import Count
+from django.db.models import Count, Case, When
 from organization.utility.follow import (
     get_list_of_project_followers,
     set_user_following_project,
@@ -137,6 +137,7 @@ class ListProjectsView(ListAPIView):
     search_fields = ["name", "translation_project__name_translation"]
     filterset_fields = ["collaborators_welcome"]
     pagination_class = ProjectsPagination
+    serializer_class = ProjectStubSerializer
 
     def get_queryset(self):
         user = self.request.user
@@ -144,16 +145,10 @@ class ListProjectsView(ListAPIView):
         if user.is_authenticated and user.user_profile:
             user_profile = user.user_profile
         # Get project ranking
-        projects = (
-            Project.objects.filter(
-                is_draft=False,
-                is_active=True,
-            )
-            .annotate(
-                total_comments=Count("project_comment", distinct=True),
-                total_likes=Count("project_liked", distinct=True),
-                total_followers=Count("project_following", distinct=True),
-            )
+        projects = Project.objects.filter(is_draft=False, is_active=True,).annotate(
+            total_comments=Count("project_comment", distinct=True),
+            total_likes=Count("project_liked", distinct=True),
+            total_followers=Count("project_following", distinct=True),
         )
 
         if "hub" in self.request.query_params:
@@ -280,9 +275,18 @@ class ListProjectsView(ListAPIView):
             )
             projects = projects.filter(loc__in=location_ids)
 
-        projects = sorted(projects, key=lambda project: project.ranking)
-        serializer = ProjectStubSerializer(projects, many=True)
-        return serializer.data
+        # Sort projects by its ranking.
+        project_ids = [
+            project.id
+            for project in sorted(projects, key=lambda project: -project.ranking)
+        ]
+        preferred_order = Case(
+            *(
+                When(id=id, then=position)
+                for position, id in enumerate(project_ids, start=1)
+            )
+        )
+        return projects.order_by(preferred_order)
 
 
 class CreateProjectView(APIView):

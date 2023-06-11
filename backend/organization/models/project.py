@@ -200,8 +200,10 @@ class Project(models.Model):
     @property
     def ranking(self) -> int:
         return ProjectRanking().calculate_ranking(
+            description=self.description,
             location=self.loc,
             project_id=self.id,
+            total_skills=self.skills.count(),
             total_comments=self.total_comments,
             total_followers=self.total_followers,
             total_likes=self.total_likes

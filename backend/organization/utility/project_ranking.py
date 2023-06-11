@@ -11,7 +11,7 @@ class ProjectRanking:
 
     def _randomize(self) -> int:
         # a random number gives a boost to different projects to get the top of the list
-        return int(random.triangular(1, 100))
+        return int(random.triangular(1, 10))
 
     def _weights(self) -> Dict:
         return {
@@ -23,7 +23,22 @@ class ProjectRanking:
             "last_project_follower": 0.9,
             "total_tags": 0.1,
             "location": 0.1,
+            "description": 0.9,
+            "total_skills": 0.1
         }
+    
+    def _recency_score(self, timedelta: int) -> Dict:
+        # minimum and maximum recency score for the interaction
+        min_score = 0
+        max_score = 100
+
+        # Scale the timedelta to a score between 0 and 100
+        score = ((timedelta - min_score) / (max_score - min_score)) * 100
+
+        # Ensure the score is within the range of 0 to 100
+        score = max(min(score, 100), 0)
+
+        return score
 
     def calculate_recency_of_interaction(
         self, last_interaction_timestamp: Optional[datetime.datetime]
@@ -32,14 +47,15 @@ class ProjectRanking:
             return 0
 
         current_timestamp = datetime.datetime.now().timestamp()
-        # recency
-        recency = (last_interaction_timestamp - current_timestamp) / (60 * 60 * 24)
-        return recency
+        timedelta = (current_timestamp - last_interaction_timestamp) / (60 * 60 * 24)
+        return self._recency_score(timedelta=timedelta)
 
     def calculate_ranking(
         self,
+        description: str,
         location: Optional[int],
         project_id: int,
+        total_skills: int,
         total_comments: int,
         total_followers: int,
         total_likes: int,
@@ -86,7 +102,12 @@ class ProjectRanking:
             ),
             "total_tags": ProjectTagging.objects.filter(project_id=project_id).count(),
             "location": 1 if location else 0,
+            "description": 1 if description and len(description) > 0 else 0,
+            "total_skills": total_skills
         }
 
         project_rank = int(sum(project_factors[factor] * weights[factor] for factor in weights))
+        # Now we want to change the order every time somebody
+        # visits the page we would add some randomization.
+        project_rank /= self._randomize()
         return project_rank
