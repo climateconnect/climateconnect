@@ -15,7 +15,7 @@ export async function getServerSideProps(ctx) {
   if (ctx.req && !auth_token) {
     const texts = getTexts({ page: "project", locale: ctx.locale });
     const message = texts.please_log_in_or_sign_up_to_share_a_project;
-    return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
+    return sendToLogin(ctx, message);
   }
   const [
     availabilityOptions,

@@ -105,7 +105,6 @@ export default function EditAccountRoot({
       payload: payload,
       token: token,
       locale: locale,
-      shouldThrowError: true,
     })
       .then(function (response) {
         Router.push({

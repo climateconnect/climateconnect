@@ -17,6 +17,7 @@ import ProjectsSharedBox from "../src/components/landingPage/ProjectsSharedBox";
 import WideLayout from "../src/components/layouts/WideLayout";
 import ExplainerBox from "../src/components/staticpages/ExplainerBox";
 import StartNowBanner from "../src/components/staticpages/StartNowBanner";
+import { CcLocale } from "../src/types";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -111,7 +112,7 @@ export default function Index() {
             setPos("moved");
           }
         });
-        const projects = await getProjects(undefined, locale);
+        const projects = await getProjects(locale);
         const organizations = await getOrganizations(locale);
         const hubs = await getHubs(locale);
         setElements({
@@ -198,13 +199,12 @@ export default function Index() {
   );
 }
 
-const getProjects = async (token, locale) => {
+const getProjects = async (locale: CcLocale) => {
   try {
     const resp = await apiRequest({
       method: "get",
       url: `/api/featured_projects/`,
-      locale: locale,
-      shouldThrowError: true,
+      locale,
     });
     if (resp.data.length === 0) {
       return null;

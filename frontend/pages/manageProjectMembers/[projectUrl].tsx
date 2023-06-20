@@ -26,7 +26,7 @@ export async function getServerSideProps(ctx) {
   const texts = getTexts({ page: "project", locale: ctx.locale });
   if (ctx.req && !auth_token) {
     const message = texts.you_have_to_log_in_to_manage_a_projects_members;
-    return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
+    return sendToLogin(ctx, message);
   }
   const projectUrl = encodeURI(ctx.query.projectUrl);
   const [project, members, rolesOptions, availabilityOptions] = await Promise.all([

@@ -56,7 +56,7 @@ export async function getServerSideProps(ctx) {
   if (ctx.req && !auth_token) {
     const texts = getTexts({ page: "chat", locale: ctx.locale });
     const message = texts.you_have_to_log_in_to_see_your_inbox;
-    return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
+    return sendToLogin(ctx, message);
   }
   const chatData: any = await getChatsOfLoggedInUser(auth_token, 1, ctx.locale);
   return {
@@ -92,44 +92,52 @@ export default function Inbox({ chatData, initialNextPage }) {
   const [searchingOpen, setSearchingOpen] = useState(false);
 
   const applyFilterToChats = async (filter) => {
-    setSearchingOpen(true);
-    setSearchTerm(filter);
-    handleSetIsLoading(true);
-    const url = `/api/chat/?page=1&search=${filter}`;
-    const response = await apiRequest({
-      token: token,
-      method: "get",
-      url: url,
-      locale: locale,
-    });
+    try {
+      setSearchingOpen(true);
+      setSearchTerm(filter);
+      handleSetIsLoading(true);
+      const url = `/api/chat/?page=1&search=${filter}`;
+      const response = await apiRequest({
+        token: token,
+        method: "get",
+        url: url,
+        locale: locale,
+      });
 
-    handleSetIsLoading(false);
+      handleSetIsLoading(false);
 
-    const parsedChatData = parseChatData(response.data.results);
-    const parsedChats = parseChats(parsedChatData, texts);
+      const parsedChatData = parseChatData(response.data.results);
+      const parsedChats = parseChats(parsedChatData, texts);
 
-    setSearchedChatsState({
-      chats: parsedChats,
-      nextPage: response.data.next ? 2 : null,
-    });
+      setSearchedChatsState({
+        chats: parsedChats,
+        nextPage: response.data.next ? 2 : null,
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const loadMoreFilteredChats = async () => {
-    const url = `/api/chat/?page=${searchedChatsState.nextPage}&search=${searchTerm}`;
-    const response = await apiRequest({
-      token: token,
-      method: "get",
-      url: url,
-      locale: locale,
-    });
+    try {
+      const url = `/api/chat/?page=${searchedChatsState.nextPage}&search=${searchTerm}`;
+      const response = await apiRequest({
+        token: token,
+        method: "get",
+        url: url,
+        locale: locale,
+      });
 
-    const parsedChatData = parseChatData(response.data.results);
-    const parsedChats = parseChats(parsedChatData, texts);
-    setSearchedChatsState({
-      ...searchedChatsState,
-      nextPage: response.data.next ? searchedChatsState.nextPage! + 1 : null,
-      chats: [...searchedChatsState.chats, ...parsedChats],
-    });
+      const parsedChatData = parseChatData(response.data.results);
+      const parsedChats = parseChats(parsedChatData, texts);
+      setSearchedChatsState({
+        ...searchedChatsState,
+        nextPage: response.data.next ? searchedChatsState.nextPage! + 1 : null,
+        chats: [...searchedChatsState.chats, ...parsedChats],
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleSetIsLoading = (newValue) => {

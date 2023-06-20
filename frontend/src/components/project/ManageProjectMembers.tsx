@@ -134,9 +134,8 @@ export default function ManageProjectMembers({
       method: "delete",
       url: "/api/projects/" + project.url_slug + "/members/" + m.member_id + "/",
       token: token,
-      shouldThrowError: true,
       locale: locale,
-    });
+    }).catch(console.error);
   };
 
   const updateMember = (m, locale) => {
@@ -145,9 +144,8 @@ export default function ManageProjectMembers({
       url: "/api/projects/" + project.url_slug + "/members/" + m.member_id + "/",
       token: token,
       payload: parseMemberForUpdateRequest(m, project),
-      shouldThrowError: true,
       locale: locale,
-    });
+    }).catch(console.error);
   };
 
   const createMembers = (team_members, locale) => {
@@ -156,9 +154,8 @@ export default function ManageProjectMembers({
       url: "/api/projects/" + project.url_slug + "/add_members/",
       token: token,
       payload: parseMembersForCreateRequest(team_members, project),
-      shouldThrowError: true,
       locale: locale,
-    });
+    }).catch(console.error);
   };
 
   const updateCreator = (new_creator, locale) => {
@@ -167,9 +164,8 @@ export default function ManageProjectMembers({
       url: "/api/projects/" + project.url_slug + "/change_creator/",
       token: token,
       payload: parseMemberForUpdateRequest(new_creator, project),
-      shouldThrowError: true,
       locale: locale,
-    });
+    }).catch(console.error);
   };
   return (
     <>

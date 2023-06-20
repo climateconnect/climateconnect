@@ -16,7 +16,7 @@ export async function getServerSideProps(ctx) {
   if (ctx.req && !auth_token) {
     const texts = getTexts({ page: "organization", locale: ctx.locale });
     const message = texts.log_in_to_edit_organization;
-    return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
+    return sendToLogin(ctx, message);
   }
   const url = encodeURI(ctx.query.organizationUrl);
   const [organization, tagOptions, allHubs] = await Promise.all([

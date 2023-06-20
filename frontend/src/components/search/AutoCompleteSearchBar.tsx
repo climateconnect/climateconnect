@@ -44,19 +44,23 @@ export default function AutoCompleteSearchBar({
 
     (async () => {
       if (searchValue) {
-        const response = await apiRequest({
-          method: "get",
-          url: (baseUrl + searchValue).replace(process.env.API_URL!, ""),
-          locale: locale,
-        });
-        if (active) {
-          setOptions(
-            response.data.results
-              .map((o) => ({ ...o, key: o.url_slug }))
-              .filter((o) =>
-                filterOut ? !filterOut.find((fo) => fo.url_slug === o.url_slug) : true
-              )
-          );
+        try {
+          const response = await apiRequest({
+            method: "get",
+            url: (baseUrl + searchValue).replace(process.env.API_URL!, ""),
+            locale: locale,
+          });
+          if (active) {
+            setOptions(
+              response.data.results
+                .map((o) => ({ ...o, key: o.url_slug }))
+                .filter((o) =>
+                  filterOut ? !filterOut.find((fo) => fo.url_slug === o.url_slug) : true
+                )
+            );
+          }
+        } catch (error) {
+          console.error(error);
         }
       } else {
         setOptions([]);

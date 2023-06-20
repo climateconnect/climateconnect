@@ -165,7 +165,6 @@ export default function ShareProjectRoot({
         payload: payload,
         token: token,
         locale: locale,
-        shouldThrowError: true,
       });
       setProject({ ...project, url_slug: resp.data.url_slug });
       setLoadingSubmit(false);

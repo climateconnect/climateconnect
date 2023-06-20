@@ -172,6 +172,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
         url: url,
         locale: locale,
       });
+
       const location = getLocationValue(values, "location");
       setOrganizationInfo({
         ...organizationInfo,
