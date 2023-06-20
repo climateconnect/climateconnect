@@ -7,7 +7,5 @@ yarn install
 popd
 
 pushd backend
-python3 -m venv .venv
-source .venv/bin/activate
-pip3 install -r dev-requirements.txt
+pdm install
 popd
