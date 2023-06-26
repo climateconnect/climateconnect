@@ -250,7 +250,7 @@ export default function ShareProjectRoot({
             activeStep={curStep.key}
           />
           <Typography variant="h4" color="primary" className={classes.headline}>
-            {curStep.headline ? curStep.headline : project.name}
+            {curStep.headline && curStep.headline}
           </Typography>
           {curStep.key === "share" && (
             <ShareProject
