@@ -24,9 +24,10 @@ const useStyles = makeStyles(theme => ({
       width: "100%",
     }
   },
-  fullHeight: {
+  input: {
     [theme.breakpoints.up("md")]: {
       height: "100%",
+      alignItems: "flex-start"
     }
   },
 }));
@@ -73,7 +74,7 @@ export default function AddSummarySection({
           onChange={(event) => onDescriptionChange(event, "short_description")}
           className={classes.shortDescription}
           InputProps={{
-            classes: { root: classes.fullHeight, input: classes.input, inputMultiline: classes.fullHeight },
+            classes: { root: classes.input, input: classes.input, inputMultiline: classes.input },
           }}
           rows={4}
           value={projectData.short_description}
