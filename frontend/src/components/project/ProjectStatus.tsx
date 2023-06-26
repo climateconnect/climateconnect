@@ -14,7 +14,7 @@ const useStyles = makeStyles({
 type Props = {
   status: any;
   className?: any;
-}
+};
 
 export default function ProjectStatus({ status, className }: Props) {
   const classes = useStyles();

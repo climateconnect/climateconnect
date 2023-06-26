@@ -16,6 +16,7 @@ import ProjectSubmittedPage from "./ProjectSubmittedPage";
 import SelectCategory from "./SelectCategory";
 import ShareProject from "./ShareProject";
 import { Project } from "../../types";
+import { parseLocation } from "../../../public/lib/locationOperations";
 
 const DEFAULT_STATUS = 2;
 
@@ -37,7 +38,7 @@ const getSteps = (texts) => {
     {
       key: "share",
       text: texts.basic_info,
-      headline: texts.share_a_project,
+      headline: texts.share_your_climate_project,
     },
     {
       key: "selectCategory",
@@ -365,6 +366,7 @@ const getDefaultProjectValues = (
 const formatProjectForRequest = async (project, translations) => {
   return {
     ...project,
+    loc: parseLocation(project.loc),
     status: project.status.id,
     skills: project.skills.map((s) => s.key),
     team_members: project.team_members.map((m) => ({

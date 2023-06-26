@@ -477,7 +477,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     project_name: {
       en: "Project name",
-      de: "Projektname",
+      de: "Projekttitel",
     },
     your_project_draft_is_missing_the_following_reqired_property: {
       en: "Your project draft is missing the following reqired property:",
@@ -631,16 +631,16 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Benutze die Suchleiste, um Mitglieder zu deinem Projekt hinzuzufügen.",
     },
     summarize_your_project: {
-      en: "Summarize your project",
-      de: "Fasse dein Projekt zusammen",
+      en: "Short summary of your project",
+      de: "Kurze Zusammenfassung deines Projektes",
     },
     briefly_summarise_what_you_are_doing: {
       en: "Briefly summarize what you are doing (up to 280 characters)",
       de: "Fasse kurz zusammen, was du tust (bis zu 280 Zeichen)",
     },
     briefly_summarise_what_you_are_doing_part_one: {
-      en: "Briefly summarise what you are doing (",
-      de: "Fasse kurz zusammen, was ihr macht (",
+      en: "Briefly summarise what you are doing. You have space to fully describe your project later. (",
+      de: "Gib einen kurzen Überblick darüber, was ihr macht. Du hast nachfolgend noch Platz für eine vollständige Beschreibung (",
     },
     briefly_summarise_what_you_are_doing_part_two: {
       en: " / 280 characters)",
@@ -978,11 +978,25 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     event_start_date: {
       en: "Event Start Time",
-      de: "Start des Events"
+      de: "Start des Events",
     },
     event_finish_date: {
       en: "Event Finish Time",
-      de: "Ende des Events"
-    }
+      de: "Ende des Events",
+    },
+    event_location: {
+      en: "Event Location",
+      de: "Veranstaltungsort",
+    },
+    event_location_helper_text: {
+      en:
+        "Enter the exact location so others are able to find your event. For online events enter the city or country you are from.",
+      de:
+        "Gib die genaue Adresse an, damit Interessierte deine Veranstaltung finden können. Bei Online-Events einfach die Stadt, in der du wohnst.",
+    },
+    share_your_climate_project: {
+      en: "Share Your Climate Project",
+      de: "Teile dein Klimaprojekt",
+    },
   };
 }

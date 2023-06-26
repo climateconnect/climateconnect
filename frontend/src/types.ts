@@ -1,4 +1,4 @@
-import { Dayjs } from 'dayjs';
+import { Dayjs } from "dayjs";
 
 export type User = {
   id: string;
@@ -25,7 +25,7 @@ export type Project = {
   tags?: any[];
   type: ProjectType;
   start_date?: Date | Dayjs | null;
-  end_date?: Date | Dayjs | null
+  end_date?: Date | Dayjs | null;
 };
 
 export type ProjectType = "project" | "idea" | "event";

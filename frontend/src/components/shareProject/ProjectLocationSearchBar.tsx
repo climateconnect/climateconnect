@@ -1,5 +1,6 @@
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
+import { parseLocation } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import { Project } from "../../types";
 import UserContext from "../context/UserContext";
@@ -25,6 +26,31 @@ export default function ProjectLocationSearchBar({ projectData, handleSetProject
   const { locale } = useContext(UserContext);
   const classes = useStyles();
   const texts = getTexts({ page: "project", locale: locale });
+  const TYPES_TO_USE_EXACT_LOCATION = ["event"];
+
+  const handleChangeLocationString = (newLocationString) => {
+    handleSetProjectData({
+      ...projectData,
+      loc: newLocationString,
+    });
+  };
+
+  const handleChangeLocation = (location) => {
+    handleSetProjectData({
+      ...projectData,
+      loc: location,
+    });
+  };
+
+  const handleChangeAdditionalInfoText = (additionalInfo) => {
+    handleSetProjectData({
+      ...projectData,
+      loc: {
+        ...projectData.loc,
+        additionalInfo
+      }
+    })
+  }
 
   const propsByProjectType = {
     event: {
@@ -45,7 +71,13 @@ export default function ProjectLocationSearchBar({ projectData, handleSetProject
       className={classes.root}
       label={propsByProjectType[projectData.type]?.label}
       helperText={propsByProjectType[projectData.type]?.helperText}
-      enableExactLocation
+      enableExactLocation={TYPES_TO_USE_EXACT_LOCATION.includes(projectData.type)}
+      value={projectData.loc}
+      onChange={handleChangeLocationString}
+      onSelect={handleChangeLocation}
+      required
+      additionalInfoText={projectData.loc.additionalInfo}
+      onChangeAdditionalInfoText={handleChangeAdditionalInfoText}
     />
   );
 }

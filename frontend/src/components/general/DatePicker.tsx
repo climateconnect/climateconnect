@@ -1,12 +1,12 @@
 import React, { useContext } from "react";
 import "date-fns";
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import 'dayjs/locale/de';
-import 'dayjs/locale/en';
-import { Dayjs } from "dayjs"
+import "dayjs/locale/de";
+import "dayjs/locale/en";
+import { Dayjs } from "dayjs";
 
-import { DatePicker as DatePickerComponent} from "@mui/x-date-pickers/DatePicker"
+import { DatePicker as DatePickerComponent } from "@mui/x-date-pickers/DatePicker";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import UserContext from "../context/UserContext";
 
@@ -15,8 +15,8 @@ type Props = {
   date?: Date | null | Dayjs;
   handleChange: Function;
   className?: string;
-  minDate?: Date;
-  maxDate?: Date;
+  minDate?: Date | Dayjs | null;
+  maxDate?: Date | Dayjs | null;
   enableTime?: boolean;
 };
 export default function DatePicker({
@@ -28,11 +28,11 @@ export default function DatePicker({
   maxDate,
   enableTime,
 }: Props) {
-  const { locale } = useContext(UserContext)
+  const { locale } = useContext(UserContext);
   const handleDateChange = (value) => {
     handleChange(value);
   };
-  
+
   const args = {
     className: className,
     label: label,
@@ -44,10 +44,10 @@ export default function DatePicker({
   return (
     <LocalizationProvider adapterLocale={locale} dateAdapter={AdapterDayjs}>
       {enableTime ? (
-        <DateTimePicker {...args}/>
-      ) :
+        <DateTimePicker {...args} minDateTime={minDate && minDate} />
+      ) : (
         <DatePickerComponent {...args} />
-      }
+      )}
     </LocalizationProvider>
   );
 }

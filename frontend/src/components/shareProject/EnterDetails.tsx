@@ -12,6 +12,7 @@ import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import AddPhotoSection from "./AddPhotoSection";
 import AddSummarySection from "./AddSummarySection";
 import CollaborateSection from "./CollaborateSection";
+import ProjectNameSection from "./ProjectNameSection"
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -168,6 +169,10 @@ export default function EnterDetails({
     <>
       <Container maxWidth="lg">
         <form onSubmit={onClickNextStep}>
+          <ProjectNameSection
+            projectData={projectData}
+            handleSetProjectData={handleSetProjectData}
+          />
           <ProjectTimeAndPlaceSection
             projectData={projectData}
             handleSetProjectData={handleSetProjectData}
