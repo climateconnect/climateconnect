@@ -371,7 +371,7 @@ const formatProjectForRequest = async (project, translations) => {
     team_members: project.team_members.map((m) => ({
       url_slug: m.url_slug,
       role: m.role.id,
-      availability: m.availability.id,
+      availability: m.availability?.id,
       id: m.id,
       role_in_project: m.role_in_project,
     })),
