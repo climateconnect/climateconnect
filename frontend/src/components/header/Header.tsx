@@ -92,12 +92,6 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       padding: theme.spacing(2),
       paddingRight: "auto",
       paddingLeft: "auto",
-      [theme.breakpoints.down("lg")]: {
-        padding: theme.spacing(2),
-      },
-      [theme.breakpoints.down("md")]: {
-        padding: `${theme.spacing(0.8)} ${theme.spacing(2)}`,
-      },
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",

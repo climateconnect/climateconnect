@@ -1,5 +1,5 @@
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext, useRef } from "react";
+import React, { useContext } from "react";
 import { Mention, MentionsInput } from "react-mentions";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import UserContext from "../context/UserContext";

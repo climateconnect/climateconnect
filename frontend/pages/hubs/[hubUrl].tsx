@@ -32,17 +32,6 @@ import { Theme } from "@mui/material/styles";
 import theme from "../../src/themes/theme";
 
 const useStyles = makeStyles((theme) => ({
-  contentRefContainer: {
-    paddingTop: theme.spacing(4),
-    position: "relative",
-    [theme.breakpoints.down("md")]: {
-      paddingTop: theme.spacing(1),
-    },
-  },
-  contentRef: {
-    position: "absolute",
-    top: -90,
-  },
   moreInfoSoon: {
     fontWeight: 600,
     maxWidth: 800,
