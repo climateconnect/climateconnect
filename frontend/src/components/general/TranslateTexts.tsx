@@ -253,7 +253,6 @@ export default function TranslateTexts({
           target_language: "en",
         },
         locale: locale,
-        shouldThrowError: true,
       });
       const translations = response.data.translations;
       const translationsObject = Object.keys(translations).reduce(function (obj, key) {

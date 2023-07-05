@@ -117,7 +117,6 @@ export default function TranslateProject({
           target_language: "en",
         },
         locale: locale,
-        shouldThrowError: true,
       });
       const translations = response.data.translations;
       const translationsObject = Object.keys(translations).reduce(function (obj, key) {

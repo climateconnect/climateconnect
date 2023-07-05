@@ -407,7 +407,6 @@ const getHubData = async (url_slug, locale) => {
       method: "get",
       url: `/api/hubs/${url_slug}/`,
       locale: locale,
-      shouldThrowError: true,
     });
     return resp.data;
   } catch (err: any) {
@@ -424,7 +423,6 @@ const getHubAmbassadorData = async (url_slug, locale) => {
       method: "get",
       url: `/api/hubs/${url_slug}/ambassador/`,
       locale: locale,
-      shouldThrowError: true,
     });
     return resp.data;
   } catch (err: any) {

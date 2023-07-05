@@ -136,7 +136,6 @@ export default function EditOrganizationRoot({
         payload: payload,
         token: token,
         locale: locale,
-        shouldThrowError: true,
       })
         .then(function () {
           Router.push({

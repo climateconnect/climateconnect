@@ -70,6 +70,7 @@ export default function SelectedFilter({
                 icon={<filterMetadata.icon name={filterMetadata.iconName} />}
                 className={classes.selectedChip}
                 label={filterName}
+                color="secondary"
                 onDelete={() => handleUnselectFilter(filter, filterMetadata.key)}
               />
             </Tooltip>

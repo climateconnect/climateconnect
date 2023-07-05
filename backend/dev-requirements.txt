@@ -1,7 +1,0 @@
-
-# Dev dependencies go here
--r requirements.txt
-
-django-debug-toolbar==3.5.0
-GDAL==3.0.4
-ruff~=0.0
