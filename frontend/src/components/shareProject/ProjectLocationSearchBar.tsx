@@ -6,27 +6,16 @@ import { Project } from "../../types";
 import UserContext from "../context/UserContext";
 import LocationSearchBar from "../search/LocationSearchBar";
 
-const useStyles = makeStyles((theme) => {
-  return {
-    root: {
-      [theme.breakpoints.up("sm")]: {
-        width: "50%",
-        paddingLeft: theme.spacing(2),
-      },
-    },
-  };
-});
-
 type Args = {
   projectData: Project;
   handleSetProjectData: Function;
+  className?: any;
 };
 
-export default function ProjectLocationSearchBar({ projectData, handleSetProjectData }: Args) {
+export default function ProjectLocationSearchBar({ projectData, handleSetProjectData, className }: Args) {
   const { locale } = useContext(UserContext);
-  const classes = useStyles();
   const texts = getTexts({ page: "project", locale: locale });
-  const TYPES_TO_USE_EXACT_LOCATION = ["event"];
+  const PROJECT_TYPES_WITH_ADD_INFO = ["event"]
 
   const handleChangeLocationString = (newLocationString) => {
     handleSetProjectData({
@@ -44,11 +33,8 @@ export default function ProjectLocationSearchBar({ projectData, handleSetProject
 
   const handleChangeAdditionalInfoText = (additionalInfo) => {
     handleSetProjectData({
-      ...projectData,
-      loc: {
-        ...projectData.loc,
-        additionalInfo
-      }
+      ...projectData,      
+      additional_loc_info: additionalInfo
     })
   }
 
@@ -68,16 +54,17 @@ export default function ProjectLocationSearchBar({ projectData, handleSetProject
   };
   return (
     <LocationSearchBar
-      className={classes.root}
+      className={className}
       label={propsByProjectType[projectData.type]?.label}
       helperText={propsByProjectType[projectData.type]?.helperText}
-      enableExactLocation={TYPES_TO_USE_EXACT_LOCATION.includes(projectData.type)}
+      enableExactLocation
       value={projectData.loc}
       onChange={handleChangeLocationString}
       onSelect={handleChangeLocation}
       required
-      additionalInfoText={projectData.loc.additionalInfo}
+      additionalInfoText={projectData.additional_loc_info}
       onChangeAdditionalInfoText={handleChangeAdditionalInfoText}
+      enableAdditionalInfo={PROJECT_TYPES_WITH_ADD_INFO.includes(projectData.type)}
     />
   );
 }

@@ -159,7 +159,6 @@ export default function ShareProjectRoot({
     event.preventDefault();
     setLoadingSubmit(true);
     const payload = await formatProjectForRequest(project, translations);
-
     try {
       const resp = await apiRequest({
         method: "post",
@@ -366,7 +365,7 @@ const getDefaultProjectValues = (
 const formatProjectForRequest = async (project, translations) => {
   return {
     ...project,
-    loc: parseLocation(project.loc),
+    loc: parseLocation(project.loc, true),
     status: project.status.id,
     skills: project.skills.map((s) => s.key),
     team_members: project.team_members.map((m) => ({

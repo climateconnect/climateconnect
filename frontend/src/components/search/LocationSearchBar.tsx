@@ -12,10 +12,16 @@ import {
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   additionalInfos: {
     width: "100%",
   },
+  input: {
+    marginBottom: theme.spacing(2)
+  },
+  formHelperText: {
+    marginTop: theme.spacing(-2)
+  }
 }));
 
 type Props = {
@@ -37,6 +43,7 @@ type Props = {
   enableExactLocation?: boolean;
   additionalInfoText?: string;
   onChangeAdditionalInfoText?;
+  enableAdditionalInfo?: boolean;
 };
 export default function LocationSearchBar({
   label,
@@ -57,6 +64,7 @@ export default function LocationSearchBar({
   enableExactLocation,
   additionalInfoText,
   onChangeAdditionalInfoText,
+  enableAdditionalInfo,
 }: Props) {
   const { locale } = useContext(UserContext);
   const classes = useStyles();
@@ -294,12 +302,17 @@ export default function LocationSearchBar({
             InputProps={{
               ...params.InputProps,
               endAdornment: <React.Fragment>{params.InputProps.endAdornment}</React.Fragment>,
-              className: textFieldClassName,
+              className: `${textFieldClassName} ${classes.input}`,
+            }}
+            FormHelperTextProps={{
+              classes:{
+                  root:classes.formHelperText
+              }
             }}
           />
         )}
       />
-      {enableExactLocation && (
+      {enableAdditionalInfo && (
         <TextField
           label={texts.additional_infos_for_location}
           className={classes.additionalInfos}

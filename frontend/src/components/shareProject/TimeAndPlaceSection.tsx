@@ -6,8 +6,10 @@ import UserContext from "../context/UserContext";
 import makeStyles from "@mui/styles/makeStyles";
 import { Dayjs } from "dayjs";
 import ProjectLocationSearchBar from "./ProjectLocationSearchBar";
+import { Theme } from "@mui/material";
 
-const useStyles = makeStyles((theme) => {
+
+const useStyles = makeStyles<Theme, { displayDate?: boolean }>((theme) => {
   return {
     root: {
       [theme.breakpoints.up("md")]: {
@@ -28,6 +30,13 @@ const useStyles = makeStyles((theme) => {
         paddingRight: 0
       }
     },
+    locationSearchBar: (props) => ({
+      [theme.breakpoints.up("sm")]: {
+        width: "50%",
+        paddingLeft: props.displayDate ? theme.spacing(2) : 0,
+        paddingRight: props.displayDate ? 0 : theme.spacing(2)
+      },
+    })
   };
 });
 
@@ -39,7 +48,7 @@ type Args = {
 export default function ProjectTimeAndPlaceSection({ projectData, handleSetProjectData }: Args) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ locale: locale, page: "project" });
-  const classes = useStyles();
+  const classes = useStyles({displayDate: projectData.type !== "idea"});
 
   const dateOptions = {
     project: {
@@ -101,6 +110,7 @@ export default function ProjectTimeAndPlaceSection({ projectData, handleSetProje
       <ProjectLocationSearchBar
         projectData={projectData}
         handleSetProjectData={handleSetProjectData}
+        className={classes.locationSearchBar}
       />
     </div>
   );

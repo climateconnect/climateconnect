@@ -100,6 +100,9 @@ export function getNameFromExactLocation(location) {
   const name = firstPart + middlePart + cityAndCountry;
   return {
     name: name || location.display_name || "test",
+    city: getCityOrCountyName(location.address),
+    state: location.address.state,
+    country: location.address.country,
   };
 }
 
@@ -204,7 +207,7 @@ export function parseLocation(location, isConcretePlace = false) {
     country: location_object.country,
     place_name: placeName,
     exact_address: exactAddress,
-    additional_info: location?.additionalInfoText,
+    additional_info: location?.additionalInfoText || location?.additionalInfo,
     is_exact_location: isConcretePlace
   };
 }
