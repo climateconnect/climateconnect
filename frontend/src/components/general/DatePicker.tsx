@@ -18,6 +18,7 @@ type Props = {
   minDate?: Date | Dayjs | null;
   maxDate?: Date | Dayjs | null;
   enableTime?: boolean;
+  error?: "string";
 };
 export default function DatePicker({
   label,
@@ -27,6 +28,7 @@ export default function DatePicker({
   minDate,
   maxDate,
   enableTime,
+  error,
 }: Props) {
   const { locale } = useContext(UserContext);
   const handleDateChange = (value) => {
@@ -40,6 +42,12 @@ export default function DatePicker({
     onChange: handleDateChange,
     maxDate: maxDate && maxDate,
     minDate: minDate && minDate,
+    slotProps: {
+      textField: {
+        helperText: error,
+        error: error,
+      },
+    },
   };
   return (
     <LocalizationProvider adapterLocale={locale} dateAdapter={AdapterDayjs}>

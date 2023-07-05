@@ -17,11 +17,11 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   input: {
-    marginBottom: theme.spacing(2)
+    marginBottom: theme.spacing(2),
   },
   formHelperText: {
-    marginTop: theme.spacing(-2)
-  }
+    marginTop: theme.spacing(-2),
+  },
 }));
 
 type Props = {
@@ -266,8 +266,8 @@ export default function LocationSearchBar({
   };
 
   const handleChangeAdditionalInfoText = (e) => {
-    onChangeAdditionalInfoText(e.target.value)
-  }
+    onChangeAdditionalInfoText(e.target.value);
+  };
 
   return (
     <div className={className}>
@@ -305,9 +305,9 @@ export default function LocationSearchBar({
               className: `${textFieldClassName} ${classes.input}`,
             }}
             FormHelperTextProps={{
-              classes:{
-                  root:classes.formHelperText
-              }
+              classes: {
+                root: classes.formHelperText,
+              },
             }}
           />
         )}

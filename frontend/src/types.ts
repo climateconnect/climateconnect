@@ -26,7 +26,7 @@ export type Project = {
   type: ProjectType;
   start_date?: Date | Dayjs | null;
   end_date?: Date | Dayjs | null;
-  additional_loc_info?: string
+  additional_loc_info?: string;
 };
 
 export type ProjectType = "project" | "idea" | "event";

@@ -2,7 +2,7 @@ import { Container, IconButton, TextField, Tooltip, Typography } from "@mui/mate
 import makeStyles from "@mui/styles/makeStyles";
 import Switch from "@mui/material/Switch";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import getCollaborationTexts from "../../../public/data/collaborationTexts";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -12,7 +12,8 @@ import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import AddPhotoSection from "./AddPhotoSection";
 import AddSummarySection from "./AddSummarySection";
 import CollaborateSection from "./CollaborateSection";
-import ProjectNameSection from "./ProjectNameSection"
+import ProjectNameSection from "./ProjectNameSection";
+import dayjs from "dayjs";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -81,27 +82,26 @@ export default function EnterDetails({
   skillsOptions,
   statusOptions,
 }) {
-  const [open, setOpen] = React.useState({
+  const [open, setOpen] = useState({
     avatarDialog: false,
     skillsDialog: false,
     connectionsDialog: false,
+  });
+  const [errors, setErrors] = useState({
+    start_date: "",
+    end_date: "",
   });
   const classes = useStyles(projectData);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: projectData });
   const collaborationTexts = getCollaborationTexts(texts);
   const helpTexts = getHelpTexts(texts);
+  const topRef = useRef(null);
 
-  const statusValues = statusOptions.map((s) => {
-    return {
-      ...s,
-      label: s.name,
-      key: s.name,
-    };
-  });
-
-  const statusesWithStartDate = statusOptions.filter((s) => s.has_start_date).map((s) => s.id);
-  const statusesWithEndDate = statusOptions.filter((s) => s.has_end_date).map((s) => s.id);
+  //scroll to top if there is an error
+  useEffect(() => {
+    topRef?.current.scrollIntoView();
+  }, [errors]);
 
   const onClickPreviousStep = () => {
     goToPreviousStep();
@@ -146,19 +146,32 @@ export default function EnterDetails({
     if (!project.image) {
       alert(texts.please_add_an_image);
       return false;
-    } else return true;
-  };
+    }
+    //We handle date errors manually because props like 'required' aren't supported by mui-x-date-pickers
+    if (!project.start_date) {
+      setErrors({
+        ...errors,
+        start_date: `${texts.please_fill_out_this_field}: ${texts.start_date}`,
+      });
+      return false;
+    }
 
-  const onStatusRadioChange = (newStatus) => {
-    handleSetProjectData({ status: statusOptions.find((s) => s.name === newStatus) });
-  };
+    if (!dayjs(project.start_date).isValid()) {
+      setErrors({
+        ...errors,
+        start_date: `${texts.invalid_value}: ${texts.start_date}`,
+      });
+      return false;
+    }
 
-  const onStartDateChange = (newDate) => {
-    handleSetProjectData({ start_date: newDate });
-  };
-
-  const onEndDateChange = (newDate) => {
-    handleSetProjectData({ end_date: newDate });
+    if (!dayjs(project.end_date).isValid()) {
+      setErrors({
+        ...errors,
+        end_date: `${texts.invalid_value}: ${texts.end_date}`,
+      });
+      return false;
+    }
+    return true;
   };
 
   const onAllowCollaboratorsChange = (event) => {
@@ -168,7 +181,7 @@ export default function EnterDetails({
   return (
     <>
       <Container maxWidth="lg">
-        <form onSubmit={onClickNextStep}>
+        <form ref={topRef} onSubmit={onClickNextStep}>
           <ProjectNameSection
             projectData={projectData}
             handleSetProjectData={handleSetProjectData}
@@ -176,6 +189,7 @@ export default function EnterDetails({
           <ProjectTimeAndPlaceSection
             projectData={projectData}
             handleSetProjectData={handleSetProjectData}
+            errors={errors}
           />
           <div className={classes.block}>
             <AddPhotoSection

@@ -12,10 +12,14 @@ type Args = {
   className?: any;
 };
 
-export default function ProjectLocationSearchBar({ projectData, handleSetProjectData, className }: Args) {
+export default function ProjectLocationSearchBar({
+  projectData,
+  handleSetProjectData,
+  className,
+}: Args) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
-  const PROJECT_TYPES_WITH_ADD_INFO = ["event"]
+  const PROJECT_TYPES_WITH_ADD_INFO = ["event"];
 
   const handleChangeLocationString = (newLocationString) => {
     handleSetProjectData({
@@ -33,10 +37,10 @@ export default function ProjectLocationSearchBar({ projectData, handleSetProject
 
   const handleChangeAdditionalInfoText = (additionalInfo) => {
     handleSetProjectData({
-      ...projectData,      
-      additional_loc_info: additionalInfo
-    })
-  }
+      ...projectData,
+      additional_loc_info: additionalInfo,
+    });
+  };
 
   const propsByProjectType = {
     event: {

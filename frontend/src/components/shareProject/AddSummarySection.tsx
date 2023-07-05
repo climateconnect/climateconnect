@@ -5,14 +5,13 @@ import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   shortDescriptionWrapper: {
     width: "100%",
     [theme.breakpoints.up("md")]: {
       paddingTop: "56.25%",
       position: "relative",
-
-    }
+    },
   },
   shortDescription: {
     [theme.breakpoints.up("md")]: {
@@ -22,13 +21,13 @@ const useStyles = makeStyles(theme => ({
       bottom: 0,
       right: 0,
       width: "100%",
-    }
+    },
   },
   input: {
     [theme.breakpoints.up("md")]: {
       height: "100%",
-      alignItems: "flex-start"
-    }
+      alignItems: "flex-start",
+    },
   },
 }));
 

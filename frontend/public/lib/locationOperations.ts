@@ -167,7 +167,9 @@ export function isExactLocation(location) {
 }
 
 export function parseLocation(location, isConcretePlace = false) {
-  const location_object = isConcretePlace ? getNameFromExactLocation(location) : getNameFromLocation(location);
+  const location_object = isConcretePlace
+    ? getNameFromExactLocation(location)
+    : getNameFromLocation(location);
   //don't return anything if in legacy mode
   if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
     return location;
@@ -208,7 +210,7 @@ export function parseLocation(location, isConcretePlace = false) {
     place_name: placeName,
     exact_address: exactAddress,
     additional_info: location?.additionalInfoText || location?.additionalInfo,
-    is_exact_location: isConcretePlace
+    is_exact_location: isConcretePlace,
   };
 }
 
@@ -226,7 +228,7 @@ const props = [
   "place_name",
   "exact_address",
   "additional_info",
-  "is_exact_location"
+  "is_exact_location",
 ];
 const alreadyParsed = (location) => {
   for (const prop of props) {

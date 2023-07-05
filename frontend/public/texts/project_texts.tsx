@@ -639,8 +639,10 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Fasse kurz zusammen, was du tust (bis zu 280 Zeichen)",
     },
     briefly_summarise_what_you_are_doing_part_one: {
-      en: "Briefly summarise what you are doing. You have space to fully describe your project later. (",
-      de: "Gib einen kurzen Überblick darüber, was ihr macht. Du hast nachfolgend noch Platz für eine vollständige Beschreibung (",
+      en:
+        "Briefly summarise what you are doing. You have space to fully describe your project later. (",
+      de:
+        "Gib einen kurzen Überblick darüber, was ihr macht. Du hast nachfolgend noch Platz für eine vollständige Beschreibung (",
     },
     briefly_summarise_what_you_are_doing_part_two: {
       en: " / 280 characters)",
