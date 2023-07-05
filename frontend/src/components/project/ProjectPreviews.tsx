@@ -30,7 +30,7 @@ export default function ProjectPreviews({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const toProjectPreviews = (projects) =>
-    projects.map((p) => (
+    (projects || []).map((p) => (
       <GridItem
         key={p.url_slug}
         project={p}
@@ -49,12 +49,13 @@ export default function ProjectPreviews({
   }
 
   const loadMore = async () => {
-    // Sometimes InfiniteScroll calls loadMore twice really fast. Therefore
+    // Sometimes InfiniteScroll calls loadMore twice really fast. Therefore,
     // to improve performance, we aim to guard against subsequent
     // fetches to the API by maintaining a local state flag.
     if (!isFetchingMore) {
       setIsFetchingMore(true);
       const newProjects = await loadFunc();
+
       if (!parentHandlesGridItems) {
         setGridItems([...gridItems, ...toProjectPreviews(newProjects)]);
       }

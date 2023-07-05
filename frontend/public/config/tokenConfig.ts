@@ -1,4 +1,4 @@
-export default function tokenConfig(token, additionalHeaders) {
+export default function tokenConfig(token: string | undefined, additionalHeaders: object) {
   // Headers
   const config = {
     headers: {

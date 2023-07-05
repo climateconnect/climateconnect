@@ -1,13 +1,17 @@
 import { apiRequest } from "./apiOperations";
 
 export async function getMessageFromServer(message_id, token, locale) {
-  const resp = await apiRequest({
-    method: "get",
-    url: "/api/message/" + message_id + "/",
-    token: token,
-    locale: locale,
-  });
-  return resp.data;
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/message/" + message_id + "/",
+      token: token,
+      locale: locale,
+    });
+    return resp.data;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 export async function startPrivateChat(profile, token, locale) {
@@ -26,12 +30,16 @@ export async function startPrivateChat(profile, token, locale) {
 }
 
 export async function joinIdeaGroupChat({ idea, token, locale }) {
-  const resp = await apiRequest({
-    method: "post",
-    url: `/api/ideas/${idea.url_slug}/join_chat/`,
-    payload: {},
-    token: token,
-    locale: locale,
-  });
-  return resp.data;
+  try {
+    const resp = await apiRequest({
+      method: "post",
+      url: `/api/ideas/${idea.url_slug}/join_chat/`,
+      payload: {},
+      token: token,
+      locale: locale,
+    });
+    return resp.data;
+  } catch (error) {
+    console.error(error);
+  }
 }

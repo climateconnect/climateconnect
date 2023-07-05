@@ -1,5 +1,5 @@
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext, useRef } from "react";
+import React, { useContext } from "react";
 import { Mention, MentionsInput } from "react-mentions";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import UserContext from "../context/UserContext";
@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     borderBottom: `1px solid rgba(0, 0, 0, 0.87)`,
     marginLeft: theme.spacing(3),
-    overflow: "auto",
+    overflow: "visible",
     "&:hover": {
       borderBottom: "2px solid black",
       marginBottom: -1,
@@ -19,6 +19,9 @@ const useStyles = makeStyles((theme) => ({
       borderBottom: `2px solid ${theme.palette.primary.main}`,
       marginBottom: -1,
     },
+  },
+  mention: {
+    zIndex: 100,
   },
   messageInput: {
     flexGrow: 1,
@@ -63,7 +66,8 @@ export default function InputWithMentions({ baseUrl, value, onChange, placeholde
           id: user.url_slug,
         }));
       })
-      .then(callback);
+      .then(callback)
+      .catch(console.error);
   }
 
   return (
@@ -79,6 +83,7 @@ export default function InputWithMentions({ baseUrl, value, onChange, placeholde
           onKeyDown={onKeyDown}
         >
           <Mention
+            className={classes.mention}
             displayTransform={(login) => `@${login}`}
             trigger="@"
             markup={`@@@____id__^^____display__@@@^^^`}

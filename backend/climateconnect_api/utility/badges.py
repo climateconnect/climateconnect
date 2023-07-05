@@ -1,4 +1,4 @@
-from climateconnect_api.models.badge import Badge, DonorBadge, UserBadge
+from climateconnect_api.models.badge import DonorBadge, UserBadge
 from climateconnect_api.models.donation import Donation
 import datetime
 from django.db.models import Q

@@ -1,4 +1,4 @@
-from climateconnect_api.models.user import UserProfileTranslation, Language
+from climateconnect_api.models.user import UserProfileTranslation
 from rest_framework import serializers
 
 

@@ -136,7 +136,6 @@ export default function EditOrganizationRoot({
         payload: payload,
         token: token,
         locale: locale,
-        shouldThrowError: true,
       })
         .then(function () {
           Router.push({
@@ -218,7 +217,6 @@ export default function EditOrganizationRoot({
       {organization ? (
         step === "edit_organization" ? (
           <EditAccountPage
-            type="organization"
             account={organization}
             possibleAccountTypes={tagOptions}
             infoMetadata={infoMetadata}
@@ -231,6 +229,7 @@ export default function EditOrganizationRoot({
             existingUrlSlug={existingUrlSlug}
             onClickCheckTranslations={onClickCheckTranslations}
             allHubs={allHubs}
+            type="organization"
           />
         ) : (
           <>

@@ -29,7 +29,12 @@ export default function LogInAction({ onClose }) {
 
   return (
     <>
-      <Button className={classes.signUpButton} variant="contained" onClick={onClickSignUp}>
+      <Button
+        color="grey"
+        className={classes.signUpButton}
+        variant="contained"
+        onClick={onClickSignUp}
+      >
         {texts.log_in}
       </Button>
       <IconButton aria-label="close" color="inherit" onClick={onClose} size="large">

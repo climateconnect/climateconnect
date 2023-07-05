@@ -53,6 +53,7 @@ else
 fi
 
 pushd backend
+$(pdm venv activate)
 make migrate
 make test-data
 popd

@@ -12,9 +12,7 @@ from climateconnect_api.pagination import SkillsPagination
 from rest_framework.response import Response
 from climateconnect_api.models.common import Feedback
 from climateconnect_api.utility.email_setup import send_feedback_email
-from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
-from django.utils.translation import get_language
 
 
 class ListAvailabilitiesView(ListAPIView):
@@ -51,7 +49,7 @@ class ReceiveFeedback(APIView):
             return Response(
                 {"message": "Message is missing."}, status=status.HTTP_400_BAD_REQUEST
             )
-        if "send_response" in request.data and request.data["send_response"] == True:
+        if "send_response" in request.data and request.data["send_response"] is True:
             if request.user and request.user.is_authenticated:
                 feedback = Feedback.objects.create(
                     user=request.user,

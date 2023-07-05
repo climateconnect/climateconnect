@@ -1,12 +1,8 @@
 import re
-from datetime import datetime, timedelta
-
-from asgiref.sync import async_to_sync
 
 
 from organization.models.organization_project_published import OrgProjectPublished
-from organization.models.members import MembershipRequests, OrganizationMember
-from channels.layers import get_channel_layer
+from organization.models.members import MembershipRequests
 from organization.utility.email import (
     send_join_project_request_email,
     send_mention_email,
@@ -120,7 +116,6 @@ def create_organization_follower_notification(organization_follower):
 def create_organization_project_published_notification(
     followers, organization, project
 ):
-
     for follower in followers:
         org_project_published = OrgProjectPublished.objects.create(
             organization=organization, project=project, user=follower.user

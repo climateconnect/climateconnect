@@ -69,7 +69,6 @@ export default function CommentsContent({ user, project, token, setCurComments }
         method: "post",
         token: token,
         locale: locale,
-        shouldThrowError: true,
       });
       handleAddComment(resp.data.comment);
       if (setDisplayReplies) setDisplayReplies(true);

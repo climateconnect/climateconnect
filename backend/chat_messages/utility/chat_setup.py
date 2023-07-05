@@ -5,7 +5,7 @@ import uuid
 from datetime import datetime, timedelta
 
 # Django/Django REST imports
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import User
 from django.db.models import QuerySet
 
 from climateconnect_api.models import UserProfile, Role, Notification, UserNotification

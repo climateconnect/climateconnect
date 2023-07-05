@@ -3,7 +3,7 @@ from hubs.models import Hub, HubStat
 
 def get_hub_attribute(hub: Hub, attribute_name, language_code: str) -> str:
     if (
-        hub.language != None
+        hub.language is not None
         and language_code != hub.language.language_code
         and hub.translate_hub.filter(language__language_code=language_code).exists()
     ):
@@ -20,7 +20,7 @@ def get_hub_stat_attribute(
     hub_stat: HubStat, attribute_name, language_code: str
 ) -> str:
     if (
-        hub_stat.language != None
+        hub_stat.language is not None
         and language_code != hub_stat.language.language_code
         and hub_stat.translation_hub_stat.filter(
             language__language_code=language_code

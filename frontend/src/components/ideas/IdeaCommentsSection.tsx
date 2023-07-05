@@ -75,7 +75,6 @@ export default function IdeaCommentsSection({
         method: "post",
         token: token,
         locale: locale,
-        shouldThrowError: true,
       });
       handleAddComment(resp.data);
       if (setDisplayReplies) setDisplayReplies(true);

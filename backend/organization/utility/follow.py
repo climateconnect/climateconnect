@@ -12,6 +12,7 @@ from rest_framework.exceptions import ValidationError
 
 from django.utils.translation import gettext as _
 
+
 #  IsUserFollowing View functions
 def check_if_user_follows_project(
     user,
@@ -64,7 +65,6 @@ def check_if_user_follows(
 
 # SetFollow View functions
 def set_user_following_project(request, url_slug):
-
     return set_user_following(
         request_data=request.data,
         user=request.user,
@@ -76,7 +76,6 @@ def set_user_following_project(request, url_slug):
 
 
 def set_user_following_organization(request, url_slug):
-
     return set_user_following(
         request_data=request.data,
         user=request.user,
@@ -114,7 +113,7 @@ def set_user_following(
     field_look_up_input = {
         lookup_up_field_name: entity_model
     }  # this syntax is used for field_name=value in the .filter(s) lookup below
-    if request_data["following"] == True:
+    if request_data["following"] is True:
         if follower_model.objects.filter(user=user, **field_look_up_input).exists():
             message = (
                 _("You're already following this organization.")
@@ -147,7 +146,7 @@ def set_user_following(
                 },
                 status=status.HTTP_200_OK,
             )
-    if request_data["following"] == False:
+    if request_data["following"] is False:
         try:
             follower_object = follower_model.objects.get(
                 user=user, **field_look_up_input
@@ -184,7 +183,6 @@ def set_user_following(
 
 # ListFollowerView functions
 def get_list_of_organization_followers(self):
-
     return get_list_of_followers(
         list_of_followers_for_entity_model=Organization,
         follower_model=OrganizationFollower,
@@ -194,7 +192,6 @@ def get_list_of_organization_followers(self):
 
 
 def get_list_of_project_followers(self):
-
     return get_list_of_followers(
         list_of_followers_for_entity_model=Project,
         follower_model=ProjectFollower,

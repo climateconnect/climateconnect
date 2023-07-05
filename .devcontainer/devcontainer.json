@@ -8,10 +8,11 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "esbenp.prettier-vscode",
-        "dbaeumer.vscode-eslint",
-        "ms-python.python"
-      ]
+		"esbenp.prettier-vscode",
+		"dbaeumer.vscode-eslint",
+		"ms-python.python",
+		"charliermarsh.ruff"
+	]
     }
   },
   "containerEnv": {

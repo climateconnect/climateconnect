@@ -6,15 +6,19 @@ import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
 import DropDownList from "../../header/DropDownList";
 
+type MakeStylesProps = {
+  height: number;
+};
+
 const useStyles = makeStyles((theme) => ({
-  hubsDropDownButton: {
+  hubsDropDownButton: (props: MakeStylesProps) => ({
     textTransform: "none",
     color: "white",
     fontSize: 16,
-    height: 54,
+    height: props.height ? props.height : 54,
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
-  },
+  }),
 }));
 
 //Generic component to show a list of hubs in the HubsSubHeader
@@ -27,8 +31,9 @@ export default function HubsDropDown({
   onOpen,
   onClose,
   addLocationHubExplainerLink,
+  height,
 }: any) {
-  const classes = useStyles();
+  const classes = useStyles({ height: height });
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const popperRef = useRef<HTMLAnchorElement | null>(null);
   const { locale } = useContext(UserContext);
