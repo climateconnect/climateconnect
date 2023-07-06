@@ -11,6 +11,7 @@ export default function WebflowPage({
   pageKey,
   className,
   hideFooter,
+  noHeader,
 }: any) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
@@ -24,6 +25,7 @@ export default function WebflowPage({
         //TODO(unused) hideHeadline
         noSpaceBottom
         hideFooter={hideFooter}
+        noHeader={noHeader}
       >
         <div dangerouslySetInnerHTML={{ __html: bodyContent }} />
       </WideLayout>
