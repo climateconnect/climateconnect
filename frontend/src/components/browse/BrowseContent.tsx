@@ -517,8 +517,6 @@ export default function BrowseContent({
     hubName: hubName,
     nonFilterParams: nonFilterParams,
   };
-  console.log(isNarrowScreen);
-  console.log(isNarrowScreen ? filtersExandedOnMobile : filtersExpanded);
   return (
     <LoadingContext.Provider
       value={{

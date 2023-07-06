@@ -7,6 +7,7 @@ import { applyNewFilters, getInitialFilters } from "../public/lib/filterOperatio
 import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
+  getProjectTypeOptions,
   getSkillsOptions,
   getStatusOptions,
 } from "../public/lib/getOptions";
@@ -19,6 +20,7 @@ import TopOfPage from "../src/components/hooks/TopOfPage";
 import HubsSubHeader from "../src/components/indexPage/hubsSubHeader/HubsSubHeader";
 import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingContainerMobile";
 import WideLayout from "../src/components/layouts/WideLayout";
+import BrowseContext from "../src/components/context/BrowseContext";
 
 export async function getServerSideProps(ctx) {
   const { hideInfo } = NextCookies(ctx);
@@ -29,6 +31,7 @@ export async function getServerSideProps(ctx) {
     project_statuses,
     hubs,
     location_filtered_by,
+    projectTypes,
   ] = await Promise.all([
     getProjectTagsOptions(null, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
@@ -36,6 +39,7 @@ export async function getServerSideProps(ctx) {
     getStatusOptions(ctx.locale),
     getAllHubs(ctx.locale),
     getLocationFilteredBy(ctx.query),
+    getProjectTypeOptions(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -48,11 +52,12 @@ export async function getServerSideProps(ctx) {
       hideInfo: hideInfo === "true",
       hubs: hubs,
       initialLocationFilter: location_filtered_by,
+      projectTypes: projectTypes,
     }),
   };
 }
 
-export default function Browse({ filterChoices, hubs, initialLocationFilter }) {
+export default function Browse({ filterChoices, hubs, initialLocationFilter, projectTypes }) {
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
   const { locale } = useContext(UserContext);
@@ -109,6 +114,10 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter }) {
     });
   };
 
+  const contextValues = {
+    projectTypes: projectTypes,
+  };
+
   const hubsSubHeaderRef = useRef(null);
   return (
     <>
@@ -117,17 +126,19 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter }) {
         showOnScrollUp={showOnScrollUp}
         subHeader={<HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef} />}
       >
-        <MainHeadingContainerMobile />
-        <BrowseContent
-          applyNewFilters={handleApplyNewFilters}
-          filters={filters}
-          handleUpdateFilterValues={handleUpdateFilterValues}
-          errorMessage={errorMessage}
-          filterChoices={filterChoices}
-          handleSetErrorMessage={handleSetErrorMessage}
-          hubsSubHeaderRef={hubsSubHeaderRef}
-          initialLocationFilter={initialLocationFilter}
-        />
+        <BrowseContext.Provider value={contextValues}>
+          <MainHeadingContainerMobile />
+          <BrowseContent
+            applyNewFilters={handleApplyNewFilters}
+            filters={filters}
+            handleUpdateFilterValues={handleUpdateFilterValues}
+            errorMessage={errorMessage}
+            filterChoices={filterChoices}
+            handleSetErrorMessage={handleSetErrorMessage}
+            hubsSubHeaderRef={hubsSubHeaderRef}
+            initialLocationFilter={initialLocationFilter}
+          />
+        </BrowseContext.Provider>
       </WideLayout>
     </>
   );

@@ -23,7 +23,10 @@ from organization.models import (
 from organization.models.content import ProjectComment
 from organization.models.translations import ProjectTranslation
 from organization.serializers.organization import OrganizationStubSerializer
-from organization.serializers.status import ProjectStatusSerializer
+from organization.serializers.status import (
+    ProjectTypesSerializer,
+    ProjectStatusSerializer
+)
 from organization.serializers.tags import ProjectTaggingSerializer
 from organization.serializers.translation import ProjectTranslationSerializer
 from organization.utility.project import (
@@ -232,7 +235,7 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
 class ProjectStubSerializer(serializers.ModelSerializer):
     project_parents = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
-    status = SerializerMethodField()
+    project_type = SerializerMethodField()
     image = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
@@ -249,7 +252,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             "url_slug",
             "image",
             "location",
-            "status",
+            "project_type",
             "project_parents",
             "tags",
             "is_draft",
@@ -257,6 +260,8 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             "number_of_comments",
             "number_of_likes",
             "collaborating_organizations",
+            "start_date",
+            "end_date"
         )
 
     def get_name(self, obj):
@@ -305,8 +310,8 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             return None
         return obj.loc.name
 
-    def get_status(self, obj):
-        serializer = ProjectStatusSerializer(obj.status, many=False)
+    def get_project_type(self, obj):
+        serializer = ProjectTypesSerializer(obj.project_type, many=False)
         return serializer.data["name"]
 
     def get_number_of_comments(self, obj):

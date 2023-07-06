@@ -11,6 +11,10 @@ import ProjectCategoriesDisplay from "./ProjectCategoriesDisplay";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import { Project } from "../../types";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import LightbulbIcon from "@mui/icons-material/Lightbulb";
+import PublicIcon from "@mui/icons-material/Public";
+import BrowseContext from "../context/BrowseContext";
 
 const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
   creatorImage: {
@@ -76,6 +80,12 @@ const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
   },
   additionalInfoCounter: {
     marginLeft: theme.spacing(0.5),
+  },
+  typeIcon: {
+    width: 20,
+    height: 20,
+    marginLeft: 2,
+    marginRight: 6,
   },
 }));
 
@@ -238,13 +248,17 @@ const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_pa
 
 const AdditionalPreviewInfo = ({ project }) => {
   const classes = useStyles({});
-  //only display additional preview info if the project has a significant number of likes/comments
-  if (project.number_of_comments < 3 && project.number_of_likes < 3) {
-    return <></>;
-  }
+  const nativeIcons = {
+    event: CalendarMonthIcon,
+    project: PublicIcon,
+    idea: LightbulbIcon,
+  };
+  const { projectTypes } = useContext(BrowseContext);
+  const projectType = projectTypes.find((t) => t.name === project.project_type);
+  projectType.nativeIcon = nativeIcons[projectType.type_id];
   return (
     <Box className={classes.additionalInfoContainer}>
-      {project.number_of_comments > 2 && (
+      {project.number_of_comments > 0 && (
         <Box className={classes.additionalInfoIcon}>
           <ModeCommentIcon color="primary" />
           <span className={classes.additionalInfoCounter}> {project.number_of_comments} </span>
@@ -257,9 +271,15 @@ const AdditionalPreviewInfo = ({ project }) => {
         </Box>
       )}
       <Box className={classes.additionalInfoIcon}>
-        {" • "}
-        <div className={classes.horizontalSpacing} />
-        {project.status}
+        {(project.number_of_comments > 0 || project.number_of_likes > 2) && (
+          <>
+            {" • "}
+            <div className={classes.horizontalSpacing} />
+          </>
+        )}
+        {/*<projectType.nativeIcon color="primary" className={classes.cardIcon} />*/}
+        <img src={projectType.icon} className={`${classes.typeIcon} ${classes.cardIcon}`} />
+        <Typography className={classes.metadataText}>{project.project_type}</Typography>
       </Box>
     </Box>
   );

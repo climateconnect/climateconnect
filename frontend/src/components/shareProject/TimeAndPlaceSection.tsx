@@ -52,7 +52,7 @@ export default function ProjectTimeAndPlaceSection({
 }: Args) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ locale: locale, page: "project" });
-  const classes = useStyles({ displayDate: projectData.type !== "idea" });
+  const classes = useStyles({ displayDate: projectData.project_type !== "idea" });
 
   const dateOptions = {
     project: {
@@ -89,21 +89,21 @@ export default function ProjectTimeAndPlaceSection({
     <div className={classes.root}>
       {
         //Don't display a date for ideas. We'll assume the person sharing just had the idea
-        projectData.type !== "idea" && (
+        projectData.project_type !== "idea" && (
           <div className={classes.datePickerContainer}>
             <DatePicker
               className={classes.datePicker}
-              label={dateOptions[projectData.type].startDateLabel}
-              enableTime={dateOptions[projectData.type].enableTime}
+              label={dateOptions[projectData.project_type].startDateLabel}
+              enableTime={dateOptions[projectData.project_type].enableTime}
               handleChange={(newDate) => handleDateChange(newDate, "start_date")}
               date={projectData.start_date}
               error={errors.start_date}
             />
-            {projectData.type === "event" && (
+            {projectData.project_type === "event" && (
               <DatePicker
                 className={classes.datePicker}
-                label={dateOptions[projectData.type].endDateLabel}
-                enableTime={dateOptions[projectData.type].enableTime}
+                label={dateOptions[projectData.project_type].endDateLabel}
+                enableTime={dateOptions[projectData.project_type].enableTime}
                 handleChange={(newDate) => handleDateChange(newDate, "end_date")}
                 minDate={projectData.start_date || null}
                 date={projectData.end_date}

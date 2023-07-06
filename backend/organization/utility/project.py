@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_new_project(data: Dict, source_language: Language) -> Project:
-    project_type_id_index = [t[1] for t in ProjectTypes.POSSIBLE_PROJECT_TYPES].index(data["type"])
+    project_type_id_index = [t[1] for t in ProjectTypes.POSSIBLE_PROJECT_TYPES].index(data["project_type"])
     project_type = ProjectTypes.objects.get(
         type_id=ProjectTypes.POSSIBLE_PROJECT_TYPES[project_type_id_index][0]
     )

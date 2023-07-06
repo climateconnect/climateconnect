@@ -74,10 +74,6 @@ export default function Share({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
 
-  const getOrgObject = (org) => {
-    return userOrganizations.find((o) => o.name.trim() === org);
-  };
-
   const onChangeSwitch = () => {
     handleSetProjectData({ is_organization_project: !project.is_organization_project });
   };
@@ -87,7 +83,7 @@ export default function Share({
   };
 
   const onChangeProjectType = (newValue) => {
-    handleSetProjectData({ type: newValue });
+    handleSetProjectData({ project_type: newValue });
   };
 
   const onClickNextStep = (e) => {
@@ -123,7 +119,7 @@ export default function Share({
       )}
       <ProjectTypeSelector
         className={classes.field}
-        value={project.type}
+        value={project.project_type}
         onChange={onChangeProjectType}
         types={projectTypeOptions}
       />

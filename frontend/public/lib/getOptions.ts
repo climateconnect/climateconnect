@@ -60,6 +60,25 @@ export async function getProjectTagsOptions(hub, locale) {
   }
 }
 
+export async function getProjectTypeOptions(locale) {
+  const url = `/api/project_type_options/`;
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: url,
+      locale: locale,
+    });
+    if (resp.data.results.length === 0) return null;
+    else {
+      return resp.data.results;
+    }
+  } catch (err: any) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
+
 export async function getOrganizationTagsOptions(locale) {
   try {
     const resp = await apiRequest({
