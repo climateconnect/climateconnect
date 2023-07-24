@@ -14,6 +14,7 @@ import AddSummarySection from "./AddSummarySection";
 import CollaborateSection from "./CollaborateSection";
 import ProjectNameSection from "./ProjectNameSection";
 import dayjs from "dayjs";
+import { getProjectTypeOptions } from "../../../public/data/projectTypeOptions"
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -91,6 +92,7 @@ export default function EnterDetails({
     start_date: "",
     end_date: "",
   });
+  const PROJECT_TYPE_OPTIONS = getProjectTypeOptions(texts)
   const classes = useStyles(projectData);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: projectData });
@@ -147,29 +149,34 @@ export default function EnterDetails({
       alert(texts.please_add_an_image);
       return false;
     }
-    //We handle date errors manually because props like 'required' aren't supported by mui-x-date-pickers
-    if (!project.start_date) {
-      setErrors({
-        ...errors,
-        start_date: `${texts.please_fill_out_this_field}: ${texts.start_date}`,
-      });
-      return false;
-    }
 
-    if (!dayjs(project.start_date).isValid()) {
-      setErrors({
-        ...errors,
-        start_date: `${texts.invalid_value}: ${texts.start_date}`,
-      });
-      return false;
-    }
+    if(PROJECT_TYPE_OPTIONS[project.type].enableStartDate) {
+      //We handle date errors manually because props like 'required' aren't supported by mui-x-date-pickers
+      if (!project.start_date) {
+        setErrors({
+          ...errors,
+          start_date: `${texts.please_fill_out_this_field}: ${texts.start_date}`,
+        });
+        return false;
+      }
 
-    if (!dayjs(project.end_date).isValid()) {
-      setErrors({
-        ...errors,
-        end_date: `${texts.invalid_value}: ${texts.end_date}`,
-      });
-      return false;
+      if (!dayjs(project.start_date).isValid()) {
+        setErrors({
+          ...errors,
+          start_date: `${texts.invalid_value}: ${texts.start_date}`,
+        });
+        return false;
+      }
+
+      if(PROJECT_TYPE_OPTIONS[project.type].enableEndDate) {
+        if (!dayjs(project.end_date).isValid()) {
+          setErrors({
+            ...errors,
+            end_date: `${texts.invalid_value}: ${texts.end_date}`,
+          });
+          return false;
+        }
+      }
     }
     return true;
   };
