@@ -10,7 +10,7 @@ from climateconnect_api.utility.common import create_unique_slug
 
 from organization.models import Project, ProjectMember
 from organization.models.tags import ProjectTags
-from organization.models.status import ProjectTypes
+from organization.models.type import ProjectTypesChoices
 
 from django.db.models import Q
 from climateconnect_api.models import Role
@@ -21,10 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_new_project(data: Dict, source_language: Language) -> Project:
-    project_type_id_index = [t[1] for t in ProjectTypes.POSSIBLE_PROJECT_TYPES].index(data["project_type"])
-    project_type = ProjectTypes.objects.get(
-        type_id=ProjectTypes.POSSIBLE_PROJECT_TYPES[project_type_id_index][0]
-    )
+    project_type = ProjectTypesChoices[data["type"]]
     project = Project.objects.create(
         name=data["name"],
         short_description=data["short_description"],

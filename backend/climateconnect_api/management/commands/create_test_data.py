@@ -14,7 +14,7 @@ from climateconnect_api.models import (
     UserProfile,
     Skill,
 )
-from organization.models import ProjectStatus, Project, Organization, ProjectTypes
+from organization.models import ProjectStatus, Project, Organization
 
 
 def create_language_test_data():
@@ -114,30 +114,6 @@ def create_project_status_test_data():
         print("Recurring project status created.")
     else:
         print("Recurring project status already exists.")
-
-
-def create_project_type_test_data():
-    # Creating 3 project types
-    types_to_create = [
-        {"name": "Project", "name_de_translation": "Projekt", "type_id": 0},
-        {"name": "Idea", "name_de_translation": "Idee", "type_id": 1},
-        {"name": "Event", "name_de_translation": "Event", "type_id": 2},
-    ]
-    print("Creating project types...")
-    for type in types_to_create:
-        create_project_type(type)
-
-
-def create_project_type(type):
-    if not ProjectTypes.objects.filter(type_id=type["type_id"]).exists():
-        ProjectTypes.objects.create(
-            name=type["name"],
-            name_de_translation=type["name_de_translation"],
-            type_id=type["type_id"],
-        )
-        print('Project type "%s" created.', type["name"])
-    else:
-        print('"%s" project type already exists.', type["name"])
 
 
 def create_organization_test_data(number_of_rows: int):
@@ -441,7 +417,6 @@ class Command(BaseCommand):
         create_availability_test_data(number_of_rows=number_of_rows)
         create_roles_test_data()
         create_project_status_test_data()
-        create_project_type_test_data()
         create_organization_test_data(number_of_rows=number_of_rows)
         create_project_tags_test_data()
         create_organization_tags_test_data()

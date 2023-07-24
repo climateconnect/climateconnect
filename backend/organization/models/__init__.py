@@ -19,7 +19,7 @@ from organization.models.members import (
 
 from organization.models.organization_project_published import OrgProjectPublished
 
-from organization.models.status import ProjectStatus, ProjectTypes
+from organization.models.status import ProjectStatus
 
 from organization.models.followers import ProjectFollower, OrganizationFollower
 

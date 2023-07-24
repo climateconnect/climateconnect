@@ -50,7 +50,7 @@ from organization.models import (
     OrganizationFollower,
 )
 
-from organization.models.status import ProjectTypes
+from organization.models.type import PROJECT_TYPES
 from organization.serializers.status import ProjectTypesSerializer
 
 from organization.models.members import MembershipRequests
@@ -839,12 +839,14 @@ class ListProjectStatus(ListAPIView):
         return ProjectStatus.objects.all()
 
 
-class ListProjectTypeOptions(ListAPIView):
+class ListProjectTypeOptions(APIView):
     permission_classes = [AllowAny]
     serializer_class = ProjectTypesSerializer
 
-    def get_queryset(self):
-        return ProjectTypes.objects.all()
+    def get(self, request):
+        project_type_values = [type for type in PROJECT_TYPES.values()]
+        serializer = ProjectTypesSerializer(project_type_values, many=True) 
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class SetFollowView(APIView):
