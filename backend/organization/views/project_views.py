@@ -841,7 +841,6 @@ class ListProjectStatus(ListAPIView):
 
 class ListProjectTypeOptions(APIView):
     permission_classes = [AllowAny]
-    serializer_class = ProjectTypesSerializer
 
     def get(self, request):
         project_type_values = [type for type in PROJECT_TYPES.values()]
