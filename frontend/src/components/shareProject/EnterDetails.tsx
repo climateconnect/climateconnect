@@ -92,12 +92,12 @@ export default function EnterDetails({
     start_date: "",
     end_date: "",
   });
-  const PROJECT_TYPE_OPTIONS = getProjectTypeOptions(texts)
   const classes = useStyles(projectData);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: projectData });
   const collaborationTexts = getCollaborationTexts(texts);
   const helpTexts = getHelpTexts(texts);
+  const PROJECT_TYPE_OPTIONS = getProjectTypeOptions(texts)
   const topRef = useRef(null);
 
   //scroll to top if there is an error
