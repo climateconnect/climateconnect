@@ -1,4 +1,5 @@
-import { format, isThisYear, isToday } from "date-fns";
+import { format, formatRelative, isThisYear, isToday } from "date-fns";
+import { de } from "date-fns/locale";
 
 export function getDayAndMonth(date) {
   return format(date, "dd.MM");
@@ -17,6 +18,16 @@ export function getDateTime(rawDate) {
   if (isToday(date)) return format(date, "hh:mm");
   if (isThisYear(date)) return format(date, "MMM dd HH:mm");
   else return format(date, "MMM dd yyyy HH:mm");
+}
+
+export function getDateTimeRange(rawStartDate, rawEndDate) {
+  const startDate = new Date(rawStartDate);
+  const endDate = new Date(rawEndDate);
+  //Case 1: start and end are on the same day
+  if(startDate.getDate() === endDate.getDate()) {
+    return formatRelative(startDate, new Date())
+  }
+  return formatRelative(startDate, new Date(), {locale: de})
 }
 
 export function durationFromMiliseconds(miliseconds, texts) {

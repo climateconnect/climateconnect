@@ -246,7 +246,9 @@ const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_pa
 const AdditionalPreviewInfo = ({ project }) => {
   const classes = useStyles({});
   const { projectTypes } = useContext(BrowseContext);
-  const projectType = projectTypes.find((t) => t.name === project.project_type);
+  const projectType = (projectTypes && projectTypes.length > 0)
+    ? projectTypes.find((t) => t.name === project.project_type)
+    : { name: project.project_type.name };
   return (
     <Box className={classes.additionalInfoContainer}>
       {project.number_of_comments > 0 && (

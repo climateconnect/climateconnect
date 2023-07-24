@@ -110,7 +110,10 @@ export default function ProjectPreview({ project, projectRef, hubUrl, className 
   const [hovering, setHovering] = React.useState(false);
   const { locale } = useContext(UserContext);
   const { projectTypes } = useContext(BrowseContext);
-  const projectType = projectTypes.find((t) => t.name === project.project_type);
+  const projectType =
+    projectTypes && projectTypes.length > 0
+      ? projectTypes.find((t) => t.name === project.project_type)
+      : { name: project.project_type };
   const texts = getTexts({ page: "project", locale: locale });
   const classes = useStyles({ hovering: hovering });
   const handleMouseEnter = () => {
