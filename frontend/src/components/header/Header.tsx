@@ -691,7 +691,6 @@ function NarrowScreenLinks({
                 !(!loggedInUser && link.onlyShowLoggedIn)
             ).map((link, index) => {
               const Icon = link.iconForDrawer;
-              console.log(link);
               if (link.type !== "languageSelect") {
                 return (
                   <Link href={localePrefix + link.href} key={index} underline="hover">

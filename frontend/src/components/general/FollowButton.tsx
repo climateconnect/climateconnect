@@ -1,6 +1,6 @@
 import { Button, CircularProgress, Link, Tooltip, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React from "react";
+import React, { MouseEventHandler } from "react";
 import ButtonIcon from "./ButtonIcon";
 
 const useStyles = makeStyles((theme) => ({
@@ -56,10 +56,28 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type Args = {
+  isUserFollowing: boolean;
+  handleToggleFollow: MouseEventHandler<HTMLButtonElement>;
+  hasAdminPermissions: boolean;
+  toggleShowFollowers: Function;
+  followingChangePending: boolean;
+  texts: any;
+  screenSize?: any;
+  numberOfFollowers: number;
+  bindFollow?: Function;
+  isLoggedIn: boolean;
+  showStartIcon?: boolean;
+  showLinkUnderButton?: boolean;
+  showNumberInText?: boolean;
+  toolTipText?: string;
+  toolTipPlacement?: any;
+};
+
 export default function FollowButton({
   isUserFollowing,
   handleToggleFollow,
-  hasAdminPermissions,
+  hasAdminPermissions = false,
   toggleShowFollowers,
   followingChangePending,
   texts,
@@ -72,7 +90,7 @@ export default function FollowButton({
   showNumberInText,
   toolTipText,
   toolTipPlacement,
-}) {
+}: Args) {
   const classes = useStyles({
     hasAdminPermissions: hasAdminPermissions,
     followingChangePending: followingChangePending,

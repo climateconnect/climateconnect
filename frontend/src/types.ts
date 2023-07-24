@@ -2,6 +2,8 @@ import { Dayjs } from "dayjs";
 
 export type User = {
   id: string;
+  first_name?: string;
+  last_name?: string;
 };
 
 export type Project = {
@@ -27,6 +29,9 @@ export type Project = {
   start_date?: Date | Dayjs | null;
   end_date?: Date | Dayjs | null;
   additional_loc_info?: string;
+  short_description?: string;
+  creator?: User | Organization | any; //TODO: remove 'any' once User and Organization types are properly defined
+  image?: string;
 };
 
 export type ProjectType = "project" | "idea" | "event";

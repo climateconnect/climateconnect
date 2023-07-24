@@ -143,10 +143,8 @@ export default function ProfileRoot({
       default_background={DEFAULT_BACKGROUND_IMAGE}
       editHref={getLocalePrefix(locale) + "/editprofile"}
       isOwnAccount={isOwnAccount}
-      type="profile"
       isOrganization={false}
       infoMetadata={infoMetadata}
-      isTinyScreen={isTinyScreen}
       isSmallScreen={isSmallScreen}
     >
       {!user && (

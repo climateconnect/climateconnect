@@ -1,7 +1,7 @@
 import { Button, Chip, Container, Divider, Link, Theme, Tooltip, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import PlaceIcon from "@mui/icons-material/Place";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Linkify from "react-linkify";
 import Cookies from "universal-cookie";
 import FeedbackContext from "../context/FeedbackContext";
@@ -180,7 +180,6 @@ export default function AccountPage({
   isOwnAccount,
   isOrganization,
   editText,
-  isTinyScreen,
   isSmallScreen,
   numberOfFollowers,
   handleFollow,
@@ -430,14 +429,10 @@ export default function AccountPage({
           )}
           {isOrganization && (
             <SocialMediaShareButton
-              containerClassName={classes.shareButtonContainer}
+              className={classes.shareButtonContainer}
               contentLinkPath={`${getLocalePrefix(locale)}/organizations/${account.url_slug}`}
               apiEndpoint={`/api/organizations/${account.url_slug}/set_shared_organization/`}
-              locale={locale}
-              token={token}
               messageTitle={`${organizationTexts.climate_protection_organization}${account.name}`}
-              tinyScreen={isTinyScreen}
-              smallScreen={isSmallScreen}
               mailBody={organizationTexts.share_organization_email_body}
               texts={texts}
               dialogTitle={organizationTexts.tell_others_about_this_organization}

@@ -18,7 +18,6 @@ import ConfirmDialog from "../dialogs/ConfirmDialog";
 import ElementOnScreen from "../hooks/ElementOnScreen";
 import ElementSpaceToRight from "../hooks/ElementSpaceToRight";
 import VisibleFooterHeight from "../hooks/VisibleFooterHeight";
-import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import Tutorial from "../tutorial/Tutorial";
 import ProjectInteractionButtons from "./Buttons/ProjectInteractionButtons";
 import ProjectCommentsContent from "./ProjectCommentsContent";
@@ -26,6 +25,7 @@ import ProjectContent from "./ProjectContent";
 import ProjectOverview from "./ProjectOverview";
 import ProjectSideBar from "./ProjectSideBar";
 import ProjectTeamContent from "./ProjectTeamContent";
+import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMediaShareButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -174,7 +174,7 @@ export default function ProjectPageRoot({
     // Get the actual project name from the URL, removing any query params
     // and projects/ prefix. For example,
     // "/projects/Anotherproject6?projectId=Anotherproject6" -> "Anotherproject6"
-    const projectName = pathName?.split("/")[2].split("?")[0];
+    const projectName = pathName.split("/")[2].split("?")[0];
     // Also strip any trailing '#' too.
     const strippedProjectName = projectName.endsWith("#") ? projectName.slice(0, -1) : projectName;
 
@@ -437,21 +437,12 @@ export default function ProjectPageRoot({
     toggleShowFollowers();
   });
 
-  const apiEndpointShareButton = `/api/projects/${project.url_slug}/set_shared_project/`;
-  const projectAdminName = project?.creator.name ? project?.creator.name : projectAdmin.name;
-  const projectLinkPath = `${getLocalePrefix(locale)}/projects/${project.url_slug}`;
-  const messageTitleShareButton = `${texts.climate_protection_project_by}${projectAdminName}: ${project.name}`;
-  const mailBodyShareButton = texts.share_project_email_body;
-  const dialogTitleShareButton = texts.tell_others_about_this_project;
-
   const latestParentComment = [project.comments[0]];
 
   return (
     <div className={classes.root}>
       <ProjectOverview
-        apiEndpointShareButton={apiEndpointShareButton}
         contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
-        dialogTitleShareButton={dialogTitleShareButton}
         followers={followers}
         followingChangePending={followingChangePending}
         handleClickContact={handleClickContact}
@@ -464,21 +455,15 @@ export default function ProjectPageRoot({
         isUserLiking={isUserLiking}
         likes={likes}
         likingChangePending={likingChangePending}
-        locale={locale}
-        mailBodyShareButton={mailBodyShareButton}
-        messageTitleShareButton={messageTitleShareButton}
         numberOfFollowers={numberOfFollowers}
         numberOfLikes={numberOfLikes}
         project={project}
         projectAdmin={projectAdmin}
-        projectLinkPath={projectLinkPath}
         screenSize={screenSize}
         showFollowers={showFollowers}
         showLikes={showLikes}
         toggleShowFollowers={toggleShowFollowers}
         toggleShowLikes={toggleShowLikes}
-        token={token}
-        user={user}
       />
 
       <Container className={classes.tabsContainerWithoutPadding}>
@@ -496,18 +481,10 @@ export default function ProjectPageRoot({
         </div>
 
         {!screenSize.belowSmall && (
-          <SocialMediaShareButton
-            containerClassName={classes.shareButtonContainer}
-            contentLinkPath={projectLinkPath}
-            apiEndpoint={apiEndpointShareButton}
-            locale={locale}
-            token={token}
-            messageTitle={messageTitleShareButton}
-            tinyScreen={screenSize.belowTiny}
-            smallScreen={screenSize.belowSmall}
-            mailBody={mailBodyShareButton}
-            texts={texts}
-            dialogTitle={dialogTitleShareButton}
+          <ProjectSocialMediaShareButton
+            className={classes.shareButtonContainer}
+            project={project}
+            projectAdmin={projectAdmin}
           />
         )}
       </Container>
@@ -534,6 +511,7 @@ export default function ProjectPageRoot({
           numberOfLikes={numberOfLikes}
           bindLike={bindLike}
           bindFollow={bindFollow}
+          user={user}
         />
       </Container>
 
