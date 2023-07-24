@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('name_de_translation', models.CharField(help_text='Translation of name column', max_length=512, verbose_name='Name DE translation')),
                 ('help_text', models.TextField(help_text='Small helper text that is shown under the name in the shrae project interface', max_length=512, verbose_name='Helptext')),
                 ('help_text_de_translation', models.TextField(help_text='Translation of help_text column', max_length=512, verbose_name='Helptext DE translation')),
-                ('icon', models.FileField(blank=True, help_text='The icon representing the project type in the share project interface', null=True, upload_to=organization.models.status.project_type_image_path, verbose_name='Icon')),
+                ('icon', models.FileField(blank=True, help_text='The icon representing the project type in the share project interface', null=True, upload_to="", verbose_name='Icon')),
                 ('type_id', models.IntegerField(choices=[(0, 'project'), (1, 'idea'), (2, 'event')], default=0, help_text='Type of the status. Used as unique identifier', verbose_name='Status Type')),
                 ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when project was linked to an organization', verbose_name='Created At')),
                 ('updated_at', models.DateTimeField(auto_now=True, help_text='Time when project was updated. i.e.: Order change etc.', verbose_name='Updated At')),
@@ -39,6 +39,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='project',
             name='project_type',
-            field=models.ForeignKey(default=organization.models.status.ProjectTypes.get_default_pk, help_text="Points to project's type", on_delete=django.db.models.deletion.PROTECT, related_name='project_type', to='organization.projecttypes', verbose_name='Project Type'),
+            field=models.ForeignKey(default="", help_text="Points to project's type", on_delete=django.db.models.deletion.PROTECT, related_name='project_type', to='organization.projecttypes', verbose_name='Project Type'),
         ),
     ]
