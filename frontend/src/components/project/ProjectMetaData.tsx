@@ -268,7 +268,7 @@ const AdditionalPreviewInfo = ({ project }) => {
             <div className={classes.horizontalSpacing} />
           </>
         )}
-        <img src={projectType.icon} className={`${classes.typeIcon} ${classes.cardIcon}`} />
+        <img src={`/images/project_types/${projectType.type_id}.png`} className={`${classes.typeIcon} ${classes.cardIcon}`} />
         <Typography className={classes.metadataText}>{project.project_type}</Typography>
       </Box>
     </Box>
