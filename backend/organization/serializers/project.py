@@ -35,6 +35,7 @@ from organization.utility.project import (
     get_project_name,
     get_project_short_description,
 )
+from organization.models.type import PROJECT_TYPES
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -311,7 +312,9 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         return obj.loc.name
 
     def get_project_type(self, obj):
-        serializer = ProjectTypesSerializer(obj.project_type, many=False)
+        possible_project_types = list(PROJECT_TYPES.values())
+        project_type = next(filter(lambda type: type.type_id_short == obj.project_type, possible_project_types), None)
+        serializer = ProjectTypesSerializer(project_type, many=False)
         return serializer.data["name"]
 
     def get_number_of_comments(self, obj):

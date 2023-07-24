@@ -68,9 +68,9 @@ export async function getProjectTypeOptions(locale) {
       url: url,
       locale: locale,
     });
-    if (resp.data.results.length === 0) return null;
+    if (resp.data === null) return null;
     else {
-      return resp.data.results;
+      return resp.data;
     }
   } catch (err: any) {
     console.log(err);
