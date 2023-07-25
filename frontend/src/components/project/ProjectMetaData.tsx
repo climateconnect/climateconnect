@@ -247,7 +247,7 @@ const AdditionalPreviewInfo = ({ project }) => {
   const classes = useStyles({});
   const { projectTypes } = useContext(BrowseContext);
   const projectType = (projectTypes && projectTypes.length > 0)
-    ? projectTypes.find((t) => t.name === project.project_type)
+    ? projectTypes.find((t) => t.type_id === project.project_type)
     : { name: project.project_type.name };
   return (
     <Box className={classes.additionalInfoContainer}>

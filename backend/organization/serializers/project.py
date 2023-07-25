@@ -323,7 +323,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         possible_project_types = list(PROJECT_TYPES.values())
         project_type = next(filter(lambda type: type.type_id_short == obj.project_type, possible_project_types), None)
         serializer = ProjectTypesSerializer(project_type, many=False)
-        return serializer.data["name"]
+        return serializer.data["type_id"]
 
     def get_number_of_comments(self, obj):
         return ProjectComment.objects.filter(project=obj).count()
