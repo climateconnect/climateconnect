@@ -6,6 +6,18 @@ start:
 	$(info )
 	python3 manage.py runserver
 
+celery:
+	$(info )
+	$(info -- Starting Celery --)
+	$(info )
+	celery -A climateconnect_main worker -l INFO
+
+celery_beat:
+	$(info )
+	$(info -- Starting Celery Beat --)
+	$(info )
+	celery -A climateconnect_main beat -l INFO
+
 install:
 	pdm install
 
