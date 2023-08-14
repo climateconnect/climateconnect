@@ -1,5 +1,5 @@
 import { format, formatRelative, isThisYear, isToday } from "date-fns";
-import { de } from "date-fns/locale";
+import { de, enUS } from "date-fns/locale";
 
 export function getDayAndMonth(date) {
   return format(date, "dd.MM");
@@ -20,14 +20,18 @@ export function getDateTime(rawDate) {
   else return format(date, "MMM dd yyyy HH:mm");
 }
 
-export function getDateTimeRange(rawStartDate, rawEndDate) {
+export function getDateTimeRange(rawStartDate, rawEndDate, locale) {
   const startDate = new Date(rawStartDate);
   const endDate = new Date(rawEndDate);
+  let startDateString = format(startDate, "PPP p", {locale: locale === "de" ? de : enUS})
   //Case 1: start and end are on the same day
   if(startDate.getDate() === endDate.getDate()) {
-    return formatRelative(startDate, new Date())
+    return `${startDateString} - ${format(endDate, "p", {locale: locale === "de" ? de : enUS})}`
+  } else {
+    startDateString = format(startDate, "P p", {locale: locale === "de" ? de : enUS})
+    const endDateString = format(endDate, "P p", {locale: locale === "de" ? de : enUS})
+    return `${startDateString} - ${endDateString}`
   }
-  return formatRelative(startDate, new Date(), {locale: de})
 }
 
 export function durationFromMiliseconds(miliseconds, texts) {

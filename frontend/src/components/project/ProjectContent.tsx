@@ -136,9 +136,10 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
   },
   showRequestsButton: {
-    background: "white",
+    background: "#f7f7f7",
+    color: theme.palette.secondary.main,
     "&:hover": {
-      background: "#f7f7f7",
+      background: "#e3e3e3",
     },
   },
 
@@ -311,7 +312,7 @@ export default function ProjectContent({
 
           {/* Note: created date is not the same as the start date, for projects */}
           <Typography>
-            {texts.created}: <DateDisplay date={new Date(project.creation_date)} />
+            {texts.shared} <DateDisplay date={new Date(project.creation_date)} />
           </Typography>
           <div>
             <div className={classes.projectParentContainer}>

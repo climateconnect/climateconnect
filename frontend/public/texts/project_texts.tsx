@@ -1000,5 +1000,9 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Share Your Climate Project",
       de: "Teile dein Klimaprojekt",
     },
+    shared: {
+      en: "Shared",
+      de: "Geteilt"
+    }
   };
 }

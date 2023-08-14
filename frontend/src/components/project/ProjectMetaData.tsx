@@ -12,6 +12,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import { Project } from "../../types";
 import BrowseContext from "../context/BrowseContext";
+import ProjectTypeDisplay from "./ProjectTypeDisplay";
 
 const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
   creatorImage: {
@@ -24,7 +25,6 @@ const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
   },
   cardIcon: {
     verticalAlign: "bottom",
-
     marginRight: theme.spacing(0.5),
     marginLeft: theme.spacing(-0.25),
     fontSize: "default",
@@ -88,7 +88,6 @@ const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
 
 type Props = { project: Project; hovering: boolean; withDescription?: boolean };
 export default function ProjectMetaData({ project, hovering, withDescription }: Props) {
-  const classes = useStyles({ hovering: hovering });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const project_parent = project.project_parents![0];
@@ -270,8 +269,11 @@ const AdditionalPreviewInfo = ({ project }) => {
             <div className={classes.horizontalSpacing} />
           </>
         )}
-        <img src={`/images/project_types/${projectType.type_id}.png`} className={`${classes.typeIcon} ${classes.cardIcon}`} />
-        <Typography className={classes.metadataText}>{project.project_type}</Typography>
+        <ProjectTypeDisplay 
+          projectType={projectType} 
+          iconClassName={classes.typeIcon}
+          textClassName={classes.metadataText}
+        />
       </Box>
     </Box>
   );

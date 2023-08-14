@@ -81,7 +81,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             "number_of_followers",
             "number_of_likes",
             "language",
-            "project_type"
+            "project_type",
+            "additional_loc_info"
         )
         read_only_fields = ["url_slug"]
 
