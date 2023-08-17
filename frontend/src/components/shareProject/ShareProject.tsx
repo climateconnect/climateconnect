@@ -43,8 +43,8 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     float: "right",
-    marginTop: theme.spacing(2)
-  }
+    marginTop: theme.spacing(2),
+  },
 }));
 
 type Args = {
@@ -60,7 +60,7 @@ export default function Share({
   handleSetProjectData,
   userOrganizations,
   projectTypeOptions,
-  goToNextStep
+  goToNextStep,
 }: Args) {
   const organizationOptions = !userOrganizations
     ? []
@@ -91,8 +91,8 @@ export default function Share({
   };
 
   const onClickNextStep = (e) => {
-    goToNextStep()
-  }
+    goToNextStep();
+  };
 
   return (
     <div className={classes.form}>

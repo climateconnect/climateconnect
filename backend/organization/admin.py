@@ -26,7 +26,6 @@ from organization.models import (
     ProjectLike,
     OrganizationFollower,
     OrgProjectPublished,
-    ProjectTypes,
 )
 
 
@@ -42,7 +41,6 @@ pass_through_models = (
     PostComment,
     ProjectComment,
     ProjectStatus,
-    ProjectTypes,
     ProjectCollaborators,
     ProjectFollower,
     OrganizationFieldTagging,

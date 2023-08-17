@@ -10,7 +10,13 @@ const useStyles = makeStyles({
     borderRadius: 10,
   },
 });
-export default function ProjectStatus({ status, className }) {
+
+type Props = {
+  status: any;
+  className?: any;
+};
+
+export default function ProjectStatus({ status, className }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });

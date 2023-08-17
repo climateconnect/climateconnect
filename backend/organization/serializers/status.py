@@ -5,8 +5,9 @@ from organization.utility.status import (
 )
 from django.utils.translation import get_language
 from rest_framework import serializers
+from organization.models.type import PROJECT_TYPES
 
-from organization.models.status import ProjectStatus, ProjectTypes
+from organization.models.status import ProjectStatus
 
 
 class ProjectStatusSerializer(serializers.ModelSerializer):
@@ -40,15 +41,12 @@ class ProjectStatusSerializer(serializers.ModelSerializer):
         return project_status_name
 
 
-class ProjectTypesSerializer(serializers.ModelSerializer):
+class ProjectTypesSerializer(serializers.Serializer):
     name = serializers.SerializerMethodField()
     original_name = serializers.SerializerMethodField()
-    type_id = serializers.SerializerMethodField()
     help_text = serializers.SerializerMethodField()
-
-    class Meta:
-        model = ProjectTypes
-        fields = ("id", "name", "original_name", "type_id", "icon", "help_text")
+    icon = serializers.CharField()
+    type_id = serializers.CharField()
 
     def get_name(self, obj):
         return get_project_type_name(obj, get_language())
@@ -57,12 +55,7 @@ class ProjectTypesSerializer(serializers.ModelSerializer):
         return obj.name
 
     def get_type_id(self, obj):
-        TYPE_ID_INDEX = 0
-        PROJECT_TYPE_INDEX = 1
-        project_type_id = list(
-            filter(lambda x: x[TYPE_ID_INDEX] == obj.type_id, ProjectTypes.POSSIBLE_PROJECT_TYPES)
-        )[TYPE_ID_INDEX][PROJECT_TYPE_INDEX]
-        return project_type_id
+        return obj.type_id
 
     def get_help_text(self, obj):
         return get_project_type_helptext(obj, get_language())

@@ -5,7 +5,9 @@ from django.contrib.postgres.fields import ArrayField
 from organization.models import (
     Organization,
 )
-from organization.models.status import ProjectTypes
+from organization.models.type import (
+    ProjectTypesChoices
+)
 from climateconnect_api.models import (
     Skill,
 )
@@ -54,13 +56,10 @@ class Project(models.Model):
         on_delete=models.PROTECT,
     )
 
-    project_type = models.ForeignKey(
-        "ProjectTypes",
-        help_text="Points to project's type",
-        verbose_name="Project Type",
-        related_name="project_type",
-        on_delete=models.PROTECT,
-        default=ProjectTypes.get_default_pk,
+    project_type = models.CharField(
+        max_length=2,
+        choices=ProjectTypesChoices.choices,
+        default=ProjectTypesChoices.project
     )
 
     start_date = models.DateTimeField(
@@ -191,6 +190,14 @@ class Project(models.Model):
         on_delete=models.SET_NULL,
     )
 
+    additional_loc_info = models.CharField(
+        help_text="e.g. Room or other instructions to get to the location",
+        verbose_name="Additional location info",
+        max_length=256,
+        null=True,
+        blank=True,
+    )
+
     class Meta:
         app_label = "organization"
         verbose_name = "Project"
@@ -198,7 +205,7 @@ class Project(models.Model):
         ordering = ["-rating", "-id"]
 
     def __str__(self):
-        return "(%d) %s" % (self.pk, self.name)
+        return "(%d) %s: %s" % (self.pk, self.project_type, self.name)
 
 
 class ProjectParents(models.Model):
@@ -247,7 +254,7 @@ class ProjectParents(models.Model):
         verbose_name_plural = "Project Parents"
 
     def __str__(self):
-        return "Project parent for project %s" % (self.project.id)
+        return "Project parent for project %s" % (self.project.name)
 
 
 class ProjectCollaborators(models.Model):

@@ -1,11 +1,5 @@
-import {
-  Card,
-  Grid,
-  makeStyles,
-  Radio,
-  RadioGroup,
-  Typography,
-} from "@material-ui/core";
+import { Card, Grid, Radio, RadioGroup, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 
@@ -72,7 +66,7 @@ const ProjectTypeBox = ({ type, value, onChange }) => {
       onClick={handleChangeValue}
     >
       <div className={classes.imageContainer}>
-        <img src={getImageUrl(type.icon)} className={classes.image} />
+        <img src={`/images/project_types/${type.type_id}.png`} className={classes.image} />
       </div>
       <div className={classes.textBox}>
         <Typography className={classes.headline}>{type.name}</Typography>
