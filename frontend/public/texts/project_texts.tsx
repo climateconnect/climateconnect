@@ -1021,8 +1021,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Teile dein Klimaprojekt",
     },
     shared: {
-      en: "Shared on",
-      de: "Geteilt am"
+      en: "Shared",
+      de: "Geteilt"
     },
     event_organized_by: {
       en: "Event organized by",
