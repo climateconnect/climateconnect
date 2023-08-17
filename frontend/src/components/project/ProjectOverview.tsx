@@ -3,7 +3,6 @@ import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import Linkify from "react-linkify";
 import React, { MouseEventHandler, RefObject, useContext, useEffect, useState } from "react";
-import Cookies from "universal-cookie";
 
 //icons
 import ExploreIcon from "@mui/icons-material/Explore";
@@ -26,8 +25,8 @@ import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
 import UserContext from "../context/UserContext";
 import { Project } from "../../types";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMediaShareButton";
+import ProjectTypeDisplay from "./ProjectTypeDisplay";
 
 type StyleProps = { hasAdminPermissions?: boolean };
 
@@ -168,7 +167,6 @@ export default function ProjectOverview({
 }: Props) {
   const classes = useStyles({});
   const { locale, user } = useContext(UserContext)
-  const cookies = new Cookies();
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [gotParams, setGotParams] = useState(false);
 
@@ -186,7 +184,7 @@ export default function ProjectOverview({
     return (
       <>
         <Typography component="div" className={classes.shortDescription}>
-          <MessageContent content={project?.short_description} />
+          <MessageContent content={project.short_description} />
         </Typography>
         <div className={classes.projectInfoEl}>
           <Typography>
@@ -194,15 +192,18 @@ export default function ProjectOverview({
               <PlaceIcon color="primary" className={classes.icon} />
             </Tooltip>{" "}
             {project.location}
+            {project.additional_loc_info && (
+              <> - {project.additional_loc_info}</>
+            )}
           </Typography>
         </div>
         {project.project_type?.type_id === "event" && (
           <div className={classes.projectInfoEl}>
             <Typography>
-              <Tooltip title={texts.website}>
+              <Tooltip title={texts.event_start_date}>
                 <CalendarTodayIcon color="primary" className={classes.icon} />
               </Tooltip>{" "}
-              {getDateTimeRange(project.start_date, project.endDate)}
+              {getDateTimeRange(project.start_date, project.end_date, locale)}
             </Typography>
           </div>
         )}
@@ -223,6 +224,9 @@ export default function ProjectOverview({
             </Tooltip>{" "}
             {project.tags.join(", ")}
           </Typography>
+        </div>
+        <div className={classes.projectInfoEl}>
+          <ProjectTypeDisplay projectType={project.project_type} />
         </div>
       </>
     );
@@ -257,34 +261,7 @@ export default function ProjectOverview({
           <Typography component="h1" variant="h3" className={classes.smallScreenHeader}>
             {project.name}
           </Typography>
-
           <ShortProjectInfo />
-          <div className={classes.infoBottomBar}>
-            <FollowButton
-              isLoggedIn={!!user}
-              isUserFollowing={isUserFollowing}
-              handleToggleFollow={handleToggleFollowProject}
-              hasAdminPermissions={hasAdminPermissions}
-              toggleShowFollowers={toggleShowFollowers}
-              followingChangePending={followingChangePending}
-              numberOfFollowers={numberOfFollowers}
-              texts={texts}
-              showStartIcon
-              showNumberInText
-            />
-
-            {!hasAdminPermissions && (
-              <Button
-                className={classes.contactProjectButton}
-                variant="contained"
-                color="primary"
-                onClick={handleClickContact}
-                ref={contactProjectCreatorButtonRef}
-              >
-                {texts.contact}
-              </Button>
-            )}
-          </div>
         </div>
       </>
     );
