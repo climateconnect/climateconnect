@@ -60,12 +60,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type Props = {
-  hasAdminPermissions?: Boolean,
-  screenSize?: any,
-  handleSendProjectJoinRequest: Function,
-  requestedToJoin: boolean,
-  className?: string,
-}
+  hasAdminPermissions?: Boolean;
+  screenSize?: any;
+  handleSendProjectJoinRequest: Function;
+  requestedToJoin: boolean;
+  className?: string;
+};
 
 export default function JoinButton({
   hasAdminPermissions,

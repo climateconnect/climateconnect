@@ -42,9 +42,9 @@ export default function SocialMediaShareButton({
   switchColors,
 }: SocialMediaShareButtonProps) {
   const classes = useStyles({ switchColors: switchColors });
-  const { locale } = useContext(UserContext)
-  const cookies = new Cookies()
-  const token = cookies.get("token")
+  const { locale } = useContext(UserContext);
+  const cookies = new Cookies();
+  const token = cookies.get("token");
   const isTinyScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 

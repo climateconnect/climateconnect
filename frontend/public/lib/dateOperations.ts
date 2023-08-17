@@ -23,14 +23,14 @@ export function getDateTime(rawDate) {
 export function getDateTimeRange(rawStartDate, rawEndDate, locale) {
   const startDate = new Date(rawStartDate);
   const endDate = new Date(rawEndDate);
-  let startDateString = format(startDate, "PPP p", {locale: locale === "de" ? de : enUS})
+  let startDateString = format(startDate, "PPP p", { locale: locale === "de" ? de : enUS });
   //Case 1: start and end are on the same day
-  if(startDate.getDate() === endDate.getDate()) {
-    return `${startDateString} - ${format(endDate, "p", {locale: locale === "de" ? de : enUS})}`
+  if (startDate.getDate() === endDate.getDate()) {
+    return `${startDateString} - ${format(endDate, "p", { locale: locale === "de" ? de : enUS })}`;
   } else {
-    startDateString = format(startDate, "P p", {locale: locale === "de" ? de : enUS})
-    const endDateString = format(endDate, "P p", {locale: locale === "de" ? de : enUS})
-    return `${startDateString} - ${endDateString}`
+    startDateString = format(startDate, "P p", { locale: locale === "de" ? de : enUS });
+    const endDateString = format(endDate, "P p", { locale: locale === "de" ? de : enUS });
+    return `${startDateString} - ${endDateString}`;
   }
 }
 

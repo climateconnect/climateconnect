@@ -18,9 +18,9 @@ const useStyles = makeStyles({
 });
 
 type Props = {
-  content?: any,
-  renderYoutubeVideos?: boolean
-}
+  content?: any;
+  renderYoutubeVideos?: boolean;
+};
 
 export default function MessageContent({ content, renderYoutubeVideos = false }: Props) {
   const classes = useStyles();

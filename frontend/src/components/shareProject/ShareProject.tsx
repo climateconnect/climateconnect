@@ -66,10 +66,10 @@ export default function Share({
   const texts = getTexts({ page: "project", locale: locale });
 
   const onChangeSwitch = () => {
-    handleSetProjectData({ 
+    handleSetProjectData({
       is_organization_project: !project.is_organization_project,
       isPersonalProject: !project.isPersonalProject,
-      parent_organization: project.is_organization_project ? null : organizationOptions[0]
+      parent_organization: project.is_organization_project ? null : organizationOptions[0],
     });
   };
   const onChangeParentOrganization = (e) => {

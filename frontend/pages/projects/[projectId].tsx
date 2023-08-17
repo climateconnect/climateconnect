@@ -420,7 +420,7 @@ function parseProject(project) {
     number_of_followers: project.number_of_followers,
     number_of_likes: project.number_of_likes,
     project_type: project.project_type,
-    additional_loc_info: project.additional_loc_info
+    additional_loc_info: project.additional_loc_info,
   };
 }
 

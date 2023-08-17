@@ -7,7 +7,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import { Dayjs } from "dayjs";
 import ProjectLocationSearchBar from "./ProjectLocationSearchBar";
 import { Theme } from "@mui/material";
-import { getProjectTypeOptions } from "../../../public/data/projectTypeOptions"
+import { getProjectTypeOptions } from "../../../public/data/projectTypeOptions";
 
 const useStyles = makeStyles<Theme, { displayDate?: boolean }>((theme) => {
   return {
@@ -54,7 +54,7 @@ export default function ProjectTimeAndPlaceSection({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ locale: locale, page: "project" });
   const classes = useStyles({ displayDate: projectData.project_type !== "idea" });
-  const PROJECT_TYPE_DATE_OPTIONS = getProjectTypeOptions(texts)
+  const PROJECT_TYPE_DATE_OPTIONS = getProjectTypeOptions(texts);
 
   type DateChangeProp = "start_date" | "end_date";
   //TODO: Make sure end date is after start date (in both frontend and backend)
@@ -62,7 +62,10 @@ export default function ProjectTimeAndPlaceSection({
     const noEndDateSet = prop === "start_date" && !isNaN(value?.$d) && !projectData.end_date;
     const endDateBeforeStartDate =
       prop === "start_date" && projectData.end_date && projectData.end_date < value;
-    if (PROJECT_TYPE_DATE_OPTIONS[projectData.project_type].enableEndDate && (noEndDateSet || endDateBeforeStartDate)) {
+    if (
+      PROJECT_TYPE_DATE_OPTIONS[projectData.project_type].enableEndDate &&
+      (noEndDateSet || endDateBeforeStartDate)
+    ) {
       const endDateSuggestion = value.add(1, "h");
       handleSetProjectData({
         start_date: value,

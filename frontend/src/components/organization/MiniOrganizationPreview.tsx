@@ -38,13 +38,13 @@ const useStyles = makeStyles<Theme, { showBorder: boolean }>((theme) => ({
     wordBreak: "break-word",
   },
   inlineWrapper: {
-    display: "inline-block"
+    display: "inline-block",
   },
   boldOrgName: {
     fontSize: 18,
     fontWeight: 600,
-    display: "inline-block"
-  }
+    display: "inline-block",
+  },
 }));
 
 export default function MiniOrganizationPreview({
@@ -107,10 +107,10 @@ function Content({ organization, size, onDelete, doNotShowName, inline }) {
       </div>
       {!doNotShowName && (
         <>
-          {(size === "tiny" || size === "small") ? (
-              <Typography className={size === "small" ? classes.boldOrgName : ""}>
-                {organization.name}
-              </Typography>
+          {size === "tiny" || size === "small" ? (
+            <Typography className={size === "small" ? classes.boldOrgName : ""}>
+              {organization.name}
+            </Typography>
           ) : size === "medium" ? (
             <Typography className={classes.mediumOrgName}>{organization.name}</Typography>
           ) : (

@@ -8,7 +8,7 @@ import React, { MouseEventHandler, RefObject, useContext, useEffect, useState } 
 import ExploreIcon from "@mui/icons-material/Explore";
 import LanguageIcon from "@mui/icons-material/Language";
 import PlaceIcon from "@mui/icons-material/Place";
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
 // Relative imports
 import { getImageUrl } from "./../../../public/lib/imageOperations";
@@ -139,7 +139,7 @@ type Props = {
   showLikes: boolean; //merge like & follow?
   toggleShowFollowers: Function; //merge like & follow?
   toggleShowLikes: Function; //merge like & follow?
-}
+};
 
 export default function ProjectOverview({
   contactProjectCreatorButtonRef,
@@ -166,7 +166,7 @@ export default function ProjectOverview({
   toggleShowLikes,
 }: Props) {
   const classes = useStyles({});
-  const { locale, user } = useContext(UserContext)
+  const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [gotParams, setGotParams] = useState(false);
 
@@ -192,9 +192,7 @@ export default function ProjectOverview({
               <PlaceIcon color="primary" className={classes.icon} />
             </Tooltip>{" "}
             {project.location}
-            {project.additional_loc_info && (
-              <> - {project.additional_loc_info}</>
-            )}
+            {project.additional_loc_info && <> - {project.additional_loc_info}</>}
           </Typography>
         </div>
         {project.project_type?.type_id === "event" && (

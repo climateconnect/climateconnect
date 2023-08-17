@@ -1,11 +1,11 @@
-import { Typography, Theme } from "@mui/material"
+import { Typography, Theme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React from "react"
+import React from "react";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
   },
   typeIcon: {
     width: 20,
@@ -13,22 +13,30 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 0,
     marginRight: 8,
   },
-}))
+}));
 
 type Props = {
   projectType: any; //TODO: create projectType type
   className?: any;
   iconClassName?: any;
   textClassName?: any;
-}
+};
 
-export default function ProjectTypeDisplay({projectType, className, iconClassName, textClassName}: Props) {
-  const classes = useStyles()
+export default function ProjectTypeDisplay({
+  projectType,
+  className,
+  iconClassName,
+  textClassName,
+}: Props) {
+  const classes = useStyles();
 
   return (
     <div className={`${className} ${classes.root}`}>
-      <img src={`/images/project_types/${projectType.type_id}.png`} className={iconClassName ? iconClassName : `${classes.typeIcon} ${classes.cardIcon}`} />
+      <img
+        src={`/images/project_types/${projectType.type_id}.png`}
+        className={iconClassName ? iconClassName : `${classes.typeIcon} ${classes.cardIcon}`}
+      />
       <Typography className={textClassName}>{projectType.name}</Typography>
     </div>
-  )
+  );
 }

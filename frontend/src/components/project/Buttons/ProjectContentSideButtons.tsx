@@ -1,17 +1,17 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react";
 import { Button, Badge, useMediaQuery, IconButton } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import Cookies from "universal-cookie";
 
-import GroupAddIcon from '@mui/icons-material/GroupAdd';
-import EditIcon from '@mui/icons-material/Edit';
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
+import EditIcon from "@mui/icons-material/Edit";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
-import UserContext from "../../context/UserContext"
+import UserContext from "../../context/UserContext";
 import ROLE_TYPES from "../../../../public/data/role_types";
 import getTexts from "../../../../public/texts/texts";
 import { getMembershipRequests } from "../../../../public/lib/projectOperations";
-import ProjectRequestersDialog from "../../dialogs/ProjectRequestersDialog"
+import ProjectRequestersDialog from "../../dialogs/ProjectRequestersDialog";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import JoinButton from "./JoinButton";
 import theme from "../../../themes/theme";
@@ -59,10 +59,10 @@ const useStyles = makeStyles((theme) => ({
   leaveIconButton: {
     background: theme.palette.error.main,
     "&:hover": {
-      backgroundColor: "#c96262"
-    }
-  }
-}))
+      backgroundColor: "#c96262",
+    },
+  },
+}));
 
 export default function ProjectContentSideButtons({
   project,
@@ -70,13 +70,13 @@ export default function ProjectContentSideButtons({
   toggleShowRequests,
   handleSendProjectJoinRequest,
   requestedToJoinProject,
-  leaveProject
+  leaveProject,
 }) {
   const token = new Cookies().get("auth_token");
-  const classes = useStyles()
-  const { user, locale } = useContext(UserContext)
+  const classes = useStyles();
+  const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("md"))
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const user_permission =
     user && project.team && project.team.find((m) => m.id === user.id)
@@ -104,7 +104,7 @@ export default function ProjectContentSideButtons({
         const userRequests = membershipRequests.map((r) => {
           const user = {
             requestId: r.id,
-            user: r.user_profile
+            user: r.user_profile,
           };
           return user;
         });
@@ -117,14 +117,14 @@ export default function ProjectContentSideButtons({
   }, []);
 
   const ShowRequestsButton = () => {
-    if(isNarrowScreen) {
+    if (isNarrowScreen) {
       return (
         <Badge badgeContent={requesters.length} color="error">
           <IconButton size="large" className={classes.iconButton} onClick={toggleShowRequests}>
             <GroupAddIcon />
           </IconButton>
         </Badge>
-      )
+      );
     } else {
       return (
         <Badge badgeContent={requesters.length} color="primary">
@@ -136,17 +136,21 @@ export default function ProjectContentSideButtons({
             {texts.review_join_requests}
           </Button>
         </Badge>
-      )
+      );
     }
-  }
+  };
 
   const EditProjectButton = () => {
-    if(isNarrowScreen) {
+    if (isNarrowScreen) {
       return (
-        <IconButton size="large" className={classes.iconButton} href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}>
+        <IconButton
+          size="large"
+          className={classes.iconButton}
+          href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
+        >
           <EditIcon />
         </IconButton>
-      )
+      );
     } else {
       return (
         <Button
@@ -156,29 +160,29 @@ export default function ProjectContentSideButtons({
         >
           {project.is_draft ? texts.edit_draft : texts.edit}
         </Button>
-      )
+      );
     }
-  }
+  };
 
   const LeaveProjectButton = () => {
-    if(isNarrowScreen) {
+    if (isNarrowScreen) {
       return (
-        <IconButton size="large" className={`${classes.iconButton} ${classes.leaveIconButton}`} onClick={leaveProject}>
-          <ExitToAppIcon />
-        </IconButton>
-      )
-    } else {
-      return (
-        <Button
-          className={classes.leaveProjectButton}
-          variant="contained"
+        <IconButton
+          size="large"
+          className={`${classes.iconButton} ${classes.leaveIconButton}`}
           onClick={leaveProject}
         >
+          <ExitToAppIcon />
+        </IconButton>
+      );
+    } else {
+      return (
+        <Button className={classes.leaveProjectButton} variant="contained" onClick={leaveProject}>
           {texts.leave_project}
         </Button>
-      )
+      );
     }
-  }
+  };
 
   return (
     <div>
@@ -198,7 +202,8 @@ export default function ProjectContentSideButtons({
 
       {/* If the user is an admin on the project, or is already part
         of the project (has read only permissions), then we don't want to show the membership request button. */}
-      {!hasAdminPermissions && !project.project_type.type_id === "event" && 
+      {!hasAdminPermissions &&
+        !project.project_type.type_id === "event" &&
         !(user_permission && [ROLE_TYPES.read_only_type].includes(user_permission)) && (
           <JoinButton
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
@@ -219,5 +224,5 @@ export default function ProjectContentSideButtons({
         user_permission={user_permission}
       />
     </div>
-  )
+  );
 }

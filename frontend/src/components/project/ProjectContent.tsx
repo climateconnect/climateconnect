@@ -127,7 +127,7 @@ const useStyles = makeStyles((theme) => ({
   projectParentContainer: {
     display: "flex",
     flexDirection: "row",
-    alignItems: "center"
+    alignItems: "center",
   },
   collaborationContainer: {
     display: "flex",
@@ -179,22 +179,18 @@ export default function ProjectContent({
 
   //return the right static text depending on the project type
   const getProjectDescriptionHeadline = () => {
-    const type = project.project_type.type_id
-    if(type === "event")
-      return texts.event_description
-    if(type === "idea")
-      return texts.idea_description
-    return texts.project_description
-  }
+    const type = project.project_type.type_id;
+    if (type === "event") return texts.event_description;
+    if (type === "idea") return texts.idea_description;
+    return texts.project_description;
+  };
 
   const getNoProjectDescriptionText = () => {
-    const type = project.project_type.type_id
-    if(type === "event")
-      return texts.this_event_hasnt_added_a_description_yet
-    if(type === "idea")
-      return texts.this_idea_hasnt_added_a_description_yet
-    return texts.this_project_hasnt_added_a_description_yet
-  }
+    const type = project.project_type.type_id;
+    if (type === "event") return texts.this_event_hasnt_added_a_description_yet;
+    if (type === "idea") return texts.this_idea_hasnt_added_a_description_yet;
+    return texts.this_project_hasnt_added_a_description_yet;
+  };
 
   return (
     <>
@@ -215,21 +211,18 @@ export default function ProjectContent({
           <div>
             <div className={classes.projectParentContainer}>
               <Typography component="span">
-                {
-                  project.project_type.type_id === "event" ?
-                    <>
-                      {texts.event_organized_by}
-                    </>
-                  :
-                    <>
-                      {texts.started + " "}
-                      <TimeAgo
-                        date={new Date(project.start_date)}
-                        formatter={locale === "de" ? germanYearAndDayFormatter : yearAndDayFormatter}
-                      />{" "}
-                      {texts.by}
-                    </>
-                }
+                {project.project_type.type_id === "event" ? (
+                  <>{texts.event_organized_by}</>
+                ) : (
+                  <>
+                    {texts.started + " "}
+                    <TimeAgo
+                      date={new Date(project.start_date)}
+                      formatter={locale === "de" ? germanYearAndDayFormatter : yearAndDayFormatter}
+                    />{" "}
+                    {texts.by}
+                  </>
+                )}
                 {project.isPersonalProject ? (
                   <MiniProfilePreview
                     className={classes.creator}
@@ -244,7 +237,7 @@ export default function ProjectContent({
                     size="small"
                   />
                 )}
-              </Typography>              
+              </Typography>
             </div>
             {project.project_type.type_id === "project" && project.end_date && (
               <Typography>
@@ -307,9 +300,7 @@ export default function ProjectContent({
               />
             )
           ) : (
-            <Typography variant="body2">
-              {getNoProjectDescriptionText()}
-            </Typography>
+            <Typography variant="body2">{getNoProjectDescriptionText()}</Typography>
           )}
         </Typography>
         {project.description && project.description.length > maxDisplayedDescriptionLength && (

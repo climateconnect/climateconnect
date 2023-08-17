@@ -50,7 +50,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     edit: {
       en: "Edit",
-      de: "Bearbeiten"
+      de: "Bearbeiten",
     },
     edit_draft: {
       en: "Edit Draft",
@@ -278,11 +278,11 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     this_event_hasnt_added_a_description_yet: {
       en: "The organizers haven't added a description yet.",
-      de: "Die Veranstalter:innen haben noch keine Beschreibung hinzugefügt."
+      de: "Die Veranstalter:innen haben noch keine Beschreibung hinzugefügt.",
     },
     this_idea_hasnt_added_a_description_yet: {
       en: "So far no detailled description has been added to this idea.",
-      de: "Zu dieser Idee wurde noch keine detaillierte Beschreibung hinzugefügt."
+      de: "Zu dieser Idee wurde noch keine detaillierte Beschreibung hinzugefügt.",
     },
     this_project_is_not_looking_for_collaborators_right_now: {
       en: "This project is not looking for collaborators right now.",
@@ -1022,11 +1022,11 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     shared: {
       en: "Shared",
-      de: "Geteilt"
+      de: "Geteilt",
     },
     event_organized_by: {
       en: "Event organized by",
-      de: "Veranstaltung organisiert von"
-    }
+      de: "Veranstaltung organisiert von",
+    },
   };
 }
