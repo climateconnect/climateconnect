@@ -1,17 +1,5 @@
-import { format, formatRelative, isThisYear, isToday } from "date-fns";
+import { format, isThisYear, isToday } from "date-fns";
 import { de, enUS } from "date-fns/locale";
-
-export function getDayAndMonth(date) {
-  return format(date, "dd.MM");
-}
-
-export function getTime(date) {
-  return format(date, "HH:mm");
-}
-
-export function getDateAndTime(date) {
-  return format(date, "dd.MM HH:mm");
-}
 
 export function getDayAndMonth(date) {
   return format(date, "dd.MM");
