@@ -1,3 +1,5 @@
+import { Dayjs } from "dayjs";
+
 export type User = {
   id: string;
 };
@@ -21,7 +23,21 @@ export type Project = {
   name?: string;
   project_parents?: any[];
   tags?: any[];
+  type: ProjectType;
+  start_date?: Date | Dayjs | null;
+  end_date?: Date | Dayjs | null;
+  additional_loc_info?: string;
 };
+
+export type ProjectType = "project" | "idea" | "event";
+
+export type Organization = {
+  location: any;
+  name: string;
+  thumbnail_image: string;
+  url_slug: string;
+};
+
 export type CcLocale = "en" | "de";
 
 declare module "@mui/material/styles/createPalette" {

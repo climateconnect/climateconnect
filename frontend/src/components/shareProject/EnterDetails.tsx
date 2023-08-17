@@ -2,17 +2,19 @@ import { Container, IconButton, TextField, Tooltip, Typography } from "@mui/mate
 import makeStyles from "@mui/styles/makeStyles";
 import Switch from "@mui/material/Switch";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import getCollaborationTexts from "../../../public/data/collaborationTexts";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import BottomNavigation from "../general/BottomNavigation";
-import DatePicker from "../general/DatePicker";
-import RadioButtons from "../general/RadioButtons";
+import ProjectTimeAndPlaceSection from "./TimeAndPlaceSection";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import AddPhotoSection from "./AddPhotoSection";
 import AddSummarySection from "./AddSummarySection";
 import CollaborateSection from "./CollaborateSection";
+import ProjectNameSection from "./ProjectNameSection";
+import dayjs from "dayjs";
+import { getProjectTypeOptions } from "../../../public/data/projectTypeOptions"
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -81,27 +83,27 @@ export default function EnterDetails({
   skillsOptions,
   statusOptions,
 }) {
-  const [open, setOpen] = React.useState({
+  const [open, setOpen] = useState({
     avatarDialog: false,
     skillsDialog: false,
     connectionsDialog: false,
   });
+  const [errors, setErrors] = useState({
+    start_date: "",
+    end_date: "",
+  });
+  const PROJECT_TYPE_OPTIONS = getProjectTypeOptions(texts)
   const classes = useStyles(projectData);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: projectData });
   const collaborationTexts = getCollaborationTexts(texts);
   const helpTexts = getHelpTexts(texts);
+  const topRef = useRef(null);
 
-  const statusValues = statusOptions.map((s) => {
-    return {
-      ...s,
-      label: s.name,
-      key: s.name,
-    };
-  });
-
-  const statusesWithStartDate = statusOptions.filter((s) => s.has_start_date).map((s) => s.id);
-  const statusesWithEndDate = statusOptions.filter((s) => s.has_end_date).map((s) => s.id);
+  //scroll to top if there is an error
+  useEffect(() => {
+    topRef?.current.scrollIntoView();
+  }, [errors]);
 
   const onClickPreviousStep = () => {
     goToPreviousStep();
@@ -146,19 +148,37 @@ export default function EnterDetails({
     if (!project.image) {
       alert(texts.please_add_an_image);
       return false;
-    } else return true;
-  };
+    }
 
-  const onStatusRadioChange = (newStatus) => {
-    handleSetProjectData({ status: statusOptions.find((s) => s.name === newStatus) });
-  };
+    if(PROJECT_TYPE_OPTIONS[project.type].enableStartDate) {
+      //We handle date errors manually because props like 'required' aren't supported by mui-x-date-pickers
+      if (!project.start_date) {
+        setErrors({
+          ...errors,
+          start_date: `${texts.please_fill_out_this_field}: ${texts.start_date}`,
+        });
+        return false;
+      }
 
-  const onStartDateChange = (newDate) => {
-    handleSetProjectData({ start_date: newDate });
-  };
+      if (!dayjs(project.start_date).isValid()) {
+        setErrors({
+          ...errors,
+          start_date: `${texts.invalid_value}: ${texts.start_date}`,
+        });
+        return false;
+      }
 
-  const onEndDateChange = (newDate) => {
-    handleSetProjectData({ end_date: newDate });
+      if(PROJECT_TYPE_OPTIONS[project.type].enableEndDate) {
+        if (!dayjs(project.end_date).isValid()) {
+          setErrors({
+            ...errors,
+            end_date: `${texts.invalid_value}: ${texts.end_date}`,
+          });
+          return false;
+        }
+      }
+    }
+    return true;
   };
 
   const onAllowCollaboratorsChange = (event) => {
@@ -168,53 +188,16 @@ export default function EnterDetails({
   return (
     <>
       <Container maxWidth="lg">
-        <form onSubmit={onClickNextStep}>
-          <Typography
-            component="h2"
-            variant="subtitle2"
-            color="primary"
-            className={classes.subHeader}
-          >
-            {texts.general_information}*
-          </Typography>
-          <div className={classes.block}>
-            <Typography component="h2" variant="subtitle2" className={classes.inlineSubHeader}>
-              {texts.your_project_is}
-            </Typography>
-            <div className={classes.inlineBlock}>
-              <RadioButtons
-                value={projectData.status.name}
-                onChange={onStatusRadioChange}
-                values={statusValues}
-              />
-            </div>
-          </div>
-          <div>
-            <Typography component="h2" variant="subtitle2" className={classes.inlineSubHeader}>
-              {texts.date}
-            </Typography>
-            <div className={classes.inlineBlock}>
-              {statusesWithStartDate.includes(projectData.status.id) && (
-                <DatePicker
-                  className={classes.datePicker}
-                  label={texts.start_date}
-                  date={projectData.start_date}
-                  handleChange={onStartDateChange}
-                  required
-                />
-              )}
-              {statusesWithEndDate.includes(projectData.status.id) && (
-                <DatePicker
-                  className={classes.datePicker}
-                  label={texts.end_date}
-                  date={projectData.end_date}
-                  handleChange={onEndDateChange}
-                  required
-                  minDate={projectData.start_date && new Date(projectData.start_date)}
-                />
-              )}
-            </div>
-          </div>
+        <form ref={topRef} onSubmit={onClickNextStep}>
+          <ProjectNameSection
+            projectData={projectData}
+            handleSetProjectData={handleSetProjectData}
+          />
+          <ProjectTimeAndPlaceSection
+            projectData={projectData}
+            handleSetProjectData={handleSetProjectData}
+            errors={errors}
+          />
           <div className={classes.block}>
             <AddPhotoSection
               projectData={projectData}

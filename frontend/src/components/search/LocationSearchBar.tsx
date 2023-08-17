@@ -1,16 +1,33 @@
 import { TextField } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
+import makeStyles from "@mui/styles/makeStyles";
 import axios from "axios";
 import { debounce } from "lodash";
 import React, { useContext, useEffect } from "react";
-import { getNameFromLocation } from "../../../public/lib/locationOperations";
+import {
+  getNameFromLocation,
+  getNameFromExactLocation,
+  isExactLocation,
+} from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
+const useStyles = makeStyles((theme) => ({
+  additionalInfos: {
+    width: "100%",
+  },
+  input: {
+    marginBottom: theme.spacing(2),
+  },
+  formHelperText: {
+    marginTop: theme.spacing(-2),
+  },
+}));
+
 type Props = {
-  label?;
-  required?;
-  helperText?;
+  label?: string;
+  required?: boolean;
+  helperText?: string;
   inputClassName?;
   smallInput?;
   onSelect?;
@@ -23,6 +40,10 @@ type Props = {
   locationInputRef?;
   textFieldClassName?;
   disabled?;
+  enableExactLocation?: boolean;
+  additionalInfoText?: string;
+  onChangeAdditionalInfoText?;
+  enableAdditionalInfo?: boolean;
 };
 export default function LocationSearchBar({
   label,
@@ -40,8 +61,13 @@ export default function LocationSearchBar({
   locationInputRef,
   textFieldClassName,
   disabled,
+  enableExactLocation,
+  additionalInfoText,
+  onChangeAdditionalInfoText,
+  enableAdditionalInfo,
 }: Props) {
   const { locale } = useContext(UserContext);
+  const classes = useStyles();
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const getValue = (newValue, inputValue) => {
     if (!newValue) {
@@ -110,19 +136,32 @@ export default function LocationSearchBar({
             lat: -1,
           },
         ];
-        const bannedTypes = ["claimed_administrative", "isolated_dwelling", "croft"];
+        const bannedTypes = [
+          "claimed_administrative",
+          "isolated_dwelling",
+          "croft",
+          "construction",
+        ];
+        const minimumImportance = {
+          exactAddresses: 0.25,
+          places: 0.5,
+        };
         if (active) {
           const filteredData = response.data.filter((o) => {
             return (
-              o.importance > 0.5 &&
-              !bannedClasses.includes(o.class) &&
+              (isExactLocation(o)
+                ? o.importance > minimumImportance.exactAddresses
+                : o.importance > minimumImportance.places) &&
+              (enableExactLocation || !bannedClasses.includes(o.class)) &&
               !bannedTypes.includes(o.type)
             );
           });
           const data =
             filteredData.length > 0
               ? filteredData
-              : response.data.slice(0, 2).filter((o) => !bannedClasses.includes(o.class));
+              : response.data
+                  .slice(0, 2)
+                  .filter((o) => enableExactLocation || !bannedClasses.includes(o.class));
           for (const option of additionalOptions) {
             if (option.simple_name.toLowerCase().includes(searchValue.toLowerCase())) {
               data.push(option);
@@ -130,7 +169,9 @@ export default function LocationSearchBar({
           }
           const options = data.map((o) => ({
             ...o,
-            simple_name: getNameFromLocation(o).name,
+            simple_name: enableExactLocation
+              ? getNameFromExactLocation(o).name
+              : getNameFromLocation(o).name,
             key: o.place_id,
           }));
           setOptions(getOptionsWithoutRedundancies(options));
@@ -147,19 +188,29 @@ export default function LocationSearchBar({
   }, [searchValue]);
 
   const getOptionsWithoutRedundancies = (options) => {
-    const type_hierarchy = ["administrative", "county"];
-    console.log(options);
-    //If there is multiple locations with the same name, only let the one with the "strongest" type in.
+    //For the classes_without_hierarchy we simply return the first element if there is a redundancy
+    const classes_without_hierarchy = ["highway"];
+    //If any of these types apply we want the types to trump each other in this order instead of just taking the first element
+    const type_hierarchy = ["administrative", "county", "political"];
     //e.g. don't display both a city and a county if their names are identical
     return options.filter((cur) => {
       for (const o of options) {
-        if (
-          cur !== o &&
-          cur.simple_name === o.simple_name &&
-          type_hierarchy.indexOf(cur.type) > -1 &&
-          type_hierarchy.indexOf(o.type) < type_hierarchy.indexOf(cur.type)
-        ) {
-          return false;
+        if (cur !== o && cur.simple_name === o.simple_name) {
+          //if the elements are both a class without hierarchy, filter out every element but the first one
+          if (
+            classes_without_hierarchy.includes(cur.class) &&
+            o.class === cur.class &&
+            o !== options.find((e) => e.class === cur.class)
+          ) {
+            return false;
+          }
+          //if the elements are part of the type hierarchy, filter out every element but the strongest
+          if (
+            type_hierarchy.indexOf(cur.type) > -1 &&
+            type_hierarchy.indexOf(o.type) < type_hierarchy.indexOf(cur.type)
+          ) {
+            return false;
+          }
         }
       }
       return true;
@@ -214,42 +265,61 @@ export default function LocationSearchBar({
     return options;
   };
 
+  const handleChangeAdditionalInfoText = (e) => {
+    onChangeAdditionalInfoText(e.target.value);
+  };
+
   return (
-    <Autocomplete
-      className={`${className} ${inputClassName}`}
-      open={open === undefined ? uncontrolledOpen : open}
-      onOpen={() => {
-        setOpen(true);
-      }}
-      handleHomeEndKeys
-      disableClearable
-      loading={loading}
-      onClose={handleClose}
-      onChange={handleChange}
-      options={options.map((o) => o.simple_name)}
-      inputValue={getValue(value, inputValue)}
-      filterOptions={handleFilterOptions}
-      getOptionDisabled={handleGetOptionDisabled}
-      renderOption={renderSearchOption}
-      disabled={disabled}
-      noOptionsText={!searchValue && !inputValue ? texts.start_typing + "..." : texts.no_options}
-      renderInput={(params) => (
+    <div className={className}>
+      <Autocomplete
+        className={inputClassName}
+        open={open === undefined ? uncontrolledOpen : open}
+        onOpen={() => {
+          setOpen(true);
+        }}
+        handleHomeEndKeys
+        disableClearable
+        loading={loading}
+        onClose={handleClose}
+        onChange={handleChange}
+        options={options.map((o) => o.simple_name)}
+        inputValue={getValue(value, inputValue)}
+        filterOptions={handleFilterOptions}
+        getOptionDisabled={handleGetOptionDisabled}
+        renderOption={renderSearchOption}
+        disabled={disabled}
+        noOptionsText={!searchValue && !inputValue ? texts.start_typing + "..." : texts.no_options}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label={label}
+            required={required}
+            variant="outlined"
+            onChange={handleInputChange}
+            helperText={helperText}
+            size={smallInput && "small"}
+            inputRef={locationInputRef}
+            InputProps={{
+              ...params.InputProps,
+              endAdornment: <React.Fragment>{params.InputProps.endAdornment}</React.Fragment>,
+              className: `${textFieldClassName} ${classes.input}`,
+            }}
+            FormHelperTextProps={{
+              classes: {
+                root: classes.formHelperText,
+              },
+            }}
+          />
+        )}
+      />
+      {enableAdditionalInfo && (
         <TextField
-          {...params}
-          label={label}
-          required={required}
-          variant="outlined"
-          onChange={handleInputChange}
-          helperText={helperText}
-          size={smallInput && "small"}
-          inputRef={locationInputRef}
-          InputProps={{
-            ...params.InputProps,
-            endAdornment: <React.Fragment>{params.InputProps.endAdornment}</React.Fragment>,
-            className: textFieldClassName,
-          }}
+          label={texts.additional_infos_for_location}
+          className={classes.additionalInfos}
+          value={additionalInfoText}
+          onChange={handleChangeAdditionalInfoText}
         />
       )}
-    />
+    </div>
   );
 }
