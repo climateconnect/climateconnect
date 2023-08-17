@@ -62,7 +62,7 @@ export default function ProjectTimeAndPlaceSection({
     const noEndDateSet = prop === "start_date" && !isNaN(value?.$d) && !projectData.end_date;
     const endDateBeforeStartDate =
       prop === "start_date" && projectData.end_date && projectData.end_date < value;
-    if (noEndDateSet || endDateBeforeStartDate) {
+    if (PROJECT_TYPE_DATE_OPTIONS[projectData.project_type].enableEndDate && (noEndDateSet || endDateBeforeStartDate)) {
       const endDateSuggestion = value.add(1, "h");
       handleSetProjectData({
         start_date: value,

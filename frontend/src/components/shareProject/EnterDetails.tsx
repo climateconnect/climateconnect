@@ -81,7 +81,6 @@ export default function EnterDetails({
   goToNextStep,
   goToPreviousStep,
   skillsOptions,
-  statusOptions,
 }) {
   const [open, setOpen] = useState({
     avatarDialog: false,
