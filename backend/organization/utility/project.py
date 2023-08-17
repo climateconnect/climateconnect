@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_new_project(data: Dict, source_language: Language) -> Project:
-    project_type = ProjectTypesChoices[data["type"]]
+    project_type = ProjectTypesChoices[data["project_type"]]
     project = Project.objects.create(
         name=data["name"],
         short_description=data["short_description"],
