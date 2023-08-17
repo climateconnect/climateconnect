@@ -5,31 +5,24 @@ import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
   shortDescriptionWrapper: {
     width: "100%",
-    [theme.breakpoints.up("md")]: {
-      paddingTop: "56.25%",
-      position: "relative",
-    },
+    paddingTop: "56.25%",
+    position: "relative",
   },
   shortDescription: {
-    [theme.breakpoints.up("md")]: {
-      position: "absolute",
-      top: 0,
-      left: 0,
-      bottom: 0,
-      right: 0,
-      width: "100%",
-    },
+    position: "absolute",
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    width: "100%",
   },
-  input: {
-    [theme.breakpoints.up("md")]: {
-      height: "100%",
-      alignItems: "flex-start",
-    },
+  fullHeight: {
+    height: "100%",
   },
-}));
+});
 
 export default function AddSummarySection({
   projectData,
@@ -73,9 +66,9 @@ export default function AddSummarySection({
           onChange={(event) => onDescriptionChange(event, "short_description")}
           className={classes.shortDescription}
           InputProps={{
-            classes: { root: classes.input, input: classes.input, inputMultiline: classes.input },
+            classes: { root: classes.fullHeight, inputMultiline: classes.fullHeight },
           }}
-          rows={4}
+          rows={2}
           value={projectData.short_description}
         />
       </div>

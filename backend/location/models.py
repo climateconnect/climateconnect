@@ -10,22 +10,6 @@ class Location(models.Model):
         max_length=4096,
     )
 
-    place_name = models.CharField(
-        help_text="If it is a specific place (e.g. city hall) this contains the name of the place",
-        verbose_name="Place Name",
-        max_length=1024,
-        blank=True,
-        null=True,
-    )
-
-    exact_address = models.CharField(
-        help_text="Points to the exact address the location is on (e.g. 'Silk Road 50')",
-        verbose_name="Exact Address",
-        max_length=1024,
-        blank=True,
-        null=True,
-    )
-
     city = models.CharField(
         help_text="Points to location's city name", verbose_name="City", max_length=1024
     )

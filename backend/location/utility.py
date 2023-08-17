@@ -46,11 +46,14 @@ def get_location(location_object):
         if param not in location_object:
             raise ValidationError("Required parameter is missing:" + param)
     loc = Location.objects.filter(place_id=location_object["place_id"])
-    optional_attribute_names = ["city", "state", "place_name", "exact_address"]
-    optional_attributes = {}
-    for attr in optional_attribute_names:
-        if attr in location_object:
-            optional_attributes[attr] = location_object[attr]
+    if "city" in location_object:
+        city = location_object["city"]
+    else:
+        city = ""
+    if "state" in location_object:
+        state = location_object["state"]
+    else:
+        state = ""
     if loc.exists():
         return loc[0]
     elif location_object["type"] == "Point":
@@ -60,10 +63,8 @@ def get_location(location_object):
         loc = Location.objects.create(
             osm_id=location_object["osm_id"],
             place_id=location_object["place_id"],
-            city=optional_attributes["city"],
-            state=optional_attributes["state"],
-            place_name=optional_attributes["place_name"],
-            exact_address=optional_attributes["exact_address"],
+            city=city,
+            state=state,
             country=location_object["country"],
             name=location_object["name"],
             centre_point=switched_point,
@@ -81,10 +82,8 @@ def get_location(location_object):
         loc = Location.objects.create(
             osm_id=location_object["osm_id"],
             place_id=location_object["place_id"],
-            city=optional_attributes["city"],
-            state=optional_attributes["state"],
-            place_name=optional_attributes["place_name"],
-            exact_address=optional_attributes["exact_address"],
+            city=city,
+            state=state,
             country=location_object["country"],
             name=location_object["name"],
             multi_polygon=multipolygon,

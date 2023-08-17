@@ -24,7 +24,6 @@ export async function getServerSideProps(ctx) {
     skillsOptions,
     rolesOptions,
     statusOptions,
-    projectTypeOptions,
   ] = await Promise.all([
     getAvailabilityOptions(auth_token, ctx.locale),
     getUserOrganizations(auth_token, ctx.locale),
@@ -32,7 +31,6 @@ export async function getServerSideProps(ctx) {
     getSkillsOptions(auth_token, ctx.locale),
     getRolesOptions(auth_token, ctx.locale),
     getStatusOptions(auth_token, ctx.locale),
-    getProjectTypeOptions(auth_token, ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -42,7 +40,6 @@ export async function getServerSideProps(ctx) {
       skillsOptions: skillsOptions,
       rolesOptions: rolesOptions,
       statusOptions: statusOptions,
-      projectTypeOptions: projectTypeOptions,
     }),
   };
 }
@@ -54,7 +51,6 @@ export default function Share({
   skillsOptions,
   rolesOptions,
   statusOptions,
-  projectTypeOptions,
 }) {
   const token = new Cookies().get("auth_token");
   const { user, locale } = useContext(UserContext);
@@ -86,7 +82,6 @@ export default function Share({
           statusOptions={statusOptions}
           token={token}
           setMessage={handleSetErrorMessage}
-          projectTypeOptions={projectTypeOptions}
         />
       </WideLayout>
     );
@@ -199,25 +194,6 @@ const getUserOrganizations = async (token, locale) => {
     if (resp.data.length === 0) return null;
     else {
       return resp.data.map((o) => o.organization);
-    }
-  } catch (err: any) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-};
-
-const getProjectTypeOptions = async (token, locale) => {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: "/api/project_type_options/",
-      token: token,
-      locale: locale,
-    });
-    if (resp.data.length === 0) return null;
-    else {
-      return resp.data;
     }
   } catch (err: any) {
     console.log(err);

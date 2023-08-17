@@ -10,7 +10,6 @@ from climateconnect_api.utility.common import create_unique_slug
 
 from organization.models import Project, ProjectMember
 from organization.models.tags import ProjectTags
-from organization.models.type import ProjectTypesChoices
 
 from django.db.models import Q
 from climateconnect_api.models import Role
@@ -21,13 +20,11 @@ logger = logging.getLogger(__name__)
 
 
 def create_new_project(data: Dict, source_language: Language) -> Project:
-    project_type = ProjectTypesChoices[data["type"]]
     project = Project.objects.create(
         name=data["name"],
         short_description=data["short_description"],
         collaborators_welcome=data["collaborators_welcome"],
         status_id=data["status"],
-        project_type=project_type
     )
     # Add all non required parameters if they exists in the request.
     if "start_date" in data:
@@ -53,8 +50,6 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
         project.is_draft = data["is_draft"]
     if "website" in data:
         project.website = data["website"]
-    if "additional_loc_info" in data:
-        project.additional_loc_info = data["additional_loc_info"]
     project.language = source_language
 
     project.url_slug = create_unique_slug(project.name, project.id, Project.objects)

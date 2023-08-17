@@ -82,9 +82,5 @@ export default function getFilterAndSearchTexts({ filterType, hubName, locale })
         hubName ? `im ${hubName} Hub ` : ""
       }finden, die deinen Filtern entsprechen.`,
     },
-    additional_infos_for_location: {
-      en: "Additional info (e.g. room, ...)",
-      de: "Zusätzliche Infos (z.B. Raum, ...)",
-    },
   };
 }

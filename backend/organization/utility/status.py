@@ -1,14 +1,10 @@
 from organization.models import ProjectStatus
-from climateconnect_main.utility.general import get_prop_in_language
-from organization.models.type import ProjectType
+
 
 def get_project_status(status: ProjectStatus, language_code: str) -> str:
-    return get_prop_in_language(status, "name", language_code)
-
-
-def get_project_type_name(type: ProjectType, language_code: str) -> str:
-    return get_prop_in_language(type, "name", language_code)
-
-
-def get_project_type_helptext(type: ProjectType, language_code: str) -> str:
-    return get_prop_in_language(type, "help_text", language_code)
+    lang_translation_attr = "name_{}_translation".format(language_code)
+    if hasattr(status, lang_translation_attr):
+        translation = getattr(status, lang_translation_attr)
+        if language_code != "en" and translation is not None:
+            return translation
+    return status.name

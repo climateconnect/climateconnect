@@ -7,7 +7,6 @@ from django.core.files.base import ContentFile
 
 # django and pillow lib
 from PIL import Image
-from django.db.models import QuerySet
 
 
 # source: https://dev.to/ageumatheus/creating-image-from-dataurl-base64-with-pyhton-django-454g
@@ -56,12 +55,3 @@ def get_allowed_hosts(ALLOWED_HOSTS_ENV):
             if host not in allowed_hosts:
                 allowed_hosts.append(host)
     return allowed_hosts
-
-
-def get_prop_in_language(obj: QuerySet, prop_name: str, language_code: str) -> str:
-    lang_translation_attr = "{}_{}_translation".format(prop_name, language_code)
-    if hasattr(obj, lang_translation_attr):
-        translation = getattr(obj, lang_translation_attr)
-        if language_code != "en" and translation != None:
-            return translation
-    return getattr(obj, prop_name)

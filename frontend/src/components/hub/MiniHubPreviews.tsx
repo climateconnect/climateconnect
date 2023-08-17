@@ -13,6 +13,12 @@ const useStyles = makeStyles((theme) => ({
   root: {
     marginLeft: theme.spacing(-1),
   },
+  firstItem: {
+    marginLeft: theme.spacing(-1),
+  },
+  lastItem: {
+    marginRight: theme.spacing(-1),
+  },
 }));
 
 export default function MiniHubPreviews({
@@ -33,11 +39,18 @@ export default function MiniHubPreviews({
             hub={hub}
             key={hub.url_slug}
             editMode={editMode}
+            //TODO(unused) isFirstItem={index === 0}
             onClickRemoveHub={onClickRemoveHub}
           />
         ))}
       {allowCreate && (
-        <GridItem createMode hubsToSelectFrom={allHubs} onSelectNewHub={onSelectNewHub} />
+        <GridItem
+          createMode
+          //TODO(unused) isFirstItem={hubs.length === 0}
+          //TODO(unused) isLastItem
+          hubsToSelectFrom={allHubs}
+          onSelectNewHub={onSelectNewHub}
+        />
       )}
     </Grid>
   );
