@@ -13,6 +13,18 @@ export function getDateAndTime(date) {
   return format(date, "dd.MM HH:mm");
 }
 
+export function getDayAndMonth(date) {
+  return format(date, "dd.MM");
+}
+
+export function getTime(date) {
+  return format(date, "HH:mm");
+}
+
+export function getDateAndTime(date) {
+  return format(date, "dd.MM HH:mm");
+}
+
 export function getDateTime(rawDate) {
   const date = new Date(rawDate);
   if (isToday(date)) return format(date, "hh:mm");
