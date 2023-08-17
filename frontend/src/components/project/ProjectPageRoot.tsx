@@ -7,7 +7,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { useLongPress } from "use-long-press";
 import ROLE_TYPES from "../../../public/data/role_types";
-import { apiRequest, getLocalePrefix, redirect } from "../../../public/lib/apiOperations";
+import { apiRequest, redirect } from "../../../public/lib/apiOperations";
 import { getParams } from "../../../public/lib/generalOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
 import getTexts from "../../../public/texts/texts";
@@ -531,7 +531,6 @@ export default function ProjectPageRoot({
             toggleShowRequests={toggleShowRequests}
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
             requestedToJoinProject={requestedToJoinProject}
-            token={token}
           />
         </TabContent>
         <TabContent value={tabValue} index={1}>

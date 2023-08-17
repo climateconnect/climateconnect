@@ -22,6 +22,7 @@ const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
   },
   creator: {
     wordBreak: "break-word",
+    marginBottom: theme.spacing(0.25)
   },
   cardIcon: {
     verticalAlign: "bottom",
@@ -207,7 +208,7 @@ const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_pa
           <MiniOrganizationPreview
             className={classes.creator}
             organization={project_parent.parent_organization}
-            size="small"
+            size="tiny"
             nolink
           />
           {collaborating_organizations.length > 0 && (
@@ -220,7 +221,7 @@ const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_pa
                   key={index}
                   className={classes.creator}
                   organization={co.collaborating_organization}
-                  size="small"
+                  size="tiny"
                   nolink
                   doNotShowName
                 />

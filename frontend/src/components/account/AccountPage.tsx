@@ -315,7 +315,7 @@ export default function AccountPage({
                   <MiniOrganizationPreview
                     className={classes.miniOrgPreview}
                     organization={value}
-                    size="small"
+                    size="tiny"
                   />
                 </div>
               );
