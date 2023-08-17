@@ -215,7 +215,7 @@ const getProjectTypeOptions = async (token, locale) => {
       token: token,
       locale: locale,
     });
-    if (resp.data.length === 0) return null;
+    if (!resp.data) return null;
     else {
       return resp.data;
     }

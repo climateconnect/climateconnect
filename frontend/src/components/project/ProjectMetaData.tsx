@@ -11,6 +11,7 @@ import ProjectCategoriesDisplay from "./ProjectCategoriesDisplay";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import { Project } from "../../types";
+import BrowseContext from "../context/BrowseContext";
 
 const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
   creatorImage: {
@@ -76,6 +77,12 @@ const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
   },
   additionalInfoCounter: {
     marginLeft: theme.spacing(0.5),
+  },
+  typeIcon: {
+    width: 20,
+    height: 20,
+    marginLeft: 2,
+    marginRight: 6,
   },
 }));
 
@@ -238,13 +245,11 @@ const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_pa
 
 const AdditionalPreviewInfo = ({ project }) => {
   const classes = useStyles({});
-  //only display additional preview info if the project has a significant number of likes/comments
-  if (project.number_of_comments < 3 && project.number_of_likes < 3) {
-    return <></>;
-  }
+  const { projectTypes } = useContext(BrowseContext);
+  const projectType = projectTypes.find((t) => t.name === project.project_type);
   return (
     <Box className={classes.additionalInfoContainer}>
-      {project.number_of_comments > 2 && (
+      {project.number_of_comments > 0 && (
         <Box className={classes.additionalInfoIcon}>
           <ModeCommentIcon color="primary" />
           <span className={classes.additionalInfoCounter}> {project.number_of_comments} </span>
@@ -257,9 +262,14 @@ const AdditionalPreviewInfo = ({ project }) => {
         </Box>
       )}
       <Box className={classes.additionalInfoIcon}>
-        {" • "}
-        <div className={classes.horizontalSpacing} />
-        {project.status}
+        {(project.number_of_comments > 0 || project.number_of_likes > 2) && (
+          <>
+            {" • "}
+            <div className={classes.horizontalSpacing} />
+          </>
+        )}
+        <img src={`/images/project_types/${projectType.type_id}.png`} className={`${classes.typeIcon} ${classes.cardIcon}`} />
+        <Typography className={classes.metadataText}>{project.project_type}</Typography>
       </Box>
     </Box>
   );
