@@ -18,6 +18,9 @@ celery_beat:
 	$(info )
 	celery -A climateconnect_main beat -l INFO
 
+shell:
+	python3 manage.py shell
+
 install:
 	pdm install
 

@@ -145,10 +145,11 @@ class ListProjectsView(ListAPIView):
         if user.is_authenticated and user.user_profile:
             user_profile = user.user_profile
         # Get project ranking
-        projects = Project.objects.filter(is_draft=False, is_active=True,).annotate(
-            total_comments=Count("project_comment", distinct=True),
-            total_likes=Count("project_liked", distinct=True),
-            total_followers=Count("project_following", distinct=True),
+        projects = Project.objects.filter(
+            is_draft=False, is_active=True
+        ).select_related('loc', 'language', 'status').prefetch_related(
+            'skills', 'tag_project', 'project_comment', 'project_liked',
+            'project_following'
         )
 
         if "hub" in self.request.query_params:
@@ -275,7 +276,7 @@ class ListProjectsView(ListAPIView):
             )
             projects = projects.filter(loc__in=location_ids)
 
-        # Sort projects by its ranking.
+        # Sort projects by its ranking
         project_ids = [
             project.id
             for project in sorted(projects, key=lambda project: -project.ranking)

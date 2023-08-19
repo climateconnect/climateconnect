@@ -1,7 +1,7 @@
 import datetime
 import random
+from django.utils import timezone
 from typing import Dict, Optional
-from django.db.models import ExpressionWrapper, IntegerField
 from climateconnect_api.models.user import UserProfile
 
 
@@ -46,7 +46,7 @@ class ProjectRanking:
         if not last_interaction_timestamp:
             return 0
 
-        current_timestamp = datetime.datetime.now().timestamp()
+        current_timestamp = timezone.now().timestamp()
         timedelta = (current_timestamp - last_interaction_timestamp) / (60 * 60 * 24)
         return self._recency_score(timedelta=timedelta)
 
@@ -55,10 +55,7 @@ class ProjectRanking:
         description: str,
         location: Optional[int],
         project_id: int,
-        total_skills: int,
-        total_comments: int,
-        total_followers: int,
-        total_likes: int,
+        total_skills: int
     ) -> int:
         from organization.models import (
             ProjectComment,
@@ -88,9 +85,9 @@ class ProjectRanking:
         last_project_follower_timestamp = None if not last_project_follower else last_project_follower.created_at.timestamp()
 
         project_factors = {
-            "total_comments": total_comments,
-            "total_likes": total_likes,
-            "total_followers": total_followers,
+            "total_comments": ProjectComment.objects.filter(project_id=project_id).count(),
+            "total_likes": ProjectLike.objects.filter(project_id=project_id).count(),
+            "total_followers": ProjectFollower.objects.filter(project_id=project_id).count(),
             "last_project_comment": self.calculate_recency_of_interaction(
                 last_interaction_timestamp=last_project_comment_timestamp
             ),
