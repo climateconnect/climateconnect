@@ -73,7 +73,7 @@ const ProjectTypeBox = ({ type, value, onChange }) => {
         <Typography className={classes.helpText}>{type.help_text}</Typography>
       </div>
       <Radio
-        checked={value === type.type_id}
+        checked={value.type_id === type.type_id}
         onChange={handleChangeValue}
         name={type.name}
         value={type.type_id}

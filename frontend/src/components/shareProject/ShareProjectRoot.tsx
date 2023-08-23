@@ -90,6 +90,7 @@ export default function ShareProjectRoot({
         role_in_project: "",
       },
       statusOptions,
+      projectTypeOptions,
       userOrganizations,
       locale
     )
@@ -340,6 +341,7 @@ export default function ShareProjectRoot({
 const getDefaultProjectValues = (
   loggedInUser,
   statusOptions,
+  projectTypeOptions,
   userOrganizations,
   locale
 ): Project => {
@@ -357,7 +359,7 @@ const getDefaultProjectValues = (
     team_members: [{ ...loggedInUser }],
     website: "",
     language: locale,
-    project_type: "project",
+    project_type: projectTypeOptions.find(t=>t.type_id === "project"),
   };
 };
 

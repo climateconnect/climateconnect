@@ -84,7 +84,7 @@ const useStyles = makeStyles<
       margin: "0 auto",
     },
     expanded: {
-      color: "white",
+      color: theme.palette.secondary.main,
     },
     hidden: {
       display: "none",

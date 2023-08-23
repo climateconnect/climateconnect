@@ -63,7 +63,7 @@ export default function ProjectTimeAndPlaceSection({
     const endDateBeforeStartDate =
       prop === "start_date" && projectData.end_date && projectData.end_date < value;
     if (
-      PROJECT_TYPE_DATE_OPTIONS[projectData.project_type].enableEndDate &&
+      PROJECT_TYPE_DATE_OPTIONS[projectData.project_type.type_id].enableEndDate &&
       (noEndDateSet || endDateBeforeStartDate)
     ) {
       const endDateSuggestion = value.add(1, "h");
@@ -82,21 +82,21 @@ export default function ProjectTimeAndPlaceSection({
     <div className={classes.root}>
       {
         //Don't display a date for ideas. We'll assume the person sharing just had the idea
-        PROJECT_TYPE_DATE_OPTIONS[projectData.project_type].enableStartDate && (
+        PROJECT_TYPE_DATE_OPTIONS[projectData.project_type.type_id].enableStartDate && (
           <div className={classes.datePickerContainer}>
             <DatePicker
               className={classes.datePicker}
-              label={PROJECT_TYPE_DATE_OPTIONS[projectData.project_type].startDateLabel}
-              enableTime={PROJECT_TYPE_DATE_OPTIONS[projectData.project_type].enableTime}
+              label={PROJECT_TYPE_DATE_OPTIONS[projectData.project_type.type_id].startDateLabel}
+              enableTime={PROJECT_TYPE_DATE_OPTIONS[projectData.project_type.type_id].enableTime}
               handleChange={(newDate) => handleDateChange(newDate, "start_date")}
               date={projectData.start_date}
               error={errors.start_date}
             />
-            {PROJECT_TYPE_DATE_OPTIONS[projectData.project_type].enableEndDate && (
+            {PROJECT_TYPE_DATE_OPTIONS[projectData.project_type.type_id].enableEndDate && (
               <DatePicker
                 className={classes.datePicker}
-                label={PROJECT_TYPE_DATE_OPTIONS[projectData.project_type].endDateLabel}
-                enableTime={PROJECT_TYPE_DATE_OPTIONS[projectData.project_type].enableTime}
+                label={PROJECT_TYPE_DATE_OPTIONS[projectData.project_type.type_id].endDateLabel}
+                enableTime={PROJECT_TYPE_DATE_OPTIONS[projectData.project_type.type_id].enableTime}
                 handleChange={(newDate) => handleDateChange(newDate, "end_date")}
                 minDate={projectData.start_date || null}
                 date={projectData.end_date}

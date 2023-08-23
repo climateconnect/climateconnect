@@ -248,9 +248,6 @@ export default function BrowseContent({
     }
   }, []);
 
-  const myFunction = (tabKey) => {
-    console.log("function triggered", tabKey);
-  };
   const handleTabChange = (event, newValue) => {
     // Update the state of the visual filters, like Select, Dialog, etc
     // Then actually fetch the data. We need a way to map what's

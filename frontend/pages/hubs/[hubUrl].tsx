@@ -151,7 +151,6 @@ export default function Hub({
   hubDescription,
   projectTypes,
 }) {
-  console.log(allHubs);
   const classes = useStyles();
   let fabClass = shareProjectFabStyle(false);
   const { locale } = useContext(UserContext);

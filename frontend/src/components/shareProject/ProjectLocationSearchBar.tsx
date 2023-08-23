@@ -59,8 +59,8 @@ export default function ProjectLocationSearchBar({
   return (
     <LocationSearchBar
       className={className}
-      label={propsByProjectType[projectData.project_type]?.label}
-      helperText={propsByProjectType[projectData.project_type]?.helperText}
+      label={propsByProjectType[projectData.project_type.type_id]?.label}
+      helperText={propsByProjectType[projectData.project_type.type_id]?.helperText}
       enableExactLocation
       value={projectData.loc}
       onChange={handleChangeLocationString}
@@ -68,7 +68,7 @@ export default function ProjectLocationSearchBar({
       required
       additionalInfoText={projectData.additional_loc_info}
       onChangeAdditionalInfoText={handleChangeAdditionalInfoText}
-      enableAdditionalInfo={PROJECT_TYPES_WITH_ADD_INFO.includes(projectData.project_type)}
+      enableAdditionalInfo={PROJECT_TYPES_WITH_ADD_INFO.includes(projectData.project_type.type_id)}
     />
   );
 }
