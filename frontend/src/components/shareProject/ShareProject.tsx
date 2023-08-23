@@ -77,7 +77,7 @@ export default function Share({
   };
 
   const onChangeProjectType = (newValue) => {
-    handleSetProjectData({ project_type: newValue });
+    handleSetProjectData({ project_type: projectTypeOptions.find((t) => t.type_id === newValue) });
   };
 
   const onClickNextStep = (e) => {

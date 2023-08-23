@@ -359,7 +359,7 @@ const getDefaultProjectValues = (
     team_members: [{ ...loggedInUser }],
     website: "",
     language: locale,
-    project_type: projectTypeOptions.find(t=>t.type_id === "project"),
+    project_type: projectTypeOptions.find((t) => t.type_id === "project"),
   };
 };
 
