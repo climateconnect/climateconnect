@@ -58,7 +58,7 @@ export default function StaticPageLinks() {
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
   const texts = getTexts({ page: "navigation", locale: locale });
-  const STATIC_PAGE_LINKS = getStaticPageLinks(texts);
+  const STATIC_PAGE_LINKS = getStaticPageLinks(texts, locale, true);
 
   const getLinksToShow = () => {
     if (isNarrowScreen) {

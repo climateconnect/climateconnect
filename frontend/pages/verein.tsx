@@ -16,7 +16,7 @@ export default function Verein({ bodyContent, headContent }) {
       hideFooter
       bodyContent={bodyContent}
       headContent={headContent}
-      pageKey="transparency"
+      pageKey="association"
     />
   );
 }
