@@ -1,7 +1,11 @@
+from organization.utility.cache import generate_project_ranking_cache_key
 from organization.utility.project_ranking import ProjectRanking
 from location.models import Location
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.core.cache import cache
+from django.db.models.signals import post_delete, post_save
+from django.dispatch import receiver
 
 from organization.models import (
     Organization,
@@ -199,12 +203,18 @@ class Project(models.Model):
 
     @property
     def ranking(self) -> int:
-        return ProjectRanking().calculate_ranking(
-            description=self.description,
-            location=self.loc,
-            project_id=self.id,
-            total_skills=self.skills.count()
-        )
+        cache_key = generate_project_ranking_cache_key(project_id=self.id)
+        project_ranking = cache.get(cache_key)
+        if project_ranking is None:
+            project_ranking = ProjectRanking().calculate_ranking(
+                description=self.description,
+                location=self.loc,
+                project_id=self.id,
+                total_skills=self.skills.count()
+            )
+            cache.set(cache_key, project_ranking)
+
+        return project_ranking
 
     class Meta:
         app_label = "organization"
@@ -214,6 +224,22 @@ class Project(models.Model):
 
     def __str__(self):
         return "(%d) %s: %s" % (self.pk, self.project_type, self.name)
+
+
+@receiver(post_save, sender='organization.ProjectLike')
+@receiver(post_save, sender='organization.ProjectFollower')
+@receiver(post_save, sender='organization.ProjectComment')
+def update_project_ranking_cache_on_save(sender, instance, created, **kwargs):
+    if created:
+        cache.delete(generate_project_ranking_cache_key(project_id=instance.project_id))
+        instance.project.ranking
+
+
+@receiver(post_delete, sender='organization.ProjectFollower')
+@receiver(post_delete, sender='organization.ProjectComment')
+@receiver(post_delete, sender='organization.ProjectLike')
+def update_project_ranking_cache_on_delete(sender, instance, **kwargs):
+    cache.delete(generate_project_ranking_cache_key(project_id=instance.project_id))
 
 
 class ProjectParents(models.Model):
