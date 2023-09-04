@@ -7,7 +7,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import { Dayjs } from "dayjs";
 import ProjectLocationSearchBar from "./ProjectLocationSearchBar";
 import { Theme } from "@mui/material";
-import { getProjectTypeOptions } from "../../../public/data/projectTypeOptions"
+import { getProjectTypeOptions } from "../../../public/data/projectTypeOptions";
 
 const useStyles = makeStyles<Theme, { displayDate?: boolean }>((theme) => {
   return {
@@ -54,7 +54,7 @@ export default function ProjectTimeAndPlaceSection({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ locale: locale, page: "project" });
   const classes = useStyles({ displayDate: projectData.project_type !== "idea" });
-  const PROJECT_TYPE_DATE_OPTIONS = getProjectTypeOptions(texts)
+  const PROJECT_TYPE_DATE_OPTIONS = getProjectTypeOptions(texts);
 
   type DateChangeProp = "start_date" | "end_date";
   //TODO: Make sure end date is after start date (in both frontend and backend)
@@ -62,7 +62,10 @@ export default function ProjectTimeAndPlaceSection({
     const noEndDateSet = prop === "start_date" && !isNaN(value?.$d) && !projectData.end_date;
     const endDateBeforeStartDate =
       prop === "start_date" && projectData.end_date && projectData.end_date < value;
-    if (noEndDateSet || endDateBeforeStartDate) {
+    if (
+      PROJECT_TYPE_DATE_OPTIONS[projectData.project_type.type_id].enableEndDate &&
+      (noEndDateSet || endDateBeforeStartDate)
+    ) {
       const endDateSuggestion = value.add(1, "h");
       handleSetProjectData({
         start_date: value,
@@ -79,21 +82,21 @@ export default function ProjectTimeAndPlaceSection({
     <div className={classes.root}>
       {
         //Don't display a date for ideas. We'll assume the person sharing just had the idea
-        PROJECT_TYPE_DATE_OPTIONS[projectData.project_type].enableStartDate && (
+        PROJECT_TYPE_DATE_OPTIONS[projectData.project_type.type_id].enableStartDate && (
           <div className={classes.datePickerContainer}>
             <DatePicker
               className={classes.datePicker}
-              label={PROJECT_TYPE_DATE_OPTIONS[projectData.project_type].startDateLabel}
-              enableTime={PROJECT_TYPE_DATE_OPTIONS[projectData.project_type].enableTime}
+              label={PROJECT_TYPE_DATE_OPTIONS[projectData.project_type.type_id].startDateLabel}
+              enableTime={PROJECT_TYPE_DATE_OPTIONS[projectData.project_type.type_id].enableTime}
               handleChange={(newDate) => handleDateChange(newDate, "start_date")}
               date={projectData.start_date}
               error={errors.start_date}
             />
-            {PROJECT_TYPE_DATE_OPTIONS[projectData.project_type].enableEndDate && (
+            {PROJECT_TYPE_DATE_OPTIONS[projectData.project_type.type_id].enableEndDate && (
               <DatePicker
                 className={classes.datePicker}
-                label={PROJECT_TYPE_DATE_OPTIONS[projectData.project_type].endDateLabel}
-                enableTime={PROJECT_TYPE_DATE_OPTIONS[projectData.project_type].enableTime}
+                label={PROJECT_TYPE_DATE_OPTIONS[projectData.project_type.type_id].endDateLabel}
+                enableTime={PROJECT_TYPE_DATE_OPTIONS[projectData.project_type.type_id].enableTime}
                 handleChange={(newDate) => handleDateChange(newDate, "end_date")}
                 minDate={projectData.start_date || null}
                 date={projectData.end_date}

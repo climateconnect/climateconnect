@@ -17,7 +17,12 @@ const useStyles = makeStyles({
   },
 });
 
-export default function MessageContent({ content, renderYoutubeVideos = false }) {
+type Props = {
+  content?: any;
+  renderYoutubeVideos?: boolean;
+};
+
+export default function MessageContent({ content, renderYoutubeVideos = false }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   //workaround to get target="_blank" because setting 'properties' on the Linkify component doesn't work

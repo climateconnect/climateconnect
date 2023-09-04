@@ -48,6 +48,10 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Edit Project",
       de: "Projekt bearbeiten",
     },
+    edit: {
+      en: "Edit",
+      de: "Bearbeiten",
+    },
     edit_draft: {
       en: "Edit Draft",
       de: "Entwurf bearbeiten",
@@ -245,8 +249,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Likes",
     },
     leave_project: {
-      en: "Leave project",
-      de: "Projekt verlassen",
+      en: "Leave team",
+      de: "Team verlassen",
     },
     in_collaboration_with: {
       en: "in collaboration with",
@@ -257,12 +261,28 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Gesamte Laufzeit",
     },
     project_description: {
-      en: "Project description",
+      en: "Project Description",
       de: "Projektbeschreibung",
+    },
+    event_description: {
+      en: "Event Description",
+      de: "Veranstaltungsbeschreibung",
+    },
+    idea_description: {
+      en: "Idea Description",
+      de: "Ideenbeschreibung",
     },
     this_project_hasnt_added_a_description_yet: {
       en: "This project hasn't added a description yet.",
       de: "Zu diesem Projekt wurde noch keine Beschreibung hinzugefügt.",
+    },
+    this_event_hasnt_added_a_description_yet: {
+      en: "The organizers haven't added a description yet.",
+      de: "Die Veranstalter:innen haben noch keine Beschreibung hinzugefügt.",
+    },
+    this_idea_hasnt_added_a_description_yet: {
+      en: "So far no detailled description has been added to this idea.",
+      de: "Zu dieser Idee wurde noch keine detaillierte Beschreibung hinzugefügt.",
     },
     this_project_is_not_looking_for_collaborators_right_now: {
       en: "This project is not looking for collaborators right now.",
@@ -999,6 +1019,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     share_your_climate_project: {
       en: "Share Your Climate Project",
       de: "Teile dein Klimaprojekt",
+    },
+    shared: {
+      en: "Shared",
+      de: "Geteilt",
+    },
+    event_organized_by: {
+      en: "Event organized by",
+      de: "Veranstaltung organisiert von",
     },
   };
 }

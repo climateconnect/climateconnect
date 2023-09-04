@@ -144,8 +144,6 @@ export default function IdeaRoot({
   );
   const { showFeedbackMessage } = useContext(FeedbackContext);
   const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("lg"));
-  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
-  const isTinyScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const handleIdeaClose = (e) => {
     onIdeaClose(e);
   };
@@ -395,11 +393,7 @@ export default function IdeaRoot({
                 <SocialMediaShareButton
                   contentLinkPath={`${window.location.pathname}?idea=${idea.url_slug}${window.location.hash}`}
                   apiEndpoint={`/api/ideas/${idea.url_slug}/set_shared_idea/`}
-                  locale={locale}
-                  token={token}
                   messageTitle={`${texts.climate_protection_idea_from}${ideaCreatorName}: ${idea.name}`}
-                  tinyScreen={isTinyScreen}
-                  smallScreen={isSmallScreen}
                   mailBody={texts.share_idea_email_body}
                   texts={texts}
                   dialogTitle={texts.tell_others_about_this_idea}

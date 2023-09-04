@@ -62,6 +62,6 @@ def get_prop_in_language(obj: QuerySet, prop_name: str, language_code: str) -> s
     lang_translation_attr = "{}_{}_translation".format(prop_name, language_code)
     if hasattr(obj, lang_translation_attr):
         translation = getattr(obj, lang_translation_attr)
-        if language_code != "en" and translation != None:
+        if language_code != "en" and translation is not None:
             return translation
     return getattr(obj, prop_name)

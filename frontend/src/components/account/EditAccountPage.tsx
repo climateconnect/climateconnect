@@ -457,7 +457,7 @@ export default function EditAccountPage({
                 </Typography>
                 <MiniOrganizationPreview
                   organization={i.value}
-                  size="small"
+                  size="tiny"
                   className={classes.infoElement}
                   onDelete={() => handleSetParentOrganization(null)}
                 />

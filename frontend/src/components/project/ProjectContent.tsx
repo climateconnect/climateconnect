@@ -1,14 +1,13 @@
-import { Button, Typography, Badge } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import humanizeDuration from "humanize-duration";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import TimeAgo from "react-timeago";
 import youtubeRegex from "youtube-regex";
 
 // Relative imports
-import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 import { germanYearAndDayFormatter, yearAndDayFormatter } from "../../utils/formatting";
 import DateDisplay from "./../general/DateDisplay";
 import DiscussionPreview from "./DiscussionPreview";
@@ -17,12 +16,8 @@ import MessageContent from "../communication/MessageContent";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import Posts from "./../communication/Posts";
-import ProjectRequestersDialog from "../dialogs/ProjectRequestersDialog";
-import ProjectStatus from "./ProjectStatus";
-import ROLE_TYPES from "../../../public/data/role_types";
 import UserContext from "../context/UserContext";
-import JoinButton from "./Buttons/JoinButton";
-import { getMembershipRequests } from "../../../public/lib/projectOperations";
+import ProjectContentSideButtons from "./Buttons/ProjectContentSideButtons";
 
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
@@ -126,43 +121,13 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
     fontWeight: "bold",
   },
-  memberButtons: {
-    float: "right",
-    display: "flex",
-    flexDirection: "column",
-  },
-
-  editProjectButton: {
-    marginTop: theme.spacing(1),
-  },
-  showRequestsButton: {
-    background: "white",
-    "&:hover": {
-      background: "#f7f7f7",
-    },
-  },
-
-  leaveProjectButton: {
-    // TODO: we should really encapsulate
-    // spacing style into specific spacing components, akin
-    // to what Braid's <Box /> component does. This makes
-    // the frontend code more maintainable, and spacing more deterministic
-    marginTop: theme.spacing(1),
-    background: theme.palette.error.main,
-    color: "white",
-    ["&:hover"]: {
-      backgroundColor: theme.palette.error.main,
-    },
-  },
-  joinButton: {
-    float: "right",
-  },
   projectDescription: {
     wordBreak: "break-word",
   },
   projectParentContainer: {
     display: "flex",
     flexDirection: "row",
+    alignItems: "center",
   },
   collaborationContainer: {
     display: "flex",
@@ -184,49 +149,15 @@ export default function ProjectContent({
   toggleShowRequests,
   handleSendProjectJoinRequest,
   requestedToJoinProject,
-  token,
 }) {
   const classes = useStyles({ isPersonalProject: project.isPersonalProject });
-  const { user, locale } = useContext(UserContext);
+  const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
 
   const [showFullDescription, setShowFullDescription] = useState(false);
   const handleToggleFullDescriptionClick = () => setShowFullDescription(!showFullDescription);
-  const user_permission =
-    user && project.team && project.team.find((m) => m.id === user.id)
-      ? project.team.find((m) => m.id === user.id).permission
-      : null;
 
-  const [requesters, setRequesters] = useState([]);
-  const [requestersRetrieved, setRequestersRetrieved] = useState(false);
-  // Fetch and populate requesters on initial load
-  useEffect(() => {
-    (async () => {
-      //short circuit if the user doesn't have the necessary permissions to see join requests
-      if (!(user_permission && hasAdminPermissions)) {
-        return;
-      }
-      // Returns an array of objects with an ID (request ID) and
-      // associated user profile.
-      try {
-        const membershipRequests = await getMembershipRequests(project.url_slug, locale, token);
-        // Now transform to a shape of objects where a specific request ID is
-        // alongside a user profile.
-        const userRequests = membershipRequests.map((r) => {
-          const user = {};
-          user.requestId = r.id;
-          user.user = r.user_profile;
-          return user;
-        });
-        setRequesters(userRequests);
-        setRequestersRetrieved(true);
-      } catch (e) {
-        console.log(e.response.data);
-      }
-    })();
-  }, []);
-
-  const CalculateMaxDisplayedDescriptionLength = (description) => {
+  const calculateMaxDisplayedDescriptionLength = (description) => {
     const words = description.split(" ");
     const youtubeLink = words.find((el) => youtubeRegex().test(el));
     if (youtubeLink) {
@@ -243,101 +174,72 @@ export default function ProjectContent({
     }
   };
   const maxDisplayedDescriptionLength = project.description
-    ? CalculateMaxDisplayedDescriptionLength(project.description)
+    ? calculateMaxDisplayedDescriptionLength(project.description)
     : null;
 
-  const hasAdminPermissions = [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(
-    user_permission
-  );
+  //return the right static text depending on the project type
+  const getProjectDescriptionHeadline = () => {
+    const type = project.project_type.type_id;
+    if (type === "event") return texts.event_description;
+    if (type === "idea") return texts.idea_description;
+    return texts.project_description;
+  };
+
+  const getNoProjectDescriptionText = () => {
+    const type = project.project_type.type_id;
+    if (type === "event") return texts.this_event_hasnt_added_a_description_yet;
+    if (type === "idea") return texts.this_idea_hasnt_added_a_description_yet;
+    return texts.this_project_hasnt_added_a_description_yet;
+  };
+
   return (
     <>
       <div className={classes.contentBlock}>
         <div className={classes.createdBy}>
-          {user && project.team && project.team.find((m) => m.id === user.id) && (
-            <div className={classes.memberButtons}>
-              {user_permission && hasAdminPermissions && (
-                <>
-                  {/* Badge is dynamic based on the number of membership requesters */}
-                  <Badge badgeContent={requesters.length} color="primary">
-                    <Button
-                      className={`${classes.editProjectButton} ${classes.showRequestsButton}`}
-                      variant="contained"
-                      onClick={toggleShowRequests}
-                    >
-                      {texts.review_join_requests}
-                    </Button>
-                  </Badge>
-                  <Button
-                    className={classes.editProjectButton}
-                    variant="contained"
-                    href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
-                  >
-                    {project.is_draft ? texts.edit_draft : texts.edit_project}
-                  </Button>
-                </>
-              )}
-              {/* Otherwise if not a project admin, just show the Leave Project button */}
-              <Button
-                className={classes.leaveProjectButton}
-                variant="contained"
-                onClick={leaveProject}
-              >
-                {texts.leave_project}
-              </Button>
-            </div>
-          )}
-
-          {/* If the user is an admin on the project, or is already part
-            of the project (has read only permissions), then we don't want to show the membership request button. */}
-          {!hasAdminPermissions &&
-            !(user_permission && [ROLE_TYPES.read_only_type].includes(user_permission)) && (
-              <JoinButton
-                handleSendProjectJoinRequest={handleSendProjectJoinRequest}
-                requestedToJoin={requestedToJoinProject}
-                className={classes.joinButton}
-              />
-            )}
-
-          {/* Only present dialog if button has been clicked! */}
-          <ProjectRequestersDialog
-            open={showRequesters}
+          <ProjectContentSideButtons
             project={project}
-            requesters={requesters}
-            onClose={toggleShowRequests}
-            user={user}
-            loading={!requestersRetrieved}
-            user_permission={user_permission}
+            showRequesters={showRequesters}
+            toggleShowRequests={toggleShowRequests}
+            handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+            requestedToJoinProject={requestedToJoinProject}
+            leaveProject={leaveProject}
           />
-
           {/* Note: created date is not the same as the start date, for projects */}
           <Typography>
-            {texts.created}: <DateDisplay date={new Date(project.creation_date)} />
+            {texts.shared} <DateDisplay date={new Date(project.creation_date)} />
           </Typography>
           <div>
             <div className={classes.projectParentContainer}>
               <Typography component="span">
-                {texts.started + " "}
-                <TimeAgo
-                  date={new Date(project.start_date)}
-                  formatter={locale === "de" ? germanYearAndDayFormatter : yearAndDayFormatter}
-                />{" "}
-                {texts.by}
+                {project.project_type.type_id === "event" ? (
+                  <>{texts.event_organized_by}</>
+                ) : (
+                  <>
+                    {texts.started + " "}
+                    <TimeAgo
+                      date={new Date(project.start_date)}
+                      formatter={locale === "de" ? germanYearAndDayFormatter : yearAndDayFormatter}
+                    />{" "}
+                    {texts.by}
+                  </>
+                )}
+                {project.isPersonalProject ? (
+                  <MiniProfilePreview
+                    className={classes.creator}
+                    profile={project.creator}
+                    size="small"
+                  />
+                ) : (
+                  <MiniOrganizationPreview
+                    className={classes.creator}
+                    organization={project.creator}
+                    inline
+                    size="small"
+                  />
+                )}
               </Typography>
-              {project.isPersonalProject ? (
-                <MiniProfilePreview
-                  className={classes.creator}
-                  profile={project.creator}
-                  size="small"
-                />
-              ) : (
-                <MiniOrganizationPreview
-                  className={classes.creator}
-                  organization={project.creator}
-                  size="small"
-                />
-              )}
             </div>
-            {project.end_date && (
+            {project.project_type.type_id === "project" && project.end_date && (
               <Typography>
                 {texts.finished + " "}
                 <TimeAgo
@@ -354,6 +256,7 @@ export default function ProjectContent({
                   <MiniOrganizationPreview
                     key={o.id}
                     size="small"
+                    inline
                     className={classes.collaboratingOrganization}
                     organization={o}
                   />
@@ -375,9 +278,6 @@ export default function ProjectContent({
             <Typography>{texts.cancelled} :(</Typography>
           )}
         </div>
-        <div className={classes.statusContainer}>
-          <ProjectStatus status={project.status} />
-        </div>
       </div>
       <div className={classes.contentBlock}>
         <Typography
@@ -387,7 +287,7 @@ export default function ProjectContent({
           ref={projectDescriptionRef}
           className={classes.subHeader}
         >
-          {texts.project_description}
+          {getProjectDescriptionHeadline()}
         </Typography>
         <Typography className={classes.projectDescription} component="div">
           {project.description ? (
@@ -396,13 +296,11 @@ export default function ProjectContent({
             ) : (
               <MessageContent
                 content={project.description.substr(0, maxDisplayedDescriptionLength) + "..."}
-                renderYoutubeVideos={1}
+                renderYoutubeVideos={true}
               />
             )
           ) : (
-            <Typography variant="body2">
-              {texts.this_project_hasnt_added_a_description_yet}
-            </Typography>
+            <Typography variant="body2">{getNoProjectDescriptionText()}</Typography>
           )}
         </Typography>
         {project.description && project.description.length > maxDisplayedDescriptionLength && (

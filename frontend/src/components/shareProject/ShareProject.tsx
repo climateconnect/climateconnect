@@ -1,19 +1,10 @@
-import { Button, TextField, Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext, useRef } from "react";
+import React, { useContext } from "react";
 import { Project, Organization } from "../../types";
 import ProjectTypeSelector from "./ProjectTypeSelector";
-
-// Relative imports
-import {
-  getLocationValue,
-  indicateWrongLocation,
-  isLocationValid,
-  parseLocation,
-} from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-import Form from "../general/Form";
 import Switcher from "../general/Switcher";
 import SelectField from "../general/SelectField";
 
@@ -75,15 +66,18 @@ export default function Share({
   const texts = getTexts({ page: "project", locale: locale });
 
   const onChangeSwitch = () => {
-    handleSetProjectData({ is_organization_project: !project.is_organization_project });
+    handleSetProjectData({
+      is_organization_project: !project.is_organization_project,
+      isPersonalProject: !project.isPersonalProject,
+      parent_organization: project.is_organization_project ? null : organizationOptions[0],
+    });
   };
-
   const onChangeParentOrganization = (e) => {
     console.log(e);
   };
 
   const onChangeProjectType = (newValue) => {
-    handleSetProjectData({ project_type: newValue });
+    handleSetProjectData({ project_type: projectTypeOptions.find((t) => t.type_id === newValue) });
   };
 
   const onClickNextStep = (e) => {
@@ -105,7 +99,7 @@ export default function Share({
         <>
           <SelectField
             controlled
-            controlledValue={project.parent_organization.name}
+            controlledValue={project.parent_organization?.name}
             required
             options={organizationOptions}
             label={texts.organization}

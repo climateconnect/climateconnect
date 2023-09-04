@@ -16,7 +16,7 @@ const useStyles = makeStyles({
   },
 });
 
-// This component is for display projects with the option to infinitely scroll to get more projects
+// This component is to display projects with the option to infinitely scroll to get more projects
 export default function ProjectPreviews({
   hasMore,
   loadFunc,

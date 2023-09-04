@@ -7,7 +7,7 @@ const UserContext = createContext<{
   notifications?: any;
   locale: CcLocale;
   locales: CcLocale[];
-  pathName?: string;
+  pathName: string;
   acceptedNecessary?: boolean;
   socketConnectionState?: any;
   donationGoal?: any;

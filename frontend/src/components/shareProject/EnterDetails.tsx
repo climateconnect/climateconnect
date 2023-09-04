@@ -14,7 +14,7 @@ import AddSummarySection from "./AddSummarySection";
 import CollaborateSection from "./CollaborateSection";
 import ProjectNameSection from "./ProjectNameSection";
 import dayjs from "dayjs";
-import { getProjectTypeOptions } from "../../../public/data/projectTypeOptions"
+import { getProjectTypeOptions } from "../../../public/data/projectTypeOptions";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -81,7 +81,6 @@ export default function EnterDetails({
   goToNextStep,
   goToPreviousStep,
   skillsOptions,
-  statusOptions,
 }) {
   const [open, setOpen] = useState({
     avatarDialog: false,
@@ -97,7 +96,7 @@ export default function EnterDetails({
   const texts = getTexts({ page: "project", locale: locale, project: projectData });
   const collaborationTexts = getCollaborationTexts(texts);
   const helpTexts = getHelpTexts(texts);
-  const PROJECT_TYPE_OPTIONS = getProjectTypeOptions(texts)
+  const PROJECT_TYPE_OPTIONS = getProjectTypeOptions(texts);
   const topRef = useRef(null);
 
   //scroll to top if there is an error
@@ -149,8 +148,7 @@ export default function EnterDetails({
       alert(texts.please_add_an_image);
       return false;
     }
-
-    if(PROJECT_TYPE_OPTIONS[project.type].enableStartDate) {
+    if (PROJECT_TYPE_OPTIONS[project.project_type.type_id].enableStartDate) {
       //We handle date errors manually because props like 'required' aren't supported by mui-x-date-pickers
       if (!project.start_date) {
         setErrors({
@@ -168,7 +166,7 @@ export default function EnterDetails({
         return false;
       }
 
-      if(PROJECT_TYPE_OPTIONS[project.type].enableEndDate) {
+      if (PROJECT_TYPE_OPTIONS[project.project_type.type_id].enableEndDate) {
         if (!dayjs(project.end_date).isValid()) {
           setErrors({
             ...errors,

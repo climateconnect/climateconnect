@@ -53,6 +53,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     loc = serializers.SerializerMethodField()
     helpful_connections = serializers.SerializerMethodField()
     language = serializers.SerializerMethodField()
+    project_type = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -80,6 +81,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             "number_of_followers",
             "number_of_likes",
             "language",
+            "project_type",
+            "additional_loc_info"
         )
         read_only_fields = ["url_slug"]
 
@@ -133,6 +136,12 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def get_language(self, obj):
         return obj.language.language_code
+
+    def get_project_type(self, obj):
+        possible_project_types = list(PROJECT_TYPES.values())
+        project_type = next(filter(lambda type: type.type_id_short == obj.project_type, possible_project_types), None)
+        serializer = ProjectTypesSerializer(project_type, many=False)
+        return serializer.data
 
 
 class EditProjectSerializer(ProjectSerializer):
@@ -315,7 +324,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         possible_project_types = list(PROJECT_TYPES.values())
         project_type = next(filter(lambda type: type.type_id_short == obj.project_type, possible_project_types), None)
         serializer = ProjectTypesSerializer(project_type, many=False)
-        return serializer.data["name"]
+        return serializer.data["type_id"]
 
     def get_number_of_comments(self, obj):
         return ProjectComment.objects.filter(project=obj).count()
