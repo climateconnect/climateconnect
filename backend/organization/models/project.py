@@ -203,18 +203,12 @@ class Project(models.Model):
 
     @property
     def ranking(self) -> int:
-        cache_key = generate_project_ranking_cache_key(project_id=self.id)
-        project_ranking = cache.get(cache_key)
-        if project_ranking is None:
-            project_ranking = ProjectRanking().calculate_ranking(
+        return ProjectRanking().calculate_ranking(
                 description=self.description,
                 location=self.loc,
                 project_id=self.id,
                 total_skills=self.skills.count()
             )
-            cache.set(cache_key, project_ranking)
-
-        return project_ranking
 
     class Meta:
         app_label = "organization"

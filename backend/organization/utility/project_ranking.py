@@ -1,7 +1,9 @@
 import datetime
 import random
+from django.core.cache import cache
 from django.utils import timezone
 from typing import Dict, Optional
+from organization.utility.cache import generate_project_ranking_cache_key
 from climateconnect_api.models.user import UserProfile
 
 
@@ -57,54 +59,59 @@ class ProjectRanking:
         project_id: int,
         total_skills: int
     ) -> int:
-        from organization.models import (
-            ProjectComment,
-            ProjectLike,
-            ProjectTagging,
-            ProjectFollower,
-        )
-        weights = self._weights()
+        cache_key = generate_project_ranking_cache_key(project_id=project_id)
+        project_rank = cache.get(cache_key)
+        if project_rank is None:
+            from organization.models import (
+                ProjectComment,
+                ProjectLike,
+                ProjectTagging,
+                ProjectFollower,
+            )
+            weights = self._weights()
 
-        last_project_comment = (
-            ProjectComment.objects.filter(project_id=project_id)
-            .order_by("-created_at")
-            .last()
-        )
-        last_project_comment_timestamp = None if not last_project_comment else last_project_comment.created_at.timestamp()
-        last_project_like = (
-            ProjectLike.objects.filter(project_id=project_id)
-            .order_by("-created_at")
-            .last()
-        )
-        last_project_like_timestamp = None if not last_project_like else last_project_like.created_at.timestamp()
-        last_project_follower = (
-            ProjectFollower.objects.filter(project_id=project_id)
-            .order_by("-created_at")
-            .last()
-        )
-        last_project_follower_timestamp = None if not last_project_follower else last_project_follower.created_at.timestamp()
+            last_project_comment = (
+                ProjectComment.objects.filter(project_id=project_id)
+                .order_by("-created_at")
+                .last()
+            )
+            last_project_comment_timestamp = None if not last_project_comment else last_project_comment.created_at.timestamp()
+            last_project_like = (
+                ProjectLike.objects.filter(project_id=project_id)
+                .order_by("-created_at")
+                .last()
+            )
+            last_project_like_timestamp = None if not last_project_like else last_project_like.created_at.timestamp()
+            last_project_follower = (
+                ProjectFollower.objects.filter(project_id=project_id)
+                .order_by("-created_at")
+                .last()
+            )
+            last_project_follower_timestamp = None if not last_project_follower else last_project_follower.created_at.timestamp()
 
-        project_factors = {
-            "total_comments": ProjectComment.objects.filter(project_id=project_id).count(),
-            "total_likes": ProjectLike.objects.filter(project_id=project_id).count(),
-            "total_followers": ProjectFollower.objects.filter(project_id=project_id).count(),
-            "last_project_comment": self.calculate_recency_of_interaction(
-                last_interaction_timestamp=last_project_comment_timestamp
-            ),
-            "last_project_like": self.calculate_recency_of_interaction(
-                last_interaction_timestamp=last_project_like_timestamp
-            ),
-            "last_project_follower": self.calculate_recency_of_interaction(
-                last_interaction_timestamp=last_project_follower_timestamp
-            ),
-            "total_tags": ProjectTagging.objects.filter(project_id=project_id).count(),
-            "location": 1 if location else 0,
-            "description": 1 if description and len(description) > 0 else 0,
-            "total_skills": total_skills
-        }
+            project_factors = {
+                "total_comments": ProjectComment.objects.filter(project_id=project_id).count(),
+                "total_likes": ProjectLike.objects.filter(project_id=project_id).count(),
+                "total_followers": ProjectFollower.objects.filter(project_id=project_id).count(),
+                "last_project_comment": self.calculate_recency_of_interaction(
+                    last_interaction_timestamp=last_project_comment_timestamp
+                ),
+                "last_project_like": self.calculate_recency_of_interaction(
+                    last_interaction_timestamp=last_project_like_timestamp
+                ),
+                "last_project_follower": self.calculate_recency_of_interaction(
+                    last_interaction_timestamp=last_project_follower_timestamp
+                ),
+                "total_tags": ProjectTagging.objects.filter(project_id=project_id).count(),
+                "location": 1 if location else 0,
+                "description": 1 if description and len(description) > 0 else 0,
+                "total_skills": total_skills
+            }
 
-        project_rank = int(sum(project_factors[factor] * weights[factor] for factor in weights))
+            project_rank = int(sum(project_factors[factor] * weights[factor] for factor in weights))
+            cache.set(cache_key, project_rank)
+
         # Now we want to change the order every time somebody
         # visits the page we would add some randomization.
-        project_rank /= self._randomize()
+        project_rank = self._randomize()
         return project_rank
