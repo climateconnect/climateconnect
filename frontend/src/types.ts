@@ -6,6 +6,13 @@ export type User = {
   last_name?: string;
 };
 
+export type Role = {
+  id: number;
+  name: string;
+  name_de_translation?: string;
+  role_type: "all" | "read write" | "read only"
+}
+
 export type Project = {
   collaborators_welcome: boolean;
   status: string;
