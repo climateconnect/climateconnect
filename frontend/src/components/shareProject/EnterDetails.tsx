@@ -14,7 +14,7 @@ import AddSummarySection from "./AddSummarySection";
 import CollaborateSection from "./CollaborateSection";
 import ProjectNameSection from "./ProjectNameSection";
 import dayjs from "dayjs";
-import { getProjectTypeOptions } from "../../../public/data/projectTypeOptions";
+import { getProjectTypeDateOptions } from "../../../public/data/projectTypeOptions";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -96,7 +96,7 @@ export default function EnterDetails({
   const texts = getTexts({ page: "project", locale: locale, project: projectData });
   const collaborationTexts = getCollaborationTexts(texts);
   const helpTexts = getHelpTexts(texts);
-  const PROJECT_TYPE_OPTIONS = getProjectTypeOptions(texts);
+  const PROJECT_TYPE_OPTIONS = getProjectTypeDateOptions(texts);
   const topRef = useRef(null);
 
   //scroll to top if there is an error

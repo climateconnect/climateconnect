@@ -245,10 +245,8 @@ export default function ProjectPage({
                   timeline_posts: posts,
                   comments: curComments,
                 }}
-                token={token}
                 setMessage={setMessage}
                 isUserFollowing={isUserFollowing}
-                user={user}
                 setCurComments={setCurComments}
                 followingChangePending={followingChangePending}
                 likingChangePending={likingChangePending}

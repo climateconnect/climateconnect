@@ -153,8 +153,6 @@ export default function EditProjectPage({
           statusOptions={statusOptions}
           handleSetProject={handleSetProject}
           tagsOptions={tagsOptions}
-          token={token}
-          user={user}
           user_role={user_role}
           handleSetErrorMessage={handleSetErrorMessage}
           initialTranslations={project.translations}
