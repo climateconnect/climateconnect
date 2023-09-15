@@ -6,15 +6,14 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import getCollaborationTexts from "../../../public/data/collaborationTexts";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-import BottomNavigation from "../general/BottomNavigation";
+import NavigationButtons from "../general/NavigationButtons";
 import ProjectTimeAndPlaceSection from "./TimeAndPlaceSection";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import AddPhotoSection from "./AddPhotoSection";
 import AddSummarySection from "./AddSummarySection";
 import CollaborateSection from "./CollaborateSection";
 import ProjectNameSection from "./ProjectNameSection";
-import dayjs from "dayjs";
-import { getProjectTypeDateOptions } from "../../../public/data/projectTypeOptions";
+import { checkProjectDatesValid } from "../../../public/lib/dateOperations";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -96,7 +95,6 @@ export default function EnterDetails({
   const texts = getTexts({ page: "project", locale: locale, project: projectData });
   const collaborationTexts = getCollaborationTexts(texts);
   const helpTexts = getHelpTexts(texts);
-  const PROJECT_TYPE_OPTIONS = getProjectTypeDateOptions(texts);
   const topRef = useRef(null);
 
   //scroll to top if there is an error
@@ -148,33 +146,13 @@ export default function EnterDetails({
       alert(texts.please_add_an_image);
       return false;
     }
-    if (PROJECT_TYPE_OPTIONS[project.project_type.type_id].enableStartDate) {
-      //We handle date errors manually because props like 'required' aren't supported by mui-x-date-pickers
-      if (!project.start_date) {
-        setErrors({
-          ...errors,
-          start_date: `${texts.please_fill_out_this_field}: ${texts.start_date}`,
-        });
-        return false;
-      }
-
-      if (!dayjs(project.start_date).isValid()) {
-        setErrors({
-          ...errors,
-          start_date: `${texts.invalid_value}: ${texts.start_date}`,
-        });
-        return false;
-      }
-
-      if (PROJECT_TYPE_OPTIONS[project.project_type.type_id].enableEndDate) {
-        if (!dayjs(project.end_date).isValid()) {
-          setErrors({
-            ...errors,
-            end_date: `${texts.invalid_value}: ${texts.end_date}`,
-          });
-          return false;
-        }
-      }
+    const projectDatesValid = checkProjectDatesValid(project, texts);
+    if (projectDatesValid.error) {
+      setErrors({
+        ...errors,
+        [projectDatesValid.error.key]: projectDatesValid.error.value,
+      });
+      return false;
     }
     return true;
   };
@@ -298,10 +276,11 @@ export default function EnterDetails({
               collaborationTexts={collaborationTexts}
             />
           )}
-          <BottomNavigation
+          <NavigationButtons
             className={classes.block}
             onClickPreviousStep={onClickPreviousStep}
             nextStepButtonType="submit"
+            position="bottom"
           />
         </form>
       </Container>

@@ -5,7 +5,7 @@ import React, { useContext } from "react";
 import ROLE_TYPES from "../../../public/data/role_types";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-import BottomNavigation from "../general/BottomNavigation";
+import NavigationButtons from "../general/NavigationButtons";
 import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 import AddProjectMembersContainer from "./AddProjectMembersContainer";
 import OrganizersContainer from "./OrganizersContainer";
@@ -149,19 +149,21 @@ export default function AddTeam({
           handleRemoveOrganization={handleRemoveOrganization}
         />
         {isLastStep ? (
-          <BottomNavigation
+          <NavigationButtons
             className={classes.block}
             onClickPreviousStep={onClickPreviousStep}
             nextStepButtonType="publish"
             saveAsDraft={saveAsDraft}
             loadingSubmit={loadingSubmit}
             loadingSubmitDraft={loadingSubmitDraft}
+            position="bottom"
           />
         ) : (
-          <BottomNavigation
+          <NavigationButtons
             className={classes.block}
             onClickPreviousStep={onClickPreviousStep}
             nextStepButtonType="submit"
+            position="bottom"
           />
         )}
       </form>

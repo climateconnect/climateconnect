@@ -10,8 +10,8 @@ export type Role = {
   id: number;
   name: string;
   name_de_translation?: string;
-  role_type: "all" | "read write" | "read only"
-}
+  role_type: "all" | "read write" | "read only";
+};
 
 export type Project = {
   collaborators_welcome: boolean;
