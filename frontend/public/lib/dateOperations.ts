@@ -1,5 +1,7 @@
 import { format, isThisYear, isToday } from "date-fns";
 import { de, enUS } from "date-fns/locale";
+import dayjs from "dayjs";
+import { getProjectTypeDateOptions } from "../data/projectTypeOptions";
 
 export function getDayAndMonth(date) {
   return format(date, "dd.MM");
@@ -56,4 +58,45 @@ export function durationFromMiliseconds(miliseconds, texts) {
     }`;
   }
   return str;
+}
+
+export function checkProjectDatesValid(project, texts) {
+  const PROJECT_TYPE_OPTIONS = getProjectTypeDateOptions(texts);
+  if (PROJECT_TYPE_OPTIONS[project.project_type.type_id].enableStartDate) {
+    //We handle date errors manually because props like 'required' aren't supported by mui-x-date-pickers
+    if (!project.start_date) {
+      return {
+        valid: false,
+        error: {
+          key: "start_date",
+          value: `${texts.please_fill_out_this_field}: ${texts.start_date}`,
+        },
+      };
+    }
+
+    if (!dayjs(project.start_date).isValid()) {
+      return {
+        valid: false,
+        error: {
+          key: "start_date",
+          value: `${texts.invalid_value}: ${texts.start_date}`,
+        },
+      };
+    }
+
+    if (PROJECT_TYPE_OPTIONS[project.project_type.type_id].enableEndDate) {
+      if (!dayjs(project.end_date).isValid()) {
+        return {
+          valid: false,
+          error: {
+            key: "end_date",
+            value: `${texts.invalid_value}: ${texts.end_date}`,
+          },
+        };
+      }
+    }
+  }
+  return {
+    valid: true,
+  };
 }

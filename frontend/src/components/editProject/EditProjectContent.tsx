@@ -9,9 +9,10 @@ import {
   Theme,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext } from "react";
+import React, { Ref, useContext, useState } from "react";
 import getCollaborationTexts from "../../../public/data/collaborationTexts";
 import ROLE_TYPES from "../../../public/data/role_types";
+import { getProjectTypeDateOptions } from "../../../public/data/projectTypeOptions";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
@@ -22,6 +23,8 @@ import SelectField from "../general/SelectField";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import DeleteProjectButton from "./DeleteProjectButton";
+import dayjs from "dayjs";
+import { Project, Role } from "../../types";
 
 const useStyles = makeStyles((theme) => ({
   select: {
@@ -29,6 +32,9 @@ const useStyles = makeStyles((theme) => ({
   },
   startDate: {
     marginRight: theme.spacing(4),
+    [theme.breakpoints.down("md")]: {
+      marginBottom: theme.spacing(2),
+    },
   },
   creator: {
     display: "inline-block",
@@ -69,26 +75,35 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type Args = {
+  project: Project;
+  handleSetProject: Function;
+  userOrganizations: any;
+  skillsOptions: any;
+  user_role: Role;
+  deleteProject: Function;
+  errors: any;
+  contentRef?: React.RefObject<any>;
+};
+
 export default function EditProjectContent({
   project,
   handleSetProject,
-  statusOptions,
   userOrganizations,
   skillsOptions,
   user_role,
   deleteProject,
-}) {
+  errors,
+  contentRef,
+}: Args) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const collaborationTexts = getCollaborationTexts(texts);
-  const [selectedItems, setSelectedItems] = React.useState(
-    project.skills ? [...project.skills] : []
-  );
+  const [selectedItems, setSelectedItems] = useState(project.skills ? [...project.skills] : []);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
-  const [open, setOpen] = React.useState({ skills: false, connections: false, delete: false });
-  const statusesWithStartDate = statusOptions.filter((s) => s.has_start_date).map((s) => s.id);
-  const statusesWithEndDate = statusOptions.filter((s) => s.has_end_date).map((s) => s.id);
+  const [open, setOpen] = useState({ skills: false, connections: false, delete: false });
+  const PROJECT_TYPE_DATE_OPTIONS = getProjectTypeDateOptions(texts);
 
   const handleChangeProject = (newValue, key) => {
     handleSetProject({ ...project, [key]: newValue });
@@ -168,7 +183,7 @@ export default function EditProjectContent({
   };
 
   return (
-    <div>
+    <div ref={contentRef}>
       <div className={classes.block}>
         <div className={classes.block}>
           <Typography component="span">
@@ -226,38 +241,24 @@ export default function EditProjectContent({
           )}
         </div>
         <div className={classes.block}>
-          <SelectField
-            controlled
-            controlledValue={project.status}
-            onChange={(event) =>
-              handleChangeProject(
-                statusOptions.find((s) => s.name === event.target.value),
-                "status"
-              )
-            }
-            options={statusOptions}
-            label={texts.project_status}
-            className={classes.select}
-            required
-          />
-        </div>
-        <div className={classes.block}>
-          {statusesWithStartDate.includes(project.status.id) && (
+          {PROJECT_TYPE_DATE_OPTIONS[project.project_type.type_id].enableStartDate && (
             <DatePicker
               className={classes.startDate}
               label={texts.start_date}
-              date={new Date(project.start_date)}
+              enableTime={PROJECT_TYPE_DATE_OPTIONS[project.project_type.type_id].enableTime}
+              date={dayjs(project.start_date)}
               handleChange={(newDate) => handleChangeProject(newDate, "start_date")}
-              required
+              error={errors.start_date}
             />
           )}
-          {statusesWithEndDate.includes(project.status.id) && (
+          {PROJECT_TYPE_DATE_OPTIONS[project.project_type.type_id].enableEndDate && (
             <DatePicker
               label={texts.end_date}
-              date={project.end_date}
+              date={dayjs(project.end_date)}
+              enableTime={PROJECT_TYPE_DATE_OPTIONS[project.project_type.type_id].enableTime}
               handleChange={(newDate) => handleChangeProject(newDate, "end_date")}
-              required
-              minDate={project.start_date && new Date(project.start_date)}
+              minDate={project.start_date && dayjs(project.start_date)}
+              error={errors.end_date}
             />
           )}
         </div>
