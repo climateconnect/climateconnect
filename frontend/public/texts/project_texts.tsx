@@ -651,9 +651,9 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Benutze die Suchleiste, um Mitglieder zu deinem Projekt hinzuzufügen.",
     },
     summarize_your_project: {
-      en: "Short summary of your project",
+      en: "Short Summary Of Your Project",
       de: "Kurze Zusammenfassung deines Projektes",
-    },
+    },    
     briefly_summarise_what_you_are_doing: {
       en: "Briefly summarize what you are doing (up to 280 characters)",
       de: "Fasse kurz zusammen, was du tust (bis zu 280 Zeichen)",

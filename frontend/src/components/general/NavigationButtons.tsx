@@ -86,7 +86,6 @@ export default function NavigationButtons({
   position,
   fixedOnMobile,
 }: Args) {
-  console.log(fixedOnMobile);
   const classes = useStyles({ position: position, fixedOnMobile: fixedOnMobile });
   const [open, setOpen] = React.useState(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
@@ -104,10 +103,6 @@ export default function NavigationButtons({
       setOpen(false);
     } else setOpen(false);
   };
-
-  console.log(!isNarrowScreen || !saveAsDraft)
-  console.log(!isNarrowScreen)
-  console.log(saveAsDraft)
 
   const CancelButton = () => (
     <>

@@ -8,7 +8,7 @@ import Cookies from "universal-cookie";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import { checkProjectDatesValid } from "../../../public/lib/dateOperations";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
-import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
+import { indicateWrongLocation, isLocationValid, parseLocation } from "../../../public/lib/locationOperations";
 import {
   getTranslationsFromObject,
   getTranslationsWithoutRedundantKeys,
@@ -390,9 +390,10 @@ const getProjectWithoutRedundancies = (newProject, oldProject) => {
 const parseProjectForRequest = async (project, translationChanges) => {
   const ret = {
     ...project,
-    translations: translationChanges,
+    translations: translationChanges
   };
   if (project.image) ret.image = await blobFromObjectUrl(project.image);
+  if (project.loc) ret.loc = parseLocation(project.loc, true)
   if (project.thumbnail_image)
     ret.thumbnail_image = await blobFromObjectUrl(project.thumbnail_image);
   if (project.skills) ret.skills = project.skills.map((s) => s.id);

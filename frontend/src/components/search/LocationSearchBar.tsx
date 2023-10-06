@@ -13,9 +13,10 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
-  additionalInfos: {
+  additionalInfos: props => ({
     width: "100%",
-  },
+    marginTop: props.hideHelperText ? 0 : theme.spacing(2)
+  }),
   input: {
     marginBottom: theme.spacing(2),
   },
@@ -44,6 +45,7 @@ type Props = {
   additionalInfoText?: string;
   onChangeAdditionalInfoText?;
   enableAdditionalInfo?: boolean;
+  hideHelperText?: boolean;
 };
 export default function LocationSearchBar({
   label,
@@ -65,15 +67,20 @@ export default function LocationSearchBar({
   additionalInfoText,
   onChangeAdditionalInfoText,
   enableAdditionalInfo,
+  hideHelperText,
 }: Props) {
   const { locale } = useContext(UserContext);
-  const classes = useStyles();
+  const classes = useStyles({hideHelperText: hideHelperText});
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const getValue = (newValue, inputValue) => {
     if (!newValue) {
       return inputValue ? inputValue : "";
     } else if (typeof newValue === "object") {
-      return newValue.name ? newValue.name : newValue.simple_name;
+      if(enableExactLocation) {
+        return getNameFromExactLocation(newValue).name
+      } else {
+        return newValue.name ? newValue.name : newValue.simple_name;
+      }
     } else {
       return newValue;
     }

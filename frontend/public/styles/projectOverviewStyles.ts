@@ -67,7 +67,7 @@ const projectOverviewStyles = (theme: Theme): StyleRules => {
       padding: theme.spacing(1),
       [theme.breakpoints.up("md")]: {
         paddingLeft: theme.spacing(4),
-        paddingRight: theme.spacing(4),
+        paddingRight: 0,
       },
     },
     infoTopBar: {

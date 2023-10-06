@@ -18,7 +18,8 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
-import LocationSearchBar from "../search/LocationSearchBar";
+import ProjectLocationSearchBar from "../shareProject/ProjectLocationSearchBar";
+import { Project } from "../../types";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
 const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
@@ -67,6 +68,7 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
   },
   locationInput: {
     marginBottom: theme.spacing(1),
+    marginTop: theme.spacing(2)
   },
   overviewHeadline: {
     fontSize: 12,
@@ -75,6 +77,19 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
     marginTop: theme.spacing(1),
   },
 }));
+
+type Args = {
+  project: Project,
+  handleSetProject: Function,
+  smallScreen: Boolean,
+  tagsOptions: object,
+  overviewInputsRef: any,
+  locationOptionsOpen: boolean,
+  handleSetLocationOptionsOpen: Function,
+  locationInputRef: any,
+}
+
+//TODO: Allow changing project type?!
 
 export default function EditProjectOverview({
   project,
@@ -85,7 +100,7 @@ export default function EditProjectOverview({
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
   locationInputRef,
-}) {
+}: Args) {
   const classes = useStyles({});
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
@@ -99,31 +114,29 @@ export default function EditProjectOverview({
       thumbnail_image: newThumbnailImage,
     });
   };
+
+  const passThroughProps = {
+    project: project,
+    handleChangeProject: handleChangeProject,
+    handleChangeImage: handleChangeImage,
+    tagsOptions: tagsOptions,
+    overviewInputsRef: overviewInputsRef,
+    handleSetProject: handleSetProject,
+    handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
+    locationOptionsOpen: locationOptionsOpen,
+    locationInputRef: locationInputRef,
+    texts: texts,
+  }
+
   return (
     <Container className={classes.projectOverview}>
       {smallScreen ? (
         <SmallScreenOverview
-          project={project}
-          handleChangeProject={handleChangeProject}
-          handleChangeImage={handleChangeImage}
-          tagsOptions={tagsOptions}
-          overviewInputsRef={overviewInputsRef}
-          locationOptionsOpen={locationOptionsOpen}
-          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-          locationInputRef={locationInputRef}
-          texts={texts}
+          {...passThroughProps}
         />
       ) : (
         <LargeScreenOverview
-          project={project}
-          handleChangeProject={handleChangeProject}
-          handleChangeImage={handleChangeImage}
-          tagsOptions={tagsOptions}
-          overviewInputsRef={overviewInputsRef}
-          locationOptionsOpen={locationOptionsOpen}
-          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-          locationInputRef={locationInputRef}
-          texts={texts}
+          {...passThroughProps}
         />
       )}
     </Container>
@@ -136,9 +149,10 @@ function SmallScreenOverview({
   handleChangeImage,
   tagsOptions,
   overviewInputsRef,
+  handleSetProject,
+  locationInputRef,
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
-  locationInputRef,
   texts,
 }) {
   const classes = useStyles({});
@@ -160,10 +174,12 @@ function SmallScreenOverview({
         <InputLocation
           project={project}
           handleChangeProject={handleChangeProject}
+          handleSetProject={handleSetProject}
+          texts={texts}
+          locationInputRef={locationInputRef}
           locationOptionsOpen={locationOptionsOpen}
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-          locationInputRef={locationInputRef}
-          texts={texts}
+          
         />
         <InputWebsite project={project} handleChangeProject={handleChangeProject} texts={texts} />
         <InputTags
@@ -182,11 +198,12 @@ function LargeScreenOverview({
   handleChangeProject,
   handleChangeImage,
   tagsOptions,
+  handleSetProject,
+  overviewInputsRef,
+  texts,
+  locationInputRef,
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
-  overviewInputsRef,
-  locationInputRef,
-  texts,
 }) {
   const classes = useStyles({});
   return (
@@ -215,10 +232,11 @@ function LargeScreenOverview({
           <InputLocation
             project={project}
             handleChangeProject={handleChangeProject}
+            handleSetProject={handleSetProject}
+            texts={texts}
+            locationInputRef={locationInputRef}
             locationOptionsOpen={locationOptionsOpen}
             handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-            locationInputRef={locationInputRef}
-            texts={texts}
           />
           <InputWebsite project={project} handleChangeProject={handleChangeProject} texts={texts} />
           <InputTags
@@ -234,23 +252,21 @@ function LargeScreenOverview({
 }
 
 const InputShortDescription = ({ project, handleChangeProject, texts }) => {
+  const classes = useStyles({})
   return (
     <TextField
-      label="Summary"
+      label={texts.summarize_your_project}
       variant="outlined"
       multiline
       fullWidth
       value={project.short_description}
       type="text"
+      minRows={4}
       onChange={(event) =>
         handleChangeProject(event.target.value.substring(0, 280), "short_description")
       }
+      className={classes.projectInfoEl}
       required
-      helperText={
-        texts.briefly_summarise_what_you_are_doing_part_one +
-        (project.short_description ? project.short_description.length : 0) +
-        texts.briefly_summarise_what_you_are_doing_part_two
-      }
       placeholder={texts.briefly_summarise_what_you_are_doing_please_only_use_english}
     />
   );
@@ -259,18 +275,20 @@ const InputShortDescription = ({ project, handleChangeProject, texts }) => {
 const InputLocation = ({
   project,
   handleChangeProject,
-  locationOptionsOpen,
-  handleSetLocationOptionsOpen,
-  locationInputRef,
+  handleSetProject,
   texts,
+  locationInputRef,
+  locationOptionsOpen,
+  handleSetLocationOptionsOpen
 }) => {
   const classes = useStyles({});
-  const handleChangeLocation = (location) => {
-    handleChangeProject(parseLocation(location), "loc");
-  };
   const handleChangeLegacyLocationElement = (key, value) => {
     handleChangeProject({ ...project.loc, [key]: value }, "loc");
   };
+
+  const handleChangeLocation = (newLocation) => {
+    handleChangeProject(newLocation, "loc");
+  }
   if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
     return (
       <>
@@ -299,7 +317,7 @@ const InputLocation = ({
   }
   return (
     <div /*TODO(undefined) className={classes.projectInfoEl}*/>
-      <LocationSearchBar
+      {/*<LocationSearchBar
         label={texts.location}
         required
         className={classes.locationInput}
@@ -311,6 +329,16 @@ const InputLocation = ({
         open={locationOptionsOpen}
         handleSetOpen={handleSetLocationOptionsOpen}
         locationInputRef={locationInputRef}
+      />*/}
+      <ProjectLocationSearchBar
+        projectData={project}
+        handleSetProjectData={handleSetProject}
+        className={`${classes.locationInput} ${classes.projectInfoEl}`}
+        hideHelperText
+        locationInputRef={locationInputRef}
+        locationOptionsOpen={locationOptionsOpen}
+        handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+        onChangeLocation={handleChangeLocation}
       />
     </div>
   );
@@ -325,7 +353,7 @@ const InputWebsite = ({ project, handleChangeProject, texts }) => {
         variant="outlined"
         fullWidth
         value={project.website}
-        className={classes.input}
+        className={`${classes.input} ${classes.projectInfoEl}`}
         type="text"
         onChange={(event) => handleChangeProject(event.target.value, "website")}
       />
