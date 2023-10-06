@@ -486,6 +486,7 @@ class ProjectAPIView(APIView):
         # Code formatting here. So fields are just pass through so combing them and using setattr method insted.
         pass_through_params = [
             "collaborators_welcome",
+            "additional_loc_info",
             "description",
             "helpful_connections",
             "short_description",
