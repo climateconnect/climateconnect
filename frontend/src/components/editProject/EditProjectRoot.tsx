@@ -50,6 +50,7 @@ type Props = {
   user_role: Role;
   handleSetErrorMessage: any;
   initialTranslations: any;
+  projectTypeOptions: any;
 };
 
 export default function EditProjectRoot({
@@ -62,6 +63,7 @@ export default function EditProjectRoot({
   user_role,
   handleSetErrorMessage,
   initialTranslations,
+  projectTypeOptions,
 }: Props) {
   const classes = useStyles();
   const token = new Cookies().get("auth_token");
@@ -342,6 +344,7 @@ export default function EditProjectRoot({
             deleteProject={deleteProject}
             errors={errors}
             contentRef={contentRef}
+            projectTypeOptions={projectTypeOptions}
           />
           <Divider className={classes.divider} />
           <NavigationButtons
@@ -392,6 +395,7 @@ const parseProjectForRequest = async (project, translationChanges) => {
     ...project,
     translations: translationChanges
   };
+  if (project.project_type) ret.project_type=project.project_type.type_id;
   if (project.image) ret.image = await blobFromObjectUrl(project.image);
   if (project.loc) ret.loc = parseLocation(project.loc, true)
   if (project.thumbnail_image)

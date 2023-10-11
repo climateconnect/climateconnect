@@ -7,6 +7,7 @@ import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getLocalePrefix, sendToLogin } from "../../public/lib/apiOperations";
 import {
   getProjectTagsOptions,
+  getProjectTypeOptions,
   getSkillsOptions,
   getStatusOptions,
 } from "../../public/lib/getOptions";
@@ -44,6 +45,7 @@ export async function getServerSideProps(ctx) {
     userOrganizations,
     statusOptions,
     tagsOptions,
+    projectTypeOptions,
   ] = await Promise.all([
     getProjectByIdIfExists(projectUrl, auth_token, ctx.locale),
     getMembersByProject(projectUrl, auth_token, ctx.locale),
@@ -51,6 +53,7 @@ export async function getServerSideProps(ctx) {
     getUserOrganizations(auth_token, ctx.locale),
     getStatusOptions(ctx.locale),
     getProjectTagsOptions(null, ctx.locale),
+    getProjectTypeOptions(ctx.locale)
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -60,6 +63,7 @@ export async function getServerSideProps(ctx) {
       userOrganizations: userOrganizations,
       statusOptions: statusOptions,
       tagsOptions: tagsOptions,
+      projectTypeOptions: projectTypeOptions
     }),
   };
 }
@@ -71,8 +75,8 @@ export default function EditProjectPage({
   userOrganizations,
   statusOptions,
   tagsOptions,
+  projectTypeOptions,
 }) {
-  const token = new Cookies().get("auth_token");
   const classes = useStyles();
   const [curProject, setCurProject] = React.useState({
     ...project,
@@ -156,6 +160,7 @@ export default function EditProjectPage({
           user_role={user_role}
           handleSetErrorMessage={handleSetErrorMessage}
           initialTranslations={project.translations}
+          projectTypeOptions={projectTypeOptions}
         />
       </WideLayout>
     );

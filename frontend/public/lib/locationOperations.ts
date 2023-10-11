@@ -85,6 +85,10 @@ const getCityOrCountyName = (address) => {
 };
 
 export function getNameFromExactLocation(location) {
+  //If the location object is empty, just return an empty string
+  if(Object.keys(location).length === 0) {
+    return ""
+  }
   const isConcretePlace = isExactLocation(location);
   const firstPart =
     isConcretePlace && (location.address[location.class] || location.address[location.type])

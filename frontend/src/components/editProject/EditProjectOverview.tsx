@@ -12,7 +12,6 @@ import {
   getResizedImage,
   whitenTransparentPixels,
 } from "../../../public/lib/imageOperations";
-import { parseLocation } from "../../../public/lib/locationOperations";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -255,7 +254,7 @@ const InputShortDescription = ({ project, handleChangeProject, texts }) => {
   const classes = useStyles({})
   return (
     <TextField
-      label={texts.summarize_your_project}
+      label={texts["summarize_your_"+project.project_type.type_id]}
       variant="outlined"
       multiline
       fullWidth

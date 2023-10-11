@@ -114,6 +114,7 @@ from rest_framework.views import APIView
 
 from organization.utility.requests import MembershipRequestsManager
 from organization.utility import MembershipTarget
+from organization.models.type import ProjectTypesChoices
 
 logger = logging.getLogger(__name__)
 
@@ -498,6 +499,9 @@ class ProjectAPIView(APIView):
 
         if "name" in request.data and request.data["name"] != project.name:
             project.name = request.data["name"]
+
+        if "project_type" in request.data:
+            project.project_type = ProjectTypesChoices[request.data["project_type"]]
 
         if "skills" in request.data:
             for skill in project.skills.all():

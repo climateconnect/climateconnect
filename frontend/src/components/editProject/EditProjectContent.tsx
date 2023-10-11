@@ -25,6 +25,7 @@ import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import DeleteProjectButton from "./DeleteProjectButton";
 import dayjs from "dayjs";
 import { Project, Role } from "../../types";
+import { EditProjectTypeSelector } from "./EditProjectTypeSelector";
 
 const useStyles = makeStyles((theme) => ({
   select: {
@@ -84,6 +85,7 @@ type Args = {
   deleteProject: Function;
   errors: any;
   contentRef?: React.RefObject<any>;
+  projectTypeOptions?: any;
 };
 
 export default function EditProjectContent({
@@ -95,6 +97,7 @@ export default function EditProjectContent({
   deleteProject,
   errors,
   contentRef,
+  projectTypeOptions,
 }: Args) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -182,6 +185,15 @@ export default function EditProjectContent({
     else handleChangeProject(!event.target.checked, "is_personal_project");
   };
 
+  const handleChangeProjectType = (newProjectType) => {
+    handleSetProject({
+      ...project,
+      project_type: newProjectType
+    })
+  }
+
+  console.log(project)
+
   return (
     <div ref={contentRef}>
       <div className={classes.block}>
@@ -241,6 +253,13 @@ export default function EditProjectContent({
           )}
         </div>
         <div className={classes.block}>
+          <EditProjectTypeSelector 
+            project={project}
+            projectTypeOptions={projectTypeOptions}
+            onChangeProjectType={handleChangeProjectType}
+          />
+        </div>
+        <div className={classes.block}>
           {PROJECT_TYPE_DATE_OPTIONS[project.project_type.type_id].enableStartDate && (
             <DatePicker
               className={classes.startDate}
@@ -263,7 +282,7 @@ export default function EditProjectContent({
           )}
         </div>
         <div className={classes.block}>
-          <ProjectDescriptionHelp status={project.status} />
+          <ProjectDescriptionHelp project_type={project.project_type} />
           <div className={classes.spacer} />
           <TextField
             variant="outlined"
