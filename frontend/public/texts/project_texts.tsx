@@ -261,8 +261,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Gesamte Laufzeit",
     },
     project_description: {
-      en: "Project Description",
-      de: "Projektbeschreibung",
+      en: `${project?.project_type?.name ? project.project_type.name : "Project"} Description`,
+      de: `${project?.project_type?.name ? project.project_type.name : "Projekt"}beschreibung`,
     },
     event_description: {
       en: "Event Description",
@@ -443,8 +443,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     // \n\n creates two newlines
     describe_your_project_in_more_detail: {
-      en: `Describe your project in more detail.\n\n-What are you trying to achieve?\n-How are you trying to achieve it\n-What were the biggest challenges?\n-What insights have you gained during the implementation?`,
-      de: `Beschreibe dein Projekt detaillierter.\n\n-Was willst du erreichen?\n-Wie willst du es erreichen?\n-Was waren die größten Herausforderungen?\n-Welche Erkenntnisse hast du bei der Umsetzung gewonnen?`,
+      en: `Describe your ${project?.project_type?.name} in more detail`,
+      de: `Beschreibe dein ${project?.project_type?.name} detaillierter.`,
     },
     add_connections: {
       en: "Add Connections",
@@ -548,90 +548,6 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Show all projects",
       de: "Alle Projekte anzeigen",
     },
-    what_is_the_climate_impact_of_the_idea: {
-      en: "What is the climate impact of the idea?",
-      de: "Was ist der Klima-Impact deiner Idee?",
-    },
-    what_would_the_climate_impact_of_the_project_have_been: {
-      en: "What would the climate impact of the project have been?",
-      de: "Welchen Klima-Impact hätte das Projekt gehabt?",
-    },
-    what_was_or_is_the_climate_impact_of_the_project: {
-      en: "What was/is the climate impact of the project?",
-      de: "Was war/ist der Klima-Impact deines Projektes?",
-    },
-    what_are_you_trying_to_achieve: {
-      en: "What are you trying to achieve?",
-      de: "Was versuchst du zu erreichen?",
-    },
-    what_were_you_trying_to_achieve: {
-      en: "What were you trying to achieve?",
-      de: "Was wolltest du erreichen?",
-    },
-    what_did_you_achieve: {
-      en: "What did you achieve?",
-      de: "Was hast du erreichst?",
-    },
-    what_are_you_achieving: {
-      en: "What are you achieving?",
-      de: "Was erreichst du gerade?",
-    },
-    how_are_you_going_to_try_to_achieve_it: {
-      en: "How are you going to try to achieve it?",
-      de: "Wie wirst du versuchen, es zu erreichen?",
-    },
-    how_are_you_trying_to_achieve_it: {
-      en: "How are you trying to achieve it?",
-      de: "Wie versuchst du es zu erreichen?",
-    },
-    how_did_you_try_to_achieve_it: {
-      en: "How did you try to achieve it?",
-      de: "Wie hast du versucht es zu erreichen?",
-    },
-    how_did_you_make_your_project_a_success: {
-      en: "How did you make your project a success?",
-      de: "Wie hast du dein Projekt zum Erfolg gemacht?",
-    },
-    how_are_you_achieving_it: {
-      en: "How are you achieving it?",
-      de: "Wie erreichst du es?",
-    },
-    what_are_going_to_be_the_biggest_challenges: {
-      en: "What are going to be the biggest challenges?",
-      de: "Was werden die größten Herausforderungen?",
-    },
-    what_are_the_biggest_challenges: {
-      en: "What are the biggest challenges?",
-      de: "Was sind die größten Herausforderungen?",
-    },
-    what_were_the_biggest_challenges: {
-      en: "What were the biggest challenges?",
-      de: "Was waren die größten Herausforderungen?",
-    },
-    which_insights_have_you_gained_so_far: {
-      en: "Which insights have you gained so far?",
-      de: "Welche Erkenntnisse hast du bisher gewonnen?",
-    },
-    which_insights_did_you_gain: {
-      en: "Which insights did you gain?",
-      de: "Welche Erkenntnisse hast du gewonnen?",
-    },
-    which_insights_did_you_gain_during_the_implementation: {
-      en: "Which insights did you gain during the implementation?",
-      de: "Welche Erkenntnisse hast du während der Umsetzung gewonnen?",
-    },
-    could_this_project_be_replicated_somewhere_else: {
-      en: "Show all projects",
-      de: "Alle Projekte anzeigen",
-    },
-    what_would_you_have_needed_to_make_this_project_a_sucess: {
-      en: "What would you have needed to make this project a sucess?",
-      de: "Was hättest du gebraucht, um das Projekt zu einem Erfolg werden zu lassen?",
-    },
-    how_can_this_project_be_replicated_by_other_climate_protectors: {
-      en: "How can this project be replicated by other climate protectors?",
-      de: "Wie kann dieses Projekt von anderen Klimaschützer*innen repliziert werden?",
-    },
     please_touch_on_the_following_points_in_your_project_description: {
       en: "Please touch on the following points in your project description",
       de: "Bitte gehe in deiner Projektbeschreibung auf die folgenden Punkte ein",
@@ -653,6 +569,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     summarize_your_project: {
       en: "Short Summary Of Your Project",
       de: "Kurze Zusammenfassung deines Projektes",
+    },
+    summarize_your_event: {
+      en: "Short Overview Of Your Event",
+      de: "Kurzer Überblick über dein Event",
+    },    
+    summarize_your_idea: {
+      en: "Short Summary Of Your Idea",
+      de: "Kurze Zusammenfassung deiner Idee",
     },    
     briefly_summarise_what_you_are_doing: {
       en: "Briefly summarize what you are doing (up to 280 characters)",
@@ -1028,5 +952,9 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Event organized by",
       de: "Veranstaltung organisiert von",
     },
+    project_type: {
+      en: "Project Type",
+      de: "Projekttyp"
+    }
   };
 }

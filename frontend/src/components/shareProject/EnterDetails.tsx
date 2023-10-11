@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => {
       margin: "0 auto",
     },
     subHeader: {
-      marginBottom: theme.spacing(4),
+      marginBottom: theme.spacing(2),
       fontSize: 20,
     },
     inlineSubHeader: {
@@ -210,14 +210,13 @@ export default function EnterDetails({
                 </IconButton>
               </Tooltip>
             </Typography>
-            <ProjectDescriptionHelp status={projectData.status} />
+            <ProjectDescriptionHelp project_type={projectData.project_type} />
             <TextField
               variant="outlined"
               fullWidth
               multiline
               rows={9}
               onChange={(event) => onDescriptionChange(event, "description")}
-              helperText={texts.describe_your_project_in_detail_please_only_use_language}
               placeholder={texts.describe_your_project_in_more_detail}
               value={projectData.description}
             />

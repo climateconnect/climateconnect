@@ -6,13 +6,16 @@ import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SaveIcon from "@mui/icons-material/Save";
-import ProjectSubmittedPage from "../shareProject/ProjectSubmittedPage";
 
 const useStyles = makeStyles((theme) => {
   return {
     navigationButtonWrapper: (props: any) => ({
       marginTop: props.position !== "top" ? theme.spacing(10) : theme.spacing(6),
       marginBottom: props.position === "top" && theme.spacing(4),
+      display: "flex",
+      flexWrap: "wrap",
+      justifyContent:"space-between",
+      rowGap: theme.spacing(2),
       [theme.breakpoints.down("md")]: {
         position: props.fixedOnMobile && "fixed",
         bottom: props.fixedOnMobile && 0,
@@ -28,18 +31,10 @@ const useStyles = makeStyles((theme) => {
       color: theme.palette.primary.main,
     },
     nextStepButtonsContainer: (props: any) => ({
-      float: "right",
       [theme.breakpoints.down("sm")]: {
-        float: "none",
-        marginTop: theme.spacing(2),
+        display: "flex",
+        justifyContent: "space-between",
       },
-      [theme.breakpoints.down("md")]: {
-        display: props.fixedOnMobile && "flex",
-        justifyContent: props.fixedOnMobile && "space-between",
-        marginLeft: theme.spacing(2),
-        float: "none",
-        marginTop: theme.spacing(1),
-      }
     }),
     draftButton: {
       marginRight: theme.spacing(2),
