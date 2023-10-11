@@ -90,7 +90,7 @@ export default function LocationSearchBar({
   // If no 'open' prop is passed to the component, the component handles its 'open' state with this internal state
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState("");
-  const [inputValue, setInputValue] = React.useState(getValue(initialValue, ""));
+  const [inputValue, setInputValue] = React.useState(getValue(value ? value : initialValue, ""));
   useEffect(
     function () {
       if (inputValue?.length > 0 && value?.length === 0) {
