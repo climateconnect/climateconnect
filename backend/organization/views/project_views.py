@@ -409,12 +409,15 @@ class CreateProjectView(APIView):
                         "Project tagging created for project {}".format(project.id)
                     )
 
+        #TODO: completely remove availability
         for member in team_members:
             user_role = roles.filter(id=int(member["role"])).first()
             try:
-                user_availability = Availability.objects.filter(
-                    id=int(member["availability"])
-                ).first()
+                user_availability = None
+                if "availability" in member.keys():
+                    user_availability = Availability.objects.filter(
+                        id=int(member["availability"])
+                    ).first()
             except Availability.DoesNotExist:
                 raise NotFound(
                     detail="Availability not found.", code=status.HTTP_404_NOT_FOUND

@@ -345,7 +345,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     add_skills_that_would_be_beneficial_for_collaborators_to_have: {
       en: "Add skills that would be beneficial for collaborators to have",
-      de: "Füge Fähigkeiten hinzu, die hilfreich für Unterstützende wären",
+      de: "Füge Fähigkeiten hinzu, die Unterstützende möglichst haben sollten",
     },
     add_skills_that_are_helpful_to_make_your_project_a_success: {
       en: "Add skills that are helpful to make your project a success",
@@ -357,7 +357,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     add_connections_that_would_be_beneficial_for_collaborators_to_have: {
       en: "Add connections that would be beneficial for collaborators to have",
-      de: "Füge Connections hinzu, die hilfreich für Unterstützende sind",
+      de: "Connections zu diesen Organisationen wären für das Projekt hilfreich",
     },
     add_connections_that_would_be_beneficial_to_make_your_project_a_success: {
       en: "Add connections that would be beneficial to make your project a success",

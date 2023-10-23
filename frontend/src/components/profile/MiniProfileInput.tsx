@@ -213,7 +213,6 @@ export default function MiniProfileInput({
             options={availabilityOptions}
             onChange={handleChangeAvailability}
             defaultValue={profile.availability}
-            required
           />
         </>
       )}

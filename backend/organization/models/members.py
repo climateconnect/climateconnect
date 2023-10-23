@@ -44,6 +44,8 @@ class ProjectMember(models.Model):
         help_text="Shows how many hours per week the user is putting into this specific project.",
         verbose_name="Time per week",
         on_delete=models.PROTECT,
+        null=True,
+        blank=True,
     )
 
     created_at = models.DateTimeField(
