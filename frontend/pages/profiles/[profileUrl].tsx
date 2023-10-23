@@ -1,8 +1,10 @@
 import NextCookies from "next-cookies";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
+import { getProjectTypeOptions } from "../../public/lib/getOptions"
 import { apiRequest } from "../../public/lib/apiOperations";
 import getTexts from "../../public/texts/texts";
+import BrowseContext from "../../src/components/context/BrowseContext";
 import PageNotFound from "../../src/components/general/PageNotFound";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import ProfileRoot from "../../src/components/profile/ProfileRoot";
@@ -13,11 +15,12 @@ import UserContext from "./../../src/components/context/UserContext";
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const profileUrl = encodeURI(ctx.query.profileUrl);
-  const [profile, organizations, projects, ideas] = await Promise.all([
+  const [profile, organizations, projects, ideas, projectTypes] = await Promise.all([
     getProfileByUrlIfExists(profileUrl, auth_token, ctx.locale),
     getOrganizationsByUser(profileUrl, auth_token, ctx.locale),
     getProjectsByUser(profileUrl, auth_token, ctx.locale),
     getIdeasByUser(profileUrl, auth_token, ctx.locale),
+    getProjectTypeOptions(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -25,15 +28,21 @@ export async function getServerSideProps(ctx) {
       organizations: organizations,
       projects: projects,
       ideas: ideas,
+      projectTypes: projectTypes,
     }),
   };
 }
 
-export default function ProfilePage({ profile, projects, organizations, ideas }) {
+export default function ProfilePage({ profile, projects, organizations, ideas, projectTypes }) {
   const token = new Cookies().get("auth_token");
   const { user, locale } = useContext(UserContext);
   const infoMetadata = getProfileInfoMetadata(locale);
   const texts = getTexts({ page: "profile", locale: locale, profile: profile });
+
+  const contextValues = {
+    projectTypes: projectTypes,
+  };
+
   return (
     <WideLayout
       title={profile ? texts.persons_profile : texts.not_found}
@@ -45,17 +54,19 @@ export default function ProfilePage({ profile, projects, organizations, ideas })
       }
     >
       {profile ? (
-        <ProfileRoot
-          profile={profile}
-          projects={projects}
-          organizations={organizations}
-          infoMetadata={infoMetadata}
-          user={user}
-          token={token}
-          texts={texts}
-          locale={locale}
-          ideas={ideas}
-        />
+        <BrowseContext.Provider value={contextValues}>
+          <ProfileRoot
+            profile={profile}
+            projects={projects}
+            organizations={organizations}
+            infoMetadata={infoMetadata}
+            user={user}
+            token={token}
+            texts={texts}
+            locale={locale}
+            ideas={ideas}
+          />
+        </BrowseContext.Provider>
       ) : (
         <PageNotFound itemName="Profile" />
       )}
@@ -71,7 +82,7 @@ async function getProfileByUrlIfExists(profileUrl, token, locale) {
       token: token,
       locale: locale,
     });
-    return parseProfile(resp.data);
+    return parseProfile(resp.data, false);
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     console.log("error!");
