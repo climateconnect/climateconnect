@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => {
       marginBottom: props.position === "top" && theme.spacing(4),
       display: "flex",
       flexWrap: "wrap",
-      justifyContent:"space-between",
+      justifyContent: "space-between",
       rowGap: theme.spacing(2),
       [theme.breakpoints.down("md")]: {
         position: props.fixedOnMobile && "fixed",
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => {
         alignItems: props.fixedOnMobile && "center",
         paddingBottom: props.fixedOnMobile && theme.spacing(1),
         background: props.fixedOnMobile && theme.palette.grey.light,
-        zIndex: props.fixedOnMobile && 10
+        zIndex: props.fixedOnMobile && 10,
       },
     }),
     backButton: {
@@ -49,8 +49,8 @@ const useStyles = makeStyles((theme) => {
       display: "flex",
       justifyContent: "flex-end",
       marginTop: theme.spacing(1),
-      marginRight: theme.spacing(2)
-    }
+      marginRight: theme.spacing(2),
+    },
   };
 });
 
@@ -144,7 +144,7 @@ export default function NavigationButtons({
               onClick={b.onClick}
               className={`${classes.backButton} ${classes.draftButton}`}
             >
-              {(fixedOnMobile && isNarrowScreen) ? <b.icon /> : b.text}
+              {fixedOnMobile && isNarrowScreen ? <b.icon /> : b.text}
             </Button>
           ))}
         {saveAsDraft && (
@@ -162,7 +162,7 @@ export default function NavigationButtons({
             )}
           </Button>
         )}
-        {(!(fixedOnMobile && isMobileScreen && onClickCancel && additionalButtons.length >1)) && (
+        {!(fixedOnMobile && isMobileScreen && onClickCancel && additionalButtons.length > 1) && (
           <NextButtons
             nextStepButtonType={nextStepButtonType}
             onClickNextStep={onClickNextStep}
@@ -174,19 +174,19 @@ export default function NavigationButtons({
           />
         )}
       </div>
-        {(fixedOnMobile && isMobileScreen && onClickCancel && additionalButtons.length >1) && (
-          <div className={classes.publishButtonOwnLine}>
-            <NextButtons
-              nextStepButtonType={nextStepButtonType}
-              onClickNextStep={onClickNextStep}
-              texts={texts}
-              loadingSubmit={loadingSubmit}
-              loadingSubmitDraft={loadingSubmitDraft}
-              fixedOnMobile={fixedOnMobile}
-              isNarrowScreen={isNarrowScreen}
-            />
-          </div>
-        )}
+      {fixedOnMobile && isMobileScreen && onClickCancel && additionalButtons.length > 1 && (
+        <div className={classes.publishButtonOwnLine}>
+          <NextButtons
+            nextStepButtonType={nextStepButtonType}
+            onClickNextStep={onClickNextStep}
+            texts={texts}
+            loadingSubmit={loadingSubmit}
+            loadingSubmitDraft={loadingSubmitDraft}
+            fixedOnMobile={fixedOnMobile}
+            isNarrowScreen={isNarrowScreen}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -198,7 +198,7 @@ function NextButtons({
   loadingSubmit,
   loadingSubmitDraft,
   fixedOnMobile,
-  isNarrowScreen
+  isNarrowScreen,
 }) {
   const classes = useStyles();
   if (nextStepButtonType === "submit")
@@ -210,7 +210,7 @@ function NextButtons({
   else if (nextStepButtonType === "save")
     return (
       <Button variant="contained" color="primary" type="submit">
-        {(fixedOnMobile && isNarrowScreen) ? <SaveIcon /> : texts.save_changes}
+        {fixedOnMobile && isNarrowScreen ? <SaveIcon /> : texts.save_changes}
       </Button>
     );
   else if (nextStepButtonType === "publish")

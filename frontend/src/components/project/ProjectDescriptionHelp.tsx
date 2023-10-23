@@ -5,15 +5,15 @@ import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    marginBottom: theme.spacing(1)
-  }
-}))
+    marginBottom: theme.spacing(1),
+  },
+}));
 
 export default function ProjectDescriptionHelp({ project_type }) {
   const { locale } = useContext(UserContext);
-  const classes = useStyles()
+  const classes = useStyles();
   const texts = getTexts({ page: "project", locale: locale });
   /*const bulletPoints = {
     project: [

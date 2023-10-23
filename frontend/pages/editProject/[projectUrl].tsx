@@ -53,7 +53,7 @@ export async function getServerSideProps(ctx) {
     getUserOrganizations(auth_token, ctx.locale),
     getStatusOptions(ctx.locale),
     getProjectTagsOptions(null, ctx.locale),
-    getProjectTypeOptions(ctx.locale)
+    getProjectTypeOptions(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -63,7 +63,7 @@ export async function getServerSideProps(ctx) {
       userOrganizations: userOrganizations,
       statusOptions: statusOptions,
       tagsOptions: tagsOptions,
-      projectTypeOptions: projectTypeOptions
+      projectTypeOptions: projectTypeOptions,
     }),
   };
 }

@@ -67,7 +67,7 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
   },
   locationInput: {
     marginBottom: theme.spacing(1),
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(2),
   },
   overviewHeadline: {
     fontSize: 12,
@@ -78,15 +78,15 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
 }));
 
 type Args = {
-  project: Project,
-  handleSetProject: Function,
-  smallScreen: Boolean,
-  tagsOptions: object,
-  overviewInputsRef: any,
-  locationOptionsOpen: boolean,
-  handleSetLocationOptionsOpen: Function,
-  locationInputRef: any,
-}
+  project: Project;
+  handleSetProject: Function;
+  smallScreen: Boolean;
+  tagsOptions: object;
+  overviewInputsRef: any;
+  locationOptionsOpen: boolean;
+  handleSetLocationOptionsOpen: Function;
+  locationInputRef: any;
+};
 
 //TODO: Allow changing project type?!
 
@@ -125,18 +125,14 @@ export default function EditProjectOverview({
     locationOptionsOpen: locationOptionsOpen,
     locationInputRef: locationInputRef,
     texts: texts,
-  }
+  };
 
   return (
     <Container className={classes.projectOverview}>
       {smallScreen ? (
-        <SmallScreenOverview
-          {...passThroughProps}
-        />
+        <SmallScreenOverview {...passThroughProps} />
       ) : (
-        <LargeScreenOverview
-          {...passThroughProps}
-        />
+        <LargeScreenOverview {...passThroughProps} />
       )}
     </Container>
   );
@@ -178,7 +174,6 @@ function SmallScreenOverview({
           locationInputRef={locationInputRef}
           locationOptionsOpen={locationOptionsOpen}
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-          
         />
         <InputWebsite project={project} handleChangeProject={handleChangeProject} texts={texts} />
         <InputTags
@@ -251,10 +246,10 @@ function LargeScreenOverview({
 }
 
 const InputShortDescription = ({ project, handleChangeProject, texts }) => {
-  const classes = useStyles({})
+  const classes = useStyles({});
   return (
     <TextField
-      label={texts["summarize_your_"+project.project_type.type_id]}
+      label={texts["summarize_your_" + project.project_type.type_id]}
       variant="outlined"
       multiline
       fullWidth
@@ -278,7 +273,7 @@ const InputLocation = ({
   texts,
   locationInputRef,
   locationOptionsOpen,
-  handleSetLocationOptionsOpen
+  handleSetLocationOptionsOpen,
 }) => {
   const classes = useStyles({});
   const handleChangeLegacyLocationElement = (key, value) => {
@@ -287,7 +282,7 @@ const InputLocation = ({
 
   const handleChangeLocation = (newLocation) => {
     handleChangeProject(newLocation, "loc");
-  }
+  };
   if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
     return (
       <>

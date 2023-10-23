@@ -39,8 +39,8 @@ export default function ProjectLocationSearchBar({
   };
 
   const handleChangeLocation = (location) => {
-    if(onChangeLocation) {
-      onChangeLocation(location)
+    if (onChangeLocation) {
+      onChangeLocation(location);
     } else {
       handleSetProjectData({
         ...projectData,
@@ -71,19 +71,21 @@ export default function ProjectLocationSearchBar({
     },
   };
 
-  const additionalProps: any = {}
+  const additionalProps: any = {};
 
   //If these props are set the components "open" state is controlled.
-  if(locationOptionsOpen && handleSetLocationOptionsOpen) {
-    additionalProps.open = locationOptionsOpen,
-    additionalProps.handleSetOpen = handleSetLocationOptionsOpen
+  if (locationOptionsOpen && handleSetLocationOptionsOpen) {
+    (additionalProps.open = locationOptionsOpen),
+      (additionalProps.handleSetOpen = handleSetLocationOptionsOpen);
   }
 
   return (
     <LocationSearchBar
       className={className}
       label={propsByProjectType[projectData.project_type.type_id]?.label}
-      helperText={hideHelperText ? null : propsByProjectType[projectData.project_type.type_id]?.helperText}
+      helperText={
+        hideHelperText ? null : propsByProjectType[projectData.project_type.type_id]?.helperText
+      }
       enableExactLocation
       value={projectData.loc}
       onChange={handleChangeLocationString}

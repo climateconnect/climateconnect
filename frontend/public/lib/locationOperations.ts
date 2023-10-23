@@ -86,8 +86,8 @@ const getCityOrCountyName = (address) => {
 
 export function getNameFromExactLocation(location) {
   //If the location object is empty, just return an empty string
-  if(Object.keys(location).length === 0) {
-    return ""
+  if (Object.keys(location).length === 0) {
+    return "";
   }
   const isConcretePlace = isExactLocation(location);
   const firstPart =
@@ -174,25 +174,21 @@ export function isExactLocation(location) {
 const generateGeoJson = (location) => {
   return {
     type: "Point",
-    coordinates: [
-      parseFloat(location.lon),
-      parseFloat(location.lat)
-    ]
-  }
-}
+    coordinates: [parseFloat(location.lon), parseFloat(location.lat)],
+  };
+};
 
 const getLocationType = (location) => {
-  if(!location)
-    return
-  if(location.added_manually) {
-    return location.type
+  if (!location) return;
+  if (location.added_manually) {
+    return location.type;
   }
   //If Nominatim does not provice a geojson we assume the location is a Point
-  if(!location.geojson) {
-    return "Point"
+  if (!location.geojson) {
+    return "Point";
   }
-  return location.geojson.type
-}
+  return location.geojson.type;
+};
 
 export function parseLocation(location, isConcretePlace = false) {
   const location_object = isConcretePlace
