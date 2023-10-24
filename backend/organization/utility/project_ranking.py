@@ -11,9 +11,9 @@ class ProjectRanking:
     def __init__(self, user_profile: Optional[UserProfile] = None):
         self.user_profile = user_profile
 
-    def _randomize(self) -> int:
+    def _randomize_ranking(self, project_rank: int) -> int:
         # a random number gives a boost to different projects to get the top of the list
-        return int(random.triangular(1, 10))
+        return int(random.triangular(1, 10)) * project_rank
 
     def _weights(self) -> Dict:
         return {
@@ -109,9 +109,10 @@ class ProjectRanking:
             }
 
             project_rank = int(sum(project_factors[factor] * weights[factor] for factor in weights))
-            cache.set(cache_key, project_rank)
 
-        # Now we want to change the order every time somebody
-        # visits the page we would add some randomization.
-        project_rank = self._randomize()
+            # Now we want to change the order every time somebody
+            # visits the page we would add some randomization.
+            project_rank = self._randomize_ranking(project_rank=project_rank)
+            cache.set(cache_key, project_rank)
+        
         return project_rank
