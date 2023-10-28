@@ -72,7 +72,7 @@ export default function ProjectDateSection({ projectData, handleSetProjectData, 
               label={PROJECT_TYPE_DATE_OPTIONS[projectData.project_type.type_id].startDateLabel}
               enableTime={PROJECT_TYPE_DATE_OPTIONS[projectData.project_type.type_id].enableTime}
               handleChange={(newDate) => handleDateChange(newDate, "start_date")}
-              date={dayjs(projectData.start_date)}
+              date={projectData.start_date && dayjs(projectData.start_date)}
               error={errors.start_date}
             />
             {PROJECT_TYPE_DATE_OPTIONS[projectData.project_type.type_id].enableEndDate && (
@@ -82,7 +82,7 @@ export default function ProjectDateSection({ projectData, handleSetProjectData, 
                 enableTime={PROJECT_TYPE_DATE_OPTIONS[projectData.project_type.type_id].enableTime}
                 handleChange={(newDate) => handleDateChange(newDate, "end_date")}
                 minDate={dayjs(projectData.start_date) || null}
-                date={dayjs(projectData.end_date)}
+                date={projectData.end_date && dayjs(projectData.end_date)}
                 error={errors.end_date}
               />
             )}

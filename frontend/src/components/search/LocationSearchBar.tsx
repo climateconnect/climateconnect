@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type Props = {
-  label?: string;
+  label?: string | Element;
   required?: boolean;
   helperText?: string;
   inputClassName?;
@@ -46,6 +46,7 @@ type Props = {
   onChangeAdditionalInfoText?;
   enableAdditionalInfo?: boolean;
   hideHelperText?: boolean;
+  filterMode?: boolean;
 };
 export default function LocationSearchBar({
   label,
@@ -68,6 +69,7 @@ export default function LocationSearchBar({
   onChangeAdditionalInfoText,
   enableAdditionalInfo,
   hideHelperText,
+  filterMode=false, //Are we filtering any content by this location?
 }: Props) {
   const { locale } = useContext(UserContext);
   const classes = useStyles({ hideHelperText: hideHelperText });
@@ -148,6 +150,7 @@ export default function LocationSearchBar({
           "isolated_dwelling",
           "croft",
           "construction",
+          "postcode"
         ];
         const minimumImportance = {
           exactAddresses: 0.25,
@@ -168,7 +171,13 @@ export default function LocationSearchBar({
               ? filteredData
               : response.data
                   .slice(0, 2)
-                  .filter((o) => enableExactLocation || !bannedClasses.includes(o.class));
+                  .filter((o) => {
+                    if(filterMode && o.type === "postcode"){
+                      return false;
+                    } else {
+                      return enableExactLocation || !bannedClasses.includes(o.class)
+                    }
+                  });
           for (const option of additionalOptions) {
             if (option.simple_name.toLowerCase().includes(searchValue.toLowerCase())) {
               data.push(option);
