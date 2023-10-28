@@ -110,7 +110,7 @@ export default function CollaborateSection({
           color="primary"
           className={subHeaderClassName}
         >
-          {collaborationTexts.skills[projectData.status.status_type]}
+          {collaborationTexts.skills[projectData.project_type.type_id]}
           <Tooltip title={helpTexts.addSkills} className={toolTipClassName}>
             <IconButton size="large">
               <ToolTipIcon />
@@ -142,7 +142,7 @@ export default function CollaborateSection({
           color="primary"
           className={subHeaderClassName}
         >
-          {collaborationTexts.connections[projectData.status.status_type]}
+          {collaborationTexts.connections[projectData.project_type.type_id]}
           <Tooltip title={helpTexts.addConnections} className={toolTipClassName}>
             <IconButton size="large">
               <ToolTipIcon />

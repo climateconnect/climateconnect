@@ -331,41 +331,36 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Wir konnten keine Mitglieder für dieses Projekt finden.",
     },
     allow_collaboration_on_your_project: {
-      en: "Allow collaboration on your project?",
-      de: "Möchtest du Zusammenarbeit an deinem Projekt zulassen?",
+      en: "Are you looking for collaborators for your project?",
+      de: "Suchst du noch Unterstützung für dein Projekt?",
     },
-    encourage_collaboration_to_make_your_project_a_success: {
-      en: "Encourage collaboration to make your project a success?",
-      de: "Möchtest du nach Mitwirkenden suchen, um dein Projekt zu einem Erfolg werden lassen?",
+    are_you_looking_for_more_people_to_help_implement_the_idea: {
+      en: "Are you looking for more people to implement the idea together?",
+      de: "Suchst du nach Mitstreiter:innen?"
     },
-    would_you_assist_in_the_replication_of_your_project: {
-      en: "Would you assist in the replication of your project?",
-      de:
-        "Würdest du dabei unterstützen, wenn jemand dein Projekt auch umsetzen möchte, z.B. an einem anderen Ort?",
+    are_you_looking_for_people_to_help_with_the_event: {
+      en: "Are you looking for people to help organizing the event?",
+      de: "Suchst du noch Unterstützer:innen, um das Event zu organisieren?"
     },
     add_skills_that_would_be_beneficial_for_collaborators_to_have: {
       en: "Add skills that would be beneficial for collaborators to have",
       de: "Füge Fähigkeiten hinzu, die Unterstützende möglichst haben sollten",
     },
-    add_skills_that_are_helpful_to_make_your_project_a_success: {
-      en: "Add skills that are helpful to make your project a success",
-      de: "Füge Fähigkeiten hinzu, die hilfreich sind, um das Projekt zu einem Erfolg zu machen",
-    },
-    add_skills_that_are_helpful_to_replicate_your_project: {
-      en: "Add skills that are helpful to replicate your project",
-      de: "Füge Fähigkeiten hinzu, die hilfreich sind, um das Projekt woanders umzusetzen",
+    add_skills_that_would_be_beneficial_for_collaborators_to_have_idea: {
+      en: "Add skills that would be beneficial for collaborators to have",
+      de: "Füge Fähigkeiten hinzu, die Mitstreiter:innen möglichst haben sollten",
     },
     add_connections_that_would_be_beneficial_for_collaborators_to_have: {
-      en: "Add connections that would be beneficial for collaborators to have",
-      de: "Connections zu diesen Organisationen wären für das Projekt hilfreich",
+      en: "Connections to which organizations would be helpful for the project?",
+      de: "Connections zu welchen Organisationen wären für das Projekt hilfreich?",
     },
-    add_connections_that_would_be_beneficial_to_make_your_project_a_success: {
-      en: "Add connections that would be beneficial to make your project a success",
-      de: "Füge Connections hinzu, die hilfreich sind um das Projekt zu einem Erfolg zu machen",
+    add_connections_that_would_be_beneficial_for_collaborators_to_have_idea: {
+      en: "Connections to which organizations would be helpful for the project?",
+      de: "Connections zu welchen Organisationen wären für die Umsetzung der Idee hilfreich?",
     },
-    add_connection_that_would_be_beneficial_to_have_to_replicate_your_project: {
-      en: "Add connection that would be beneficial to have to replicate your project",
-      de: "Füge Connections hinzu, die hilfreich sind, um das Projekt zu replizieren",
+    add_connections_that_would_be_beneficial_for_collaborators_to_have_event: {
+      en: "Connections to these organizations would be helpful for organizing the event?",
+      de: "Connections zu welchen Organisationen wären für die Event-Organisation hilfreich?",
     },
     to_share_a_project: {
       en: "to share a project",
@@ -542,7 +537,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     climate_action_projects_shared_by_climate_connect_users_text: {
       en: `Find the best climate change solutions from around the world. Get involved, share your own
       solutions or spread effective projects and ideas to your location.`,
-      de: `Finde die besten Klimaprojekte aus aller Welt. Beteilige dich, teile deine eigenen Lösungen oder setze effektive Projekte auch bei dir vor Ort um.`,
+      de: `Finde spannende Klimaprojekte aus aller Welt. Beteilige dich, teile deine eigenen Lösungen oder setze effektive Projekte auch bei dir vor Ort um.`,
     },
     show_all_projects: {
       en: "Show all projects",
@@ -573,11 +568,11 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     summarize_your_event: {
       en: "Short Overview Of Your Event",
       de: "Kurzer Überblick über dein Event",
-    },    
+    },
     summarize_your_idea: {
       en: "Short Summary Of Your Idea",
       de: "Kurze Zusammenfassung deiner Idee",
-    },    
+    },
     briefly_summarise_what_you_are_doing: {
       en: "Briefly summarize what you are doing (up to 280 characters)",
       de: "Fasse kurz zusammen, was du tust (bis zu 280 Zeichen)",
@@ -650,7 +645,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en:
         "Add connections that would be helpful for collaborators to have. Specifically this could be connections to organizations that could help accelerate your project.",
       de:
-        "Füge Connections hinzu, die für Mitarbeitende hilfreich sein könnten. Konkret könnten dies Connections zu Organisationen sein, die dein Projekt beschleunigen könnten.",
+        "Füge Connections hinzu, die für Unterstützende hilfreich sein könnten. Konkret könnten dies Connections zu Organisationen sein, die dein Projekt beschleunigen könnten.",
     },
     search_for_collaborating_organizations: {
       en: "Search for collaborating organizations",
@@ -954,7 +949,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     project_type: {
       en: "Project Type",
-      de: "Projekttyp"
-    }
+      de: "Projekttyp",
+    },
   };
 }

@@ -68,12 +68,14 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     padding: 0,
     flexWrap: "wrap",
-    marginBottom: theme.spacing(3),
     marginTop: theme.spacing(2),
   },
   spacer: {
     marginBottom: theme.spacing(1),
   },
+  addButton: {
+    marginTop: theme.spacing(2)
+  }
 }));
 
 type Args = {
@@ -188,11 +190,9 @@ export default function EditProjectContent({
   const handleChangeProjectType = (newProjectType) => {
     handleSetProject({
       ...project,
-      project_type: newProjectType
-    })
-  }
-
-  console.log(project)
+      project_type: newProjectType,
+    });
+  };
 
   return (
     <div ref={contentRef}>
@@ -253,7 +253,7 @@ export default function EditProjectContent({
           )}
         </div>
         <div className={classes.block}>
-          <EditProjectTypeSelector 
+          <EditProjectTypeSelector
             project={project}
             projectTypeOptions={projectTypeOptions}
             onChangeProjectType={handleChangeProjectType}
@@ -300,9 +300,7 @@ export default function EditProjectContent({
         </div>
         <div className={classes.block}>
           <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
-            {collaborationTexts.allow[project.status.name]
-              ? collaborationTexts.allow[project.status.name]
-              : collaborationTexts.allow["In Progress"]}
+            {collaborationTexts.allow[project.project_type.type_id]}
           </Typography>
           <Switch
             checked={project.collaborators_welcome}
@@ -321,12 +319,10 @@ export default function EditProjectContent({
                 color="primary"
                 className={classes.subHeader}
               >
-                {collaborationTexts.skills[project.status.name]
-                  ? collaborationTexts.skills[project.status.name]
-                  : collaborationTexts.skills["In Progress"]}
+                {collaborationTexts.skills[project.project_type.type_id]}
               </Typography>
               <div>
-                {project.skills && (
+                {project.skills?.length > 0 && (
                   <List className={classes.flexContainer}>
                     {project.skills.map((skill) => (
                       <Chip
@@ -338,7 +334,7 @@ export default function EditProjectContent({
                     ))}
                   </List>
                 )}
-                <Button variant="contained" color="primary" onClick={onClickSkillsDialogOpen}>
+                <Button variant="contained" color="primary" onClick={onClickSkillsDialogOpen} className={classes.addButton}>
                   {project.skills && project.skills.length ? texts.edit_skills : texts.add_skills}
                 </Button>
               </div>
@@ -350,11 +346,9 @@ export default function EditProjectContent({
                 color="primary"
                 className={classes.subHeader}
               >
-                {collaborationTexts.connections[project.status.name]
-                  ? collaborationTexts.connections[project.status.name]
-                  : collaborationTexts.connections["In Progress"]}
+                {collaborationTexts.connections[project.project_type.type_id]}
               </Typography>
-              {project.helpful_connections && (
+              {project.helpful_connections?.length > 0 && (
                 <List className={classes.flexContainer}>
                   {project.helpful_connections.map((connection) => (
                     <Chip
@@ -366,7 +360,7 @@ export default function EditProjectContent({
                   ))}
                 </List>
               )}
-              <Button variant="contained" color="primary" onClick={onClickConnectionsDialogOpen}>
+              <Button variant="contained" color="primary" onClick={onClickConnectionsDialogOpen} className={classes.addButton}>
                 {texts.add_connections}
               </Button>
             </div>
