@@ -1,7 +1,7 @@
 import NextCookies from "next-cookies";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
-import { getProjectTypeOptions } from "../../public/lib/getOptions"
+import { getProjectTypeOptions } from "../../public/lib/getOptions";
 import { apiRequest } from "../../public/lib/apiOperations";
 import getTexts from "../../public/texts/texts";
 import BrowseContext from "../../src/components/context/BrowseContext";

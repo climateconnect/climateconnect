@@ -102,7 +102,7 @@ export default function Index() {
   const [showScrollToTop, setShowScrollToTop] = useState(false);
   //holds projects, organizations and hubs
   const [elements, setElements] = useState<any>({});
-  const [contextValues, setContextValues] = useState<any>({})
+  const [contextValues, setContextValues] = useState<any>({});
   useEffect(() => {
     const initialize = async () => {
       if (!initialized && isLoading) {
@@ -117,7 +117,7 @@ export default function Index() {
         });
         const projects = await getProjects(locale);
         const organizations = await getOrganizations(locale);
-        const hubs = await getHubs(locale);     
+        const hubs = await getHubs(locale);
         setElements({
           projects: projects,
           organizations: organizations,
@@ -126,8 +126,8 @@ export default function Index() {
 
         const projectTypes = await getProjectTypeOptions(locale);
         setContextValues({
-          projectTypes: projectTypes
-        })
+          projectTypes: projectTypes,
+        });
 
         setInitialized(true);
         setIsLoading(false);

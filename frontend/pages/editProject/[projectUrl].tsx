@@ -2,7 +2,6 @@ import { Link, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import NextCookies from "next-cookies";
 import React, { useContext } from "react";
-import Cookies from "universal-cookie";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getLocalePrefix, sendToLogin } from "../../public/lib/apiOperations";
 import {
