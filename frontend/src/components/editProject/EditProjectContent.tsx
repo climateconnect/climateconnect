@@ -9,25 +9,23 @@ import {
   Theme,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { Ref, useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import getCollaborationTexts from "../../../public/data/collaborationTexts";
 import ROLE_TYPES from "../../../public/data/role_types";
-import { getProjectTypeDateOptions } from "../../../public/data/projectTypeOptions";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
 import EnterTextDialog from "../dialogs/EnterTextDialog";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
-import DatePicker from "../general/DatePicker";
 import SelectField from "../general/SelectField";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import DeleteProjectButton from "./DeleteProjectButton";
-import dayjs from "dayjs";
 import { Project, Role } from "../../types";
 import { EditProjectTypeSelector } from "./EditProjectTypeSelector";
+import ProjectDateSection from "../shareProject/ProjectDateSection";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme>((theme) => ({
   select: {
     maxWidth: 250,
   },
@@ -74,8 +72,8 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
   },
   addButton: {
-    marginTop: theme.spacing(2)
-  }
+    marginTop: theme.spacing(2),
+  },
 }));
 
 type Args = {
@@ -108,10 +106,21 @@ export default function EditProjectContent({
   const [selectedItems, setSelectedItems] = useState(project.skills ? [...project.skills] : []);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const [open, setOpen] = useState({ skills: false, connections: false, delete: false });
-  const PROJECT_TYPE_DATE_OPTIONS = getProjectTypeDateOptions(texts);
 
   const handleChangeProject = (newValue, key) => {
     handleSetProject({ ...project, [key]: newValue });
+  };
+
+  /*
+    This is a helper function just for <ProjectDateSection>
+    It's a bit of a hack to be able to use the same code even though handleSetProject 
+    is implemented differently in EditProject and ShareProject
+  */
+  const handleSetProjectData = (newData) => {
+    handleSetProject({
+      ...project,
+      ...newData
+    })
   };
 
   const onClickSkillsDialogOpen = () => {
@@ -173,7 +182,7 @@ export default function EditProjectContent({
   const handleSwitchChange = (event) => {
     if (
       event.target.checked &&
-      !project.project_parents.parent_organization &&
+      !project?.project_parents?.parent_organization &&
       userOrganizations[0]
     )
       handleSetProject({
@@ -222,7 +231,7 @@ export default function EditProjectContent({
               {texts.created_by}
               <MiniProfilePreview
                 className={classes.creator}
-                profile={project.project_parents.parent_user}
+                profile={project?.project_parents?.parent_user}
                 size="small"
               />
             </>
@@ -230,8 +239,8 @@ export default function EditProjectContent({
             <SelectField
               controlled
               controlledValue={
-                project.project_parents.parent_organization
-                  ? project.project_parents.parent_organization
+                project?.project_parents?.parent_organization
+                  ? project?.project_parents?.parent_organization
                   : userOrganizations[0]
               }
               onChange={(event) =>
@@ -260,26 +269,11 @@ export default function EditProjectContent({
           />
         </div>
         <div className={classes.block}>
-          {PROJECT_TYPE_DATE_OPTIONS[project.project_type.type_id].enableStartDate && (
-            <DatePicker
-              className={classes.startDate}
-              label={texts.start_date}
-              enableTime={PROJECT_TYPE_DATE_OPTIONS[project.project_type.type_id].enableTime}
-              date={dayjs(project.start_date)}
-              handleChange={(newDate) => handleChangeProject(newDate, "start_date")}
-              error={errors.start_date}
-            />
-          )}
-          {PROJECT_TYPE_DATE_OPTIONS[project.project_type.type_id].enableEndDate && (
-            <DatePicker
-              label={texts.end_date}
-              date={dayjs(project.end_date)}
-              enableTime={PROJECT_TYPE_DATE_OPTIONS[project.project_type.type_id].enableTime}
-              handleChange={(newDate) => handleChangeProject(newDate, "end_date")}
-              minDate={project.start_date && dayjs(project.start_date)}
-              error={errors.end_date}
-            />
-          )}
+          <ProjectDateSection
+            projectData={project}
+            handleSetProjectData={handleSetProjectData}
+            errors={errors}
+          />
         </div>
         <div className={classes.block}>
           <ProjectDescriptionHelp project_type={project.project_type} />
@@ -334,7 +328,12 @@ export default function EditProjectContent({
                     ))}
                   </List>
                 )}
-                <Button variant="contained" color="primary" onClick={onClickSkillsDialogOpen} className={classes.addButton}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={onClickSkillsDialogOpen}
+                  className={classes.addButton}
+                >
                   {project.skills && project.skills.length ? texts.edit_skills : texts.add_skills}
                 </Button>
               </div>
@@ -360,7 +359,12 @@ export default function EditProjectContent({
                   ))}
                 </List>
               )}
-              <Button variant="contained" color="primary" onClick={onClickConnectionsDialogOpen} className={classes.addButton}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={onClickConnectionsDialogOpen}
+                className={classes.addButton}
+              >
                 {texts.add_connections}
               </Button>
             </div>

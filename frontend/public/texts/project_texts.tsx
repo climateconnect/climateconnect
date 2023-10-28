@@ -336,11 +336,11 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     are_you_looking_for_more_people_to_help_implement_the_idea: {
       en: "Are you looking for more people to implement the idea together?",
-      de: "Suchst du nach Mitstreiter:innen?"
+      de: "Suchst du nach Mitstreiter:innen?",
     },
     are_you_looking_for_people_to_help_with_the_event: {
       en: "Are you looking for people to help organizing the event?",
-      de: "Suchst du noch Unterstützer:innen, um das Event zu organisieren?"
+      de: "Suchst du noch Unterstützer:innen, um das Event zu organisieren?",
     },
     add_skills_that_would_be_beneficial_for_collaborators_to_have: {
       en: "Add skills that would be beneficial for collaborators to have",
@@ -951,5 +951,9 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Project Type",
       de: "Projekttyp",
     },
+    end_date_must_be_after_start_date: {
+      en: "End date must be after start date",
+      de: "Das Enddatum muss nach dem Startdatum sein"
+    }
   };
 }
