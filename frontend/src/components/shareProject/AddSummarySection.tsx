@@ -75,7 +75,6 @@ export default function AddSummarySection({
           InputProps={{
             classes: { root: classes.input, input: classes.input, inputMultiline: classes.input },
           }}
-          rows={4}
           value={projectData.short_description}
         />
       </div>
