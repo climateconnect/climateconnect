@@ -151,7 +151,12 @@ function SmallScreenOverview({
         texts={texts}
       />
       <div className={classes.blockProjectInfo} ref={overviewInputsRef}>
-        <InputName project={project} screenSize="small" texts={texts} />
+        <InputName 
+          project={project} 
+          screenSize="small" 
+          texts={texts}
+          handleChangeProject={handleChangeProject}
+        />
         <InputShortDescription
           project={project}
           handleChangeProject={handleChangeProject}

@@ -421,7 +421,6 @@ export default function Header({
             fixedHeader={fixedHeader}
             LINKS={LINKS}
             texts={texts}
-            localePrefix={localePrefix}
           />
         ) : (
           <NormalScreenLinks
@@ -435,7 +434,6 @@ export default function Header({
             fixedHeader={fixedHeader}
             LINKS={LINKS}
             texts={texts}
-            localePrefix={localePrefix}
             isStaticPage={isStaticPage}
           />
         )}
@@ -456,13 +454,14 @@ function NormalScreenLinks({
   fixedHeader,
   LINKS,
   texts,
-  localePrefix,
   isStaticPage,
 }) {
+  const { locale } = useContext(UserContext)
+  const localePrefix = getLocalePrefix(locale);
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
   const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("lg"));
-  const STATIC_PAGE_LINKS = getStaticPageLinks(texts);
+  const STATIC_PAGE_LINKS = getStaticPageLinks(texts, locale);
   return (
     <Box className={classes.linkContainer}>
       {LINKS.filter(
@@ -571,10 +570,10 @@ function NarrowScreenLinks({
   fixedHeader,
   LINKS,
   texts,
-  localePrefix,
 }) {
+  const { locale } = useContext(UserContext)
+  const localePrefix = getLocalePrefix(locale);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
   const openDrawer = setIsDrawerOpen.bind(null, true);
   const closeDrawer = setIsDrawerOpen.bind(null, false);
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
