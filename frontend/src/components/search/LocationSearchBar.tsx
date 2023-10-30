@@ -69,7 +69,7 @@ export default function LocationSearchBar({
   onChangeAdditionalInfoText,
   enableAdditionalInfo,
   hideHelperText,
-  filterMode=false, //Are we filtering any content by this location?
+  filterMode = false, //Are we filtering any content by this location?
 }: Props) {
   const { locale } = useContext(UserContext);
   const classes = useStyles({ hideHelperText: hideHelperText });
@@ -150,7 +150,7 @@ export default function LocationSearchBar({
           "isolated_dwelling",
           "croft",
           "construction",
-          "postcode"
+          "postcode",
         ];
         const minimumImportance = {
           exactAddresses: 0.25,
@@ -169,15 +169,13 @@ export default function LocationSearchBar({
           const data =
             filteredData.length > 0
               ? filteredData
-              : response.data
-                  .slice(0, 2)
-                  .filter((o) => {
-                    if(filterMode && o.type === "postcode"){
-                      return false;
-                    } else {
-                      return enableExactLocation || !bannedClasses.includes(o.class)
-                    }
-                  });
+              : response.data.slice(0, 2).filter((o) => {
+                  if (filterMode && o.type === "postcode") {
+                    return false;
+                  } else {
+                    return enableExactLocation || !bannedClasses.includes(o.class);
+                  }
+                });
           for (const option of additionalOptions) {
             if (option.simple_name.toLowerCase().includes(searchValue.toLowerCase())) {
               data.push(option);

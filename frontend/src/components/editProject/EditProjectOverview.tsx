@@ -160,7 +160,12 @@ function SmallScreenOverview({
         texts={texts}
       />
       <div className={classes.blockProjectInfo} ref={overviewInputsRef}>
-        <InputName project={project} screenSize="small" texts={texts} />
+        <InputName
+          project={project}
+          screenSize="small"
+          texts={texts}
+          handleChangeProject={handleChangeProject}
+        />
         <InputShortDescription
           project={project}
           handleChangeProject={handleChangeProject}
@@ -419,7 +424,14 @@ const InputTags = ({ project, handleChangeProject, tagsOptions, texts }) => {
   );
 };
 
-const InputName = ({ project, screenSize, handleChangeProject = undefined as any, texts }) => {
+type InputNameArgs = {
+  project: Project;
+  screenSize?: any;
+  handleChangeProject: Function;
+  texts: any;
+};
+
+const InputName = ({ project, screenSize, handleChangeProject, texts }: InputNameArgs) => {
   const classes = useStyles({});
   return (
     <TextField

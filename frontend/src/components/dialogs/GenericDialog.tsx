@@ -1,8 +1,17 @@
-import { Button, Dialog, DialogTitle, IconButton, Theme, Typography } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  IconButton,
+  Theme,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
 import PropTypes from "prop-types";
 import React, { PropsWithChildren } from "react";
+import theme from "../../themes/theme";
 
 const useStyles = makeStyles<
   Theme,
@@ -29,27 +38,25 @@ const useStyles = makeStyles<
     overflow: "auto",
   },
   closeButtonLeft: {
-    position: "absolute",
-    left: theme.spacing(1),
-    top: theme.spacing(1),
+    marginLeft: theme.spacing(-1),
     color: theme.palette.grey[500],
   },
   closeButtonRight: {
-    position: "absolute",
-    right: theme.spacing(1),
-    top: theme.spacing(1),
     color: theme.palette.grey[500],
   },
   titleText: (props) => ({
-    marginLeft: props.closeButtonRightSide ? theme.spacing(-1) : theme.spacing(5),
-    marginRight: props.closeButtonRightSide ? theme.spacing(5) : theme.spacing(0),
-    paddingRight: props.useApplyButton ? 150 : 0,
+    marginLeft: props.closeButtonRightSide ? theme.spacing(-1) : theme.spacing(1),
+    marginRight: props.closeButtonRightSide ? theme.spacing(5) : theme.spacing(2),
     fontSize: 20,
   }),
-  applyButton: {
-    position: "absolute",
-    right: theme.spacing(2),
-    top: theme.spacing(1.5),
+  dialogTitle: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  saveIconButton: {
+    background: theme.palette.primary.main,
+    color: "white",
   },
 }));
 
@@ -68,6 +75,7 @@ type Props = PropsWithChildren<{
   closeButtonSmall?: boolean;
   titleTextClassName?: string;
   dialogContentClass?: string;
+  applyIcon?: any;
 }>;
 /**
  * Simple base wrapper on top of the Material UI (MUI)
@@ -91,12 +99,15 @@ export default function GenericDialog({
   closeButtonSmall,
   titleTextClassName,
   dialogContentClass,
+  applyIcon,
 }: Props) {
   const classes = useStyles({
     useApplyButton,
     fullScreen,
     closeButtonRightSide,
   });
+
+  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
   const handleCancel = () => {
     onClose(false);
@@ -113,7 +124,7 @@ export default function GenericDialog({
         paper: paperClassName,
       }}
     >
-      <DialogTitle>
+      <DialogTitle className={classes.dialogTitle}>
         {onClose && !closeButtonRightSide && (
           <IconButton
             aria-label="close"
@@ -128,14 +139,22 @@ export default function GenericDialog({
           {title}
         </Typography>
         {useApplyButton && applyText && (
-          <Button
-            variant="contained"
-            color="primary"
-            className={classes.applyButton}
-            onClick={onApply}
-          >
-            {applyText}
-          </Button>
+          <>
+            {applyIcon && isSmallScreen ? (
+              <IconButton className={classes.saveIconButton} size="large">
+                <applyIcon.icon />
+              </IconButton>
+            ) : (
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.applyButton}
+                onClick={onApply}
+              >
+                {applyText}
+              </Button>
+            )}
+          </>
         )}
         {onClose && closeButtonRightSide && (
           <IconButton

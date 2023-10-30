@@ -953,7 +953,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     end_date_must_be_after_start_date: {
       en: "End date must be after start date",
-      de: "Das Enddatum muss nach dem Startdatum sein"
-    }
+      de: "Das Enddatum muss nach dem Startdatum sein",
+    },
   };
 }

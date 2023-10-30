@@ -24,6 +24,7 @@ import DeleteProjectButton from "./DeleteProjectButton";
 import { Project, Role } from "../../types";
 import { EditProjectTypeSelector } from "./EditProjectTypeSelector";
 import ProjectDateSection from "../shareProject/ProjectDateSection";
+import AddIcon from '@mui/icons-material/Add';
 
 const useStyles = makeStyles<Theme>((theme) => ({
   select: {
@@ -119,8 +120,8 @@ export default function EditProjectContent({
   const handleSetProjectData = (newData) => {
     handleSetProject({
       ...project,
-      ...newData
-    })
+      ...newData,
+    });
   };
 
   const onClickSkillsDialogOpen = () => {
@@ -386,6 +387,7 @@ export default function EditProjectContent({
         onClose={handleConnectionsDialogClose}
         maxLength={25}
         applyText={texts.add}
+        applyIcon={{icon: AddIcon}}
         inputLabel={texts.connection}
         title={texts.add_a_helpful_connection}
       />

@@ -44,7 +44,7 @@ export default function ProjectDateSection({ projectData, handleSetProjectData, 
     const noEndDateSet = prop === "start_date" && !isNaN(value?.$d) && !projectData.end_date;
     //This only does a check if we're changing the start date
     const endDateBeforeStartDate =
-      prop === "start_date" && projectData.end_date && projectData.end_date < value
+      prop === "start_date" && projectData.end_date && projectData.end_date < value;
     if (
       PROJECT_TYPE_DATE_OPTIONS[projectData.project_type.type_id].enableEndDate &&
       (noEndDateSet || endDateBeforeStartDate)

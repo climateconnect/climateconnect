@@ -94,7 +94,7 @@ export function checkProjectDatesValid(project, texts) {
           },
         };
       }
-      if(dayjs(project.end_date) < dayjs(project.start_date)) {
+      if (dayjs(project.end_date) < dayjs(project.start_date)) {
         return {
           valid: false,
           error: {
