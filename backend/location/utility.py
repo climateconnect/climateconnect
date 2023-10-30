@@ -73,6 +73,22 @@ def get_location(location_object):
             loc.osm_id = location_object["osm_id"]
         loc.save()
         return loc
+    elif location_object["type"] == "LineString":
+        centre_point = Point(
+            float(location_object["lat"]), float(location_object["lon"])
+        )
+        loc = Location.objects.create(
+            place_id=location_object["place_id"],
+            city=optional_attributes["city"],
+            state=optional_attributes["state"],
+            place_name=optional_attributes["place_name"],
+            exact_address=optional_attributes["exact_address"],
+            country=location_object["country"],
+            name=location_object["name"],
+            centre_point=centre_point,
+            is_formatted=True,
+        )
+        return loc
     elif location_object["type"] == "global":
         loc = get_global_location()
         return loc
