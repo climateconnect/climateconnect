@@ -224,6 +224,9 @@ const SiteLinks = ({ texts, locale }) => {
           <FooterLink href={getLocalePrefix(locale) + "/faq"}>{texts.faq}</FooterLink>
           <FooterLink href={getLocalePrefix(locale) + "/donate"}>{texts.donate}</FooterLink>
           <FooterLink href={getLocalePrefix(locale) + "/about"}>{texts.about}</FooterLink>
+          {locale === "de" && (
+            <FooterLink href={getLocalePrefix(locale) + "/verein"}>{texts.association}</FooterLink>
+          )}
           <FooterLink
             href={
               locale === "de"
