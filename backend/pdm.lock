@@ -66,26 +66,12 @@ version = "1.1.25"
 summary = "Microsoft Azure Client Library for Python (Common)"
 
 [[package]]
-name = "azure-core"
-version = "1.29.5"
-requires_python = ">=3.7"
-summary = "Microsoft Azure Core Library for Python"
-dependencies = [
-    "requests>=2.18.4",
-    "six>=1.11.0",
-    "typing-extensions>=4.6.0",
-]
-
-[[package]]
 name = "azure-storage-blob"
-version = "12.18.3"
-requires_python = ">=3.7"
-summary = "Microsoft Azure Blob Storage Client Library for Python"
+version = "2.1.0"
+summary = "Microsoft Azure Storage Blob Client Library for Python"
 dependencies = [
-    "azure-core<2.0.0,>=1.28.0",
-    "cryptography>=2.1.4",
-    "isodate>=0.6.1",
-    "typing-extensions>=4.3.0",
+    "azure-common>=1.1.5",
+    "azure-storage-common~=2.1",
 ]
 
 [[package]]
@@ -471,14 +457,6 @@ name = "install"
 version = "1.3.5"
 requires_python = ">=2.7, >=3.5"
 summary = "Install packages from within code"
-
-[[package]]
-name = "isodate"
-version = "0.6.1"
-summary = "An ISO 8601 date/time/duration parser and formatter"
-dependencies = [
-    "six",
-]
 
 [[package]]
 name = "kombu"
@@ -898,7 +876,7 @@ dependencies = [
 lock_version = "4.2"
 cross_platform = true
 groups = ["default", "dev"]
-content_hash = "sha256:dc1f35eba8b0d166a255be0f8f3495fa213d9ab8fbf31156b195caffecca54f6"
+content_hash = "sha256:80b31fe1f7c125f1786d50651e88de134ea44b2e56e88114682b12da91661bd9"
 
 [metadata.files]
 "aioredis 1.3.1" = [
@@ -933,13 +911,9 @@ content_hash = "sha256:dc1f35eba8b0d166a255be0f8f3495fa213d9ab8fbf31156b195caffe
     {url = "https://files.pythonhosted.org/packages/7e/c5/27ebe1f286036f0fda02274d57f3303d3e3cbac09e188b5faa47d3649488/azure-common-1.1.25.zip", hash = "sha256:ce0f1013e6d0e9faebaf3188cc069f4892fc60a6ec552e3f817c1a2f92835054"},
     {url = "https://files.pythonhosted.org/packages/e5/4d/d000fc3c5af601d00d55750b71da5c231fcb128f42ac95b208ed1091c2c1/azure_common-1.1.25-py2.py3-none-any.whl", hash = "sha256:fd02e4256dc9cdd2d4422bc795bdca2ef302f7a86148b154fbf4ea1f09da400a"},
 ]
-"azure-core 1.29.5" = [
-    {url = "https://files.pythonhosted.org/packages/9c/f8/1cf23a75cb8c2755c539ac967f3a7f607887c4979d073808134803720f0f/azure_core-1.29.5-py3-none-any.whl", hash = "sha256:0fa04b7b1f7d44a4fb8468c4093deb2ea01fdf4faddbf802ed9205615f99d68c"},
-    {url = "https://files.pythonhosted.org/packages/e3/39/328faea9f656075dbb8ecf70f1a4697bc80510fcc70e3e8f0090c34fc00c/azure-core-1.29.5.tar.gz", hash = "sha256:52983c89d394c6f881a121e5101c5fa67278ca3b1f339c8fb2ef39230c70e9ac"},
-]
-"azure-storage-blob 12.18.3" = [
-    {url = "https://files.pythonhosted.org/packages/9d/f5/4ec0b5b3a99f6a4bb5c82f8dbab121bcd892c355ae363140558a164cff08/azure-storage-blob-12.18.3.tar.gz", hash = "sha256:d8ced0deee3367fa3d4f3d1a03cd9edadf4440c0a371f503d623fa6c807554ee"},
-    {url = "https://files.pythonhosted.org/packages/be/cd/30306c04f962b55cae44cab2859b5496d0d75521a3bf2e92ec4a6bb61ddb/azure_storage_blob-12.18.3-py3-none-any.whl", hash = "sha256:c278dde2ac41857a68d615c9f2b36d894ba877a7e84d62795603c7e79d0bb5e9"},
+"azure-storage-blob 2.1.0" = [
+    {url = "https://files.pythonhosted.org/packages/0e/76/bd6eadc0f2b481bcfb43c37caacf77372401fc013c1431861561b794e06a/azure-storage-blob-2.1.0.tar.gz", hash = "sha256:b90323aad60f207f9f90a0c4cf94c10acc313c20b39403398dfba51f25f7b454"},
+    {url = "https://files.pythonhosted.org/packages/3e/84/610f379b46d7d3c2d48eadeed6a12b6d46a43100fea70534f5992d0ac996/azure_storage_blob-2.1.0-py2.py3-none-any.whl", hash = "sha256:a8e91a51d4f62d11127c7fd8ba0077385c5b11022f0269f8a2a71b9fc36bef31"},
 ]
 "azure-storage-common 2.1.0" = [
     {url = "https://files.pythonhosted.org/packages/48/12/e074fe454bc327fbe2a61e20d3260473ee4a0fd85387baf249dc83c8e774/azure-storage-common-2.1.0.tar.gz", hash = "sha256:ccedef5c67227bc4d6670ffd37cec18fb529a1b7c3a5e53e4096eb0cf23dc73f"},
@@ -1304,10 +1278,6 @@ content_hash = "sha256:dc1f35eba8b0d166a255be0f8f3495fa213d9ab8fbf31156b195caffe
 "install 1.3.5" = [
     {url = "https://files.pythonhosted.org/packages/26/79/b6a13690bcde4e1fef5759f05a5e0939c110fcbc8c6e4efa6b4663ee11a5/install-1.3.5.tar.gz", hash = "sha256:e67c8a0be5ccf8cb4ffa17d090f3a61b6e820e6a7e21cd1d2c0f7bc59b18e647"},
     {url = "https://files.pythonhosted.org/packages/4d/c8/8cbca135f9e167810756ea2bc34b028501936675fcbd7dadccf752fa4622/install-1.3.5-py3-none-any.whl", hash = "sha256:0d3fadf4aa62c95efe8d34757c8507eb46177f86c016c21c6551eafc6a53d5a9"},
-]
-"isodate 0.6.1" = [
-    {url = "https://files.pythonhosted.org/packages/b6/85/7882d311924cbcfc70b1890780763e36ff0b140c7e51c110fc59a532f087/isodate-0.6.1-py2.py3-none-any.whl", hash = "sha256:0751eece944162659049d35f4f549ed815792b38793f07cf73381c1c87cbed96"},
-    {url = "https://files.pythonhosted.org/packages/db/7a/c0a56c7d56c7fa723988f122fa1f1ccf8c5c4ccc48efad0d214b49e5b1af/isodate-0.6.1.tar.gz", hash = "sha256:48c5881de7e8b0a0d648cb024c8062dc84e7b840ed81e864c7614fd3c127bde9"},
 ]
 "kombu 5.2.4" = [
     {url = "https://files.pythonhosted.org/packages/d9/f3/62d12dd7ebad710319f0877c1c33bca379fc7d28069daae890fa2fa444c8/kombu-5.2.4-py3-none-any.whl", hash = "sha256:8b213b24293d3417bcf0d2f5537b7f756079e3ea232a8386dcc89a59fd2361a4"},
