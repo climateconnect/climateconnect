@@ -189,7 +189,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       zIndex: 30,
     },
     loggedInPopper: {
-      zIndex: 30,
+      zIndex: 130,
     },
     normalScreenIcon: {
       fontSize: 20,

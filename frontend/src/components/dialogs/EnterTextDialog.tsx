@@ -18,6 +18,7 @@ export default function EnterTextDialog({
   title,
   inputLabel,
   applyText,
+  applyIcon,
   maxLength,
   className,
 }) {
@@ -50,6 +51,7 @@ export default function EnterTextDialog({
       open={open}
       title={title}
       useApplyButton={true}
+      applyIcon={applyIcon}
       onApply={applyElement}
       applyText={applyText ? applyText : texts.apply}
     >

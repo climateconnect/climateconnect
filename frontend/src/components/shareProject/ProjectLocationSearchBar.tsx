@@ -10,12 +10,22 @@ type Args = {
   projectData: Project;
   handleSetProjectData: Function;
   className?: any;
+  hideHelperText?: boolean;
+  locationInputRef?: any;
+  locationOptionsOpen?: boolean;
+  handleSetLocationOptionsOpen?: Function;
+  onChangeLocation?: Function; //Set this if you want the component to be controlled
 };
 
 export default function ProjectLocationSearchBar({
   projectData,
   handleSetProjectData,
   className,
+  hideHelperText,
+  locationInputRef,
+  locationOptionsOpen,
+  handleSetLocationOptionsOpen,
+  onChangeLocation,
 }: Args) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
@@ -29,10 +39,14 @@ export default function ProjectLocationSearchBar({
   };
 
   const handleChangeLocation = (location) => {
-    handleSetProjectData({
-      ...projectData,
-      loc: location,
-    });
+    if (onChangeLocation) {
+      onChangeLocation(location);
+    } else {
+      handleSetProjectData({
+        ...projectData,
+        loc: location,
+      });
+    }
   };
 
   const handleChangeAdditionalInfoText = (additionalInfo) => {
@@ -56,11 +70,22 @@ export default function ProjectLocationSearchBar({
       helperText: "",
     },
   };
+
+  const additionalProps: any = {};
+
+  //If these props are set the components "open" state is controlled.
+  if (locationOptionsOpen && handleSetLocationOptionsOpen) {
+    (additionalProps.open = locationOptionsOpen),
+      (additionalProps.handleSetOpen = handleSetLocationOptionsOpen);
+  }
+
   return (
     <LocationSearchBar
       className={className}
       label={propsByProjectType[projectData.project_type.type_id]?.label}
-      helperText={propsByProjectType[projectData.project_type.type_id]?.helperText}
+      helperText={
+        hideHelperText ? null : propsByProjectType[projectData.project_type.type_id]?.helperText
+      }
       enableExactLocation
       value={projectData.loc}
       onChange={handleChangeLocationString}
@@ -69,6 +94,9 @@ export default function ProjectLocationSearchBar({
       additionalInfoText={projectData.additional_loc_info}
       onChangeAdditionalInfoText={handleChangeAdditionalInfoText}
       enableAdditionalInfo={PROJECT_TYPES_WITH_ADD_INFO.includes(projectData.project_type.type_id)}
+      hideHelperText={hideHelperText}
+      locationInputRef={locationInputRef}
+      {...additionalProps}
     />
   );
 }

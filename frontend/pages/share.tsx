@@ -2,6 +2,7 @@ import NextCookies from "next-cookies";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest, sendToLogin } from "../public/lib/apiOperations";
+import { getProjectTypeOptions } from "../public/lib/getOptions";
 import { nullifyUndefinedValues } from "../public/lib/profileOperations";
 import { parseOptions } from "../public/lib/selectOptionsOperations";
 import getTexts from "../public/texts/texts";
@@ -32,7 +33,7 @@ export async function getServerSideProps(ctx) {
     getSkillsOptions(auth_token, ctx.locale),
     getRolesOptions(auth_token, ctx.locale),
     getStatusOptions(auth_token, ctx.locale),
-    getProjectTypeOptions(auth_token, ctx.locale),
+    getProjectTypeOptions(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -199,25 +200,6 @@ const getUserOrganizations = async (token, locale) => {
     if (resp.data.length === 0) return null;
     else {
       return resp.data.map((o) => o.organization);
-    }
-  } catch (err: any) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-};
-
-const getProjectTypeOptions = async (token, locale) => {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: "/api/project_type_options/",
-      token: token,
-      locale: locale,
-    });
-    if (!resp.data) return null;
-    else {
-      return resp.data;
     }
   } catch (err: any) {
     console.log(err);

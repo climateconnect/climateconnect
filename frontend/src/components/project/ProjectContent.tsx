@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
   },
   subHeader: {
     fontWeight: "bold",
-    paddingBottom: theme.spacing(2),
+    paddingBottom: theme.spacing(1),
   },
   expandButton: {
     width: "100%",

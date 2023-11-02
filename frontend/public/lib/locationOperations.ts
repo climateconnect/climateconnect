@@ -70,8 +70,8 @@ const getCityOrCountyName = (address) => {
     "city",
     "place",
     "boundary",
-    "village",
     "town",
+    "village",
     "place",
     "municipality",
     "county",
@@ -85,6 +85,10 @@ const getCityOrCountyName = (address) => {
 };
 
 export function getNameFromExactLocation(location) {
+  //If the location object is empty, just return an empty string
+  if (Object.keys(location).length === 0) {
+    return "";
+  }
   const isConcretePlace = isExactLocation(location);
   const firstPart =
     isConcretePlace && (location.address[location.class] || location.address[location.type])
@@ -109,7 +113,6 @@ export function getNameFromExactLocation(location) {
 const getFirstPart = (address, order) => {
   for (const el of order) {
     if (address[el]) {
-      console.log(el);
       if (el === "state") return address[el] + " (state)";
       if (el === "municipality") return address[el] + " (municipality)";
       return address[el];
@@ -166,6 +169,27 @@ export function isExactLocation(location) {
   return placeClasses.includes(location.class);
 }
 
+//Sometimes the Nominatim API does not return any "geojson" for points
+//For these cases we reconstruct it by assuming it's a point with lat and lon as coordinates
+const generateGeoJson = (location) => {
+  return {
+    type: "Point",
+    coordinates: [parseFloat(location.lon), parseFloat(location.lat)],
+  };
+};
+
+const getLocationType = (location) => {
+  if (!location) return;
+  if (location.added_manually) {
+    return location.type;
+  }
+  //If Nominatim does not provice a geojson we assume the location is a Point
+  if (!location.geojson) {
+    return "Point";
+  }
+  return location.geojson.type;
+};
+
 export function parseLocation(location, isConcretePlace = false) {
   const location_object = isConcretePlace
     ? getNameFromExactLocation(location)
@@ -194,11 +218,10 @@ export function parseLocation(location, isConcretePlace = false) {
       location.address.road +
       (location.address.house_number ? ` ${location.address.house_number}` : "");
   }
-
   return {
-    type: location.added_manually ? location.type : location?.geojson?.type,
+    type: getLocationType(location),
     coordinates: location?.geojson?.coordinates,
-    geojson: location?.geojson,
+    geojson: location.geojson ? location.geojson : generateGeoJson(location),
     place_id: location?.place_id,
     osm_id: location?.osm_id,
     name: location_object.name,

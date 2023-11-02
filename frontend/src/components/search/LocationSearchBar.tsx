@@ -13,9 +13,10 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
-  additionalInfos: {
+  additionalInfos: (props) => ({
     width: "100%",
-  },
+    marginTop: props.hideHelperText ? 0 : theme.spacing(2),
+  }),
   input: {
     marginBottom: theme.spacing(2),
   },
@@ -25,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type Props = {
-  label?: string;
+  label?: string | Element;
   required?: boolean;
   helperText?: string;
   inputClassName?;
@@ -44,6 +45,8 @@ type Props = {
   additionalInfoText?: string;
   onChangeAdditionalInfoText?;
   enableAdditionalInfo?: boolean;
+  hideHelperText?: boolean;
+  filterMode?: boolean;
 };
 export default function LocationSearchBar({
   label,
@@ -65,15 +68,21 @@ export default function LocationSearchBar({
   additionalInfoText,
   onChangeAdditionalInfoText,
   enableAdditionalInfo,
+  hideHelperText,
+  filterMode = false, //Are we filtering any content by this location?
 }: Props) {
   const { locale } = useContext(UserContext);
-  const classes = useStyles();
+  const classes = useStyles({ hideHelperText: hideHelperText });
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const getValue = (newValue, inputValue) => {
     if (!newValue) {
       return inputValue ? inputValue : "";
     } else if (typeof newValue === "object") {
-      return newValue.name ? newValue.name : newValue.simple_name;
+      if (enableExactLocation) {
+        return getNameFromExactLocation(newValue).name;
+      } else {
+        return newValue.name ? newValue.name : newValue.simple_name;
+      }
     } else {
       return newValue;
     }
@@ -83,7 +92,7 @@ export default function LocationSearchBar({
   // If no 'open' prop is passed to the component, the component handles its 'open' state with this internal state
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState("");
-  const [inputValue, setInputValue] = React.useState(getValue(initialValue, ""));
+  const [inputValue, setInputValue] = React.useState(getValue(value ? value : initialValue, ""));
   useEffect(
     function () {
       if (inputValue?.length > 0 && value?.length === 0) {
@@ -141,6 +150,7 @@ export default function LocationSearchBar({
           "isolated_dwelling",
           "croft",
           "construction",
+          "postcode",
         ];
         const minimumImportance = {
           exactAddresses: 0.25,
@@ -159,9 +169,13 @@ export default function LocationSearchBar({
           const data =
             filteredData.length > 0
               ? filteredData
-              : response.data
-                  .slice(0, 2)
-                  .filter((o) => enableExactLocation || !bannedClasses.includes(o.class));
+              : response.data.slice(0, 2).filter((o) => {
+                  if (filterMode && o.type === "postcode") {
+                    return false;
+                  } else {
+                    return enableExactLocation || !bannedClasses.includes(o.class);
+                  }
+                });
           for (const option of additionalOptions) {
             if (option.simple_name.toLowerCase().includes(searchValue.toLowerCase())) {
               data.push(option);

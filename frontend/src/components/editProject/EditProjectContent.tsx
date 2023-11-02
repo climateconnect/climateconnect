@@ -9,7 +9,7 @@ import {
   Theme,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import getCollaborationTexts from "../../../public/data/collaborationTexts";
 import ROLE_TYPES from "../../../public/data/role_types";
 import getTexts from "../../../public/texts/texts";
@@ -17,18 +17,24 @@ import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
 import EnterTextDialog from "../dialogs/EnterTextDialog";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
-import DatePicker from "../general/DatePicker";
 import SelectField from "../general/SelectField";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import DeleteProjectButton from "./DeleteProjectButton";
+import { Project, Role } from "../../types";
+import { EditProjectTypeSelector } from "./EditProjectTypeSelector";
+import ProjectDateSection from "../shareProject/ProjectDateSection";
+import AddIcon from '@mui/icons-material/Add';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme>((theme) => ({
   select: {
     maxWidth: 250,
   },
   startDate: {
     marginRight: theme.spacing(4),
+    [theme.breakpoints.down("md")]: {
+      marginBottom: theme.spacing(2),
+    },
   },
   creator: {
     display: "inline-block",
@@ -61,37 +67,61 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     padding: 0,
     flexWrap: "wrap",
-    marginBottom: theme.spacing(3),
     marginTop: theme.spacing(2),
   },
   spacer: {
     marginBottom: theme.spacing(1),
   },
+  addButton: {
+    marginTop: theme.spacing(2),
+  },
 }));
+
+type Args = {
+  project: Project;
+  handleSetProject: Function;
+  userOrganizations: any;
+  skillsOptions: any;
+  user_role: Role;
+  deleteProject: Function;
+  errors: any;
+  contentRef?: React.RefObject<any>;
+  projectTypeOptions?: any;
+};
 
 export default function EditProjectContent({
   project,
   handleSetProject,
-  statusOptions,
   userOrganizations,
   skillsOptions,
   user_role,
   deleteProject,
-}) {
+  errors,
+  contentRef,
+  projectTypeOptions,
+}: Args) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const collaborationTexts = getCollaborationTexts(texts);
-  const [selectedItems, setSelectedItems] = React.useState(
-    project.skills ? [...project.skills] : []
-  );
+  const [selectedItems, setSelectedItems] = useState(project.skills ? [...project.skills] : []);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
-  const [open, setOpen] = React.useState({ skills: false, connections: false, delete: false });
-  const statusesWithStartDate = statusOptions.filter((s) => s.has_start_date).map((s) => s.id);
-  const statusesWithEndDate = statusOptions.filter((s) => s.has_end_date).map((s) => s.id);
+  const [open, setOpen] = useState({ skills: false, connections: false, delete: false });
 
   const handleChangeProject = (newValue, key) => {
     handleSetProject({ ...project, [key]: newValue });
+  };
+
+  /*
+    This is a helper function just for <ProjectDateSection>
+    It's a bit of a hack to be able to use the same code even though handleSetProject 
+    is implemented differently in EditProject and ShareProject
+  */
+  const handleSetProjectData = (newData) => {
+    handleSetProject({
+      ...project,
+      ...newData,
+    });
   };
 
   const onClickSkillsDialogOpen = () => {
@@ -153,7 +183,7 @@ export default function EditProjectContent({
   const handleSwitchChange = (event) => {
     if (
       event.target.checked &&
-      !project.project_parents.parent_organization &&
+      !project?.project_parents?.parent_organization &&
       userOrganizations[0]
     )
       handleSetProject({
@@ -167,8 +197,15 @@ export default function EditProjectContent({
     else handleChangeProject(!event.target.checked, "is_personal_project");
   };
 
+  const handleChangeProjectType = (newProjectType) => {
+    handleSetProject({
+      ...project,
+      project_type: newProjectType,
+    });
+  };
+
   return (
-    <div>
+    <div ref={contentRef}>
       <div className={classes.block}>
         <div className={classes.block}>
           <Typography component="span">
@@ -195,7 +232,7 @@ export default function EditProjectContent({
               {texts.created_by}
               <MiniProfilePreview
                 className={classes.creator}
-                profile={project.project_parents.parent_user}
+                profile={project?.project_parents?.parent_user}
                 size="small"
               />
             </>
@@ -203,8 +240,8 @@ export default function EditProjectContent({
             <SelectField
               controlled
               controlledValue={
-                project.project_parents.parent_organization
-                  ? project.project_parents.parent_organization
+                project?.project_parents?.parent_organization
+                  ? project?.project_parents?.parent_organization
                   : userOrganizations[0]
               }
               onChange={(event) =>
@@ -226,43 +263,21 @@ export default function EditProjectContent({
           )}
         </div>
         <div className={classes.block}>
-          <SelectField
-            controlled
-            controlledValue={project.status}
-            onChange={(event) =>
-              handleChangeProject(
-                statusOptions.find((s) => s.name === event.target.value),
-                "status"
-              )
-            }
-            options={statusOptions}
-            label={texts.project_status}
-            className={classes.select}
-            required
+          <EditProjectTypeSelector
+            project={project}
+            projectTypeOptions={projectTypeOptions}
+            onChangeProjectType={handleChangeProjectType}
           />
         </div>
         <div className={classes.block}>
-          {statusesWithStartDate.includes(project.status.id) && (
-            <DatePicker
-              className={classes.startDate}
-              label={texts.start_date}
-              date={new Date(project.start_date)}
-              handleChange={(newDate) => handleChangeProject(newDate, "start_date")}
-              required
-            />
-          )}
-          {statusesWithEndDate.includes(project.status.id) && (
-            <DatePicker
-              label={texts.end_date}
-              date={project.end_date}
-              handleChange={(newDate) => handleChangeProject(newDate, "end_date")}
-              required
-              minDate={project.start_date && new Date(project.start_date)}
-            />
-          )}
+          <ProjectDateSection
+            projectData={project}
+            handleSetProjectData={handleSetProjectData}
+            errors={errors}
+          />
         </div>
         <div className={classes.block}>
-          <ProjectDescriptionHelp status={project.status} />
+          <ProjectDescriptionHelp project_type={project.project_type} />
           <div className={classes.spacer} />
           <TextField
             variant="outlined"
@@ -280,9 +295,7 @@ export default function EditProjectContent({
         </div>
         <div className={classes.block}>
           <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
-            {collaborationTexts.allow[project.status.name]
-              ? collaborationTexts.allow[project.status.name]
-              : collaborationTexts.allow["In Progress"]}
+            {collaborationTexts.allow[project.project_type.type_id]}
           </Typography>
           <Switch
             checked={project.collaborators_welcome}
@@ -301,12 +314,10 @@ export default function EditProjectContent({
                 color="primary"
                 className={classes.subHeader}
               >
-                {collaborationTexts.skills[project.status.name]
-                  ? collaborationTexts.skills[project.status.name]
-                  : collaborationTexts.skills["In Progress"]}
+                {collaborationTexts.skills[project.project_type.type_id]}
               </Typography>
               <div>
-                {project.skills && (
+                {project.skills?.length > 0 && (
                   <List className={classes.flexContainer}>
                     {project.skills.map((skill) => (
                       <Chip
@@ -318,7 +329,12 @@ export default function EditProjectContent({
                     ))}
                   </List>
                 )}
-                <Button variant="contained" color="primary" onClick={onClickSkillsDialogOpen}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={onClickSkillsDialogOpen}
+                  className={classes.addButton}
+                >
                   {project.skills && project.skills.length ? texts.edit_skills : texts.add_skills}
                 </Button>
               </div>
@@ -330,11 +346,9 @@ export default function EditProjectContent({
                 color="primary"
                 className={classes.subHeader}
               >
-                {collaborationTexts.connections[project.status.name]
-                  ? collaborationTexts.connections[project.status.name]
-                  : collaborationTexts.connections["In Progress"]}
+                {collaborationTexts.connections[project.project_type.type_id]}
               </Typography>
-              {project.helpful_connections && (
+              {project.helpful_connections?.length > 0 && (
                 <List className={classes.flexContainer}>
                   {project.helpful_connections.map((connection) => (
                     <Chip
@@ -346,7 +360,12 @@ export default function EditProjectContent({
                   ))}
                 </List>
               )}
-              <Button variant="contained" color="primary" onClick={onClickConnectionsDialogOpen}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={onClickConnectionsDialogOpen}
+                className={classes.addButton}
+              >
                 {texts.add_connections}
               </Button>
             </div>
@@ -368,6 +387,7 @@ export default function EditProjectContent({
         onClose={handleConnectionsDialogClose}
         maxLength={25}
         applyText={texts.add}
+        applyIcon={{icon: AddIcon}}
         inputLabel={texts.connection}
         title={texts.add_a_helpful_connection}
       />

@@ -1,4 +1,4 @@
-export function getProjectTypeOptions(texts) {
+export function getProjectTypeDateOptions(texts) {
   return {
     project: {
       startDateLabel: texts?.start_date,

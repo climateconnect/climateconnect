@@ -3,6 +3,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import MultiLevelSelector from "../general/MultiLevelSelector";
 import GenericDialog from "./GenericDialog";
+import SaveIcon from "@mui/icons-material/Save";
 
 export default function MultiLevelSelectDialog({
   dragAble,
@@ -48,13 +49,28 @@ export default function MultiLevelSelectDialog({
     return 0;
   });
 
+  const getTitle = () => {
+    if (title) {
+      return title;
+    } else {
+      if (locale === "de") {
+        return `${itemNamePlural} ${texts.add}`;
+      }
+      //For english and other locales
+      return texts.add + " " + itemNamePlural;
+    }
+  };
+
+  const renderedTitle = getTitle();
+
   return (
     <GenericDialog
       applyText={texts.save}
+      applyIcon={{ icon: SaveIcon }}
       onApply={() => applySkills(true)}
       onClose={() => applySkills(false)}
       open={open}
-      title={title ? title : texts.add + " " + itemNamePlural}
+      title={renderedTitle}
       topBarFixed
       useApplyButton={true}
     >

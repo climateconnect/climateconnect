@@ -41,7 +41,7 @@ def get_legacy_location(location_object):
 def get_location(location_object):
     if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
         return get_legacy_location(location_object)
-    required_params = ["osm_id", "place_id", "country", "name", "type", "lon", "lat"]
+    required_params = ["place_id", "country", "name", "type", "lon", "lat"]
     for param in required_params:
         if param not in location_object:
             raise ValidationError("Required parameter is missing:" + param)
@@ -58,7 +58,6 @@ def get_location(location_object):
         coords = list(point)
         switched_point = Point(coords[1], coords[0])
         loc = Location.objects.create(
-            osm_id=location_object["osm_id"],
             place_id=location_object["place_id"],
             city=optional_attributes["city"],
             state=optional_attributes["state"],
@@ -67,6 +66,26 @@ def get_location(location_object):
             country=location_object["country"],
             name=location_object["name"],
             centre_point=switched_point,
+            is_formatted=True,
+        )
+        # Postcode location do not have an osm_id
+        if "osm_id" in location_object:
+            loc.osm_id = location_object["osm_id"]
+        loc.save()
+        return loc
+    elif location_object["type"] == "LineString":
+        centre_point = Point(
+            float(location_object["lat"]), float(location_object["lon"])
+        )
+        loc = Location.objects.create(
+            place_id=location_object["place_id"],
+            city=optional_attributes["city"],
+            state=optional_attributes["state"],
+            place_name=optional_attributes["place_name"],
+            exact_address=optional_attributes["exact_address"],
+            country=location_object["country"],
+            name=location_object["name"],
+            centre_point=centre_point,
             is_formatted=True,
         )
         return loc

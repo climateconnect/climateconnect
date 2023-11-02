@@ -180,168 +180,34 @@ export default function ProjectOverview({
     }
   }, []);
 
-  function ShortProjectInfo() {
-    return (
-      <>
-        <Typography component="div" className={classes.shortDescription}>
-          <MessageContent content={project.short_description} />
-        </Typography>
-        <div className={classes.projectInfoEl}>
-          <Typography>
-            <Tooltip title={texts.location}>
-              <PlaceIcon color="primary" className={classes.icon} />
-            </Tooltip>{" "}
-            {project.location}
-            {project.additional_loc_info && <> - {project.additional_loc_info}</>}
-          </Typography>
-        </div>
-        {project.project_type?.type_id === "event" && (
-          <div className={classes.projectInfoEl}>
-            <Typography>
-              <Tooltip title={texts.event_start_date}>
-                <CalendarTodayIcon color="primary" className={classes.icon} />
-              </Tooltip>{" "}
-              {getDateTimeRange(project.start_date, project.end_date, locale)}
-            </Typography>
-          </div>
-        )}
-        {project.website && (
-          <div className={classes.projectInfoEl}>
-            <Typography>
-              <Tooltip title={texts.website}>
-                <LanguageIcon color="primary" className={classes.icon} />
-              </Tooltip>{" "}
-              <Linkify componentDecorator={componentDecorator}>{project.website}</Linkify>
-            </Typography>
-          </div>
-        )}
-        <div className={classes.projectInfoEl}>
-          <Typography>
-            <Tooltip title={texts.categories}>
-              <ExploreIcon color="primary" className={classes.icon} />
-            </Tooltip>{" "}
-            {project.tags.join(", ")}
-          </Typography>
-        </div>
-        <div className={classes.projectInfoEl}>
-          <ProjectTypeDisplay projectType={project.project_type} />
-        </div>
-      </>
-    );
-  }
-
-  function SmallScreenOverview() {
-    const classes = useStyles({});
-
-    return (
-      <>
-        <div className={classes.imageContainer}>
-          {screenSize?.belowTiny && (
-            <GoBackFromProjectPageButton
-              containerClassName={classes.goBackButtonContainer}
-              texts={texts}
-              tinyScreen={screenSize.belowTiny}
-              locale={locale}
-            />
-          )}
-          <ProjectSocialMediaShareButton
-            className={classes.shareButtonContainer}
-            project={project}
-            projectAdmin={projectAdmin}
-          />
-          <img
-            className={classes.fullWidthImage}
-            src={getImageUrl(project.image)}
-            alt={texts.project_image_of_project + " " + project.name}
-          />
-        </div>
-        <div className={classes.blockProjectInfo}>
-          <Typography component="h1" variant="h3" className={classes.smallScreenHeader}>
-            {project.name}
-          </Typography>
-          <ShortProjectInfo />
-        </div>
-      </>
-    );
-  }
-
-  function LargeScreenOverview() {
-    const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
-
-    return (
-      <>
-        <div className={classes.headerContainer}>
-          <Typography component="h1" variant="h4" className={classes.largeScreenHeader}>
-            {project.name}
-          </Typography>
-        </div>
-        <div className={classes.flexContainer}>
-          <img
-            className={classes.inlineImage}
-            src={getImageUrl(project.image)}
-            alt={texts.project_image_of_project + " " + project.name}
-          />
-          <div className={classes.inlineProjectInfo}>
-            <Typography component="h2" variant="h5" className={classes.subHeader}>
-              {texts.summary}
-            </Typography>
-            <ShortProjectInfo />
-            <div className={classes.infoBottomBar}>
-              <LikeButton
-                texts={texts}
-                isUserLiking={isUserLiking}
-                handleToggleLikeProject={handleToggleLikeProject}
-                toggleShowLikes={toggleShowLikes}
-                likingChangePending={likingChangePending}
-                screenSize={screenSize}
-                hasAdminPermissions={hasAdminPermissions}
-                numberOfLikes={numberOfLikes}
-              />
-              <FollowButton
-                isLoggedIn={!!user}
-                followingChangePending={followingChangePending}
-                handleToggleFollow={handleToggleFollowProject}
-                hasAdminPermissions={hasAdminPermissions}
-                isUserFollowing={isUserFollowing}
-                numberOfFollowers={numberOfFollowers}
-                screenSize={screenSize}
-                texts={texts}
-                toggleShowFollowers={toggleShowFollowers}
-                showStartIcon={!screenSize.belowMedium}
-                showLinkUnderButton
-              />
-              {!hasAdminPermissions &&
-                (!screenSize.belowMedium ? (
-                  <ContactCreatorButton
-                    creator={projectAdmin}
-                    contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
-                    handleClickContact={handleClickContact}
-                    customCardWidth={220}
-                    withInfoCard={true}
-                    withIcons={true}
-                    collapsable={true}
-                  />
-                ) : (
-                  <Button
-                    className={classes.contactProjectButtonLarge}
-                    variant="contained"
-                    color="primary"
-                    onClick={handleClickContact}
-                    ref={contactProjectCreatorButtonRef}
-                  >
-                    {texts.contact}
-                  </Button>
-                ))}
-            </div>
-          </div>
-        </div>
-      </>
-    );
+  const passThroughProps = {
+    projectAdmin: projectAdmin,
+    project: project,
+    screenSize: screenSize
   }
 
   return (
     <Container className={classes.projectOverview}>
-      {screenSize?.belowSmall ? <SmallScreenOverview /> : <LargeScreenOverview />}
+      {screenSize?.belowSmall ? 
+        <SmallScreenOverview {...passThroughProps}/> 
+      : 
+        <LargeScreenOverview 
+          {...passThroughProps}
+          hasAdminPermissions={hasAdminPermissions}
+          handleClickContact={handleClickContact}
+          contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
+          isUserLiking={isUserLiking}
+          handleToggleLikeProject={handleToggleLikeProject}
+          toggleShowLikes={toggleShowLikes}
+          likingChangePending={likingChangePending}
+          numberOfLikes={numberOfLikes}
+          isUserFollowing={isUserFollowing}
+          handleToggleFollowProject={handleToggleFollowProject}
+          toggleShowFollowers={toggleShowFollowers}
+          followingChangePending={followingChangePending}
+          numberOfFollowers={numberOfFollowers}
+        />
+      }
 
       <FollowersDialog
         open={showFollowers}
@@ -369,5 +235,189 @@ export default function ProjectOverview({
         url={"projects/" + project.url_slug + "?show_likes=true"}
       />
     </Container>
+  );
+}
+
+function ShortProjectInfo({
+  project
+}) {
+  const classes = useStyles({});
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale, project: project });
+  return (
+    <>
+      <Typography component="div" className={classes.shortDescription}>
+        <MessageContent content={project.short_description} />
+      </Typography>
+      <div className={classes.projectInfoEl}>
+        <Typography>
+          <Tooltip title={texts.location}>
+            <PlaceIcon color="primary" className={classes.icon} />
+          </Tooltip>{" "}
+          {project.location}
+          {project.additional_loc_info && <> - {project.additional_loc_info}</>}
+        </Typography>
+      </div>
+      {project.project_type?.type_id === "event" && (
+        <div className={classes.projectInfoEl}>
+          <Typography>
+            <Tooltip title={texts.event_start_date}>
+              <CalendarTodayIcon color="primary" className={classes.icon} />
+            </Tooltip>{" "}
+            {getDateTimeRange(project.start_date, project.end_date, locale)}
+          </Typography>
+        </div>
+      )}
+      {project.website && (
+        <div className={classes.projectInfoEl}>
+          <Typography>
+            <Tooltip title={texts.website}>
+              <LanguageIcon color="primary" className={classes.icon} />
+            </Tooltip>{" "}
+            <Linkify componentDecorator={componentDecorator}>{project.website}</Linkify>
+          </Typography>
+        </div>
+      )}
+      <div className={classes.projectInfoEl}>
+        <Typography>
+          <Tooltip title={texts.categories}>
+            <ExploreIcon color="primary" className={classes.icon} />
+          </Tooltip>{" "}
+          {project.tags.join(", ")}
+        </Typography>
+      </div>
+      <div className={classes.projectInfoEl}>
+        <ProjectTypeDisplay projectType={project.project_type} />
+      </div>
+    </>
+  );
+}
+
+function SmallScreenOverview({screenSize, project, projectAdmin}) {
+  const classes = useStyles({});
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale, project: project });
+
+  return (
+    <>
+      <div className={classes.imageContainer}>
+        {screenSize?.belowTiny && (
+          <GoBackFromProjectPageButton
+            containerClassName={classes.goBackButtonContainer}
+            texts={texts}
+            tinyScreen={screenSize.belowTiny}
+            locale={locale}
+          />
+        )}
+        <ProjectSocialMediaShareButton
+          className={classes.shareButtonContainer}
+          project={project}
+          projectAdmin={projectAdmin}
+        />
+        <img
+          className={classes.fullWidthImage}
+          src={getImageUrl(project.image)}
+          alt={texts.project_image_of_project + " " + project.name}
+        />
+      </div>
+      <div className={classes.blockProjectInfo}>
+        <Typography component="h1" variant="h3" className={classes.smallScreenHeader}>
+          {project.name}
+        </Typography>
+        <ShortProjectInfo project={project}/>
+      </div>
+    </>
+  );
+}
+
+function LargeScreenOverview({
+  project, 
+  projectAdmin,
+  hasAdminPermissions, 
+  screenSize,
+  handleClickContact,
+  contactProjectCreatorButtonRef,
+  isUserLiking, 
+  handleToggleLikeProject,
+  toggleShowLikes,
+  likingChangePending,
+  numberOfLikes,
+  isUserFollowing,
+  handleToggleFollowProject,
+  toggleShowFollowers,
+  followingChangePending,
+  numberOfFollowers,
+}) {
+  const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
+  const { locale, user } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale, project: project });
+  return (
+    <>
+      <div className={classes.headerContainer}>
+        <Typography component="h1" variant="h4" className={classes.largeScreenHeader}>
+          {project.name}
+        </Typography>
+      </div>
+      <div className={classes.flexContainer}>
+        <img
+          className={classes.inlineImage}
+          src={getImageUrl(project.image)}
+          alt={texts.project_image_of_project + " " + project.name}
+        />
+        <div className={classes.inlineProjectInfo}>
+          <Typography component="h2" variant="h5" className={classes.subHeader}>
+            {texts.summary}
+          </Typography>
+          <ShortProjectInfo project={project}/>
+          <div className={classes.infoBottomBar}>
+            <LikeButton
+              texts={texts}
+              isUserLiking={isUserLiking}
+              handleToggleLikeProject={handleToggleLikeProject}
+              toggleShowLikes={toggleShowLikes}
+              likingChangePending={likingChangePending}
+              screenSize={screenSize}
+              hasAdminPermissions={hasAdminPermissions}
+              numberOfLikes={numberOfLikes}
+            />
+            <FollowButton
+              isLoggedIn={!!user}
+              followingChangePending={followingChangePending}
+              handleToggleFollow={handleToggleFollowProject}
+              hasAdminPermissions={hasAdminPermissions}
+              isUserFollowing={isUserFollowing}
+              numberOfFollowers={numberOfFollowers}
+              screenSize={screenSize}
+              texts={texts}
+              toggleShowFollowers={toggleShowFollowers}
+              showStartIcon={!screenSize.belowMedium}
+              showLinkUnderButton
+            />
+            {!hasAdminPermissions &&
+              (!screenSize.belowMedium ? (
+                <ContactCreatorButton
+                  creator={projectAdmin}
+                  contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
+                  handleClickContact={handleClickContact}
+                  customCardWidth={220}
+                  withInfoCard={true}
+                  withIcons={true}
+                  collapsable={true}
+                />
+              ) : (
+                <Button
+                  className={classes.contactProjectButtonLarge}
+                  variant="contained"
+                  color="primary"
+                  onClick={handleClickContact}
+                  ref={contactProjectCreatorButtonRef}
+                >
+                  {texts.contact}
+                </Button>
+              ))}
+          </div>
+        </div>
+      </div>
+    </>
   );
 }

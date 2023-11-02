@@ -78,11 +78,9 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ProjectPageRoot({
   project,
-  token,
   setMessage,
   isUserFollowing,
   isUserLiking,
-  user,
   setCurComments,
   followingChangePending,
   likingChangePending,
@@ -97,10 +95,12 @@ export default function ProjectPageRoot({
   requestedToJoinProject,
   handleJoinRequest,
 }) {
+  const cookies = new Cookies();
+  const token = cookies.get("auth_token");
   const visibleFooterHeight = VisibleFooterHeight({});
   const tabContentRef = useRef(null);
   const tabContentContainerSpaceToRight = ElementSpaceToRight({ el: tabContentRef.current });
-  const { locale, pathName } = useContext(UserContext);
+  const { locale, pathName, user } = useContext(UserContext);
   const classes = useStyles({
     showSimilarProjects: showSimilarProjects,
     locale: locale,
@@ -178,7 +178,6 @@ export default function ProjectPageRoot({
     // Also strip any trailing '#' too.
     const strippedProjectName = projectName.endsWith("#") ? projectName.slice(0, -1) : projectName;
 
-    const cookies = new Cookies();
     const token = cookies.get("auth_token");
 
     try {

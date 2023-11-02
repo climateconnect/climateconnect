@@ -65,7 +65,7 @@ export default function getProfileTexts({ profile, locale }) {
     },
     hours_contributed_per_week: {
       en: "Hours contributed per week",
-      de: "Arbeitszeit pro Woche",
+      de: "Beigetragene Wochenstunden",
     },
     pick_how_many_hours_user_contributes_to_org: {
       en: "Pick how many hours per week the user contributes to this organization on average.",

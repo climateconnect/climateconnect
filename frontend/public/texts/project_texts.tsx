@@ -261,8 +261,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Gesamte Laufzeit",
     },
     project_description: {
-      en: "Project Description",
-      de: "Projektbeschreibung",
+      en: `${project?.project_type?.name ? project.project_type.name : "Project"} Description`,
+      de: `${project?.project_type?.name ? project.project_type.name : "Projekt"}beschreibung`,
     },
     event_description: {
       en: "Event Description",
@@ -331,41 +331,36 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Wir konnten keine Mitglieder für dieses Projekt finden.",
     },
     allow_collaboration_on_your_project: {
-      en: "Allow collaboration on your project?",
-      de: "Möchtest du Zusammenarbeit an deinem Projekt zulassen?",
+      en: "Are you looking for collaborators for your project?",
+      de: "Suchst du noch Unterstützung für dein Projekt?",
     },
-    encourage_collaboration_to_make_your_project_a_success: {
-      en: "Encourage collaboration to make your project a success?",
-      de: "Möchtest du nach Mitwirkenden suchen, um dein Projekt zu einem Erfolg werden lassen?",
+    are_you_looking_for_more_people_to_help_implement_the_idea: {
+      en: "Are you looking for more people to implement the idea together?",
+      de: "Suchst du nach Mitstreiter:innen?",
     },
-    would_you_assist_in_the_replication_of_your_project: {
-      en: "Would you assist in the replication of your project?",
-      de:
-        "Würdest du dabei unterstützen, wenn jemand dein Projekt auch umsetzen möchte, z.B. an einem anderen Ort?",
+    are_you_looking_for_people_to_help_with_the_event: {
+      en: "Are you looking for people to help organizing the event?",
+      de: "Suchst du noch Unterstützer:innen, um das Event zu organisieren?",
     },
     add_skills_that_would_be_beneficial_for_collaborators_to_have: {
       en: "Add skills that would be beneficial for collaborators to have",
-      de: "Füge Fähigkeiten hinzu, die hilfreich für Unterstützende wären",
+      de: "Füge Fähigkeiten hinzu, die Unterstützende möglichst haben sollten",
     },
-    add_skills_that_are_helpful_to_make_your_project_a_success: {
-      en: "Add skills that are helpful to make your project a success",
-      de: "Füge Fähigkeiten hinzu, die hilfreich sind, um das Projekt zu einem Erfolg zu machen",
-    },
-    add_skills_that_are_helpful_to_replicate_your_project: {
-      en: "Add skills that are helpful to replicate your project",
-      de: "Füge Fähigkeiten hinzu, die hilfreich sind, um das Projekt woanders umzusetzen",
+    add_skills_that_would_be_beneficial_for_collaborators_to_have_idea: {
+      en: "Add skills that would be beneficial for collaborators to have",
+      de: "Füge Fähigkeiten hinzu, die Mitstreiter:innen möglichst haben sollten",
     },
     add_connections_that_would_be_beneficial_for_collaborators_to_have: {
-      en: "Add connections that would be beneficial for collaborators to have",
-      de: "Füge Connections hinzu, die hilfreich für Unterstützende sind",
+      en: "Connections to which organizations would be helpful for the project?",
+      de: "Connections zu welchen Organisationen wären für das Projekt hilfreich?",
     },
-    add_connections_that_would_be_beneficial_to_make_your_project_a_success: {
-      en: "Add connections that would be beneficial to make your project a success",
-      de: "Füge Connections hinzu, die hilfreich sind um das Projekt zu einem Erfolg zu machen",
+    add_connections_that_would_be_beneficial_for_collaborators_to_have_idea: {
+      en: "Connections to which organizations would be helpful for the project?",
+      de: "Connections zu welchen Organisationen wären für die Umsetzung der Idee hilfreich?",
     },
-    add_connection_that_would_be_beneficial_to_have_to_replicate_your_project: {
-      en: "Add connection that would be beneficial to have to replicate your project",
-      de: "Füge Connections hinzu, die hilfreich sind, um das Projekt zu replizieren",
+    add_connections_that_would_be_beneficial_for_collaborators_to_have_event: {
+      en: "Connections to these organizations would be helpful for organizing the event?",
+      de: "Connections zu welchen Organisationen wären für die Event-Organisation hilfreich?",
     },
     to_share_a_project: {
       en: "to share a project",
@@ -443,8 +438,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     // \n\n creates two newlines
     describe_your_project_in_more_detail: {
-      en: `Describe your project in more detail.\n\n-What are you trying to achieve?\n-How are you trying to achieve it\n-What were the biggest challenges?\n-What insights have you gained during the implementation?`,
-      de: `Beschreibe dein Projekt detaillierter.\n\n-Was willst du erreichen?\n-Wie willst du es erreichen?\n-Was waren die größten Herausforderungen?\n-Welche Erkenntnisse hast du bei der Umsetzung gewonnen?`,
+      en: `Describe your ${project?.project_type?.name} in more detail`,
+      de: `Beschreibe dein ${project?.project_type?.name} detaillierter.`,
     },
     add_connections: {
       en: "Add Connections",
@@ -542,95 +537,11 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     climate_action_projects_shared_by_climate_connect_users_text: {
       en: `Find the best climate change solutions from around the world. Get involved, share your own
       solutions or spread effective projects and ideas to your location.`,
-      de: `Finde die besten Klimaprojekte aus aller Welt. Beteilige dich, teile deine eigenen Lösungen oder setze effektive Projekte auch bei dir vor Ort um.`,
+      de: `Finde spannende Klimaprojekte aus aller Welt. Beteilige dich, teile deine eigenen Lösungen oder setze effektive Projekte auch bei dir vor Ort um.`,
     },
     show_all_projects: {
       en: "Show all projects",
       de: "Alle Projekte anzeigen",
-    },
-    what_is_the_climate_impact_of_the_idea: {
-      en: "What is the climate impact of the idea?",
-      de: "Was ist der Klima-Impact deiner Idee?",
-    },
-    what_would_the_climate_impact_of_the_project_have_been: {
-      en: "What would the climate impact of the project have been?",
-      de: "Welchen Klima-Impact hätte das Projekt gehabt?",
-    },
-    what_was_or_is_the_climate_impact_of_the_project: {
-      en: "What was/is the climate impact of the project?",
-      de: "Was war/ist der Klima-Impact deines Projektes?",
-    },
-    what_are_you_trying_to_achieve: {
-      en: "What are you trying to achieve?",
-      de: "Was versuchst du zu erreichen?",
-    },
-    what_were_you_trying_to_achieve: {
-      en: "What were you trying to achieve?",
-      de: "Was wolltest du erreichen?",
-    },
-    what_did_you_achieve: {
-      en: "What did you achieve?",
-      de: "Was hast du erreichst?",
-    },
-    what_are_you_achieving: {
-      en: "What are you achieving?",
-      de: "Was erreichst du gerade?",
-    },
-    how_are_you_going_to_try_to_achieve_it: {
-      en: "How are you going to try to achieve it?",
-      de: "Wie wirst du versuchen, es zu erreichen?",
-    },
-    how_are_you_trying_to_achieve_it: {
-      en: "How are you trying to achieve it?",
-      de: "Wie versuchst du es zu erreichen?",
-    },
-    how_did_you_try_to_achieve_it: {
-      en: "How did you try to achieve it?",
-      de: "Wie hast du versucht es zu erreichen?",
-    },
-    how_did_you_make_your_project_a_success: {
-      en: "How did you make your project a success?",
-      de: "Wie hast du dein Projekt zum Erfolg gemacht?",
-    },
-    how_are_you_achieving_it: {
-      en: "How are you achieving it?",
-      de: "Wie erreichst du es?",
-    },
-    what_are_going_to_be_the_biggest_challenges: {
-      en: "What are going to be the biggest challenges?",
-      de: "Was werden die größten Herausforderungen?",
-    },
-    what_are_the_biggest_challenges: {
-      en: "What are the biggest challenges?",
-      de: "Was sind die größten Herausforderungen?",
-    },
-    what_were_the_biggest_challenges: {
-      en: "What were the biggest challenges?",
-      de: "Was waren die größten Herausforderungen?",
-    },
-    which_insights_have_you_gained_so_far: {
-      en: "Which insights have you gained so far?",
-      de: "Welche Erkenntnisse hast du bisher gewonnen?",
-    },
-    which_insights_did_you_gain: {
-      en: "Which insights did you gain?",
-      de: "Welche Erkenntnisse hast du gewonnen?",
-    },
-    which_insights_did_you_gain_during_the_implementation: {
-      en: "Which insights did you gain during the implementation?",
-      de: "Welche Erkenntnisse hast du während der Umsetzung gewonnen?",
-    },
-    could_this_project_be_replicated_somewhere_else: {
-      en: "Show all projects",
-      de: "Alle Projekte anzeigen",
-    },
-    what_would_you_have_needed_to_make_this_project_a_sucess: {
-      en: "What would you have needed to make this project a sucess?",
-      de: "Was hättest du gebraucht, um das Projekt zu einem Erfolg werden zu lassen?",
-    },
-    how_can_this_project_be_replicated_by_other_climate_protectors: {
-      en: "How can this project be replicated by other climate protectors?",
-      de: "Wie kann dieses Projekt von anderen Klimaschützer*innen repliziert werden?",
     },
     please_touch_on_the_following_points_in_your_project_description: {
       en: "Please touch on the following points in your project description",
@@ -651,8 +562,16 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Benutze die Suchleiste, um Mitglieder zu deinem Projekt hinzuzufügen.",
     },
     summarize_your_project: {
-      en: "Short summary of your project",
+      en: "Short Summary Of Your Project",
       de: "Kurze Zusammenfassung deines Projektes",
+    },
+    summarize_your_event: {
+      en: "Short Overview Of Your Event",
+      de: "Kurzer Überblick über dein Event",
+    },
+    summarize_your_idea: {
+      en: "Short Summary Of Your Idea",
+      de: "Kurze Zusammenfassung deiner Idee",
     },
     briefly_summarise_what_you_are_doing: {
       en: "Briefly summarize what you are doing (up to 280 characters)",
@@ -726,7 +645,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en:
         "Add connections that would be helpful for collaborators to have. Specifically this could be connections to organizations that could help accelerate your project.",
       de:
-        "Füge Connections hinzu, die für Mitarbeitende hilfreich sein könnten. Konkret könnten dies Connections zu Organisationen sein, die dein Projekt beschleunigen könnten.",
+        "Füge Connections hinzu, die für Unterstützende hilfreich sein könnten. Konkret könnten dies Connections zu Organisationen sein, die dein Projekt beschleunigen könnten.",
     },
     search_for_collaborating_organizations: {
       en: "Search for collaborating organizations",
@@ -1027,6 +946,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     event_organized_by: {
       en: "Event organized by",
       de: "Veranstaltung organisiert von",
+    },
+    project_type: {
+      en: "Project Type",
+      de: "Projekttyp",
+    },
+    end_date_must_be_after_start_date: {
+      en: "End date must be after start date",
+      de: "Das Enddatum muss nach dem Startdatum sein",
     },
   };
 }

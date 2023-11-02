@@ -48,7 +48,7 @@ export default function AddSummarySection({
   return (
     <div className={className}>
       <Typography component="h2" variant="subtitle2" color="primary" className={subHeaderClassname}>
-        {texts.summarize_your_project}*
+        {texts["summarize_your_" + projectData.project_type.type_id]}*
         <Tooltip title={helpTexts.short_description} className={toolTipClassName}>
           <IconButton size="large">
             <ToolTipIcon />
@@ -75,7 +75,6 @@ export default function AddSummarySection({
           InputProps={{
             classes: { root: classes.input, input: classes.input, inputMultiline: classes.input },
           }}
-          rows={4}
           value={projectData.short_description}
         />
       </div>
