@@ -1,9 +1,12 @@
-import { IconButton, Theme } from "@mui/material";
+import { IconButton, Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import ShareIcon from "@mui/icons-material/Share";
-import React from "react";
+import React, { useContext } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import SocialMediaShareDialog from "./SocialMediaShareDialog";
+import UserContext from "../context/UserContext";
+import Cookies from "universal-cookie";
+import theme from "../../themes/theme";
 
 const useStyles = makeStyles<Theme, { switchColors?: boolean }>((theme) => ({
   button: (props) => ({
@@ -17,35 +20,33 @@ const useStyles = makeStyles<Theme, { switchColors?: boolean }>((theme) => ({
   }),
 }));
 
-type Props = {
-  containerClassName?: any;
+export type SocialMediaShareButtonProps = {
+  className?: string;
   contentLinkPath?: any;
   apiEndpoint?: any;
-  locale?: any;
-  token?: any;
   messageTitle?: any;
-  tinyScreen?: any;
-  smallScreen?: any;
   mailBody?: any;
   texts?: any;
   dialogTitle?: any;
   switchColors?: any;
 };
+
 export default function SocialMediaShareButton({
-  containerClassName,
+  className,
   contentLinkPath,
   apiEndpoint,
-  locale,
-  token,
   messageTitle,
-  tinyScreen,
-  smallScreen,
   mailBody,
   texts,
   dialogTitle,
   switchColors,
-}: Props) {
+}: SocialMediaShareButtonProps) {
   const classes = useStyles({ switchColors: switchColors });
+  const { locale } = useContext(UserContext);
+  const cookies = new Cookies();
+  const token = cookies.get("token");
+  const isTinyScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
   const [showSocials, setShowSocials] = React.useState(false);
   const toggleShowSocials = (value) => {
@@ -92,7 +93,7 @@ export default function SocialMediaShareButton({
 
   const handleClick = () => {
     //navigator.share (Web Share API) is only available with https
-    if (navigator.share && smallScreen) {
+    if (navigator.share && isSmallScreen) {
       navigator
         .share({
           title: messageTitle,
@@ -109,7 +110,7 @@ export default function SocialMediaShareButton({
 
   return (
     <>
-      <div className={containerClassName}>
+      <div className={className}>
         <IconButton className={classes.button} onClick={handleClick} size="large">
           {/*adjusted viewBox to center the icon*/}
           <ShareIcon viewBox="2 0 24 24" />
@@ -119,7 +120,7 @@ export default function SocialMediaShareButton({
         open={showSocials}
         onClose={toggleShowSocials}
         createShareRecord={createShareRecord}
-        tinyScreen={tinyScreen}
+        tinyScreen={isTinyScreen}
         SHARE_OPTIONS={SHARE_OPTIONS}
         contentLink={contentLink}
         messageTitle={messageTitle}

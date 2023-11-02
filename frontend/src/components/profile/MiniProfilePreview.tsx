@@ -32,10 +32,6 @@ const useStyles = makeStyles((theme) => {
       height: 30,
       width: 30,
     },
-    wrapper: {
-      display: "inline-flex",
-      alignItems: "center",
-    },
     contentWrapper: {
       display: "inline-flex",
       alignItems: "center",
@@ -59,7 +55,7 @@ export default function MiniProfilePreview({
   const { locale } = useContext(UserContext);
   if (!nolink)
     return (
-      <div className={classes.wrapper}>
+      <>
         <Link
           color="inherit"
           href={getLocalePrefix(locale) + "/profiles/" + profile.url_slug}
@@ -73,7 +69,7 @@ export default function MiniProfilePreview({
             <ClearIcon />
           </IconButton>
         )}
-      </div>
+      </>
     );
   else
     return (

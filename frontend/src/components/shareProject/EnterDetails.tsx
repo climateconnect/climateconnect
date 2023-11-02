@@ -2,17 +2,18 @@ import { Container, IconButton, TextField, Tooltip, Typography } from "@mui/mate
 import makeStyles from "@mui/styles/makeStyles";
 import Switch from "@mui/material/Switch";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import getCollaborationTexts from "../../../public/data/collaborationTexts";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-import BottomNavigation from "../general/BottomNavigation";
-import DatePicker from "../general/DatePicker";
-import RadioButtons from "../general/RadioButtons";
+import NavigationButtons from "../general/NavigationButtons";
+import ProjectTimeAndPlaceSection from "./TimeAndPlaceSection";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import AddPhotoSection from "./AddPhotoSection";
 import AddSummarySection from "./AddSummarySection";
 import CollaborateSection from "./CollaborateSection";
+import ProjectNameSection from "./ProjectNameSection";
+import { checkProjectDatesValid } from "../../../public/lib/dateOperations";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -26,7 +27,7 @@ const useStyles = makeStyles((theme) => {
       margin: "0 auto",
     },
     subHeader: {
-      marginBottom: theme.spacing(4),
+      marginBottom: theme.spacing(2),
       fontSize: 20,
     },
     inlineSubHeader: {
@@ -79,29 +80,27 @@ export default function EnterDetails({
   goToNextStep,
   goToPreviousStep,
   skillsOptions,
-  statusOptions,
 }) {
-  const [open, setOpen] = React.useState({
+  const [open, setOpen] = useState({
     avatarDialog: false,
     skillsDialog: false,
     connectionsDialog: false,
+  });
+  const [errors, setErrors] = useState({
+    start_date: "",
+    end_date: "",
   });
   const classes = useStyles(projectData);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: projectData });
   const collaborationTexts = getCollaborationTexts(texts);
   const helpTexts = getHelpTexts(texts);
+  const topRef = useRef(null);
 
-  const statusValues = statusOptions.map((s) => {
-    return {
-      ...s,
-      label: s.name,
-      key: s.name,
-    };
-  });
-
-  const statusesWithStartDate = statusOptions.filter((s) => s.has_start_date).map((s) => s.id);
-  const statusesWithEndDate = statusOptions.filter((s) => s.has_end_date).map((s) => s.id);
+  //scroll to top if there is an error
+  useEffect(() => {
+    topRef?.current.scrollIntoView();
+  }, [errors]);
 
   const onClickPreviousStep = () => {
     goToPreviousStep();
@@ -146,19 +145,16 @@ export default function EnterDetails({
     if (!project.image) {
       alert(texts.please_add_an_image);
       return false;
-    } else return true;
-  };
-
-  const onStatusRadioChange = (newStatus) => {
-    handleSetProjectData({ status: statusOptions.find((s) => s.name === newStatus) });
-  };
-
-  const onStartDateChange = (newDate) => {
-    handleSetProjectData({ start_date: newDate });
-  };
-
-  const onEndDateChange = (newDate) => {
-    handleSetProjectData({ end_date: newDate });
+    }
+    const projectDatesValid = checkProjectDatesValid(project, texts);
+    if (projectDatesValid.error) {
+      setErrors({
+        ...errors,
+        [projectDatesValid.error.key]: projectDatesValid.error.value,
+      });
+      return false;
+    }
+    return true;
   };
 
   const onAllowCollaboratorsChange = (event) => {
@@ -168,53 +164,16 @@ export default function EnterDetails({
   return (
     <>
       <Container maxWidth="lg">
-        <form onSubmit={onClickNextStep}>
-          <Typography
-            component="h2"
-            variant="subtitle2"
-            color="primary"
-            className={classes.subHeader}
-          >
-            {texts.general_information}*
-          </Typography>
-          <div className={classes.block}>
-            <Typography component="h2" variant="subtitle2" className={classes.inlineSubHeader}>
-              {texts.your_project_is}
-            </Typography>
-            <div className={classes.inlineBlock}>
-              <RadioButtons
-                value={projectData.status.name}
-                onChange={onStatusRadioChange}
-                values={statusValues}
-              />
-            </div>
-          </div>
-          <div>
-            <Typography component="h2" variant="subtitle2" className={classes.inlineSubHeader}>
-              {texts.date}
-            </Typography>
-            <div className={classes.inlineBlock}>
-              {statusesWithStartDate.includes(projectData.status.id) && (
-                <DatePicker
-                  className={classes.datePicker}
-                  label={texts.start_date}
-                  date={projectData.start_date}
-                  handleChange={onStartDateChange}
-                  required
-                />
-              )}
-              {statusesWithEndDate.includes(projectData.status.id) && (
-                <DatePicker
-                  className={classes.datePicker}
-                  label={texts.end_date}
-                  date={projectData.end_date}
-                  handleChange={onEndDateChange}
-                  required
-                  minDate={projectData.start_date && new Date(projectData.start_date)}
-                />
-              )}
-            </div>
-          </div>
+        <form ref={topRef} onSubmit={onClickNextStep}>
+          <ProjectNameSection
+            projectData={projectData}
+            handleSetProjectData={handleSetProjectData}
+          />
+          <ProjectTimeAndPlaceSection
+            projectData={projectData}
+            handleSetProjectData={handleSetProjectData}
+            errors={errors}
+          />
           <div className={classes.block}>
             <AddPhotoSection
               projectData={projectData}
@@ -251,14 +210,13 @@ export default function EnterDetails({
                 </IconButton>
               </Tooltip>
             </Typography>
-            <ProjectDescriptionHelp status={projectData.status} />
+            <ProjectDescriptionHelp project_type={projectData.project_type} />
             <TextField
               variant="outlined"
               fullWidth
               multiline
               rows={9}
               onChange={(event) => onDescriptionChange(event, "description")}
-              helperText={texts.describe_your_project_in_detail_please_only_use_language}
               placeholder={texts.describe_your_project_in_more_detail}
               value={projectData.description}
             />
@@ -287,7 +245,7 @@ export default function EnterDetails({
               color="primary"
               className={classes.subHeader}
             >
-              {collaborationTexts.allow[projectData.status.status_type]}
+              {collaborationTexts.allow[projectData.project_type.type_id]}
               <Tooltip title={helpTexts.collaboration} className={classes.tooltip}>
                 <IconButton size="large">
                   <HelpOutlineIcon />
@@ -317,10 +275,11 @@ export default function EnterDetails({
               collaborationTexts={collaborationTexts}
             />
           )}
-          <BottomNavigation
+          <NavigationButtons
             className={classes.block}
             onClickPreviousStep={onClickPreviousStep}
             nextStepButtonType="submit"
+            position="bottom"
           />
         </form>
       </Container>

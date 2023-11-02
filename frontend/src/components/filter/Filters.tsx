@@ -248,6 +248,7 @@ export default function Filters({
                   locationInputRef={locationInputRef}
                   open={locationOptionsOpen}
                   handleSetOpen={handleSetLocationOptionsOpen}
+                  filterMode
                   label={
                     <div className={classes.iconLabel}>
                       <filter.icon fontSize="inherit" />

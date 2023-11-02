@@ -50,6 +50,9 @@ from organization.models import (
     OrganizationFollower,
 )
 
+from organization.models.type import PROJECT_TYPES
+from organization.serializers.status import ProjectTypesSerializer
+
 from organization.models.members import MembershipRequests
 from organization.models.translations import ProjectTranslation
 
@@ -111,6 +114,7 @@ from rest_framework.views import APIView
 
 from organization.utility.requests import MembershipRequestsManager
 from organization.utility import MembershipTarget
+from organization.models.type import ProjectTypesChoices
 
 logger = logging.getLogger(__name__)
 
@@ -405,12 +409,15 @@ class CreateProjectView(APIView):
                         "Project tagging created for project {}".format(project.id)
                     )
 
+        #TODO: completely remove availability
         for member in team_members:
             user_role = roles.filter(id=int(member["role"])).first()
             try:
-                user_availability = Availability.objects.filter(
-                    id=int(member["availability"])
-                ).first()
+                user_availability = None
+                if "availability" in member.keys():
+                    user_availability = Availability.objects.filter(
+                        id=int(member["availability"])
+                    ).first()
             except Availability.DoesNotExist:
                 raise NotFound(
                     detail="Availability not found.", code=status.HTTP_404_NOT_FOUND
@@ -483,6 +490,7 @@ class ProjectAPIView(APIView):
         # Code formatting here. So fields are just pass through so combing them and using setattr method insted.
         pass_through_params = [
             "collaborators_welcome",
+            "additional_loc_info",
             "description",
             "helpful_connections",
             "short_description",
@@ -494,6 +502,9 @@ class ProjectAPIView(APIView):
 
         if "name" in request.data and request.data["name"] != project.name:
             project.name = request.data["name"]
+
+        if "project_type" in request.data:
+            project.project_type = ProjectTypesChoices[request.data["project_type"]]
 
         if "skills" in request.data:
             for skill in project.skills.all():
@@ -834,6 +845,15 @@ class ListProjectStatus(ListAPIView):
 
     def get_queryset(self):
         return ProjectStatus.objects.all()
+
+
+class ListProjectTypeOptions(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        project_type_values = [type for type in PROJECT_TYPES.values()]
+        serializer = ProjectTypesSerializer(project_type_values, many=True) 
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class SetFollowView(APIView):

@@ -782,5 +782,13 @@
   "no_permission": {
     "en": "You do not have permission to do this.",
     "de": "Dir fehlen die Berechtigungen für diese Aktion."
+  },
+  "please_fill_out_this_field": {
+    "en": "Please fill out this field",
+    "de": "Bitte füll dieses Feld aus"
+  },
+  "invalid_value": {
+    "en": "Invalid Value",
+    "de": "Ungültiger Wert"
   }
 }

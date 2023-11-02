@@ -9,6 +9,7 @@ import { applyNewFilters, getInitialFilters } from "../../public/lib/filterOpera
 import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
+  getProjectTypeOptions,
   getSkillsOptions,
   getStatusOptions,
 } from "../../public/lib/getOptions";
@@ -30,6 +31,7 @@ import { retrievePage } from "../../src/utils/webflow";
 import AddIcon from "@mui/icons-material/Add";
 import { Theme } from "@mui/material/styles";
 import theme from "../../src/themes/theme";
+import BrowseContext from "../../src/components/context/BrowseContext";
 
 const useStyles = makeStyles((theme) => ({
   moreInfoSoon: {
@@ -85,6 +87,7 @@ export async function getServerSideProps(ctx) {
     location_filtered_by,
     allHubs,
     hubDescription,
+    projectTypes,
   ] = await Promise.all([
     getHubData(hubUrl, ctx.locale),
     getProjectTagsOptions(hubUrl, ctx.locale),
@@ -94,6 +97,7 @@ export async function getServerSideProps(ctx) {
     getLocationFilteredBy(ctx.query),
     getAllHubs(ctx.locale, false),
     retrieveDescriptionFromWebflow(ctx.query, ctx.locale),
+    getProjectTypeOptions(ctx.locale),
   ]);
 
   return {
@@ -121,6 +125,7 @@ export async function getServerSideProps(ctx) {
       allHubs: allHubs,
       initialIdeaUrlSlug: ideaToOpen ? encodeURIComponent(ideaToOpen) : null,
       hubDescription: hubDescription,
+      projectTypes: projectTypes,
     },
   };
 }
@@ -144,8 +149,8 @@ export default function Hub({
   hubLocation,
   hubData,
   hubDescription,
+  projectTypes,
 }) {
-  console.log(allHubs);
   const classes = useStyles();
   let fabClass = shareProjectFabStyle(false);
   const { locale } = useContext(UserContext);
@@ -255,6 +260,10 @@ export default function Hub({
     });
   };
 
+  const contextValues = {
+    projectTypes: projectTypes,
+  };
+
   return (
     <>
       {hubDescription && hubDescription.headContent && (
@@ -318,34 +327,36 @@ export default function Hub({
             source={image_attribution}
           />
           {!isLocationHub && <BrowseExplainer />}
-          <BrowseContent
-            applyNewFilters={handleApplyNewFilters}
-            contentRef={contentRef}
-            customSearchBarLabels={customSearchBarLabels}
-            errorMessage={errorMessage}
-            hubAmbassador={hubAmbassador}
-            filters={filters}
-            handleUpdateFilterValues={handleUpdateFilterValues}
-            filterChoices={filterChoices}
-            handleSetErrorMessage={handleSetErrorMessage}
-            hideMembers={!isLocationHub}
-            hubName={name}
-            hubProjectsButtonRef={hubProjectsButtonRef}
-            hubQuickInfoRef={hubQuickInfoRef}
-            initialLocationFilter={initialLocationFilter}
-            // TODO: is this still needed?
-            // initialOrganizations={initialOrganizations}
-            // initialProjects={initialProjects}
-            nextStepTriggeredBy={nextStepTriggeredBy}
-            showIdeas={isLocationHub}
-            allHubs={allHubs}
-            initialIdeaUrlSlug={initialIdeaUrlSlug}
-            hubLocation={hubLocation}
-            hubData={hubData}
-            resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
-            hubUrl={hubUrl}
-            tabNavigationRequested={requestTabNavigation}
-          />
+          <BrowseContext.Provider value={contextValues}>
+            <BrowseContent
+              applyNewFilters={handleApplyNewFilters}
+              contentRef={contentRef}
+              customSearchBarLabels={customSearchBarLabels}
+              errorMessage={errorMessage}
+              hubAmbassador={hubAmbassador}
+              filters={filters}
+              handleUpdateFilterValues={handleUpdateFilterValues}
+              filterChoices={filterChoices}
+              handleSetErrorMessage={handleSetErrorMessage}
+              hideMembers={!isLocationHub}
+              hubName={name}
+              hubProjectsButtonRef={hubProjectsButtonRef}
+              hubQuickInfoRef={hubQuickInfoRef}
+              initialLocationFilter={initialLocationFilter}
+              // TODO: is this still needed?
+              // initialOrganizations={initialOrganizations}
+              // initialProjects={initialProjects}
+              nextStepTriggeredBy={nextStepTriggeredBy}
+              showIdeas={isLocationHub}
+              allHubs={allHubs}
+              initialIdeaUrlSlug={initialIdeaUrlSlug}
+              hubLocation={hubLocation}
+              hubData={hubData}
+              resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
+              hubUrl={hubUrl}
+              tabNavigationRequested={requestTabNavigation}
+            />
+          </BrowseContext.Provider>
         </div>
         {isSmallScreen && (
           <Fab

@@ -189,7 +189,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       zIndex: 30,
     },
     loggedInPopper: {
-      zIndex: 30,
+      zIndex: 130,
     },
     normalScreenIcon: {
       fontSize: 20,
@@ -690,7 +690,6 @@ function NarrowScreenLinks({
                 !(!loggedInUser && link.onlyShowLoggedIn)
             ).map((link, index) => {
               const Icon = link.iconForDrawer;
-              console.log(link);
               if (link.type !== "languageSelect") {
                 return (
                   <Link href={localePrefix + link.href} key={index} underline="hover">

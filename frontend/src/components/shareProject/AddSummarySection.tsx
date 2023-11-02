@@ -5,24 +5,31 @@ import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   shortDescriptionWrapper: {
     width: "100%",
-    paddingTop: "56.25%",
-    position: "relative",
+    [theme.breakpoints.up("md")]: {
+      paddingTop: "56.25%",
+      position: "relative",
+    },
   },
   shortDescription: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-    width: "100%",
+    [theme.breakpoints.up("md")]: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      bottom: 0,
+      right: 0,
+      width: "100%",
+    },
   },
-  fullHeight: {
-    height: "100%",
+  input: {
+    [theme.breakpoints.up("md")]: {
+      height: "100%",
+      alignItems: "flex-start",
+    },
   },
-});
+}));
 
 export default function AddSummarySection({
   projectData,
@@ -41,7 +48,7 @@ export default function AddSummarySection({
   return (
     <div className={className}>
       <Typography component="h2" variant="subtitle2" color="primary" className={subHeaderClassname}>
-        {texts.summarize_your_project}*
+        {texts["summarize_your_" + projectData.project_type.type_id]}*
         <Tooltip title={helpTexts.short_description} className={toolTipClassName}>
           <IconButton size="large">
             <ToolTipIcon />
@@ -66,9 +73,8 @@ export default function AddSummarySection({
           onChange={(event) => onDescriptionChange(event, "short_description")}
           className={classes.shortDescription}
           InputProps={{
-            classes: { root: classes.fullHeight, inputMultiline: classes.fullHeight },
+            classes: { root: classes.input, input: classes.input, inputMultiline: classes.input },
           }}
-          rows={2}
           value={projectData.short_description}
         />
       </div>

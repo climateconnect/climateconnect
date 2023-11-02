@@ -16,6 +16,7 @@ import ProjectSubmittedPage from "./ProjectSubmittedPage";
 import SelectCategory from "./SelectCategory";
 import ShareProject from "./ShareProject";
 import { Project } from "../../types";
+import { parseLocation } from "../../../public/lib/locationOperations";
 
 const DEFAULT_STATUS = 2;
 
@@ -37,7 +38,7 @@ const getSteps = (texts) => {
     {
       key: "share",
       text: texts.basic_info,
-      headline: texts.share_a_project,
+      headline: texts.share_your_climate_project,
     },
     {
       key: "selectCategory",
@@ -75,6 +76,7 @@ export default function ShareProjectRoot({
   statusOptions,
   token,
   setMessage,
+  projectTypeOptions,
 }) {
   const classes = useStyles();
   const { locale, locales } = useContext(UserContext);
@@ -88,6 +90,7 @@ export default function ShareProjectRoot({
         role_in_project: "",
       },
       statusOptions,
+      projectTypeOptions,
       userOrganizations,
       locale
     )
@@ -157,7 +160,6 @@ export default function ShareProjectRoot({
     event.preventDefault();
     setLoadingSubmit(true);
     const payload = await formatProjectForRequest(project, translations);
-
     try {
       const resp = await apiRequest({
         method: "post",
@@ -247,15 +249,15 @@ export default function ShareProjectRoot({
             activeStep={curStep.key}
           />
           <Typography variant="h4" color="primary" className={classes.headline}>
-            {curStep.headline ? curStep.headline : project.name}
+            {curStep.headline && curStep.headline}
           </Typography>
           {curStep.key === "share" && (
             <ShareProject
               project={project}
               handleSetProjectData={handleSetProject}
-              goToNextStep={goToNextStep}
               userOrganizations={userOrganizations}
-              setMessage={setMessage}
+              projectTypeOptions={projectTypeOptions}
+              goToNextStep={goToNextStep}
             />
           )}
           {curStep.key === "selectCategory" && (
@@ -339,6 +341,7 @@ export default function ShareProjectRoot({
 const getDefaultProjectValues = (
   loggedInUser,
   statusOptions,
+  projectTypeOptions,
   userOrganizations,
   locale
 ): Project => {
@@ -356,18 +359,20 @@ const getDefaultProjectValues = (
     team_members: [{ ...loggedInUser }],
     website: "",
     language: locale,
+    project_type: projectTypeOptions.find((t) => t.type_id === "project"),
   };
 };
 
 const formatProjectForRequest = async (project, translations) => {
   return {
     ...project,
+    loc: parseLocation(project.loc, true),
     status: project.status.id,
     skills: project.skills.map((s) => s.key),
     team_members: project.team_members.map((m) => ({
       url_slug: m.url_slug,
       role: m.role.id,
-      availability: m.availability.id,
+      availability: m.availability?.id,
       id: m.id,
       role_in_project: m.role_in_project,
     })),

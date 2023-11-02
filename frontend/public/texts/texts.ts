@@ -1,5 +1,5 @@
 import { ClassNameMap } from "@mui/styles";
-import { User, CcLocale } from "../../src/types";
+import { User, CcLocale, Project } from "../../src/types";
 import getAboutTexts from "./about_texts";
 import account_texts from "./account_texts.json";
 import activate_email from "./activate_email.json";
@@ -58,7 +58,7 @@ type Args<P extends Page> = {
   organization?: string;
   page: P;
   profile?: string;
-  project?: string;
+  project?: Project;
   url_slug?: string;
   user?: User;
   climateMatchQuestion?: string;

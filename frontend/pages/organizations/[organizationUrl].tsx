@@ -255,7 +255,6 @@ function OrganizationLayout({
       isOwnAccount={canEdit}
       isOrganization={true}
       editText={texts.edit_organization}
-      isTinyScreen={isTinyScreen}
       isSmallScreen={isSmallScreen}
     >
       {!user && (

@@ -5,7 +5,7 @@ import { apiRequest } from "../../../public/lib/apiOperations";
 import getProjectTexts from "../../../public/texts/project_texts";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-import BottomNavigation from "../general/BottomNavigation";
+import NavigationButtons from "../general/NavigationButtons";
 import ButtonLoader from "../general/ButtonLoader";
 
 const useStyles = makeStyles((theme) => ({
@@ -208,7 +208,7 @@ export default function TranslateProject({
               />
             ))}
         </div>
-        <BottomNavigation
+        <NavigationButtons
           className={classes.block}
           onClickPreviousStep={onClickPreviousStep}
           nextStepButtonType="publish"

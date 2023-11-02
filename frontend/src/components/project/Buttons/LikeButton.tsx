@@ -1,6 +1,6 @@
 import { Button, CircularProgress, IconButton, Link, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React from "react";
+import React, { MouseEventHandler } from "react";
 import ButtonIcon from "../../general/ButtonIcon";
 
 const useStyles = makeStyles((theme) => ({
@@ -74,17 +74,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type Args = {
+  isUserLiking: boolean;
+  handleToggleLikeProject: MouseEventHandler<HTMLButtonElement>;
+  texts: any;
+  toggleShowLikes: Function;
+  likingChangePending: boolean;
+  hasAdminPermissions?: boolean;
+  screenSize?: any;
+  numberOfLikes: number;
+  bindLike?: Function;
+};
+
 export default function LikeButton({
   isUserLiking,
   handleToggleLikeProject,
   texts,
   toggleShowLikes,
   likingChangePending,
-  hasAdminPermissions,
+  hasAdminPermissions = false,
   screenSize,
   numberOfLikes,
   bindLike,
-}) {
+}: Args) {
   const classes = useStyles({ likingChangePending: likingChangePending });
 
   if (screenSize?.belowSmall) {

@@ -18,6 +18,8 @@ import WideLayout from "../src/components/layouts/WideLayout";
 import ExplainerBox from "../src/components/staticpages/ExplainerBox";
 import StartNowBanner from "../src/components/staticpages/StartNowBanner";
 import { CcLocale } from "../src/types";
+import { getProjectTypeOptions } from "../public/lib/getOptions";
+import BrowseContext from "../src/components/context/BrowseContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -100,6 +102,7 @@ export default function Index() {
   const [showScrollToTop, setShowScrollToTop] = useState(false);
   //holds projects, organizations and hubs
   const [elements, setElements] = useState<any>({});
+  const [contextValues, setContextValues] = useState<any>({});
   useEffect(() => {
     const initialize = async () => {
       if (!initialized && isLoading) {
@@ -120,6 +123,12 @@ export default function Index() {
           organizations: organizations,
           hubs: hubs,
         });
+
+        const projectTypes = await getProjectTypeOptions(locale);
+        setContextValues({
+          projectTypes: projectTypes,
+        });
+
         setInitialized(true);
         setIsLoading(false);
       }
@@ -138,64 +147,64 @@ export default function Index() {
   const contentRef = useRef<HTMLDivElement | null>(null);
   const scrollToTopRef = useRef(null);
 
-  const scrollToContent = () => contentRef.current!.scrollIntoView({ behavior: "smooth" });
-
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   return (
-    <WideLayout
-      /*TODO(unused) hideTitle */
-      fixedHeader
-      transparentHeader={pos === "top"}
-      noFeedbackButton
-      noSpaceBottom
-      largeFooter
-      landingPage
-    >
-      <div className={`${classes.root} ${isLoading && classes.hideOverFlowY}`}>
-        <LandingTopBox /*TODO(unused) scrollToContent={scrollToContent}  */ />
-        <div className={classes.lowerPart}>
-          <div id="info" ref={contentRef} className={classes.contentRef} />
-          <ExplainerBox h1ClassName={classes.h1ClassName} className={classes.explainerBox} />
-          <ProjectsSharedBox
-            projects={elements.projects}
-            className={classes.projectsSharedBox}
-            isLoading={isLoading}
-          />
-          <PitchBox h1ClassName={classes.h1ClassName} className={classes.pitchBox} />
-          <div className={classes.signUpButtonContainer}>
-            <Button
-              href={getLocalePrefix(locale) + "/signup"}
-              variant="contained"
-              color="primary"
-              size="large"
-              className={classes.signUpButton}
-            >
-              {texts.sign_up_and_make_a_change}
-            </Button>
+    <BrowseContext.Provider value={contextValues}>
+      <WideLayout
+        /*TODO(unused) hideTitle */
+        fixedHeader
+        transparentHeader={pos === "top"}
+        noFeedbackButton
+        noSpaceBottom
+        largeFooter
+        landingPage
+      >
+        <div className={`${classes.root} ${isLoading && classes.hideOverFlowY}`}>
+          <LandingTopBox />
+          <div className={classes.lowerPart}>
+            <div id="info" ref={contentRef} className={classes.contentRef} />
+            <ExplainerBox h1ClassName={classes.h1ClassName} className={classes.explainerBox} />
+            <ProjectsSharedBox
+              projects={elements.projects}
+              className={classes.projectsSharedBox}
+              isLoading={isLoading}
+            />
+            <PitchBox h1ClassName={classes.h1ClassName} className={classes.pitchBox} />
+            <div className={classes.signUpButtonContainer}>
+              <Button
+                href={getLocalePrefix(locale) + "/signup"}
+                variant="contained"
+                color="primary"
+                size="large"
+                className={classes.signUpButton}
+              >
+                {texts.sign_up_and_make_a_change}
+              </Button>
+            </div>
+            <HubsBox isLoading={isLoading} hubs={elements.hubs} />
+            <JoinCommunityBox h1ClassName={classes.h1ClassName} />
+            <OrganizationsSharedBox isLoading={isLoading} organizations={elements.organizations} />
+            {process.env.DONATION_CAMPAIGN_RUNNING && (
+              <DonationsBanner h1ClassName={classes.h1ClassName} />
+            )}
+            <OurTeamBox h1ClassName={classes.h1ClassName} />
+            <StartNowBanner h1ClassName={classes.h1ClassName} />
           </div>
-          <HubsBox isLoading={isLoading} hubs={elements.hubs} />
-          <JoinCommunityBox h1ClassName={classes.h1ClassName} />
-          <OrganizationsSharedBox isLoading={isLoading} organizations={elements.organizations} />
-          {process.env.DONATION_CAMPAIGN_RUNNING && (
-            <DonationsBanner h1ClassName={classes.h1ClassName} />
+          {showScrollToTop && (
+            <IconButton
+              aria-label="scroll to top"
+              className={classes.scrollToTop}
+              onClick={scrollToTop}
+              ref={scrollToTopRef}
+              size="large"
+            >
+              <ArrowUpwardIcon />
+            </IconButton>
           )}
-          <OurTeamBox h1ClassName={classes.h1ClassName} />
-          <StartNowBanner h1ClassName={classes.h1ClassName} />
         </div>
-        {showScrollToTop && (
-          <IconButton
-            aria-label="scroll to top"
-            className={classes.scrollToTop}
-            onClick={scrollToTop}
-            ref={scrollToTopRef}
-            size="large"
-          >
-            <ArrowUpwardIcon />
-          </IconButton>
-        )}
-      </div>
-    </WideLayout>
+      </WideLayout>
+    </BrowseContext.Provider>
   );
 }
 

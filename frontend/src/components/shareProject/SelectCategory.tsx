@@ -3,7 +3,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-import BottomNavigation from "../general/BottomNavigation";
+import NavigationButtons from "../general/NavigationButtons";
 import MultiLevelSelector from "../general/MultiLevelSelector";
 
 const useStyles = makeStyles((theme) => {
@@ -85,7 +85,7 @@ export default function SelectCategory({
           dragAble={true}
         />
       </div>
-      <BottomNavigation
+      <NavigationButtons
         className={classes.block}
         onClickPreviousStep={onClickPreviousStep}
         onClickNextStep={onClickNextStep}

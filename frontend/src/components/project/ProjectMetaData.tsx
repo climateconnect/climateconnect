@@ -11,6 +11,8 @@ import ProjectCategoriesDisplay from "./ProjectCategoriesDisplay";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import { Project } from "../../types";
+import BrowseContext from "../context/BrowseContext";
+import ProjectTypeDisplay from "./ProjectTypeDisplay";
 
 const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
   creatorImage: {
@@ -20,10 +22,10 @@ const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
   },
   creator: {
     wordBreak: "break-word",
+    marginBottom: theme.spacing(0.25),
   },
   cardIcon: {
     verticalAlign: "bottom",
-
     marginRight: theme.spacing(0.5),
     marginLeft: theme.spacing(-0.25),
     fontSize: "default",
@@ -77,11 +79,16 @@ const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
   additionalInfoCounter: {
     marginLeft: theme.spacing(0.5),
   },
+  typeIcon: {
+    width: 20,
+    height: 20,
+    marginLeft: 2,
+    marginRight: 6,
+  },
 }));
 
 type Props = { project: Project; hovering: boolean; withDescription?: boolean };
 export default function ProjectMetaData({ project, hovering, withDescription }: Props) {
-  const classes = useStyles({ hovering: hovering });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const project_parent = project.project_parents![0];
@@ -201,7 +208,7 @@ const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_pa
           <MiniOrganizationPreview
             className={classes.creator}
             organization={project_parent.parent_organization}
-            size="small"
+            size="tiny"
             nolink
           />
           {collaborating_organizations.length > 0 && (
@@ -214,7 +221,7 @@ const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_pa
                   key={index}
                   className={classes.creator}
                   organization={co.collaborating_organization}
-                  size="small"
+                  size="tiny"
                   nolink
                   doNotShowName
                 />
@@ -238,13 +245,14 @@ const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_pa
 
 const AdditionalPreviewInfo = ({ project }) => {
   const classes = useStyles({});
-  //only display additional preview info if the project has a significant number of likes/comments
-  if (project.number_of_comments < 3 && project.number_of_likes < 3) {
-    return <></>;
-  }
+  const { projectTypes } = useContext(BrowseContext);
+  const projectType =
+    projectTypes && projectTypes.length > 0
+      ? projectTypes.find((t) => t.type_id === project.project_type)
+      : { name: project.project_type.name };
   return (
     <Box className={classes.additionalInfoContainer}>
-      {project.number_of_comments > 2 && (
+      {project.number_of_comments > 0 && (
         <Box className={classes.additionalInfoIcon}>
           <ModeCommentIcon color="primary" />
           <span className={classes.additionalInfoCounter}> {project.number_of_comments} </span>
@@ -257,9 +265,17 @@ const AdditionalPreviewInfo = ({ project }) => {
         </Box>
       )}
       <Box className={classes.additionalInfoIcon}>
-        {" • "}
-        <div className={classes.horizontalSpacing} />
-        {project.status}
+        {(project.number_of_comments > 0 || project.number_of_likes > 2) && (
+          <>
+            {" • "}
+            <div className={classes.horizontalSpacing} />
+          </>
+        )}
+        <ProjectTypeDisplay
+          projectType={projectType}
+          iconClassName={classes.typeIcon}
+          textClassName={classes.metadataText}
+        />
       </Box>
     </Box>
   );

@@ -65,10 +65,54 @@ export function getNameFromLocation(location) {
   };
 }
 
+const getCityOrCountyName = (address) => {
+  const cityElementOrder = [
+    "city",
+    "place",
+    "boundary",
+    "town",
+    "village",
+    "place",
+    "municipality",
+    "county",
+    "state_district",
+    "province",
+    "administrative",
+    "state",
+    "region",
+  ];
+  return getFirstPart(address, cityElementOrder);
+};
+
+export function getNameFromExactLocation(location) {
+  //If the location object is empty, just return an empty string
+  if (Object.keys(location).length === 0) {
+    return "";
+  }
+  const isConcretePlace = isExactLocation(location);
+  const firstPart =
+    isConcretePlace && (location.address[location.class] || location.address[location.type])
+      ? `${location.address[location.class] || location.address[location.type]}, `
+      : "";
+  const middlePart =
+    isConcretePlace && location.address.road
+      ? `${location.address.road}${
+          location.address.house_number ? " " + location.address.house_number : ""
+        }, `
+      : "";
+  const cityAndCountry = `${getCityOrCountyName(location.address)}, ${location.address.country}`;
+  const name = firstPart + middlePart + cityAndCountry;
+  return {
+    name: name || location.display_name || "test",
+    city: getCityOrCountyName(location.address),
+    state: location.address.state,
+    country: location.address.country,
+  };
+}
+
 const getFirstPart = (address, order) => {
   for (const el of order) {
     if (address[el]) {
-      console.log(el);
       if (el === "state") return address[el] + " (state)";
       if (el === "municipality") return address[el] + " (municipality)";
       return address[el];
@@ -110,8 +154,46 @@ export function isLocationValid(location) {
   else return true;
 }
 
-export function parseLocation(location) {
-  const location_object = getNameFromLocation(location);
+export function isExactLocation(location) {
+  const placeClasses = [
+    "amenity",
+    "building",
+    "historic",
+    "tourism",
+    "landuse",
+    "leisure",
+    "place",
+    "highway",
+    "office",
+  ];
+  return placeClasses.includes(location.class);
+}
+
+//Sometimes the Nominatim API does not return any "geojson" for points
+//For these cases we reconstruct it by assuming it's a point with lat and lon as coordinates
+const generateGeoJson = (location) => {
+  return {
+    type: "Point",
+    coordinates: [parseFloat(location.lon), parseFloat(location.lat)],
+  };
+};
+
+const getLocationType = (location) => {
+  if (!location) return;
+  if (location.added_manually) {
+    return location.type;
+  }
+  //If Nominatim does not provice a geojson we assume the location is a Point
+  if (!location.geojson) {
+    return "Point";
+  }
+  return location.geojson.type;
+};
+
+export function parseLocation(location, isConcretePlace = false) {
+  const location_object = isConcretePlace
+    ? getNameFromExactLocation(location)
+    : getNameFromLocation(location);
   //don't return anything if in legacy mode
   if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
     return location;
@@ -120,10 +202,26 @@ export function parseLocation(location) {
   if (typeof location === "object" && alreadyParsed(location)) {
     return location;
   }
+
+  //placeName is the name of the concrete building, e.g. "City Hall"
+  let placeName: string = "";
+
+  if (isConcretePlace && (location.address[location.class] || location.address[location.type])) {
+    placeName = location.address[location.class] || location.address[location.type];
+  }
+
+  //For exact locations we also want the address in the format `<streetname> <number>`
+  let exactAddress: string = "";
+
+  if (isConcretePlace && location.address.road) {
+    exactAddress =
+      location.address.road +
+      (location.address.house_number ? ` ${location.address.house_number}` : "");
+  }
   return {
-    type: location.added_manually ? location.type : location?.geojson?.type,
+    type: getLocationType(location),
     coordinates: location?.geojson?.coordinates,
-    geojson: location?.geojson,
+    geojson: location.geojson ? location.geojson : generateGeoJson(location),
     place_id: location?.place_id,
     osm_id: location?.osm_id,
     name: location_object.name,
@@ -132,6 +230,10 @@ export function parseLocation(location) {
     city: location_object.city,
     state: location_object.state,
     country: location_object.country,
+    place_name: placeName,
+    exact_address: exactAddress,
+    additional_info: location?.additionalInfoText || location?.additionalInfo,
+    is_exact_location: isConcretePlace,
   };
 }
 
@@ -146,6 +248,10 @@ const props = [
   "country",
   "lon",
   "lat",
+  "place_name",
+  "exact_address",
+  "additional_info",
+  "is_exact_location",
 ];
 const alreadyParsed = (location) => {
   for (const prop of props) {

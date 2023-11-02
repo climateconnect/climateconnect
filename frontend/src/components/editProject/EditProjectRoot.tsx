@@ -2,28 +2,37 @@ import { Container, Divider, Typography, useMediaQuery } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import Router from "next/router";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import Cookies from "universal-cookie";
 
 import { apiRequest } from "../../../public/lib/apiOperations";
+import { checkProjectDatesValid } from "../../../public/lib/dateOperations";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
-import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
+import {
+  indicateWrongLocation,
+  isLocationValid,
+  parseLocation,
+} from "../../../public/lib/locationOperations";
 import {
   getTranslationsFromObject,
   getTranslationsWithoutRedundantKeys,
 } from "../../../public/lib/translationOperations";
 import getTexts from "../../../public/texts/texts";
+import { Project, Role } from "../../types";
 import UserContext from "../context/UserContext";
-import BottomNavigation from "../general/BottomNavigation";
+import NavigationButtons from "../general/NavigationButtons";
 import TranslateTexts from "../general/TranslateTexts";
 import EditProjectContent from "./EditProjectContent";
 import EditProjectOverview from "./EditProjectOverview";
+import TranslateIcon from "@mui/icons-material/Translate";
+import SaveAsIcon from "@mui/icons-material/SaveAs";
 
 const useStyles = makeStyles((theme) => {
   return {
     divider: {
       marginBottom: theme.spacing(2),
     },
-    bottomNavigation: {
+    navigationButtons: {
       marginTop: theme.spacing(3),
       minHeight: theme.spacing(2),
     },
@@ -34,22 +43,35 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
+type Props = {
+  project: Project;
+  skillsOptions: any;
+  userOrganizations: any;
+  statusOptions: any;
+  handleSetProject: any;
+  tagsOptions: any;
+  oldProject: Project;
+  user_role: Role;
+  handleSetErrorMessage: any;
+  initialTranslations: any;
+  projectTypeOptions: any;
+};
+
 export default function EditProjectRoot({
   project,
   skillsOptions,
   userOrganizations,
-  statusOptions,
   handleSetProject,
   tagsOptions,
-  token,
   oldProject,
-  user,
   user_role,
   handleSetErrorMessage,
   initialTranslations,
-}) {
+  projectTypeOptions,
+}: Props) {
   const classes = useStyles();
-  const { locale, locales } = useContext(UserContext);
+  const token = new Cookies().get("auth_token");
+  const { locale, locales, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
@@ -65,20 +87,39 @@ export default function EditProjectRoot({
   const [translations, setTranslations] = useState(
     initialTranslations ? getTranslationsFromObject(initialTranslations, "project") : {}
   );
+  const [errors, setErrors] = useState({
+    start_date: "",
+    end_date: "",
+  });
+  const contentRef = useRef(null);
 
   const sourceLanguage = project.language ? project.language : locale;
   const targetLanguage = locales.find((l) => l !== sourceLanguage);
+
+  //scroll to error if there is an error
+  useEffect(() => {
+    if (errors?.start_date || errors?.end_date) {
+      contentRef?.current.scrollIntoView();
+    }
+  }, [errors]);
 
   // TODO: Allow changing sourceLanguage, targetLanguage
 
   const handleSetLocationOptionsOpen = (bool) => {
     setLocationOptionsOpen(bool);
   };
-
   const checkIfProjectValid = (isDraft) => {
     if (project?.loc && oldProject?.loc !== project.loc && !isLocationValid(project.loc)) {
       overviewInputsRef.current!.scrollIntoView();
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, handleSetErrorMessage, texts);
+      return false;
+    }
+    const projectDatesValid = checkProjectDatesValid(project, texts);
+    if (projectDatesValid.error) {
+      setErrors({
+        ...errors,
+        [projectDatesValid.error.key]: projectDatesValid.error.value,
+      });
       return false;
     }
     if (isDraft && Object.keys(draftReqiredProperties).filter((key) => !project[key]).length > 0) {
@@ -140,6 +181,7 @@ export default function EditProjectRoot({
       text: texts.check_translations,
       argument: "save",
       onClick: onCheckTranslations,
+      icon: TranslateIcon,
     },
   ];
 
@@ -148,6 +190,7 @@ export default function EditProjectRoot({
       text: texts.save_changes_as_draft,
       argument: "save",
       onClick: onSaveDraft,
+      icon: SaveAsIcon,
     });
   }
 
@@ -277,6 +320,15 @@ export default function EditProjectRoot({
     <Container>
       {step === "edit_project" ? (
         <form onSubmit={handleSubmit}>
+          {!isNarrowScreen && (
+            <NavigationButtons
+              position="top"
+              onClickCancel={handleCancel}
+              additionalButtons={additionalButtons}
+              nextStepButtonType={project.is_draft ? "publish" : "save"}
+              className={classes.navigationButtons}
+            />
+          )}
           <EditProjectOverview
             tagsOptions={tagsOptions}
             project={project}
@@ -290,18 +342,22 @@ export default function EditProjectRoot({
           <EditProjectContent
             project={project}
             handleSetProject={handleSetProject}
-            statusOptions={statusOptions}
             userOrganizations={userOrganizations}
             skillsOptions={skillsOptions}
             user_role={user_role}
             deleteProject={deleteProject}
+            errors={errors}
+            contentRef={contentRef}
+            projectTypeOptions={projectTypeOptions}
           />
           <Divider className={classes.divider} />
-          <BottomNavigation
+          <NavigationButtons
+            position="bottom"
             onClickCancel={handleCancel}
             additionalButtons={additionalButtons}
             nextStepButtonType={project.is_draft ? "publish" : "save"}
-            className={classes.bottomNavigation}
+            className={classes.navigationButtons}
+            fixedOnMobile
           />
         </form>
       ) : (
@@ -343,7 +399,9 @@ const parseProjectForRequest = async (project, translationChanges) => {
     ...project,
     translations: translationChanges,
   };
+  if (project.project_type) ret.project_type = project.project_type.type_id;
   if (project.image) ret.image = await blobFromObjectUrl(project.image);
+  if (project.loc) ret.loc = parseLocation(project.loc, true);
   if (project.thumbnail_image)
     ret.thumbnail_image = await blobFromObjectUrl(project.thumbnail_image);
   if (project.skills) ret.skills = project.skills.map((s) => s.id);

@@ -47,6 +47,8 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
   }),
 }));
 import { NOTIFICATION_TYPES } from "../../src/components/communication/notifications/Notification";
+import { getProjectTypeOptions } from "../../public/lib/getOptions";
+import BrowseContext from "../../src/components/context/BrowseContext";
 
 const parseComments = (comments) => {
   return comments
@@ -124,6 +126,21 @@ export default function ProjectPage({
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [showSimilarProjects, setShowSimilarProjects] = useState(true);
+  const [projectTypes, setProjectTypes] = useState([]);
+
+  const retrieveAndSetProjectTypes = async () => {
+    const projectTypeOptions = await getProjectTypeOptions(locale);
+    setProjectTypes(projectTypeOptions);
+  };
+
+  useEffect(function () {
+    retrieveAndSetProjectTypes();
+  }, []);
+
+  const contextValues = {
+    projectTypes: projectTypes,
+  };
+
   const classes = useStyles({
     showSimilarProjects: showSimilarProjects,
   });
@@ -144,8 +161,8 @@ export default function ProjectPage({
     await refreshNotifications();
   };
 
-  useEffect(async () => {
-    await handleReadNotifications(NOTIFICATION_TYPES.indexOf("org_project_published"));
+  useEffect(() => {
+    handleReadNotifications(NOTIFICATION_TYPES.indexOf("org_project_published"));
   }, [
     notifications.length !== 0,
   ]); /* end of removing bell icon notification 
@@ -209,52 +226,59 @@ export default function ProjectPage({
       messageType={message?.messageType}
       title={project ? project.name : texts.project + " " + texts.not_found}
       subHeader={
-        !tinyScreen && (
+        !tinyScreen ? (
           <HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef} onlyShowDropDown={true} />
+        ) : (
+          <></>
         )
       }
       image={project ? getImageUrl(project.image) : undefined}
     >
-      {project ? (
-        <div className={classes.contentWrapper}>
-          <div className={classes.mainContent}>
-            <ProjectPageRoot
-              project={{ ...project, team: members, timeline_posts: posts, comments: curComments }}
-              token={token}
-              setMessage={setMessage}
-              isUserFollowing={isUserFollowing}
-              user={user}
-              setCurComments={setCurComments}
-              followingChangePending={followingChangePending}
-              likingChangePending={likingChangePending}
-              projectAdmin={members?.find((m) => m.permission === ROLE_TYPES.all_type)}
-              isUserLiking={isUserLiking}
-              numberOfLikes={numberOfLikes}
-              numberOfFollowers={numberOfFollowers}
-              handleFollow={handleFollow}
-              handleLike={handleLike}
-              similarProjects={similarProjects}
-              handleHideContent={handleHideContent}
-              showSimilarProjects={showSimilarProjects}
-              requestedToJoinProject={requestedToJoinProject}
-              handleJoinRequest={handleJoinRequest}
-            />
-          </div>
-          <div className={classes.secondaryContent}>
-            {!smallScreenSize && (
-              <ProjectSideBar
+      <BrowseContext.Provider value={contextValues}>
+        {project ? (
+          <div className={classes.contentWrapper}>
+            <div className={classes.mainContent}>
+              <ProjectPageRoot
+                project={{
+                  ...project,
+                  team: members,
+                  timeline_posts: posts,
+                  comments: curComments,
+                }}
+                setMessage={setMessage}
+                isUserFollowing={isUserFollowing}
+                setCurComments={setCurComments}
+                followingChangePending={followingChangePending}
+                likingChangePending={likingChangePending}
+                projectAdmin={members?.find((m) => m.permission === ROLE_TYPES.all_type)}
+                isUserLiking={isUserLiking}
+                numberOfLikes={numberOfLikes}
+                numberOfFollowers={numberOfFollowers}
+                handleFollow={handleFollow}
+                handleLike={handleLike}
                 similarProjects={similarProjects}
                 handleHideContent={handleHideContent}
                 showSimilarProjects={showSimilarProjects}
-                locale={locale}
-                texts={texts}
+                requestedToJoinProject={requestedToJoinProject}
+                handleJoinRequest={handleJoinRequest}
               />
-            )}
+            </div>
+            <div className={classes.secondaryContent}>
+              {!smallScreenSize && (
+                <ProjectSideBar
+                  similarProjects={similarProjects}
+                  handleHideContent={handleHideContent}
+                  showSimilarProjects={showSimilarProjects}
+                  locale={locale}
+                  texts={texts}
+                />
+              )}
+            </div>
           </div>
-        </div>
-      ) : (
-        <PageNotFound itemName={texts.project} />
-      )}
+        ) : (
+          <PageNotFound itemName={texts.project} />
+        )}
+      </BrowseContext.Provider>
     </WideLayout>
   );
 }
@@ -393,6 +417,8 @@ function parseProject(project) {
     website: project.website,
     number_of_followers: project.number_of_followers,
     number_of_likes: project.number_of_likes,
+    project_type: project.project_type,
+    additional_loc_info: project.additional_loc_info,
   };
 }
 

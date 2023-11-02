@@ -5,11 +5,18 @@ import Truncate from "react-truncate";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
+import BrowseContext from "../context/BrowseContext";
 import UserContext from "../context/UserContext";
 import ProjectMetaData from "./ProjectMetaData";
+import EventDateIndicator from "./EventDateIndicator";
 
 const useStyles = makeStyles((theme) => {
   return {
+    wrapper: {
+      position: "relative",
+      height: "100%",
+      paddingTop: theme.spacing(0.25),
+    },
     root: {
       "&:hover": {
         cursor: "pointer",
@@ -22,7 +29,6 @@ const useStyles = makeStyles((theme) => {
       backgroundColor: theme.palette.background.default,
       borderRadius: 3,
       boxShadow: "3px 3px 8px #E0E0E0",
-
       position: "relative",
       height: "100%",
       display: "flex",
@@ -103,6 +109,11 @@ const useStyles = makeStyles((theme) => {
 export default function ProjectPreview({ project, projectRef, hubUrl, className }: any) {
   const [hovering, setHovering] = React.useState(false);
   const { locale } = useContext(UserContext);
+  const { projectTypes } = useContext(BrowseContext);
+  const projectType =
+    projectTypes && projectTypes.length > 0
+      ? projectTypes.find((t) => t.type_id === project.project_type)
+      : { name: project.project_type };
   const texts = getTexts({ page: "project", locale: locale });
   const classes = useStyles({ hovering: hovering });
   const handleMouseEnter = () => {
@@ -111,7 +122,6 @@ export default function ProjectPreview({ project, projectRef, hubUrl, className 
   const handleMouseLeave = () => {
     setHovering(false);
   };
-
   const queryString = hubUrl ? "?hubPage=" + hubUrl : "";
   return (
     <Link
@@ -123,35 +133,38 @@ export default function ProjectPreview({ project, projectRef, hubUrl, className 
       className={classes.noUnderline}
       underline="hover"
     >
-      <Card
-        className={`${classes.root} ${className}`}
-        variant="outlined"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        ref={projectRef}
-      >
-        <CardMedia
-          /*TODO(undefined) className={classes.media} */
-          title={project.name}
-          image={getImageUrl(project.image)}
+      <div className={classes.wrapper}>
+        {projectType.type_id === "event" && <EventDateIndicator project={project} />}
+        <Card
+          className={`${classes.root} ${className}`}
+          variant="outlined"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          ref={projectRef}
         >
-          {project.is_draft ? (
-            <div className={classes.draftTriangle}>
-              <div className={classes.draftText}>Draft</div>
-            </div>
-          ) : (
-            <img
-              src={getImageUrl(project.image)}
-              className={classes.placeholderImg}
-              alt={texts.project_image_of_project + " " + project.name}
-            />
-          )}
-        </CardMedia>
-        <div className={classes.cardContentWrapper}>
-          <CardContentWithDescription project={project} hovering={hovering} />
-          <CardContentWithoutDescription project={project} hovering={hovering} />
-        </div>
-      </Card>
+          <CardMedia
+            /*TODO(undefined) className={classes.media} */
+            title={project.name}
+            image={getImageUrl(project.image)}
+          >
+            {project.is_draft ? (
+              <div className={classes.draftTriangle}>
+                <div className={classes.draftText}>Draft</div>
+              </div>
+            ) : (
+              <img
+                src={getImageUrl(project.image)}
+                className={classes.placeholderImg}
+                alt={texts.project_image_of_project + " " + project.name}
+              />
+            )}
+          </CardMedia>
+          <div className={classes.cardContentWrapper}>
+            <CardContentWithDescription project={project} hovering={hovering} />
+            <CardContentWithoutDescription project={project} hovering={hovering} />
+          </div>
+        </Card>
+      </div>
     </Link>
   );
 }

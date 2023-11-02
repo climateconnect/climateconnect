@@ -1,16 +1,19 @@
 import { Button, Container, Link, Tooltip, Typography } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
+import Linkify from "react-linkify";
+import React, { MouseEventHandler, RefObject, useContext, useEffect, useState } from "react";
+
+//icons
 import ExploreIcon from "@mui/icons-material/Explore";
 import LanguageIcon from "@mui/icons-material/Language";
-import Linkify from "react-linkify";
 import PlaceIcon from "@mui/icons-material/Place";
-import React, { useEffect, useState } from "react";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
 // Relative imports
-import { apiRequest } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 import { getParams } from "../../../public/lib/generalOperations";
+import { getDateTimeRange } from "../../../public/lib/dateOperations";
 import ContactCreatorButton from "./Buttons/ContactCreatorButton";
 import FollowButton from "../general/FollowButton";
 import getTexts from "../../../public/texts/texts";
@@ -20,8 +23,10 @@ import MessageContent from "../communication/MessageContent";
 import FollowersDialog from "../dialogs/FollowersDialog";
 import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
-import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
-import { getMembershipRequests } from "../../../public/lib/projectOperations";
+import UserContext from "../context/UserContext";
+import { Project } from "../../types";
+import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMediaShareButton";
+import ProjectTypeDisplay from "./ProjectTypeDisplay";
 
 type StyleProps = { hasAdminPermissions?: boolean };
 
@@ -111,10 +116,33 @@ const componentDecorator = (href, text, key) => (
   </Link>
 );
 
+type Props = {
+  contactProjectCreatorButtonRef?: React.RefObject<typeof Button>;
+  followers: object; //merge like & follow?
+  followingChangePending: boolean; //merge like & follow?
+  handleClickContact: Function; //--> Call external function?
+  handleToggleFollowProject: MouseEventHandler<HTMLButtonElement>; //merge like & follow?
+  handleToggleLikeProject: MouseEventHandler<HTMLButtonElement>; //merge like & follow?
+  hasAdminPermissions: boolean;
+  initiallyCaughtFollowers: boolean; //merge like & follow?
+  initiallyCaughtLikes: boolean; //merge like & follow?
+  isUserFollowing: boolean; //merge like & follow?
+  isUserLiking: boolean; //merge like & follow?
+  likes: object; //merge like & follow?
+  likingChangePending: boolean; //merge like & follow?
+  numberOfFollowers: number; //merge like & follow?; calculate from followers
+  numberOfLikes: number; //merge like & follow?; calculate from likes;
+  project: Project;
+  projectAdmin: object;
+  screenSize: any;
+  showFollowers: boolean; //merge like & follow?
+  showLikes: boolean; //merge like & follow?
+  toggleShowFollowers: Function; //merge like & follow?
+  toggleShowLikes: Function; //merge like & follow?
+};
+
 export default function ProjectOverview({
-  apiEndpointShareButton,
   contactProjectCreatorButtonRef,
-  dialogTitleShareButton,
   followers,
   followingChangePending,
   handleClickContact,
@@ -127,27 +155,21 @@ export default function ProjectOverview({
   isUserLiking,
   likes,
   likingChangePending,
-  locale,
-  mailBodyShareButton,
-  messageTitleShareButton,
   numberOfFollowers,
   numberOfLikes,
   project,
   projectAdmin,
-  projectLinkPath,
   screenSize,
   showFollowers,
   showLikes,
   toggleShowFollowers,
   toggleShowLikes,
-  token,
-  user,
-}) {
+}: Props) {
   const classes = useStyles({});
-
+  const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
-
   const [gotParams, setGotParams] = useState(false);
+
   useEffect(() => {
     if (!gotParams) {
       const params = getParams(window.location.href);
@@ -158,53 +180,34 @@ export default function ProjectOverview({
     }
   }, []);
 
+  const passThroughProps = {
+    projectAdmin: projectAdmin,
+    project: project,
+    screenSize: screenSize
+  }
+
   return (
     <Container className={classes.projectOverview}>
-      {screenSize?.belowSmall ? (
-        <SmallScreenOverview
-          contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
-          followingChangePending={followingChangePending}
-          handleClickContact={handleClickContact}
-          handleToggleFollowProject={handleToggleFollowProject}
+      {screenSize?.belowSmall ? 
+        <SmallScreenOverview {...passThroughProps}/> 
+      : 
+        <LargeScreenOverview 
+          {...passThroughProps}
           hasAdminPermissions={hasAdminPermissions}
-          isUserFollowing={isUserFollowing}
-          project={project}
-          texts={texts}
-          toggleShowFollowers={toggleShowFollowers}
-          numberOfFollowers={numberOfFollowers}
-          user={user}
-          dialogTitleShareButton={dialogTitleShareButton}
-        />
-      ) : (
-        <LargeScreenOverview
-          apiEndpointShareButton={apiEndpointShareButton}
-          contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
-          dialogTitleShareButton={dialogTitleShareButton}
-          followingChangePending={followingChangePending}
           handleClickContact={handleClickContact}
-          handleToggleFollowProject={handleToggleFollowProject}
-          handleToggleLikeProject={handleToggleLikeProject}
-          hasAdminPermissions={hasAdminPermissions}
-          isUserFollowing={isUserFollowing}
+          contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
           isUserLiking={isUserLiking}
-          likes={likes}
-          likingChangePending={likingChangePending}
-          locale={locale}
-          mailBodyShareButton={mailBodyShareButton}
-          messageTitleShareButton={messageTitleShareButton}
-          numberOfFollowers={numberOfFollowers}
-          numberOfLikes={numberOfLikes}
-          project={project}
-          projectAdmin={projectAdmin}
-          projectLinkPath={projectLinkPath}
-          screenSize={screenSize}
-          texts={texts}
-          toggleShowFollowers={toggleShowFollowers}
+          handleToggleLikeProject={handleToggleLikeProject}
           toggleShowLikes={toggleShowLikes}
-          token={token}
-          user={user}
+          likingChangePending={likingChangePending}
+          numberOfLikes={numberOfLikes}
+          isUserFollowing={isUserFollowing}
+          handleToggleFollowProject={handleToggleFollowProject}
+          toggleShowFollowers={toggleShowFollowers}
+          followingChangePending={followingChangePending}
+          numberOfFollowers={numberOfFollowers}
         />
-      )}
+      }
 
       <FollowersDialog
         open={showFollowers}
@@ -235,28 +238,65 @@ export default function ProjectOverview({
   );
 }
 
-function SmallScreenOverview({
-  apiEndpointShareButton,
-  contactProjectCreatorButtonRef,
-  dialogTitleShareButton,
-  followingChangePending,
-  handleClickContact,
-  handleToggleFollowProject,
-  hasAdminPermissions,
-  isUserFollowing,
-  locale,
-  mailBodyShareButton,
-  messageTitleShareButton,
-  project,
-  projectLinkPath,
-  screenSize,
-  texts,
-  toggleShowFollowers,
-  token,
-  user,
-  numberOfFollowers,
+function ShortProjectInfo({
+  project
 }) {
   const classes = useStyles({});
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale, project: project });
+  return (
+    <>
+      <Typography component="div" className={classes.shortDescription}>
+        <MessageContent content={project.short_description} />
+      </Typography>
+      <div className={classes.projectInfoEl}>
+        <Typography>
+          <Tooltip title={texts.location}>
+            <PlaceIcon color="primary" className={classes.icon} />
+          </Tooltip>{" "}
+          {project.location}
+          {project.additional_loc_info && <> - {project.additional_loc_info}</>}
+        </Typography>
+      </div>
+      {project.project_type?.type_id === "event" && (
+        <div className={classes.projectInfoEl}>
+          <Typography>
+            <Tooltip title={texts.event_start_date}>
+              <CalendarTodayIcon color="primary" className={classes.icon} />
+            </Tooltip>{" "}
+            {getDateTimeRange(project.start_date, project.end_date, locale)}
+          </Typography>
+        </div>
+      )}
+      {project.website && (
+        <div className={classes.projectInfoEl}>
+          <Typography>
+            <Tooltip title={texts.website}>
+              <LanguageIcon color="primary" className={classes.icon} />
+            </Tooltip>{" "}
+            <Linkify componentDecorator={componentDecorator}>{project.website}</Linkify>
+          </Typography>
+        </div>
+      )}
+      <div className={classes.projectInfoEl}>
+        <Typography>
+          <Tooltip title={texts.categories}>
+            <ExploreIcon color="primary" className={classes.icon} />
+          </Tooltip>{" "}
+          {project.tags.join(", ")}
+        </Typography>
+      </div>
+      <div className={classes.projectInfoEl}>
+        <ProjectTypeDisplay projectType={project.project_type} />
+      </div>
+    </>
+  );
+}
+
+function SmallScreenOverview({screenSize, project, projectAdmin}) {
+  const classes = useStyles({});
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale, project: project });
 
   return (
     <>
@@ -269,18 +309,10 @@ function SmallScreenOverview({
             locale={locale}
           />
         )}
-        <SocialMediaShareButton
-          containerClassName={classes.shareButtonContainer}
-          contentLinkPath={projectLinkPath}
-          apiEndpoint={apiEndpointShareButton}
-          locale={locale}
-          token={token}
-          messageTitle={messageTitleShareButton}
-          tinyScreen={screenSize?.belowTiny}
-          smallScreen={screenSize?.belowSmall}
-          mailBody={mailBodyShareButton}
-          texts={texts}
-          dialogTitle={dialogTitleShareButton}
+        <ProjectSocialMediaShareButton
+          className={classes.shareButtonContainer}
+          project={project}
+          projectAdmin={projectAdmin}
         />
         <img
           className={classes.fullWidthImage}
@@ -292,90 +324,33 @@ function SmallScreenOverview({
         <Typography component="h1" variant="h3" className={classes.smallScreenHeader}>
           {project.name}
         </Typography>
-
-        <Typography className={classes.shortDescription}>{project?.short_description}</Typography>
-
-        <div className={classes.projectInfoEl}>
-          <Typography>
-            <Tooltip title={texts.location}>
-              <PlaceIcon color="primary" className={classes.icon} />
-            </Tooltip>{" "}
-            {project.location}
-          </Typography>
-        </div>
-        {project.website && (
-          <div className={classes.projectInfoEl}>
-            <Typography>
-              <Tooltip title={texts.website}>
-                <LanguageIcon color="primary" className={classes.icon} />
-              </Tooltip>{" "}
-              <Linkify componentDecorator={componentDecorator}>{project.website}</Linkify>
-            </Typography>
-          </div>
-        )}
-        <div className={classes.projectInfoEl}>
-          <Typography>
-            <Tooltip title={texts.categories}>
-              <ExploreIcon color="primary" className={classes.icon} />
-            </Tooltip>{" "}
-            {project.tags.join(", ")}
-          </Typography>
-        </div>
-        <div className={classes.infoBottomBar}>
-          <FollowButton
-            isLoggedIn={user}
-            isUserFollowing={isUserFollowing}
-            handleToggleFollow={handleToggleFollowProject}
-            project={project}
-            hasAdminPermissions={hasAdminPermissions}
-            toggleShowFollowers={toggleShowFollowers}
-            followingChangePending={followingChangePending}
-            numberOfFollowers={numberOfFollowers}
-            texts={texts}
-            showStartIcon
-            showNumberInText
-          />
-
-          {!hasAdminPermissions && (
-            <Button
-              className={classes.contactProjectButton}
-              variant="contained"
-              color="primary"
-              onClick={handleClickContact}
-              ref={contactProjectCreatorButtonRef}
-            >
-              {texts.contact}
-            </Button>
-          )}
-        </div>
+        <ShortProjectInfo project={project}/>
       </div>
     </>
   );
 }
 
 function LargeScreenOverview({
-  contactProjectCreatorButtonRef,
-  followingChangePending,
-  handleClickContact,
-  handleToggleFollowProject,
-  handleToggleLikeProject,
-  hasAdminPermissions,
-  isUserFollowing,
-  isUserLiking,
-  likes,
-  likingChangePending,
-  numberOfFollowers,
-  numberOfLikes,
-  project,
+  project, 
   projectAdmin,
+  hasAdminPermissions, 
   screenSize,
-  texts,
-  toggleShowFollowers,
+  handleClickContact,
+  contactProjectCreatorButtonRef,
+  isUserLiking, 
+  handleToggleLikeProject,
   toggleShowLikes,
-  user,
+  likingChangePending,
+  numberOfLikes,
+  isUserFollowing,
+  handleToggleFollowProject,
+  toggleShowFollowers,
+  followingChangePending,
+  numberOfFollowers,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
-
+  const { locale, user } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale, project: project });
   return (
     <>
       <div className={classes.headerContainer}>
@@ -393,42 +368,12 @@ function LargeScreenOverview({
           <Typography component="h2" variant="h5" className={classes.subHeader}>
             {texts.summary}
           </Typography>
-          <Typography component="div" className={classes.shortDescription}>
-            <MessageContent content={project?.short_description} />
-          </Typography>
-          <div className={classes.projectInfoEl}>
-            <Typography>
-              <Tooltip title={texts.location}>
-                <PlaceIcon color="primary" className={classes.icon} />
-              </Tooltip>{" "}
-              {project.location}
-            </Typography>
-          </div>
-          {project.website && (
-            <div className={classes.projectInfoEl}>
-              <Typography>
-                <Tooltip title={texts.website}>
-                  <LanguageIcon color="primary" className={classes.icon} />
-                </Tooltip>{" "}
-                <Linkify componentDecorator={componentDecorator}>{project.website}</Linkify>
-              </Typography>
-            </div>
-          )}
-          <div className={classes.projectInfoEl}>
-            <Typography>
-              <Tooltip title={texts.categories}>
-                <ExploreIcon color="primary" className={classes.icon} />
-              </Tooltip>{" "}
-              {project.tags.join(", ")}
-            </Typography>
-          </div>
+          <ShortProjectInfo project={project}/>
           <div className={classes.infoBottomBar}>
             <LikeButton
               texts={texts}
               isUserLiking={isUserLiking}
               handleToggleLikeProject={handleToggleLikeProject}
-              project={project}
-              likes={likes}
               toggleShowLikes={toggleShowLikes}
               likingChangePending={likingChangePending}
               screenSize={screenSize}
@@ -436,13 +381,12 @@ function LargeScreenOverview({
               numberOfLikes={numberOfLikes}
             />
             <FollowButton
-              isLoggedIn={user}
+              isLoggedIn={!!user}
               followingChangePending={followingChangePending}
               handleToggleFollow={handleToggleFollowProject}
               hasAdminPermissions={hasAdminPermissions}
               isUserFollowing={isUserFollowing}
               numberOfFollowers={numberOfFollowers}
-              project={project}
               screenSize={screenSize}
               texts={texts}
               toggleShowFollowers={toggleShowFollowers}

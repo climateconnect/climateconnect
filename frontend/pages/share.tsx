@@ -2,6 +2,7 @@ import NextCookies from "next-cookies";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest, sendToLogin } from "../public/lib/apiOperations";
+import { getProjectTypeOptions } from "../public/lib/getOptions";
 import { nullifyUndefinedValues } from "../public/lib/profileOperations";
 import { parseOptions } from "../public/lib/selectOptionsOperations";
 import getTexts from "../public/texts/texts";
@@ -24,6 +25,7 @@ export async function getServerSideProps(ctx) {
     skillsOptions,
     rolesOptions,
     statusOptions,
+    projectTypeOptions,
   ] = await Promise.all([
     getAvailabilityOptions(auth_token, ctx.locale),
     getUserOrganizations(auth_token, ctx.locale),
@@ -31,6 +33,7 @@ export async function getServerSideProps(ctx) {
     getSkillsOptions(auth_token, ctx.locale),
     getRolesOptions(auth_token, ctx.locale),
     getStatusOptions(auth_token, ctx.locale),
+    getProjectTypeOptions(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -40,6 +43,7 @@ export async function getServerSideProps(ctx) {
       skillsOptions: skillsOptions,
       rolesOptions: rolesOptions,
       statusOptions: statusOptions,
+      projectTypeOptions: projectTypeOptions,
     }),
   };
 }
@@ -51,6 +55,7 @@ export default function Share({
   skillsOptions,
   rolesOptions,
   statusOptions,
+  projectTypeOptions,
 }) {
   const token = new Cookies().get("auth_token");
   const { user, locale } = useContext(UserContext);
@@ -82,6 +87,7 @@ export default function Share({
           statusOptions={statusOptions}
           token={token}
           setMessage={handleSetErrorMessage}
+          projectTypeOptions={projectTypeOptions}
         />
       </WideLayout>
     );

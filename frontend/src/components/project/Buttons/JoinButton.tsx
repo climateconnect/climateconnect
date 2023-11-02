@@ -59,13 +59,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type Props = {
+  hasAdminPermissions?: Boolean;
+  screenSize?: any;
+  handleSendProjectJoinRequest: Function;
+  requestedToJoin: boolean;
+  className?: string;
+};
+
 export default function JoinButton({
   hasAdminPermissions,
   screenSize,
   handleSendProjectJoinRequest,
   requestedToJoin,
   className,
-}) {
+}: Props) {
   const classes = useStyles();
 
   const { locale } = useContext(UserContext);
