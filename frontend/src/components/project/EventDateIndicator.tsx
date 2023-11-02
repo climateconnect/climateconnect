@@ -4,7 +4,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import { getDateAndTime, getDayAndMonth, getTime } from "../../../public/lib/dateOperations";
 
 const useStyles = makeStyles((theme) => ({
-  eventDateIndicator: (props) => ({
+  eventDateIndicator: (props: any) => ({
     position: "absolute",
     top: 0,
     right: 20,
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     lineHeight: 1,
   },
-  text: (props) => ({
+  text: (props: any) => ({
     color: props.isInPast && theme.palette.secondary.main,
   }),
 }));
@@ -35,7 +35,7 @@ export default function EventDateIndicator({ project }) {
   const end_date = new Date(project.end_date);
   const classes = useStyles({ isInPast: new Date() > end_date });
   const ONE_DAY_IN_MILISECONDS = 1000 * 60 * 60 * 24;
-  const event_duration = end_date - start_date;
+  const event_duration = end_date.getTime() - start_date.getTime();
   const isMultiDayEvent =
     start_date.getDate() !== start_date.getDate() || event_duration > ONE_DAY_IN_MILISECONDS;
 

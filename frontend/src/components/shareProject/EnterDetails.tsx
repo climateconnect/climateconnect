@@ -95,11 +95,13 @@ export default function EnterDetails({
   const texts = getTexts({ page: "project", locale: locale, project: projectData });
   const collaborationTexts = getCollaborationTexts(texts);
   const helpTexts = getHelpTexts(texts);
-  const topRef = useRef(null);
+  const topRef = useRef<null | HTMLFormElement>(null);
 
   //scroll to top if there is an error
   useEffect(() => {
-    topRef?.current.scrollIntoView();
+    if (topRef?.current) {
+      topRef.current.scrollIntoView();
+    }
   }, [errors]);
 
   const onClickPreviousStep = () => {

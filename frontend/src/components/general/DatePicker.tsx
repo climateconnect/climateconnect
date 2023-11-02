@@ -45,7 +45,7 @@ export default function DatePicker({
     slotProps: {
       textField: {
         helperText: error,
-        error: error,
+        error: !!error,
       },
     },
   };

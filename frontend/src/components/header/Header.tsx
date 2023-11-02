@@ -456,7 +456,7 @@ function NormalScreenLinks({
   texts,
   isStaticPage,
 }) {
-  const { locale } = useContext(UserContext)
+  const { locale } = useContext(UserContext);
   const localePrefix = getLocalePrefix(locale);
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
   const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
@@ -571,7 +571,7 @@ function NarrowScreenLinks({
   LINKS,
   texts,
 }) {
-  const { locale } = useContext(UserContext)
+  const { locale } = useContext(UserContext);
   const localePrefix = getLocalePrefix(locale);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const openDrawer = setIsDrawerOpen.bind(null, true);

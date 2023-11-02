@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => {
   return {
     navigationButtonWrapper: (props: any) => ({
       marginTop: props.position !== "top" ? theme.spacing(10) : theme.spacing(6),
-      marginBottom: props.position === "top" && theme.spacing(4),
+      marginBottom: props.position === "top" ? theme.spacing(4) : 0,
       display: "flex",
       flexWrap: "wrap",
       justifyContent: "space-between",
@@ -30,12 +30,12 @@ const useStyles = makeStyles((theme) => {
     backButton: {
       color: theme.palette.primary.main,
     },
-    nextStepButtonsContainer: (props: any) => ({
+    nextStepButtonsContainer: {
       [theme.breakpoints.down("sm")]: {
         display: "flex",
         justifyContent: "space-between",
       },
-    }),
+    },
     draftButton: {
       marginRight: theme.spacing(2),
     },
@@ -56,11 +56,11 @@ const useStyles = makeStyles((theme) => {
 
 type Args = {
   className?: string;
-  onClickPreviousStep?: MouseEventHandler<HTMLAnchorElement>;
+  onClickPreviousStep?: MouseEventHandler<HTMLButtonElement>;
   onClickCancel?: Function;
   nextStepButtonType?: "submit" | "save" | "publish";
-  onClickNextStep?: MouseEventHandler<HTMLAnchorElement>;
-  saveAsDraft?: Function;
+  onClickNextStep?: MouseEventHandler<HTMLButtonElement>;
+  saveAsDraft?: MouseEventHandler<HTMLButtonElement>;
   additionalButtons?: any;
   loadingSubmit?: boolean;
   loadingSubmitDraft?: boolean;
@@ -200,7 +200,7 @@ function NextButtons({
   fixedOnMobile,
   isNarrowScreen,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({});
   if (nextStepButtonType === "submit")
     return (
       <Button variant="contained" color="primary" type="submit">

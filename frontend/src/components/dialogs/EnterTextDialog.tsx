@@ -12,6 +12,17 @@ const useStyles = makeStyles({
   },
 });
 
+type Props = {
+  onClose: any;
+  open: boolean;
+  title: any;
+  inputLabel: any;
+  applyText: any;
+  applyIcon?: any;
+  maxLength: any;
+  className: any;
+};
+
 export default function EnterTextDialog({
   onClose,
   open,
@@ -21,7 +32,7 @@ export default function EnterTextDialog({
   applyIcon,
   maxLength,
   className,
-}) {
+}: Props) {
   const classes = useStyles();
   const [element, setElement] = React.useState(null);
   const { locale } = useContext(UserContext);

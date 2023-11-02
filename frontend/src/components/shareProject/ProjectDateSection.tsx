@@ -40,7 +40,7 @@ export default function ProjectDateSection({ projectData, handleSetProjectData, 
 
   type DateChangeProp = "start_date" | "end_date";
   //TODO: Make sure end date is after start date (in both frontend and backend)
-  const handleDateChange = (value: Dayjs, prop: DateChangeProp) => {
+  const handleDateChange = (value: Dayjs | any, prop: DateChangeProp) => {
     const noEndDateSet = prop === "start_date" && !isNaN(value?.$d) && !projectData.end_date;
     //This only does a check if we're changing the start date
     const endDateBeforeStartDate =

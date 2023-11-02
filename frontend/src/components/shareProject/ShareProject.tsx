@@ -43,7 +43,7 @@ type Args = {
   handleSetProjectData: Function;
   goToNextStep: Function;
   userOrganizations: Array<Organization>;
-  projectTypeOptions: Object;
+  projectTypeOptions: any;
 };
 
 export default function Share({

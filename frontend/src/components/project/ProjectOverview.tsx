@@ -183,15 +183,15 @@ export default function ProjectOverview({
   const passThroughProps = {
     projectAdmin: projectAdmin,
     project: project,
-    screenSize: screenSize
-  }
+    screenSize: screenSize,
+  };
 
   return (
     <Container className={classes.projectOverview}>
-      {screenSize?.belowSmall ? 
-        <SmallScreenOverview {...passThroughProps}/> 
-      : 
-        <LargeScreenOverview 
+      {screenSize?.belowSmall ? (
+        <SmallScreenOverview {...passThroughProps} />
+      ) : (
+        <LargeScreenOverview
           {...passThroughProps}
           hasAdminPermissions={hasAdminPermissions}
           handleClickContact={handleClickContact}
@@ -207,7 +207,7 @@ export default function ProjectOverview({
           followingChangePending={followingChangePending}
           numberOfFollowers={numberOfFollowers}
         />
-      }
+      )}
 
       <FollowersDialog
         open={showFollowers}
@@ -238,9 +238,7 @@ export default function ProjectOverview({
   );
 }
 
-function ShortProjectInfo({
-  project
-}) {
+function ShortProjectInfo({ project }) {
   const classes = useStyles({});
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
@@ -293,7 +291,7 @@ function ShortProjectInfo({
   );
 }
 
-function SmallScreenOverview({screenSize, project, projectAdmin}) {
+function SmallScreenOverview({ screenSize, project, projectAdmin }) {
   const classes = useStyles({});
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
@@ -324,20 +322,20 @@ function SmallScreenOverview({screenSize, project, projectAdmin}) {
         <Typography component="h1" variant="h3" className={classes.smallScreenHeader}>
           {project.name}
         </Typography>
-        <ShortProjectInfo project={project}/>
+        <ShortProjectInfo project={project} />
       </div>
     </>
   );
 }
 
 function LargeScreenOverview({
-  project, 
+  project,
   projectAdmin,
-  hasAdminPermissions, 
+  hasAdminPermissions,
   screenSize,
   handleClickContact,
   contactProjectCreatorButtonRef,
-  isUserLiking, 
+  isUserLiking,
   handleToggleLikeProject,
   toggleShowLikes,
   likingChangePending,
@@ -368,7 +366,7 @@ function LargeScreenOverview({
           <Typography component="h2" variant="h5" className={classes.subHeader}>
             {texts.summary}
           </Typography>
-          <ShortProjectInfo project={project}/>
+          <ShortProjectInfo project={project} />
           <div className={classes.infoBottomBar}>
             <LikeButton
               texts={texts}

@@ -1,5 +1,5 @@
 //Lists all static page links. Expects navigation_texts
-export function getStaticPageLinks(texts, locale, isStaticPage=false) {
+export function getStaticPageLinks(texts, locale, isStaticPage = false) {
   const links = [
     {
       href: "/about",
@@ -8,7 +8,7 @@ export function getStaticPageLinks(texts, locale, isStaticPage=false) {
     {
       href: "/donate",
       text: texts.donate,
-      only_show_on_static_page: true
+      only_show_on_static_page: true,
     },
     {
       href: "/team",
@@ -19,7 +19,7 @@ export function getStaticPageLinks(texts, locale, isStaticPage=false) {
       href: "/verein",
       text: texts.association,
       parent_item: "/about",
-      only_show_in_languages: ["de"]
+      only_show_in_languages: ["de"],
     },
     {
       href: "/join",
@@ -49,14 +49,16 @@ export function getStaticPageLinks(texts, locale, isStaticPage=false) {
       text: texts.faq,
     },
   ];
-  if(locale) {
-    return links.filter(l => {
-      if((!l.only_show_in_languages || l.only_show_in_languages.includes(locale)) &&
-      (!l.only_show_on_static_page || isStaticPage)) {
-        return l
+  if (locale) {
+    return links.filter((l) => {
+      if (
+        (!l.only_show_in_languages || l.only_show_in_languages.includes(locale)) &&
+        (!l.only_show_on_static_page || isStaticPage)
+      ) {
+        return l;
       }
-    })
+    });
   } else {
-    return links
+    return links;
   }
 }

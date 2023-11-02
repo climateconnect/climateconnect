@@ -13,7 +13,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
-  additionalInfos: (props) => ({
+  additionalInfos: (props: any) => ({
     width: "100%",
     marginTop: props.hideHelperText ? 0 : theme.spacing(2),
   }),
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type Props = {
-  label?: string | Element;
+  label?: any;
   required?: boolean;
   helperText?: string;
   inputClassName?;
@@ -79,7 +79,8 @@ export default function LocationSearchBar({
       return inputValue ? inputValue : "";
     } else if (typeof newValue === "object") {
       if (enableExactLocation) {
-        return getNameFromExactLocation(newValue).name;
+        const nameObj = getNameFromExactLocation(newValue);
+        return nameObj === "" ? nameObj : nameObj.name;
       } else {
         return newValue.name ? newValue.name : newValue.simple_name;
       }
@@ -181,13 +182,18 @@ export default function LocationSearchBar({
               data.push(option);
             }
           }
-          const options = data.map((o) => ({
-            ...o,
-            simple_name: enableExactLocation
-              ? getNameFromExactLocation(o).name
-              : getNameFromLocation(o).name,
-            key: o.place_id,
-          }));
+          const options = data.map((o) => {
+            const nameObj = getNameFromExactLocation(o);
+            return {
+              ...o,
+              simple_name: enableExactLocation
+                ? (nameObj === ""
+                  ? nameObj
+                  : nameObj.name)
+                : getNameFromLocation(o).name,
+              key: o.place_id,
+            };
+          });
           setOptions(getOptionsWithoutRedundancies(options));
           setLoading(false);
         }

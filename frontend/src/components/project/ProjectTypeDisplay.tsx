@@ -2,7 +2,7 @@ import { Typography, Theme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     display: "flex",
     alignItems: "center",
@@ -34,7 +34,7 @@ export default function ProjectTypeDisplay({
     <div className={`${className} ${classes.root}`}>
       <img
         src={`/images/project_types/${projectType.type_id}.png`}
-        className={iconClassName ? iconClassName : `${classes.typeIcon} ${classes.cardIcon}`}
+        className={iconClassName ? iconClassName : classes.typeIcon}
       />
       <Typography className={textClassName}>{projectType.name}</Typography>
     </div>
