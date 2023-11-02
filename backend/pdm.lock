@@ -21,9 +21,12 @@ dependencies = [
 
 [[package]]
 name = "asgiref"
-version = "3.5.0"
+version = "3.7.2"
 requires_python = ">=3.7"
 summary = "ASGI specs, helper code, and adapters"
+dependencies = [
+    "typing-extensions>=4; python_version < \"3.11\"",
+]
 
 [[package]]
 name = "async-timeout"
@@ -63,12 +66,26 @@ version = "1.1.25"
 summary = "Microsoft Azure Client Library for Python (Common)"
 
 [[package]]
-name = "azure-storage-blob"
-version = "2.1.0"
-summary = "Microsoft Azure Storage Blob Client Library for Python"
+name = "azure-core"
+version = "1.29.5"
+requires_python = ">=3.7"
+summary = "Microsoft Azure Core Library for Python"
 dependencies = [
-    "azure-common>=1.1.5",
-    "azure-storage-common~=2.1",
+    "requests>=2.18.4",
+    "six>=1.11.0",
+    "typing-extensions>=4.6.0",
+]
+
+[[package]]
+name = "azure-storage-blob"
+version = "12.18.3"
+requires_python = ">=3.7"
+summary = "Microsoft Azure Blob Storage Client Library for Python"
+dependencies = [
+    "azure-core<2.0.0,>=1.28.0",
+    "cryptography>=2.1.4",
+    "isodate>=0.6.1",
+    "typing-extensions>=4.3.0",
 ]
 
 [[package]]
@@ -251,7 +268,7 @@ summary = "Decorators for Humans"
 
 [[package]]
 name = "django"
-version = "3.2.18"
+version = "3.2.23"
 requires_python = ">=3.6"
 summary = "A high-level Python Web framework that encourages rapid development and clean, pragmatic design."
 dependencies = [
@@ -454,6 +471,14 @@ name = "install"
 version = "1.3.5"
 requires_python = ">=2.7, >=3.5"
 summary = "Install packages from within code"
+
+[[package]]
+name = "isodate"
+version = "0.6.1"
+summary = "An ISO 8601 date/time/duration parser and formatter"
+dependencies = [
+    "six",
+]
 
 [[package]]
 name = "kombu"
@@ -784,9 +809,9 @@ summary = "Compatibility API between asyncio/Twisted/Trollius"
 
 [[package]]
 name = "typing-extensions"
-version = "4.3.0"
-requires_python = ">=3.7"
-summary = "Backported and Experimental Type Hints for Python 3.7+"
+version = "4.8.0"
+requires_python = ">=3.8"
+summary = "Backported and Experimental Type Hints for Python 3.8+"
 
 [[package]]
 name = "tzdata"
@@ -873,7 +898,7 @@ dependencies = [
 lock_version = "4.2"
 cross_platform = true
 groups = ["default", "dev"]
-content_hash = "sha256:8e9429bf355a886e73576a9fa3895b9f264ec4d3726579634f5564c052d4e323"
+content_hash = "sha256:dc1f35eba8b0d166a255be0f8f3495fa213d9ab8fbf31156b195caffecca54f6"
 
 [metadata.files]
 "aioredis 1.3.1" = [
@@ -884,9 +909,9 @@ content_hash = "sha256:8e9429bf355a886e73576a9fa3895b9f264ec4d3726579634f5564c05
     {url = "https://files.pythonhosted.org/packages/98/40/c6ea25c5c701634a0bd700a9362185f7f0981f52a406f30dc320ea27ae31/amqp-5.0.9.tar.gz", hash = "sha256:1e5f707424e544078ca196e72ae6a14887ce74e02bd126be54b7c03c971bef18"},
     {url = "https://files.pythonhosted.org/packages/b9/80/76cc2ce4789c91394f43e0e78d86be5738b5223d106c11d78bacc260a559/amqp-5.0.9-py3-none-any.whl", hash = "sha256:9cd81f7b023fc04bbb108718fbac674f06901b77bfcdce85b10e2a5d0ee91be5"},
 ]
-"asgiref 3.5.0" = [
-    {url = "https://files.pythonhosted.org/packages/0b/9f/5f3b91391578312827561b669a0397d58535b4e82966c8f1667525c7d563/asgiref-3.5.0-py3-none-any.whl", hash = "sha256:88d59c13d634dcffe0510be048210188edd79aeccb6a6c9028cdad6f31d730a9"},
-    {url = "https://files.pythonhosted.org/packages/ea/2b/3face3a7241f61dc1c58dbe243cc02c15c61ccdcafebc4406f7bb40ce731/asgiref-3.5.0.tar.gz", hash = "sha256:2f8abc20f7248433085eda803936d98992f1343ddb022065779f37c5da0181d0"},
+"asgiref 3.7.2" = [
+    {url = "https://files.pythonhosted.org/packages/12/19/64e38c1c2cbf0da9635b7082bbdf0e89052e93329279f59759c24a10cc96/asgiref-3.7.2.tar.gz", hash = "sha256:9e0ce3aa93a819ba5b45120216b23878cf6e8525eb3848653452b4192b92afed"},
+    {url = "https://files.pythonhosted.org/packages/9b/80/b9051a4a07ad231558fcd8ffc89232711b4e618c15cb7a392a17384bbeef/asgiref-3.7.2-py3-none-any.whl", hash = "sha256:89b2ef2247e3b562a16eef663bc0e2e703ec6468e2fa8a5cd61cd449786d4f6e"},
 ]
 "async-timeout 3.0.1" = [
     {url = "https://files.pythonhosted.org/packages/a1/78/aae1545aba6e87e23ecab8d212b58bb70e72164b67eb090b81bb17ad38e3/async-timeout-3.0.1.tar.gz", hash = "sha256:0c3c816a028d47f659d6ff5c745cb2acf1f966da1fe5c19c77a70282b25f4c5f"},
@@ -908,9 +933,13 @@ content_hash = "sha256:8e9429bf355a886e73576a9fa3895b9f264ec4d3726579634f5564c05
     {url = "https://files.pythonhosted.org/packages/7e/c5/27ebe1f286036f0fda02274d57f3303d3e3cbac09e188b5faa47d3649488/azure-common-1.1.25.zip", hash = "sha256:ce0f1013e6d0e9faebaf3188cc069f4892fc60a6ec552e3f817c1a2f92835054"},
     {url = "https://files.pythonhosted.org/packages/e5/4d/d000fc3c5af601d00d55750b71da5c231fcb128f42ac95b208ed1091c2c1/azure_common-1.1.25-py2.py3-none-any.whl", hash = "sha256:fd02e4256dc9cdd2d4422bc795bdca2ef302f7a86148b154fbf4ea1f09da400a"},
 ]
-"azure-storage-blob 2.1.0" = [
-    {url = "https://files.pythonhosted.org/packages/0e/76/bd6eadc0f2b481bcfb43c37caacf77372401fc013c1431861561b794e06a/azure-storage-blob-2.1.0.tar.gz", hash = "sha256:b90323aad60f207f9f90a0c4cf94c10acc313c20b39403398dfba51f25f7b454"},
-    {url = "https://files.pythonhosted.org/packages/3e/84/610f379b46d7d3c2d48eadeed6a12b6d46a43100fea70534f5992d0ac996/azure_storage_blob-2.1.0-py2.py3-none-any.whl", hash = "sha256:a8e91a51d4f62d11127c7fd8ba0077385c5b11022f0269f8a2a71b9fc36bef31"},
+"azure-core 1.29.5" = [
+    {url = "https://files.pythonhosted.org/packages/9c/f8/1cf23a75cb8c2755c539ac967f3a7f607887c4979d073808134803720f0f/azure_core-1.29.5-py3-none-any.whl", hash = "sha256:0fa04b7b1f7d44a4fb8468c4093deb2ea01fdf4faddbf802ed9205615f99d68c"},
+    {url = "https://files.pythonhosted.org/packages/e3/39/328faea9f656075dbb8ecf70f1a4697bc80510fcc70e3e8f0090c34fc00c/azure-core-1.29.5.tar.gz", hash = "sha256:52983c89d394c6f881a121e5101c5fa67278ca3b1f339c8fb2ef39230c70e9ac"},
+]
+"azure-storage-blob 12.18.3" = [
+    {url = "https://files.pythonhosted.org/packages/9d/f5/4ec0b5b3a99f6a4bb5c82f8dbab121bcd892c355ae363140558a164cff08/azure-storage-blob-12.18.3.tar.gz", hash = "sha256:d8ced0deee3367fa3d4f3d1a03cd9edadf4440c0a371f503d623fa6c807554ee"},
+    {url = "https://files.pythonhosted.org/packages/be/cd/30306c04f962b55cae44cab2859b5496d0d75521a3bf2e92ec4a6bb61ddb/azure_storage_blob-12.18.3-py3-none-any.whl", hash = "sha256:c278dde2ac41857a68d615c9f2b36d894ba877a7e84d62795603c7e79d0bb5e9"},
 ]
 "azure-storage-common 2.1.0" = [
     {url = "https://files.pythonhosted.org/packages/48/12/e074fe454bc327fbe2a61e20d3260473ee4a0fd85387baf249dc83c8e774/azure-storage-common-2.1.0.tar.gz", hash = "sha256:ccedef5c67227bc4d6670ffd37cec18fb529a1b7c3a5e53e4096eb0cf23dc73f"},
@@ -1104,9 +1133,9 @@ content_hash = "sha256:8e9429bf355a886e73576a9fa3895b9f264ec4d3726579634f5564c05
     {url = "https://files.pythonhosted.org/packages/66/0c/8d907af351aa16b42caae42f9d6aa37b900c67308052d10fdce809f8d952/decorator-5.1.1.tar.gz", hash = "sha256:637996211036b6385ef91435e4fae22989472f9d571faba8927ba8253acbc330"},
     {url = "https://files.pythonhosted.org/packages/d5/50/83c593b07763e1161326b3b8c6686f0f4b0f24d5526546bee538c89837d6/decorator-5.1.1-py3-none-any.whl", hash = "sha256:b8c3f85900b9dc423225913c5aace94729fe1fa9763b38939a95226f02d37186"},
 ]
-"django 3.2.18" = [
-    {url = "https://files.pythonhosted.org/packages/57/12/da22535f809b8c06c8d58eaf236ec8683ffd4e1dc4eced175b174e6446fa/Django-3.2.18-py3-none-any.whl", hash = "sha256:4d492d9024c7b3dfababf49f94511ab6a58e2c9c3c7207786f1ba4eb77750706"},
-    {url = "https://files.pythonhosted.org/packages/66/e6/e06dd4fceb09cbb50598cbaecca0dc1a2ac3bc4b8cf3e073e394603c3d85/Django-3.2.18.tar.gz", hash = "sha256:08208dfe892eb64fff073ca743b3b952311104f939e7f6dae954fe72dcc533ba"},
+"django 3.2.23" = [
+    {url = "https://files.pythonhosted.org/packages/c9/69/72663af69f1a70fa186813220c8ec5ce7f9056b6d987077e2c38ed794bee/Django-3.2.23-py3-none-any.whl", hash = "sha256:d48608d5f62f2c1e260986835db089fa3b79d6f58510881d316b8d88345ae6e1"},
+    {url = "https://files.pythonhosted.org/packages/dd/6e/7c97a4c54c1a4d3d700fb0d687323c96dc5e9f5e7d2bcac163e2f0c17cb7/Django-3.2.23.tar.gz", hash = "sha256:82968f3640e29ef4a773af2c28448f5f7a08d001c6ac05b32d02aeee6509508b"},
 ]
 "django-celery-beat 2.3.0" = [
     {url = "https://files.pythonhosted.org/packages/ab/57/99975d986048aced9f6cb113b6bc1fa27671c7746091d17b4cc04d91a84a/django_celery_beat-2.3.0-py3-none-any.whl", hash = "sha256:ff694e1d30f84de3d2b78822c90005c6c7c1462768e845ae162af71a6a46f1eb"},
@@ -1275,6 +1304,10 @@ content_hash = "sha256:8e9429bf355a886e73576a9fa3895b9f264ec4d3726579634f5564c05
 "install 1.3.5" = [
     {url = "https://files.pythonhosted.org/packages/26/79/b6a13690bcde4e1fef5759f05a5e0939c110fcbc8c6e4efa6b4663ee11a5/install-1.3.5.tar.gz", hash = "sha256:e67c8a0be5ccf8cb4ffa17d090f3a61b6e820e6a7e21cd1d2c0f7bc59b18e647"},
     {url = "https://files.pythonhosted.org/packages/4d/c8/8cbca135f9e167810756ea2bc34b028501936675fcbd7dadccf752fa4622/install-1.3.5-py3-none-any.whl", hash = "sha256:0d3fadf4aa62c95efe8d34757c8507eb46177f86c016c21c6551eafc6a53d5a9"},
+]
+"isodate 0.6.1" = [
+    {url = "https://files.pythonhosted.org/packages/b6/85/7882d311924cbcfc70b1890780763e36ff0b140c7e51c110fc59a532f087/isodate-0.6.1-py2.py3-none-any.whl", hash = "sha256:0751eece944162659049d35f4f549ed815792b38793f07cf73381c1c87cbed96"},
+    {url = "https://files.pythonhosted.org/packages/db/7a/c0a56c7d56c7fa723988f122fa1f1ccf8c5c4ccc48efad0d214b49e5b1af/isodate-0.6.1.tar.gz", hash = "sha256:48c5881de7e8b0a0d648cb024c8062dc84e7b840ed81e864c7614fd3c127bde9"},
 ]
 "kombu 5.2.4" = [
     {url = "https://files.pythonhosted.org/packages/d9/f3/62d12dd7ebad710319f0877c1c33bca379fc7d28069daae890fa2fa444c8/kombu-5.2.4-py3-none-any.whl", hash = "sha256:8b213b24293d3417bcf0d2f5537b7f756079e3ea232a8386dcc89a59fd2361a4"},
@@ -1763,9 +1796,9 @@ content_hash = "sha256:8e9429bf355a886e73576a9fa3895b9f264ec4d3726579634f5564c05
     {url = "https://files.pythonhosted.org/packages/4f/82/0cd8d81d57e55a598cd4cef10c6e971dbcaf437e4f138dc1624cf7c1388e/txaio-20.4.1-py2.py3-none-any.whl", hash = "sha256:38a469daf93c37e5527cb062653d6393ae11663147c42fab7ddc3f6d00d434ae"},
     {url = "https://files.pythonhosted.org/packages/e7/dd/c0c90b080c3fad0ac8e2382eddbe86591d4fa1a5c1aea652de0adf245fc0/txaio-20.4.1.tar.gz", hash = "sha256:17938f2bca4a9cabce61346758e482ca4e600160cbc28e861493eac74a19539d"},
 ]
-"typing-extensions 4.3.0" = [
-    {url = "https://files.pythonhosted.org/packages/9e/1d/d128169ff58c501059330f1ad96ed62b79114a2eb30b8238af63a2e27f70/typing_extensions-4.3.0.tar.gz", hash = "sha256:e6d2677a32f47fc7eb2795db1dd15c1f34eff616bcaf2cfb5e997f854fa1c4a6"},
-    {url = "https://files.pythonhosted.org/packages/ed/d6/2afc375a8d55b8be879d6b4986d4f69f01115e795e36827fd3a40166028b/typing_extensions-4.3.0-py3-none-any.whl", hash = "sha256:25642c956049920a5aa49edcdd6ab1e06d7e5d467fc00e0506c44ac86fbfca02"},
+"typing-extensions 4.8.0" = [
+    {url = "https://files.pythonhosted.org/packages/1f/7a/8b94bb016069caa12fc9f587b28080ac33b4fbb8ca369b98bc0a4828543e/typing_extensions-4.8.0.tar.gz", hash = "sha256:df8e4339e9cb77357558cbdbceca33c303714cf861d1eef15e1070055ae8b7ef"},
+    {url = "https://files.pythonhosted.org/packages/24/21/7d397a4b7934ff4028987914ac1044d3b7d52712f30e2ac7a2ae5bc86dd0/typing_extensions-4.8.0-py3-none-any.whl", hash = "sha256:8f92fc8806f9a6b641eaa5318da32b44d401efaac0f6678c9bc448ba3605faa0"},
 ]
 "tzdata 2022.1" = [
     {url = "https://files.pythonhosted.org/packages/89/2d/49329ebec33b14dae61ecc8c85abe596341832fa36c4bcd3d99fddda018b/tzdata-2022.1-py2.py3-none-any.whl", hash = "sha256:238e70234214138ed7b4e8a0fab0e5e13872edab3be586ab8198c407620e2ab9"},
