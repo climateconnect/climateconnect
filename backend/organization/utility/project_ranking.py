@@ -57,6 +57,7 @@ class ProjectRanking:
         description: str,
         location: Optional[int],
         project_id: int,
+        project_manually_set_rating: int,
         total_skills: int
     ) -> int:
         cache_key = generate_project_ranking_cache_key(project_id=project_id)
@@ -108,7 +109,7 @@ class ProjectRanking:
                 "total_skills": total_skills
             }
 
-            project_rank = int(sum(project_factors[factor] * weights[factor] for factor in weights))
+            project_rank = int(sum(project_factors[factor] * weights[factor] for factor in weights)) + project_manually_set_rating
 
             # Now we want to change the order every time somebody
             # visits the page we would add some randomization.

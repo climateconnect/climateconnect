@@ -207,6 +207,7 @@ class Project(models.Model):
                 description=self.description,
                 location=self.loc,
                 project_id=self.id,
+                project_manually_set_rating=self.rating,
                 total_skills=self.skills.count()
             )
 
