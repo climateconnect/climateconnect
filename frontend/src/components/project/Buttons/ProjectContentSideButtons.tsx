@@ -203,7 +203,7 @@ export default function ProjectContentSideButtons({
       {/* If the user is an admin on the project, or is already part
         of the project (has read only permissions), then we don't want to show the membership request button. */}
       {!hasAdminPermissions &&
-        !project.project_type.type_id === "event" &&
+        project.project_type.type_id !== "event" &&
         !(user_permission && [ROLE_TYPES.read_only_type].includes(user_permission)) && (
           <JoinButton
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
