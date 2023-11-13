@@ -669,7 +669,6 @@ class AddProjectMembersView(APIView):
                 {"message": "Missing required parameters"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
         for member in request.data["team_members"]:
             try:
                 user = User.objects.get(id=int(member["id"]))
@@ -696,22 +695,24 @@ class AddProjectMembersView(APIView):
                 )
                 continue
             user_role = roles.filter(id=int(member["permission_type_id"])).first()
-            try:
-                user_availability = Availability.objects.filter(
-                    id=int(member["availability"])
-                ).first()
-            except Availability.DoesNotExist:
-                raise NotFound(
-                    detail="Availability not found.", code=status.HTTP_404_NOT_FOUND
-                )
             if user and not (user_inactive):
-                ProjectMember.objects.create(
+                new_member = ProjectMember.objects.create(
                     project=project,
                     user=user,
                     role=user_role,
                     role_in_project=member["role_in_project"],
-                    availability=user_availability,
                 )
+                if "availability" in member.keys():
+                    try:
+                        user_availability = Availability.objects.filter(
+                            id=int(member["availability"])
+                        ).first()
+                        new_member.availability = user_availability
+                        new_member.save()
+                    except Availability.DoesNotExist:
+                        raise NotFound(
+                            detail="Availability not found.", code=status.HTTP_404_NOT_FOUND
+                        )
                 logger.info("Project member created for user {}".format(user.id))
             elif user and user_inactive:
                 record = ProjectMember.objects.get(project=project, user=user)

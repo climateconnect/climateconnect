@@ -58,7 +58,7 @@ export default function ManageProjectMembers({
       .catch((e) => {
         console.log(e);
         redirect("/projects/" + project.url_slug, {
-          message: texts.not_all_your_updates_have_worked,
+          errorMessage: texts.not_all_your_updates_have_worked,
         });
       });
   };
@@ -206,12 +206,17 @@ export default function ManageProjectMembers({
 
 const parseMembersForCreateRequest = (members) => {
   return {
-    team_members: members.map((m) => ({
-      ...m,
-      permission_type_id: m.role.id,
-      role_in_project: m.role_in_project ? m.role_in_project : "",
-      availability: m.availability.id,
-    })),
+    team_members: members.map((m) => {
+      const parsedMem = {
+        ...m,
+        permission_type_id: m.role.id,
+        role_in_project: m.role_in_project ? m.role_in_project : ""
+      }
+      if(m.availability){
+        parsedMem.availability = m.availability.id
+      }
+      return parsedMem
+    }),
   };
 };
 
