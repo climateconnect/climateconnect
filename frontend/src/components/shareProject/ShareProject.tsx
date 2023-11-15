@@ -73,7 +73,10 @@ export default function Share({
     });
   };
   const onChangeParentOrganization = (e) => {
-    console.log(e);
+    const selectedOrg = userOrganizations.find(o=>o.name === e.target.value)
+    handleSetProjectData({
+      parent_organization: selectedOrg
+    })
   };
 
   const onChangeProjectType = (newValue) => {
@@ -99,7 +102,7 @@ export default function Share({
         <>
           <SelectField
             controlled
-            controlledValue={project.parent_organization?.name}
+            controlledValue={project.parent_organization}
             required
             options={organizationOptions}
             label={texts.organization}
