@@ -448,9 +448,10 @@ class CreateProjectView(APIView):
                 organization__name=organization.name
             )
 
-            create_organization_project_published_notification(
-                followers_of_org, organization, project
-            )
+            if not project.is_draft:
+                create_organization_project_published_notification(
+                    followers_of_org, organization, project
+                )
 
         return Response(
             {
