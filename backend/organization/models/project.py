@@ -208,7 +208,9 @@ class Project(models.Model):
                 location=self.loc,
                 project_id=self.id,
                 project_manually_set_rating=self.rating,
-                total_skills=self.skills.count()
+                total_skills=self.skills.count(),
+                project_type=self.project_type,
+                start_date=self.start_date,
             )
 
     class Meta:
