@@ -159,7 +159,7 @@ def format_location(location_string, already_loaded):
     if already_loaded:
         location_object = location_string
     else:
-        if type(location_string) == dict:
+        if isinstance(location_string, dict):
             location_object = location_string
         else:
             location_object = json.loads(location_string)[0]
