@@ -64,9 +64,9 @@ export default function CreateIdeaDialog({
     location: hubLocation && {
       ...hubLocation,
       type: getTypeFromLocation(hubLocation),
-      lon: parseFloat(hubLocation.centre_point.replace("SRID=4326;POINT (", "").split(" ")[0]),
+      lon: parseFloat(hubLocation.centre_point?.replace("SRID=4326;POINT (", "").split(" ")[0]),
       lat: parseFloat(
-        hubLocation.centre_point.replace("SRID=4326;POINT (", "").split(" ")[1].replace(")", "")
+        hubLocation.centre_point?.replace("SRID=4326;POINT (", "").split(" ")[1].replace(")", "")
       ),
     },
   });

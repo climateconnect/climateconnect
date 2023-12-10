@@ -171,15 +171,17 @@ class ListProjectsView(ListAPIView):
                     ).distinct()
                 elif hub[0].hub_type == Hub.LOCATION_HUB_TYPE:
                     location = hub[0].location.all()[0]
+                    location_multipolygon = location.multi_polygon
                     projects = projects.filter(
                         Q(loc__country=location.country)
-                        & (
-                            Q(loc__multi_polygon__coveredby=(location.multi_polygon))
-                            | Q(loc__centre_point__coveredby=(location.multi_polygon))
-                        )
-                    ).annotate(
-                        distance=Distance("loc__centre_point", location.multi_polygon)
                     )
+                    if location_multipolygon:
+                        projects = projects.filter(
+                            Q(loc__multi_polygon__coveredby=(location_multipolygon))
+                            | Q(loc__centre_point__coveredby=(location_multipolygon))
+                        ).annotate(
+                            distance=Distance("loc__centre_point", location_multipolygon)
+                        )
 
         if "collaboration" in self.request.query_params:
             collaborators_welcome = self.request.query_params.get("collaboration")
