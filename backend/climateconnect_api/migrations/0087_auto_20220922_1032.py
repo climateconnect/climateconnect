@@ -5,36 +5,85 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0096_organizationfollower_orgprojectpublished'),
-        ('climateconnect_api', '0086_auto_20220827_1839'),
+        ("organization", "0096_organizationfollower_orgprojectpublished"),
+        ("climateconnect_api", "0086_auto_20220827_1839"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='notification',
-            name='org_project_published',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='notification_org_project_published', to='organization.orgprojectpublished', verbose_name='Org Project Published'),
+            model_name="notification",
+            name="org_project_published",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="notification_org_project_published",
+                to="organization.orgprojectpublished",
+                verbose_name="Org Project Published",
+            ),
         ),
         migrations.AddField(
-            model_name='notification',
-            name='organization_follower',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='notification_organization_follower', to='organization.organizationfollower', verbose_name='Organization Follower'),
+            model_name="notification",
+            name="organization_follower",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="notification_organization_follower",
+                to="organization.organizationfollower",
+                verbose_name="Organization Follower",
+            ),
         ),
         migrations.AddField(
-            model_name='userprofile',
-            name='email_on_new_organization_follower',
-            field=models.BooleanField(blank=True, default=True, help_text='Check if user wants to receive emails when somebody follows their organization', null=True, verbose_name='Email on new organization follower'),
+            model_name="userprofile",
+            name="email_on_new_organization_follower",
+            field=models.BooleanField(
+                blank=True,
+                default=True,
+                help_text="Check if user wants to receive emails when somebody follows their organization",
+                null=True,
+                verbose_name="Email on new organization follower",
+            ),
         ),
         migrations.AddField(
-            model_name='userprofile',
-            name='email_on_new_project_from_followed_org',
-            field=models.BooleanField(blank=True, default=True, help_text='Check if user wants to receive emails when an org they follow publishes a project', null=True, verbose_name='Email on new organization project published'),
+            model_name="userprofile",
+            name="email_on_new_project_from_followed_org",
+            field=models.BooleanField(
+                blank=True,
+                default=True,
+                help_text="Check if user wants to receive emails when an org they follow publishes a project",
+                null=True,
+                verbose_name="Email on new organization project published",
+            ),
         ),
         migrations.AlterField(
-            model_name='notification',
-            name='notification_type',
-            field=models.IntegerField(choices=[(0, 'broadcast'), (1, 'private_message'), (2, 'project_comment'), (3, 'reply_to_project_comment'), (4, 'project_follower'), (5, 'project_update_post'), (6, 'post_comment'), (7, 'reply_to_post_comment'), (8, 'group_message'), (9, 'join_project_request'), (10, 'project_join_request_approved'), (11, 'mention'), (12, 'project_like'), (13, 'idea_comment'), (14, 'reply_to_idea_comment'), (15, 'person_joined_idea'), (16, 'organization_follower'), (17, 'org_project_published')], default=0, help_text='type of notification', verbose_name='Notification type'),
+            model_name="notification",
+            name="notification_type",
+            field=models.IntegerField(
+                choices=[
+                    (0, "broadcast"),
+                    (1, "private_message"),
+                    (2, "project_comment"),
+                    (3, "reply_to_project_comment"),
+                    (4, "project_follower"),
+                    (5, "project_update_post"),
+                    (6, "post_comment"),
+                    (7, "reply_to_post_comment"),
+                    (8, "group_message"),
+                    (9, "join_project_request"),
+                    (10, "project_join_request_approved"),
+                    (11, "mention"),
+                    (12, "project_like"),
+                    (13, "idea_comment"),
+                    (14, "reply_to_idea_comment"),
+                    (15, "person_joined_idea"),
+                    (16, "organization_follower"),
+                    (17, "org_project_published"),
+                ],
+                default=0,
+                help_text="type of notification",
+                verbose_name="Notification type",
+            ),
         ),
     ]

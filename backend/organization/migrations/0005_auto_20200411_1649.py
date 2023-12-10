@@ -4,35 +4,62 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0004_organizationtype'),
+        ("organization", "0004_organizationtype"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='organization',
-            name='city',
-            field=models.CharField(blank=True, help_text='Points to what city the organization is located', max_length=1024, null=True, verbose_name='City'),
+            model_name="organization",
+            name="city",
+            field=models.CharField(
+                blank=True,
+                help_text="Points to what city the organization is located",
+                max_length=1024,
+                null=True,
+                verbose_name="City",
+            ),
         ),
         migrations.AddField(
-            model_name='organization',
-            name='country',
-            field=models.CharField(blank=True, help_text='Points to what country the organization is located.', max_length=512, null=True, verbose_name='Country'),
+            model_name="organization",
+            name="country",
+            field=models.CharField(
+                blank=True,
+                help_text="Points to what country the organization is located.",
+                max_length=512,
+                null=True,
+                verbose_name="Country",
+            ),
         ),
         migrations.AddField(
-            model_name='organization',
-            name='short_description',
-            field=models.TextField(blank=True, help_text='Short description about an organization', null=True, verbose_name='Short Description'),
+            model_name="organization",
+            name="short_description",
+            field=models.TextField(
+                blank=True,
+                help_text="Short description about an organization",
+                null=True,
+                verbose_name="Short Description",
+            ),
         ),
         migrations.AddField(
-            model_name='organization',
-            name='state',
-            field=models.CharField(blank=True, help_text='Points to what state the organization is located.', max_length=512, null=True, verbose_name='State'),
+            model_name="organization",
+            name="state",
+            field=models.CharField(
+                blank=True,
+                help_text="Points to what state the organization is located.",
+                max_length=512,
+                null=True,
+                verbose_name="State",
+            ),
         ),
         migrations.AddField(
-            model_name='organization',
-            name='types',
-            field=models.ManyToManyField(blank=True, help_text='Points to type of organization.', related_name='organization_types', to='organization.OrganizationType'),
+            model_name="organization",
+            name="types",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="Points to type of organization.",
+                related_name="organization_types",
+                to="organization.OrganizationType",
+            ),
         ),
     ]

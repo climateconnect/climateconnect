@@ -5,16 +5,23 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('ideas', '0014_auto_20210607_0956'),
-        ('chat_messages', '0009_participant_is_active'),
+        ("ideas", "0014_auto_20210607_0956"),
+        ("chat_messages", "0009_participant_is_active"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='messageparticipants',
-            name='related_idea',
-            field=models.ForeignKey(blank=True, help_text='If this chat is about an idea, this points to the idea', null=True, on_delete=django.db.models.deletion.PROTECT, related_name='related_idea_message_participant', to='ideas.Idea', verbose_name='Related idea'),
+            model_name="messageparticipants",
+            name="related_idea",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="If this chat is about an idea, this points to the idea",
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="related_idea_message_participant",
+                to="ideas.Idea",
+                verbose_name="Related idea",
+            ),
         ),
     ]

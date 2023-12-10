@@ -5,27 +5,83 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0050_language'),
+        ("climateconnect_api", "0050_language"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='UserProfileTranslation',
+            name="UserProfileTranslation",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name_translation', models.CharField(blank=True, help_text="Translation user's name", max_length=256, null=True, verbose_name='Name translation')),
-                ('biography_translation', models.TextField(blank=True, help_text='Translation of user bio', null=True, verbose_name='Biography translation')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when translation object was created', verbose_name='Created at')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='Time when translation object was updated', verbose_name='Updated at')),
-                ('language', models.ForeignKey(help_text='Points to language object', on_delete=django.db.models.deletion.CASCADE, related_name='profile_translatiion_lang', to='climateconnect_api.Language', verbose_name='Language')),
-                ('user_profile', models.ForeignKey(help_text='Points to user profile object', on_delete=django.db.models.deletion.CASCADE, related_name='profie_translation', to='climateconnect_api.UserProfile', verbose_name='User profile')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name_translation",
+                    models.CharField(
+                        blank=True,
+                        help_text="Translation user's name",
+                        max_length=256,
+                        null=True,
+                        verbose_name="Name translation",
+                    ),
+                ),
+                (
+                    "biography_translation",
+                    models.TextField(
+                        blank=True,
+                        help_text="Translation of user bio",
+                        null=True,
+                        verbose_name="Biography translation",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Time when translation object was created",
+                        verbose_name="Created at",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="Time when translation object was updated",
+                        verbose_name="Updated at",
+                    ),
+                ),
+                (
+                    "language",
+                    models.ForeignKey(
+                        help_text="Points to language object",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="profile_translatiion_lang",
+                        to="climateconnect_api.Language",
+                        verbose_name="Language",
+                    ),
+                ),
+                (
+                    "user_profile",
+                    models.ForeignKey(
+                        help_text="Points to user profile object",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="profie_translation",
+                        to="climateconnect_api.UserProfile",
+                        verbose_name="User profile",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'User profile translation',
-                'verbose_name_plural': 'User profile translations',
-                'unique_together': {('user_profile', 'language')},
+                "verbose_name": "User profile translation",
+                "verbose_name_plural": "User profile translations",
+                "unique_together": {("user_profile", "language")},
             },
         ),
     ]

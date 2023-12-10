@@ -4,20 +4,31 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0031_auto_20201001_2008'),
+        ("climateconnect_api", "0031_auto_20201001_2008"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userprofile',
-            name='email_on_group_chat_message',
-            field=models.BooleanField(blank=True, default=True, help_text='Check if user wants to receive emails when they receive a group chat message', null=True, verbose_name='Email project suggestions'),
+            model_name="userprofile",
+            name="email_on_group_chat_message",
+            field=models.BooleanField(
+                blank=True,
+                default=True,
+                help_text="Check if user wants to receive emails when they receive a group chat message",
+                null=True,
+                verbose_name="Email project suggestions",
+            ),
         ),
         migrations.AddField(
-            model_name='userprofile',
-            name='email_on_private_chat_message',
-            field=models.BooleanField(blank=True, default=True, help_text='Check if user wants to receive emails when they receive a private chat message', null=True, verbose_name='Email project suggestions'),
+            model_name="userprofile",
+            name="email_on_private_chat_message",
+            field=models.BooleanField(
+                blank=True,
+                default=True,
+                help_text="Check if user wants to receive emails when they receive a private chat message",
+                null=True,
+                verbose_name="Email project suggestions",
+            ),
         ),
     ]

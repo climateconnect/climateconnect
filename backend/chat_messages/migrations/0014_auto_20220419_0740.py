@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('chat_messages', '0013_auto_20220419_0739'),
+        ("chat_messages", "0013_auto_20220419_0739"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='messagereceiver',
-            name='id',
+            model_name="messagereceiver",
+            name="id",
             field=models.AutoField(primary_key=True, serialize=False),
         ),
         migrations.AlterField(
-            model_name='participant',
-            name='id',
+            model_name="participant",
+            name="id",
             field=models.AutoField(primary_key=True, serialize=False),
         ),
     ]

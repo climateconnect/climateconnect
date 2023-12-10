@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0087_auto_20211027_1052'),
+        ("organization", "0087_auto_20211027_1052"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='organizationtags',
-            name='show_in_climatematch',
-            field=models.BooleanField(default=False, help_text='Help display organizations and projects in climate match', verbose_name='Show in climatematch?'),
+            model_name="organizationtags",
+            name="show_in_climatematch",
+            field=models.BooleanField(
+                default=False,
+                help_text="Help display organizations and projects in climate match",
+                verbose_name="Show in climatematch?",
+            ),
         ),
     ]

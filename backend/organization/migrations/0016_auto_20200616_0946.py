@@ -5,19 +5,18 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('organization', '0015_auto_20200615_2004'),
+        ("organization", "0015_auto_20200615_2004"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='Posts',
-            new_name='Post',
+            old_name="Posts",
+            new_name="Post",
         ),
         migrations.AlterModelOptions(
-            name='post',
-            options={'verbose_name': 'Post'},
+            name="post",
+            options={"verbose_name": "Post"},
         ),
     ]

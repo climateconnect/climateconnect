@@ -5,16 +5,22 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0096_organizationfollower_orgprojectpublished'),
-        ('climateconnect_api', '0087_auto_20220922_1032'),
+        ("organization", "0096_organizationfollower_orgprojectpublished"),
+        ("climateconnect_api", "0087_auto_20220922_1032"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='notification',
-            name='org_project_published',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='notification_org_project_published', to='organization.organizationfollower', verbose_name='Org Project Published'),
+            model_name="notification",
+            name="org_project_published",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="notification_org_project_published",
+                to="organization.organizationfollower",
+                verbose_name="Org Project Published",
+            ),
         ),
     ]

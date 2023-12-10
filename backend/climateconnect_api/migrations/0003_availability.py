@@ -4,25 +4,60 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0002_auto_20200402_0449'),
+        ("climateconnect_api", "0002_auto_20200402_0449"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Availability',
+            name="Availability",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(help_text="Full text of user's availability to work on a project", max_length=512, verbose_name='Name')),
-                ('key', models.CharField(help_text="Key for user' availability", max_length=100, verbose_name='Key')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when object was created', verbose_name='Created At')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='Time when object was updated', verbose_name='Updated At')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="Full text of user's availability to work on a project",
+                        max_length=512,
+                        verbose_name="Name",
+                    ),
+                ),
+                (
+                    "key",
+                    models.CharField(
+                        help_text="Key for user' availability",
+                        max_length=100,
+                        verbose_name="Key",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Time when object was created",
+                        verbose_name="Created At",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="Time when object was updated",
+                        verbose_name="Updated At",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Availability',
-                'verbose_name_plural': 'Availabilities',
-                'db_table': 'climateconnect_availability',
+                "verbose_name": "Availability",
+                "verbose_name_plural": "Availabilities",
+                "db_table": "climateconnect_availability",
             },
         ),
     ]

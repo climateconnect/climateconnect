@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0092_auto_20221115_0946'),
+        ("climateconnect_api", "0092_auto_20221115_0946"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userprofile',
-            name='restricted_profile',
-            field=models.BooleanField(default=False, help_text='Restrict user profile to perform certain actions on the platform.', verbose_name='Is profile restricted?'),
+            model_name="userprofile",
+            name="restricted_profile",
+            field=models.BooleanField(
+                default=False,
+                help_text="Restrict user profile to perform certain actions on the platform.",
+                verbose_name="Is profile restricted?",
+            ),
         ),
     ]

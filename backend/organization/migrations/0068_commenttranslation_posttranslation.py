@@ -5,39 +5,106 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0056_auto_20210408_0541'),
-        ('organization', '0067_auto_20210405_0304'),
+        ("climateconnect_api", "0056_auto_20210408_0541"),
+        ("organization", "0067_auto_20210405_0304"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='PostTranslation',
+            name="PostTranslation",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('content_translation', models.TextField(blank=True, help_text='Translation of content column', null=True, verbose_name='Content translation')),
-                ('language', models.ForeignKey(help_text='Points to language table', on_delete=django.db.models.deletion.CASCADE, related_name='post_translation_lang', to='climateconnect_api.Language', verbose_name='Language')),
-                ('post', models.ForeignKey(help_text='Points to post table', on_delete=django.db.models.deletion.CASCADE, related_name='translate_post', to='organization.Post', verbose_name='Post')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "content_translation",
+                    models.TextField(
+                        blank=True,
+                        help_text="Translation of content column",
+                        null=True,
+                        verbose_name="Content translation",
+                    ),
+                ),
+                (
+                    "language",
+                    models.ForeignKey(
+                        help_text="Points to language table",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="post_translation_lang",
+                        to="climateconnect_api.Language",
+                        verbose_name="Language",
+                    ),
+                ),
+                (
+                    "post",
+                    models.ForeignKey(
+                        help_text="Points to post table",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="translate_post",
+                        to="organization.Post",
+                        verbose_name="Post",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Post translation',
-                'verbose_name_plural': 'Post translations',
-                'unique_together': {('post', 'language')},
+                "verbose_name": "Post translation",
+                "verbose_name_plural": "Post translations",
+                "unique_together": {("post", "language")},
             },
         ),
         migrations.CreateModel(
-            name='CommentTranslation',
+            name="CommentTranslation",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('content_translation', models.TextField(blank=True, help_text='Translation of content column', null=True, verbose_name='Content translation')),
-                ('comment', models.ForeignKey(help_text='Point to comment table', on_delete=django.db.models.deletion.CASCADE, related_name='translate_comment', to='organization.Comment', verbose_name='Comment')),
-                ('language', models.ForeignKey(help_text='Points to language table', on_delete=django.db.models.deletion.CASCADE, related_name='comment_translation_lang', to='climateconnect_api.Language', verbose_name='Language')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "content_translation",
+                    models.TextField(
+                        blank=True,
+                        help_text="Translation of content column",
+                        null=True,
+                        verbose_name="Content translation",
+                    ),
+                ),
+                (
+                    "comment",
+                    models.ForeignKey(
+                        help_text="Point to comment table",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="translate_comment",
+                        to="organization.Comment",
+                        verbose_name="Comment",
+                    ),
+                ),
+                (
+                    "language",
+                    models.ForeignKey(
+                        help_text="Points to language table",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="comment_translation_lang",
+                        to="climateconnect_api.Language",
+                        verbose_name="Language",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Comment translation',
-                'verbose_name_plural': 'Comment translations',
-                'unique_together': {('comment', 'language')},
+                "verbose_name": "Comment translation",
+                "verbose_name_plural": "Comment translations",
+                "unique_together": {("comment", "language")},
             },
         ),
     ]

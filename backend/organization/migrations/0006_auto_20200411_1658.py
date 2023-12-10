@@ -4,27 +4,38 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0005_auto_20200411_1649'),
+        ("organization", "0005_auto_20200411_1649"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='organization',
-            name='types',
+            model_name="organization",
+            name="types",
         ),
         migrations.AddField(
-            model_name='organization',
-            name='organ',
-            field=models.CharField(blank=True, help_text='Used for organization who is gov organization', max_length=512, null=True, verbose_name='Organ'),
+            model_name="organization",
+            name="organ",
+            field=models.CharField(
+                blank=True,
+                help_text="Used for organization who is gov organization",
+                max_length=512,
+                null=True,
+                verbose_name="Organ",
+            ),
         ),
         migrations.AddField(
-            model_name='organization',
-            name='school',
-            field=models.CharField(blank=True, help_text='Points to a school if the organization is school org', max_length=512, null=True, verbose_name='School'),
+            model_name="organization",
+            name="school",
+            field=models.CharField(
+                blank=True,
+                help_text="Points to a school if the organization is school org",
+                max_length=512,
+                null=True,
+                verbose_name="School",
+            ),
         ),
         migrations.DeleteModel(
-            name='OrganizationType',
+            name="OrganizationType",
         ),
     ]

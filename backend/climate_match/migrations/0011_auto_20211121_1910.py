@@ -6,15 +6,22 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climate_match', '0010_userquestionanswer_token'),
+        ("climate_match", "0010_userquestionanswer_token"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='userquestionanswer',
-            name='user',
-            field=models.ForeignKey(blank=True, help_text='Points user who answered questions', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='user_qna', to=settings.AUTH_USER_MODEL, verbose_name='User'),
+            model_name="userquestionanswer",
+            name="user",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Points user who answered questions",
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="user_qna",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="User",
+            ),
         ),
     ]

@@ -4,11 +4,9 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0042_auto_20201207_2153'),
-        ('climateconnect_api', '0042_auto_20201207_0230'),
+        ("climateconnect_api", "0042_auto_20201207_2153"),
+        ("climateconnect_api", "0042_auto_20201207_0230"),
     ]
 
-    operations = [
-    ]
+    operations = []

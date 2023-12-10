@@ -4,20 +4,31 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0049_auto_20200724_1010'),
+        ("organization", "0049_auto_20200724_1010"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='organizationtags',
-            name='key',
-            field=models.CharField(blank=True, help_text='Points to key of the tag. Example: `Student organization` becomes studentorganization', max_length=256, null=True, verbose_name='Key'),
+            model_name="organizationtags",
+            name="key",
+            field=models.CharField(
+                blank=True,
+                help_text="Points to key of the tag. Example: `Student organization` becomes studentorganization",
+                max_length=256,
+                null=True,
+                verbose_name="Key",
+            ),
         ),
         migrations.AddField(
-            model_name='projecttags',
-            name='key',
-            field=models.CharField(blank=True, help_text='Points to key of the tag. Example: `Student organization` becomes studentorganization', max_length=256, null=True, verbose_name='Key'),
+            model_name="projecttags",
+            name="key",
+            field=models.CharField(
+                blank=True,
+                help_text="Points to key of the tag. Example: `Student organization` becomes studentorganization",
+                max_length=256,
+                null=True,
+                verbose_name="Key",
+            ),
         ),
     ]

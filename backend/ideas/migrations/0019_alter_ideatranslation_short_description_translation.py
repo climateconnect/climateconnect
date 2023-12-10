@@ -4,15 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('ideas', '0018_auto_20220419_0744'),
+        ("ideas", "0018_auto_20220419_0744"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='ideatranslation',
-            name='short_description_translation',
-            field=models.CharField(blank=True, help_text="Translation of idea's summary", max_length=5096, null=True, verbose_name='Summary'),
+            model_name="ideatranslation",
+            name="short_description_translation",
+            field=models.CharField(
+                blank=True,
+                help_text="Translation of idea's summary",
+                max_length=5096,
+                null=True,
+                verbose_name="Summary",
+            ),
         ),
     ]

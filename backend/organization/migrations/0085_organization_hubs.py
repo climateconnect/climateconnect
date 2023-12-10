@@ -4,16 +4,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('hubs', '0010_auto_20210422_1227'),
-        ('organization', '0084_auto_20210429_0801'),
+        ("hubs", "0010_auto_20210422_1227"),
+        ("organization", "0084_auto_20210429_0801"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='organization',
-            name='hubs',
-            field=models.ManyToManyField(blank=True, help_text='Hubs that the organization is active in', related_name='organization_hubs', to='hubs.Hub', verbose_name='Hubs'),
+            model_name="organization",
+            name="hubs",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="Hubs that the organization is active in",
+                related_name="organization_hubs",
+                to="hubs.Hub",
+                verbose_name="Hubs",
+            ),
         ),
     ]

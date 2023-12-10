@@ -5,16 +5,23 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0065_userprofile_email_on_idea_join'),
-        ('climate_match', '0004_answertranslation_questiontranslation'),
+        ("climateconnect_api", "0065_userprofile_email_on_idea_join"),
+        ("climate_match", "0004_answertranslation_questiontranslation"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='answer',
-            name='language',
-            field=models.ForeignKey(blank=True, help_text='Points to a language answer is store in', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='answer_language', to='climateconnect_api.Language', verbose_name='Language'),
+            model_name="answer",
+            name="language",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Points to a language answer is store in",
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="answer_language",
+                to="climateconnect_api.Language",
+                verbose_name="Language",
+            ),
         ),
     ]

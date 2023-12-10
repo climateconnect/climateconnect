@@ -4,29 +4,45 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0084_alter_badge_step'),
+        ("climateconnect_api", "0084_alter_badge_step"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='badge',
-            name='instantly_awarded_over_amount',
+            model_name="badge",
+            name="instantly_awarded_over_amount",
         ),
         migrations.AddField(
-            model_name='badge',
-            name='examine_text',
-            field=models.CharField(blank=True, help_text='The text that is shown when you hover over the badge', max_length=512, null=True, verbose_name='Examine Text'),
+            model_name="badge",
+            name="examine_text",
+            field=models.CharField(
+                blank=True,
+                help_text="The text that is shown when you hover over the badge",
+                max_length=512,
+                null=True,
+                verbose_name="Examine Text",
+            ),
         ),
         migrations.AddField(
-            model_name='badge',
-            name='examine_text_de',
-            field=models.CharField(blank=True, help_text='The text that is shown when you hover over the badge in German', max_length=512, null=True, verbose_name='Examine Text DE'),
+            model_name="badge",
+            name="examine_text_de",
+            field=models.CharField(
+                blank=True,
+                help_text="The text that is shown when you hover over the badge in German",
+                max_length=512,
+                null=True,
+                verbose_name="Examine Text DE",
+            ),
         ),
         migrations.AddField(
-            model_name='donorbadge',
-            name='instantly_awarded_over_amount',
-            field=models.PositiveIntegerField(blank=True, help_text="You instantly get this badge if you've donated more than this amount in your current streak", null=True, verbose_name='Instantly awarded over amount'),
+            model_name="donorbadge",
+            name="instantly_awarded_over_amount",
+            field=models.PositiveIntegerField(
+                blank=True,
+                help_text="You instantly get this badge if you've donated more than this amount in your current streak",
+                null=True,
+                verbose_name="Instantly awarded over amount",
+            ),
         ),
     ]

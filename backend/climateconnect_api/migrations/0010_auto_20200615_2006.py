@@ -4,15 +4,14 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0009_role_role_type'),
+        ("climateconnect_api", "0009_role_role_type"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='userprofile',
-            old_name='profile_image',
-            new_name='image',
+            model_name="userprofile",
+            old_name="profile_image",
+            new_name="image",
         ),
     ]

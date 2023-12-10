@@ -4,35 +4,63 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0052_availability_name_de_translation'),
+        ("climateconnect_api", "0052_availability_name_de_translation"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='role',
-            name='explanation_de_translation',
-            field=models.CharField(blank=True, help_text='Deutsch translation for explanation', max_length=256, null=True, verbose_name='Explanation DE translation'),
+            model_name="role",
+            name="explanation_de_translation",
+            field=models.CharField(
+                blank=True,
+                help_text="Deutsch translation for explanation",
+                max_length=256,
+                null=True,
+                verbose_name="Explanation DE translation",
+            ),
         ),
         migrations.AddField(
-            model_name='role',
-            name='name_de_translation',
-            field=models.CharField(blank=True, help_text='Deutsch translation for role name', max_length=128, null=True, verbose_name='Name DE translation'),
+            model_name="role",
+            name="name_de_translation",
+            field=models.CharField(
+                blank=True,
+                help_text="Deutsch translation for role name",
+                max_length=128,
+                null=True,
+                verbose_name="Name DE translation",
+            ),
         ),
         migrations.AlterField(
-            model_name='language',
-            name='currency',
-            field=models.CharField(blank=True, help_text='Currency of each country', max_length=32, null=True, verbose_name='Currency'),
+            model_name="language",
+            name="currency",
+            field=models.CharField(
+                blank=True,
+                help_text="Currency of each country",
+                max_length=32,
+                null=True,
+                verbose_name="Currency",
+            ),
         ),
         migrations.AlterField(
-            model_name='language',
-            name='language_code',
-            field=models.CharField(help_text='Short form or Code for each language. e.g.: German/Deutsch has code de', max_length=8, unique=True, verbose_name='Language Code'),
+            model_name="language",
+            name="language_code",
+            field=models.CharField(
+                help_text="Short form or Code for each language. e.g.: German/Deutsch has code de",
+                max_length=8,
+                unique=True,
+                verbose_name="Language Code",
+            ),
         ),
         migrations.AlterField(
-            model_name='language',
-            name='native_name',
-            field=models.CharField(blank=True, help_text='Name of language in their native tounge. e.g: German -> Deutsch', max_length=512, null=True, verbose_name='Native name'),
+            model_name="language",
+            name="native_name",
+            field=models.CharField(
+                blank=True,
+                help_text="Name of language in their native tounge. e.g: German -> Deutsch",
+                max_length=512,
+                null=True,
+                verbose_name="Native name",
+            ),
         ),
     ]

@@ -4,18 +4,17 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0090_alter_notification_org_project_published'),
+        ("climateconnect_api", "0090_alter_notification_org_project_published"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='userprofile',
-            name='email_on_new_organization_follower',
+            model_name="userprofile",
+            name="email_on_new_organization_follower",
         ),
         migrations.RemoveField(
-            model_name='userprofile',
-            name='email_on_new_project_from_followed_org',
+            model_name="userprofile",
+            name="email_on_new_project_from_followed_org",
         ),
     ]

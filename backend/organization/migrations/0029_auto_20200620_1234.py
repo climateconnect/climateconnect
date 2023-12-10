@@ -5,20 +5,27 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0011_auto_20200617_1232'),
-        ('organization', '0028_remove_organization_organization_image'),
+        ("climateconnect_api", "0011_auto_20200617_1232"),
+        ("organization", "0028_remove_organization_organization_image"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='projectmember',
-            name='time_per_week',
+            model_name="projectmember",
+            name="time_per_week",
         ),
         migrations.AddField(
-            model_name='projectmember',
-            name='availability',
-            field=models.ForeignKey(blank=True, help_text='Shows how many hours per week the user is putting into this specific project.', null=True, on_delete=django.db.models.deletion.PROTECT, related_name='member_availability', to='climateconnect_api.Availability', verbose_name='Time per week'),
+            model_name="projectmember",
+            name="availability",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Shows how many hours per week the user is putting into this specific project.",
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="member_availability",
+                to="climateconnect_api.Availability",
+                verbose_name="Time per week",
+            ),
         ),
     ]

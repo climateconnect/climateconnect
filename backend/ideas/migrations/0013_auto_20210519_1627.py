@@ -5,21 +5,34 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0060_auto_20210420_1614'),
-        ('ideas', '0012_idea_url_slug'),
+        ("climateconnect_api", "0060_auto_20210420_1614"),
+        ("ideas", "0012_idea_url_slug"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='idea',
-            name='language',
-            field=models.ForeignKey(blank=True, help_text='Points to language in which the idea was submitted', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='idea_language', to='climateconnect_api.Language', verbose_name='Language'),
+            model_name="idea",
+            name="language",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Points to language in which the idea was submitted",
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="idea_language",
+                to="climateconnect_api.Language",
+                verbose_name="Language",
+            ),
         ),
         migrations.AlterField(
-            model_name='ideatranslation',
-            name='language',
-            field=models.ForeignKey(help_text='Points to the language idea is translated for', on_delete=django.db.models.deletion.CASCADE, related_name='translation_language', to='climateconnect_api.Language', verbose_name='Language'),
+            model_name="ideatranslation",
+            name="language",
+            field=models.ForeignKey(
+                help_text="Points to the language idea is translated for",
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="translation_language",
+                to="climateconnect_api.Language",
+                verbose_name="Language",
+            ),
         ),
     ]

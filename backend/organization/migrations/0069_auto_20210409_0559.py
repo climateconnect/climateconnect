@@ -4,20 +4,31 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0068_commenttranslation_posttranslation'),
+        ("organization", "0068_commenttranslation_posttranslation"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='organizationtags',
-            name='name_de_translation',
-            field=models.CharField(blank=True, help_text='Translation of name column', max_length=256, null=True, verbose_name='Name DE translation'),
+            model_name="organizationtags",
+            name="name_de_translation",
+            field=models.CharField(
+                blank=True,
+                help_text="Translation of name column",
+                max_length=256,
+                null=True,
+                verbose_name="Name DE translation",
+            ),
         ),
         migrations.AddField(
-            model_name='projecttags',
-            name='name_de_translation',
-            field=models.CharField(blank=True, help_text='Translation of name column', max_length=256, null=True, verbose_name='Name DE translation'),
+            model_name="projecttags",
+            name="name_de_translation",
+            field=models.CharField(
+                blank=True,
+                help_text="Translation of name column",
+                max_length=256,
+                null=True,
+                verbose_name="Name DE translation",
+            ),
         ),
     ]

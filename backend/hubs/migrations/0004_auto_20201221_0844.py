@@ -4,15 +4,17 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('hubs', '0003_auto_20201221_0836'),
+        ("hubs", "0003_auto_20201221_0836"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='hub',
-            name='segway_text',
-            field=models.TextField(help_text='Segway text between the info and the solutions', verbose_name='Segway text'),
+            model_name="hub",
+            name="segway_text",
+            field=models.TextField(
+                help_text="Segway text between the info and the solutions",
+                verbose_name="Segway text",
+            ),
         ),
     ]

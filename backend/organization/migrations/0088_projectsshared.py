@@ -6,26 +6,78 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('organization', '0087_auto_20211027_1052'),
+        ("organization", "0087_auto_20211027_1052"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ProjectsShared',
+            name="ProjectsShared",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('shared_via', models.IntegerField(choices=[(0, 'facebook'), (1, 'fb_messenger'), (2, 'twitter'), (3, 'whatsapp'), (4, 'linkedin'), (5, 'reddit'), (6, 'telegram'), (7, 'e-mail'), (8, 'link'), (9, 'native_share_dialog_of_device')], default=8, help_text='Way in which the project was shared', verbose_name='Shared Via')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when the user shared the project', verbose_name='Created At')),
-                ('project', models.ForeignKey(help_text='Points to a project', on_delete=django.db.models.deletion.CASCADE, related_name='shared_project', to='organization.Project', verbose_name='Project')),
-                ('user', models.ForeignKey(help_text='Points to the user who shared the project', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='sharing_user', to=settings.AUTH_USER_MODEL, verbose_name='Sharing User')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "shared_via",
+                    models.IntegerField(
+                        choices=[
+                            (0, "facebook"),
+                            (1, "fb_messenger"),
+                            (2, "twitter"),
+                            (3, "whatsapp"),
+                            (4, "linkedin"),
+                            (5, "reddit"),
+                            (6, "telegram"),
+                            (7, "e-mail"),
+                            (8, "link"),
+                            (9, "native_share_dialog_of_device"),
+                        ],
+                        default=8,
+                        help_text="Way in which the project was shared",
+                        verbose_name="Shared Via",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Time when the user shared the project",
+                        verbose_name="Created At",
+                    ),
+                ),
+                (
+                    "project",
+                    models.ForeignKey(
+                        help_text="Points to a project",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="shared_project",
+                        to="organization.Project",
+                        verbose_name="Project",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        help_text="Points to the user who shared the project",
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="sharing_user",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Sharing User",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Shared Project',
-                'verbose_name_plural': 'Shared Projects',
-                'ordering': ['-id'],
+                "verbose_name": "Shared Project",
+                "verbose_name_plural": "Shared Projects",
+                "ordering": ["-id"],
             },
         ),
     ]

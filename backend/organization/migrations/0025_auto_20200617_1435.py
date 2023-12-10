@@ -4,18 +4,21 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0024_auto_20200617_1232'),
+        ("organization", "0024_auto_20200617_1232"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='project',
-            options={'ordering': ['-id'], 'verbose_name': 'Project', 'verbose_name_plural': 'Projects'},
+            name="project",
+            options={
+                "ordering": ["-id"],
+                "verbose_name": "Project",
+                "verbose_name_plural": "Projects",
+            },
         ),
         migrations.RemoveField(
-            model_name='projectparents',
-            name='order',
+            model_name="projectparents",
+            name="order",
         ),
     ]

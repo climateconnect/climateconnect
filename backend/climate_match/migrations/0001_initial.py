@@ -5,28 +5,77 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('contenttypes', '0002_remove_content_type_name'),
-        ('climateconnect_api', '0060_auto_20210420_1614'),
+        ("contenttypes", "0002_remove_content_type_name"),
+        ("climateconnect_api", "0060_auto_20210420_1614"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Question',
+            name="Question",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('text', models.CharField(help_text='Question text', max_length=1024, verbose_name='Question')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when question was created', verbose_name='Created at')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='Time when question was updated', verbose_name='Updated at')),
-                ('answer_type', models.ForeignKey(blank=True, help_text="Points to a model who's weight should increase. Example: Hubs, Predefined Answer, Skills", null=True, on_delete=django.db.models.deletion.SET_NULL, to='contenttypes.ContentType', verbose_name='Increase weight of')),
-                ('language', models.ForeignKey(blank=True, help_text='Points to main language', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='question_language', to='climateconnect_api.Language', verbose_name='Language')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "text",
+                    models.CharField(
+                        help_text="Question text",
+                        max_length=1024,
+                        verbose_name="Question",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Time when question was created",
+                        verbose_name="Created at",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="Time when question was updated",
+                        verbose_name="Updated at",
+                    ),
+                ),
+                (
+                    "answer_type",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="Points to a model who's weight should increase. Example: Hubs, Predefined Answer, Skills",
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="contenttypes.ContentType",
+                        verbose_name="Increase weight of",
+                    ),
+                ),
+                (
+                    "language",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="Points to main language",
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="question_language",
+                        to="climateconnect_api.Language",
+                        verbose_name="Language",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Question',
-                'verbose_name_plural': 'Questions',
+                "verbose_name": "Question",
+                "verbose_name_plural": "Questions",
             },
         ),
     ]

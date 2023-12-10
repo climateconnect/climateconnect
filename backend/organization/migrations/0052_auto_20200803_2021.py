@@ -4,19 +4,26 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0051_merge_20200726_0512'),
+        ("organization", "0051_merge_20200726_0512"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='projecttagging',
-            options={'ordering': ['order'], 'verbose_name': 'Project Tagging', 'verbose_name_plural': 'Project Taggings'},
+            name="projecttagging",
+            options={
+                "ordering": ["order"],
+                "verbose_name": "Project Tagging",
+                "verbose_name_plural": "Project Taggings",
+            },
         ),
         migrations.AddField(
-            model_name='projecttagging',
-            name='order',
-            field=models.PositiveSmallIntegerField(default=0, help_text='The bigger the number, the more to the top this category will be displayed', verbose_name='Position of tag'),
+            model_name="projecttagging",
+            name="order",
+            field=models.PositiveSmallIntegerField(
+                default=0,
+                help_text="The bigger the number, the more to the top this category will be displayed",
+                verbose_name="Position of tag",
+            ),
         ),
     ]

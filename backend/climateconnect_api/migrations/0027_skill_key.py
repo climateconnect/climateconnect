@@ -4,15 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0026_auto_20200724_1010'),
+        ("climateconnect_api", "0026_auto_20200724_1010"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='skill',
-            name='key',
-            field=models.CharField(blank=True, help_text='Key of a skill', max_length=512, null=True, verbose_name='Key'),
+            model_name="skill",
+            name="key",
+            field=models.CharField(
+                blank=True,
+                help_text="Key of a skill",
+                max_length=512,
+                null=True,
+                verbose_name="Key",
+            ),
         ),
     ]

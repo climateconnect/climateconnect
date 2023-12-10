@@ -4,15 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('location', '0010_auto_20230704_1837'),
+        ("location", "0010_auto_20230704_1837"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='location',
-            name='exact_address',
-            field=models.CharField(blank=True, help_text="Points to the exact address the location is on (e.g. 'Silk Road 50')", max_length=1024, null=True, verbose_name='Exact Address'),
+            model_name="location",
+            name="exact_address",
+            field=models.CharField(
+                blank=True,
+                help_text="Points to the exact address the location is on (e.g. 'Silk Road 50')",
+                max_length=1024,
+                null=True,
+                verbose_name="Exact Address",
+            ),
         ),
     ]

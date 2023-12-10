@@ -4,15 +4,26 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0074_projecttranslation_helpful_connections_translation'),
+        ("organization", "0074_projecttranslation_helpful_connections_translation"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='projectstatus',
-            name='status_type',
-            field=models.IntegerField(blank=True, choices=[(0, 'idea'), (1, 'inprogress'), (2, 'finished'), (3, 'cancelled'), (4, 'recurring')], help_text='Type of the status. Used as unique identifier', null=True, verbose_name='Status Type'),
+            model_name="projectstatus",
+            name="status_type",
+            field=models.IntegerField(
+                blank=True,
+                choices=[
+                    (0, "idea"),
+                    (1, "inprogress"),
+                    (2, "finished"),
+                    (3, "cancelled"),
+                    (4, "recurring"),
+                ],
+                help_text="Type of the status. Used as unique identifier",
+                null=True,
+                verbose_name="Status Type",
+            ),
         ),
     ]

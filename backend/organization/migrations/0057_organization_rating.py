@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0056_merge_20200827_0530'),
+        ("organization", "0056_merge_20200827_0530"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='organization',
-            name='rating',
-            field=models.PositiveSmallIntegerField(default=100, help_text='organizations with a rating of 99 are being shown as featured. Could later be used to sort organizations.', verbose_name='Rating (1-100)'),
+            model_name="organization",
+            name="rating",
+            field=models.PositiveSmallIntegerField(
+                default=100,
+                help_text="organizations with a rating of 99 are being shown as featured. Could later be used to sort organizations.",
+                verbose_name="Rating (1-100)",
+            ),
         ),
     ]

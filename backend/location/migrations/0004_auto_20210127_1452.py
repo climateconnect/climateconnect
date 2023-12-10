@@ -5,30 +5,50 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('location', '0003_auto_20210127_1423'),
+        ("location", "0003_auto_20210127_1423"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='location',
-            name='city',
-            field=models.CharField(help_text="Points to location's city name", max_length=1024, verbose_name='City'),
+            model_name="location",
+            name="city",
+            field=models.CharField(
+                help_text="Points to location's city name",
+                max_length=1024,
+                verbose_name="City",
+            ),
         ),
         migrations.AlterField(
-            model_name='location',
-            name='country',
-            field=models.CharField(help_text="Points to location's country name", max_length=1024, verbose_name='Country'),
+            model_name="location",
+            name="country",
+            field=models.CharField(
+                help_text="Points to location's country name",
+                max_length=1024,
+                verbose_name="Country",
+            ),
         ),
         migrations.AlterField(
-            model_name='location',
-            name='multi_polygon',
-            field=django.contrib.gis.db.models.fields.MultiPolygonField(blank=True, geography=True, help_text='The area where the location is located', null=True, srid=4326, verbose_name='Multi Polygon'),
+            model_name="location",
+            name="multi_polygon",
+            field=django.contrib.gis.db.models.fields.MultiPolygonField(
+                blank=True,
+                geography=True,
+                help_text="The area where the location is located",
+                null=True,
+                srid=4326,
+                verbose_name="Multi Polygon",
+            ),
         ),
         migrations.AlterField(
-            model_name='location',
-            name='state',
-            field=models.CharField(blank=True, help_text="Points to location's state name", max_length=1024, null=True, verbose_name='State'),
+            model_name="location",
+            name="state",
+            field=models.CharField(
+                blank=True,
+                help_text="Points to location's state name",
+                max_length=1024,
+                null=True,
+                verbose_name="State",
+            ),
         ),
     ]

@@ -5,31 +5,79 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0036_auto_20200624_1749'),
+        ("organization", "0036_auto_20200624_1749"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ProjectStatus',
+            name="ProjectStatus",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, help_text='Name of the project status', max_length=512, null=True, verbose_name='Name')),
-                ('has_end_date', models.BooleanField(help_text='Checks whether projects with this status have an end date', verbose_name='Has end date')),
-                ('has_start_date', models.BooleanField(help_text='Checks whether projects with this status have a start date', verbose_name='Has start date')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when project was linked to an organization', verbose_name='Created At')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='Time when project was updated. i.e.: Order change etc.', verbose_name='Updated At')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        blank=True,
+                        help_text="Name of the project status",
+                        max_length=512,
+                        null=True,
+                        verbose_name="Name",
+                    ),
+                ),
+                (
+                    "has_end_date",
+                    models.BooleanField(
+                        help_text="Checks whether projects with this status have an end date",
+                        verbose_name="Has end date",
+                    ),
+                ),
+                (
+                    "has_start_date",
+                    models.BooleanField(
+                        help_text="Checks whether projects with this status have a start date",
+                        verbose_name="Has start date",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Time when project was linked to an organization",
+                        verbose_name="Created At",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="Time when project was updated. i.e.: Order change etc.",
+                        verbose_name="Updated At",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Project Status',
-                'verbose_name_plural': 'Project Statuses',
-                'ordering': ['id'],
+                "verbose_name": "Project Status",
+                "verbose_name_plural": "Project Statuses",
+                "ordering": ["id"],
             },
         ),
         migrations.AlterField(
-            model_name='project',
-            name='status',
-            field=models.ForeignKey(help_text="Points to project's status", on_delete=django.db.models.deletion.PROTECT, related_name='project_status', to='organization.ProjectStatus', verbose_name='Project Status'),
+            model_name="project",
+            name="status",
+            field=models.ForeignKey(
+                help_text="Points to project's status",
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="project_status",
+                to="organization.ProjectStatus",
+                verbose_name="Project Status",
+            ),
         ),
     ]

@@ -25,7 +25,7 @@ from organization.models.translations import ProjectTranslation
 from organization.serializers.organization import OrganizationStubSerializer
 from organization.serializers.status import (
     ProjectTypesSerializer,
-    ProjectStatusSerializer
+    ProjectStatusSerializer,
 )
 from organization.serializers.tags import ProjectTaggingSerializer
 from organization.serializers.translation import ProjectTranslationSerializer
@@ -82,7 +82,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             "number_of_likes",
             "language",
             "project_type",
-            "additional_loc_info"
+            "additional_loc_info",
         )
         read_only_fields = ["url_slug"]
 
@@ -139,7 +139,13 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def get_project_type(self, obj):
         possible_project_types = list(PROJECT_TYPES.values())
-        project_type = next(filter(lambda type: type.type_id_short == obj.project_type, possible_project_types), None)
+        project_type = next(
+            filter(
+                lambda type: type.type_id_short == obj.project_type,
+                possible_project_types,
+            ),
+            None,
+        )
         serializer = ProjectTypesSerializer(project_type, many=False)
         return serializer.data
 
@@ -271,7 +277,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             "number_of_likes",
             "collaborating_organizations",
             "start_date",
-            "end_date"
+            "end_date",
         )
 
     def get_name(self, obj):
@@ -322,7 +328,13 @@ class ProjectStubSerializer(serializers.ModelSerializer):
 
     def get_project_type(self, obj):
         possible_project_types = list(PROJECT_TYPES.values())
-        project_type = next(filter(lambda type: type.type_id_short == obj.project_type, possible_project_types), None)
+        project_type = next(
+            filter(
+                lambda type: type.type_id_short == obj.project_type,
+                possible_project_types,
+            ),
+            None,
+        )
         serializer = ProjectTypesSerializer(project_type, many=False)
         return serializer.data["type_id"]
 

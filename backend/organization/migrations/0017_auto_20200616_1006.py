@@ -5,20 +5,33 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0016_auto_20200616_0946'),
+        ("organization", "0016_auto_20200616_0946"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='postcomment',
-            name='comment',
-            field=models.ForeignKey(blank=True, help_text='Point to comments table', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='comment_post_comment', to='organization.Comment', verbose_name='Comment'),
+            model_name="postcomment",
+            name="comment",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Point to comments table",
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="comment_post_comment",
+                to="organization.Comment",
+                verbose_name="Comment",
+            ),
         ),
         migrations.AlterField(
-            model_name='postcomment',
-            name='post',
-            field=models.ForeignKey(help_text='Point to post table', on_delete=django.db.models.deletion.CASCADE, related_name='post_comment', to='organization.Post', verbose_name='Post'),
+            model_name="postcomment",
+            name="post",
+            field=models.ForeignKey(
+                help_text="Point to post table",
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="post_comment",
+                to="organization.Post",
+                verbose_name="Post",
+            ),
         ),
     ]

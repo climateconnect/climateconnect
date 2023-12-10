@@ -6,25 +6,42 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0086_projectlike'),
+        ("organization", "0086_projectlike"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='projectmember',
-            name='project',
-            field=models.ForeignKey(help_text='Points to project table', on_delete=django.db.models.deletion.CASCADE, related_name='project_member_project', to='organization.Project', verbose_name='Project'),
+            model_name="projectmember",
+            name="project",
+            field=models.ForeignKey(
+                help_text="Points to project table",
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="project_member_project",
+                to="organization.Project",
+                verbose_name="Project",
+            ),
         ),
         migrations.AlterField(
-            model_name='projectmember',
-            name='role',
-            field=models.ForeignKey(help_text='Points to user role', on_delete=django.db.models.deletion.PROTECT, related_name='project_member_role', to='climateconnect_api.Role', verbose_name='Role(permissions)'),
+            model_name="projectmember",
+            name="role",
+            field=models.ForeignKey(
+                help_text="Points to user role",
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="project_member_role",
+                to="climateconnect_api.Role",
+                verbose_name="Role(permissions)",
+            ),
         ),
         migrations.AlterField(
-            model_name='projectmember',
-            name='user',
-            field=models.ForeignKey(help_text='Points to user table', on_delete=django.db.models.deletion.CASCADE, related_name='project_member_user', to=settings.AUTH_USER_MODEL, verbose_name='User'),
+            model_name="projectmember",
+            name="user",
+            field=models.ForeignKey(
+                help_text="Points to user table",
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="project_member_user",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="User",
+            ),
         ),
     ]

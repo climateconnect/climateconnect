@@ -4,15 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0005_skill'),
+        ("climateconnect_api", "0005_skill"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userprofile',
-            name='skills',
-            field=models.ManyToManyField(blank=True, help_text="Points to user's skills", related_name='user_skills', to='climateconnect_api.Skill', verbose_name='Skills'),
+            model_name="userprofile",
+            name="skills",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="Points to user's skills",
+                related_name="user_skills",
+                to="climateconnect_api.Skill",
+                verbose_name="Skills",
+            ),
         ),
     ]

@@ -6,24 +6,56 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('ideas', '0006_idea_location'),
+        ("ideas", "0006_idea_location"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='IdeaSupporter',
+            name="IdeaSupporter",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when user supported the idea', verbose_name='Created at')),
-                ('idea', models.ForeignKey(help_text='Points to idea supported by user', on_delete=django.db.models.deletion.CASCADE, related_name='supported_idea', to='ideas.Idea', verbose_name='Idea')),
-                ('user', models.ForeignKey(help_text='Points to user who supported the idea', on_delete=django.db.models.deletion.CASCADE, related_name='supporter_user', to=settings.AUTH_USER_MODEL, verbose_name='User')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Time when user supported the idea",
+                        verbose_name="Created at",
+                    ),
+                ),
+                (
+                    "idea",
+                    models.ForeignKey(
+                        help_text="Points to idea supported by user",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="supported_idea",
+                        to="ideas.Idea",
+                        verbose_name="Idea",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        help_text="Points to user who supported the idea",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="supporter_user",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="User",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Idea supporter',
-                'verbose_name_plural': 'Idea supporters',
+                "verbose_name": "Idea supporter",
+                "verbose_name_plural": "Idea supporters",
             },
         ),
     ]

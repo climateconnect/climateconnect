@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0057_userprofile_language'),
+        ("climateconnect_api", "0057_userprofile_language"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userprofiletranslation',
-            name='is_manual_translation',
-            field=models.BooleanField(default=False, help_text='Did the user manually translate this or was it automatically translated with DeepL?', verbose_name='Is manual translation?'),
+            model_name="userprofiletranslation",
+            name="is_manual_translation",
+            field=models.BooleanField(
+                default=False,
+                help_text="Did the user manually translate this or was it automatically translated with DeepL?",
+                verbose_name="Is manual translation?",
+            ),
         ),
     ]

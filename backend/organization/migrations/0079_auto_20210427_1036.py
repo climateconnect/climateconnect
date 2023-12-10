@@ -4,20 +4,25 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0078_auto_20210427_0915'),
+        ("organization", "0078_auto_20210427_0915"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='organizationtranslation',
-            old_name='short_description_translation',
-            new_name='about_translation',
+            model_name="organizationtranslation",
+            old_name="short_description_translation",
+            new_name="about_translation",
         ),
         migrations.AddField(
-            model_name='organization',
-            name='short_description',
-            field=models.TextField(blank=True, help_text='Short description of the org: 240 characters max!', max_length=280, null=True, verbose_name='Short description'),
+            model_name="organization",
+            name="short_description",
+            field=models.TextField(
+                blank=True,
+                help_text="Short description of the org: 240 characters max!",
+                max_length=280,
+                null=True,
+                verbose_name="Short description",
+            ),
         ),
     ]

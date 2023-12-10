@@ -5,16 +5,23 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('location', '0008_locationtranslation'),
-        ('ideas', '0005_idearating'),
+        ("location", "0008_locationtranslation"),
+        ("ideas", "0005_idearating"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='idea',
-            name='location',
-            field=models.ForeignKey(blank=True, help_text='Points to location of the idea', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='idea_location', to='location.Location', verbose_name='Location'),
+            model_name="idea",
+            name="location",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Points to location of the idea",
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="idea_location",
+                to="location.Location",
+                verbose_name="Location",
+            ),
         ),
     ]

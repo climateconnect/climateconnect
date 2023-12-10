@@ -4,22 +4,48 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0001_initial'),
+        ("organization", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='OrganizationTags',
+            name="OrganizationTags",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(help_text='Tag name', max_length=256, verbose_name='Name')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when tag was created', verbose_name='Created At')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='Time when tag was updated', verbose_name='Updated At')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="Tag name", max_length=256, verbose_name="Name"
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Time when tag was created",
+                        verbose_name="Created At",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="Time when tag was updated",
+                        verbose_name="Updated At",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Organization Tags',
+                "verbose_name": "Organization Tags",
             },
         ),
     ]

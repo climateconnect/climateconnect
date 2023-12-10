@@ -4,15 +4,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0006_userprofile_skills'),
+        ("climateconnect_api", "0006_userprofile_skills"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='userprofile',
-            name='url_slug',
-            field=models.CharField(blank=True, help_text='slug for user URL', max_length=512, null=True, unique=True, verbose_name='URL Slug'),
+            model_name="userprofile",
+            name="url_slug",
+            field=models.CharField(
+                blank=True,
+                help_text="slug for user URL",
+                max_length=512,
+                null=True,
+                unique=True,
+                verbose_name="URL Slug",
+            ),
         ),
     ]

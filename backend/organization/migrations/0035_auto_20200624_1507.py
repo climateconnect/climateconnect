@@ -4,20 +4,19 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0034_auto_20200624_1429'),
+        ("organization", "0034_auto_20200624_1429"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='organizationtags',
-            old_name='organization_tag',
-            new_name='parent_tag',
+            model_name="organizationtags",
+            old_name="organization_tag",
+            new_name="parent_tag",
         ),
         migrations.RenameField(
-            model_name='projecttags',
-            old_name='organization_tag',
-            new_name='parent_tag',
+            model_name="projecttags",
+            old_name="organization_tag",
+            new_name="parent_tag",
         ),
     ]

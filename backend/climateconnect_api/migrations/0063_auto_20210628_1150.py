@@ -4,15 +4,32 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0062_userprofile_email_on_comment_on_your_idea'),
+        ("climateconnect_api", "0062_userprofile_email_on_comment_on_your_idea"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='notification',
-            name='notification_type',
-            field=models.IntegerField(choices=[(0, 'broadcast'), (1, 'private_message'), (2, 'project_comment'), (3, 'reply_to_project_comment'), (4, 'project_follower'), (5, 'project_update_post'), (6, 'post_comment'), (7, 'reply_to_post_comment'), (8, 'group_message'), (11, 'idea_comment'), (12, 'reply_to_idea_comment'), (13, 'person_joined_idea')], default=0, help_text='type of notification', verbose_name='Notification type'),
+            model_name="notification",
+            name="notification_type",
+            field=models.IntegerField(
+                choices=[
+                    (0, "broadcast"),
+                    (1, "private_message"),
+                    (2, "project_comment"),
+                    (3, "reply_to_project_comment"),
+                    (4, "project_follower"),
+                    (5, "project_update_post"),
+                    (6, "post_comment"),
+                    (7, "reply_to_post_comment"),
+                    (8, "group_message"),
+                    (11, "idea_comment"),
+                    (12, "reply_to_idea_comment"),
+                    (13, "person_joined_idea"),
+                ],
+                default=0,
+                help_text="type of notification",
+                verbose_name="Notification type",
+            ),
         ),
     ]

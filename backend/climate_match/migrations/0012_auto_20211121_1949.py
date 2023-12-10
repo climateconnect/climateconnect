@@ -4,15 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climate_match', '0011_auto_20211121_1910'),
+        ("climate_match", "0011_auto_20211121_1910"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='userquestionanswer',
-            name='token',
-            field=models.UUIDField(blank=True, help_text='Unique token to store for user who are not logged in.', null=True, verbose_name='Token'),
+            model_name="userquestionanswer",
+            name="token",
+            field=models.UUIDField(
+                blank=True,
+                help_text="Unique token to store for user who are not logged in.",
+                null=True,
+                verbose_name="Token",
+            ),
         ),
     ]

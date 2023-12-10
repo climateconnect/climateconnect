@@ -5,25 +5,64 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0057_organization_rating'),
+        ("organization", "0057_organization_rating"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='OrganizationFieldTagging',
+            name="OrganizationFieldTagging",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when organization field tag was created', verbose_name='Created At')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='Time when organization field tag was updated', verbose_name='Updated At')),
-                ('field_tag', models.ForeignKey(help_text='Points to the tag', on_delete=django.db.models.deletion.CASCADE, related_name='field_tag_organization', to='organization.ProjectTags', verbose_name='Organization Tag')),
-                ('organization', models.ForeignKey(help_text='Points to an organization', on_delete=django.db.models.deletion.CASCADE, related_name='field_tag_organization', to='organization.Organization', verbose_name='Organization')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Time when organization field tag was created",
+                        verbose_name="Created At",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="Time when organization field tag was updated",
+                        verbose_name="Updated At",
+                    ),
+                ),
+                (
+                    "field_tag",
+                    models.ForeignKey(
+                        help_text="Points to the tag",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="field_tag_organization",
+                        to="organization.ProjectTags",
+                        verbose_name="Organization Tag",
+                    ),
+                ),
+                (
+                    "organization",
+                    models.ForeignKey(
+                        help_text="Points to an organization",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="field_tag_organization",
+                        to="organization.Organization",
+                        verbose_name="Organization",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Organization Field Tagging',
-                'verbose_name_plural': 'Organization Field Taggings',
-                'unique_together': {('organization', 'field_tag')},
+                "verbose_name": "Organization Field Tagging",
+                "verbose_name_plural": "Organization Field Taggings",
+                "unique_together": {("organization", "field_tag")},
             },
         ),
     ]

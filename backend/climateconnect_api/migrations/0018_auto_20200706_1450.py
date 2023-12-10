@@ -4,14 +4,17 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0017_auto_20200702_0728'),
+        ("climateconnect_api", "0017_auto_20200702_0728"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='userprofile',
-            options={'ordering': ['-id'], 'verbose_name': 'User Profile', 'verbose_name_plural': 'User Profiles'},
+            name="userprofile",
+            options={
+                "ordering": ["-id"],
+                "verbose_name": "User Profile",
+                "verbose_name_plural": "User Profiles",
+            },
         ),
     ]

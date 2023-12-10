@@ -4,40 +4,39 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climate_match', '0013_userquestionanswer_hub'),
+        ("climate_match", "0013_userquestionanswer_hub"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='answer',
-            name='id',
+            model_name="answer",
+            name="id",
             field=models.AutoField(primary_key=True, serialize=False),
         ),
         migrations.AlterField(
-            model_name='answermetadata',
-            name='id',
+            model_name="answermetadata",
+            name="id",
             field=models.AutoField(primary_key=True, serialize=False),
         ),
         migrations.AlterField(
-            model_name='answertranslation',
-            name='id',
+            model_name="answertranslation",
+            name="id",
             field=models.AutoField(primary_key=True, serialize=False),
         ),
         migrations.AlterField(
-            model_name='question',
-            name='id',
+            model_name="question",
+            name="id",
             field=models.AutoField(primary_key=True, serialize=False),
         ),
         migrations.AlterField(
-            model_name='questiontranslation',
-            name='id',
+            model_name="questiontranslation",
+            name="id",
             field=models.AutoField(primary_key=True, serialize=False),
         ),
         migrations.AlterField(
-            model_name='userquestionanswer',
-            name='id',
+            model_name="userquestionanswer",
+            name="id",
             field=models.BigAutoField(primary_key=True, serialize=False),
         ),
     ]

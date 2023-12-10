@@ -4,15 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0064_notification_idea_supporter'),
+        ("climateconnect_api", "0064_notification_idea_supporter"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userprofile',
-            name='email_on_idea_join',
-            field=models.BooleanField(blank=True, default=True, help_text='Check if user wants to receive emails when somebody joins an idea they are part of', null=True, verbose_name='Email on new idea join'),
+            model_name="userprofile",
+            name="email_on_idea_join",
+            field=models.BooleanField(
+                blank=True,
+                default=True,
+                help_text="Check if user wants to receive emails when somebody joins an idea they are part of",
+                null=True,
+                verbose_name="Email on new idea join",
+            ),
         ),
     ]

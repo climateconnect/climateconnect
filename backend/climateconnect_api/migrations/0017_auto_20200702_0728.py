@@ -4,14 +4,17 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0016_role_explanation'),
+        ("climateconnect_api", "0016_role_explanation"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='role',
-            options={'ordering': ['id'], 'verbose_name': 'Role', 'verbose_name_plural': 'Roles'},
+            name="role",
+            options={
+                "ordering": ["id"],
+                "verbose_name": "Role",
+                "verbose_name_plural": "Roles",
+            },
         ),
     ]

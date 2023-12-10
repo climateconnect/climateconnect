@@ -6,26 +6,73 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('organization', '0097_delete_orgprojectpublished'),
+        ("organization", "0097_delete_orgprojectpublished"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='OrgProjectPublished',
+            name="OrgProjectPublished",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when organization was created', verbose_name='Created At')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='Time when organization object was updated', verbose_name='Updated At')),
-                ('organization', models.ForeignKey(help_text='Points to an organization', on_delete=django.db.models.deletion.CASCADE, related_name='organization_that_published', to='organization.organization', verbose_name='Organization that published a project')),
-                ('project', models.ForeignKey(help_text='Points to a project', on_delete=django.db.models.deletion.CASCADE, related_name='project_published_by_org', to='organization.project', verbose_name='Project that was published by org')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='receiving_organization_follower', to=settings.AUTH_USER_MODEL, verbose_name='Organization Follower that will receive notification')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Time when organization was created",
+                        verbose_name="Created At",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="Time when organization object was updated",
+                        verbose_name="Updated At",
+                    ),
+                ),
+                (
+                    "organization",
+                    models.ForeignKey(
+                        help_text="Points to an organization",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="organization_that_published",
+                        to="organization.organization",
+                        verbose_name="Organization that published a project",
+                    ),
+                ),
+                (
+                    "project",
+                    models.ForeignKey(
+                        help_text="Points to a project",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="project_published_by_org",
+                        to="organization.project",
+                        verbose_name="Project that was published by org",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="receiving_organization_follower",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Organization Follower that will receive notification",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Organization Project Published',
-                'ordering': ['-id'],
+                "verbose_name": "Organization Project Published",
+                "ordering": ["-id"],
             },
         ),
     ]

@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0019_merge_20200707_1303'),
+        ("climateconnect_api", "0019_merge_20200707_1303"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userprofile',
-            name='has_logged_in',
-            field=models.PositiveSmallIntegerField(default=0, help_text='Check if the user should be redirected to the edit profile page. Shows the number of logins up to 2', verbose_name='Number of logins up to 2'),
+            model_name="userprofile",
+            name="has_logged_in",
+            field=models.PositiveSmallIntegerField(
+                default=0,
+                help_text="Check if the user should be redirected to the edit profile page. Shows the number of logins up to 2",
+                verbose_name="Number of logins up to 2",
+            ),
         ),
     ]

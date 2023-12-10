@@ -4,14 +4,16 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('hubs', '0015_auto_20220921_1617'),
+        ("hubs", "0015_auto_20220921_1617"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='hubambassador',
-            options={'verbose_name': 'Hub Ambassador', 'verbose_name_plural': 'Hub Ambassadors'},
+            name="hubambassador",
+            options={
+                "verbose_name": "Hub Ambassador",
+                "verbose_name_plural": "Hub Ambassadors",
+            },
         ),
     ]

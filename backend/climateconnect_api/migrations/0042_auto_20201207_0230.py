@@ -4,25 +4,42 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0041_donation_donationgoal'),
+        ("climateconnect_api", "0041_donation_donationgoal"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userprofile',
-            name='latitude',
-            field=models.CharField(blank=True, help_text="Latitude of user's location", max_length=512, null=True, verbose_name='Latitude'),
+            model_name="userprofile",
+            name="latitude",
+            field=models.CharField(
+                blank=True,
+                help_text="Latitude of user's location",
+                max_length=512,
+                null=True,
+                verbose_name="Latitude",
+            ),
         ),
         migrations.AddField(
-            model_name='userprofile',
-            name='location',
-            field=models.CharField(blank=True, help_text='Location of user', max_length=2048, null=True, verbose_name='Location'),
+            model_name="userprofile",
+            name="location",
+            field=models.CharField(
+                blank=True,
+                help_text="Location of user",
+                max_length=2048,
+                null=True,
+                verbose_name="Location",
+            ),
         ),
         migrations.AddField(
-            model_name='userprofile',
-            name='longitude',
-            field=models.CharField(blank=True, help_text="Longitude of user's location", max_length=512, null=True, verbose_name='Longitude'),
+            model_name="userprofile",
+            name="longitude",
+            field=models.CharField(
+                blank=True,
+                help_text="Longitude of user's location",
+                max_length=512,
+                null=True,
+                verbose_name="Longitude",
+            ),
         ),
     ]

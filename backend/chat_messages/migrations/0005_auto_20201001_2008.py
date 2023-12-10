@@ -7,43 +7,89 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('chat_messages', '0004_auto_20200929_0554'),
+        ("chat_messages", "0004_auto_20200929_0554"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='messageparticipants',
-            options={'ordering': ['-last_message_at', '-created_at'], 'verbose_name_plural': 'Message Participants'},
+            name="messageparticipants",
+            options={
+                "ordering": ["-last_message_at", "-created_at"],
+                "verbose_name_plural": "Message Participants",
+            },
         ),
         migrations.RemoveField(
-            model_name='message',
-            name='read_at',
+            model_name="message",
+            name="read_at",
         ),
         migrations.AddField(
-            model_name='messageparticipants',
-            name='last_message_at',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now, help_text='Time when the last message in this chat was sent', verbose_name='Last message at'),
+            model_name="messageparticipants",
+            name="last_message_at",
+            field=models.DateTimeField(
+                auto_now_add=True,
+                default=django.utils.timezone.now,
+                help_text="Time when the last message in this chat was sent",
+                verbose_name="Last message at",
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='messageparticipants',
-            name='name',
-            field=models.CharField(default='', help_text='Name of the chat', max_length=128, verbose_name='chat_name'),
+            model_name="messageparticipants",
+            name="name",
+            field=models.CharField(
+                default="",
+                help_text="Name of the chat",
+                max_length=128,
+                verbose_name="chat_name",
+            ),
         ),
         migrations.CreateModel(
-            name='MessageReceiver',
+            name="MessageReceiver",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('read_at', models.DateTimeField(blank=True, help_text='Time when all participants have read a messages', null=True, verbose_name='Read at')),
-                ('message', models.ForeignKey(help_text='Points to the message that was received', on_delete=django.db.models.deletion.CASCADE, related_name='messacereceiver_message', to='chat_messages.Message', verbose_name='Message')),
-                ('receiver', models.ForeignKey(help_text='Points to the user who received the message', on_delete=django.db.models.deletion.CASCADE, related_name='messagereceiver_receiver', to=settings.AUTH_USER_MODEL, verbose_name='Receiver')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "read_at",
+                    models.DateTimeField(
+                        blank=True,
+                        help_text="Time when all participants have read a messages",
+                        null=True,
+                        verbose_name="Read at",
+                    ),
+                ),
+                (
+                    "message",
+                    models.ForeignKey(
+                        help_text="Points to the message that was received",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="messacereceiver_message",
+                        to="chat_messages.Message",
+                        verbose_name="Message",
+                    ),
+                ),
+                (
+                    "receiver",
+                    models.ForeignKey(
+                        help_text="Points to the user who received the message",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="messagereceiver_receiver",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Receiver",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Message Receiver',
-                'verbose_name_plural': 'Message Receivers',
+                "verbose_name": "Message Receiver",
+                "verbose_name_plural": "Message Receivers",
             },
         ),
     ]

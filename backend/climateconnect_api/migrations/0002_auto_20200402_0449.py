@@ -4,25 +4,42 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0001_initial'),
+        ("climateconnect_api", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userprofile',
-            name='city',
-            field=models.CharField(blank=True, help_text="User's city", max_length=512, null=True, verbose_name='City'),
+            model_name="userprofile",
+            name="city",
+            field=models.CharField(
+                blank=True,
+                help_text="User's city",
+                max_length=512,
+                null=True,
+                verbose_name="City",
+            ),
         ),
         migrations.AddField(
-            model_name='userprofile',
-            name='country',
-            field=models.CharField(blank=True, help_text="User's country", max_length=256, null=True, verbose_name='Country'),
+            model_name="userprofile",
+            name="country",
+            field=models.CharField(
+                blank=True,
+                help_text="User's country",
+                max_length=256,
+                null=True,
+                verbose_name="Country",
+            ),
         ),
         migrations.AddField(
-            model_name='userprofile',
-            name='state',
-            field=models.CharField(blank=True, help_text="User's state", max_length=512, null=True, verbose_name='State'),
+            model_name="userprofile",
+            name="state",
+            field=models.CharField(
+                blank=True,
+                help_text="User's state",
+                max_length=512,
+                null=True,
+                verbose_name="State",
+            ),
         ),
     ]

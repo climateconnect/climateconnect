@@ -5,19 +5,28 @@ import organization.models.project
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0052_auto_20200803_2021'),
+        ("organization", "0052_auto_20200803_2021"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='projecttagging',
-            options={'ordering': ['-order'], 'verbose_name': 'Project Tagging', 'verbose_name_plural': 'Project Taggings'},
+            name="projecttagging",
+            options={
+                "ordering": ["-order"],
+                "verbose_name": "Project Tagging",
+                "verbose_name_plural": "Project Taggings",
+            },
         ),
         migrations.AddField(
-            model_name='project',
-            name='thumbnail_image',
-            field=models.ImageField(blank=True, help_text='Image to show on project card', null=True, upload_to=organization.models.project.project_image_path, verbose_name='Thumbnail image'),
+            model_name="project",
+            name="thumbnail_image",
+            field=models.ImageField(
+                blank=True,
+                help_text="Image to show on project card",
+                null=True,
+                upload_to=organization.models.project.project_image_path,
+                verbose_name="Thumbnail image",
+            ),
         ),
     ]

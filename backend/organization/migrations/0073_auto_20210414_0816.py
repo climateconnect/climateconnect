@@ -4,50 +4,85 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0072_organization_language'),
+        ("organization", "0072_organization_language"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='commenttranslation',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, help_text='Time when translation object was created', null=True, verbose_name='Created at'),
+            model_name="commenttranslation",
+            name="created_at",
+            field=models.DateTimeField(
+                auto_now_add=True,
+                help_text="Time when translation object was created",
+                null=True,
+                verbose_name="Created at",
+            ),
         ),
         migrations.AddField(
-            model_name='commenttranslation',
-            name='is_manual_translation',
-            field=models.BooleanField(default=False, help_text='Did the user manually translate this or was it automatically translated with DeepL?', verbose_name='Is manual translation?'),
+            model_name="commenttranslation",
+            name="is_manual_translation",
+            field=models.BooleanField(
+                default=False,
+                help_text="Did the user manually translate this or was it automatically translated with DeepL?",
+                verbose_name="Is manual translation?",
+            ),
         ),
         migrations.AddField(
-            model_name='commenttranslation',
-            name='updated_at',
-            field=models.DateTimeField(auto_now=True, help_text='Time when translation object was updated', null=True, verbose_name='Updated at'),
+            model_name="commenttranslation",
+            name="updated_at",
+            field=models.DateTimeField(
+                auto_now=True,
+                help_text="Time when translation object was updated",
+                null=True,
+                verbose_name="Updated at",
+            ),
         ),
         migrations.AddField(
-            model_name='organizationtranslation',
-            name='is_manual_translation',
-            field=models.BooleanField(default=False, help_text='Did the user manually translate this or was it automatically translated with DeepL?', verbose_name='Is manual translation?'),
+            model_name="organizationtranslation",
+            name="is_manual_translation",
+            field=models.BooleanField(
+                default=False,
+                help_text="Did the user manually translate this or was it automatically translated with DeepL?",
+                verbose_name="Is manual translation?",
+            ),
         ),
         migrations.AddField(
-            model_name='posttranslation',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, help_text='Time when translation object was created', null=True, verbose_name='Created at'),
+            model_name="posttranslation",
+            name="created_at",
+            field=models.DateTimeField(
+                auto_now_add=True,
+                help_text="Time when translation object was created",
+                null=True,
+                verbose_name="Created at",
+            ),
         ),
         migrations.AddField(
-            model_name='posttranslation',
-            name='is_manual_translation',
-            field=models.BooleanField(default=False, help_text='Did the user manually translate this or was it automatically translated with DeepL?', verbose_name='Is manual translation?'),
+            model_name="posttranslation",
+            name="is_manual_translation",
+            field=models.BooleanField(
+                default=False,
+                help_text="Did the user manually translate this or was it automatically translated with DeepL?",
+                verbose_name="Is manual translation?",
+            ),
         ),
         migrations.AddField(
-            model_name='posttranslation',
-            name='updated_at',
-            field=models.DateTimeField(auto_now=True, help_text='Time when translation object was updated', null=True, verbose_name='Updated at'),
+            model_name="posttranslation",
+            name="updated_at",
+            field=models.DateTimeField(
+                auto_now=True,
+                help_text="Time when translation object was updated",
+                null=True,
+                verbose_name="Updated at",
+            ),
         ),
         migrations.AddField(
-            model_name='projecttranslation',
-            name='is_manual_translation',
-            field=models.BooleanField(default=False, help_text='Did the user manually translate this or was it automatically translated with DeepL?', verbose_name='Is manual translation?'),
+            model_name="projecttranslation",
+            name="is_manual_translation",
+            field=models.BooleanField(
+                default=False,
+                help_text="Did the user manually translate this or was it automatically translated with DeepL?",
+                verbose_name="Is manual translation?",
+            ),
         ),
     ]

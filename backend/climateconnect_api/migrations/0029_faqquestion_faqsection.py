@@ -5,43 +5,126 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0028_feedback'),
+        ("climateconnect_api", "0028_feedback"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='FaqSection',
+            name="FaqSection",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(help_text='Points to section name. Each section has its own tab on the FAQ page', max_length=128, verbose_name='Name')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when skill was created', verbose_name='Created At')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='Time when skill was updated', verbose_name='Updated At')),
-                ('rating', models.PositiveSmallIntegerField(default=1, help_text='The larger the number, the more to the top this section will be displayed', verbose_name='Rating (1-100)')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="Points to section name. Each section has its own tab on the FAQ page",
+                        max_length=128,
+                        verbose_name="Name",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Time when skill was created",
+                        verbose_name="Created At",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="Time when skill was updated",
+                        verbose_name="Updated At",
+                    ),
+                ),
+                (
+                    "rating",
+                    models.PositiveSmallIntegerField(
+                        default=1,
+                        help_text="The larger the number, the more to the top this section will be displayed",
+                        verbose_name="Rating (1-100)",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Faq Section',
-                'verbose_name_plural': 'Faq Sections',
-                'ordering': ['-rating'],
+                "verbose_name": "Faq Section",
+                "verbose_name_plural": "Faq Sections",
+                "ordering": ["-rating"],
             },
         ),
         migrations.CreateModel(
-            name='FaqQuestion',
+            name="FaqQuestion",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('question', models.TextField(help_text='The question text', verbose_name='Question')),
-                ('answer', models.TextField(help_text='The answer text', verbose_name='Answer')),
-                ('rating', models.PositiveSmallIntegerField(default=1, help_text='The larger the number, the more to the top this question will be displayed', verbose_name='Rating (1-100)')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when skill was created', verbose_name='Created At')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='Time when skill was updated', verbose_name='Updated At')),
-                ('section', models.ForeignKey(help_text='Points to the section this question belongs to', on_delete=django.db.models.deletion.CASCADE, related_name='question_section', to='climateconnect_api.FaqSection', verbose_name='Section/Tab')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "question",
+                    models.TextField(
+                        help_text="The question text", verbose_name="Question"
+                    ),
+                ),
+                (
+                    "answer",
+                    models.TextField(
+                        help_text="The answer text", verbose_name="Answer"
+                    ),
+                ),
+                (
+                    "rating",
+                    models.PositiveSmallIntegerField(
+                        default=1,
+                        help_text="The larger the number, the more to the top this question will be displayed",
+                        verbose_name="Rating (1-100)",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Time when skill was created",
+                        verbose_name="Created At",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="Time when skill was updated",
+                        verbose_name="Updated At",
+                    ),
+                ),
+                (
+                    "section",
+                    models.ForeignKey(
+                        help_text="Points to the section this question belongs to",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="question_section",
+                        to="climateconnect_api.FaqSection",
+                        verbose_name="Section/Tab",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Faq Question',
-                'verbose_name_plural': 'Faq Questions',
-                'db_table': 'climateconnect_faq',
-                'ordering': ['-rating'],
+                "verbose_name": "Faq Question",
+                "verbose_name_plural": "Faq Questions",
+                "db_table": "climateconnect_faq",
+                "ordering": ["-rating"],
             },
         ),
     ]

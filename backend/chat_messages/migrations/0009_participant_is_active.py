@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('chat_messages', '0008_remove_messageparticipants_participants'),
+        ("chat_messages", "0008_remove_messageparticipants_participants"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='participant',
-            name='is_active',
-            field=models.BooleanField(default=True, help_text='Check if the user is still part of the chat.', verbose_name='Is active?'),
+            model_name="participant",
+            name="is_active",
+            field=models.BooleanField(
+                default=True,
+                help_text="Check if the user is still part of the chat.",
+                verbose_name="Is active?",
+            ),
         ),
     ]

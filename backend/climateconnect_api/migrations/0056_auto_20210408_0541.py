@@ -4,20 +4,31 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0055_auto_20210408_0532'),
+        ("climateconnect_api", "0055_auto_20210408_0532"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='skill',
-            name='details_de_translation',
-            field=models.CharField(blank=True, help_text='Deutsch translation for details columns', max_length=128, null=True, verbose_name='Details DE translation'),
+            model_name="skill",
+            name="details_de_translation",
+            field=models.CharField(
+                blank=True,
+                help_text="Deutsch translation for details columns",
+                max_length=128,
+                null=True,
+                verbose_name="Details DE translation",
+            ),
         ),
         migrations.AddField(
-            model_name='skill',
-            name='name_de_translation',
-            field=models.CharField(blank=True, help_text='Deutsch translation of name column', max_length=512, null=True, verbose_name='Name DE translation'),
+            model_name="skill",
+            name="name_de_translation",
+            field=models.CharField(
+                blank=True,
+                help_text="Deutsch translation of name column",
+                max_length=512,
+                null=True,
+                verbose_name="Name DE translation",
+            ),
         ),
     ]

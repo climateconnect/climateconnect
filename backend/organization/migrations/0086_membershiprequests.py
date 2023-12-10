@@ -6,28 +6,111 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0066_auto_20210724_1451'),
+        ("climateconnect_api", "0066_auto_20210724_1451"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('organization', '0085_organization_hubs'),
+        ("organization", "0085_organization_hubs"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='MembershipRequests',
+            name="MembershipRequests",
             fields=[
-                ('id', models.AutoField(help_text='identifier of a join request', primary_key=True, serialize=False, verbose_name='join request Id')),
-                ('target_membership_type', models.SmallIntegerField(choices=[(1, 'ORGANIZATION'), (2, 'PROJECT')], help_text='The type of entity a user requested to join (organization, project...)', verbose_name='Membership Request Target Type')),
-                ('requested_at', models.DateTimeField(default=None, help_text='Time of request', verbose_name='Requested at')),
-                ('approved_at', models.DateTimeField(default=None, help_text='Time of request approval', null=True, verbose_name='Approved at')),
-                ('rejected_at', models.DateTimeField(default=None, help_text='Time of request rejection', null=True, verbose_name='Rejected at')),
-                ('message', models.CharField(blank=True, help_text='Message associated with the request', max_length=4096, null=True, verbose_name='Request Message')),
-                ('request_status', models.SmallIntegerField(choices=[(1, 'PENDING'), (2, 'APPROVED'), (3, 'REJECTED')], default=1)),
-                ('availability', models.ForeignKey(help_text='Points to the Availability offered by the user', on_delete=django.db.models.deletion.CASCADE, to='climateconnect_api.Availability')),
-                ('target_organization', models.ForeignKey(help_text='Points to the requested organization', null=True, on_delete=django.db.models.deletion.CASCADE, to='organization.Organization')),
-                ('target_project', models.ForeignKey(help_text='Points to the requested project', null=True, on_delete=django.db.models.deletion.CASCADE, to='organization.Project')),
-                ('user', models.ForeignKey(help_text='Points to the user who sent the request', on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='feedback_user')),
+                (
+                    "id",
+                    models.AutoField(
+                        help_text="identifier of a join request",
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="join request Id",
+                    ),
+                ),
+                (
+                    "target_membership_type",
+                    models.SmallIntegerField(
+                        choices=[(1, "ORGANIZATION"), (2, "PROJECT")],
+                        help_text="The type of entity a user requested to join (organization, project...)",
+                        verbose_name="Membership Request Target Type",
+                    ),
+                ),
+                (
+                    "requested_at",
+                    models.DateTimeField(
+                        default=None,
+                        help_text="Time of request",
+                        verbose_name="Requested at",
+                    ),
+                ),
+                (
+                    "approved_at",
+                    models.DateTimeField(
+                        default=None,
+                        help_text="Time of request approval",
+                        null=True,
+                        verbose_name="Approved at",
+                    ),
+                ),
+                (
+                    "rejected_at",
+                    models.DateTimeField(
+                        default=None,
+                        help_text="Time of request rejection",
+                        null=True,
+                        verbose_name="Rejected at",
+                    ),
+                ),
+                (
+                    "message",
+                    models.CharField(
+                        blank=True,
+                        help_text="Message associated with the request",
+                        max_length=4096,
+                        null=True,
+                        verbose_name="Request Message",
+                    ),
+                ),
+                (
+                    "request_status",
+                    models.SmallIntegerField(
+                        choices=[(1, "PENDING"), (2, "APPROVED"), (3, "REJECTED")],
+                        default=1,
+                    ),
+                ),
+                (
+                    "availability",
+                    models.ForeignKey(
+                        help_text="Points to the Availability offered by the user",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="climateconnect_api.Availability",
+                    ),
+                ),
+                (
+                    "target_organization",
+                    models.ForeignKey(
+                        help_text="Points to the requested organization",
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="organization.Organization",
+                    ),
+                ),
+                (
+                    "target_project",
+                    models.ForeignKey(
+                        help_text="Points to the requested project",
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="organization.Project",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        help_text="Points to the user who sent the request",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="feedback_user",
+                    ),
+                ),
             ],
         ),
     ]

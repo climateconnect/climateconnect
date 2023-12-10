@@ -5,20 +5,35 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0033_auto_20200623_1508'),
+        ("organization", "0033_auto_20200623_1508"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='organizationtags',
-            name='organization_tag',
-            field=models.ForeignKey(blank=True, help_text='Points to the parent tag', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='organization_tag_parent', to='organization.OrganizationTags', verbose_name='Parent Tag'),
+            model_name="organizationtags",
+            name="organization_tag",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Points to the parent tag",
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="organization_tag_parent",
+                to="organization.OrganizationTags",
+                verbose_name="Parent Tag",
+            ),
         ),
         migrations.AddField(
-            model_name='projecttags',
-            name='organization_tag',
-            field=models.ForeignKey(blank=True, help_text='Points to the parent tag', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='project_tag_parent', to='organization.ProjectTags', verbose_name='Parent Tag'),
+            model_name="projecttags",
+            name="organization_tag",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Points to the parent tag",
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="project_tag_parent",
+                to="organization.ProjectTags",
+                verbose_name="Parent Tag",
+            ),
         ),
     ]

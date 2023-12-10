@@ -5,19 +5,26 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0045_auto_20210128_0633'),
+        ("climateconnect_api", "0045_auto_20210128_0633"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='userprofile',
-            name='loc',
+            model_name="userprofile",
+            name="loc",
         ),
         migrations.AlterField(
-            model_name='userprofile',
-            name='location',
-            field=models.ForeignKey(blank=True, help_text="Points to the user's location", null=True, on_delete=django.db.models.deletion.CASCADE, related_name='user_profile_loc', to='location.Location', verbose_name='Location'),
+            model_name="userprofile",
+            name="location",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Points to the user's location",
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="user_profile_loc",
+                to="location.Location",
+                verbose_name="Location",
+            ),
         ),
     ]
