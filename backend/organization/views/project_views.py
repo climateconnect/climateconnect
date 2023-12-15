@@ -142,8 +142,8 @@ class ListProjectsView(ListAPIView):
     def get_queryset(self):
         user = self.request.user
         user_profile = None
-        if user.is_authenticated and user.user_profile:
-            user_profile = user.user_profile
+        if user.is_authenticated:
+            user_profile = user.user_profile if user.user_profile else None
         # Get project ranking
         projects = Project.objects.filter(
             is_draft=False, is_active=True
