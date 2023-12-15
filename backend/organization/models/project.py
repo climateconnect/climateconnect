@@ -211,6 +211,7 @@ class Project(models.Model):
                 total_skills=self.skills.count(),
                 project_type=self.project_type,
                 start_date=self.start_date,
+                created_at=self.created_at
             )
 
     class Meta:

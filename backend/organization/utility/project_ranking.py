@@ -11,7 +11,7 @@ from climateconnect_api.models.user import UserProfile
 class ProjectRanking:
     def __init__(self, user_profile: Optional[UserProfile] = None):
         self.user_profile = user_profile
-        self.EVENT_DURATION_IN_DAYS = 60
+        self.EVENT_DURATION_IN_DAYS = 14
 
     def _randomize_ranking(self, project_rank: int) -> int:
         # a random number gives a boost to different projects to get the top of the list
@@ -29,6 +29,7 @@ class ProjectRanking:
             "location": 0.1,
             "description": 0.9,
             "total_skills": 0.1,
+            "created_at": 0.5,
         }
 
     def _recency_score(self, timedelta: int) -> Dict:
@@ -63,6 +64,7 @@ class ProjectRanking:
         total_skills: int,
         project_type: ProjectTypesChoices,
         start_date: Optional[datetime.datetime],
+        created_at: datetime.datetime,
     ) -> int:
         cache_key = generate_project_ranking_cache_key(project_id=project_id)
         project_rank = cache.get(cache_key)
@@ -132,6 +134,9 @@ class ProjectRanking:
                 "location": 1 if location else 0,
                 "description": 1 if description and len(description) > 0 else 0,
                 "total_skills": total_skills,
+                "created_at": self.calculate_recency_of_interaction(
+                    last_interaction_timestamp=created_at.timestamp()
+                ),
             }
 
             project_rank = (
@@ -152,8 +157,10 @@ class ProjectRanking:
                     days=self.EVENT_DURATION_IN_DAYS
                 )
                 if start_date >= timezone.now() and start_date <= duration:
-                    project_manually_set_rating = 10000
-                    project_rank += project_manually_set_rating
+                    points_for_event_projects = self.calculate_recency_of_interaction(
+                        last_interaction_timestamp=start_date.timestamp()
+                    )
+                    project_rank += points_for_event_projects
             cache.set(cache_key, project_rank)
 
         return project_rank
