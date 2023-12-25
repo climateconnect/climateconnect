@@ -81,7 +81,6 @@ def schedule_automated_update_to_project_ranks() -> None:
 
     for i in range(0, len(all_project_ids), PROJECT_CHUNK_SIZE):
         project_ids = [p_ids for p_ids in all_project_ids[i: i + PROJECT_CHUNK_SIZE]]
-        print(project_ids)
         calculate_project_rankings.apply_async((project_ids,))
 
 
