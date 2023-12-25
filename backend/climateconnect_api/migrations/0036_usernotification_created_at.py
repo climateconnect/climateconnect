@@ -5,16 +5,20 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0035_userprofile_email_on_new_project_follower'),
+        ("climateconnect_api", "0035_userprofile_email_on_new_project_follower"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='usernotification',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now, help_text='Time when the notification was sent to the user', verbose_name='Created at'),
+            model_name="usernotification",
+            name="created_at",
+            field=models.DateTimeField(
+                auto_now_add=True,
+                default=django.utils.timezone.now,
+                help_text="Time when the notification was sent to the user",
+                verbose_name="Created at",
+            ),
             preserve_default=False,
         ),
     ]

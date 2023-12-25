@@ -31,7 +31,7 @@ class TranslateManyTextsView(APIView):
                 raise ValidationError("Required parameter missing: " + param)
         translations = {}
         for key in request.data["texts"].keys():
-            if type(request.data["texts"][key]) is list:
+            if isinstance(request.data["texts"][key], list):
                 translations[key] = request.data["texts"][key]
                 for i in range(len(request.data["texts"][key])):
                     translations[key][i] = translate_text(

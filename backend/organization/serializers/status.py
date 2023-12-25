@@ -5,7 +5,6 @@ from organization.utility.status import (
 )
 from django.utils.translation import get_language
 from rest_framework import serializers
-from organization.models.type import PROJECT_TYPES
 
 from organization.models.status import ProjectStatus
 

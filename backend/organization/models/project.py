@@ -5,9 +5,7 @@ from django.contrib.postgres.fields import ArrayField
 from organization.models import (
     Organization,
 )
-from organization.models.type import (
-    ProjectTypesChoices
-)
+from organization.models.type import ProjectTypesChoices
 from climateconnect_api.models import (
     Skill,
 )
@@ -59,7 +57,7 @@ class Project(models.Model):
     project_type = models.CharField(
         max_length=2,
         choices=ProjectTypesChoices.choices,
-        default=ProjectTypesChoices.project
+        default=ProjectTypesChoices.project,
     )
 
     start_date = models.DateTimeField(

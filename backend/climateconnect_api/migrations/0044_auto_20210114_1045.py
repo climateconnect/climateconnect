@@ -3,12 +3,12 @@
 from django.contrib.postgres.operations import CreateExtension
 from django.db import migrations
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
-        ('climateconnect_api', '0043_merge_20201211_0751'),
+        ("climateconnect_api", "0043_merge_20201211_0751"),
     ]
-    
+
     operations = [
-        CreateExtension('postgis'),
+        CreateExtension("postgis"),
     ]

@@ -5,15 +5,22 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0017_auto_20200616_1006'),
+        ("organization", "0017_auto_20200616_1006"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='projectcomment',
-            name='comment',
-            field=models.ForeignKey(blank=True, help_text='Point to comments table', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='comment_project_comment', to='organization.Comment', verbose_name='Comment'),
+            model_name="projectcomment",
+            name="comment",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Point to comments table",
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="comment_project_comment",
+                to="organization.Comment",
+                verbose_name="Comment",
+            ),
         ),
     ]

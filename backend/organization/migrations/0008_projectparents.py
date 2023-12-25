@@ -6,27 +6,82 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('organization', '0007_project'),
+        ("organization", "0007_project"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ProjectParents',
+            name="ProjectParents",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('order', models.IntegerField(help_text='Order in which project should be listed', verbose_name='Order')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when project was linked to an organization', verbose_name='Created At')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='Time when project was updated. i.e.: Order change etc.', verbose_name='Updated At')),
-                ('parent_organization', models.ForeignKey(help_text='Points to organization', on_delete=django.db.models.deletion.CASCADE, related_name='project_parent_org', to='organization.Organization', verbose_name='Organization')),
-                ('parent_user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='project_parent_user', to=settings.AUTH_USER_MODEL, verbose_name='Points to user who created a project')),
-                ('project', models.ForeignKey(help_text="Points to organizations's project", on_delete=django.db.models.deletion.CASCADE, related_name='org_project', to='organization.Project', verbose_name='Project')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "order",
+                    models.IntegerField(
+                        help_text="Order in which project should be listed",
+                        verbose_name="Order",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Time when project was linked to an organization",
+                        verbose_name="Created At",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="Time when project was updated. i.e.: Order change etc.",
+                        verbose_name="Updated At",
+                    ),
+                ),
+                (
+                    "parent_organization",
+                    models.ForeignKey(
+                        help_text="Points to organization",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="project_parent_org",
+                        to="organization.Organization",
+                        verbose_name="Organization",
+                    ),
+                ),
+                (
+                    "parent_user",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="project_parent_user",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Points to user who created a project",
+                    ),
+                ),
+                (
+                    "project",
+                    models.ForeignKey(
+                        help_text="Points to organizations's project",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="org_project",
+                        to="organization.Project",
+                        verbose_name="Project",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Project Parents',
-                'unique_together': {('project', 'order')},
+                "verbose_name": "Project Parents",
+                "unique_together": {("project", "order")},
             },
         ),
     ]

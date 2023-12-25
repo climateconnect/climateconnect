@@ -5,15 +5,22 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0003_availability'),
+        ("climateconnect_api", "0003_availability"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userprofile',
-            name='availability',
-            field=models.ForeignKey(blank=True, help_text="Points to user's availability for a work", null=True, on_delete=django.db.models.deletion.PROTECT, related_name='user_availability', to='climateconnect_api.Availability', verbose_name='Availability'),
+            model_name="userprofile",
+            name="availability",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Points to user's availability for a work",
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="user_availability",
+                to="climateconnect_api.Availability",
+                verbose_name="Availability",
+            ),
         ),
     ]

@@ -4,15 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0025_userprofile_website'),
+        ("climateconnect_api", "0025_userprofile_website"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='userprofile',
-            name='website',
-            field=models.CharField(blank=True, help_text='Website', max_length=256, null=True, verbose_name="User's Website"),
+            model_name="userprofile",
+            name="website",
+            field=models.CharField(
+                blank=True,
+                help_text="Website",
+                max_length=256,
+                null=True,
+                verbose_name="User's Website",
+            ),
         ),
     ]

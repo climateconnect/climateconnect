@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('ideas', '0016_idea_hub_shared_in'),
+        ("ideas", "0016_idea_hub_shared_in"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='idea',
-            name='short_description',
-            field=models.CharField(help_text='Summary of an idea', max_length=2048, verbose_name='Summary'),
+            model_name="idea",
+            name="short_description",
+            field=models.CharField(
+                help_text="Summary of an idea", max_length=2048, verbose_name="Summary"
+            ),
         ),
     ]

@@ -4,20 +4,31 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0075_projectstatus_status_type'),
+        ("organization", "0075_projectstatus_status_type"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='projecttranslation',
-            name='description_translation',
-            field=models.TextField(blank=True, help_text="Translation of project's description", max_length=9000, null=True, verbose_name='Description translation'),
+            model_name="projecttranslation",
+            name="description_translation",
+            field=models.TextField(
+                blank=True,
+                help_text="Translation of project's description",
+                max_length=9000,
+                null=True,
+                verbose_name="Description translation",
+            ),
         ),
         migrations.AlterField(
-            model_name='projecttranslation',
-            name='short_description_translation',
-            field=models.TextField(blank=True, help_text="Translation of project's short description", max_length=480, null=True, verbose_name='Short description translation'),
+            model_name="projecttranslation",
+            name="short_description_translation",
+            field=models.TextField(
+                blank=True,
+                help_text="Translation of project's short description",
+                max_length=480,
+                null=True,
+                verbose_name="Short description translation",
+            ),
         ),
     ]

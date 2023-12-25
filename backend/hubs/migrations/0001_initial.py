@@ -5,44 +5,165 @@ import hubs.models.hub
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='HubStat',
+            name="HubStat",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(help_text='Points to stat name', max_length=1024, verbose_name='Name')),
-                ('value', models.CharField(blank=True, help_text="Value of the stat that is being highlighted in the stat box (e.g. '75%')", max_length=128, null=True, unique=True, verbose_name='Stat Value')),
-                ('value_description', models.CharField(blank=True, help_text="Explains what the value describes (e.g. 'of global ghg emissions')", max_length=1024, null=True, verbose_name='Value description')),
-                ('description', models.CharField(blank=True, help_text='Description that is shown in the stat box', max_length=1024, null=True, unique=True, verbose_name='Stat box description')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="Points to stat name",
+                        max_length=1024,
+                        verbose_name="Name",
+                    ),
+                ),
+                (
+                    "value",
+                    models.CharField(
+                        blank=True,
+                        help_text="Value of the stat that is being highlighted in the stat box (e.g. '75%')",
+                        max_length=128,
+                        null=True,
+                        unique=True,
+                        verbose_name="Stat Value",
+                    ),
+                ),
+                (
+                    "value_description",
+                    models.CharField(
+                        blank=True,
+                        help_text="Explains what the value describes (e.g. 'of global ghg emissions')",
+                        max_length=1024,
+                        null=True,
+                        verbose_name="Value description",
+                    ),
+                ),
+                (
+                    "description",
+                    models.CharField(
+                        blank=True,
+                        help_text="Description that is shown in the stat box",
+                        max_length=1024,
+                        null=True,
+                        unique=True,
+                        verbose_name="Stat box description",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'HubStat',
-                'verbose_name_plural': 'HubStats',
+                "verbose_name": "HubStat",
+                "verbose_name_plural": "HubStats",
             },
         ),
         migrations.CreateModel(
-            name='Hub',
+            name="Hub",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(help_text='Points to hub name', max_length=1024, verbose_name='Name')),
-                ('url_slug', models.CharField(blank=True, help_text='URL slug for hub', max_length=1024, null=True, unique=True, verbose_name='URL slug')),
-                ('headline', models.CharField(blank=True, help_text='URL slug for hub', max_length=1024, null=True, unique=True, verbose_name='headline')),
-                ('image', models.ImageField(blank=True, help_text='Hub image', null=True, upload_to=hubs.models.hub.hub_image_path, verbose_name='Image')),
-                ('thumbnail_image', models.ImageField(blank=True, help_text='Image to show on hub card', null=True, upload_to=hubs.models.hub.hub_image_path, verbose_name='Thumbnail image')),
-                ('quick_info', models.CharField(blank=True, help_text='Text that is shown when the hub info is not expanded', max_length=2048, null=True, unique=True, verbose_name='Quick info about the hub (non-expanded text)')),
-                ('importance', models.PositiveSmallIntegerField(default=100, help_text='The larger the number, the more to the top this hub will be displayed on the hubs overview page', verbose_name='Importance (1-100)')),
-                ('stats', models.ManyToManyField(blank=True, help_text='points to the stats for the hubs', related_name='hub_stats', to='hubs.HubStat', verbose_name='Hub Stats')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="Points to hub name",
+                        max_length=1024,
+                        verbose_name="Name",
+                    ),
+                ),
+                (
+                    "url_slug",
+                    models.CharField(
+                        blank=True,
+                        help_text="URL slug for hub",
+                        max_length=1024,
+                        null=True,
+                        unique=True,
+                        verbose_name="URL slug",
+                    ),
+                ),
+                (
+                    "headline",
+                    models.CharField(
+                        blank=True,
+                        help_text="URL slug for hub",
+                        max_length=1024,
+                        null=True,
+                        unique=True,
+                        verbose_name="headline",
+                    ),
+                ),
+                (
+                    "image",
+                    models.ImageField(
+                        blank=True,
+                        help_text="Hub image",
+                        null=True,
+                        upload_to=hubs.models.hub.hub_image_path,
+                        verbose_name="Image",
+                    ),
+                ),
+                (
+                    "thumbnail_image",
+                    models.ImageField(
+                        blank=True,
+                        help_text="Image to show on hub card",
+                        null=True,
+                        upload_to=hubs.models.hub.hub_image_path,
+                        verbose_name="Thumbnail image",
+                    ),
+                ),
+                (
+                    "quick_info",
+                    models.CharField(
+                        blank=True,
+                        help_text="Text that is shown when the hub info is not expanded",
+                        max_length=2048,
+                        null=True,
+                        unique=True,
+                        verbose_name="Quick info about the hub (non-expanded text)",
+                    ),
+                ),
+                (
+                    "importance",
+                    models.PositiveSmallIntegerField(
+                        default=100,
+                        help_text="The larger the number, the more to the top this hub will be displayed on the hubs overview page",
+                        verbose_name="Importance (1-100)",
+                    ),
+                ),
+                (
+                    "stats",
+                    models.ManyToManyField(
+                        blank=True,
+                        help_text="points to the stats for the hubs",
+                        related_name="hub_stats",
+                        to="hubs.HubStat",
+                        verbose_name="Hub Stats",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Hub',
-                'verbose_name_plural': 'Hubs',
-                'ordering': ['-importance'],
+                "verbose_name": "Hub",
+                "verbose_name_plural": "Hubs",
+                "ordering": ["-importance"],
             },
         ),
     ]

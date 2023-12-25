@@ -5,15 +5,20 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0029_auto_20200620_1234'),
+        ("organization", "0029_auto_20200620_1234"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='projectmember',
-            name='availability',
-            field=models.ForeignKey(help_text='Shows how many hours per week the user is putting into this specific project.', on_delete=django.db.models.deletion.PROTECT, related_name='member_availability', to='climateconnect_api.Availability', verbose_name='Time per week'),
+            model_name="projectmember",
+            name="availability",
+            field=models.ForeignKey(
+                help_text="Shows how many hours per week the user is putting into this specific project.",
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="member_availability",
+                to="climateconnect_api.Availability",
+                verbose_name="Time per week",
+            ),
         ),
     ]

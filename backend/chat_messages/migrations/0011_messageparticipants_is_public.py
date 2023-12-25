@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('chat_messages', '0010_messageparticipants_related_idea'),
+        ("chat_messages", "0010_messageparticipants_related_idea"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='messageparticipants',
-            name='is_public',
-            field=models.BooleanField(default=False, help_text='If this value is set to true, anybody can join this chat without being permitted or invited by an admin.', verbose_name='Is public?'),
+            model_name="messageparticipants",
+            name="is_public",
+            field=models.BooleanField(
+                default=False,
+                help_text="If this value is set to true, anybody can join this chat without being permitted or invited by an admin.",
+                verbose_name="Is public?",
+            ),
         ),
     ]

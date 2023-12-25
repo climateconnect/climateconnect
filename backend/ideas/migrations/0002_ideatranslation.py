@@ -5,28 +5,93 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0060_auto_20210420_1614'),
-        ('ideas', '0001_initial'),
+        ("climateconnect_api", "0060_auto_20210420_1614"),
+        ("ideas", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='IdeaTranslation',
+            name="IdeaTranslation",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, help_text="Translation of idea's name", max_length=350, null=True, verbose_name='Name')),
-                ('summary', models.CharField(blank=True, help_text="Translation of idea's summary", max_length=1200, null=True, verbose_name='Summary')),
-                ('description', models.TextField(blank=True, help_text="Translation of idea's description", null=True, verbose_name='Description')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when idea translation was created', verbose_name='Created at')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='Time when idea translation was updated', verbose_name='Updated at')),
-                ('idea', models.ForeignKey(help_text='Points to idea table', on_delete=django.db.models.deletion.CASCADE, related_name='translate_idea', to='ideas.Idea', verbose_name='Idea')),
-                ('language', models.ForeignKey(help_text='Points to the language idea is translated for', on_delete=django.db.models.deletion.CASCADE, related_name='idea_language', to='climateconnect_api.Language', verbose_name='Language')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        blank=True,
+                        help_text="Translation of idea's name",
+                        max_length=350,
+                        null=True,
+                        verbose_name="Name",
+                    ),
+                ),
+                (
+                    "summary",
+                    models.CharField(
+                        blank=True,
+                        help_text="Translation of idea's summary",
+                        max_length=1200,
+                        null=True,
+                        verbose_name="Summary",
+                    ),
+                ),
+                (
+                    "description",
+                    models.TextField(
+                        blank=True,
+                        help_text="Translation of idea's description",
+                        null=True,
+                        verbose_name="Description",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Time when idea translation was created",
+                        verbose_name="Created at",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="Time when idea translation was updated",
+                        verbose_name="Updated at",
+                    ),
+                ),
+                (
+                    "idea",
+                    models.ForeignKey(
+                        help_text="Points to idea table",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="translate_idea",
+                        to="ideas.Idea",
+                        verbose_name="Idea",
+                    ),
+                ),
+                (
+                    "language",
+                    models.ForeignKey(
+                        help_text="Points to the language idea is translated for",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="idea_language",
+                        to="climateconnect_api.Language",
+                        verbose_name="Language",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Idea translation',
-                'verbose_name_plural': 'Idea translations',
+                "verbose_name": "Idea translation",
+                "verbose_name_plural": "Idea translations",
             },
         ),
     ]

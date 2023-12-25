@@ -4,23 +4,37 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0030_notification_usernotification'),
+        ("climateconnect_api", "0030_notification_usernotification"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='notification',
-            options={'ordering': ['-id'], 'verbose_name_plural': 'Notifications'},
+            name="notification",
+            options={"ordering": ["-id"], "verbose_name_plural": "Notifications"},
         ),
         migrations.RemoveField(
-            model_name='notification',
-            name='chat_message_sender',
+            model_name="notification",
+            name="chat_message_sender",
         ),
         migrations.AlterField(
-            model_name='notification',
-            name='notification_type',
-            field=models.IntegerField(choices=[(0, 'broadcast'), (1, 'private_message'), (2, 'project_comment'), (3, 'reply_to_project_comment'), (4, 'project_follower'), (5, 'project_update_post'), (6, 'post_comment'), (7, 'reply_to_post_comment'), (8, 'group_message')], default=0, help_text='type of notification', verbose_name='Notification type'),
+            model_name="notification",
+            name="notification_type",
+            field=models.IntegerField(
+                choices=[
+                    (0, "broadcast"),
+                    (1, "private_message"),
+                    (2, "project_comment"),
+                    (3, "reply_to_project_comment"),
+                    (4, "project_follower"),
+                    (5, "project_update_post"),
+                    (6, "post_comment"),
+                    (7, "reply_to_post_comment"),
+                    (8, "group_message"),
+                ],
+                default=0,
+                help_text="type of notification",
+                verbose_name="Notification type",
+            ),
         ),
     ]

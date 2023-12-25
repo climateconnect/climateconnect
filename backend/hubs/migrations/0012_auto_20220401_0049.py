@@ -4,15 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('hubs', '0011_auto_20210505_2011'),
+        ("hubs", "0011_auto_20210505_2011"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='hub',
-            name='location',
-            field=models.ManyToManyField(blank=True, help_text='For city hubs: for which locations is the ClimateHub', related_name='hub_location', to='location.Location', verbose_name='Location'),
+            model_name="hub",
+            name="location",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="For city hubs: for which locations is the ClimateHub",
+                related_name="hub_location",
+                to="location.Location",
+                verbose_name="Location",
+            ),
         ),
     ]

@@ -4,15 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0083_auto_20220810_1359'),
+        ("climateconnect_api", "0083_auto_20220810_1359"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='badge',
-            name='step',
-            field=models.PositiveSmallIntegerField(blank=True, help_text="Which step on the way to the best badge is this? This will determine the size in the donor's forest (Leave empty for non-donor-forest badges)", null=True, verbose_name='Step'),
+            model_name="badge",
+            name="step",
+            field=models.PositiveSmallIntegerField(
+                blank=True,
+                help_text="Which step on the way to the best badge is this? This will determine the size in the donor's forest (Leave empty for non-donor-forest badges)",
+                null=True,
+                verbose_name="Step",
+            ),
         ),
     ]

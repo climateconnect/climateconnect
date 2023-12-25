@@ -5,27 +5,79 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0050_language'),
-        ('organization', '0064_auto_20210311_1156'),
+        ("climateconnect_api", "0050_language"),
+        ("organization", "0064_auto_20210311_1156"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ProjectTranslation',
+            name="ProjectTranslation",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name_translation', models.CharField(blank=True, help_text='Translation of project name', max_length=1024, null=True, verbose_name='Name translation')),
-                ('short_description_translation', models.CharField(blank=True, help_text="Translation of project's short description", max_length=240, null=True, verbose_name='Short description translation')),
-                ('description_translation', models.TextField(blank=True, help_text="Translation of project's description", max_length=4800, null=True, verbose_name='Description translation')),
-                ('language', models.ForeignKey(help_text='Point to languaage table', on_delete=django.db.models.deletion.CASCADE, related_name='proj_translation_language', to='climateconnect_api.Language', verbose_name='Language')),
-                ('project', models.ForeignKey(help_text='Point to project table', on_delete=django.db.models.deletion.CASCADE, related_name='translation_project', to='organization.Project', verbose_name='Project')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name_translation",
+                    models.CharField(
+                        blank=True,
+                        help_text="Translation of project name",
+                        max_length=1024,
+                        null=True,
+                        verbose_name="Name translation",
+                    ),
+                ),
+                (
+                    "short_description_translation",
+                    models.CharField(
+                        blank=True,
+                        help_text="Translation of project's short description",
+                        max_length=240,
+                        null=True,
+                        verbose_name="Short description translation",
+                    ),
+                ),
+                (
+                    "description_translation",
+                    models.TextField(
+                        blank=True,
+                        help_text="Translation of project's description",
+                        max_length=4800,
+                        null=True,
+                        verbose_name="Description translation",
+                    ),
+                ),
+                (
+                    "language",
+                    models.ForeignKey(
+                        help_text="Point to languaage table",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="proj_translation_language",
+                        to="climateconnect_api.Language",
+                        verbose_name="Language",
+                    ),
+                ),
+                (
+                    "project",
+                    models.ForeignKey(
+                        help_text="Point to project table",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="translation_project",
+                        to="organization.Project",
+                        verbose_name="Project",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Project translation',
-                'verbose_name_plural': 'Project translations',
-                'unique_together': {('project', 'language')},
+                "verbose_name": "Project translation",
+                "verbose_name_plural": "Project translations",
+                "unique_together": {("project", "language")},
             },
         ),
     ]

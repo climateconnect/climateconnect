@@ -4,20 +4,33 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0095_auto_20220419_0744'),
+        ("organization", "0095_auto_20220419_0744"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='organization',
-            name='get_involved',
-            field=models.CharField(blank=True, default='Contact an organization adminstrator for more details.', help_text='How to get involved textfield', max_length=256, null=True, verbose_name='How to get involved'),
+            model_name="organization",
+            name="get_involved",
+            field=models.CharField(
+                blank=True,
+                default="Contact an organization adminstrator for more details.",
+                help_text="How to get involved textfield",
+                max_length=256,
+                null=True,
+                verbose_name="How to get involved",
+            ),
         ),
         migrations.AddField(
-            model_name='organizationtranslation',
-            name='get_involved_translation',
-            field=models.CharField(blank=True, default='Kontaktiere einen Organsationsadministrator für mehr Details', help_text='Translation of get involved textfield', max_length=256, null=True, verbose_name='How to get involved translation'),
+            model_name="organizationtranslation",
+            name="get_involved_translation",
+            field=models.CharField(
+                blank=True,
+                default="Kontaktiere einen Organsationsadministrator für mehr Details",
+                help_text="Translation of get involved textfield",
+                max_length=256,
+                null=True,
+                verbose_name="How to get involved translation",
+            ),
         ),
     ]

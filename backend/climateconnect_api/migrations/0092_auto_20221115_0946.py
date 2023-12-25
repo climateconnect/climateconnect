@@ -4,20 +4,27 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0091_auto_20221115_0945'),
+        ("climateconnect_api", "0091_auto_20221115_0945"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userprofile',
-            name='email_on_new_organization_follower',
-            field=models.BooleanField(default=True, help_text='Check if user wants to receive emails when somebody follows their organization', verbose_name='Email on new organization follower'),
+            model_name="userprofile",
+            name="email_on_new_organization_follower",
+            field=models.BooleanField(
+                default=True,
+                help_text="Check if user wants to receive emails when somebody follows their organization",
+                verbose_name="Email on new organization follower",
+            ),
         ),
         migrations.AddField(
-            model_name='userprofile',
-            name='email_on_new_project_from_followed_org',
-            field=models.BooleanField(default=True, help_text='Check if user wants to receive emails when an org they follow publishes a project', verbose_name='Email on new organization project published'),
+            model_name="userprofile",
+            name="email_on_new_project_from_followed_org",
+            field=models.BooleanField(
+                default=True,
+                help_text="Check if user wants to receive emails when an org they follow publishes a project",
+                verbose_name="Email on new organization project published",
+            ),
         ),
     ]

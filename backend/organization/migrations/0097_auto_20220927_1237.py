@@ -4,20 +4,31 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0096_auto_20220922_1034'),
+        ("organization", "0096_auto_20220922_1034"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='organization',
-            name='get_involved',
-            field=models.CharField(blank=True, help_text='How to get involved textfield', max_length=250, null=True, verbose_name='How to get involved'),
+            model_name="organization",
+            name="get_involved",
+            field=models.CharField(
+                blank=True,
+                help_text="How to get involved textfield",
+                max_length=250,
+                null=True,
+                verbose_name="How to get involved",
+            ),
         ),
         migrations.AlterField(
-            model_name='organizationtranslation',
-            name='get_involved_translation',
-            field=models.CharField(blank=True, help_text='Translation of get involved textfield', max_length=250, null=True, verbose_name='How to get involved translation'),
+            model_name="organizationtranslation",
+            name="get_involved_translation",
+            field=models.CharField(
+                blank=True,
+                help_text="Translation of get involved textfield",
+                max_length=250,
+                null=True,
+                verbose_name="How to get involved translation",
+            ),
         ),
     ]

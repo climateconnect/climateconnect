@@ -4,11 +4,9 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0091_delete_projectsshared'),
-        ('organization', '0087_auto_20210725_2154'),
+        ("organization", "0091_delete_projectsshared"),
+        ("organization", "0087_auto_20210725_2154"),
     ]
 
-    operations = [
-    ]
+    operations = []

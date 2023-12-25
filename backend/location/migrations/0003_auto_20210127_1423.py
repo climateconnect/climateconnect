@@ -5,24 +5,35 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('location', '0002_auto_20210125_0927'),
+        ("location", "0002_auto_20210125_0927"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='location',
-            name='main_polygon',
+            model_name="location",
+            name="main_polygon",
         ),
         migrations.AddField(
-            model_name='location',
-            name='centre_point',
-            field=django.contrib.gis.db.models.fields.PointField(blank=True, geography=True, help_text='This is only set if the location is just a point', null=True, srid=4326, verbose_name='Centre point'),
+            model_name="location",
+            name="centre_point",
+            field=django.contrib.gis.db.models.fields.PointField(
+                blank=True,
+                geography=True,
+                help_text="This is only set if the location is just a point",
+                null=True,
+                srid=4326,
+                verbose_name="Centre point",
+            ),
         ),
         migrations.AlterField(
-            model_name='location',
-            name='multi_polygon',
-            field=django.contrib.gis.db.models.fields.MultiPolygonField(geography=True, help_text='The area where the location is located', srid=4326, verbose_name='Multi Polygon'),
+            model_name="location",
+            name="multi_polygon",
+            field=django.contrib.gis.db.models.fields.MultiPolygonField(
+                geography=True,
+                help_text="The area where the location is located",
+                srid=4326,
+                verbose_name="Multi Polygon",
+            ),
         ),
     ]

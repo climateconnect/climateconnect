@@ -4,23 +4,26 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0085_auto_20220810_1400'),
+        ("climateconnect_api", "0085_auto_20220810_1400"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='badge',
-            name='examine_text',
+            model_name="badge",
+            name="examine_text",
         ),
         migrations.RemoveField(
-            model_name='badge',
-            name='examine_text_de',
+            model_name="badge",
+            name="examine_text_de",
         ),
         migrations.AddField(
-            model_name='faqsection',
-            name='is_on_about_page',
-            field=models.BooleanField(default=False, help_text='Identifies the section that should be shown on the about page faq section', verbose_name='Is shown on about page'),
+            model_name="faqsection",
+            name="is_on_about_page",
+            field=models.BooleanField(
+                default=False,
+                help_text="Identifies the section that should be shown on the about page faq section",
+                verbose_name="Is shown on about page",
+            ),
         ),
     ]

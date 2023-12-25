@@ -4,26 +4,89 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0049_userprofile_thumbnail_image'),
+        ("climateconnect_api", "0049_userprofile_thumbnail_image"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Language',
+            name="Language",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(help_text='Name of a language', max_length=512, verbose_name='Name')),
-                ('native_name', models.CharField(blank=True, help_text='Name of language in their native tounge. e.g: German -> Deutsche', max_length=512, null=True, verbose_name='Native name')),
-                ('language_code', models.CharField(help_text='Short form or Code for each language. e.g.: German/Deutsche has code DE', max_length=8, unique=True, verbose_name='Language Code')),
-                ('date_format', models.CharField(blank=True, help_text='Format of the date for different countries', max_length=12, null=True, verbose_name='Date Format')),
-                ('currency', models.CharField(blank=True, help_text='Currancy of each country', max_length=32, null=True, verbose_name='Currency')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when language was created', verbose_name='Created at')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='Time when language object was updated', verbose_name='Updated at')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="Name of a language",
+                        max_length=512,
+                        verbose_name="Name",
+                    ),
+                ),
+                (
+                    "native_name",
+                    models.CharField(
+                        blank=True,
+                        help_text="Name of language in their native tounge. e.g: German -> Deutsche",
+                        max_length=512,
+                        null=True,
+                        verbose_name="Native name",
+                    ),
+                ),
+                (
+                    "language_code",
+                    models.CharField(
+                        help_text="Short form or Code for each language. e.g.: German/Deutsche has code DE",
+                        max_length=8,
+                        unique=True,
+                        verbose_name="Language Code",
+                    ),
+                ),
+                (
+                    "date_format",
+                    models.CharField(
+                        blank=True,
+                        help_text="Format of the date for different countries",
+                        max_length=12,
+                        null=True,
+                        verbose_name="Date Format",
+                    ),
+                ),
+                (
+                    "currency",
+                    models.CharField(
+                        blank=True,
+                        help_text="Currancy of each country",
+                        max_length=32,
+                        null=True,
+                        verbose_name="Currency",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Time when language was created",
+                        verbose_name="Created at",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="Time when language object was updated",
+                        verbose_name="Updated at",
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'Languages',
+                "verbose_name_plural": "Languages",
             },
         ),
     ]

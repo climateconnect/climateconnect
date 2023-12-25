@@ -2,10 +2,11 @@
 
 from django.db import migrations
 
+
 def migrate_chat_participants(apps, schema_editor):
-    MessageParticipants = apps.get_model('chat_messages', 'MessageParticipants')
-    Participant = apps.get_model('chat_messages', 'Participant')
-    Role = apps.get_model('climateconnect_api', 'Role')
+    MessageParticipants = apps.get_model("chat_messages", "MessageParticipants")
+    Participant = apps.get_model("chat_messages", "Participant")
+    Role = apps.get_model("climateconnect_api", "Role")
     for chat in MessageParticipants.objects.all():
         assignedCreator = False
         for user in chat.participants.all():
@@ -16,13 +17,10 @@ def migrate_chat_participants(apps, schema_editor):
                 role = Role.objects.get(role_type=0)
             Participant.objects.create(user=user, chat=chat, role=role)
 
+
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('chat_messages', '0006_auto_20201112_2003'),
+        ("chat_messages", "0006_auto_20201112_2003"),
     ]
 
-    operations = [
-        migrations.RunPython(migrate_chat_participants)
-    ]
-    
+    operations = [migrations.RunPython(migrate_chat_participants)]

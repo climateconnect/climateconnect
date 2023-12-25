@@ -4,19 +4,18 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('ideas', '0009_idea_thumbnail_image'),
+        ("ideas", "0009_idea_thumbnail_image"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='idea',
-            old_name='summary',
-            new_name='short_description',
+            model_name="idea",
+            old_name="summary",
+            new_name="short_description",
         ),
         migrations.RemoveField(
-            model_name='idea',
-            name='description',
+            model_name="idea",
+            name="description",
         ),
     ]

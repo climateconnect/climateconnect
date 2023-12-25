@@ -4,15 +4,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0083_organization_organization_size'),
+        ("organization", "0083_organization_organization_size"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='organization',
-            name='organization_size',
-            field=models.IntegerField(blank=True, choices=[(0, '1-10'), (1, '11-50'), (2, '51-250'), (3, '251-500'), (4, '501-1000'), (5, '1001-5000'), (6, '5001-50000'), (7, '50000+')], help_text='The number of people working in this organization', null=True, verbose_name='Organization size'),
+            model_name="organization",
+            name="organization_size",
+            field=models.IntegerField(
+                blank=True,
+                choices=[
+                    (0, "1-10"),
+                    (1, "11-50"),
+                    (2, "51-250"),
+                    (3, "251-500"),
+                    (4, "501-1000"),
+                    (5, "1001-5000"),
+                    (6, "5001-50000"),
+                    (7, "50000+"),
+                ],
+                help_text="The number of people working in this organization",
+                null=True,
+                verbose_name="Organization size",
+            ),
         ),
     ]

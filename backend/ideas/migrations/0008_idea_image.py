@@ -5,15 +5,20 @@ import ideas.models.ideas
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('ideas', '0007_ideasupporter'),
+        ("ideas", "0007_ideasupporter"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='idea',
-            name='image',
-            field=models.ImageField(blank=True, help_text='Image of an idea', null=True, upload_to=ideas.models.ideas.idea_image_path, verbose_name='Image'),
+            model_name="idea",
+            name="image",
+            field=models.ImageField(
+                blank=True,
+                help_text="Image of an idea",
+                null=True,
+                upload_to=ideas.models.ideas.idea_image_path,
+                verbose_name="Image",
+            ),
         ),
     ]

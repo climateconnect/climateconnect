@@ -5,15 +5,20 @@ import organization.models.organization
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0062_auto_20210215_1030'),
+        ("organization", "0062_auto_20210215_1030"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='organization',
-            name='thumbnail_image',
-            field=models.ImageField(blank=True, help_text='Thumbnail image', null=True, upload_to=organization.models.organization.organization_image_path, verbose_name='Thumbnail Image'),
+            model_name="organization",
+            name="thumbnail_image",
+            field=models.ImageField(
+                blank=True,
+                help_text="Thumbnail image",
+                null=True,
+                upload_to=organization.models.organization.organization_image_path,
+                verbose_name="Thumbnail Image",
+            ),
         ),
     ]

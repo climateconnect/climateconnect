@@ -6,31 +6,58 @@ import hubs.models.hub
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0060_auto_20210420_1614'),
-        ('hubs', '0010_auto_20210422_1227'),
+        ("climateconnect_api", "0060_auto_20210420_1614"),
+        ("hubs", "0010_auto_20210422_1227"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='hub',
-            name='icon',
-            field=models.FileField(blank=True, help_text='The icon representing the hub in the small hub preview cards', null=True, upload_to=hubs.models.hub.hub_image_path, verbose_name='Icon'),
+            model_name="hub",
+            name="icon",
+            field=models.FileField(
+                blank=True,
+                help_text="The icon representing the hub in the small hub preview cards",
+                null=True,
+                upload_to=hubs.models.hub.hub_image_path,
+                verbose_name="Icon",
+            ),
         ),
         migrations.AddField(
-            model_name='hub',
-            name='language',
-            field=models.ForeignKey(blank=True, help_text='The original language of the hub', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='hub_language', to='climateconnect_api.Language', verbose_name='Language'),
+            model_name="hub",
+            name="language",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="The original language of the hub",
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="hub_language",
+                to="climateconnect_api.Language",
+                verbose_name="Language",
+            ),
         ),
         migrations.AddField(
-            model_name='hubstat',
-            name='language',
-            field=models.ForeignKey(blank=True, help_text='The original language of the hub stat', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='hub_stat_language', to='climateconnect_api.Language', verbose_name='Language'),
+            model_name="hubstat",
+            name="language",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="The original language of the hub stat",
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="hub_stat_language",
+                to="climateconnect_api.Language",
+                verbose_name="Language",
+            ),
         ),
         migrations.AlterField(
-            model_name='hubstattranslation',
-            name='hub_stat',
-            field=models.ForeignKey(help_text='Points to hub stat table', on_delete=django.db.models.deletion.CASCADE, related_name='translation_hub_stat', to='hubs.HubStat', verbose_name='Hub stat'),
+            model_name="hubstattranslation",
+            name="hub_stat",
+            field=models.ForeignKey(
+                help_text="Points to hub stat table",
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="translation_hub_stat",
+                to="hubs.HubStat",
+                verbose_name="Hub stat",
+            ),
         ),
     ]

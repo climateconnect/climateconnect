@@ -5,32 +5,49 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0014_auto_20200612_0904'),
+        ("organization", "0014_auto_20200612_0904"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='projectmember',
-            options={'ordering': ['-id'], 'verbose_name': 'Project Member', 'verbose_name_plural': 'Project Members'},
+            name="projectmember",
+            options={
+                "ordering": ["-id"],
+                "verbose_name": "Project Member",
+                "verbose_name_plural": "Project Members",
+            },
         ),
         migrations.AlterModelOptions(
-            name='projectparents',
-            options={'verbose_name_plural': 'Project Parents'},
+            name="projectparents",
+            options={"verbose_name_plural": "Project Parents"},
         ),
         migrations.AlterField(
-            model_name='projectparents',
-            name='parent_organization',
-            field=models.ForeignKey(blank=True, help_text='Points to organization', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='project_parent_org', to='organization.Organization', verbose_name='Organization'),
+            model_name="projectparents",
+            name="parent_organization",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Points to organization",
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="project_parent_org",
+                to="organization.Organization",
+                verbose_name="Organization",
+            ),
         ),
         migrations.AlterField(
-            model_name='projectparents',
-            name='project',
-            field=models.ForeignKey(help_text="Points to organizations's project", on_delete=django.db.models.deletion.CASCADE, related_name='project_parent', to='organization.Project', verbose_name='Project'),
+            model_name="projectparents",
+            name="project",
+            field=models.ForeignKey(
+                help_text="Points to organizations's project",
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="project_parent",
+                to="organization.Project",
+                verbose_name="Project",
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='projectparents',
+            name="projectparents",
             unique_together=set(),
         ),
     ]

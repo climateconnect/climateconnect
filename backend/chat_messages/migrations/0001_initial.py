@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -15,34 +14,147 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='MessageParticipants',
+            name="MessageParticipants",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('chat_uuid', models.UUIDField(blank=True, help_text='Unique ID for each message connection', null=True, unique=True, verbose_name='Chat UUID')),
-                ('is_active', models.BooleanField(default=True, help_text='Check if the chat between participants are active or not.If they are not active that means a user has blocked another person.', verbose_name='Is active?')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when participants started a messaging', verbose_name='Created at')),
-                ('deactivated_at', models.DateTimeField(blank=True, help_text='Time when one of the user has deactivated their chat.', null=True, verbose_name='Deactivated at')),
-                ('participant_one', models.ForeignKey(help_text='Points to first participant of the chat', on_delete=django.db.models.deletion.CASCADE, related_name='user_participant_one', to=settings.AUTH_USER_MODEL, verbose_name='Participant One')),
-                ('participant_two', models.ForeignKey(help_text='Points to second participant of the chat', on_delete=django.db.models.deletion.CASCADE, related_name='user_participant_two', to=settings.AUTH_USER_MODEL, verbose_name='Participant Two')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "chat_uuid",
+                    models.UUIDField(
+                        blank=True,
+                        help_text="Unique ID for each message connection",
+                        null=True,
+                        unique=True,
+                        verbose_name="Chat UUID",
+                    ),
+                ),
+                (
+                    "is_active",
+                    models.BooleanField(
+                        default=True,
+                        help_text="Check if the chat between participants are active or not.If they are not active that means a user has blocked another person.",
+                        verbose_name="Is active?",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Time when participants started a messaging",
+                        verbose_name="Created at",
+                    ),
+                ),
+                (
+                    "deactivated_at",
+                    models.DateTimeField(
+                        blank=True,
+                        help_text="Time when one of the user has deactivated their chat.",
+                        null=True,
+                        verbose_name="Deactivated at",
+                    ),
+                ),
+                (
+                    "participant_one",
+                    models.ForeignKey(
+                        help_text="Points to first participant of the chat",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="user_participant_one",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Participant One",
+                    ),
+                ),
+                (
+                    "participant_two",
+                    models.ForeignKey(
+                        help_text="Points to second participant of the chat",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="user_participant_two",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Participant Two",
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'Message Participants',
+                "verbose_name_plural": "Message Participants",
             },
         ),
         migrations.CreateModel(
-            name='Message',
+            name="Message",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('content', models.TextField(help_text='Content of a message', verbose_name='Content')),
-                ('sent_at', models.DateTimeField(blank=True, help_text='Time when message was sent', null=True, verbose_name='Sent at')),
-                ('read_at', models.DateTimeField(blank=True, help_text='Time when all participants have read a messages', null=True, verbose_name='Read at')),
-                ('updated_at', models.DateTimeField(blank=True, help_text='Time when sender updated a message', null=True, verbose_name='Updated at')),
-                ('message_participant', models.ForeignKey(help_text='Points to a table where chat was initialized between participants', on_delete=django.db.models.deletion.CASCADE, related_name='participant_message', to='chat_messages.MessageParticipants', verbose_name='Message participant')),
-                ('sender', models.ForeignKey(help_text='Points to user who sent a message', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='message_sender', to=settings.AUTH_USER_MODEL, verbose_name='Sender')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "content",
+                    models.TextField(
+                        help_text="Content of a message", verbose_name="Content"
+                    ),
+                ),
+                (
+                    "sent_at",
+                    models.DateTimeField(
+                        blank=True,
+                        help_text="Time when message was sent",
+                        null=True,
+                        verbose_name="Sent at",
+                    ),
+                ),
+                (
+                    "read_at",
+                    models.DateTimeField(
+                        blank=True,
+                        help_text="Time when all participants have read a messages",
+                        null=True,
+                        verbose_name="Read at",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        blank=True,
+                        help_text="Time when sender updated a message",
+                        null=True,
+                        verbose_name="Updated at",
+                    ),
+                ),
+                (
+                    "message_participant",
+                    models.ForeignKey(
+                        help_text="Points to a table where chat was initialized between participants",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="participant_message",
+                        to="chat_messages.MessageParticipants",
+                        verbose_name="Message participant",
+                    ),
+                ),
+                (
+                    "sender",
+                    models.ForeignKey(
+                        help_text="Points to user who sent a message",
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="message_sender",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Sender",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Message',
-                'verbose_name_plural': 'Messages',
+                "verbose_name": "Message",
+                "verbose_name_plural": "Messages",
             },
         ),
     ]

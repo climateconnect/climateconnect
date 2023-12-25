@@ -6,40 +6,112 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0069_userprofile_email_on_new_project_like'),
+        ("climateconnect_api", "0069_userprofile_email_on_new_project_like"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Badge',
+            name="Badge",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, help_text='The name of the badge', max_length=256, null=True, verbose_name='Name')),
-                ('name_de', models.CharField(blank=True, help_text='The name of the badge in german', max_length=256, null=True, verbose_name='Name DE')),
-                ('image', models.ImageField(blank=True, help_text='Points to the image of the badge', null=True, upload_to=climateconnect_api.models.badge.badge_image_path, verbose_name='Profile Image')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when post was created', verbose_name='Created at')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='Time when comment was updated', verbose_name='Updated at')),
-                ('is_active', models.BooleanField(default=False, help_text='Should Badge be shown publically?', verbose_name='Is active?')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        blank=True,
+                        help_text="The name of the badge",
+                        max_length=256,
+                        null=True,
+                        verbose_name="Name",
+                    ),
+                ),
+                (
+                    "name_de",
+                    models.CharField(
+                        blank=True,
+                        help_text="The name of the badge in german",
+                        max_length=256,
+                        null=True,
+                        verbose_name="Name DE",
+                    ),
+                ),
+                (
+                    "image",
+                    models.ImageField(
+                        blank=True,
+                        help_text="Points to the image of the badge",
+                        null=True,
+                        upload_to=climateconnect_api.models.badge.badge_image_path,
+                        verbose_name="Profile Image",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Time when post was created",
+                        verbose_name="Created at",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="Time when comment was updated",
+                        verbose_name="Updated at",
+                    ),
+                ),
+                (
+                    "is_active",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Should Badge be shown publically?",
+                        verbose_name="Is active?",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Badge',
-                'verbose_name_plural': 'Badges',
-                'ordering': ['-id'],
+                "verbose_name": "Badge",
+                "verbose_name_plural": "Badges",
+                "ordering": ["-id"],
             },
         ),
         migrations.CreateModel(
-            name='DonorBadge',
+            name="DonorBadge",
             fields=[
-                ('badge_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='climateconnect_api.Badge')),
-                ('regular_donor_minimum_duration', models.DurationField(blank=True, null=True, verbose_name='Minimum donation duration for regular donors')),
+                (
+                    "badge_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="climateconnect_api.Badge",
+                    ),
+                ),
+                (
+                    "regular_donor_minimum_duration",
+                    models.DurationField(
+                        blank=True,
+                        null=True,
+                        verbose_name="Minimum donation duration for regular donors",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Donor Badge',
-                'verbose_name_plural': 'Donor Badges',
-                'ordering': ['-id'],
+                "verbose_name": "Donor Badge",
+                "verbose_name_plural": "Donor Badges",
+                "ordering": ["-id"],
             },
-            bases=('climateconnect_api.badge',),
+            bases=("climateconnect_api.badge",),
         ),
     ]

@@ -6,27 +6,80 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('organization', '0091_delete_projectsshared'),
-        ('climateconnect_api', '0073_donation_date_cancelled'),
+        ("organization", "0091_delete_projectsshared"),
+        ("climateconnect_api", "0073_donation_date_cancelled"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ContentShares',
+            name="ContentShares",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('shared_via', models.IntegerField(choices=[(0, 'facebook'), (1, 'fb_messenger'), (2, 'twitter'), (3, 'whatsapp'), (4, 'linkedin'), (5, 'reddit'), (6, 'telegram'), (7, 'e_mail'), (8, 'link'), (9, 'native_share_dialog_of_device')], default=8, help_text='Way in which the content was shared', verbose_name='Shared Via')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when the user shared the content', verbose_name='Created At')),
-                ('project', models.ForeignKey(help_text='Points to a project', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='shared_project', to='organization.Project', verbose_name='Project')),
-                ('user', models.ForeignKey(help_text='Points to the user who shared the content', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='sharing_user', to=settings.AUTH_USER_MODEL, verbose_name='Sharing User')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "shared_via",
+                    models.IntegerField(
+                        choices=[
+                            (0, "facebook"),
+                            (1, "fb_messenger"),
+                            (2, "twitter"),
+                            (3, "whatsapp"),
+                            (4, "linkedin"),
+                            (5, "reddit"),
+                            (6, "telegram"),
+                            (7, "e_mail"),
+                            (8, "link"),
+                            (9, "native_share_dialog_of_device"),
+                        ],
+                        default=8,
+                        help_text="Way in which the content was shared",
+                        verbose_name="Shared Via",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Time when the user shared the content",
+                        verbose_name="Created At",
+                    ),
+                ),
+                (
+                    "project",
+                    models.ForeignKey(
+                        help_text="Points to a project",
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="shared_project",
+                        to="organization.Project",
+                        verbose_name="Project",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        help_text="Points to the user who shared the content",
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="sharing_user",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Sharing User",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Shared Content',
-                'verbose_name_plural': 'Shared Content',
-                'ordering': ['-id'],
+                "verbose_name": "Shared Content",
+                "verbose_name_plural": "Shared Content",
+                "ordering": ["-id"],
             },
         ),
     ]

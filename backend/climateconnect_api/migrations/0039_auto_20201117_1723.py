@@ -2,17 +2,16 @@
 
 from django.db import migrations
 
+
 def migrate_email_consent_data(apps, schema_editor):
-    UserProfile = apps.get_model('climateconnect_api', 'UserProfile')
+    UserProfile = apps.get_model("climateconnect_api", "UserProfile")
     for profile in UserProfile.objects.all():
         profile.send_newsletter = profile.email_updates_on_projects
 
+
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0038_auto_20201117_1718'),
+        ("climateconnect_api", "0038_auto_20201117_1718"),
     ]
 
-    operations = [
-        migrations.RunPython(migrate_email_consent_data)
-    ]
+    operations = [migrations.RunPython(migrate_email_consent_data)]

@@ -5,25 +5,38 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0058_organizationfieldtagging'),
+        ("organization", "0058_organizationfieldtagging"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='project',
-            name='is_active',
-            field=models.BooleanField(default=True, help_text='Flags if the project is still publically active or not', verbose_name='Is an Active Project'),
+            model_name="project",
+            name="is_active",
+            field=models.BooleanField(
+                default=True,
+                help_text="Flags if the project is still publically active or not",
+                verbose_name="Is an Active Project",
+            ),
         ),
         migrations.AddField(
-            model_name='projectmember',
-            name='is_active',
-            field=models.BooleanField(default=True, help_text='Indicates whether the user is still assigned to the project ', verbose_name='Active'),
+            model_name="projectmember",
+            name="is_active",
+            field=models.BooleanField(
+                default=True,
+                help_text="Indicates whether the user is still assigned to the project ",
+                verbose_name="Active",
+            ),
         ),
         migrations.AlterField(
-            model_name='organizationfieldtagging',
-            name='field_tag',
-            field=models.ForeignKey(help_text='Points to the tag', on_delete=django.db.models.deletion.CASCADE, related_name='field_tag', to='organization.ProjectTags', verbose_name='Organization Tag'),
+            model_name="organizationfieldtagging",
+            name="field_tag",
+            field=models.ForeignKey(
+                help_text="Points to the tag",
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="field_tag",
+                to="organization.ProjectTags",
+                verbose_name="Organization Tag",
+            ),
         ),
     ]

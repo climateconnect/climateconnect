@@ -5,25 +5,32 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('organization', '0092_merge_20220101_2230'),
+        ("organization", "0092_merge_20220101_2230"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='membershiprequests',
-            name='id',
-            field=models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID'),
+            model_name="membershiprequests",
+            name="id",
+            field=models.AutoField(
+                auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+            ),
         ),
         migrations.AlterField(
-            model_name='membershiprequests',
-            name='message',
-            field=models.TextField(blank=True, help_text='Message associated with the request', max_length=4096, null=True, verbose_name='Request Message'),
+            model_name="membershiprequests",
+            name="message",
+            field=models.TextField(
+                blank=True,
+                help_text="Message associated with the request",
+                max_length=4096,
+                null=True,
+                verbose_name="Request Message",
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='membershiprequests',
-            unique_together={('user', 'target_project')},
+            name="membershiprequests",
+            unique_together={("user", "target_project")},
         ),
     ]

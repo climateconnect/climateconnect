@@ -4,14 +4,16 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0041_donation_donationgoal'),
+        ("climateconnect_api", "0041_donation_donationgoal"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='userprofile',
-            options={'verbose_name': 'User Profile', 'verbose_name_plural': 'User Profiles'},
+            name="userprofile",
+            options={
+                "verbose_name": "User Profile",
+                "verbose_name_plural": "User Profiles",
+            },
         ),
     ]

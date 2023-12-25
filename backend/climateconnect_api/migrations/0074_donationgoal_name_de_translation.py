@@ -4,15 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0073_donation_date_cancelled'),
+        ("climateconnect_api", "0073_donation_date_cancelled"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='donationgoal',
-            name='name_de_translation',
-            field=models.CharField(blank=True, help_text='German translation of the goal name', max_length=512, null=True, verbose_name='Goal name (DE)'),
+            model_name="donationgoal",
+            name="name_de_translation",
+            field=models.CharField(
+                blank=True,
+                help_text="German translation of the goal name",
+                max_length=512,
+                null=True,
+                verbose_name="Goal name (DE)",
+            ),
         ),
     ]

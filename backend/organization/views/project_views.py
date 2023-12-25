@@ -409,7 +409,7 @@ class CreateProjectView(APIView):
                         "Project tagging created for project {}".format(project.id)
                     )
 
-        #TODO: completely remove availability
+        # TODO: completely remove availability
         for member in team_members:
             user_role = roles.filter(id=int(member["role"])).first()
             try:
@@ -712,7 +712,8 @@ class AddProjectMembersView(APIView):
                         new_member.save()
                     except Availability.DoesNotExist:
                         raise NotFound(
-                            detail="Availability not found.", code=status.HTTP_404_NOT_FOUND
+                            detail="Availability not found.",
+                            code=status.HTTP_404_NOT_FOUND,
                         )
                 logger.info("Project member created for user {}".format(user.id))
             elif user and user_inactive:
@@ -854,7 +855,7 @@ class ListProjectTypeOptions(APIView):
 
     def get(self, request):
         project_type_values = [type for type in PROJECT_TYPES.values()]
-        serializer = ProjectTypesSerializer(project_type_values, many=True) 
+        serializer = ProjectTypesSerializer(project_type_values, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

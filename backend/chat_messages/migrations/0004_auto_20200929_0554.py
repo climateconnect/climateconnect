@@ -4,18 +4,17 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('chat_messages', '0003_messageparticipants_participants'),
+        ("chat_messages", "0003_messageparticipants_participants"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='messageparticipants',
-            name='participant_one',
+            model_name="messageparticipants",
+            name="participant_one",
         ),
         migrations.RemoveField(
-            model_name='messageparticipants',
-            name='participant_two',
+            model_name="messageparticipants",
+            name="participant_two",
         ),
     ]

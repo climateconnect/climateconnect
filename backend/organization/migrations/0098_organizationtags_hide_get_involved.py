@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0097_auto_20220927_1237'),
+        ("organization", "0097_auto_20220927_1237"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='organizationtags',
-            name='hide_get_involved',
-            field=models.BooleanField(default=False, help_text='Indicates whether or not this type should hide the get involved field', verbose_name='Hide Get Involved field'),
+            model_name="organizationtags",
+            name="hide_get_involved",
+            field=models.BooleanField(
+                default=False,
+                help_text="Indicates whether or not this type should hide the get involved field",
+                verbose_name="Hide Get Involved field",
+            ),
         ),
     ]

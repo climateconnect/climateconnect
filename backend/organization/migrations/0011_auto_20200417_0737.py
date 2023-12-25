@@ -7,92 +7,240 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0006_userprofile_skills'),
+        ("climateconnect_api", "0006_userprofile_skills"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('organization', '0010_posts'),
+        ("organization", "0010_posts"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Comment',
+            name="Comment",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('content', models.TextField(help_text='Comment content', verbose_name='Content')),
-                ('is_abusive', models.BooleanField(default=False, help_text='If comment is abusive', verbose_name='Is abusive?')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when post was created', verbose_name='Created at')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='Time when comment was updated', verbose_name='Updated at')),
-                ('deleted_at', models.DateTimeField(blank=True, help_text='Time when comment was deleted', null=True, verbose_name='Deleted at')),
-                ('author_user', models.ForeignKey(help_text='Points to user who made comment', on_delete=django.db.models.deletion.CASCADE, related_name='comment_author', to=settings.AUTH_USER_MODEL, verbose_name='Author User')),
-                ('deleted_by_user', models.ForeignKey(blank=True, help_text='Person who deleted the comment', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='comment_delete', to=settings.AUTH_USER_MODEL, verbose_name='Deleted by user')),
-                ('parent_comment', models.ForeignKey(blank=True, help_text='Points to parent comment', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='comment_parent', to='organization.Comment', verbose_name='Parent Comment')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "content",
+                    models.TextField(
+                        help_text="Comment content", verbose_name="Content"
+                    ),
+                ),
+                (
+                    "is_abusive",
+                    models.BooleanField(
+                        default=False,
+                        help_text="If comment is abusive",
+                        verbose_name="Is abusive?",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Time when post was created",
+                        verbose_name="Created at",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="Time when comment was updated",
+                        verbose_name="Updated at",
+                    ),
+                ),
+                (
+                    "deleted_at",
+                    models.DateTimeField(
+                        blank=True,
+                        help_text="Time when comment was deleted",
+                        null=True,
+                        verbose_name="Deleted at",
+                    ),
+                ),
+                (
+                    "author_user",
+                    models.ForeignKey(
+                        help_text="Points to user who made comment",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="comment_author",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Author User",
+                    ),
+                ),
+                (
+                    "deleted_by_user",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="Person who deleted the comment",
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="comment_delete",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Deleted by user",
+                    ),
+                ),
+                (
+                    "parent_comment",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="Points to parent comment",
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="comment_parent",
+                        to="organization.Comment",
+                        verbose_name="Parent Comment",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Comment',
-                'verbose_name_plural': 'Comments',
+                "verbose_name": "Comment",
+                "verbose_name_plural": "Comments",
             },
         ),
         migrations.RemoveField(
-            model_name='project',
-            name='slug',
+            model_name="project",
+            name="slug",
         ),
         migrations.AddField(
-            model_name='project',
-            name='city',
-            field=models.CharField(blank=True, help_text='Points to a city of the project', max_length=512, null=True, verbose_name='City'),
+            model_name="project",
+            name="city",
+            field=models.CharField(
+                blank=True,
+                help_text="Points to a city of the project",
+                max_length=512,
+                null=True,
+                verbose_name="City",
+            ),
         ),
         migrations.AddField(
-            model_name='project',
-            name='collaborators_welcome',
-            field=models.BooleanField(default=False, help_text='If collaborators are welcome or not for the project', verbose_name='Collaborators welcome'),
+            model_name="project",
+            name="collaborators_welcome",
+            field=models.BooleanField(
+                default=False,
+                help_text="If collaborators are welcome or not for the project",
+                verbose_name="Collaborators welcome",
+            ),
         ),
         migrations.AddField(
-            model_name='project',
-            name='country',
-            field=models.CharField(blank=True, help_text='Points to a country of the project', max_length=512, null=True, verbose_name='Country'),
+            model_name="project",
+            name="country",
+            field=models.CharField(
+                blank=True,
+                help_text="Points to a country of the project",
+                max_length=512,
+                null=True,
+                verbose_name="Country",
+            ),
         ),
         migrations.AddField(
-            model_name='project',
-            name='helpful_connections',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=264), blank=True, null=True, size=5),
+            model_name="project",
+            name="helpful_connections",
+            field=django.contrib.postgres.fields.ArrayField(
+                base_field=models.CharField(max_length=264),
+                blank=True,
+                null=True,
+                size=5,
+            ),
         ),
         migrations.AddField(
-            model_name='project',
-            name='skills',
-            field=models.ManyToManyField(help_text='Points to all skills project persist or required', related_name='project_skills', to='climateconnect_api.Skill', verbose_name='Skills'),
+            model_name="project",
+            name="skills",
+            field=models.ManyToManyField(
+                help_text="Points to all skills project persist or required",
+                related_name="project_skills",
+                to="climateconnect_api.Skill",
+                verbose_name="Skills",
+            ),
         ),
         migrations.AddField(
-            model_name='project',
-            name='url_slug',
-            field=models.CharField(blank=True, help_text='URL slug for project', max_length=1024, null=True, unique=True, verbose_name='URL slug'),
+            model_name="project",
+            name="url_slug",
+            field=models.CharField(
+                blank=True,
+                help_text="URL slug for project",
+                max_length=1024,
+                null=True,
+                unique=True,
+                verbose_name="URL slug",
+            ),
         ),
         migrations.AlterField(
-            model_name='posts',
-            name='project',
-            field=models.ForeignKey(help_text='Points to the project to which the post belongs', on_delete=django.db.models.deletion.PROTECT, related_name='post_project', to='organization.Project', verbose_name='Project'),
+            model_name="posts",
+            name="project",
+            field=models.ForeignKey(
+                help_text="Points to the project to which the post belongs",
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="post_project",
+                to="organization.Project",
+                verbose_name="Project",
+            ),
         ),
         migrations.CreateModel(
-            name='ProjectComment',
+            name="ProjectComment",
             fields=[
-                ('comment_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='organization.Comment')),
-                ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='project_comment', to='organization.Project', verbose_name='Project')),
+                (
+                    "comment_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="organization.Comment",
+                    ),
+                ),
+                (
+                    "project",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="project_comment",
+                        to="organization.Project",
+                        verbose_name="Project",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Project Comment',
-                'verbose_name_plural': 'Project Comments',
+                "verbose_name": "Project Comment",
+                "verbose_name_plural": "Project Comments",
             },
-            bases=('organization.comment',),
+            bases=("organization.comment",),
         ),
         migrations.CreateModel(
-            name='PostComment',
+            name="PostComment",
             fields=[
-                ('comment_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='organization.Comment')),
-                ('post', models.ForeignKey(help_text='Point to post table', on_delete=django.db.models.deletion.CASCADE, related_name='comment_post', to='organization.Posts', verbose_name='Post')),
+                (
+                    "comment_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="organization.Comment",
+                    ),
+                ),
+                (
+                    "post",
+                    models.ForeignKey(
+                        help_text="Point to post table",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="comment_post",
+                        to="organization.Posts",
+                        verbose_name="Post",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Post Comment',
+                "verbose_name": "Post Comment",
             },
-            bases=('organization.comment',),
+            bases=("organization.comment",),
         ),
     ]

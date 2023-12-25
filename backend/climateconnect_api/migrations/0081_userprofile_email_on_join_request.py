@@ -4,15 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0080_auto_20220405_1046'),
+        ("climateconnect_api", "0080_auto_20220405_1046"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userprofile',
-            name='email_on_join_request',
-            field=models.BooleanField(blank=True, default=True, help_text='Check if user wants to receive emails when somebody asks to join their project or organization', null=True, verbose_name='Email on join request'),
+            model_name="userprofile",
+            name="email_on_join_request",
+            field=models.BooleanField(
+                blank=True,
+                default=True,
+                help_text="Check if user wants to receive emails when somebody asks to join their project or organization",
+                null=True,
+                verbose_name="Email on join request",
+            ),
         ),
     ]

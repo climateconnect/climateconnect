@@ -4,15 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0077_auto_20210427_0914'),
+        ("organization", "0077_auto_20210427_0914"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='organization',
-            name='about',
-            field=models.TextField(blank=True, help_text='About section of the organization page', null=True, verbose_name='About'),
+            model_name="organization",
+            name="about",
+            field=models.TextField(
+                blank=True,
+                help_text="About section of the organization page",
+                null=True,
+                verbose_name="About",
+            ),
         ),
     ]

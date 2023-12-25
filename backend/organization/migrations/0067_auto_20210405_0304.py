@@ -4,30 +4,49 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0066_organizationtranslation'),
+        ("organization", "0066_organizationtranslation"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='organizationtranslation',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, help_text='Time when translation object was created', null=True, verbose_name='Created at'),
+            model_name="organizationtranslation",
+            name="created_at",
+            field=models.DateTimeField(
+                auto_now_add=True,
+                help_text="Time when translation object was created",
+                null=True,
+                verbose_name="Created at",
+            ),
         ),
         migrations.AddField(
-            model_name='organizationtranslation',
-            name='updated_at',
-            field=models.DateTimeField(auto_now=True, help_text='Time when translation object was updated', null=True, verbose_name='Updated at'),
+            model_name="organizationtranslation",
+            name="updated_at",
+            field=models.DateTimeField(
+                auto_now=True,
+                help_text="Time when translation object was updated",
+                null=True,
+                verbose_name="Updated at",
+            ),
         ),
         migrations.AddField(
-            model_name='projecttranslation',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, help_text='Time when translation object was created', null=True, verbose_name='Created at'),
+            model_name="projecttranslation",
+            name="created_at",
+            field=models.DateTimeField(
+                auto_now_add=True,
+                help_text="Time when translation object was created",
+                null=True,
+                verbose_name="Created at",
+            ),
         ),
         migrations.AddField(
-            model_name='projecttranslation',
-            name='updated_at',
-            field=models.DateTimeField(auto_now=True, help_text='Time when translation object was updated', null=True, verbose_name='Updated at'),
+            model_name="projecttranslation",
+            name="updated_at",
+            field=models.DateTimeField(
+                auto_now=True,
+                help_text="Time when translation object was updated",
+                null=True,
+                verbose_name="Updated at",
+            ),
         ),
     ]

@@ -4,15 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0022_merge_20200723_0402'),
+        ("climateconnect_api", "0022_merge_20200723_0402"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userprofile',
-            name='pending_new_email',
-            field=models.EmailField(blank=True, help_text='If the user is in the process of changing their email, this field will show the potential new email', max_length=254, null=True, verbose_name='Potential new E-Mail address'),
+            model_name="userprofile",
+            name="pending_new_email",
+            field=models.EmailField(
+                blank=True,
+                help_text="If the user is in the process of changing their email, this field will show the potential new email",
+                max_length=254,
+                null=True,
+                verbose_name="Potential new E-Mail address",
+            ),
         ),
     ]

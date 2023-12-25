@@ -6,32 +6,63 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('ideas', '0017_auto_20210706_0851'),
-        ('organization', '0091_delete_projectsshared'),
-        ('climateconnect_api', '0074_contentshares'),
+        ("ideas", "0017_auto_20210706_0851"),
+        ("organization", "0091_delete_projectsshared"),
+        ("climateconnect_api", "0074_contentshares"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='contentshares',
-            name='idea',
-            field=models.ForeignKey(blank=True, help_text='Points to an idea', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='shared_idea', to='ideas.Idea', verbose_name='Idea'),
+            model_name="contentshares",
+            name="idea",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Points to an idea",
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="shared_idea",
+                to="ideas.Idea",
+                verbose_name="Idea",
+            ),
         ),
         migrations.AddField(
-            model_name='contentshares',
-            name='organization',
-            field=models.ForeignKey(blank=True, help_text='Points to an organization', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='shared_organization', to='organization.Organization', verbose_name='Organization'),
+            model_name="contentshares",
+            name="organization",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Points to an organization",
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="shared_organization",
+                to="organization.Organization",
+                verbose_name="Organization",
+            ),
         ),
         migrations.AlterField(
-            model_name='contentshares',
-            name='project',
-            field=models.ForeignKey(blank=True, help_text='Points to a project', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='shared_project', to='organization.Project', verbose_name='Project'),
+            model_name="contentshares",
+            name="project",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Points to a project",
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="shared_project",
+                to="organization.Project",
+                verbose_name="Project",
+            ),
         ),
         migrations.AlterField(
-            model_name='contentshares',
-            name='user',
-            field=models.ForeignKey(blank=True, help_text='Points to the user who shared the content', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='sharing_user', to=settings.AUTH_USER_MODEL, verbose_name='Sharing User'),
+            model_name="contentshares",
+            name="user",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Points to the user who shared the content",
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="sharing_user",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="Sharing User",
+            ),
         ),
     ]

@@ -5,29 +5,99 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0056_auto_20210408_0541'),
-        ('hubs', '0008_hubtranslation'),
+        ("climateconnect_api", "0056_auto_20210408_0541"),
+        ("hubs", "0008_hubtranslation"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='HubStatTranslation',
+            name="HubStatTranslation",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name_translation', models.CharField(blank=True, help_text='Translation of name column', max_length=1024, null=True, verbose_name='Name translation')),
-                ('value_translation', models.CharField(blank=True, help_text='Translation of value column', max_length=128, null=True, verbose_name='Value translation')),
-                ('value_description_translation', models.CharField(blank=True, help_text='Translation for value_description column', max_length=1024, null=True, verbose_name='Value description translation')),
-                ('description_translation', models.CharField(blank=True, help_text='Translation for description column', max_length=1024, null=True, verbose_name='Stat box description translation')),
-                ('source_name_translation', models.CharField(blank=True, help_text='Translation of source_name column', max_length=1024, null=True, verbose_name='Source name translation')),
-                ('hub_stat', models.ForeignKey(help_text='Points to hub stat table', on_delete=django.db.models.deletion.CASCADE, related_name='translation_hub_stat', to='hubs.HubStat', verbose_name='Hub stat translation')),
-                ('language', models.ForeignKey(help_text='Points to language table', on_delete=django.db.models.deletion.CASCADE, related_name='hub_stat_translation_lang', to='climateconnect_api.Language', verbose_name='Language')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name_translation",
+                    models.CharField(
+                        blank=True,
+                        help_text="Translation of name column",
+                        max_length=1024,
+                        null=True,
+                        verbose_name="Name translation",
+                    ),
+                ),
+                (
+                    "value_translation",
+                    models.CharField(
+                        blank=True,
+                        help_text="Translation of value column",
+                        max_length=128,
+                        null=True,
+                        verbose_name="Value translation",
+                    ),
+                ),
+                (
+                    "value_description_translation",
+                    models.CharField(
+                        blank=True,
+                        help_text="Translation for value_description column",
+                        max_length=1024,
+                        null=True,
+                        verbose_name="Value description translation",
+                    ),
+                ),
+                (
+                    "description_translation",
+                    models.CharField(
+                        blank=True,
+                        help_text="Translation for description column",
+                        max_length=1024,
+                        null=True,
+                        verbose_name="Stat box description translation",
+                    ),
+                ),
+                (
+                    "source_name_translation",
+                    models.CharField(
+                        blank=True,
+                        help_text="Translation of source_name column",
+                        max_length=1024,
+                        null=True,
+                        verbose_name="Source name translation",
+                    ),
+                ),
+                (
+                    "hub_stat",
+                    models.ForeignKey(
+                        help_text="Points to hub stat table",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="translation_hub_stat",
+                        to="hubs.HubStat",
+                        verbose_name="Hub stat translation",
+                    ),
+                ),
+                (
+                    "language",
+                    models.ForeignKey(
+                        help_text="Points to language table",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="hub_stat_translation_lang",
+                        to="climateconnect_api.Language",
+                        verbose_name="Language",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Hub stat translation',
-                'verbose_name_plural': 'Hub stat translations',
-                'unique_together': {('hub_stat', 'language')},
+                "verbose_name": "Hub stat translation",
+                "verbose_name_plural": "Hub stat translations",
+                "unique_together": {("hub_stat", "language")},
             },
         ),
     ]

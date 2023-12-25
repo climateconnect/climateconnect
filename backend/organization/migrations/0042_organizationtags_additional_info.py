@@ -5,15 +5,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0041_auto_20200706_1416'),
+        ("organization", "0041_auto_20200706_1416"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='organizationtags',
-            name='additional_info',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=264), blank=True, null=True, size=5),
+            model_name="organizationtags",
+            name="additional_info",
+            field=django.contrib.postgres.fields.ArrayField(
+                base_field=models.CharField(max_length=264),
+                blank=True,
+                null=True,
+                size=5,
+            ),
         ),
     ]

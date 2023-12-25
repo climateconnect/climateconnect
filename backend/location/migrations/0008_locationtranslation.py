@@ -5,28 +5,89 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0056_auto_20210408_0541'),
-        ('location', '0007_location_is_formatted'),
+        ("climateconnect_api", "0056_auto_20210408_0541"),
+        ("location", "0007_location_is_formatted"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='LocationTranslation',
+            name="LocationTranslation",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name_translation', models.CharField(blank=True, help_text='Translation of location name', max_length=4096, null=True, verbose_name='Name DE translation')),
-                ('city_translation', models.CharField(blank=True, help_text='Translation for city column', max_length=1024, null=True, verbose_name='City DE translation')),
-                ('state_translation', models.CharField(blank=True, help_text='Translation for state column', max_length=1024, null=True, verbose_name='State DE translation')),
-                ('country_translation', models.CharField(blank=True, help_text='Translation for country column', max_length=1024, null=True, verbose_name='Country DE translation')),
-                ('language', models.ForeignKey(help_text='Points to language table', on_delete=django.db.models.deletion.CASCADE, related_name='location_language', to='climateconnect_api.Language', verbose_name='Language')),
-                ('location', models.ForeignKey(help_text='Points to location table', on_delete=django.db.models.deletion.CASCADE, related_name='translate_location', to='location.Location', verbose_name='Location')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name_translation",
+                    models.CharField(
+                        blank=True,
+                        help_text="Translation of location name",
+                        max_length=4096,
+                        null=True,
+                        verbose_name="Name DE translation",
+                    ),
+                ),
+                (
+                    "city_translation",
+                    models.CharField(
+                        blank=True,
+                        help_text="Translation for city column",
+                        max_length=1024,
+                        null=True,
+                        verbose_name="City DE translation",
+                    ),
+                ),
+                (
+                    "state_translation",
+                    models.CharField(
+                        blank=True,
+                        help_text="Translation for state column",
+                        max_length=1024,
+                        null=True,
+                        verbose_name="State DE translation",
+                    ),
+                ),
+                (
+                    "country_translation",
+                    models.CharField(
+                        blank=True,
+                        help_text="Translation for country column",
+                        max_length=1024,
+                        null=True,
+                        verbose_name="Country DE translation",
+                    ),
+                ),
+                (
+                    "language",
+                    models.ForeignKey(
+                        help_text="Points to language table",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="location_language",
+                        to="climateconnect_api.Language",
+                        verbose_name="Language",
+                    ),
+                ),
+                (
+                    "location",
+                    models.ForeignKey(
+                        help_text="Points to location table",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="translate_location",
+                        to="location.Location",
+                        verbose_name="Location",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Location translation',
-                'verbose_name_plural': 'Location translations',
-                'unique_together': {('location', 'language')},
+                "verbose_name": "Location translation",
+                "verbose_name_plural": "Location translations",
+                "unique_together": {("location", "language")},
             },
         ),
     ]

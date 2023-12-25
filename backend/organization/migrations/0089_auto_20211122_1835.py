@@ -4,15 +4,30 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0088_projectsshared'),
+        ("organization", "0088_projectsshared"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='projectsshared',
-            name='shared_via',
-            field=models.IntegerField(choices=[(0, 'facebook'), (1, 'fb_messenger'), (2, 'twitter'), (3, 'whatsapp'), (4, 'linkedin'), (5, 'reddit'), (6, 'telegram'), (7, 'e_mail'), (8, 'link'), (9, 'native_share_dialog_of_device')], default=8, help_text='Way in which the project was shared', verbose_name='Shared Via'),
+            model_name="projectsshared",
+            name="shared_via",
+            field=models.IntegerField(
+                choices=[
+                    (0, "facebook"),
+                    (1, "fb_messenger"),
+                    (2, "twitter"),
+                    (3, "whatsapp"),
+                    (4, "linkedin"),
+                    (5, "reddit"),
+                    (6, "telegram"),
+                    (7, "e_mail"),
+                    (8, "link"),
+                    (9, "native_share_dialog_of_device"),
+                ],
+                default=8,
+                help_text="Way in which the project was shared",
+                verbose_name="Shared Via",
+            ),
         ),
     ]

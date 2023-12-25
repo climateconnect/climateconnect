@@ -5,23 +5,41 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0077_auto_20210430_1031'),
-        ('ideas', '0002_ideatranslation'),
+        ("organization", "0077_auto_20210430_1031"),
+        ("ideas", "0002_ideatranslation"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='IdeaComment',
+            name="IdeaComment",
             fields=[
-                ('comment_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='organization.Comment')),
-                ('idea', models.ForeignKey(help_text='Points to idea table', on_delete=django.db.models.deletion.CASCADE, related_name='comment_idea', to='ideas.Idea', verbose_name='Idea')),
+                (
+                    "comment_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="organization.Comment",
+                    ),
+                ),
+                (
+                    "idea",
+                    models.ForeignKey(
+                        help_text="Points to idea table",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="comment_idea",
+                        to="ideas.Idea",
+                        verbose_name="Idea",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Idea comment',
-                'verbose_name_plural': 'Idea comments',
+                "verbose_name": "Idea comment",
+                "verbose_name_plural": "Idea comments",
             },
-            bases=('organization.comment',),
+            bases=("organization.comment",),
         ),
     ]

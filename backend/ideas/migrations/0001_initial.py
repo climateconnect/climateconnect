@@ -5,30 +5,93 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('organization', '0077_auto_20210430_1031'),
-        ('hubs', '0010_auto_20210422_1227'),
+        ("organization", "0077_auto_20210430_1031"),
+        ("hubs", "0010_auto_20210422_1227"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Idea',
+            name="Idea",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(help_text='Name of an idea', max_length=256, verbose_name='Name')),
-                ('summary', models.CharField(help_text='Summary of an idea', max_length=1024, verbose_name='Summary')),
-                ('description', models.TextField(blank=True, help_text='Detailed description of an idea', null=True, verbose_name='Description')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when idea was created', verbose_name='Created at')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='Time when idea was last updated', verbose_name='Update at')),
-                ('hub', models.ForeignKey(blank=True, help_text='Points to hub the idea is under', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='idea_hub', to='hubs.Hub', verbose_name='Hub')),
-                ('organization', models.ForeignKey(blank=True, help_text='Points to organization the idea is under', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='idea_organization', to='organization.Organization', verbose_name='Organization')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="Name of an idea", max_length=256, verbose_name="Name"
+                    ),
+                ),
+                (
+                    "summary",
+                    models.CharField(
+                        help_text="Summary of an idea",
+                        max_length=1024,
+                        verbose_name="Summary",
+                    ),
+                ),
+                (
+                    "description",
+                    models.TextField(
+                        blank=True,
+                        help_text="Detailed description of an idea",
+                        null=True,
+                        verbose_name="Description",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Time when idea was created",
+                        verbose_name="Created at",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="Time when idea was last updated",
+                        verbose_name="Update at",
+                    ),
+                ),
+                (
+                    "hub",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="Points to hub the idea is under",
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="idea_hub",
+                        to="hubs.Hub",
+                        verbose_name="Hub",
+                    ),
+                ),
+                (
+                    "organization",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="Points to organization the idea is under",
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="idea_organization",
+                        to="organization.Organization",
+                        verbose_name="Organization",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Idea',
-                'verbose_name_plural': 'Ideas',
+                "verbose_name": "Idea",
+                "verbose_name_plural": "Ideas",
             },
         ),
     ]

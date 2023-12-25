@@ -5,25 +5,83 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Location',
+            name="Location",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(help_text='Points to the (shortened) name of the location', max_length=4096, verbose_name='Name')),
-                ('city', models.CharField(help_text="Points to location's city name", max_length=1024, verbose_name='Name')),
-                ('state', models.CharField(blank=True, help_text="Points to location's state name", max_length=1024, null=True, verbose_name='Name')),
-                ('country', models.CharField(help_text="Points to location's country name", max_length=1024, verbose_name='Name')),
-                ('multi_polygon', django.contrib.gis.db.models.fields.MultiPolygonField(geography=True, srid=4326)),
-                ('main_polygon', django.contrib.gis.db.models.fields.PolygonField(blank=True, geography=True, null=True, srid=4326)),
-                ('osm_id', models.PositiveIntegerField(help_text='The internal id of this location openstreetmaps', verbose_name='OSM ID')),
-                ('place_id', models.PositiveIntegerField(help_text="Nominatim's place id of this location", verbose_name='Place ID')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="Points to the (shortened) name of the location",
+                        max_length=4096,
+                        verbose_name="Name",
+                    ),
+                ),
+                (
+                    "city",
+                    models.CharField(
+                        help_text="Points to location's city name",
+                        max_length=1024,
+                        verbose_name="Name",
+                    ),
+                ),
+                (
+                    "state",
+                    models.CharField(
+                        blank=True,
+                        help_text="Points to location's state name",
+                        max_length=1024,
+                        null=True,
+                        verbose_name="Name",
+                    ),
+                ),
+                (
+                    "country",
+                    models.CharField(
+                        help_text="Points to location's country name",
+                        max_length=1024,
+                        verbose_name="Name",
+                    ),
+                ),
+                (
+                    "multi_polygon",
+                    django.contrib.gis.db.models.fields.MultiPolygonField(
+                        geography=True, srid=4326
+                    ),
+                ),
+                (
+                    "main_polygon",
+                    django.contrib.gis.db.models.fields.PolygonField(
+                        blank=True, geography=True, null=True, srid=4326
+                    ),
+                ),
+                (
+                    "osm_id",
+                    models.PositiveIntegerField(
+                        help_text="The internal id of this location openstreetmaps",
+                        verbose_name="OSM ID",
+                    ),
+                ),
+                (
+                    "place_id",
+                    models.PositiveIntegerField(
+                        help_text="Nominatim's place id of this location",
+                        verbose_name="Place ID",
+                    ),
+                ),
             ],
         ),
     ]

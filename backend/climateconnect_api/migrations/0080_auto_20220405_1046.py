@@ -5,21 +5,49 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0094_auto_20220401_0049'),
-        ('climateconnect_api', '0079_auto_20220101_2232'),
+        ("organization", "0094_auto_20220401_0049"),
+        ("climateconnect_api", "0079_auto_20220101_2232"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='notification',
-            name='membership_request',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='notification_membership_request', to='organization.MembershipRequests', verbose_name='Membership Request'),
+            model_name="notification",
+            name="membership_request",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="notification_membership_request",
+                to="organization.MembershipRequests",
+                verbose_name="Membership Request",
+            ),
         ),
         migrations.AlterField(
-            model_name='notification',
-            name='notification_type',
-            field=models.IntegerField(choices=[(0, 'broadcast'), (1, 'private_message'), (2, 'project_comment'), (3, 'reply_to_project_comment'), (4, 'project_follower'), (5, 'project_update_post'), (6, 'post_comment'), (7, 'reply_to_post_comment'), (8, 'group_message'), (9, 'join_project_request'), (10, 'project_join_request_approved'), (11, 'mention'), (12, 'project_like'), (13, 'idea_comment'), (14, 'reply_to_idea_comment'), (15, 'person_joined_idea')], default=0, help_text='type of notification', verbose_name='Notification type'),
+            model_name="notification",
+            name="notification_type",
+            field=models.IntegerField(
+                choices=[
+                    (0, "broadcast"),
+                    (1, "private_message"),
+                    (2, "project_comment"),
+                    (3, "reply_to_project_comment"),
+                    (4, "project_follower"),
+                    (5, "project_update_post"),
+                    (6, "post_comment"),
+                    (7, "reply_to_post_comment"),
+                    (8, "group_message"),
+                    (9, "join_project_request"),
+                    (10, "project_join_request_approved"),
+                    (11, "mention"),
+                    (12, "project_like"),
+                    (13, "idea_comment"),
+                    (14, "reply_to_idea_comment"),
+                    (15, "person_joined_idea"),
+                ],
+                default=0,
+                help_text="type of notification",
+                verbose_name="Notification type",
+            ),
         ),
     ]

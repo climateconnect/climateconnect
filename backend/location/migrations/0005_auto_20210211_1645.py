@@ -4,25 +4,38 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('location', '0004_auto_20210127_1452'),
+        ("location", "0004_auto_20210127_1452"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='location',
-            name='is_stub',
-            field=models.BooleanField(default=False, help_text='Check if this location was created without geocoordinates', verbose_name='Is Stub?'),
+            model_name="location",
+            name="is_stub",
+            field=models.BooleanField(
+                default=False,
+                help_text="Check if this location was created without geocoordinates",
+                verbose_name="Is Stub?",
+            ),
         ),
         migrations.AlterField(
-            model_name='location',
-            name='osm_id',
-            field=models.PositiveIntegerField(blank=True, help_text='The internal id of this location openstreetmaps', null=True, verbose_name='OSM ID'),
+            model_name="location",
+            name="osm_id",
+            field=models.PositiveIntegerField(
+                blank=True,
+                help_text="The internal id of this location openstreetmaps",
+                null=True,
+                verbose_name="OSM ID",
+            ),
         ),
         migrations.AlterField(
-            model_name='location',
-            name='place_id',
-            field=models.PositiveIntegerField(blank=True, help_text="Nominatim's place id of this location", null=True, verbose_name='Place ID'),
+            model_name="location",
+            name="place_id",
+            field=models.PositiveIntegerField(
+                blank=True,
+                help_text="Nominatim's place id of this location",
+                null=True,
+                verbose_name="Place ID",
+            ),
         ),
     ]

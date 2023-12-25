@@ -5,15 +5,20 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0059_remove_userprofiletranslation_name_translation'),
+        ("climateconnect_api", "0059_remove_userprofiletranslation_name_translation"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='userprofiletranslation',
-            name='user_profile',
-            field=models.ForeignKey(help_text='Points to user profile object', on_delete=django.db.models.deletion.CASCADE, related_name='profile_translation', to='climateconnect_api.UserProfile', verbose_name='User profile'),
+            model_name="userprofiletranslation",
+            name="user_profile",
+            field=models.ForeignKey(
+                help_text="Points to user profile object",
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="profile_translation",
+                to="climateconnect_api.UserProfile",
+                verbose_name="User profile",
+            ),
         ),
     ]

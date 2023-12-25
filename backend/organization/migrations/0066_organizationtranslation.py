@@ -5,27 +5,87 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0050_language'),
-        ('organization', '0065_projecttranslation'),
+        ("climateconnect_api", "0050_language"),
+        ("organization", "0065_projecttranslation"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='OrganizationTranslation',
+            name="OrganizationTranslation",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name_translation', models.CharField(blank=True, help_text='Translation of organization name', max_length=1024, null=True, verbose_name='Name translation')),
-                ('short_description_translation', models.TextField(blank=True, help_text='Translation of short description', null=True, verbose_name='Short description translation')),
-                ('school_translation', models.CharField(blank=True, help_text='Translation of school name', max_length=512, null=True, verbose_name='School translation')),
-                ('organ_translation', models.CharField(blank=True, help_text='Translation of gov organization', max_length=512, null=True, verbose_name='Organ translation')),
-                ('language', models.ForeignKey(help_text='Points to language organization needed to be translated to', on_delete=django.db.models.deletion.CASCADE, related_name='org_translation_language', to='climateconnect_api.Language', verbose_name='Language')),
-                ('organization', models.ForeignKey(help_text='Points to organization table', on_delete=django.db.models.deletion.CASCADE, related_name='translation_org', to='organization.Organization', verbose_name='Organization')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name_translation",
+                    models.CharField(
+                        blank=True,
+                        help_text="Translation of organization name",
+                        max_length=1024,
+                        null=True,
+                        verbose_name="Name translation",
+                    ),
+                ),
+                (
+                    "short_description_translation",
+                    models.TextField(
+                        blank=True,
+                        help_text="Translation of short description",
+                        null=True,
+                        verbose_name="Short description translation",
+                    ),
+                ),
+                (
+                    "school_translation",
+                    models.CharField(
+                        blank=True,
+                        help_text="Translation of school name",
+                        max_length=512,
+                        null=True,
+                        verbose_name="School translation",
+                    ),
+                ),
+                (
+                    "organ_translation",
+                    models.CharField(
+                        blank=True,
+                        help_text="Translation of gov organization",
+                        max_length=512,
+                        null=True,
+                        verbose_name="Organ translation",
+                    ),
+                ),
+                (
+                    "language",
+                    models.ForeignKey(
+                        help_text="Points to language organization needed to be translated to",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="org_translation_language",
+                        to="climateconnect_api.Language",
+                        verbose_name="Language",
+                    ),
+                ),
+                (
+                    "organization",
+                    models.ForeignKey(
+                        help_text="Points to organization table",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="translation_org",
+                        to="organization.Organization",
+                        verbose_name="Organization",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Organization translation',
-                'verbose_name_plural': 'Organization translations',
+                "verbose_name": "Organization translation",
+                "verbose_name_plural": "Organization translations",
             },
         ),
     ]

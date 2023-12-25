@@ -5,27 +5,72 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0037_auto_20200702_0759'),
+        ("organization", "0037_auto_20200702_0759"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='organization',
-            options={'ordering': ['-id'], 'verbose_name': 'Organization', 'verbose_name_plural': 'Organizations'},
+            name="organization",
+            options={
+                "ordering": ["-id"],
+                "verbose_name": "Organization",
+                "verbose_name_plural": "Organizations",
+            },
         ),
         migrations.CreateModel(
-            name='ProjectCollaborators',
+            name="ProjectCollaborators",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when project was linked to an organization', verbose_name='Created At')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='Time when project was updated. i.e.: Order change etc.', verbose_name='Updated At')),
-                ('collaborating_organization', models.ForeignKey(blank=True, help_text='Points to organization', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='collaborating_organization', to='organization.Organization', verbose_name='Organization')),
-                ('project', models.ForeignKey(help_text="Points to organizations's project", on_delete=django.db.models.deletion.CASCADE, related_name='collaboration_project', to='organization.Project', verbose_name='Project')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Time when project was linked to an organization",
+                        verbose_name="Created At",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="Time when project was updated. i.e.: Order change etc.",
+                        verbose_name="Updated At",
+                    ),
+                ),
+                (
+                    "collaborating_organization",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="Points to organization",
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="collaborating_organization",
+                        to="organization.Organization",
+                        verbose_name="Organization",
+                    ),
+                ),
+                (
+                    "project",
+                    models.ForeignKey(
+                        help_text="Points to organizations's project",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="collaboration_project",
+                        to="organization.Project",
+                        verbose_name="Project",
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'Project Collaborators',
+                "verbose_name_plural": "Project Collaborators",
             },
         ),
     ]

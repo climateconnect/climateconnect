@@ -6,16 +6,22 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('climateconnect_api', '0071_auto_20211125_1127'),
+        ("climateconnect_api", "0071_auto_20211125_1127"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='donation',
-            name='user',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='donation_user', to=settings.AUTH_USER_MODEL, verbose_name='User'),
+            model_name="donation",
+            name="user",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="donation_user",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="User",
+            ),
         ),
     ]

@@ -4,24 +4,61 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0003_organizationtagging'),
+        ("organization", "0003_organizationtagging"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='OrganizationType',
+            name="OrganizationType",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(help_text='Points to name of the type. e.g: NGO', max_length=512, verbose_name='Name')),
-                ('key', models.CharField(blank=True, help_text='Points to key of the type.', max_length=512, null=True, verbose_name='Key')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Time when org type was created', verbose_name='Created At')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='Time when org type was updated', verbose_name='Updated At')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="Points to name of the type. e.g: NGO",
+                        max_length=512,
+                        verbose_name="Name",
+                    ),
+                ),
+                (
+                    "key",
+                    models.CharField(
+                        blank=True,
+                        help_text="Points to key of the type.",
+                        max_length=512,
+                        null=True,
+                        verbose_name="Key",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Time when org type was created",
+                        verbose_name="Created At",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="Time when org type was updated",
+                        verbose_name="Updated At",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Organization Type',
-                'verbose_name_plural': 'Organization Types',
+                "verbose_name": "Organization Type",
+                "verbose_name_plural": "Organization Types",
             },
         ),
     ]

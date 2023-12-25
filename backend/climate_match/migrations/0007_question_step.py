@@ -4,15 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climate_match', '0006_question_image'),
+        ("climate_match", "0006_question_image"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='question',
-            name='step',
-            field=models.IntegerField(blank=True, help_text='At which step should we ask this particular question?', null=True, verbose_name='Step'),
+            model_name="question",
+            name="step",
+            field=models.IntegerField(
+                blank=True,
+                help_text="At which step should we ask this particular question?",
+                null=True,
+                verbose_name="Step",
+            ),
         ),
     ]

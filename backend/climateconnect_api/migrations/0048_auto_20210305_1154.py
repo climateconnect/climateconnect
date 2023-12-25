@@ -4,25 +4,41 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0047_auto_20210215_1030'),
+        ("climateconnect_api", "0047_auto_20210215_1030"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userprofile',
-            name='from_tutorial',
-            field=models.BooleanField(blank=True, default=False, help_text='Check whether the user signed up by clicking the "sign up" link in the tutorial', null=True, verbose_name='Signed up through tutorial?'),
+            model_name="userprofile",
+            name="from_tutorial",
+            field=models.BooleanField(
+                blank=True,
+                default=False,
+                help_text='Check whether the user signed up by clicking the "sign up" link in the tutorial',
+                null=True,
+                verbose_name="Signed up through tutorial?",
+            ),
         ),
         migrations.AddField(
-            model_name='userprofile',
-            name='is_activist',
-            field=models.CharField(blank=True, help_text='Options: ["yes", "soon", "no"]. Soon means they said they\'re interested in becoming active.', max_length=8, null=True, verbose_name='Is already active in climate action?'),
+            model_name="userprofile",
+            name="is_activist",
+            field=models.CharField(
+                blank=True,
+                help_text='Options: ["yes", "soon", "no"]. Soon means they said they\'re interested in becoming active.',
+                max_length=8,
+                null=True,
+                verbose_name="Is already active in climate action?",
+            ),
         ),
         migrations.AddField(
-            model_name='userprofile',
-            name='last_completed_tutorial_step',
-            field=models.SmallIntegerField(blank=True, help_text='Last tutorial step the user completed (16=finished)', null=True, verbose_name='Last completed tutorial step'),
+            model_name="userprofile",
+            name="last_completed_tutorial_step",
+            field=models.SmallIntegerField(
+                blank=True,
+                help_text="Last tutorial step the user completed (16=finished)",
+                null=True,
+                verbose_name="Last completed tutorial step",
+            ),
         ),
     ]

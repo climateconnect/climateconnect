@@ -5,16 +5,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('chat_messages', '0002_auto_20200922_1521'),
+        ("chat_messages", "0002_auto_20200922_1521"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='messageparticipants',
-            name='participants',
-            field=models.ManyToManyField(help_text='Points to list users in a group', related_name='participant_users', to=settings.AUTH_USER_MODEL, verbose_name='Participants'),
+            model_name="messageparticipants",
+            name="participants",
+            field=models.ManyToManyField(
+                help_text="Points to list users in a group",
+                related_name="participant_users",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="Participants",
+            ),
         ),
     ]

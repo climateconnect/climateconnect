@@ -4,19 +4,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('climateconnect_api', '0037_auto_20201113_0955'),
+        ("climateconnect_api", "0037_auto_20201113_0955"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='userprofile',
-            name='email_project_suggestions',
+            model_name="userprofile",
+            name="email_project_suggestions",
         ),
         migrations.AddField(
-            model_name='userprofile',
-            name='send_newsletter',
-            field=models.BooleanField(blank=True, default=True, help_text='Check if user wants to receive our newsletter', null=True, verbose_name='Send newsletter'),
+            model_name="userprofile",
+            name="send_newsletter",
+            field=models.BooleanField(
+                blank=True,
+                default=True,
+                help_text="Check if user wants to receive our newsletter",
+                null=True,
+                verbose_name="Send newsletter",
+            ),
         ),
     ]

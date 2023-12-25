@@ -4,15 +4,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('ideas', '0011_auto_20210509_1804'),
+        ("ideas", "0011_auto_20210509_1804"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='idea',
-            name='url_slug',
-            field=models.CharField(blank=True, help_text='URL slug for an idea', max_length=1024, null=True, unique=True, verbose_name='URL Slug'),
+            model_name="idea",
+            name="url_slug",
+            field=models.CharField(
+                blank=True,
+                help_text="URL slug for an idea",
+                max_length=1024,
+                null=True,
+                unique=True,
+                verbose_name="URL Slug",
+            ),
         ),
     ]

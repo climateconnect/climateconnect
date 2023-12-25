@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('location', '0006_auto_20210218_0859'),
+        ("location", "0006_auto_20210218_0859"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='location',
-            name='is_formatted',
-            field=models.BooleanField(default=False, help_text='helper column after migration inserted wrong languages and location shapes', verbose_name='Is Formatted?'),
+            model_name="location",
+            name="is_formatted",
+            field=models.BooleanField(
+                default=False,
+                help_text="helper column after migration inserted wrong languages and location shapes",
+                verbose_name="Is Formatted?",
+            ),
         ),
     ]

@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('ideas', '0014_auto_20210607_0956'),
+        ("ideas", "0014_auto_20210607_0956"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='ideatranslation',
-            name='is_manual_translation',
-            field=models.BooleanField(default=False, help_text='Was idea translated manually or automatically?', verbose_name='Is manual translation?'),
+            model_name="ideatranslation",
+            name="is_manual_translation",
+            field=models.BooleanField(
+                default=False,
+                help_text="Was idea translated manually or automatically?",
+                verbose_name="Is manual translation?",
+            ),
         ),
     ]

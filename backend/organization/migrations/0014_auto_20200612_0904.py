@@ -6,40 +6,87 @@ import organization.models.organization
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('organization', '0013_organizationmember_projectmember'),
+        ("organization", "0013_organizationmember_projectmember"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='organization',
-            name='image',
-            field=models.ImageField(blank=True, help_text='Organization image', null=True, upload_to=organization.models.organization.organization_image_path, verbose_name='Organization Image'),
+            model_name="organization",
+            name="image",
+            field=models.ImageField(
+                blank=True,
+                help_text="Organization image",
+                null=True,
+                upload_to=organization.models.organization.organization_image_path,
+                verbose_name="Organization Image",
+            ),
         ),
         migrations.AddField(
-            model_name='project',
-            name='description',
-            field=models.CharField(blank=True, help_text='Points to detailed description about the project', max_length=4800, null=True, verbose_name='Description'),
+            model_name="project",
+            name="description",
+            field=models.CharField(
+                blank=True,
+                help_text="Points to detailed description about the project",
+                max_length=4800,
+                null=True,
+                verbose_name="Description",
+            ),
         ),
         migrations.AddField(
-            model_name='projectmember',
-            name='role_in_project',
-            field=models.CharField(blank=True, help_text="Points to the role of the person in the project, e.g. 'project manager'", max_length=1024, null=True, verbose_name='Role in project'),
+            model_name="projectmember",
+            name="role_in_project",
+            field=models.CharField(
+                blank=True,
+                help_text="Points to the role of the person in the project, e.g. 'project manager'",
+                max_length=1024,
+                null=True,
+                verbose_name="Role in project",
+            ),
         ),
         migrations.AddField(
-            model_name='projectmember',
-            name='time_per_week',
-            field=models.CharField(choices=[('not_specified', 'Not specified'), ('1-2', '1-2'), ('3-5', '3-5'), ('6-10', '6-10'), ('11-15', '11-15'), ('16-20', '16-20'), ('21-25', '21-25'), ('26-30', '26-30'), ('31-35', '31-35'), ('36-40', '36-40'), ('over_40', 'More than 40')], default='not_specified', help_text='Shows how many hours per week the user is putting into this specific project.', max_length=64, verbose_name='Time per week'),
+            model_name="projectmember",
+            name="time_per_week",
+            field=models.CharField(
+                choices=[
+                    ("not_specified", "Not specified"),
+                    ("1-2", "1-2"),
+                    ("3-5", "3-5"),
+                    ("6-10", "6-10"),
+                    ("11-15", "11-15"),
+                    ("16-20", "16-20"),
+                    ("21-25", "21-25"),
+                    ("26-30", "26-30"),
+                    ("31-35", "31-35"),
+                    ("36-40", "36-40"),
+                    ("over_40", "More than 40"),
+                ],
+                default="not_specified",
+                help_text="Shows how many hours per week the user is putting into this specific project.",
+                max_length=64,
+                verbose_name="Time per week",
+            ),
         ),
         migrations.AlterField(
-            model_name='project',
-            name='short_description',
-            field=models.CharField(blank=True, help_text='Points to short description about the project', max_length=240, null=True, verbose_name='Short Description'),
+            model_name="project",
+            name="short_description",
+            field=models.CharField(
+                blank=True,
+                help_text="Points to short description about the project",
+                max_length=240,
+                null=True,
+                verbose_name="Short Description",
+            ),
         ),
         migrations.AlterField(
-            model_name='projectmember',
-            name='role',
-            field=models.ForeignKey(help_text='Points to user role', on_delete=django.db.models.deletion.PROTECT, related_name='project_role', to='climateconnect_api.Role', verbose_name='Role(permissions)'),
+            model_name="projectmember",
+            name="role",
+            field=models.ForeignKey(
+                help_text="Points to user role",
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="project_role",
+                to="climateconnect_api.Role",
+                verbose_name="Role(permissions)",
+            ),
         ),
     ]
