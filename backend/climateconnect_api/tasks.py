@@ -90,7 +90,7 @@ def calculate_project_rankings(self, project_ids: List[int]) -> None:
     for project_id in project_ids:
         try:
             project = Project.objects.get(id=project_id)
-        except Project.DoesNotExist as ex:
+        except Project.DoesNotExist:
             logger.error(f"[PROJECT_RANKING] Project does not exists for {project_id}.")
             return
         

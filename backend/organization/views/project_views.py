@@ -1,6 +1,6 @@
 import logging
 import traceback
-from django.db.models import Count, Case, When
+from django.db.models import Case, When
 from organization.utility.follow import (
     get_list_of_project_followers,
     set_user_following_project,
@@ -143,7 +143,7 @@ class ListProjectsView(ListAPIView):
         user = self.request.user
         user_profile = None
         if user.is_authenticated:
-            user_profile = user.user_profile if user.user_profile else None
+            user_profile = user.user_profile if user.user_profile else None  # noqa
         # Get project ranking
         projects = Project.objects.filter(
             is_draft=False, is_active=True
