@@ -202,6 +202,14 @@ class Project(models.Model):
     )
 
     @property
+    def cached_ranking(self) -> int:
+        cache_key = generate_project_ranking_cache_key(project_id=self.id)
+        project_rank = cache.get(cache_key)
+        if not project_rank:
+            return self.rating
+        return project_rank
+
+    @property
     def ranking(self) -> int:
         return ProjectRanking().calculate_ranking(
                 description=self.description,

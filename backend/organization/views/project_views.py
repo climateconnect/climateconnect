@@ -281,7 +281,7 @@ class ListProjectsView(ListAPIView):
         # Sort projects by its ranking
         project_ids = [
             project.id
-            for project in sorted(projects, key=lambda project: -project.ranking)
+            for project in sorted(projects, key=lambda project: -project.cached_ranking)
         ]
         preferred_order = Case(
             *(

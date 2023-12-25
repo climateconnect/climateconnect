@@ -12,6 +12,7 @@ class ProjectRanking:
     def __init__(self, user_profile: Optional[UserProfile] = None):
         self.user_profile = user_profile
         self.EVENT_DURATION_IN_DAYS = 14
+        self.DEFAULT_CACHE_TIMEOUT_IN_SECONDS = 86400  # 1 day
 
     def _randomize_ranking(self, project_rank: int) -> int:
         # a random number gives a boost to different projects to get the top of the list
@@ -66,101 +67,100 @@ class ProjectRanking:
         start_date: Optional[datetime.datetime],
         created_at: datetime.datetime,
     ) -> int:
+        from organization.models import (
+            ProjectComment,
+            ProjectLike,
+            ProjectTagging,
+            ProjectFollower,
+        )
         cache_key = generate_project_ranking_cache_key(project_id=project_id)
-        project_rank = cache.get(cache_key)
-        if project_rank is None:
-            from organization.models import (
-                ProjectComment,
-                ProjectLike,
-                ProjectTagging,
-                ProjectFollower,
-            )
 
-            weights = self._weights()
+        weights = self._weights()
 
-            last_project_comment = (
-                ProjectComment.objects.filter(project_id=project_id)
-                .order_by("-created_at")
-                .last()
-            )
-            last_project_comment_timestamp = (
-                None
-                if not last_project_comment
-                else last_project_comment.created_at.timestamp()
-            )
-            last_project_like = (
-                ProjectLike.objects.filter(project_id=project_id)
-                .order_by("-created_at")
-                .last()
-            )
-            last_project_like_timestamp = (
-                None
-                if not last_project_like
-                else last_project_like.created_at.timestamp()
-            )
-            last_project_follower = (
-                ProjectFollower.objects.filter(project_id=project_id)
-                .order_by("-created_at")
-                .last()
-            )
-            last_project_follower_timestamp = (
-                None
-                if not last_project_follower
-                else last_project_follower.created_at.timestamp()
-            )
+        last_project_comment = (
+            ProjectComment.objects.filter(project_id=project_id)
+            .order_by("-created_at")
+            .last()
+        )
+        last_project_comment_timestamp = (
+            None
+            if not last_project_comment
+            else last_project_comment.created_at.timestamp()
+        )
+        last_project_like = (
+            ProjectLike.objects.filter(project_id=project_id)
+            .order_by("-created_at")
+            .last()
+        )
+        last_project_like_timestamp = (
+            None
+            if not last_project_like
+            else last_project_like.created_at.timestamp()
+        )
+        last_project_follower = (
+            ProjectFollower.objects.filter(project_id=project_id)
+            .order_by("-created_at")
+            .last()
+        )
+        last_project_follower_timestamp = (
+            None
+            if not last_project_follower
+            else last_project_follower.created_at.timestamp()
+        )
 
-            project_factors = {
-                "total_comments": ProjectComment.objects.filter(
-                    project_id=project_id
-                ).count(),
-                "total_likes": ProjectLike.objects.filter(
-                    project_id=project_id
-                ).count(),
-                "total_followers": ProjectFollower.objects.filter(
-                    project_id=project_id
-                ).count(),
-                "last_project_comment": self.calculate_recency_of_interaction(
-                    last_interaction_timestamp=last_project_comment_timestamp
-                ),
-                "last_project_like": self.calculate_recency_of_interaction(
-                    last_interaction_timestamp=last_project_like_timestamp
-                ),
-                "last_project_follower": self.calculate_recency_of_interaction(
-                    last_interaction_timestamp=last_project_follower_timestamp
-                ),
-                "total_tags": ProjectTagging.objects.filter(
-                    project_id=project_id
-                ).count(),
-                "location": 1 if location else 0,
-                "description": 1 if description and len(description) > 0 else 0,
-                "total_skills": total_skills,
-                "created_at": self.calculate_recency_of_interaction(
-                    last_interaction_timestamp=created_at.timestamp()
-                ),
-            }
+        project_factors = {
+            "total_comments": ProjectComment.objects.filter(
+                project_id=project_id
+            ).count(),
+            "total_likes": ProjectLike.objects.filter(
+                project_id=project_id
+            ).count(),
+            "total_followers": ProjectFollower.objects.filter(
+                project_id=project_id
+            ).count(),
+            "last_project_comment": self.calculate_recency_of_interaction(
+                last_interaction_timestamp=last_project_comment_timestamp
+            ),
+            "last_project_like": self.calculate_recency_of_interaction(
+                last_interaction_timestamp=last_project_like_timestamp
+            ),
+            "last_project_follower": self.calculate_recency_of_interaction(
+                last_interaction_timestamp=last_project_follower_timestamp
+            ),
+            "total_tags": ProjectTagging.objects.filter(
+                project_id=project_id
+            ).count(),
+            "location": 1 if location else 0,
+            "description": 1 if description and len(description) > 0 else 0,
+            "total_skills": total_skills,
+            "created_at": self.calculate_recency_of_interaction(
+                last_interaction_timestamp=created_at.timestamp()
+            ),
+        }
 
-            project_rank = (
-                int(
-                    sum(project_factors[factor] * weights[factor] for factor in weights)
+        project_rank = (
+            int(
+                sum(project_factors[factor] * weights[factor] for factor in weights)
+            )
+            + project_manually_set_rating
+        )
+
+        # Now we want to change the order every time somebody
+        # visits the page we would add some randomization.
+        project_rank = self._randomize_ranking(project_rank=project_rank)
+
+        # Check if project type is event. If it is event, we want to set higher ranking.
+        # If the event is in next 60 days, we set additional 10000 points to the ranking.
+        if project_type == ProjectTypesChoices.event:
+            duration = timezone.now() + datetime.timedelta(
+                days=self.EVENT_DURATION_IN_DAYS
+            )
+            if start_date >= timezone.now() and start_date <= duration:
+                points_for_event_projects = self.calculate_recency_of_interaction(
+                    last_interaction_timestamp=start_date.timestamp()
                 )
-                + project_manually_set_rating
-            )
-
-            # Now we want to change the order every time somebody
-            # visits the page we would add some randomization.
-            project_rank = self._randomize_ranking(project_rank=project_rank)
-
-            # Check if project type is event. If it is event, we want to set higher ranking.
-            # If the event is in next 60 days, we set additional 10000 points to the ranking.
-            if project_type == ProjectTypesChoices.event:
-                duration = timezone.now() + datetime.timedelta(
-                    days=self.EVENT_DURATION_IN_DAYS
-                )
-                if start_date >= timezone.now() and start_date <= duration:
-                    points_for_event_projects = self.calculate_recency_of_interaction(
-                        last_interaction_timestamp=start_date.timestamp()
-                    )
-                    project_rank += points_for_event_projects
-            cache.set(cache_key, project_rank)
+                project_rank += points_for_event_projects
+        
+        cache.set(cache_key, project_rank, timeout=self.DEFAULT_CACHE_TIMEOUT_IN_SECONDS)
 
         return project_rank

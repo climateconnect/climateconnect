@@ -1,6 +1,7 @@
 import logging
 from datetime import timedelta
 from typing import List
+from organization.models.project import Project
 
 from climateconnect_main.celery import app
 from django.conf import settings
@@ -71,3 +72,28 @@ def send_email_notifications(self, user_ids: List):
             send_email_reminder_for_unread_notifications(
                 user=user, user_notifications=unread_user_notifications
             )
+
+
+@app.task
+def schedule_automated_update_to_project_ranks() -> None:
+    all_project_ids: List[int] = list(Project.objects.all().values_list('id', flat=True))
+    PROJECT_CHUNK_SIZE = 100
+
+    for i in range(0, len(all_project_ids), PROJECT_CHUNK_SIZE):
+        project_ids = [p_ids for p_ids in all_project_ids[i: i + PROJECT_CHUNK_SIZE]]
+        print(project_ids)
+        calculate_project_rankings.apply_async((project_ids,))
+
+
+@app.task(bind=True)
+def calculate_project_rankings(self, project_ids: List[int]) -> None:
+    for project_id in project_ids:
+        try:
+            project = Project.objects.get(id=project_id)
+        except Project.DoesNotExist as ex:
+            logger.error(f"[PROJECT_RANKING] Project does not exists for {project_id}.")
+            return
+        
+        logger.info(f'[PROJECT_RANKING] calculate ranking for project {project.id}')
+        project.ranking
+
