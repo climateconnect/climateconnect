@@ -1,5 +1,6 @@
 import logging
 import traceback
+from django.db.models import Case, When
 from organization.utility.follow import (
     get_list_of_project_followers,
     set_user_following_project,
@@ -139,7 +140,18 @@ class ListProjectsView(ListAPIView):
     serializer_class = ProjectStubSerializer
 
     def get_queryset(self):
-        projects = Project.objects.filter(is_draft=False, is_active=True)
+        user = self.request.user
+        user_profile = None
+        if user.is_authenticated:
+            user_profile = user.user_profile if user.user_profile else None  # noqa
+        # Get project ranking
+        projects = Project.objects.filter(
+            is_draft=False, is_active=True
+        ).select_related('loc', 'language', 'status').prefetch_related(
+            'skills', 'tag_project', 'project_comment', 'project_liked',
+            'project_following'
+        )
+
         if "hub" in self.request.query_params:
             hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
             if hub.exists():
@@ -159,15 +171,17 @@ class ListProjectsView(ListAPIView):
                     ).distinct()
                 elif hub[0].hub_type == Hub.LOCATION_HUB_TYPE:
                     location = hub[0].location.all()[0]
+                    location_multipolygon = location.multi_polygon
                     projects = projects.filter(
                         Q(loc__country=location.country)
-                        & (
-                            Q(loc__multi_polygon__coveredby=(location.multi_polygon))
-                            | Q(loc__centre_point__coveredby=(location.multi_polygon))
-                        )
-                    ).annotate(
-                        distance=Distance("loc__centre_point", location.multi_polygon)
                     )
+                    if location_multipolygon:
+                        projects = projects.filter(
+                            Q(loc__multi_polygon__coveredby=(location_multipolygon))
+                            | Q(loc__centre_point__coveredby=(location_multipolygon))
+                        ).annotate(
+                            distance=Distance("loc__centre_point", location_multipolygon)
+                        )
 
         if "collaboration" in self.request.query_params:
             collaborators_welcome = self.request.query_params.get("collaboration")
@@ -263,7 +277,19 @@ class ListProjectsView(ListAPIView):
                 country=self.request.query_params.get("country")
             )
             projects = projects.filter(loc__in=location_ids)
-        return projects
+
+        # Sort projects by its ranking
+        project_ids = [
+            project.id
+            for project in sorted(projects, key=lambda project: -project.cached_ranking)
+        ]
+        preferred_order = Case(
+            *(
+                When(id=id, then=position)
+                for position, id in enumerate(project_ids, start=1)
+            )
+        )
+        return projects.order_by(preferred_order)
 
 
 class CreateProjectView(APIView):

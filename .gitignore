@@ -37,3 +37,4 @@ frontend/.eslintcache
 media/
 
 .venv
+.vscode/tasks.json
