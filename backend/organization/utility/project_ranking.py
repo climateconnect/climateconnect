@@ -145,13 +145,15 @@ class ProjectRanking:
         # Check if project type is event. If it is event, we want to set higher ranking.
         # If the event is in next 60 days, we set additional 10000 points to the ranking.
         if project_type == ProjectTypesChoices.event:
-            duration = timezone.now() + datetime.timedelta(
+            upcoming_two_week_timedelta = timezone.now() + datetime.timedelta(
                 days=self.EVENT_DURATION_IN_DAYS
             )
-            if start_date >= timezone.now() and start_date <= duration:
-                points_for_event_projects = self.calculate_recency_of_interaction(
-                    last_interaction_timestamp=start_date.timestamp()
-                )
+            if (
+                start_date >= timezone.now()
+                and start_date <= upcoming_two_week_timedelta
+            ):
+                # Just setting 10000 points for event projects.
+                points_for_event_projects = 10000
                 project_rank += points_for_event_projects
 
         cache.set(
