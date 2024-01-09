@@ -50,7 +50,7 @@ class ListHubsView(ListAPIView):
     serializer_class = HubStubSerializer
 
     def get_queryset(self):
-        return Hub.objects.filter(importance__gte=1)
+        return Hub.objects.filter(importance__gte=1).prefetch_related("language")
 
 
 class ListSectorHubsView(ListAPIView):
