@@ -73,6 +73,7 @@ class ProjectRanking:
             ProjectTagging,
             ProjectFollower,
         )
+
         cache_key = generate_project_ranking_cache_key(project_id=project_id)
 
         weights = self._weights()
@@ -93,9 +94,7 @@ class ProjectRanking:
             .last()
         )
         last_project_like_timestamp = (
-            None
-            if not last_project_like
-            else last_project_like.created_at.timestamp()
+            None if not last_project_like else last_project_like.created_at.timestamp()
         )
         last_project_follower = (
             ProjectFollower.objects.filter(project_id=project_id)
@@ -112,9 +111,7 @@ class ProjectRanking:
             "total_comments": ProjectComment.objects.filter(
                 project_id=project_id
             ).count(),
-            "total_likes": ProjectLike.objects.filter(
-                project_id=project_id
-            ).count(),
+            "total_likes": ProjectLike.objects.filter(project_id=project_id).count(),
             "total_followers": ProjectFollower.objects.filter(
                 project_id=project_id
             ).count(),
@@ -127,9 +124,7 @@ class ProjectRanking:
             "last_project_follower": self.calculate_recency_of_interaction(
                 last_interaction_timestamp=last_project_follower_timestamp
             ),
-            "total_tags": ProjectTagging.objects.filter(
-                project_id=project_id
-            ).count(),
+            "total_tags": ProjectTagging.objects.filter(project_id=project_id).count(),
             "location": 1 if location else 0,
             "description": 1 if description and len(description) > 0 else 0,
             "total_skills": total_skills,
@@ -139,9 +134,7 @@ class ProjectRanking:
         }
 
         project_rank = (
-            int(
-                sum(project_factors[factor] * weights[factor] for factor in weights)
-            )
+            int(sum(project_factors[factor] * weights[factor] for factor in weights))
             + project_manually_set_rating
         )
 
@@ -160,7 +153,9 @@ class ProjectRanking:
                     last_interaction_timestamp=start_date.timestamp()
                 )
                 project_rank += points_for_event_projects
-        
-        cache.set(cache_key, project_rank, timeout=self.DEFAULT_CACHE_TIMEOUT_IN_SECONDS)
+
+        cache.set(
+            cache_key, project_rank, timeout=self.DEFAULT_CACHE_TIMEOUT_IN_SECONDS
+        )
 
         return project_rank
