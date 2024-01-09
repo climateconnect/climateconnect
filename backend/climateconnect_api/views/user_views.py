@@ -200,6 +200,7 @@ class ListMemberProfilesView(ListAPIView):
     def get_queryset(self):
         user_profiles = (
             UserProfile.objects.filter(is_profile_verified=True)
+            .prefetch_related("user", "location")
             .annotate(is_image_null=Count("image", filter=Q(image="")))
             .order_by("is_image_null", "-id")
         )
