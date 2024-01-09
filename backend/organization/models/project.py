@@ -212,15 +212,15 @@ class Project(models.Model):
     @property
     def ranking(self) -> int:
         return ProjectRanking().calculate_ranking(
-                description=self.description,
-                location=self.loc,
-                project_id=self.id,
-                project_manually_set_rating=self.rating,
-                total_skills=self.skills.count(),
-                project_type=self.project_type,
-                start_date=self.start_date,
-                created_at=self.created_at
-            )
+            description=self.description,
+            location=self.loc,
+            project_id=self.id,
+            project_manually_set_rating=self.rating,
+            total_skills=self.skills.count(),
+            project_type=self.project_type,
+            start_date=self.start_date,
+            created_at=self.created_at,
+        )
 
     class Meta:
         app_label = "organization"
@@ -232,18 +232,18 @@ class Project(models.Model):
         return "(%d) %s: %s" % (self.pk, self.project_type, self.name)
 
 
-@receiver(post_save, sender='organization.ProjectLike')
-@receiver(post_save, sender='organization.ProjectFollower')
-@receiver(post_save, sender='organization.ProjectComment')
+@receiver(post_save, sender="organization.ProjectLike")
+@receiver(post_save, sender="organization.ProjectFollower")
+@receiver(post_save, sender="organization.ProjectComment")
 def update_project_ranking_cache_on_save(sender, instance, created, **kwargs):
     if created:
         cache.delete(generate_project_ranking_cache_key(project_id=instance.project_id))
         instance.project.ranking
 
 
-@receiver(post_delete, sender='organization.ProjectFollower')
-@receiver(post_delete, sender='organization.ProjectComment')
-@receiver(post_delete, sender='organization.ProjectLike')
+@receiver(post_delete, sender="organization.ProjectFollower")
+@receiver(post_delete, sender="organization.ProjectComment")
+@receiver(post_delete, sender="organization.ProjectLike")
 def update_project_ranking_cache_on_delete(sender, instance, **kwargs):
     cache.delete(generate_project_ranking_cache_key(project_id=instance.project_id))
 

@@ -76,11 +76,13 @@ def send_email_notifications(self, user_ids: List):
 
 @app.task
 def schedule_automated_update_to_project_ranks() -> None:
-    all_project_ids: List[int] = list(Project.objects.all().values_list('id', flat=True))
+    all_project_ids: List[int] = list(
+        Project.objects.all().values_list("id", flat=True)
+    )
     PROJECT_CHUNK_SIZE = 100
 
     for i in range(0, len(all_project_ids), PROJECT_CHUNK_SIZE):
-        project_ids = [p_ids for p_ids in all_project_ids[i: i + PROJECT_CHUNK_SIZE]]
+        project_ids = [p_ids for p_ids in all_project_ids[i : i + PROJECT_CHUNK_SIZE]]
         calculate_project_rankings.apply_async((project_ids,))
 
 
@@ -92,7 +94,6 @@ def calculate_project_rankings(self, project_ids: List[int]) -> None:
         except Project.DoesNotExist:
             logger.error(f"[PROJECT_RANKING] Project does not exists for {project_id}.")
             return
-        
-        logger.info(f'[PROJECT_RANKING] calculate ranking for project {project.id}')
-        project.ranking
 
+        logger.info(f"[PROJECT_RANKING] calculate ranking for project {project.id}")
+        project.ranking

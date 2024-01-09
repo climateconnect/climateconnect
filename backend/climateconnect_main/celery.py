@@ -35,5 +35,5 @@ app.conf.beat_schedule = {
     "schedule_automated_update_to_project_ranks": {
         "task": "climateconnect_api.tasks.schedule_automated_update_to_project_ranks",
         "schedule": crontab(hour=2, minute=0),  # 3 am Central European Time is 2 am UTC
-    }
+    },
 }

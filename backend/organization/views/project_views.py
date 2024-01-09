@@ -145,11 +145,16 @@ class ListProjectsView(ListAPIView):
         if user.is_authenticated:
             user_profile = user.user_profile if user.user_profile else None  # noqa
         # Get project ranking
-        projects = Project.objects.filter(
-            is_draft=False, is_active=True
-        ).select_related('loc', 'language', 'status').prefetch_related(
-            'skills', 'tag_project', 'project_comment', 'project_liked',
-            'project_following'
+        projects = (
+            Project.objects.filter(is_draft=False, is_active=True)
+            .select_related("loc", "language", "status")
+            .prefetch_related(
+                "skills",
+                "tag_project",
+                "project_comment",
+                "project_liked",
+                "project_following",
+            )
         )
 
         if "hub" in self.request.query_params:
@@ -172,15 +177,15 @@ class ListProjectsView(ListAPIView):
                 elif hub[0].hub_type == Hub.LOCATION_HUB_TYPE:
                     location = hub[0].location.all()[0]
                     location_multipolygon = location.multi_polygon
-                    projects = projects.filter(
-                        Q(loc__country=location.country)
-                    )
+                    projects = projects.filter(Q(loc__country=location.country))
                     if location_multipolygon:
                         projects = projects.filter(
                             Q(loc__multi_polygon__coveredby=(location_multipolygon))
                             | Q(loc__centre_point__coveredby=(location_multipolygon))
                         ).annotate(
-                            distance=Distance("loc__centre_point", location_multipolygon)
+                            distance=Distance(
+                                "loc__centre_point", location_multipolygon
+                            )
                         )
 
         if "collaboration" in self.request.query_params:

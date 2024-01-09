@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:dfd2723b871fc0360a7aa8fd405eb485a6361c7c7cac724c1a041c6f6c6dd441"
+content_hash = "sha256:85cac310c7477c16a289adc62c70878e7d5438dd26d7a5152434d5141618331c"
 
 [[package]]
 name = "aiohttp"
@@ -238,17 +238,37 @@ files = [
 ]
 
 [[package]]
-name = "azure-storage-blob"
-version = "2.1.0"
-summary = "Microsoft Azure Storage Blob Client Library for Python"
+name = "azure-core"
+version = "1.29.6"
+requires_python = ">=3.7"
+summary = "Microsoft Azure Core Library for Python"
 groups = ["default"]
 dependencies = [
-    "azure-common>=1.1.5",
-    "azure-storage-common~=2.1",
+    "anyio<5.0,>=3.0",
+    "requests>=2.21.0",
+    "six>=1.11.0",
+    "typing-extensions>=4.6.0",
 ]
 files = [
-    {file = "azure-storage-blob-2.1.0.tar.gz", hash = "sha256:b90323aad60f207f9f90a0c4cf94c10acc313c20b39403398dfba51f25f7b454"},
-    {file = "azure_storage_blob-2.1.0-py2.py3-none-any.whl", hash = "sha256:a8e91a51d4f62d11127c7fd8ba0077385c5b11022f0269f8a2a71b9fc36bef31"},
+    {file = "azure-core-1.29.6.tar.gz", hash = "sha256:13b485252ecd9384ae624894fe51cfa6220966207264c360beada239f88b738a"},
+    {file = "azure_core-1.29.6-py3-none-any.whl", hash = "sha256:604a005bce6a49ba661bb7b2be84a9b169047e52fcfcd0a4e4770affab4178f7"},
+]
+
+[[package]]
+name = "azure-storage-blob"
+version = "12.19.0"
+requires_python = ">=3.7"
+summary = "Microsoft Azure Blob Storage Client Library for Python"
+groups = ["default"]
+dependencies = [
+    "azure-core<2.0.0,>=1.28.0",
+    "cryptography>=2.1.4",
+    "isodate>=0.6.1",
+    "typing-extensions>=4.3.0",
+]
+files = [
+    {file = "azure-storage-blob-12.19.0.tar.gz", hash = "sha256:26c0a4320a34a3c2a1b74528ba6812ebcb632a04cd67b1c7377232c4b01a5897"},
+    {file = "azure_storage_blob-12.19.0-py3-none-any.whl", hash = "sha256:7bbc2c9c16678f7a420367fef6b172ba8730a7e66df7f4d7a55d5b3c8216615b"},
 ]
 
 [[package]]
@@ -1277,6 +1297,19 @@ groups = ["default"]
 files = [
     {file = "install-1.3.5-py3-none-any.whl", hash = "sha256:0d3fadf4aa62c95efe8d34757c8507eb46177f86c016c21c6551eafc6a53d5a9"},
     {file = "install-1.3.5.tar.gz", hash = "sha256:e67c8a0be5ccf8cb4ffa17d090f3a61b6e820e6a7e21cd1d2c0f7bc59b18e647"},
+]
+
+[[package]]
+name = "isodate"
+version = "0.6.1"
+summary = "An ISO 8601 date/time/duration parser and formatter"
+groups = ["default"]
+dependencies = [
+    "six",
+]
+files = [
+    {file = "isodate-0.6.1-py2.py3-none-any.whl", hash = "sha256:0751eece944162659049d35f4f549ed815792b38793f07cf73381c1c87cbed96"},
+    {file = "isodate-0.6.1.tar.gz", hash = "sha256:48c5881de7e8b0a0d648cb024c8062dc84e7b840ed81e864c7614fd3c127bde9"},
 ]
 
 [[package]]
