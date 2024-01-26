@@ -116,6 +116,7 @@ from rest_framework.views import APIView
 from organization.utility.requests import MembershipRequestsManager
 from organization.utility import MembershipTarget
 from organization.models.type import ProjectTypesChoices
+from climateconnect_api.tasks import calculate_project_rankings
 
 logger = logging.getLogger(__name__)
 
@@ -483,7 +484,7 @@ class CreateProjectView(APIView):
                 create_organization_project_published_notification(
                     followers_of_org, organization, project
                 )
-
+        calculate_project_rankings([project.id])
         return Response(
             {
                 "message": "Project {} successfully created".format(project.name),
@@ -636,7 +637,7 @@ class ProjectAPIView(APIView):
 
         if "translations" in request.data:
             edit_translations(items_to_translate, request.data, project, "project")
-
+        calculate_project_rankings([project.id])
         return Response(
             {
                 "message": "Project {} successfully updated".format(project.name),
