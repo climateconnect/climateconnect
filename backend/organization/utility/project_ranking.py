@@ -7,7 +7,6 @@ from organization.models.type import ProjectTypesChoices
 from organization.utility.cache import generate_project_ranking_cache_key
 from climateconnect_api.models.user import UserProfile
 
-
 class ProjectRanking:
     def __init__(self, user_profile: Optional[UserProfile] = None):
         self.user_profile = user_profile
@@ -16,44 +15,88 @@ class ProjectRanking:
 
     def _randomize_ranking(self, project_rank: int) -> int:
         # a random number gives a boost to different projects to get the top of the list
-        return int(random.triangular(1, 10)) * project_rank
+        return int(random.triangular(1, 1.2) * project_rank)
 
     def _weights(self) -> Dict:
         return {
-            "total_comments": 0.5,
-            "total_likes": 0.5,
-            "total_followers": 0.5,
-            "last_project_comment": 0.7,
-            "last_project_like": 0.8,
-            "last_project_follower": 0.9,
-            "total_tags": 0.1,
-            "location": 0.1,
-            "description": 0.9,
-            "total_skills": 0.1,
-            "created_at": 0.5,
+            "total_comments": 2,
+            "total_likes": 2,
+            "total_followers": 2,
+            "last_project_comment": 1.4,
+            "last_project_like": 1.6,
+            "last_project_follower": 1.4,
+            "total_tags": 0.2,
+            "location": 0.2,
+            "description": 10,
+            "total_skills": 0.2,
+            "created_at": 5,
         }
 
-    def _recency_score(self, timedelta: int) -> Dict:
-        # minimum and maximum recency score for the interaction
-        min_score = 0
-        max_score = 100
+    #Projects or interactions older than this timeframe don't get any recency score 
+    DEFAULT_BASE_SCORE_TIMEFRAME = 100*24*60*60
+    
+    def _recency_score(self, timedelta: int, max_boost=20, base_score_timeframe=DEFAULT_BASE_SCORE_TIMEFRAME) -> Dict:
+        # The base score is the maximum score possible if max_boost=0
+        base_score = 10
+        # If timedelta < timeframe a boost between min_boost_percentage*max_boost and max_boost_percentage*max_boost is added to the base score
+        boosts = [
+            {
+                "timeframe": 3*24*60*60,
+                "min_boost_percentage": 0.6,
+                "max_boost_percentage": 1
+            }, 
+            {
+                "timeframe": 7*24*60*60,
+                "min_boost_percentage": 0.2,
+                "max_boost_percentage": 0.6
+            },
+            {
+                "timeframe": 14*24*60*60,
+                "min_boost_percentage": 0.05,
+                "max_boost_percentage": 0.2
+            }
+        ]
 
-        # Scale the timedelta to a score between 0 and 100
-        score = ((timedelta - min_score) / (max_score - min_score)) * 100
+        def get_recency_score_with_boost(reference_timespan:int, min_boost, max_boost=200):
+            time_left = base_score_timeframe-timedelta
+            percentage_of_time_left = (time_left/base_score_timeframe)
+            #First we calculate the score without a boost based on base_score and base_score_timeframe
+            score = max(0, percentage_of_time_left*base_score)
+            #If the item is applicable for a boost we add the boost score
+            if min_boost > 0:
+                time_left_boost = reference_timespan-timedelta
+                percentage_of_time_left_boost = (time_left_boost/reference_timespan)
+                boost_delta = max_boost-min_boost
+                boost = min_boost + percentage_of_time_left_boost*boost_delta
+                score += boost
+            return score
+        
+        #If timedelta fits any boost, we apply them
+        for boost in boosts:
+            if timedelta < boost["timeframe"]:
+                return get_recency_score_with_boost(
+                    reference_timespan=boost["timeframe"], 
+                    min_boost=boost["min_boost_percentage"]*max_boost, 
+                    max_boost=boost["max_boost_percentage"]*max_boost
+                )
 
-        # Ensure the score is within the range of 0 to 100
-        score = max(min(score, 100), 0)
-
-        return score
+        #Otherwise we simply return the score without any boosts
+        return get_recency_score_with_boost(
+            reference_timespan=base_score_timeframe, 
+            min_boost=0, 
+            max_boost=0
+        )
 
     def calculate_recency_of_interaction(
-        self, last_interaction_timestamp: Optional[datetime.datetime]
+        self, last_interaction_timestamp: Optional[datetime.datetime], max_boost: Optional[int], base_score_timeframe=DEFAULT_BASE_SCORE_TIMEFRAME
     ) -> int:
         if not last_interaction_timestamp:
             return 0
 
         current_timestamp = timezone.now().timestamp()
-        timedelta = (current_timestamp - last_interaction_timestamp) / (60 * 60 * 24)
+        timedelta = current_timestamp - last_interaction_timestamp
+        if max_boost:
+            self._recency_score(timedelta=timedelta, max_boost=max_boost, base_score_timeframe=base_score_timeframe)
         return self._recency_score(timedelta=timedelta)
 
     def calculate_ranking(
@@ -65,6 +108,7 @@ class ProjectRanking:
         total_skills: int,
         project_type: ProjectTypesChoices,
         start_date: Optional[datetime.datetime],
+        end_date: Optional[datetime.datetime],
         created_at: datetime.datetime,
     ) -> int:
         from organization.models import (
@@ -106,7 +150,32 @@ class ProjectRanking:
             if not last_project_follower
             else last_project_follower.created_at.timestamp()
         )
-
+        
+        def get_created_at_factor():
+            # For events the start_date and end_date are more important than the created_at factor.
+            if project_type == ProjectTypesChoices.event:
+                # The event is in the past -> attribute a negative score
+                if end_date.timestamp() < timezone.now().timestamp():
+                    return -10
+                # The event is currently ongoing. Increase its score the closer it its end it is (this is especially relevant for multi-week-projects)
+                elif start_date.timestamp() < timezone.now().timestamp():
+                    return self._recency_score(
+                        timedelta=end_date.timestamp()-timezone.now().timestamp(), 
+                        base_score_timeframe=end_date.timestamp()-start_date.timestamp()
+                    )
+                # The event is in the future -> take into account how soon the event is coming up
+                else:
+                    created_at_score = self.calculate_recency_of_interaction(
+                        last_interaction_timestamp=created_at.timestamp(), max_boost=5
+                    )
+                    start_date_timedelta = start_date.timestamp() - timezone.now().timestamp()
+                    start_date_score = self._recency_score(timedelta=start_date_timedelta, base_score_timeframe=14*24*60*60)
+                    return max(created_at_score, start_date_score)
+            # For ideas and projects simple use the creation date as reference for the created_at_factor    
+            return self.calculate_recency_of_interaction(
+                last_interaction_timestamp=created_at.timestamp(),
+                max_boost=None
+            )        
         project_factors = {
             "total_comments": ProjectComment.objects.filter(
                 project_id=project_id
@@ -116,21 +185,22 @@ class ProjectRanking:
                 project_id=project_id
             ).count(),
             "last_project_comment": self.calculate_recency_of_interaction(
-                last_interaction_timestamp=last_project_comment_timestamp
+                last_interaction_timestamp=last_project_comment_timestamp,
+                max_boost=None
             ),
             "last_project_like": self.calculate_recency_of_interaction(
-                last_interaction_timestamp=last_project_like_timestamp
+                last_interaction_timestamp=last_project_like_timestamp,
+                max_boost=None
             ),
             "last_project_follower": self.calculate_recency_of_interaction(
-                last_interaction_timestamp=last_project_follower_timestamp
+                last_interaction_timestamp=last_project_follower_timestamp,
+                max_boost=None
             ),
             "total_tags": ProjectTagging.objects.filter(project_id=project_id).count(),
             "location": 1 if location else 0,
             "description": 1 if description and len(description) > 0 else 0,
             "total_skills": total_skills,
-            "created_at": self.calculate_recency_of_interaction(
-                last_interaction_timestamp=created_at.timestamp()
-            ),
+            "created_at": get_created_at_factor(),
         }
 
         project_rank = (
@@ -141,20 +211,6 @@ class ProjectRanking:
         # Now we want to change the order every time somebody
         # visits the page we would add some randomization.
         project_rank = self._randomize_ranking(project_rank=project_rank)
-
-        # Check if project type is event. If it is event, we want to set higher ranking.
-        # If the event is in next 60 days, we set additional 10000 points to the ranking.
-        if project_type == ProjectTypesChoices.event:
-            upcoming_two_week_timedelta = timezone.now() + datetime.timedelta(
-                days=self.EVENT_DURATION_IN_DAYS
-            )
-            if (
-                start_date >= timezone.now()
-                and start_date <= upcoming_two_week_timedelta
-            ):
-                # Just setting 10000 points for event projects.
-                points_for_event_projects = 10000
-                project_rank += points_for_event_projects
 
         cache.set(
             cache_key, project_rank, timeout=self.DEFAULT_CACHE_TIMEOUT_IN_SECONDS
