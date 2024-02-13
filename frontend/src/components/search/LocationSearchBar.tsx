@@ -187,9 +187,9 @@ export default function LocationSearchBar({
             return {
               ...o,
               simple_name: enableExactLocation
-                ? (nameObj === ""
+                ? nameObj === ""
                   ? nameObj
-                  : nameObj.name)
+                  : nameObj.name
                 : getNameFromLocation(o).name,
               key: o.place_id,
             };

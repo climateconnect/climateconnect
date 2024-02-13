@@ -210,12 +210,12 @@ const parseMembersForCreateRequest = (members) => {
       const parsedMem = {
         ...m,
         permission_type_id: m.role.id,
-        role_in_project: m.role_in_project ? m.role_in_project : ""
+        role_in_project: m.role_in_project ? m.role_in_project : "",
+      };
+      if (m.availability) {
+        parsedMem.availability = m.availability.id;
       }
-      if(m.availability){
-        parsedMem.availability = m.availability.id
-      }
-      return parsedMem
+      return parsedMem;
     }),
   };
 };

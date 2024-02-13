@@ -73,10 +73,10 @@ export default function Share({
     });
   };
   const onChangeParentOrganization = (e) => {
-    const selectedOrg = userOrganizations.find(o=>o.name === e.target.value)
+    const selectedOrg = userOrganizations.find((o) => o.name === e.target.value);
     handleSetProjectData({
-      parent_organization: selectedOrg
-    })
+      parent_organization: selectedOrg,
+    });
   };
 
   const onChangeProjectType = (newValue) => {

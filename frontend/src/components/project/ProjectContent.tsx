@@ -132,7 +132,7 @@ const useStyles = makeStyles((theme) => ({
   collaborationContainer: {
     display: "flex",
     flexDirection: "row",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
   },
 }));
 
