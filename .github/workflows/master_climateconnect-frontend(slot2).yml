@@ -23,9 +23,20 @@ jobs:
 
       - name: npm install, build, and test
         run: |
-          npm install
-          npm run build --if-present
-          npm run test --if-present
+          cd frontend
+          yarn --production
+          yarn build
+        env:
+          API_HOST: ${{ secrets.API_HOST }}
+          API_URL: ${{ secrets.API_URL }}
+          BASE_URL_HOST: ${{ secrets.BASE_URL_HOST }}
+          BASE_URL: ${{ secrets.BASE_URL }}
+          DONATION_CAMPAIGN_RUNNING: ${{ secrets.DONATION_CAMPAIGN_RUNNING }}
+          ENVIRONMENT: 'production'
+          GOOGLE_ANALYTICS_CODE: ${{ secrets.GOOGLE_ANALYTICS_CODE }}
+          LATEST_NEWSLETTER_LINK: ${{ secrets.LATEST_NEWSLETTER_LINK }}
+          LETS_ENCRYPT_FILE_CONTENT: ${{ secrets.LETS_ENCRYPT_FILE_CONTENT }}
+          SOCKET_URL: ${{ secrets.SOCKET_URL }}
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
