@@ -13,18 +13,27 @@ const useStyles = makeStyles<Theme>((theme) => {
         justifyContent: "space-between",
       },
     },
+    locationSearchBar: {
+      flexGrow: 1
+    }
   };
 });
 
 type Args = {
   projectData: Project;
   handleSetProjectData: Function;
+  locationInputRef: any;
+  locationOptionsOpen: boolean;
+  setLocationOptionsOpen: Function;
   errors: any;
 };
 
 export default function ProjectTimeAndPlaceSection({
   projectData,
   handleSetProjectData,
+  locationInputRef,
+  locationOptionsOpen,
+  setLocationOptionsOpen,
   errors,
 }: Args) {
   const classes = useStyles();
@@ -39,6 +48,9 @@ export default function ProjectTimeAndPlaceSection({
       <ProjectLocationSearchBar
         projectData={projectData}
         handleSetProjectData={handleSetProjectData}
+        locationInputRef={locationInputRef}
+        locationOptionsOpen={locationOptionsOpen}
+        handleSetLocationOptionsOpen={setLocationOptionsOpen}
         className={classes.locationSearchBar}
       />
     </div>

@@ -276,6 +276,7 @@ export default function ShareProjectRoot({
               goToNextStep={goToNextStep}
               goToPreviousStep={goToPreviousStep}
               skillsOptions={skillsOptions}
+              setMessage={setMessage}
             />
           )}
           {curStep.key === "addTeam" && (
