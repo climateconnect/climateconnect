@@ -57,13 +57,14 @@ def send_email_notifications(self, user_ids: List):
         except User.DoesNotExist:
             logger.info(f"User profile does not exists for user {u_id}")
             continue
-
+        
+        four_weeks_ago = timezone.now()-timedelta(weeks=4)
         unread_user_notifications = UserNotification.objects.filter(
             user=user,
             read_at__isnull=True,
             notification__notification_type=Notification.PRIVATE_MESSAGE,
+            notification__created_at__gte=four_weeks_ago
         )
-
         if (
             unread_user_notifications.exists()
             and user.user_profile
