@@ -174,9 +174,15 @@ class Notification(models.Model):
     )
 
 
-class Meta:
-    verbose_name_plural = "Notifications"
-    ordering = ["-created_at"]
+    class Meta:
+        verbose_name_plural = "Notifications"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return "%s-Notification %d" % (
+            self.NOTIFICATION_TYPES[self.notification_type][1],
+            self.id,
+        )
 
 
 class UserNotification(models.Model):
@@ -211,10 +217,11 @@ class UserNotification(models.Model):
         verbose_name_plural = "User notifications"
 
     def __str__(self):
-        return "Notified %s %s about Notification %d at %s" % (
+        return "Notified %s %s about Notification %d of type %s at %s" % (
             self.user.first_name,
             self.user.last_name,
             self.notification.id,
+            self.notification.NOTIFICATION_TYPES[self.notification.notification_type][1],
             self.notification.created_at,
         )
 
