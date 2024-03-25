@@ -114,11 +114,6 @@ export default function EnterDetails({
 
   const onClickNextStep = (event) => {
     event.preventDefault();
-    //Short circuit if the location is not valid and we're not in legacy mode
-    if (!isLocationValid(projectData.loc)) {
-      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setMessage, texts);
-      return;
-    }
     if (isProjectDataValid(projectData)) {
       handleSetProjectData({ ...projectData });
       goToNextStep();
@@ -165,7 +160,7 @@ export default function EnterDetails({
       });
       return false;
     }
-    if(isLocationValid(project.loc)) {
+    if(!isLocationValid(project.loc)) {
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setMessage, texts);
       return false;
     }
