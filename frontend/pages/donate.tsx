@@ -7,7 +7,12 @@ import WebflowPage from "../src/components/webflow/WebflowPage";
 import { retrievePage } from "../src/utils/webflow";
 
 export default function Donate({ bodyContent, headContent }) {
-  return <WebflowPage bodyContent={bodyContent} headContent={headContent} pageKey="donate" />;
+  // Add scriptUrls here.
+  const scriptUrls = [
+    "js/webflow.js",
+    "https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.5.1.min.dc5e7f18c8.js?site=615d9a37fbb2467a53e09161"
+  ];
+  return <WebflowPage bodyContent={bodyContent} headContent={headContent} pageKey="donate" scriptUrls={scriptUrls} />;
 }
 
 export async function getServerSideProps(ctx) {
