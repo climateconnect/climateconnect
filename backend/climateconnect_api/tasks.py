@@ -24,7 +24,7 @@ def testing_task_1():
 
 @app.task
 def testing_task_2():
-    send_test_mail_to_engineering_email("task 2", "test2")
+    send_test_mail_to_engineering_email("task 2 - currently paused", "test2")
 
 
 @app.task
@@ -44,6 +44,8 @@ def schedule_automated_reminder_for_user_notifications():
         .values_list("user_id", flat=True)
         .distinct()
     )
+    # Pause notifications until we figure out celery issue with deployment slot
+    return
     for i in range(0, len(all_user_ids), settings.USER_CHUNK_SIZE):
         user_ids = [u_ids for u_ids in all_user_ids[i : i + settings.USER_CHUNK_SIZE]]
         send_email_notifications.apply_async((user_ids,))
