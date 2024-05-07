@@ -26,13 +26,13 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
   },
   mainContent: (props) => ({
     width: props.showSimilarProjects ? "80%" : "100%",
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("lg")]: {
       width: "100%",
     },
   }),
   secondaryContent: (props) => ({
     width: props.showSimilarProjects ? "20%" : "0%",
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("lg")]: {
       width: "0%",
       marginTop: theme.spacing(0),
       marginRight: theme.spacing(0),
@@ -149,7 +149,7 @@ export default function ProjectPage({
     setShowSimilarProjects(!showSimilarProjects);
   };
 
-  const smallScreenSize = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+  const smallScreenSize = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
 
   // Handle remove bell icon notification
   const { notifications, setNotificationsRead, refreshNotifications } = useContext(UserContext);
