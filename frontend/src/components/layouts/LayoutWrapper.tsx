@@ -16,6 +16,7 @@ import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
 import FeedbackButton from "../feedback/FeedbackButton";
 import CookieBanner from "../general/CookieBanner";
+import LoadingContainer from "../general/LoadingContainer";
 import CloseSnackbarAction from "../snackbarActions/CloseSnackbarAction";
 import LogInAction from "../snackbarActions/LogInAction";
 
@@ -163,11 +164,7 @@ export default function LayoutWrapper({
       <ThemeProvider theme={theme}>
         {loading || isLoading ? (
           <div className={classes.spinnerContainer}>
-            <div>
-              <img className={classes.spinner} src="/images/logo.svg" />
-            </div>
-            <CircularProgress />
-            <Typography component="div">{texts.loading_and_waiting}</Typography>
+            <LoadingContainer headerHeight={0} footerHeight={0}/>
           </div>
         ) : (
           <FeedbackContext.Provider value={contextValues}>
