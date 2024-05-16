@@ -13,7 +13,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Blog({ bodyContent, headContent }) {
+export default function Blog({ bodyContent, headContent, title, description }) {
   const classes = useStyles();
   return (
     <WebflowPage
@@ -21,6 +21,8 @@ export default function Blog({ bodyContent, headContent }) {
       headContent={headContent}
       pageKey="post"
       className={classes.root}
+      title={title}
+      description={description}
     />
   );
 }

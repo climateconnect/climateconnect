@@ -12,6 +12,8 @@ export default function WebflowPage({
   className,
   hideFooter,
   noHeader,
+  title,
+  description,
 }: any) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
@@ -20,7 +22,8 @@ export default function WebflowPage({
       <Head>{parseHtml(headContent)}</Head>
       <WideLayout
         rootClassName={className}
-        title={texts[pageKey]}
+        title={title ? title : texts[pageKey]}
+        description={description}
         isStaticPage
         //TODO(unused) hideHeadline
         noSpaceBottom
