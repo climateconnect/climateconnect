@@ -12,10 +12,14 @@ const retrievePage = async (url: string) => {
   const $ = await cheerio.load(html);
   const bodyContent = $(`body`).html();
   const headContent = $(`head`).html();
+  const title = $('title').text();
+  const description = $('meta[name="description"]').attr('content')
 
   return {
     bodyContent: bodyContent,
     headContent: headContent,
+    title: title,
+    description: description
   };
 };
 
