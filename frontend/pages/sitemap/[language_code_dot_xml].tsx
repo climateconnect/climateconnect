@@ -2,6 +2,7 @@ import globby from "globby";
 import React from "react";
 import { apiRequest } from "../../public/lib/apiOperations";
 import { getAllHubs } from "../../public/lib/hubOperations";
+import { getAllBlogPosts } from "../../public/lib/webflowOperations"
 
 const NOT_LISTED = [
   "/_app",
@@ -71,6 +72,7 @@ async function createSitemap(
   organizationEntries,
   memberEntries,
   hubEntries,
+  blogPosts,
   language_code
 ) {
   let staticPages = (await globby(["pages/*.tsx"]))
@@ -97,6 +99,7 @@ async function createSitemap(
       .map((m) => renderEntry(BASE_URL, m.url_slug, 0.8, "daily", m.updated_at))
       .join("")}
     ${hubEntries.map((m) => renderEntry(BASE_URL, m.url_slug, 1, "daily", m.updated_at)).join("")}
+    ${blogPosts.map((b) => renderEntry(BASE_URL, b.url_slug, 0.9, "daily", b.updated_at)).join("")}
     </urlset>`;
 }
 
@@ -125,11 +128,12 @@ export async function getServerSideProps(ctx) {
   //Therefore our variable "language_code" mus include a ".xml" at the end and therefore the variable is called language_code_dot_xml
   const language_code_parsed = ctx.query.language_code_dot_xml.replace(".xml", "");
   const language_code = language_code_parsed === "en" ? "" : language_code_parsed;
-  const [projectEntries, organizationEntries, memberEntries, hubEntries] = await Promise.all([
+  const [projectEntries, organizationEntries, memberEntries, hubEntries, blogPosts] = await Promise.all([
     getEntries("projects", ctx.locale, language_code),
     getEntries("organizations", ctx.locale, language_code),
     getEntries("members", ctx.locale, language_code),
     getEntries("hubs", ctx.locale, language_code),
+    getEntries("post", ctx.locale, language_code)
   ]);
   const res = ctx.res;
   res.setHeader("Content-Type", "text/xml");
@@ -140,6 +144,7 @@ export async function getServerSideProps(ctx) {
       organizationEntries,
       memberEntries,
       hubEntries,
+      blogPosts,
       language_code
     )
   );
@@ -155,20 +160,25 @@ const getEntries = async (entryTypePlural, locale, language_code_for_url) => {
   if (entryTypePlural === "hubs") {
     const hubs = await getAllHubs(locale);
     return parseEntries(entryTypePlural, hubs, language_code_for_url);
-  } else {
-    try {
-      const resp = await apiRequest({
-        method: "get",
-        url: "/api/sitemap/" + entryTypePlural + "/?page_size=1000",
-        locale: locale,
-      });
-      if (resp.data.length === 0) return null;
-      else {
-        return parseEntries(entryTypePlural, resp.data.results, language_code_for_url);
-      }
-    } catch (err) {
-      console.log(err);
+  } 
+
+  if(entryTypePlural === "post") {
+    const blogPosts = await getAllBlogPosts(language_code_for_url ? language_code_for_url : locale);
+    return parseEntries(entryTypePlural, blogPosts, language_code_for_url);
+  }
+
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/sitemap/" + entryTypePlural + "/?page_size=1000",
+      locale: locale,
+    });
+    if (resp.data.length === 0) return null;
+    else {
+      return parseEntries(entryTypePlural, resp.data.results, language_code_for_url);
     }
+  } catch (err) {
+    console.log(err);
   }
 };
 
@@ -176,6 +186,12 @@ const getEntries = async (entryTypePlural, locale, language_code_for_url) => {
 const parseEntries = (entryTypePlural, entries, language_code_for_url) => {
   const firstLevelPath = entryTypePlural === "members" ? "profiles" : entryTypePlural;
   return entries.map((e) => {
+    if(entryTypePlural === "post") {
+      return {
+        url_slug: `/post/${e.url_slug}`,
+        updated_at: e.updated_at
+      }
+    }
     return {
       url_slug: `/${
         language_code_for_url ? `${language_code_for_url.replace(".xml", "")}/` : ""
