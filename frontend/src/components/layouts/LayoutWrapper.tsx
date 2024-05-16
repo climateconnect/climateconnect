@@ -164,7 +164,7 @@ export default function LayoutWrapper({
         {loading || isLoading ? (
           <div className={classes.spinnerContainer}>
             <div>
-              <img className={classes.spinner} src="/images/logo.png" />
+              <img className={classes.spinner} src="/images/logo.svg" />
             </div>
             <CircularProgress />
             <Typography component="div">{texts.loading_and_waiting}</Typography>
