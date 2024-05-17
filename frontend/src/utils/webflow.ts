@@ -19,7 +19,7 @@ const retrievePage = async (url: string) => {
     bodyContent: bodyContent,
     headContent: headContent,
     title: title,
-    description: description
+    description: description ? description : null
   };
 };
 
