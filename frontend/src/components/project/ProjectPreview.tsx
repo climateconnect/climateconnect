@@ -113,7 +113,7 @@ export default function ProjectPreview({ project, projectRef, hubUrl, className 
   const projectType =
     projectTypes && projectTypes.length > 0
       ? projectTypes.find((t) => t.type_id === project.project_type)
-      : { name: project.project_type };
+      : { name: project.project_type, type_id: project.project_type };
   const texts = getTexts({ page: "project", locale: locale });
   const classes = useStyles({ hovering: hovering });
   const handleMouseEnter = () => {
