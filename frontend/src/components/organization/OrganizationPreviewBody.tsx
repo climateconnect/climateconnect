@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => {
       justifyContent: "center",
     },
     locationNameBox: {
-      maxWidth: "220px",
+      maxWidth: "200px",
       overflow: "hidden",
     },
     shortenedSummary: {
