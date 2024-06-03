@@ -14,7 +14,7 @@ const useStyles = makeStyles(() => ({
     bottom: 0,
     left: 0,
     right: 0,
-    zIndex: 10,
+    zIndex: 20,
     background: "#f0f2f5",
   },
 }));

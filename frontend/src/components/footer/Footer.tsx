@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
     position: "fixed",
     bottom: 0,
     backgroundColor: "#FFFFFF",
+    height: "49px",
   },
   spacingTop: {
     marginTop: theme.spacing(2),
