@@ -84,7 +84,6 @@ const useStyles = makeStyles<Theme, { addBackground?: boolean }>((theme) => ({
       fontWeight: 600,
       overflowWrap: "anywhere",
     },
-    
   },
   contactCreatorButtonContainer: {
     flexGrow: 1,
