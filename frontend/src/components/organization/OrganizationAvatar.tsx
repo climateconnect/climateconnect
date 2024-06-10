@@ -11,7 +11,7 @@ const useStyles = makeStyles<Theme, { inlineVersionOnMobile?: boolean }>((theme)
     [theme.breakpoints.down("sm")]: {
       flexDirection: props.inlineVersionOnMobile ? "row" : "column",
       flexWrap: "wrap",
-      gap: '10px'
+      gap: "10px"
     },
   }),
   avatar: (props) => ({
