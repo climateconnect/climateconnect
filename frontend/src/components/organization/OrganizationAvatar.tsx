@@ -10,6 +10,8 @@ const useStyles = makeStyles<Theme, { inlineVersionOnMobile?: boolean }>((theme)
     alignItems: "center",
     [theme.breakpoints.down("sm")]: {
       flexDirection: props.inlineVersionOnMobile ? "row" : "column",
+      flexWrap: "wrap",
+      gap: '10px'
     },
   }),
   avatar: (props) => ({
@@ -39,6 +41,7 @@ const useStyles = makeStyles<Theme, { inlineVersionOnMobile?: boolean }>((theme)
   suggestionTitle: {
     fontSize: 17,
     fontWeight: 700,
+    overflowWrap: "anywhere",
   },
 }));
 
