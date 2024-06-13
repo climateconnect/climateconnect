@@ -27,6 +27,7 @@ const useStyles = makeStyles<Theme, { displayContactButton?: boolean }>((theme) 
   suggestionTitle: {
     fontSize: 17,
     fontWeight: 700,
+    overflowWrap: "anywhere",
     display: "flex",
     justifyContent: "space-between",
   },
