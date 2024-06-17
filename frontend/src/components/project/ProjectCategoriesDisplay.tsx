@@ -18,6 +18,10 @@ const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
   categoryText: {
     marginLeft: theme.spacing(0.5),
     fontSize: 15,
+    maxWidth: "250px",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
   },
   icon: {
     fontSize: 17,
