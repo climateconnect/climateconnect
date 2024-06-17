@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
     height: theme.spacing(8),
     borderTop: `1px solid ${theme.palette.grey[100]}`,
     width: "100%",
+    zIndex: "900"
   },
   absolutePosition: {
     position: "absolute",
