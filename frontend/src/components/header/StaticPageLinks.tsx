@@ -59,7 +59,6 @@ export default function StaticPageLinks() {
 
   const texts = getTexts({ page: "navigation", locale: locale });
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts, locale, true);
-
   const getLinksToShow = () => {
     if (isNarrowScreen) {
       return STATIC_PAGE_LINKS.slice(0, 2);
@@ -104,6 +103,8 @@ function DirectlyDisplayedLinks({ links, isNarrowScreen }) {
     );
   } else {
     const parentLinks = links.filter((link) => !link.parent_item);
+    const { locale } = useContext(UserContext);
+    const localePrefix = getLocalePrefix(locale);
     return (
       <>
         {parentLinks.map((link, index) => {
@@ -115,7 +116,7 @@ function DirectlyDisplayedLinks({ links, isNarrowScreen }) {
               //TODO: Work on dropdown button so that you can click it for the link it has
               <DropDownButton
                 options={[link, ...children]}
-                href={link.href}
+                href={localePrefix + link.href}
                 buttonProps={{
                   classes: {
                     root: classes.white,
