@@ -68,6 +68,10 @@ const useStyles = makeStyles<Theme, { displayContactButton?: boolean }>((theme) 
   },
   locationText: {
     fontSize: 15,
+    maxWidth: "250px",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
   },
   locationIcon: {
     fontSize: 19,
@@ -78,6 +82,7 @@ const useStyles = makeStyles<Theme, { displayContactButton?: boolean }>((theme) 
   },
   projectCategories: {
     cursor: "default",
+    
   },
   smallLocationIcon: {
     fontSize: 15,
