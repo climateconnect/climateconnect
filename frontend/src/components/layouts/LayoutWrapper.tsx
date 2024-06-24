@@ -164,7 +164,7 @@ export default function LayoutWrapper({
       <ThemeProvider theme={theme}>
         {loading || isLoading ? (
           <div className={classes.spinnerContainer}>
-            <LoadingContainer headerHeight={0} footerHeight={0}/>
+            <LoadingContainer headerHeight={0} footerHeight={0} />
           </div>
         ) : (
           <FeedbackContext.Provider value={contextValues}>
