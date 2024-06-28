@@ -15,6 +15,9 @@ const useStyles = makeStyles({
       color: "inherit",
     },
   },
+  youtubeWrapper: {
+    maxWidth: "640px",
+  }
 });
 
 type Props = {
@@ -33,8 +36,7 @@ export default function MessageContent({ content, renderYoutubeVideos = false }:
   );
 
   const opts = {
-    height: "390",
-    width: "640",
+    width: "100%",
     host: "https://www.youtube-nocookie.com",
     playerVars: {
       // https://developers.google.com/youtube/player_parameters
@@ -53,7 +55,11 @@ export default function MessageContent({ content, renderYoutubeVideos = false }:
             let video_id = YouTubeGetID(w);
             const ampersandPosition = video_id.indexOf("&");
             if (ampersandPosition !== -1) video_id = video_id.substring(0, ampersandPosition);
-            return <YouTube videoId={video_id} opts={opts as any} />;
+            return (
+              <div className={classes.youtubeWrapper}>
+                <YouTube videoId={video_id} opts={opts as any} />
+              </div>
+            )
           } else {
             return <Linkify componentDecorator={componentDecorator}>{w + " "}</Linkify>;
           }
