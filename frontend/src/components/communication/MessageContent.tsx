@@ -34,7 +34,6 @@ export default function MessageContent({ content, renderYoutubeVideos = false }:
       {text}
     </a>
   );
-  const screenWidth = window.innerWidth;
 
   const opts = {
     width: "100%",
