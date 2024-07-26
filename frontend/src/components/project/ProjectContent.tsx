@@ -150,6 +150,7 @@ export default function ProjectContent({
   toggleShowRequests,
   handleSendProjectJoinRequest,
   requestedToJoinProject,
+  handleOpenJoinDialog
 }) {
   const classes = useStyles({ isPersonalProject: project.isPersonalProject });
   const { locale } = useContext(UserContext);
@@ -204,6 +205,7 @@ export default function ProjectContent({
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
             requestedToJoinProject={requestedToJoinProject}
             leaveProject={leaveProject}
+            handleOpenJoinDialog={handleOpenJoinDialog}
           />
           {/* Note: created date is not the same as the start date, for projects */}
           <Typography>

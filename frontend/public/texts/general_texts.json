@@ -790,5 +790,9 @@
   "invalid_value": {
     "en": "Invalid Value",
     "de": "Ungültiger Wert"
+  },
+  "send_request": {
+    "en": "SEND REQUEST",
+    "de" : "ANFRAGE SENDEN"
   }
 }

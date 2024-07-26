@@ -26,6 +26,7 @@ import ProjectOverview from "./ProjectOverview";
 import ProjectSideBar from "./ProjectSideBar";
 import ProjectTeamContent from "./ProjectTeamContent";
 import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMediaShareButton";
+import ProjectJoinDialog from "../dialogs/ProjectJoinDialog"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -419,6 +420,11 @@ export default function ProjectPageRoot({
     handleReadNotifications(NOTIFICATION_TYPES.indexOf("join_project_request"));
   };
 
+  const [showJoinDialog, setShowJoinDialog] = useState(false);
+  const handleOpenJoinDialog = () => {
+    
+    setShowJoinDialog(!showJoinDialog)
+  }
   const [gotParams, setGotParams] = useState(false);
   useEffect(() => {
     if (!gotParams) {
@@ -530,6 +536,7 @@ export default function ProjectPageRoot({
             toggleShowRequests={toggleShowRequests}
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
             requestedToJoinProject={requestedToJoinProject}
+            handleOpenJoinDialog = {handleOpenJoinDialog}
           />
         </TabContent>
         <TabContent value={tabValue} index={1}>
@@ -603,7 +610,10 @@ export default function ProjectPageRoot({
         confirmText={texts.yes}
         cancelText={texts.no}
       />
-
+      <ProjectJoinDialog 
+        open = {showJoinDialog} 
+        projectAdmin={projectAdmin}
+      />
       <Tutorial
         fixedPosition
         pointerRefs={{
