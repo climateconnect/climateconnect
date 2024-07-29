@@ -71,7 +71,7 @@ export default function ProjectContentSideButtons({
   handleSendProjectJoinRequest,
   requestedToJoinProject,
   leaveProject,
-  handleOpenJoinDialog
+  handleOpenJoinDialog,
 }) {
   const token = new Cookies().get("auth_token");
   const classes = useStyles();

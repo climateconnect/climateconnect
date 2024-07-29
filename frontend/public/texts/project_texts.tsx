@@ -961,15 +961,23 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     please_share_with :{
       en: "Please share with",
-      de: ""
+      de: "Bitte teilen Sie mit"
     },
     project_admin : {
       en: "the project admin",
-      de: ""
+      de: "die Projektverwaltung"
     },
     what_inspires_you_to_be_part_of_this_team :{
       en: "what inspires you to be part of this team and how you hope to contribute. your passion and ideas are what make our community thrive",
-      de: ""
+      de: "was Sie dazu inspiriert, Teil dieses Teams zu sein, und wie Sie dazu beitragen möchten. Ihre Leidenschaft und Ihre Ideen sind es, die unsere Gemeinschaft zum Blühen bringen"
+    },
+    already_part_of_this_project: {
+      en: `I'm already part of this project`,
+      de: "Ich bin bereits an diesem Projekt beteiligt"
+    },
+    get_active_to_project: {
+      en: "I want to get active in this project",
+      de: "Ich möchte in diesem Projekt aktiv werden"
     }
   };
 }

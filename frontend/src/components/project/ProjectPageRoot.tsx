@@ -171,7 +171,8 @@ export default function ProjectPageRoot({
    * Calls backend, sending a request to join this project based
    * on user token stored in cookies.
    */
-  const handleSendProjectJoinRequest = async () => {
+  const handleSendProjectJoinRequest = async (data) => {
+    
     // Get the actual project name from the URL, removing any query params
     // and projects/ prefix. For example,
     // "/projects/Anotherproject6?projectId=Anotherproject6" -> "Anotherproject6"
@@ -186,7 +187,8 @@ export default function ProjectPageRoot({
         method: "post",
         url: `/api/projects/${strippedProjectName}/request_membership/${user.url_slug}/`,
         payload: {
-          message: "Would like to join the project!",
+          message: data,
+          // message: "Would like to join the project!",
           // TODO: currently, we default user's availability to 4. In
           // the future, we could consider customizing this option
           user_availability: "4",
@@ -196,12 +198,14 @@ export default function ProjectPageRoot({
           Authorization: `Token ${token}`,
         },
       });
+      handleCloseJoinDialog();
       showFeedbackMessage({
         message: texts.your_request_has_been_sent,
         success: true,
       });
       handleJoinRequest(true);
     } catch (error) {
+      handleCloseJoinDialog();
       showFeedbackMessage({
         message: error?.response?.data?.message,
         error: true,
@@ -422,9 +426,12 @@ export default function ProjectPageRoot({
 
   const [showJoinDialog, setShowJoinDialog] = useState(false);
   const handleOpenJoinDialog = () => {
-    
     setShowJoinDialog(!showJoinDialog)
   }
+  const handleCloseJoinDialog = () => {
+    setShowJoinDialog(false)
+  }
+
   const [gotParams, setGotParams] = useState(false);
   useEffect(() => {
     if (!gotParams) {
@@ -613,6 +620,8 @@ export default function ProjectPageRoot({
       <ProjectJoinDialog 
         open = {showJoinDialog} 
         projectAdmin={projectAdmin}
+        handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+        onClose={handleCloseJoinDialog}
       />
       <Tutorial
         fixedPosition
