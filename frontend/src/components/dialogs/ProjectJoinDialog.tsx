@@ -6,15 +6,16 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import GenericDialog from "./GenericDialog";
 import ProfileBadge from "../profile/ProfileBadge";
-
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 const useStyles = makeStyles((theme) => ({
-  requestButton: {
+  dialogButton: {
     marginTop: theme.spacing(3),
   },
-  requestButtonContainer: {
+  dialogButtonContainer: {
     display: "flex",
     justifyContent: "center",
   },
+  
   dialogTitle: {
     color: "#207178",
   },
@@ -35,8 +36,10 @@ const useStyles = makeStyles((theme) => ({
 export default function ProjectJoinDialog({
   open,
   onClose,
+  user,
   projectAdmin,
   handleSendProjectJoinRequest,
+  url
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -58,14 +61,14 @@ export default function ProjectJoinDialog({
   };
 
   const onDescriptionChange = (event) => {
-    console.log("text", event.target.value);
+    setDescription(event.target.value)
   };
 
   const handleSelectAnswer = (chipId) => {
     const updatedChips = chips.filter((chip) => chip.id !== chipId);
     setChips(updatedChips);
     setDescription(
-      (prevValue) => prevValue + ` ,${chips.find((chip) => chip.id === chipId).label}`
+      (prevValue) => prevValue + `${chips.find((chip) => chip.id === chipId).label}`
     );
   };
 
@@ -78,54 +81,75 @@ export default function ProjectJoinDialog({
       titleTextClassName={classes.dialogTitle}
     >
       <>
-        <Typography>
-          {texts.please_share_with + " "}
-          <Link href={"/profiles/" + projectAdmin.url_slug} underline="hover">
-            {projectAdmin?.badges?.length > 0 ? (
-              <ProfileBadge badge={projectAdmin?.badges[0]} size="medium">
-                <Avatar {...avatarProps} />
-              </ProfileBadge>
-            ) : (
-              <Avatar {...avatarProps} />
-            )}
-            {" [" + projectAdmin.name + "] "}
-          </Link>
-          {texts.project_admin + ", " + texts.what_inspires_you_to_be_part_of_this_team + "!"}
-        </Typography>
-        {chips.map((data) => {
-          return (
-            <Chip
-              key={data.id}
-              label={data.label}
-              clickable={true}
-              onClick={() => handleSelectAnswer(data.id)}
-              variant="outlined"
-              size="small"
-              className={classes.chip}
-            />
-          );
-        })}
+        {!user && (
+          <>
+            <Typography>
+              {texts.please_log_in + " " + texts.to_see_this_projects_requesters + "!"}
+            </Typography>
+            <Container className={classes.dialogButtonContainer}>
+              <Button
+                className={classes.dialogButton}
+                variant="contained"
+                color="primary"
+                href={getLocalePrefix(locale) + "/signin?redirect=" + encodeURIComponent(url)}
+              >
+                {texts.log_in}
+              </Button>
+            </Container>
+          </>
+        )}
+        {user && (
+          <>
+            <Typography>
+              {texts.please_share_with + " "}
+              <Link href={"/profiles/" + projectAdmin.url_slug} underline="hover">
+                {projectAdmin?.badges?.length > 0 ? (
+                  <ProfileBadge badge={projectAdmin?.badges[0]} size="medium">
+                    <Avatar {...avatarProps} />
+                  </ProfileBadge>
+                ) : (
+                  <Avatar {...avatarProps} />
+                )}
+                {" [" + projectAdmin.name + "] "}
+              </Link>
+              {texts.project_admin + ", " + texts.what_inspires_you_to_be_part_of_this_team + "!"}
+            </Typography>
+            {chips.map((data) => {
+              return (
+                <Chip
+                  key={data.id}
+                  label={data.label}
+                  clickable={true}
+                  onClick={() => handleSelectAnswer(data.id)}
+                  variant="outlined"
+                  size="small"
+                  className={classes.chip}
+                />
+              );
+            })}
 
-        <TextField
-          variant="outlined"
-          fullWidth
-          multiline
-          rows={4}
-          onChange={(event) => onDescriptionChange(event)}
-          placeholder={texts.describe_your_project_in_more_detail}
-          value={description}
-        />
-        <Container className={classes.requestButtonContainer}>
-          <Button
-            className={classes.requestButton}
-            variant="contained"
-            color="primary"
-            href={"#"}
-            onClick={() => handleSendProjectJoinRequest(description)}
-          >
-            {texts.send_request}
-          </Button>
-        </Container>
+            <TextField
+              variant="outlined"
+              fullWidth
+              multiline
+              rows={4}
+              onChange={(event) => onDescriptionChange(event)}
+              placeholder={texts.describe_your_project_in_more_detail}
+              value={description}
+            />
+            <Container className={classes.dialogButtonContainer}>
+              <Button
+                className={classes.dialogButton}
+                variant="contained"
+                color="primary"
+                href={"#"}
+                onClick={() => handleSendProjectJoinRequest(description)}
+              >
+                {texts.send_request}
+              </Button>
+            </Container>
+          </>
+        )}
       </>
     </GenericDialog>
   );

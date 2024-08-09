@@ -619,10 +619,11 @@ export default function ProjectPageRoot({
       />
       <ProjectJoinDialog 
         open = {showJoinDialog} 
+        onClose={handleCloseJoinDialog}
+        user={user}
         projectAdmin={projectAdmin}
         handleSendProjectJoinRequest={handleSendProjectJoinRequest}
-        onClose={handleCloseJoinDialog}
-      />
+        />
       <Tutorial
         fixedPosition
         pointerRefs={{

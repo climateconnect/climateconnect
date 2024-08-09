@@ -11,7 +11,7 @@ import UserContext from "../../context/UserContext";
 import ROLE_TYPES from "../../../../public/data/role_types";
 import getTexts from "../../../../public/texts/texts";
 import { getMembershipRequests } from "../../../../public/lib/projectOperations";
-import ProjectRequestersDialog from "../../dialogs/ProjectRequestersDialog";
+import ProjectReviewJoinRequestsDialog from "../../dialogs/ProjectReviewJoinRequestsDialog";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import JoinButton from "./JoinButton";
 import theme from "../../../themes/theme";
@@ -216,7 +216,7 @@ export default function ProjectContentSideButtons({
         )}
 
       {/* Only present dialog if button has been clicked! */}
-      <ProjectRequestersDialog
+      <ProjectReviewJoinRequestsDialog
         open={showRequesters}
         project={project}
         requesters={requesters}

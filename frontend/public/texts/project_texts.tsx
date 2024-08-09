@@ -897,7 +897,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "There are currently no open join requests",
       de: "Keine offenen Anfragen.",
     },
-    project_requesters_dialog_title: {
+    project_requesters_dialog_title_with_no_user: {
       en: "Open requests to join project",
       de: "Offene Anfragen zum Mitmachen",
     },
@@ -978,6 +978,10 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     get_active_to_project: {
       en: "I want to get active in this project",
       de: "Ich möchte in diesem Projekt aktiv werden"
+    },
+    project_requesters_dialog_title: {
+      en: "climate protectors would like to join your project.",
+      de: "Klimaschützer würden sich gerne an Ihrem Projekt beteiligen.",
     }
   };
 }
