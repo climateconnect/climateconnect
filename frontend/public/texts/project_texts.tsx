@@ -897,7 +897,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "There are currently no open join requests",
       de: "Keine offenen Anfragen.",
     },
-    project_requesters_dialog_title: {
+    project_requesters_dialog_title_with_no_user: {
       en: "Open requests to join project",
       de: "Offene Anfragen zum Mitmachen",
     },
@@ -955,5 +955,33 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "End date must be after start date",
       de: "Das Enddatum muss nach dem Startdatum sein",
     },
+    thrilled_to_join_the_project: {
+      en: `We're thrilled you're intrested in joining this project`,
+      de: "Wir freuen uns sehr über Ihr Interesse an diesem Projekt"
+    },
+    please_share_with :{
+      en: "Please share with",
+      de: "Bitte teilen Sie mit"
+    },
+    project_admin : {
+      en: "the project admin",
+      de: "die Projektverwaltung"
+    },
+    what_inspires_you_to_be_part_of_this_team :{
+      en: "what inspires you to be part of this team and how you hope to contribute. your passion and ideas are what make our community thrive",
+      de: "was Sie dazu inspiriert, Teil dieses Teams zu sein, und wie Sie dazu beitragen möchten. Ihre Leidenschaft und Ihre Ideen sind es, die unsere Gemeinschaft zum Blühen bringen"
+    },
+    already_part_of_this_project: {
+      en: `I'm already part of this project`,
+      de: "Ich bin bereits an diesem Projekt beteiligt"
+    },
+    get_active_to_project: {
+      en: "I want to get active in this project",
+      de: "Ich möchte in diesem Projekt aktiv werden"
+    },
+    project_requesters_dialog_title: {
+      en: "climate protectors would like to join your project.",
+      de: "Klimaschützer würden sich gerne an Ihrem Projekt beteiligen.",
+    }
   };
 }
