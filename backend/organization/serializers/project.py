@@ -445,13 +445,13 @@ class ProjectRequesterSerializer(serializers.ModelSerializer):
     """
 
     user_profile = serializers.SerializerMethodField()
-
+    message = serializers.CharField(read_only=True)
     class Meta:
         model = MembershipRequests
 
         # Locally defined variables take precedence
         # over what's defined on the model
-        fields = ("user_profile", "id")
+        fields = ("user_profile", "id", "message")
 
     def get_user_profile(self, obj):
         user_profile = UserProfile.objects.get(user=obj.user)

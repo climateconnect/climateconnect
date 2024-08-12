@@ -106,6 +106,7 @@ export default function ProjectContentSideButtons({
           const user = {
             requestId: r.id,
             user: r.user_profile,
+            message: r.message
           };
           return user;
         });

@@ -268,7 +268,7 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
         </Typography>
       </Link>
       <Typography component="div" color="secondary" className={classes.dialogMessage}>
-        Message of the user requesting goes here.
+        {requester.message}
       </Typography>
       <div className={classes.dialogButtonContainer}>
         <Button
