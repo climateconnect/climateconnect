@@ -41,6 +41,8 @@ export default function ProjectJoinDialog({
   handleSendProjectJoinRequest,
   url
 }) {
+  console.log("url",url);
+  
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
@@ -53,11 +55,12 @@ export default function ProjectJoinDialog({
   const handleClose = () => {
     onClose();
   };
-
+  console.log("projectAdmin",projectAdmin);
+  
   const avatarProps = {
     className: classes.adminAvatar,
-    src: getImageUrl(projectAdmin.image),
-    alt: projectAdmin.name,
+    src: getImageUrl(projectAdmin?.image),
+    alt: projectAdmin?.name,
   };
 
   const onDescriptionChange = (event) => {
@@ -84,7 +87,7 @@ export default function ProjectJoinDialog({
         {!user && (
           <>
             <Typography>
-              {texts.please_log_in + " " + texts.to_see_this_projects_requesters + "!"}
+              {texts.please_log_in + " " + texts.to_send_this_project_join_request + "!"}
             </Typography>
             <Container className={classes.dialogButtonContainer}>
               <Button

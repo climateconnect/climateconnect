@@ -10,6 +10,7 @@ import {
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";
+import Router from "next/router";
 
 // Relative imports
 import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -250,6 +251,26 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
     }
   }
 
+  const handleMessageBackRequest = () => {
+    const urlPostfix = "/api/start_private_chat/";
+    const payload: any = {};
+    payload.profile_url_slug = requester?.user?.url_slug;
+    apiRequest({
+      method: "post",
+      url: urlPostfix,
+      payload: payload,
+      token: token,
+      locale: locale,
+    })
+    .then(async function (response) {
+      Router.push("/chat/" + response.data.chat_uuid + "/");
+    })
+    .catch(function (error) {
+      console.log(error.response.data.message);
+      // TODO: Show error message that user cant connect
+    });
+  }
+
   return (
     <>
       <Link
@@ -276,7 +297,7 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
           variant="contained"
           color="primary"
           href={"#"}
-          // onClick={() => handleSendProjectJoinRequest(description)}
+          onClick={() => handleMessageBackRequest()}
         >
           {texts.message_back}
         </Button>

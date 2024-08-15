@@ -982,6 +982,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     project_requesters_dialog_title: {
       en: "climate protectors would like to join your project.",
       de: "Klimaschützer würden sich gerne an Ihrem Projekt beteiligen.",
+    },
+    to_send_this_project_join_request: {
+      en: "to send this project join request",
+      de: "um eine Anfrage zum Beitritt zu diesem Projekt zu senden"
+    },
+    to_see_this_projects_requesters:{
+      en: "to see these projects requesters",
+      de: "um diese Projekte zu sehen Antragsteller"
     }
   };
 }

@@ -623,6 +623,7 @@ export default function ProjectPageRoot({
         user={user}
         projectAdmin={projectAdmin}
         handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+        url={'projects/' + project.url_slug}
         />
       <Tutorial
         fixedPosition
