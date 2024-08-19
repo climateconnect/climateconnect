@@ -84,7 +84,7 @@ export default function ProjectReviewJoinRequestsDialog({
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "project", locale: locale });
+  const texts = getTexts({ page: "project", locale: locale, count: requesters?.length});
 
   const userDoNotPermissionProps = {
     classes: classes,
@@ -101,10 +101,10 @@ export default function ProjectReviewJoinRequestsDialog({
   const handleClose = () => {
     onClose();
   };
-
+  
   const dialogTitle =
     requesters.length > 0
-      ? `[#${requesters.length} of requests] ${texts.project_requesters_dialog_title}`
+      ? texts.project_requesters_dialog_title
       : texts.project_requesters_dialog_title_with_no_user;
 
   return (
@@ -181,6 +181,7 @@ const ProjectRequesters = ({ initialRequesters, project, handleClose }) => {
       if (newRequesters.length === 0) {
         handleClose();
       }
+      
     } catch (e) {
       console.log(e);
     }

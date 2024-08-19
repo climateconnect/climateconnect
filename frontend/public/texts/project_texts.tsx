@@ -2,7 +2,7 @@ import { Link } from "@mui/material";
 import React from "react";
 import { getLocalePrefix } from "../lib/apiOperations";
 
-export default function getProjectTexts({ project, user, url_slug, locale, creator }) {
+export default function getProjectTexts({ project, user, url_slug, locale, creator, count }) {
   return {
     please_log_in_to_edit_project: {
       en: "Please Log In to Edit a project.",
@@ -980,8 +980,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Ich möchte in diesem Projekt aktiv werden"
     },
     project_requesters_dialog_title: {
-      en: "climate protectors would like to join your project.",
-      de: "Klimaschützer würden sich gerne an Ihrem Projekt beteiligen.",
+      en: `${count == 1 ? "One" : count} climate ${count == 1 ? "protector" : "protectors"} would like to join your project.`,
+      de: `${count == 1 ? "Eins" : count} Klimaschützer würden sich gerne an Ihrem Projekt beteiligen.`,
     },
     to_send_this_project_join_request: {
       en: "to send this project join request",

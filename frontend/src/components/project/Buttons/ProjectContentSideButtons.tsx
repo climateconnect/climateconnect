@@ -12,6 +12,7 @@ import ROLE_TYPES from "../../../../public/data/role_types";
 import getTexts from "../../../../public/texts/texts";
 import { getMembershipRequests } from "../../../../public/lib/projectOperations";
 import ProjectReviewJoinRequestsDialog from "../../dialogs/ProjectReviewJoinRequestsDialog";
+// import ProjectRequestersDialog from "../../dialogs/ProjectRequestersDialog";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import JoinButton from "./JoinButton";
 import theme from "../../../themes/theme";

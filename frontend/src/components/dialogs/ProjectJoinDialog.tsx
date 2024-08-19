@@ -41,7 +41,6 @@ export default function ProjectJoinDialog({
   handleSendProjectJoinRequest,
   url
 }) {
-  console.log("url",url);
   
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -55,7 +54,6 @@ export default function ProjectJoinDialog({
   const handleClose = () => {
     onClose();
   };
-  console.log("projectAdmin",projectAdmin);
   
   const avatarProps = {
     className: classes.adminAvatar,
@@ -136,7 +134,7 @@ export default function ProjectJoinDialog({
               fullWidth
               multiline
               rows={4}
-              onChange={(event) => onDescriptionChange(event)}
+              // onChange={(event) => onDescriptionChange(event)}
               placeholder={texts.describe_your_project_in_more_detail}
               value={description}
             />
