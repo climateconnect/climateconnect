@@ -81,10 +81,11 @@ export default function ProjectReviewJoinRequestsDialog({
   url,
   user,
   user_permission,
+  getRequestersList,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "project", locale: locale, count: requesters?.length});
+  const texts = getTexts({ page: "project", locale: locale, count: requesters?.length });
 
   const userDoNotPermissionProps = {
     classes: classes,
@@ -101,12 +102,12 @@ export default function ProjectReviewJoinRequestsDialog({
   const handleClose = () => {
     onClose();
   };
-  
+
   const dialogTitle =
     requesters.length > 0
       ? texts.project_requesters_dialog_title
       : texts.project_requesters_dialog_title_with_no_user;
-  
+
   return (
     <GenericDialog
       maxWidth="sm"
@@ -129,6 +130,7 @@ export default function ProjectReviewJoinRequestsDialog({
             handleClose={handleClose}
             project={project}
             initialRequesters={requesters}
+            getRequestersList={getRequestersList}
           />
         ) : (
           <Typography className={classes.noOpenRequestsText}>
@@ -164,29 +166,11 @@ const UserDoNotExist = ({ texts, classes, locale, url }) => (
   </>
 );
 
-const ProjectRequesters = ({ initialRequesters, project, handleClose }) => {
+const ProjectRequesters = ({ initialRequesters, project, getRequestersList, handleClose }) => {
   const [requesters, setRequesters] = useState(initialRequesters);
   const { locale } = useContext(UserContext);
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
-  /**
-   * After any update is made to approve
-   * or reject, we call the backend to update the
-   * current list.
-   */
-  async function handleUpdateRequesters() {
-    try {
-      const newRequesters = await getMembershipRequests(project.url_slug, locale, token);
-      setRequesters(newRequesters);
-      if (newRequesters.length === 0) {
-        handleClose();
-      }
-      
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
   return (
     <>
       <Divider />
@@ -199,8 +183,9 @@ const ProjectRequesters = ({ initialRequesters, project, handleClose }) => {
                 locale={locale}
                 requester={requester}
                 requestId={requester.requestId}
-                handleUpdateRequesters={handleUpdateRequesters}
+                getRequestersList={getRequestersList}
                 token={token}
+                handleClose={handleClose}
               />
               <Divider />
             </div>
@@ -214,7 +199,15 @@ const ProjectRequesters = ({ initialRequesters, project, handleClose }) => {
  * Separate cohesive component that encapsulates
  * all the requester state and functionality together.
  */
-const Requester = ({ handleUpdateRequesters, locale, project, requester, requestId, token }) => {
+const Requester = ({
+  getRequestersList,
+  locale,
+  project,
+  requester,
+  requestId,
+  token,
+  handleClose,
+}) => {
   const classes = useStyles();
   const { showFeedbackMessage } = useContext(FeedbackContext);
   const texts = getTexts({ page: "general", locale: locale });
@@ -234,14 +227,21 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
         },
         payload: {},
       });
+      handleClose();
+
+      /**
+       * After any update is made to approve
+       * or reject, we call the backend to update the
+       * current list.
+       */
+      getRequestersList();
+
       showFeedbackMessage({
-        message: approve ?  notificationText.requester_accepted_successfully : notificationText.requester_ignored_successfully,
+        message: approve
+          ? notificationText.requester_accepted_successfully
+          : notificationText.requester_ignored_successfully,
         success: true,
       });
-      // Now notify parent list to update current list
-      // of requesters to immediately
-      // show the updated state in the UI.
-      handleUpdateRequesters();
     } catch (e) {
       if (e.response.status === 401) {
         showFeedbackMessage({
@@ -264,14 +264,20 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
       token: token,
       locale: locale,
     })
-    .then(async function (response) {
-      Router.push("/chat/" + response?.data?.chat_uuid + "/");
-    })
-    .catch(function (error) {
-      console.log(error.response.data.message);
-      // TODO: Show error message that user cant connect
-    });
-  }
+      .then(async function (response) {
+        /**
+         * After any update is made to approve
+         * or reject, we call the backend to update the
+         * current list.
+         */
+        getRequestersList();
+
+        Router.push("/chat/" + response?.data?.chat_uuid + "/");
+      })
+      .catch(function (error) {
+        console.log(error.response.data.message);
+      });
+  };
 
   return (
     <>

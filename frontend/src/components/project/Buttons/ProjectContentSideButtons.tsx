@@ -90,33 +90,37 @@ export default function ProjectContentSideButtons({
 
   const [requesters, setRequesters] = useState([]);
   const [requestersRetrieved, setRequestersRetrieved] = useState(false);
+
   // Fetch and populate requesters on initial load
+  const getRequestersList = async () => {
+    //short circuit if the user doesn't have the necessary permissions to see join requests
+    if (!(user_permission && hasAdminPermissions)) {
+      return;
+    }
+    // Returns an array of objects with an ID (request ID) and
+    // associated user profile.
+    try {
+      const membershipRequests = await getMembershipRequests(project.url_slug, locale, token);
+      // Now transform to a shape of objects where a specific request ID is
+      // alongside a user profile.
+      const userRequests = membershipRequests.map((r) => {
+        const user = {
+          requestId: r.id,
+          user: r.user_profile,
+          message: r.message,
+        };
+        return user;
+      });
+
+      setRequesters(userRequests);
+      setRequestersRetrieved(true);
+    } catch (e) {
+      console.log(e.response.data);
+    }
+  };
+
   useEffect(() => {
-    (async () => {
-      //short circuit if the user doesn't have the necessary permissions to see join requests
-      if (!(user_permission && hasAdminPermissions)) {
-        return;
-      }
-      // Returns an array of objects with an ID (request ID) and
-      // associated user profile.
-      try {
-        const membershipRequests = await getMembershipRequests(project.url_slug, locale, token);
-        // Now transform to a shape of objects where a specific request ID is
-        // alongside a user profile.
-        const userRequests = membershipRequests.map((r) => {
-          const user = {
-            requestId: r.id,
-            user: r.user_profile,
-            message: r.message
-          };
-          return user;
-        });
-        setRequesters(userRequests);
-        setRequestersRetrieved(true);
-      } catch (e) {
-        console.log(e.response.data);
-      }
-    })();
+    getRequestersList();
   }, []);
 
   const ShowRequestsButton = () => {
@@ -226,6 +230,7 @@ export default function ProjectContentSideButtons({
         user={user}
         loading={!requestersRetrieved}
         user_permission={user_permission}
+        getRequestersList={getRequestersList}
       />
     </div>
   );
