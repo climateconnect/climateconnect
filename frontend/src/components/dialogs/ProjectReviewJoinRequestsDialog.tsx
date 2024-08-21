@@ -15,7 +15,6 @@ import Router from "next/router";
 // Relative imports
 import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
-import { getMembershipRequests } from "../../../public/lib/projectOperations";
 import getTexts from "../../../public/texts/texts";
 import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
@@ -171,6 +170,21 @@ const ProjectRequesters = ({ initialRequesters, project, getRequestersList, hand
   const { locale } = useContext(UserContext);
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
+
+  /**
+   * After any update is made to approve
+   * or reject, we update the
+   * current list with filter or call the backend api
+   */
+  const handleUpdateRequesters = (requestId) => {
+    const updatedRequesters = requesters.filter((requester) => requester.requestId !== requestId);
+    setRequesters(updatedRequesters);
+    if (requesters?.length == 1) {
+      handleClose();
+      getRequestersList();
+    }
+  };
+
   return (
     <>
       <Divider />
@@ -183,7 +197,7 @@ const ProjectRequesters = ({ initialRequesters, project, getRequestersList, hand
                 locale={locale}
                 requester={requester}
                 requestId={requester.requestId}
-                getRequestersList={getRequestersList}
+                handleUpdateRequesters={handleUpdateRequesters}
                 token={token}
                 handleClose={handleClose}
               />
@@ -200,13 +214,13 @@ const ProjectRequesters = ({ initialRequesters, project, getRequestersList, hand
  * all the requester state and functionality together.
  */
 const Requester = ({
-  getRequestersList,
   locale,
   project,
   requester,
   requestId,
   token,
   handleClose,
+  handleUpdateRequesters,
 }) => {
   const classes = useStyles();
   const { showFeedbackMessage } = useContext(FeedbackContext);
@@ -227,15 +241,11 @@ const Requester = ({
         },
         payload: {},
       });
-      handleClose();
 
-      /**
-       * After any update is made to approve
-       * or reject, we call the backend to update the
-       * current list.
-       */
-      getRequestersList();
-
+      // Now notify parent list to update current list
+      // of requesters to immediately
+      // show the updated state in the UI. 
+      handleUpdateRequesters(requestId);
       showFeedbackMessage({
         message: approve
           ? notificationText.requester_accepted_successfully
@@ -265,17 +275,11 @@ const Requester = ({
       locale: locale,
     })
       .then(async function (response) {
-        /**
-         * After any update is made to approve
-         * or reject, we call the backend to update the
-         * current list.
-         */
-        getRequestersList();
-
+        handleUpdateRequesters(requestId);
         Router.push("/chat/" + response?.data?.chat_uuid + "/");
       })
       .catch(function (error) {
-        console.log(error.response.data.message);
+        console.log(error?.response?.data?.message);
       });
   };
 
