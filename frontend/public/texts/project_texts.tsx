@@ -990,6 +990,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     to_see_this_projects_requesters:{
       en: "to see these projects requesters",
       de: "um diese Projekte zu sehen Antragsteller"
-    }
+    },
+    requester_accepted_successfully: {
+      en: "Requester accepted successfully.",
+      de: "Antragsteller erfolgreich akzeptiert."
+    },
+    requester_ignored_successfully: {
+      en: "Requester ignored successfully.",
+      de: "Der Antragsteller hat erfolgreich ignoriert."
+    },
   };
 }

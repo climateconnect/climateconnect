@@ -106,7 +106,7 @@ export default function ProjectReviewJoinRequestsDialog({
     requesters.length > 0
       ? texts.project_requesters_dialog_title
       : texts.project_requesters_dialog_title_with_no_user;
-
+  
   return (
     <GenericDialog
       maxWidth="sm"
@@ -218,6 +218,7 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
   const classes = useStyles();
   const { showFeedbackMessage } = useContext(FeedbackContext);
   const texts = getTexts({ page: "general", locale: locale });
+  const notificationText = getTexts({ page: "project", locale: locale });
 
   async function handleRequest(approve: boolean): Promise<void> {
     const url = `/api/projects/${project.url_slug}/request_membership/${
@@ -234,7 +235,7 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
         payload: {},
       });
       showFeedbackMessage({
-        message: texts.no_permission,
+        message: approve ?  notificationText.requester_accepted_successfully : notificationText.requester_ignored_successfully,
         success: true,
       });
       // Now notify parent list to update current list
@@ -264,7 +265,7 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
       locale: locale,
     })
     .then(async function (response) {
-      Router.push("/chat/" + response.data.chat_uuid + "/");
+      Router.push("/chat/" + response?.data?.chat_uuid + "/");
     })
     .catch(function (error) {
       console.log(error.response.data.message);
@@ -276,28 +277,27 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
     <>
       <Link
         className={classes.user}
-        href={getLocalePrefix(locale) + "/profiles/" + requester.user.url_slug}
+        href={getLocalePrefix(locale) + "/profiles/" + requester?.user?.url_slug}
         underline="hover"
       >
         <Avatar
           className={classes.avatar}
-          src={getImageUrl(requester.user.image)}
-          alt={requester.user.first_name + " " + requester.user.last_name}
+          src={getImageUrl(requester?.user?.image)}
+          alt={requester?.user?.first_name + " " + requester?.user?.last_name}
           sx={{ width: 24, height: 24 }}
         />
         <Typography component="span" color="secondary" className={classes.username}>
-          {requester.user.first_name + " " + requester.user.last_name}
+          {requester?.user?.first_name + " " + requester?.user?.last_name}
         </Typography>
       </Link>
       <Typography component="div" color="secondary" className={classes.dialogMessage}>
-        {requester.message}
+        {requester?.message}
       </Typography>
       <div className={classes.dialogButtonContainer}>
         <Button
           className={classes.dialogButton}
           variant="contained"
           color="primary"
-          href={"#"}
           onClick={() => handleMessageBackRequest()}
         >
           {texts.message_back}
@@ -306,7 +306,6 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
           className={classes.dialogButton}
           variant="outlined"
           color="primary"
-          href={"#"}
           onClick={() => handleRequest(false)}
         >
           {texts.ignore}
@@ -315,7 +314,6 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
           className={classes.dialogButton}
           variant="contained"
           color="primary"
-          href={"#"}
           onClick={() => handleRequest(true)}
         >
           {texts.accept}
