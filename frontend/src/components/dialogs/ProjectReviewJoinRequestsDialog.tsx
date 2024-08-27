@@ -115,28 +115,24 @@ export default function ProjectReviewJoinRequestsDialog({
       title={dialogTitle}
       titleTextClassName={classes.dialogTitle}
     >
-      {
-        // If we don't have any permissions, we can't load the join requests
-        !user_permission ? (
-          <UserDoNotPermission {...userDoNotPermissionProps} />
-        ) : loading ? (
-          <LinearProgress />
-        ) : !user ? (
-          <UserDoNotExist {...userDoNotExistProps} />
-        ) : // If there are users requesting to join and we have permission to view them: render them!
-        requesters && requesters.length > 0 ? (
-          <ProjectRequesters
-            handleClose={handleClose}
-            project={project}
-            initialRequesters={requesters}
-            getRequestersList={getRequestersList}
-          />
-        ) : (
-          <Typography className={classes.noOpenRequestsText}>
-            {texts.no_open_project_join_requests}
-          </Typography>
-        )
-      }
+      {loading ? (
+        <LinearProgress />
+      ) : !user ? (
+        <UserDoNotExist {...userDoNotExistProps} />
+      ) : !user_permission ? (
+        <UserDoNotPermission {...userDoNotPermissionProps} />
+      ) : requesters?.length > 0 ? (
+        <ProjectRequesters
+          handleClose={handleClose}
+          project={project}
+          initialRequesters={requesters}
+          getRequestersList={getRequestersList}
+        />
+      ) : (
+        <Typography className={classes.noOpenRequestsText}>
+          {texts.no_open_project_join_requests}
+        </Typography>
+      )}
     </GenericDialog>
   );
 }
@@ -244,7 +240,7 @@ const Requester = ({
 
       // Now notify parent list to update current list
       // of requesters to immediately
-      // show the updated state in the UI. 
+      // show the updated state in the UI.
       handleUpdateRequesters(requestId);
       showFeedbackMessage({
         message: approve

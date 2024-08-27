@@ -78,26 +78,16 @@ export default function ProjectContentSideButtons({
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("md"));
-
-  const user_permission =
-    user && project.team && project.team.find((m) => m.id === user.id)
-      ? project.team.find((m) => m.id === user.id).permission
-      : null;
-  const hasAdminPermissions = [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(
-    user_permission
-  );
-
   const [requesters, setRequesters] = useState([]);
   const [requestersRetrieved, setRequestersRetrieved] = useState(false);
+  const [userPermission, setUserPermission] = useState("");
+
+  const hasAdminPermissions = [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(
+    userPermission
+  );
 
   // Fetch and populate requesters on initial load
   const getRequestersList = async () => {
-    //short circuit if the user doesn't have the necessary permissions to see join requests
-    if (!(user_permission && hasAdminPermissions)) {
-      return;
-    }
-    // Returns an array of objects with an ID (request ID) and
-    // associated user profile.
     try {
       const membershipRequests = await getMembershipRequests(project.url_slug, locale, token);
       // Now transform to a shape of objects where a specific request ID is
@@ -112,10 +102,16 @@ export default function ProjectContentSideButtons({
       });
 
       setRequesters(userRequests);
-      setRequestersRetrieved(true);
     } catch (e) {
       console.log(e.response.data);
     }
+    
+    const userPermission =
+      user && project?.team?.find((m) => m.id === user.id)
+        ? project.team.find((m) => m.id === user.id).permission
+        : "";
+    setUserPermission(userPermission);
+    setRequestersRetrieved(true);
   };
 
   useEffect(() => {
@@ -194,7 +190,7 @@ export default function ProjectContentSideButtons({
     <div>
       {user && project.team && project.team.find((m) => m.id === user.id) && (
         <div className={classes.memberButtons}>
-          {user_permission && hasAdminPermissions && (
+          {userPermission && hasAdminPermissions && (
             <>
               {/* Badge is dynamic based on the number of membership requesters */}
               <ShowRequestsButton />
@@ -210,7 +206,7 @@ export default function ProjectContentSideButtons({
         of the project (has read only permissions), then we don't want to show the membership request button. */}
       {!hasAdminPermissions &&
         project.project_type.type_id !== "event" &&
-        !(user_permission && [ROLE_TYPES.read_only_type].includes(user_permission)) && (
+        !(userPermission && [ROLE_TYPES.read_only_type].includes(userPermission)) && (
           <JoinButton
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
             requestedToJoin={requestedToJoinProject}
@@ -227,8 +223,9 @@ export default function ProjectContentSideButtons({
         requesters={requesters}
         onClose={toggleShowRequests}
         user={user}
+        url={"projects/" + project.url_slug}
         loading={!requestersRetrieved}
-        user_permission={user_permission}
+        user_permission={userPermission}
         getRequestersList={getRequestersList}
       />
     </div>

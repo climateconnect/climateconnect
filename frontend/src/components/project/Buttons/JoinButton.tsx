@@ -65,6 +65,7 @@ type Props = {
   handleSendProjectJoinRequest: Function;
   requestedToJoin: boolean;
   className?: string;
+  handleOpenJoinDialog: Function
 };
 
 export default function JoinButton({
@@ -114,7 +115,6 @@ export default function JoinButton({
         className={classes.largeJoinButton}
         color={"primary"}
         disabled={requestedToJoin === true}
-        // onClick={handleSendProjectJoinRequest}
         onClick={handleOpenJoinDialog}
         startIcon={!requestedToJoin && <AddIcon />}
         variant="contained"
