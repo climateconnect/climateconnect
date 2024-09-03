@@ -999,5 +999,9 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Requester ignored successfully.",
       de: "Der Antragsteller hat erfolgreich ignoriert."
     },
+    explain_your_reason_for_joining_the_project: {
+      en: "Please explain why you would like to join this Project and how you would like to help.",
+      de: "Bitte erläutern Sie, warum Sie an diesem Projekt teilnehmen möchten und wie Sie helfen möchten."
+    } 
   };
 }

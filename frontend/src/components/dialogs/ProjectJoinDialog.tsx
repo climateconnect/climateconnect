@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
   },
-  
+
   dialogTitle: {
     color: "#207178",
   },
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     verticalAlign: "middle",
   },
   chip: {
-    backgroundColor: "#c4c2c2",
+    // backgroundColor: "#c4c2c2",
     borderRadius: "20px",
     margin: theme.spacing(0.5),
   },
@@ -39,22 +39,24 @@ export default function ProjectJoinDialog({
   user,
   projectAdmin,
   handleSendProjectJoinRequest,
-  url
+  url,
 }) {
-  
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const [description, setDescription] = useState("");
-  const [chips, setChips] = useState([
-    { id: 1, label: texts.already_part_of_this_project },
-    { id: 2, label: texts.get_active_to_project },
-  ]);
+
+  const [selectedChip, setSelectedChip] = useState(null);
+  const [showTextbox, setShowTextbox] = useState(false);
+  const chips = [
+    { id: 1, label: texts.already_part_of_this_project, requiresTextbox: false },
+    { id: 2, label: texts.get_active_to_project, requiresTextbox: true },
+  ]
 
   const handleClose = () => {
     onClose();
   };
-  
+
   const avatarProps = {
     className: classes.adminAvatar,
     src: getImageUrl(projectAdmin?.image),
@@ -62,15 +64,15 @@ export default function ProjectJoinDialog({
   };
 
   const onDescriptionChange = (event) => {
-    setDescription(event.target.value)
+    setDescription(event.target.value);
   };
 
   const handleSelectAnswer = (chipId) => {
-    const updatedChips = chips.filter((chip) => chip.id !== chipId);
-    setChips(updatedChips);
-    setDescription(
-      (prevValue) => prevValue + `${chips.find((chip) => chip.id === chipId).label}`
-    );
+    const clickedChip = chips.find((chip) => chip.id === chipId);
+    if(clickedChip){
+      setSelectedChip(chipId);
+      setShowTextbox(clickedChip.requiresTextbox || false);
+    }
   };
 
   return (
@@ -122,22 +124,26 @@ export default function ProjectJoinDialog({
                   label={data.label}
                   clickable={true}
                   onClick={() => handleSelectAnswer(data.id)}
-                  variant="outlined"
                   size="small"
                   className={classes.chip}
+                  style={{
+                    backgroundColor: selectedChip === data.id ? '#207178' : '#e0e0e0',
+                    color: selectedChip === data.id ? '#fff' : '#000',
+                  }}
                 />
               );
             })}
-
-            <TextField
-              variant="outlined"
-              fullWidth
-              multiline
-              rows={4}
-              // onChange={(event) => onDescriptionChange(event)}
-              placeholder={texts.describe_your_project_in_more_detail}
-              value={description}
-            />
+            {showTextbox && (
+              <TextField
+                variant="outlined"
+                fullWidth
+                multiline
+                rows={4}
+                onChange={(event) => onDescriptionChange(event)}
+                placeholder={texts.explain_your_reason_for_joining_the_project}
+                value={description}
+              />
+            )}
             <Container className={classes.dialogButtonContainer}>
               <Button
                 className={classes.dialogButton}

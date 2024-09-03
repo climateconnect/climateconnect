@@ -446,6 +446,7 @@ class ProjectRequesterSerializer(serializers.ModelSerializer):
 
     user_profile = serializers.SerializerMethodField()
     message = serializers.CharField(read_only=True)
+
     class Meta:
         model = MembershipRequests
 

@@ -15,7 +15,6 @@ from django.conf import settings
 
 from uuid import uuid4
 
-from django.db.models import Count
 from django.contrib.auth.models import User
 from django.db.models import Q
 from chat_messages.models import MessageParticipants, Message, Participant
@@ -26,7 +25,12 @@ from chat_messages.serializers.message import (
 )
 from chat_messages.pagination import ChatMessagePagination, ChatsPagination
 from climateconnect_api.models import UserProfile, Role
-from chat_messages.utility.chat_setup import set_read, check_can_start_chat
+from chat_messages.utility.chat_setup import (
+    set_read,
+    check_can_start_chat,
+    get_or_create_private_chat,
+    send_chat_message,
+)
 from chat_messages.permissions import (
     ChangeChatCreatorPermission,
     AddParticipantsPermission,
@@ -83,38 +87,7 @@ class StartPrivateChat(APIView):
                 {"message": "Participant not found"}, status=status.HTTP_404_NOT_FOUND
             )
         print("checking whether user can send message")
-        can_start_chat = check_can_start_chat(request.user.user_profile)
-        if can_start_chat is not True:
-            return Response(
-                {"message": can_start_chat}, status=status.HTTP_403_FORBIDDEN
-            )
-
-        chatting_partner_user = user_profile.user
-        participants = [request.user, chatting_partner_user]
-
-        chats_with_creator = Participant.objects.filter(
-            user=request.user, is_active=True
-        ).values_list("chat", flat=True)
-        chats_with_both_users = Participant.objects.filter(
-            user=chatting_partner_user, chat__in=chats_with_creator, is_active=True
-        ).values_list("chat", flat=True)
-
-        private_chat_with_both_users = MessageParticipants.objects.annotate(
-            num_participants=Count("participant_participants")
-        ).filter(
-            id__in=chats_with_both_users, num_participants=2, related_idea=None, name=""
-        )
-        if private_chat_with_both_users.exists():
-            private_chat = private_chat_with_both_users[0]
-        else:
-            private_chat = MessageParticipants.objects.create(
-                chat_uuid=str(uuid4()), created_by=request.user
-            )
-            basic_role = Role.objects.get(role_type=0)
-            for participant in participants:
-                Participant.objects.create(
-                    user=participant, chat=private_chat, role=basic_role
-                )
+        private_chat = get_or_create_private_chat(request.user, user_profile)
         serializer = MessageParticipantSerializer(
             private_chat, context={"request": request}
         )
@@ -420,54 +393,8 @@ class SendChatMessage(APIView):
                 f"platform. Please reach out {settings.CLIMATE_CONNECT_CONTACT_EMAIL} to "
                 f"lift your account restriction."
             )
-
-        try:
-            chat = MessageParticipants.objects.get(chat_uuid=chat_uuid)
-            Participant.objects.get(user=user, chat=chat, is_active=True)
-        except Participant.DoesNotExist:
-            raise NotFound("You are not a participant of this chat.")
-        if chat:
-            # Check if this is a first message and restrict sending a message
-            # if its a cold-message.
-            message_count = Message.objects.filter(message_participant=chat).count()
-            num_of_words_on_a_message = len(request.data.get("message_content").split())
-
-            if (
-                message_count == 0
-                and num_of_words_on_a_message < NUM_OF_WORDS_REQUIRED_FOR_FIRST_MESSAGE
-            ):
-                return Response(
-                    {
-                        "detail": f"Dear {user.user_profile.name}, This is your first"
-                        f" interaction with a member on the platform. Please introduce yourself and the reason for"
-                        f" your outreach in {NUM_OF_WORDS_REQUIRED_FOR_FIRST_MESSAGE} or more words."
-                    },
-                    status=status.HTTP_411_LENGTH_REQUIRED,
-                )
-            receiver_user_ids = Participant.objects.filter(
-                chat=chat, is_active=True
-            ).values_list("user", flat=True)
-            receiver_users = User.objects.filter(id__in=receiver_user_ids)
-            message = Message.objects.create(
-                content=request.data["message_content"],
-                sender=user,
-                message_participant=chat,
-                sent_at=timezone.now(),
-            )
-            chat.last_message_at = timezone.now()
-            chat.save()
-            notification = create_chat_message_notification(chat)
-            for receiver in receiver_users:
-                if not receiver.id == user.id:
-                    MessageReceiver.objects.create(receiver=receiver, message=message)
-                    create_email_notification(
-                        receiver,
-                        chat,
-                        request.data["message_content"],
-                        user,
-                        notification,
-                    )
-                    create_user_notification(receiver, notification)
+        message = request.data.get("message_content")
+        send_chat_message(chat_uuid, user, message)
         return Response({"message": "Message sent"}, status=status.HTTP_201_CREATED)
 
 

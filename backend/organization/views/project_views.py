@@ -117,6 +117,10 @@ from organization.utility.requests import MembershipRequestsManager
 from organization.utility import MembershipTarget
 from organization.models.type import ProjectTypesChoices
 from climateconnect_api.tasks import calculate_project_rankings
+from chat_messages.utility.chat_setup import (
+    get_or_create_private_chat,
+    send_chat_message,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -1214,8 +1218,8 @@ class RequestJoinProject(RetrieveUpdateAPIView):
             )
 
         # To avoid spoofing
-        user = request.user
-        user_profile_slug = UserProfile.objects.get(user=user).url_slug
+        user_sending_request = request.user
+        user_profile_slug = UserProfile.objects.get(user=user_sending_request).url_slug
         if user_profile_slug != user_slug:
             return Response(
                 {
@@ -1236,8 +1240,9 @@ class RequestJoinProject(RetrieveUpdateAPIView):
             id=request.data["user_availability"]
         ).first()
 
+        # Check whether request is corrupt/faulty
         request_manager = MembershipRequestsManager(
-            user=user,
+            user=user_sending_request,
             membership_target=MembershipTarget.PROJECT,
             user_availability=user_availability,
             project=project,
@@ -1253,17 +1258,33 @@ class RequestJoinProject(RetrieveUpdateAPIView):
             )
 
         try:
-            request = request_manager.create_membership_request()
+            # breakpoint()
+            membership_request = request_manager.create_membership_request()
             project_admins = get_project_admin_creators(project)
             create_project_join_request_notification(
-                requester=user,
+                requester=user_sending_request,
                 project_admins=project_admins,
                 project=project,
-                request=request,
+                request=membership_request,
             )
 
+            ## User 1 requests to join project A
+            ## Admins of project A: User 2, User 3
+            # place for saving requester message in the message table
+
+            if len(project_admins) == 1:
+                private_chat = get_or_create_private_chat(
+                    user_sending_request, project_admins[0].user_profile
+                )
+                message = request.data.get("message")
+                send_chat_message(private_chat.chat_uuid, user_sending_request, message)
+            else:
+                # Todo: create group chat with admins
+                pass
             # Now pass the requestId back to the client.
-            return Response({"requestId": request.id}, status=status.HTTP_200_OK)
+            return Response(
+                {"requestId": membership_request.id}, status=status.HTTP_200_OK
+            )
         except Exception:
             logging.error(traceback.format_exc())
             return Response(
