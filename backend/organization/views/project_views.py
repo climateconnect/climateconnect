@@ -1261,12 +1261,6 @@ class RequestJoinProject(RetrieveUpdateAPIView):
             # breakpoint()
             membership_request = request_manager.create_membership_request()
             project_admins = get_project_admin_creators(project)
-            create_project_join_request_notification(
-                requester=user_sending_request,
-                project_admins=project_admins,
-                project=project,
-                request=membership_request,
-            )
 
             ## User 1 requests to join project A
             ## Admins of project A: User 2, User 3
@@ -1281,6 +1275,14 @@ class RequestJoinProject(RetrieveUpdateAPIView):
             else:
                 # Todo: create group chat with admins
                 pass
+            
+            create_project_join_request_notification(
+                requester=user_sending_request,
+                project_admins=project_admins,
+                project=project,
+                request=membership_request,
+            )
+
             # Now pass the requestId back to the client.
             return Response(
                 {"requestId": membership_request.id}, status=status.HTTP_200_OK
