@@ -52,6 +52,7 @@ export default function ProjectJoinDialog({
     { id: 1, label: texts.already_part_of_this_project, requiresTextbox: false },
     { id: 2, label: texts.get_active_to_project, requiresTextbox: true },
   ]
+  const disableSubmit = !selectedChip || (showTextbox && !description);
 
   const handleClose = () => {
     onClose();
@@ -151,6 +152,7 @@ export default function ProjectJoinDialog({
                 color="primary"
                 href={"#"}
                 onClick={() => handleSendProjectJoinRequest(description)}
+                disabled = {disableSubmit}
               >
                 {texts.send_request}
               </Button>
