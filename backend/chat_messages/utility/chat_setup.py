@@ -34,6 +34,7 @@ logger = logging.getLogger(__name__)
 def get_or_create_private_chat(initiating_user, invited_user_profile):
     # Check if the user was manually banned by us or is spamming
     can_start_chat = check_can_start_chat(initiating_user.user_profile)
+    # TO DO: return this in the view
     if can_start_chat is not True:
         return Response({"message": can_start_chat}, status=status.HTTP_403_FORBIDDEN)
 
@@ -67,10 +68,11 @@ def get_or_create_private_chat(initiating_user, invited_user_profile):
     return private_chat
 
 
-def send_chat_message(chat_uuid, user, message):
+def send_chat_message(chat_uuid, user, message_content):
+    # print(message_content)
     try:
-        # breakpoint()
         chat = MessageParticipants.objects.get(chat_uuid=chat_uuid)
+        # print(chat)
         Participant.objects.get(user=user, chat=chat, is_active=True)
     except Participant.DoesNotExist:
         raise NotFound("You are not a participant of this chat.")
@@ -78,26 +80,21 @@ def send_chat_message(chat_uuid, user, message):
         # Check if this is a first message and restrict sending a message
         # if its a cold-message.
         message_count = Message.objects.filter(message_participant=chat).count()
-        num_of_words_on_a_message = len(message.split())
+        num_of_words_on_a_message = len(message_content.split())
 
         if (
             message_count == 0
             and num_of_words_on_a_message < NUM_OF_WORDS_REQUIRED_FOR_FIRST_MESSAGE
         ):
-            return Response(
-                {
-                    "detail": f"Dear {user.user_profile.name}, This is your first"
-                    f" interaction with a member on the platform. Please introduce yourself and the reason for"
-                    f" your outreach in {NUM_OF_WORDS_REQUIRED_FOR_FIRST_MESSAGE} or more words."
-                },
-                status=status.HTTP_411_LENGTH_REQUIRED,
-            )
+            raise ValueError(f"Dear {user.user_profile.name}, This is your first"
+                f" interaction with a member on the platform. Please introduce yourself and the reason for"
+                f" your outreach in {NUM_OF_WORDS_REQUIRED_FOR_FIRST_MESSAGE} or more words.")
         receiver_user_ids = Participant.objects.filter(
             chat=chat, is_active=True
         ).values_list("user", flat=True)
         receiver_users = User.objects.filter(id__in=receiver_user_ids)
         message = Message.objects.create(
-            content=message,
+            content=message_content,
             sender=user,
             message_participant=chat,
             sent_at=timezone.now(),
@@ -111,7 +108,7 @@ def send_chat_message(chat_uuid, user, message):
                 create_email_notification(
                     receiver,
                     chat,
-                    message,
+                    message_content,
                     user,
                     notification,
                 )
@@ -144,12 +141,12 @@ def set_read(messages, user, is_private_message):
             logger.error("there is no user notification for " + user.first_name)
 
 
-def create_private_or_group_chat(
+def create_group_chat(
     creator: User,
     group_chat_name: str,
     participants: Optional[QuerySet] = None,
     related_idea: Optional[Idea] = None,
-) -> None:
+) -> MessageParticipants:
     chat = MessageParticipants.objects.create(
         chat_uuid=uuid.uuid4(), name=group_chat_name, created_by=creator
     )
@@ -168,6 +165,7 @@ def create_private_or_group_chat(
             logger.info(
                 f"NewChat: Participant {participant.id} added to chat {chat.id}"
             )
+    return chat
 
 
 def check_can_start_chat(user_profile: UserProfile) -> bool:

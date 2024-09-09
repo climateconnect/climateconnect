@@ -105,7 +105,7 @@ def create_user_notification(user, notification):
             old_notification.save()
 
 
-def create_email_notification(receiver, chat, message_content, sender, notification):
+def create_email_notification(receiver, chat, message_content: str, sender, notification):
     sender_name = sender.first_name + " " + sender.last_name
     number_of_participants = Participant.objects.filter(
         chat=chat, is_active=True

@@ -120,6 +120,7 @@ from climateconnect_api.tasks import calculate_project_rankings
 from chat_messages.utility.chat_setup import (
     get_or_create_private_chat,
     send_chat_message,
+    create_group_chat,
 )
 
 logger = logging.getLogger(__name__)
@@ -1239,7 +1240,6 @@ class RequestJoinProject(RetrieveUpdateAPIView):
         user_availability = Availability.objects.filter(
             id=request.data["user_availability"]
         ).first()
-
         # Check whether request is corrupt/faulty
         request_manager = MembershipRequestsManager(
             user=user_sending_request,
@@ -1258,23 +1258,26 @@ class RequestJoinProject(RetrieveUpdateAPIView):
             )
 
         try:
-            # breakpoint()
             membership_request = request_manager.create_membership_request()
             project_admins = get_project_admin_creators(project)
-
+            message = request.data.get("message")
             ## User 1 requests to join project A
             ## Admins of project A: User 2, User 3
             # place for saving requester message in the message table
-
             if len(project_admins) == 1:
-                private_chat = get_or_create_private_chat(
+                chat = get_or_create_private_chat(
                     user_sending_request, project_admins[0].user_profile
-                )
-                message = request.data.get("message")
-                send_chat_message(private_chat.chat_uuid, user_sending_request, message)
+                )                
             else:
                 # Todo: create group chat with admins
-                pass
+                chat = create_group_chat(
+                    creator=request.user, 
+                    group_chat_name=project.name, #use project title
+                    participants = project_admins
+                )
+            
+            send_chat_message(chat.chat_uuid, user_sending_request, message)
+                
             
             create_project_join_request_notification(
                 requester=user_sending_request,

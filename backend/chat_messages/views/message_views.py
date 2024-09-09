@@ -394,7 +394,10 @@ class SendChatMessage(APIView):
                 f"lift your account restriction."
             )
         message = request.data.get("message_content")
-        send_chat_message(chat_uuid, user, message)
+        try:
+            send_chat_message(chat_uuid, user, message)
+        except ValueError as e:
+            return Response({"detail": "%s"%e}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Message sent"}, status=status.HTTP_201_CREATED)
 
 

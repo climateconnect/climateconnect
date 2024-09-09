@@ -32,6 +32,7 @@ class MembershipRequestsManager:
             user_availability = kwargs["user_availability"]
             self.membership_target = membership_target
 
+            # make sure the user is trying to join an target entity (project, organization) that is possible to join
             if self.membership_target == MembershipTarget.PROJECT:
                 self.project = kwargs["project"]
                 self.organization = None
@@ -75,6 +76,7 @@ class MembershipRequestsManager:
                 self.errors.append(
                     f"More than a record or not a single record was found in membership requests for request id {int(kwargs['membership_request_id'])}"
                 )
+            # There is exactly one membership request from the user to this entity, as expected
             else:
                 self.membership_request = self.membership_request.first()
                 user_in_project = is_part_of_project(

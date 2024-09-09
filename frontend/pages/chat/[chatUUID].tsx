@@ -198,6 +198,8 @@ export default function Chat({
         ],
       });
     } catch (err: any) {
+      console.log("Error!")
+      console.log(err)
       if (err.response && err.response.data)
         console.log("Error in sendChatMessageThroughPostRequest: " + err.response.data.detail);
       setErrorMessage(err.response.data.detail);
