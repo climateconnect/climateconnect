@@ -266,14 +266,15 @@ const Requester = ({
     }
   }
   const handleMessageBackRequest = () => {
-    const admins = project?.team;
-    admins.push(requester.user);
+    let admins = [...(project?.team || [])];
+    admins.push(requester?.user);
 
     //seprate the admin who is login now and want to start chat
     const participantsExceptInitiator = admins.filter((admin) => admin.id !== adminId);
     const isGroupchat = participantsExceptInitiator.length > 1;
     const groupName = project.name;
     const urlPostfix = isGroupchat ? "/api/start_group_chat/" : "/api/start_private_chat/";
+    
     if (participantsExceptInitiator?.length >= 1) {
       const payload: any = {};
       if (isGroupchat) {
@@ -293,7 +294,7 @@ const Requester = ({
       } else {
         payload.profile_url_slug = participantsExceptInitiator[0].url_slug;
       }
-
+      
       apiRequest({
         method: "post",
         url: urlPostfix,
@@ -303,7 +304,7 @@ const Requester = ({
       })
         .then(async function (response) {
           handleUpdateRequesters(requestId);
-          Router.push("/chat/" + response.data.chat_uuid + "/");
+          Router.push("/chat/" + response?.data?.chat_uuid + "/");
         })
         .catch(function (error) {
           showFeedbackMessage({
