@@ -151,7 +151,6 @@ export default function ProjectContent({
   handleSendProjectJoinRequest,
   requestedToJoinProject,
   handleOpenJoinDialog,
-  // handleCloseRequestersDialog
 }) {
   const classes = useStyles({ isPersonalProject: project.isPersonalProject });
   const { locale } = useContext(UserContext);

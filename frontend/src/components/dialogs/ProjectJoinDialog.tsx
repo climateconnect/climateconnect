@@ -106,7 +106,7 @@ export default function ProjectJoinDialog({
           <>
             <Typography>
               {texts.please_share_with + " "}
-              <Link href={"/profiles/" + projectAdmin.url_slug} underline="hover">
+              <Link href={"/profiles/" + projectAdmin?.url_slug} underline="hover">
                 {projectAdmin?.badges?.length > 0 ? (
                   <ProfileBadge badge={projectAdmin?.badges[0]} size="medium">
                     <Avatar {...avatarProps} />
@@ -114,7 +114,7 @@ export default function ProjectJoinDialog({
                 ) : (
                   <Avatar {...avatarProps} />
                 )}
-                {" [" + projectAdmin.name + "] "}
+                {" [" + projectAdmin?.name + "] "}
               </Link>
               {texts.project_admin + ", " + texts.what_inspires_you_to_be_part_of_this_team + "!"}
             </Typography>
