@@ -69,10 +69,8 @@ def get_or_create_private_chat(initiating_user, invited_user_profile):
 
 
 def send_chat_message(chat_uuid, user, message_content):
-    # print(message_content)
     try:
         chat = MessageParticipants.objects.get(chat_uuid=chat_uuid)
-        # print(chat)
         Participant.objects.get(user=user, chat=chat, is_active=True)
     except Participant.DoesNotExist:
         raise NotFound("You are not a participant of this chat.")

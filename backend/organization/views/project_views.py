@@ -1258,7 +1258,6 @@ class RequestJoinProject(RetrieveUpdateAPIView):
             )
 
         try:
-            membership_request = request_manager.create_membership_request()
             project_admins = get_project_admin_creators(project)
             message = request.data.get("message")
             ## User 1 requests to join project A
@@ -1275,10 +1274,12 @@ class RequestJoinProject(RetrieveUpdateAPIView):
                     group_chat_name=project.name, #use project title
                     participants = project_admins
                 )
+            try:
+                send_chat_message(chat.chat_uuid, user_sending_request, message)
+            except ValueError as e:
+                return Response({"message": "%s"%e}, status=status.HTTP_400_BAD_REQUEST)   
             
-            send_chat_message(chat.chat_uuid, user_sending_request, message)
-                
-            
+            membership_request = request_manager.create_membership_request()
             create_project_join_request_notification(
                 requester=user_sending_request,
                 project_admins=project_admins,
