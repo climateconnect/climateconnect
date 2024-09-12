@@ -95,7 +95,6 @@ export default function HubTabsNavigation({
   tabValue,
   handleTabChange,
   type_names,
-  organizationsTabRef,
   hubUrl,
   className,
   allHubs,
@@ -141,7 +140,6 @@ export default function HubTabsNavigation({
                       indicator: classes.tabIndicator,
                     },
                   };
-                  if (index === 1) tabProps.ref = organizationsTabRef;
                   return (
                     <Tab
                       {...tabProps}

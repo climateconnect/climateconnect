@@ -125,8 +125,6 @@ export default function BrowseContent({
   };
 
   const token = new Cookies().get("auth_token");
-  //saving these refs for the tutorial
-  const organizationsTabRef = useRef(null);
 
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles();
@@ -524,7 +522,6 @@ export default function BrowseContent({
           tabValue={tabValue}
           handleTabChange={handleTabChange}
           type_names={type_names}
-          organizationsTabRef={organizationsTabRef}
           hubUrl={hubUrl}
           className={classes.hubsTabNavigation}
           allHubs={allHubs}
@@ -567,7 +564,6 @@ export default function BrowseContent({
                   </div>
                 );
               }
-              if (index === 1) tabProps.ref = organizationsTabRef;
               return <Tab {...tabProps} key={index} />;
             })}
           </Tabs>
@@ -578,7 +574,6 @@ export default function BrowseContent({
             handleTabChange={handleTabChange}
             TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
             //TODO(unused) type_names={type_names}
-            organizationsTabRef={organizationsTabRef}
             hubAmbassador={hubAmbassador}
           />
         )}
@@ -637,7 +632,6 @@ export default function BrowseContent({
         <Tutorial
           fixedPosition
           pointerRefs={{
-            organizationsTabRef: organizationsTabRef,
             hubsSubHeaderRef: hubsSubHeaderRef,
             hubQuickInfoRef: hubQuickInfoRef,
             hubProjectsButtonRef: hubProjectsButtonRef,
