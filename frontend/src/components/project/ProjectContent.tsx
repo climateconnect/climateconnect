@@ -276,7 +276,7 @@ export default function ProjectContent({
             </Typography>
           )}
           {project.end_date && project.status.key === "cancelled" && (
-            <Typography>{texts.cancelled} :(</Typography>
+            <Typography>{texts.cancelled} :</Typography>
           )}
         </div>
       </div>
