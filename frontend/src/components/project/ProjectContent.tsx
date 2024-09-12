@@ -172,9 +172,11 @@ export default function ProjectContent({
       return MAX_DISPLAYED_DESCRIPTION_LENGTH;
     }
   };
+  // TODO: is 0 fine as a default value?
+  // previously, it was null. But with null, the lsp complains about "number <= null" checks
   const maxDisplayedDescriptionLength = project.description
     ? calculateMaxDisplayedDescriptionLength(project.description)
-    : null;
+    : 0;
 
   //return the right static text depending on the project type
   const getProjectDescriptionHeadline = () => {
