@@ -18,7 +18,6 @@ import ConfirmDialog from "../dialogs/ConfirmDialog";
 import ElementOnScreen from "../hooks/ElementOnScreen";
 import ElementSpaceToRight from "../hooks/ElementSpaceToRight";
 import VisibleFooterHeight from "../hooks/VisibleFooterHeight";
-import Tutorial from "../tutorial/Tutorial";
 import ProjectInteractionButtons from "./Buttons/ProjectInteractionButtons";
 import ProjectCommentsContent from "./ProjectCommentsContent";
 import ProjectContent from "./ProjectContent";
@@ -130,8 +129,12 @@ export default function ProjectPageRoot({
   });
   const typesByTabValue = ["project", "team", "comments"];
 
-  //refs for tutorial
+  // ref used within:
+  // -> ProjectInteractionBoard
+  // -> ProjectOverview -> ContactCreatorButton
   const contactProjectCreatorButtonRef = useRef(null);
+  
+  // ref used within: ProjectContent > DiscussionPreview
   const projectTabsRef = useRef(null);
 
   const messageButtonIsVisible = ElementOnScreen({ el: contactProjectCreatorButtonRef.current });
@@ -600,15 +603,6 @@ export default function ProjectPageRoot({
         cancelText={texts.no}
       />
 
-      <Tutorial
-        fixedPosition
-        pointerRefs={{
-          contactProjectCreatorButtonRef: contactProjectCreatorButtonRef,
-          projectTabsRef: projectTabsRef,
-        }}
-        typesByTabValue={typesByTabValue}
-        handleTabChange={handleTabChange}
-      />
     </div>
   );
 }
