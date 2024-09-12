@@ -143,7 +143,6 @@ export default function ProjectContent({
   latestParentComment,
   leaveProject,
   project,
-  projectDescriptionRef,
   projectTabsRef,
   typesByTabValue,
   showRequesters,
@@ -285,7 +284,6 @@ export default function ProjectContent({
           component="h2"
           variant="h6"
           color="primary"
-          ref={projectDescriptionRef}
           className={classes.subHeader}
         >
           {getProjectDescriptionHeadline()}
