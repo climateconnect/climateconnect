@@ -622,15 +622,6 @@ export default function BrowseContent({
           </TabContentWrapper>
         </Suspense>
       </Container>
-      <Suspense fallback={null}>
-        {/* <Tutorial
-          fixedPosition
-          pointerRefs={{
-          }}
-          handleTabChange={handleTabChange}
-          typesByTabValue={TYPES_BY_TAB_VALUE}
-        /> */}
-      </Suspense>
     </LoadingContext.Provider>
   );
 }
