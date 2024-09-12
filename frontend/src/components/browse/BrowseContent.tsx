@@ -86,7 +86,6 @@ export default function BrowseContent({
   hubName,
   hubProjectsButtonRef,
   hubQuickInfoRef,
-  hubsSubHeaderRef,
   nextStepTriggeredBy,
   showIdeas,
   allHubs,
@@ -629,10 +628,9 @@ export default function BrowseContent({
         </Suspense>
       </Container>
       <Suspense fallback={null}>
-        <Tutorial
+        {/* <Tutorial
           fixedPosition
           pointerRefs={{
-            hubsSubHeaderRef: hubsSubHeaderRef,
             hubQuickInfoRef: hubQuickInfoRef,
             hubProjectsButtonRef: hubProjectsButtonRef,
           }}
@@ -640,7 +638,7 @@ export default function BrowseContent({
           nextStepTriggeredBy={nextStepTriggeredBy}
           handleTabChange={handleTabChange}
           typesByTabValue={TYPES_BY_TAB_VALUE}
-        />
+        /> */}
       </Suspense>
     </LoadingContext.Provider>
   );

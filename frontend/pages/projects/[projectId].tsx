@@ -216,7 +216,6 @@ export default function ProjectPage({
     };
   });
 
-  const hubsSubHeaderRef = useRef(null);
   const tinyScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
 
   return (
@@ -227,7 +226,7 @@ export default function ProjectPage({
       title={project ? project.name : texts.project + " " + texts.not_found}
       subHeader={
         !tinyScreen ? (
-          <HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef} onlyShowDropDown={true} />
+          <HubsSubHeader hubs={hubs} onlyShowDropDown={true} />
         ) : (
           <></>
         )
