@@ -194,7 +194,6 @@ export default function Hub({
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
   //Refs and state for tutorial
-  const [nextStepTriggeredBy, setNextStepTriggeredBy] = useState(false);
   const [requestTabNavigation, tabNavigationRequested] = useState("foo");
 
   const navRequested = (tabKey) => {
@@ -202,7 +201,6 @@ export default function Hub({
   };
 
   const scrollToSolutions = () => {
-    setNextStepTriggeredBy("showProjectsButton");
     contentRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -326,7 +324,7 @@ export default function Hub({
           <BrowseContext.Provider value={contextValues}>
             <BrowseContent
               applyNewFilters={handleApplyNewFilters}
-              contentRef={contentRef}
+              contentRef={contentRef} // TOOD: is this a dead prop as well?
               customSearchBarLabels={customSearchBarLabels}
               errorMessage={errorMessage}
               hubAmbassador={hubAmbassador}
@@ -340,7 +338,6 @@ export default function Hub({
               // TODO: is this still needed?
               // initialOrganizations={initialOrganizations}
               // initialProjects={initialProjects}
-              nextStepTriggeredBy={nextStepTriggeredBy}
               showIdeas={isLocationHub}
               allHubs={allHubs}
               initialIdeaUrlSlug={initialIdeaUrlSlug}

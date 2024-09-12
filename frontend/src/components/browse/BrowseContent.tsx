@@ -83,8 +83,6 @@ export default function BrowseContent({
   filterChoices,
   handleSetErrorMessage,
   hideMembers,
-  hubName,
-  nextStepTriggeredBy,
   showIdeas,
   allHubs,
   initialIdeaUrlSlug,
@@ -504,7 +502,6 @@ export default function BrowseContent({
     initialLocationFilter: initialLocationFilter,
     isFiltering: isFiltering,
     state: state,
-    hubName: hubName,
     nonFilterParams: nonFilterParams,
   };
   return (
@@ -630,8 +627,6 @@ export default function BrowseContent({
           fixedPosition
           pointerRefs={{
           }}
-          hubName={hubName}
-          nextStepTriggeredBy={nextStepTriggeredBy}
           handleTabChange={handleTabChange}
           typesByTabValue={TYPES_BY_TAB_VALUE}
         /> */}
