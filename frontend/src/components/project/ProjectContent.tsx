@@ -31,7 +31,8 @@ const useStyles = makeStyles((theme) => ({
     display: "block",
     fontSize: 14,
   },
-  creator: (props) => ({
+  //FIXME: added any type so that lsp does not complain about props.isPersonalProject
+  creator: (props: any) => ({ 
     paddingTop: props.isPersonalProject && theme.spacing(0.25),
     paddingLeft: theme.spacing(1),
     color: theme.palette.grey[800],
@@ -361,7 +362,7 @@ export default function ProjectContent({
 }
 
 function CollaborateContent({ project, texts }) {
-  const classes = useStyles();
+  const classes = useStyles(); // FIXME: useStyles expects a theme. Unsure what to input here
   return (
     <>
       <Typography variant="body2" className={classes.info}>
