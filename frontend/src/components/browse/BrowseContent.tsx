@@ -84,7 +84,6 @@ export default function BrowseContent({
   handleSetErrorMessage,
   hideMembers,
   hubName,
-  hubProjectsButtonRef,
   nextStepTriggeredBy,
   showIdeas,
   allHubs,
@@ -630,7 +629,6 @@ export default function BrowseContent({
         {/* <Tutorial
           fixedPosition
           pointerRefs={{
-            hubProjectsButtonRef: hubProjectsButtonRef,
           }}
           hubName={hubName}
           nextStepTriggeredBy={nextStepTriggeredBy}

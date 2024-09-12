@@ -119,7 +119,6 @@ export default function HubContent({
   statBoxTitle,
   scrollToSolutions,
   subHeadline,
-  hubProjectsButtonRef,
   isLocationHub,
   hubAmbassador,
   location,
@@ -225,7 +224,6 @@ export default function HubContent({
             variant="contained"
             color="primary"
             onClick={scrollToSolutions}
-            ref={hubProjectsButtonRef}
           >
             <ExpandMoreIcon /> {texts.show_projects}
           </Button>
