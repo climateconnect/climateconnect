@@ -292,7 +292,7 @@ export default function ProjectContent({
         <Typography className={classes.projectDescription} component="div">
           {project.description ? (
             showFullDescription || project.description.length <= maxDisplayedDescriptionLength ? (
-              <MessageContent content={project.description} renderYoutubeVideos={1} />
+              <MessageContent content={project.description} renderYoutubeVideos={true} />
             ) : (
               <MessageContent
                 content={project.description.substr(0, maxDisplayedDescriptionLength) + "..."}
