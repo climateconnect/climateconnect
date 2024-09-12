@@ -126,7 +126,6 @@ export default function BrowseContent({
 
   const token = new Cookies().get("auth_token");
   //saving these refs for the tutorial
-  const firstProjectCardRef = useRef(null);
   const filterButtonRef = useRef(null);
   const organizationsTabRef = useRef(null);
 
@@ -596,7 +595,6 @@ export default function BrowseContent({
               loadFunc={() => handleLoadMoreData("projects")}
               parentHandlesGridItems
               projects={state.items.projects}
-              firstProjectCardRef={firstProjectCardRef}
               hubUrl={hubUrl}
             />
           </TabContentWrapper>
@@ -641,7 +639,6 @@ export default function BrowseContent({
         <Tutorial
           fixedPosition
           pointerRefs={{
-            projectCardRef: firstProjectCardRef,
             filterButtonRef: filterButtonRef,
             organizationsTabRef: organizationsTabRef,
             hubsSubHeaderRef: hubsSubHeaderRef,
