@@ -58,7 +58,6 @@ type Props = {
   setFiltersExpanded: Function;
   type?: any;
   customSearchBarLabels?: any;
-  filterButtonRef?: any;
   searchValue?: any;
   hideFilterButton?: boolean;
   applyBackgroundColor?: boolean;
@@ -70,7 +69,6 @@ export default function FilterSection({
   setFiltersExpanded,
   type,
   customSearchBarLabels,
-  filterButtonRef,
   searchValue,
   hideFilterButton,
   applyBackgroundColor,
@@ -132,7 +130,6 @@ export default function FilterSection({
             startIcon={
               filtersExpanded ? <HighlightOffIcon color="primary" /> : <TuneIcon color="primary" />
             }
-            ref={filterButtonRef}
           >
             Filter
           </Button>

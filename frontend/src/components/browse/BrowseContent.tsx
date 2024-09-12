@@ -126,7 +126,6 @@ export default function BrowseContent({
 
   const token = new Cookies().get("auth_token");
   //saving these refs for the tutorial
-  const filterButtonRef = useRef(null);
   const organizationsTabRef = useRef(null);
 
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
@@ -540,7 +539,6 @@ export default function BrowseContent({
             setFiltersExpanded={isNarrowScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
             type={TYPES_BY_TAB_VALUE[tabValue]}
             customSearchBarLabels={customSearchBarLabels}
-            filterButtonRef={filterButtonRef}
             searchValue={filters.search}
             hideFilterButton={tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas")}
             applyBackgroundColor={hubData?.hub_type === "location hub"}
@@ -639,7 +637,6 @@ export default function BrowseContent({
         <Tutorial
           fixedPosition
           pointerRefs={{
-            filterButtonRef: filterButtonRef,
             organizationsTabRef: organizationsTabRef,
             hubsSubHeaderRef: hubsSubHeaderRef,
             hubQuickInfoRef: hubQuickInfoRef,
