@@ -194,7 +194,6 @@ export default function Hub({
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
   //Refs and state for tutorial
-  const hubQuickInfoRef = useRef(null);
   const hubProjectsButtonRef = useRef(null);
   const [nextStepTriggeredBy, setNextStepTriggeredBy] = useState(false);
   const [requestTabNavigation, tabNavigationRequested] = useState("foo");
@@ -302,7 +301,6 @@ export default function Hub({
             />
           )}
           <HubContent
-            hubQuickInfoRef={hubQuickInfoRef}
             headline={headline}
             hubAmbassador={hubAmbassador}
             quickInfo={quickInfo}
@@ -341,7 +339,6 @@ export default function Hub({
               hideMembers={!isLocationHub}
               hubName={name}
               hubProjectsButtonRef={hubProjectsButtonRef}
-              hubQuickInfoRef={hubQuickInfoRef}
               initialLocationFilter={initialLocationFilter}
               // TODO: is this still needed?
               // initialOrganizations={initialOrganizations}

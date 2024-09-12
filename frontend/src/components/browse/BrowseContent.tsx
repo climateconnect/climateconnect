@@ -85,7 +85,6 @@ export default function BrowseContent({
   hideMembers,
   hubName,
   hubProjectsButtonRef,
-  hubQuickInfoRef,
   nextStepTriggeredBy,
   showIdeas,
   allHubs,
@@ -631,7 +630,6 @@ export default function BrowseContent({
         {/* <Tutorial
           fixedPosition
           pointerRefs={{
-            hubQuickInfoRef: hubQuickInfoRef,
             hubProjectsButtonRef: hubProjectsButtonRef,
           }}
           hubName={hubName}
