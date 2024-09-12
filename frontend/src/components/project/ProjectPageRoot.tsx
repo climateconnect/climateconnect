@@ -131,7 +131,6 @@ export default function ProjectPageRoot({
   const typesByTabValue = ["project", "team", "comments"];
 
   //refs for tutorial
-  const collaborationSectionRef = useRef(null);
   const contactProjectCreatorButtonRef = useRef(null);
   const projectTabsRef = useRef(null);
 
@@ -518,7 +517,6 @@ export default function ProjectPageRoot({
           <ProjectContent
             project={project}
             leaveProject={requestLeaveProject}
-            collaborationSectionRef={collaborationSectionRef}
             discussionTabLabel={discussionTabLabel()}
             latestParentComment={latestParentComment}
             handleTabChange={handleTabChange}
@@ -605,7 +603,6 @@ export default function ProjectPageRoot({
       <Tutorial
         fixedPosition
         pointerRefs={{
-          collaborationSectionRef: collaborationSectionRef,
           contactProjectCreatorButtonRef: contactProjectCreatorButtonRef,
           projectTabsRef: projectTabsRef,
         }}

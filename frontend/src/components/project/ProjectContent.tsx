@@ -137,7 +137,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ProjectContent({
-  collaborationSectionRef,
   discussionTabLabel,
   handleTabChange,
   latestParentComment,
@@ -327,7 +326,7 @@ export default function ProjectContent({
           projectTabsRef={projectTabsRef}
         />
       )}
-      <div className={classes.contentBlock} ref={collaborationSectionRef}>
+      <div className={classes.contentBlock}>
         <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
           {texts.collaboration}
         </Typography>
