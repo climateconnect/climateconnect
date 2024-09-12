@@ -279,12 +279,7 @@ export default function ProjectContent({
         </div>
       </div>
       <div className={classes.contentBlock}>
-        <Typography
-          component="h2"
-          variant="h6"
-          color="primary"
-          className={classes.subHeader}
-        >
+        <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
           {getProjectDescriptionHeadline()}
         </Typography>
         <Typography className={classes.projectDescription} component="div">

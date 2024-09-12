@@ -133,7 +133,7 @@ export default function ProjectPageRoot({
   // -> ProjectInteractionBoard
   // -> ProjectOverview -> ContactCreatorButton
   const contactProjectCreatorButtonRef = useRef(null);
-  
+
   // ref used within: ProjectContent > DiscussionPreview
   const projectTabsRef = useRef(null);
 
@@ -602,7 +602,6 @@ export default function ProjectPageRoot({
         confirmText={texts.yes}
         cancelText={texts.no}
       />
-
     </div>
   );
 }

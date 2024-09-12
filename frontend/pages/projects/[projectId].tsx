@@ -224,13 +224,7 @@ export default function ProjectPage({
       message={message?.message}
       messageType={message?.messageType}
       title={project ? project.name : texts.project + " " + texts.not_found}
-      subHeader={
-        !tinyScreen ? (
-          <HubsSubHeader hubs={hubs} onlyShowDropDown={true} />
-        ) : (
-          <></>
-        )
-      }
+      subHeader={!tinyScreen ? <HubsSubHeader hubs={hubs} onlyShowDropDown={true} /> : <></>}
       image={project ? getImageUrl(project.image) : undefined}
     >
       <BrowseContext.Provider value={contextValues}>

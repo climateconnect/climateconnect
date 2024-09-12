@@ -87,11 +87,7 @@ export default function ProjectPreviews({
   );
 }
 
-function GridItem({
-  project,
-  hubUrl,
-  displayOnePreviewInRow,
-}) {
+function GridItem({ project, hubUrl, displayOnePreviewInRow }) {
   const projectPreviewProps = {
     project: project,
   } as any;
