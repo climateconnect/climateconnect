@@ -269,7 +269,7 @@ export default function ProjectContent({
             <Typography>
               {texts.finished} <TimeAgo date={new Date(project.end_date)} />. {texts.total_duration}
               :{" "}
-              {humanizeDuration(new Date(project.end_date) - new Date(project.start_date), {
+              {humanizeDuration(new Date(project.end_date).valueOf() - new Date(project.start_date).valueOf(), {
                 largest: 1,
                 language: locale,
               })}
@@ -350,7 +350,7 @@ export default function ProjectContent({
         {project.timeline_posts && project.timeline_posts.length > 0 && (
           <div className={classes.progressContent}>
             <Posts
-              posts={project.timeline_posts.sort((a, b) => new Date(b.date) - new Date(a.date))}
+              posts={project.timeline_posts.sort((a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf())}
               type="progresspost"
             />
           </div>
