@@ -32,7 +32,6 @@ const IdeasBoard = React.lazy(() => import("../ideas/IdeasBoard"));
 const OrganizationPreviews = React.lazy(() => import("../organization/OrganizationPreviews"));
 const ProfilePreviews = React.lazy(() => import("../profile/ProfilePreviews"));
 const ProjectPreviews = React.lazy(() => import("../project/ProjectPreviews"));
-const Tutorial = React.lazy(() => import("../tutorial/Tutorial"));
 const TabContentWrapper = React.lazy(() => import("./TabContentWrapper"));
 
 const useStyles = makeStyles((theme) => {
@@ -83,6 +82,7 @@ export default function BrowseContent({
   filterChoices,
   handleSetErrorMessage,
   hideMembers,
+  hubName,
   showIdeas,
   allHubs,
   initialIdeaUrlSlug,
@@ -502,6 +502,7 @@ export default function BrowseContent({
     initialLocationFilter: initialLocationFilter,
     isFiltering: isFiltering,
     state: state,
+    hubName: hubName,
     nonFilterParams: nonFilterParams,
   };
   return (
