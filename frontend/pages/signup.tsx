@@ -32,8 +32,10 @@ export default function Signup() {
   const cookies = new Cookies();
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
+  
   //Information about the completion state of the tutorial
   const isClimateActorCookie = cookies.get("tutorialVariables"); // TODO: fix 1320: not sure about that one
+
   const steps = ["basicinfo", "personalinfo"];
   const [curStep, setCurStep] = useState(steps[0]);
   const [errorMessage, setErrorMessage] = useState("");

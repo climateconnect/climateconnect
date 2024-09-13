@@ -286,11 +286,10 @@ class UserProfile(models.Model):
         blank=True,
     )
 
-
     # TODO:fix-1320 delete this attribtue and run migrations on the server
     # this project is missing an deprecation system
     # maybe we should `pdm install deprecated` or add a decorater manually
-    "DEPRECATED" 
+    "DEPRECATED"
     from_tutorial = models.BooleanField(
         help_text='Check whether the user signed up by clicking the "sign up" link in the tutorial',
         verbose_name="Signed up through tutorial?",
@@ -312,7 +311,7 @@ class UserProfile(models.Model):
     # TODO:fix-1320 delete this attribtue and run migrations on the server
     # this project is missing an deprecation system
     # maybe we should `pdm install deprecated` or add a decorater manually
-    "DEPRECATED" 
+    "DEPRECATED"
     last_completed_tutorial_step = models.SmallIntegerField(
         help_text="Last tutorial step the user completed (16=finished)",
         verbose_name="Last completed tutorial step",
