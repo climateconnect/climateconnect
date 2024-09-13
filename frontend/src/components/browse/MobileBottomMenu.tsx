@@ -23,7 +23,6 @@ export default function MobileBottomMenu({
   tabValue,
   handleTabChange,
   TYPES_BY_TAB_VALUE,
-  organizationsTabRef,
   hubAmbassador,
 }) {
   const type_icons = {
@@ -53,7 +52,6 @@ export default function MobileBottomMenu({
             const typeIcon = {
               icon: type_icons[t],
             };
-            if (index === 1) tabProps.ref = organizationsTabRef;
             return <Tab label={<typeIcon.icon />} {...tabProps} key={index} />;
           })}
         </Tabs>

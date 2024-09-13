@@ -17,7 +17,7 @@ const useStyles = makeStyles({
   },
   youtubeWrapper: {
     maxWidth: "640px",
-  }
+  },
 });
 
 type Props = {
@@ -59,7 +59,7 @@ export default function MessageContent({ content, renderYoutubeVideos = false }:
               <div className={classes.youtubeWrapper}>
                 <YouTube videoId={video_id} opts={opts as any} />
               </div>
-            )
+            );
           } else {
             return <Linkify componentDecorator={componentDecorator}>{w + " "}</Linkify>;
           }

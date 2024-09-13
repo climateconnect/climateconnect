@@ -194,9 +194,6 @@ export default function Hub({
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
   //Refs and state for tutorial
-  const hubQuickInfoRef = useRef(null);
-  const hubProjectsButtonRef = useRef(null);
-  const [nextStepTriggeredBy, setNextStepTriggeredBy] = useState(false);
   const [requestTabNavigation, tabNavigationRequested] = useState("foo");
 
   const navRequested = (tabKey) => {
@@ -204,7 +201,6 @@ export default function Hub({
   };
 
   const scrollToSolutions = () => {
-    setNextStepTriggeredBy("showProjectsButton");
     contentRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -302,7 +298,6 @@ export default function Hub({
             />
           )}
           <HubContent
-            hubQuickInfoRef={hubQuickInfoRef}
             headline={headline}
             hubAmbassador={hubAmbassador}
             quickInfo={quickInfo}
@@ -318,7 +313,6 @@ export default function Hub({
             }
             hubUrl={hubUrl}
             subHeadline={subHeadline}
-            hubProjectsButtonRef={hubProjectsButtonRef}
             isLocationHub={isLocationHub}
             location={hubLocation}
             allHubs={allHubs}
@@ -330,7 +324,7 @@ export default function Hub({
           <BrowseContext.Provider value={contextValues}>
             <BrowseContent
               applyNewFilters={handleApplyNewFilters}
-              contentRef={contentRef}
+              contentRef={contentRef} // TOOD: is this a dead prop as well?
               customSearchBarLabels={customSearchBarLabels}
               errorMessage={errorMessage}
               hubAmbassador={hubAmbassador}
@@ -340,13 +334,10 @@ export default function Hub({
               handleSetErrorMessage={handleSetErrorMessage}
               hideMembers={!isLocationHub}
               hubName={name}
-              hubProjectsButtonRef={hubProjectsButtonRef}
-              hubQuickInfoRef={hubQuickInfoRef}
               initialLocationFilter={initialLocationFilter}
               // TODO: is this still needed?
               // initialOrganizations={initialOrganizations}
               // initialProjects={initialProjects}
-              nextStepTriggeredBy={nextStepTriggeredBy}
               showIdeas={isLocationHub}
               allHubs={allHubs}
               initialIdeaUrlSlug={initialIdeaUrlSlug}

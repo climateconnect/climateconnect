@@ -2,7 +2,7 @@ import globby from "globby";
 import React from "react";
 import { apiRequest } from "../../public/lib/apiOperations";
 import { getAllHubs } from "../../public/lib/hubOperations";
-import { getAllBlogPosts } from "../../public/lib/webflowOperations"
+import { getAllBlogPosts } from "../../public/lib/webflowOperations";
 
 const NOT_LISTED = [
   "/_app",
@@ -128,12 +128,18 @@ export async function getServerSideProps(ctx) {
   //Therefore our variable "language_code" mus include a ".xml" at the end and therefore the variable is called language_code_dot_xml
   const language_code_parsed = ctx.query.language_code_dot_xml.replace(".xml", "");
   const language_code = language_code_parsed === "en" ? "" : language_code_parsed;
-  const [projectEntries, organizationEntries, memberEntries, hubEntries, blogPosts] = await Promise.all([
+  const [
+    projectEntries,
+    organizationEntries,
+    memberEntries,
+    hubEntries,
+    blogPosts,
+  ] = await Promise.all([
     getEntries("projects", ctx.locale, language_code),
     getEntries("organizations", ctx.locale, language_code),
     getEntries("members", ctx.locale, language_code),
     getEntries("hubs", ctx.locale, language_code),
-    getEntries("post", ctx.locale, language_code)
+    getEntries("post", ctx.locale, language_code),
   ]);
   const res = ctx.res;
   res.setHeader("Content-Type", "text/xml");
@@ -160,9 +166,9 @@ const getEntries = async (entryTypePlural, locale, language_code_for_url) => {
   if (entryTypePlural === "hubs") {
     const hubs = await getAllHubs(locale);
     return parseEntries(entryTypePlural, hubs, language_code_for_url);
-  } 
+  }
 
-  if(entryTypePlural === "post") {
+  if (entryTypePlural === "post") {
     const blogPosts = await getAllBlogPosts(language_code_for_url ? language_code_for_url : locale);
     return parseEntries(entryTypePlural, blogPosts, language_code_for_url);
   }
@@ -186,11 +192,11 @@ const getEntries = async (entryTypePlural, locale, language_code_for_url) => {
 const parseEntries = (entryTypePlural, entries, language_code_for_url) => {
   const firstLevelPath = entryTypePlural === "members" ? "profiles" : entryTypePlural;
   return entries.map((e) => {
-    if(entryTypePlural === "post") {
+    if (entryTypePlural === "post") {
       return {
         url_slug: `/post/${e.url_slug}`,
-        updated_at: e.updated_at
-      }
+        updated_at: e.updated_at,
+      };
     }
     return {
       url_slug: `/${

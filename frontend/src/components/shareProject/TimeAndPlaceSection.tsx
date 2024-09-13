@@ -14,8 +14,8 @@ const useStyles = makeStyles<Theme>((theme) => {
       },
     },
     locationSearchBar: {
-      flexGrow: 1
-    }
+      flexGrow: 1,
+    },
   };
 });
 

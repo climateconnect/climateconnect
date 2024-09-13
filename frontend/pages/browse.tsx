@@ -118,13 +118,12 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter, pro
     projectTypes: projectTypes,
   };
 
-  const hubsSubHeaderRef = useRef(null);
   return (
     <>
       <WideLayout
         // hideHeadline
         showOnScrollUp={showOnScrollUp}
-        subHeader={<HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef} />}
+        subHeader={<HubsSubHeader hubs={hubs} />}
       >
         <BrowseContext.Provider value={contextValues}>
           <MainHeadingContainerMobile />
@@ -135,7 +134,6 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter, pro
             errorMessage={errorMessage}
             filterChoices={filterChoices}
             handleSetErrorMessage={handleSetErrorMessage}
-            hubsSubHeaderRef={hubsSubHeaderRef}
             initialLocationFilter={initialLocationFilter}
           />
         </BrowseContext.Provider>

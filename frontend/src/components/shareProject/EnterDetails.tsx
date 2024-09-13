@@ -81,7 +81,7 @@ export default function EnterDetails({
   goToNextStep,
   goToPreviousStep,
   skillsOptions,
-  setMessage
+  setMessage,
 }) {
   const [open, setOpen] = useState({
     avatarDialog: false,
@@ -160,7 +160,7 @@ export default function EnterDetails({
       });
       return false;
     }
-    if(!isLocationValid(project.loc)) {
+    if (!isLocationValid(project.loc)) {
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setMessage, texts);
       return false;
     }
