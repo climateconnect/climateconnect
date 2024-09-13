@@ -92,8 +92,7 @@ export default function Signup() {
       last_name: values.last_name.trim(),
       location: parseLocation(location),
       send_newsletter: values.sendNewsletter,
-      from_tutorial: params?.from_tutorial === "true", // TODO: fix-1320: not sure about that one
-      is_activist: isClimateActorCookie?.isActivist,
+      is_activist: isClimateActorCookie?.isActivist, // TODO: fix-1320: not sure about that one
       source_language: locale,
     };
     const headers = {

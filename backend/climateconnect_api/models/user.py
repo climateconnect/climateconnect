@@ -286,6 +286,11 @@ class UserProfile(models.Model):
         blank=True,
     )
 
+
+    # TODO:fix-1320 delete this attribtue and run migrations on the server
+    # this project is missing an deprecation system
+    # maybe we should `pdm install deprecated` or add a decorater manually
+    "DEPRECATED" 
     from_tutorial = models.BooleanField(
         help_text='Check whether the user signed up by clicking the "sign up" link in the tutorial',
         verbose_name="Signed up through tutorial?",
@@ -294,6 +299,8 @@ class UserProfile(models.Model):
         default=False,
     )
 
+    # TODO: fix-1320 not sure whether we want to delete it
+    # information might still be usefull even if will not use it
     is_activist = models.CharField(
         help_text='Options: ["yes", "soon", "no"]. Soon means they said they\'re interested in becoming active.',
         verbose_name="Is already active in climate action?",
@@ -302,6 +309,10 @@ class UserProfile(models.Model):
         max_length=8,
     )
 
+    # TODO:fix-1320 delete this attribtue and run migrations on the server
+    # this project is missing an deprecation system
+    # maybe we should `pdm install deprecated` or add a decorater manually
+    "DEPRECATED" 
     last_completed_tutorial_step = models.SmallIntegerField(
         help_text="Last tutorial step the user completed (16=finished)",
         verbose_name="Last completed tutorial step",
