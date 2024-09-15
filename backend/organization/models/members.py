@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from organization.models import Project, Organization
 from climateconnect_api.models import Role, Availability
+from chat_messages.models import Message
 from organization.utility import MembershipTarget, RequestStatus
 
 
@@ -204,6 +205,7 @@ class MembershipRequests(models.Model):
         default=None,
         null=True,
     )
+
     rejected_at = models.DateTimeField(
         help_text="Time of request rejection",
         verbose_name="Rejected at",
@@ -211,14 +213,15 @@ class MembershipRequests(models.Model):
         null=True,
     )
 
-    message = models.TextField(
+    message = models.ForeignKey(
+        Message,
         help_text="Message associated with the request",
         verbose_name="Request Message",
-        max_length=4096,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
     )
-
+    
     request_status = models.SmallIntegerField(
         choices=[(x.value, x.name) for x in RequestStatus],
         default=RequestStatus.PENDING.value,

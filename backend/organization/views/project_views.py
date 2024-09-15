@@ -1247,8 +1247,9 @@ class RequestJoinProject(RetrieveUpdateAPIView):
             user_availability=user_availability,
             project=project,
             organization=None,
-            message=request.data["message"],
         )
+
+        # message.message_participant.chat_uuid
 
         exists = request_manager.duplicate_request
         if exists:
@@ -1275,11 +1276,13 @@ class RequestJoinProject(RetrieveUpdateAPIView):
                     participants = project_admins
                 )
             try:
-                send_chat_message(chat.chat_uuid, user_sending_request, message)
+                # This is the message object which is linked to the chat
+                message = send_chat_message(chat.chat_uuid, user_sending_request, message)
+                request_manager.message = message
+                membership_request = request_manager.create_membership_request()
             except ValueError as e:
                 return Response({"message": "%s"%e}, status=status.HTTP_400_BAD_REQUEST)   
             
-            membership_request = request_manager.create_membership_request()
             create_project_join_request_notification(
                 requester=user_sending_request,
                 project_admins=project_admins,
@@ -1289,7 +1292,9 @@ class RequestJoinProject(RetrieveUpdateAPIView):
 
             # Now pass the requestId back to the client.
             return Response(
-                {"requestId": membership_request.id}, status=status.HTTP_200_OK
+                {
+                    "requestId": membership_request.id, 
+                }, status=status.HTTP_200_OK
             )
         except Exception:
             logging.error(traceback.format_exc())

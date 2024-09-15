@@ -48,7 +48,7 @@ class MembershipRequestsManager:
 
             self.user = user
             self.user_availability = user_availability
-            self.message = kwargs["message"]
+            # self.message = kwargs["message"]
             self.membership_request = None
 
             # check if the request exists already

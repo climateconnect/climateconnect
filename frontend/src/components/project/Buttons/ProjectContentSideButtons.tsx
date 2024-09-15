@@ -114,6 +114,7 @@ export default function ProjectContentSideButtons({
     setRequestersRetrieved(true);
   };
 
+  //Executed once when the page loads
   useEffect(() => {
     getRequestersList();
   }, []);

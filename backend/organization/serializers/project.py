@@ -438,7 +438,7 @@ class ProjectFollowerSerializer(serializers.ModelSerializer):
         return serializer.data
 
 
-class ProjectRequesterSerializer(serializers.ModelSerializer):
+class  ProjectRequesterSerializer(serializers.ModelSerializer):
     """Serializer class required to return the request ID
     to the client, so that it can be sent appropriately
     alongside the approve/deny actions for project requesters.
@@ -446,19 +446,23 @@ class ProjectRequesterSerializer(serializers.ModelSerializer):
 
     user_profile = serializers.SerializerMethodField()
     message = serializers.CharField(read_only=True)
+    chat_uuid = serializers.SerializerMethodField()
 
     class Meta:
         model = MembershipRequests
-
         # Locally defined variables take precedence
         # over what's defined on the model
-        fields = ("user_profile", "id", "message")
+        fields = ("user_profile", "id", "message", "chat_uuid")
 
     def get_user_profile(self, obj):
         user_profile = UserProfile.objects.get(user=obj.user)
         serializer = UserProfileStubSerializer(user_profile)
         return serializer.data
-
+    
+    def get_chat_uuid(self, obj):
+        if obj.message and obj.message.message_participant:
+            return obj.message.message_participant.chat_uuid
+        return None 
 
 class ProjectLikeSerializer(serializers.ModelSerializer):
     user_profile = serializers.SerializerMethodField()

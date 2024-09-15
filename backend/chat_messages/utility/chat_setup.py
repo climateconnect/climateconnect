@@ -67,7 +67,6 @@ def get_or_create_private_chat(initiating_user, invited_user_profile):
             )
     return private_chat
 
-
 def send_chat_message(chat_uuid, user, message_content):
     try:
         chat = MessageParticipants.objects.get(chat_uuid=chat_uuid)
@@ -111,7 +110,8 @@ def send_chat_message(chat_uuid, user, message_content):
                     notification,
                 )
                 create_user_notification(receiver, notification)
-    return
+    #TODO: return message object
+    return message
 
 
 def set_read(messages, user, is_private_message):
@@ -138,7 +138,6 @@ def set_read(messages, user, is_private_message):
         except UserNotification.DoesNotExist:
             logger.error("there is no user notification for " + user.first_name)
 
-
 def create_group_chat(
     creator: User,
     group_chat_name: str,
@@ -164,7 +163,6 @@ def create_group_chat(
                 f"NewChat: Participant {participant.id} added to chat {chat.id}"
             )
     return chat
-
 
 def check_can_start_chat(user_profile: UserProfile) -> bool:
     if user_profile.restricted_profile:
