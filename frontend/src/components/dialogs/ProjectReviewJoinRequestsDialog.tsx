@@ -127,7 +127,6 @@ export default function ProjectReviewJoinRequestsDialog({
           project={project}
           initialRequesters={requesters}
           getRequestersList={getRequestersList}
-          adminId={user.id}
         />
       ) : (
         <Typography className={classes.noOpenRequestsText}>
@@ -167,7 +166,6 @@ const ProjectRequesters = ({
   project,
   getRequestersList,
   handleClose,
-  adminId,
 }) => {
   const [requesters, setRequesters] = useState(initialRequesters);
   const { locale } = useContext(UserContext);
@@ -200,7 +198,6 @@ const ProjectRequesters = ({
                 locale={locale}
                 requester={requester}
                 requestId={requester.requestId}
-                adminId={adminId}
                 handleUpdateRequesters={handleUpdateRequesters}
                 token={token}
               />
@@ -222,7 +219,6 @@ const Requester = ({
   requester,
   requestId,
   token,
-  adminId,
   handleUpdateRequesters,
 }) => {
   const classes = useStyles();
@@ -265,58 +261,9 @@ const Requester = ({
       console.log(e);
     }
   }
+  
   const handleMessageBackRequest = () => {
-    let admins = [...(project?.team || [])];
-    admins.push(requester?.user);
-
-    //seprate the admin who is login now and want to start chat
-    const participantsExceptInitiator = admins.filter((admin) => admin.id !== adminId);
-    const isGroupchat = participantsExceptInitiator.length > 1;
-    const groupName = project.name;
-    const urlPostfix = isGroupchat ? "/api/start_group_chat/" : "/api/start_private_chat/";
-    
-    if (participantsExceptInitiator?.length >= 1) {
-      const payload: any = {};
-      if (isGroupchat) {
-        if (!groupName) {
-          showFeedbackMessage({
-            message: (
-              <span>
-                {texts.please_set_a_group_name_if_youre_starting_a_chat_with_more_than_one_member}
-              </span>
-            ),
-            error: true,
-          });
-          return;
-        }
-        payload.participants = participantsExceptInitiator.map((item) => item.id);
-        payload.group_chat_name = groupName;
-      } else {
-        payload.profile_url_slug = participantsExceptInitiator[0].url_slug;
-      }
-      
-      apiRequest({
-        method: "post",
-        url: urlPostfix,
-        payload: payload,
-        token: token,
-        locale: locale,
-      })
-        .then(async function (response) {
-          handleUpdateRequesters(requestId);
-          Router.push("/chat/" + response?.data?.chat_uuid + "/");
-        })
-        .catch(function (error) {
-          showFeedbackMessage({
-            message: <span>{error?.response?.data?.message}</span>,
-            error: true,
-          });
-        });
-    } else
-      showFeedbackMessage({
-        message: <span>{texts.no_open_project_join_requests}</span>,
-        error: true,
-      });
+    requester?.chat_uuid ? Router.push("/chat/" + requester?.chat_uuid + "/") : ""
   };
 
   return (

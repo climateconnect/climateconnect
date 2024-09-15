@@ -445,7 +445,7 @@ class  ProjectRequesterSerializer(serializers.ModelSerializer):
     """
 
     user_profile = serializers.SerializerMethodField()
-    message = serializers.CharField(read_only=True)
+    message = serializers.SerializerMethodField()
     chat_uuid = serializers.SerializerMethodField()
 
     class Meta:
@@ -459,10 +459,15 @@ class  ProjectRequesterSerializer(serializers.ModelSerializer):
         serializer = UserProfileStubSerializer(user_profile)
         return serializer.data
     
+    def get_message(self, obj):
+        if obj.message:
+            return obj.message.content
+        return None
+            
     def get_chat_uuid(self, obj):
         if obj.message and obj.message.message_participant:
             return obj.message.message_participant.chat_uuid
-        return None 
+        return None
 
 class ProjectLikeSerializer(serializers.ModelSerializer):
     user_profile = serializers.SerializerMethodField()

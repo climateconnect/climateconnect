@@ -97,6 +97,7 @@ export default function ProjectContentSideButtons({
           requestId: r.id,
           user: r.user_profile,
           message: r.message,
+          chat_uuid: r.chat_uuid
         };
         return user;
       });
