@@ -85,7 +85,6 @@ export default function ChatContent({
   const handleClose = () => {
     setShowSendHelper(false);
   };
-
   return (
     <>
       {showChatParticipants && (

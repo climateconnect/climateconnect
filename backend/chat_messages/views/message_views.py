@@ -4,6 +4,7 @@ from climateconnect_api.utility.notification import (
     create_user_notification,
 )
 from chat_messages.models.message import MessageReceiver
+from organization.models.members import MembershipRequests
 from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView

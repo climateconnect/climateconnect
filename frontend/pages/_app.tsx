@@ -240,7 +240,7 @@ export default function MyApp({ Component, pageProps = {} }) {
   const stopLoading = () => {
     setLoading(false);
   };
-
+console.log("state.user",state.user)
   const contextValues = {
     user: state.user,
     signOut: signOut,

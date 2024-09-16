@@ -23,13 +23,60 @@ const useStyles = makeStyles((theme) => ({
   senderName: {
     fontSize: 12,
   },
+  returnJoinRequestBox: {
+    backgroundColor: theme.palette.primary.light,
+    marginTop: theme.spacing(.5),
+    padding: theme.spacing(1),
+    paddingRight: theme.spacing(4),
+  },
+  returnLink: {
+    color: "#2C3E50",
+  },
+  userText: {
+    fontWeight: "600",
+  },
 }));
 
-export default function Message({ message, classes, isPrivateChat }) {
+const MessageForProject = ({
+  ownClasses,
+  classes,
+  associatedJoinRequest,
+  received,
+  getLocalePrefix,
+  texts,
+}) => {
+  return (
+    <span className={`${ownClasses.returnJoinRequestBox} ${classes.message}`}>
+      <Typography display="inline-block" style={{ alignSelf: "flex-start" }}>
+        {associatedJoinRequest?.project_url_slug && received && (
+          <a
+            href={
+              getLocalePrefix +
+              `/projects/${associatedJoinRequest?.project_url_slug}?show_join_requests=true`
+            }
+            className={ownClasses.returnLink}
+          >
+            {texts.return_to_project_to_approve_or_ignore}
+          </a>
+        )}
+        {!received && (
+          <p>
+            {texts.this_is_your_message_for_the_request_to_join}{" "}
+            <span className={ownClasses.userText}>{associatedJoinRequest?.project_name}</span>{" "}
+            {texts.project}
+            {". "}
+          </p>
+        )}
+      </Typography>
+    </span>
+  );
+};
+
+export default function Message({ message, associatedJoinRequest, classes, isPrivateChat }) {
   const ownClasses = useStyles();
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "chat", locale: locale });
-  const received = message.sender.url_slug !== user.url_slug;
+  const received = message.sender.url_slug !== user?.url_slug;
   const sent_date = getDateTime(message.sent_at);
 
   return (
@@ -41,7 +88,13 @@ export default function Message({ message, classes, isPrivateChat }) {
     >
       <span
         color={received ? "default" : "primary"}
-        className={`${received ? classes.receivedMessage : classes.sentMessage} ${classes.message}`}
+        className={`${
+          associatedJoinRequest
+            ? classes.receiveMessageFromJoinRequest
+            : received
+            ? classes.receivedMessage
+            : classes.sentMessage
+        } ${classes.message}`}
       >
         {received && !isPrivateChat && (
           <Link
@@ -66,6 +119,16 @@ export default function Message({ message, classes, isPrivateChat }) {
           </div>
         </div>
       </span>
+      {associatedJoinRequest && (
+        <MessageForProject
+          ownClasses={ownClasses}
+          classes={classes}
+          associatedJoinRequest={associatedJoinRequest}
+          received={received}
+          getLocalePrefix={getLocalePrefix(locale)}
+          texts={texts}
+        />
+      )}
     </div>
   );
 }

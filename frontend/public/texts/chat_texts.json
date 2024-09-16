@@ -166,5 +166,13 @@
   "no_chats_found_for_this_search": {
     "en": "No matches found for your search",
     "de": "Keine Suchergebnisse gefunden"
+  },
+  "return_to_project_to_approve_or_ignore": {
+    "en": "Click the link to return to your project request and approve or ignore the requester.",
+    "de": "Klicken Sie auf den Link, um zu Ihrer Projektanfrage zurückzukehren und den Antragsteller zu genehmigen oder zu ignorieren."
+  },
+  "this_is_your_message_for_the_request_to_join": {
+    "en": "The above message is your request to join the ",
+    "de": "Die obige Nachricht ist Ihr Antrag auf Beitritt zum "
   }
 }

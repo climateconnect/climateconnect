@@ -957,51 +957,58 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     thrilled_to_join_the_project: {
       en: `We're thrilled you're intrested in joining this project`,
-      de: "Wir freuen uns sehr über Ihr Interesse an diesem Projekt"
+      de: "Wir freuen uns sehr über Ihr Interesse an diesem Projekt",
     },
-    please_share_with :{
+    please_share_with: {
       en: "Please share with",
-      de: "Bitte teilen Sie mit"
+      de: "Bitte teilen Sie mit",
     },
-    project_admin : {
+    project_admin: {
       en: "the project admin",
-      de: "die Projektverwaltung"
+      de: "die Projektverwaltung",
     },
-    what_inspires_you_to_be_part_of_this_team :{
-      en: "what inspires you to be part of this team and how you hope to contribute. your passion and ideas are what make our community thrive",
-      de: "was Sie dazu inspiriert, Teil dieses Teams zu sein, und wie Sie dazu beitragen möchten. Ihre Leidenschaft und Ihre Ideen sind es, die unsere Gemeinschaft zum Blühen bringen"
+    what_inspires_you_to_be_part_of_this_team: {
+      en:
+        "what inspires you to be part of this team and how you hope to contribute. your passion and ideas are what make our community thrive",
+      de:
+        "was Sie dazu inspiriert, Teil dieses Teams zu sein, und wie Sie dazu beitragen möchten. Ihre Leidenschaft und Ihre Ideen sind es, die unsere Gemeinschaft zum Blühen bringen",
     },
     already_part_of_this_project: {
       en: `I'm already part of this project`,
-      de: "Ich bin bereits an diesem Projekt beteiligt"
+      de: "Ich bin bereits an diesem Projekt beteiligt",
     },
     get_active_to_project: {
       en: "I want to get active in this project",
-      de: "Ich möchte in diesem Projekt aktiv werden"
+      de: "Ich möchte in diesem Projekt aktiv werden",
     },
     project_requesters_dialog_title: {
-      en: `${count == 1 ? "One" : count} climate ${count == 1 ? "protector" : "protectors"} would like to join your project.`,
-      de: `${count == 1 ? "Eins" : count} Klimaschützer würden sich gerne an Ihrem Projekt beteiligen.`,
+      en: `${count == 1 ? "One" : count} climate ${
+        count == 1 ? "protector" : "protectors"
+      } would like to join your project.`,
+      de: `${
+        count == 1 ? "Eins" : count
+      } Klimaschützer würden sich gerne an Ihrem Projekt beteiligen.`,
     },
     to_send_this_project_join_request: {
       en: "to send this project join request",
-      de: "um eine Anfrage zum Beitritt zu diesem Projekt zu senden"
+      de: "um eine Anfrage zum Beitritt zu diesem Projekt zu senden",
     },
-    to_see_this_projects_requesters:{
+    to_see_this_projects_requesters: {
       en: "to see these projects requesters",
-      de: "um diese Projekte zu sehen Antragsteller"
+      de: "um diese Projekte zu sehen Antragsteller",
     },
     requester_accepted_successfully: {
       en: "Requester accepted successfully.",
-      de: "Antragsteller erfolgreich akzeptiert."
+      de: "Antragsteller erfolgreich akzeptiert.",
     },
     requester_ignored_successfully: {
       en: "Requester ignored successfully.",
-      de: "Der Antragsteller hat erfolgreich ignoriert."
+      de: "Der Antragsteller hat erfolgreich ignoriert.",
     },
     explain_your_reason_for_joining_the_project: {
       en: "Please explain why you would like to join this Project and how you would like to help.",
-      de: "Bitte erläutern Sie, warum Sie an diesem Projekt teilnehmen möchten und wie Sie helfen möchten."
-    } 
+      de:
+        "Bitte erläutern Sie, warum Sie an diesem Projekt teilnehmen möchten und wie Sie helfen möchten.",
+    }
   };
 }

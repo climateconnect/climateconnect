@@ -22,7 +22,7 @@ type Props = {
   renderYoutubeVideos?: boolean;
 };
 
-export default function MessageContent({ content, renderYoutubeVideos = false }: Props) {
+export default function MessageContent({ content, renderYoutubeVideos = false, associatedJoinRequest }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   //workaround to get target="_blank" because setting 'properties' on the Linkify component doesn't work
@@ -93,7 +93,7 @@ export default function MessageContent({ content, renderYoutubeVideos = false }:
         return (
           <div key={index}>
             <Typography display="inline" style={{ alignSelf: "flex-start" }}>
-              {fragments}
+                {fragments}
             </Typography>
           </div>
         );
