@@ -262,10 +262,6 @@ const Requester = ({
     }
   }
   
-  const handleMessageBackRequest = () => {
-    requester?.chat_uuid ? Router.push("/chat/" + requester?.chat_uuid + "/") : ""
-  };
-
   return (
     <>
       <Link
@@ -291,7 +287,7 @@ const Requester = ({
           className={classes.dialogButton}
           variant="contained"
           color="primary"
-          onClick={() => handleMessageBackRequest()}
+          href={"/chat/" + requester?.chat_uuid + "/"}
         >
           {texts.message_back}
         </Button>
