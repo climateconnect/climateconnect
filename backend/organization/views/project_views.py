@@ -1261,6 +1261,8 @@ class RequestJoinProject(RetrieveUpdateAPIView):
         try:
             project_admins = get_project_admin_creators(project)
             message = request.data.get("message")
+            #send back error if there are 0 project_admins
+
             ## User 1 requests to join project A
             ## Admins of project A: User 2, User 3
             # place for saving requester message in the message table
@@ -1278,6 +1280,7 @@ class RequestJoinProject(RetrieveUpdateAPIView):
             try:
                 # This is the message object which is linked to the chat
                 message = send_chat_message(chat.chat_uuid, user_sending_request, message)
+              
                 request_manager.message = message
                 membership_request = request_manager.create_membership_request()
             except ValueError as e:
@@ -1289,7 +1292,6 @@ class RequestJoinProject(RetrieveUpdateAPIView):
                 project=project,
                 request=membership_request,
             )
-
             # Now pass the requestId back to the client.
             return Response(
                 {

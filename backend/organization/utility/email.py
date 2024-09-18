@@ -334,12 +334,13 @@ def send_join_project_request_email(user, request, requester, notification):
     url_ending = (
         "/projects/" + request.target_project.url_slug + "?show_join_requests=true"
     )
-
+    
     variables = {
         "RequesterName": requester_name,
         "FirstName": user.first_name,
         "ProjectName": request.target_project.name,
         "url": base_url + get_user_lang_url(lang_code) + url_ending,
+        "JoinMessage": request.message.content
     }
     send_email(
         user=user,
