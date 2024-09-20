@@ -17,6 +17,6 @@
     "moduleResolution": "node",
     "isolatedModules": true
   },
-  "include": ["src/*", "pages/*", "public/*"],
+  "include": ["src/*", "pages/*", "public/*", "pages/hubs/[hubsName]/landingPage.tsx"],
   "exclude": ["node_modules"]
 }
