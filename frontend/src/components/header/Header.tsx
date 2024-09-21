@@ -325,7 +325,7 @@ export default function Header({
   transparentHeader,
   background,
   isHubPage,
-  hubName,
+  hubUrl,
   isLocationHub,
 }: HeaderProps) {
   const classes = useStyles({
@@ -353,8 +353,8 @@ export default function Header({
 
   const getLogo = () => {
     let imageUrl = "/images";
-    if (isHubPage && hubName) {
-      imageUrl += `/hub_logos/ch_${hubName.toLowerCase()}_logo.svg`;
+    if (isHubPage && isLocationHub) {
+      imageUrl += `/hub_logos/ch_${hubUrl}_logo.svg`;
     } else {
       imageUrl = loadDefaultLogo(transparentHeader, isMediumScreen);
     }

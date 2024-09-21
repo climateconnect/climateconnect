@@ -108,6 +108,8 @@ export async function getServerSideProps(ctx) {
       name: hubData.name,
       headline: hubData.headline,
       subHeadline: hubData.sub_headline,
+      welcomeMessageLoggedIn: hubData.welcome_message_logged_in,
+      welcomeMessageLoggedOut: hubData.welcome_message_logged_out,
       image: hubData.image,
       quickInfo: hubData.quick_info,
       stats: hubData.stats,
@@ -141,6 +143,8 @@ export default function Hub({
   statBoxTitle,
   stats,
   subHeadline,
+  welcomeMessageLoggedIn,
+  welcomeMessageLoggedOut,
   initialLocationFilter,
   filterChoices,
   sectorHubs,
@@ -274,7 +278,7 @@ export default function Hub({
         headerBackground="#FFF"
         image={getImageUrl(image)}
         isHubPage
-        hubName={name}
+        hubUrl={hubUrl}
         hideDonationCampaign
         customFooterImage={hubData.custom_footer_image && getImageUrl(hubData.custom_footer_image)}
         isLocationHub={isLocationHub}
@@ -318,6 +322,8 @@ export default function Hub({
             }
             hubUrl={hubUrl}
             subHeadline={subHeadline}
+            welcomeMessageLoggedIn={welcomeMessageLoggedIn}
+            welcomeMessageLoggedOut={welcomeMessageLoggedOut}
             hubProjectsButtonRef={hubProjectsButtonRef}
             isLocationHub={isLocationHub}
             location={hubLocation}
