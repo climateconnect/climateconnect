@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { getProjectTypeDateOptions } from "../data/projectTypeOptions";
 
 export function getDayAndMonth(date) {
-  return format(date, "dd.MM");
+  return format(date, "dd.MM.");
 }
 
 export function getTime(date) {
@@ -12,7 +12,7 @@ export function getTime(date) {
 }
 
 export function getDateAndTime(date) {
-  return format(date, "dd.MM HH:mm");
+  return format(date, "dd.MM. HH:mm");
 }
 
 export function getDateTime(rawDate) {

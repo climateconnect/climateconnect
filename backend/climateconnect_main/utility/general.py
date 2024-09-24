@@ -30,7 +30,7 @@ def get_image_from_data_url(data_url, resize=False, base_width=500):
             # resize
             w_percent = base_width / float(image.size[0])
             h_size = int((float(image.size[1]) * float(w_percent)))
-            image = image.resize((base_width, h_size), Image.ANTIALIAS)
+            image = image.resize((base_width, h_size), Image.Resampling.LANCZOS)
 
             # save resized image
             image.save(image_io, format=_extension)
