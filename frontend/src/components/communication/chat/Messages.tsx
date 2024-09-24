@@ -23,11 +23,11 @@ const styles = (theme) => {
       padding: theme.spacing(1),
       paddingRight: theme.spacing(4),
     },
-    receiveMessageFromJoinRequest: {
-      backgroundColor: theme.palette.info.light,
-      padding: theme.spacing(1),
-      paddingRight: theme.spacing(4),
-    },
+    // receiveMessageFromJoinRequest: {
+    //   backgroundColor: theme.palette.info.light,
+    //   padding: theme.spacing(1),
+    //   paddingRight: theme.spacing(4),
+    // },
     sentMessage: {
       backgroundColor: theme.palette.primary.main,
       padding: theme.spacing(1),
@@ -94,6 +94,7 @@ class Messages extends React.Component {
       messageContainer.scrollTop = messageContainer.scrollHeight;
     }
   }
+
 
   render() {
     const loadMore = async (page) => {

@@ -51,6 +51,7 @@ class MessageSerializer(serializers.ModelSerializer):
                 "join_request_created_at": join_request.requested_at,
                 "project_url_slug": join_request.target_project.url_slug,
                 "project_name": join_request.target_project.name,
+                "requestId": join_request.id
             }
         except MembershipRequests.DoesNotExist:
             return None

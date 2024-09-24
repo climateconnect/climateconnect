@@ -1,11 +1,15 @@
-import { CircularProgress, Link, Tooltip, Typography } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
+import { Link, Button, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getDateTime } from "../../../../public/lib/dateOperations";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
 import MessageContent from "./../MessageContent";
+import TimeContainer from "./TimeContainer";
+import { apiRequest } from "../../../../public/lib/apiOperations";
+import FeedbackContext from "../../context/FeedbackContext";
+import Cookies from "universal-cookie";
 
 const useStyles = makeStyles((theme) => ({
   time: {
@@ -20,12 +24,17 @@ const useStyles = makeStyles((theme) => ({
   sentTime: {
     color: "#bdb8c7",
   },
-  senderName: {
+  projectMessage: {
     fontSize: 12,
+    marginTop: "5px",
+    marginBottom: "22px",
+  },
+  userMessage: {
+    color: "white",
   },
   returnJoinRequestBox: {
     backgroundColor: theme.palette.primary.light,
-    marginTop: theme.spacing(.5),
+    marginTop: theme.spacing(0.5),
     padding: theme.spacing(1),
     paddingRight: theme.spacing(4),
   },
@@ -35,40 +44,192 @@ const useStyles = makeStyles((theme) => ({
   userText: {
     fontWeight: "600",
   },
+  buttonContainer: {
+    margin: "25px 0 10px 0",
+  },
+  submitBtn: {
+    margin: "0 5px 0 5px",
+  },
+  ignoreBtn: {
+    border: "1px solid #707070",
+    color: "#484848",
+    paddingTop: "6px",
+    paddingBottom: "6px"
+  },
+  approveText: {
+    color: "#207178",
+  },
+  ignoreText: {
+    color: "#484848",
+  },
+  pendingText: {
+    color: "#F8F8F8",
+    lineHeight: "3"
+  },
+  projectRecivedMessage: {
+    backgroundColor: "white",
+    border: "1px solid #707070",
+    padding: theme.spacing(1),
+    paddingRight: theme.spacing(4),
+  },
+  projectSentMessage: {
+    backgroundColor: "#66BCB5",
+    padding: theme.spacing(1),
+    color: "white",
+    textAlign: "left",
+    paddingRight: theme.spacing(4),
+  },
+  chatClarification: {
+    margin: "2px 0"
+  }
 }));
 
-const MessageForProject = ({
+const JoinProjectMessage = ({
   ownClasses,
-  classes,
+  isPrivateChat,
+  locale,
+  message,
+  sentDate,
   associatedJoinRequest,
   received,
-  getLocalePrefix,
   texts,
 }) => {
+  const { showFeedbackMessage } = useContext(FeedbackContext);
+  const notificationText = getTexts({ page: "project", locale: locale });
+  const [approveRequest, setApproveRequest] = React.useState<string | null>(null);
+  const cookies = new Cookies();
+  const token = cookies.get("auth_token");
+
+  async function handleRequest(approve: boolean): Promise<void> {
+    const url = `/api/projects/${associatedJoinRequest.project_url_slug}/request_membership/${
+      approve ? "approve" : "reject"
+    }/${associatedJoinRequest.requestId}/`;
+    try {
+      await apiRequest({
+        method: "post",
+        url: url,
+        locale: locale,
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+        payload: {},
+      });
+
+      if (approve) setApproveRequest("approve");
+      else setApproveRequest("ignore");
+
+      showFeedbackMessage({
+        message: approve
+          ? notificationText.requester_accepted_successfully
+          : notificationText.requester_ignored_successfully,
+        success: true,
+      });
+    } catch (e) {
+      if (e.response.status === 401) {
+        showFeedbackMessage({
+          message: texts.no_permission,
+          error: true,
+        });
+      }
+      console.log(e);
+    }
+  }
   return (
-    <span className={`${ownClasses.returnJoinRequestBox} ${classes.message}`}>
-      <Typography display="inline-block" style={{ alignSelf: "flex-start" }}>
-        {associatedJoinRequest?.project_url_slug && received && (
-          <a
-            href={
-              getLocalePrefix +
-              `/projects/${associatedJoinRequest?.project_url_slug}?show_join_requests=true`
-            }
-            className={ownClasses.returnLink}
-          >
-            {texts.return_to_project_to_approve_or_ignore}
+    <>
+      {received && !isPrivateChat && (
+        <Typography className={ownClasses.projectMessage} color="primary" component="p">
+          {texts.this_message_is_part_of_users_request +
+            message.sender.first_name +
+            " " +
+            message.sender.last_name +
+            " " +
+            texts.request_to_join_your_project}
+          <a href={"/projects/" + associatedJoinRequest?.project_url_slug}>
+            {` "`}
+            {associatedJoinRequest?.project_name}
+            {`". `}
           </a>
-        )}
-        {!received && (
-          <p>
-            {texts.this_is_your_message_for_the_request_to_join}{" "}
-            <span className={ownClasses.userText}>{associatedJoinRequest?.project_name}</span>{" "}
-            {texts.project}
-            {". "}
-          </p>
-        )}
-      </Typography>
-    </span>
+          <p className={ownClasses.chatClarification}>{texts.if_you_are_not_sure_answer_here_in_the_chat}</p>
+        </Typography>
+      )}
+      {!received && (
+        <Typography className={ownClasses.projectMessage} color="#207178" component="p">
+          {texts.this_message_is_part_of_users_request + texts.user_request_to_join_project}
+          <a href={"/projects/" + associatedJoinRequest?.project_url_slug}>
+            {` "`}
+            {associatedJoinRequest?.project_name}
+            {`" `}
+          </a>
+          {texts.project}
+        </Typography>
+      )}
+      <MessageContent
+        content={message.content}
+        associatedJoinRequest={associatedJoinRequest}
+        sentDate={sentDate}
+        received={received}
+        unconfirmed={message.unconfirmed}
+      />
+      {received && (
+        <div className={ownClasses.buttonContainer}>
+          {approveRequest == "approve" && (
+            <span className={ownClasses.approveText}>{texts.request_accepted}</span>
+          )}
+          {approveRequest == "ignore" && (
+            <span className={ownClasses.ignoreText}>{texts.request_declined}</span>
+          )}
+          {approveRequest == null && (
+            <>
+              <Button
+                className={ownClasses.ignoreBtn}
+                variant="outlined"
+                onClick={() => handleRequest(false)}
+              >
+                {texts.ignore}
+              </Button>
+              <Button
+                className={ownClasses.submitBtn}
+                variant="contained"
+                color="primary"
+                onClick={() => handleRequest(true)}
+              >
+                {texts.accept}
+              </Button>
+            </>
+          )}
+        </div>
+      )}
+      {!received && approveRequest == null && (
+        <span className={ownClasses.pendingText}>{texts.answer_pending}</span>
+      )}
+    </>
+  );
+};
+
+const OtherTypeMessage = ({
+  received,
+  isPrivateChat,
+  getLocalePrefix,
+  message,
+  ownClasses,
+  sentDate,
+}) => {
+  return (
+    <>
+      {received && !isPrivateChat && (
+        <Link
+          href={getLocalePrefix + "/profiles/" + message?.sender?.url_slug}
+          target="_blank"
+          underline="hover"
+        >
+          <Typography className={ownClasses.senderName} color="primary" component="span">
+            {message?.sender?.first_name + " " + message?.sender?.last_name}
+          </Typography>
+        </Link>
+      )}
+      <MessageContent content={message.content} />
+      <TimeContainer received={received} unconfirmed={message?.unconfirmed} sentDate={sentDate} />
+    </>
   );
 };
 
@@ -89,46 +250,38 @@ export default function Message({ message, associatedJoinRequest, classes, isPri
       <span
         color={received ? "default" : "primary"}
         className={`${
-          associatedJoinRequest
-            ? classes.receiveMessageFromJoinRequest
+          !associatedJoinRequest
+            ? received
+              ? classes.receivedMessage
+              : classes.sentMessage
             : received
-            ? classes.receivedMessage
-            : classes.sentMessage
+            ? ownClasses.projectRecivedMessage
+            : ownClasses.projectSentMessage
         } ${classes.message}`}
       >
-        {received && !isPrivateChat && (
-          <Link
-            href={getLocalePrefix(locale) + "/profiles/" + message.sender.url_slug}
-            target="_blank"
-            underline="hover"
-          >
-            <Typography className={ownClasses.senderName} color="primary" component="span">
-              {message.sender.first_name + " " + message.sender.last_name}
-            </Typography>
-          </Link>
+        {!associatedJoinRequest && (
+          <OtherTypeMessage
+            received={received}
+            isPrivateChat={isPrivateChat}
+            getLocalePrefix={getLocalePrefix(locale)}
+            message={message}
+            ownClasses={ownClasses}
+            sentDate={sent_date}
+          />
         )}
-        <MessageContent content={message.content} />
-        <div className={ownClasses.timeContainer}>
-          <div className={`${ownClasses.time} ${!received && ownClasses.sentTime}`}>
-            {message.unconfirmed && (
-              <Tooltip title={texts.sending_message + "..."}>
-                <CircularProgress size={10} color="inherit" className={classes.loader} />
-              </Tooltip>
-            )}
-            {sent_date}
-          </div>
-        </div>
+        {associatedJoinRequest && (
+          <JoinProjectMessage
+            received={received}
+            isPrivateChat={isPrivateChat}
+            locale={locale}
+            message={message}
+            ownClasses={ownClasses}
+            texts={texts}
+            sentDate={sent_date}
+            associatedJoinRequest={associatedJoinRequest}
+          />
+        )}
       </span>
-      {associatedJoinRequest && (
-        <MessageForProject
-          ownClasses={ownClasses}
-          classes={classes}
-          associatedJoinRequest={associatedJoinRequest}
-          received={received}
-          getLocalePrefix={getLocalePrefix(locale)}
-          texts={texts}
-        />
-      )}
     </div>
   );
 }
