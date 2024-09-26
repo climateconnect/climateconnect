@@ -49,6 +49,7 @@ import DropDownButton from "./DropDownButton";
 import LanguageSelect from "./LanguageSelect";
 import StaticPageLinks from "./StaticPageLinks";
 import { HeaderProps } from "./types";
+import { useRouter } from "next/router";
 
 type StyleProps = {
   transparentHeader?: boolean;
@@ -205,6 +206,9 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       display: "flex",
       justifyContent: "center",
     },
+    landingPageNavColor: {
+      backgroundColor: "#207178"
+    }
   };
 });
 
@@ -377,6 +381,8 @@ export default function Header({
   const logo = getLogo();
   const [hideHeader, setHideHeader] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const router = useRouter();
+  const isLandingPage = router.pathname === '/hubs/[hubUrl]/landingpage';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -396,7 +402,7 @@ export default function Header({
   return (
     <Box
       component="header"
-      className={`${classes.root} ${className} ${!noSpacingBottom && classes.spacingBottom} ${
+      className={`${classes.root} ${isLandingPage ? classes.landingPageNavColor : ""} ${className} ${!noSpacingBottom && classes.spacingBottom} ${
         hideHeader ? classes.hideHeader : ""
       }`}
     >

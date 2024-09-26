@@ -12,5 +12,5 @@
 
 # production
 /build
-
+/devlink
 *.tsbuildinfo

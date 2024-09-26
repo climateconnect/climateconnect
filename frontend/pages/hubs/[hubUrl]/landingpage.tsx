@@ -6,7 +6,7 @@ import {
   DeChMarburgLandingpage,
   EnChMarburgLandingpage,
   EnChPotsdamLandingpage,
-  DeChPotsdamLandingpage
+  DeChPotsdamLandingpage,
 } from "../../../devlink";
 import UserContext from "../../../src/components/context/UserContext";
 import WideLayout from "../../../src/components/layouts/WideLayout";
@@ -14,7 +14,6 @@ const LandingPage = () => {
   const router = useRouter();
   const { hubUrl } = router.query as { hubUrl: string };
   const { locale } = useContext(UserContext);
-  console.log("hubUrl", typeof hubUrl);
 
   const landingPages = {
     erlangen: {
@@ -30,6 +29,7 @@ const LandingPage = () => {
       en: EnChPotsdamLandingpage,
     },
   };
+  
   if (!hubUrl) {
     return <div>Loading...</div>;
   }
@@ -37,11 +37,9 @@ const LandingPage = () => {
     content: landingPages[hubUrl][locale],
   };
   return (
-    // <WideLayout
-    //   title={"hi"}
-    // >
-    <LandingPage.content />
-    // </WideLayout>
+    <WideLayout title={"hi"} transparentHeader={true}>
+      <LandingPage.content />
+    </WideLayout>
   );
   return <div>Page not found</div>;
 };

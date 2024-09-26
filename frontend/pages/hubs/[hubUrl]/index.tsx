@@ -75,10 +75,9 @@ const DESCRIPTION_WEBFLOW_LINKS = {
 
 //potentially switch back to getinitialprops here?!
 export async function getServerSideProps(ctx) {
-  const hubUrl = ctx.params;
-  console.log("ctx.ctx.locales>>>>>>>",ctx.locale);
+  const hubUrl = ctx?.params?.hubUrl;
   
-  const ideaToOpen = ctx.query.idea;
+  const ideaToOpen = ctx?.query?.idea;
 
   const [
     hubData,
@@ -101,7 +100,6 @@ export async function getServerSideProps(ctx) {
     retrieveDescriptionFromWebflow(ctx.query, ctx.locale),
     getProjectTypeOptions(ctx.locale),
   ]);
-console.log("hubData>>>>>>>>>>>>>>>>>>>>>>>>>>>",hubData);
 
   return {
     props: {
@@ -408,7 +406,7 @@ const getHubData = async (url_slug, locale) => {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: `/api/hubs/${url_slug?.hubsName}/`,
+      url: `/api/hubs/${url_slug}/`,
       locale: locale,
     });
     return resp.data;
