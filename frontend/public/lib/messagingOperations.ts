@@ -43,3 +43,25 @@ export async function joinIdeaGroupChat({ idea, token, locale }) {
     console.error(error);
   }
 }
+
+export async function sendChatMessageThroughPostRequest(message, chat_uuid, token, locale){
+  try {
+    const resp = await apiRequest({
+      method: "post",
+      url: "/api/chat/" + chat_uuid + "/send_message/",
+      payload: { message_content: message },
+      token: token,
+      locale: locale,
+    });
+    console.log(resp.data);
+    
+  } catch (err: any) {
+    if (err.response && err.response.data)
+      console.log("Error in sendChatMessageThroughPostRequest: " + err.response.data.detail);
+    
+    if (err.response && err.response.data.detail === "Invalid token.")
+      console.log("invalid token! token:" + token);
+    console.log(err);
+    return null;
+  }
+};

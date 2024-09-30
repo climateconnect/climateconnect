@@ -193,7 +193,6 @@ def get_project_admin_creators(project, limit_to_admins=False):
     query = Q(project=project) & role_sub_query
 
     admins = ProjectMember.objects.filter(query)
-
     return [u.user for u in admins.all()]
 
 
