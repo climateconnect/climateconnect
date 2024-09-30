@@ -186,21 +186,22 @@ type Props = {
   allHubs?: Array<any>;
   hubData?: Object;
   className?: any;
-  headline?: string;
   location?: any;
-  hubUrl?: string;
+  welcomeMessageLoggedIn?: string,
+  welcomeMessageLoggedOut?: string
 };
 
 export default function Dashboard({
   allHubs,
   hubData,
   className,
-  headline,
   location,
-  hubUrl,
+  welcomeMessageLoggedIn,
+  welcomeMessageLoggedOut
 }: Props) {
   const classes = useStyles();
-
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "dashboard", locale: locale, user: user, location: location });
   const [userOrganizations, setUserOrganizations] = useState(null);
   const [isCreateIdeaOpen, setCreateIdeaOpen] = useState(false);
   const token = new Cookies().get("auth_token");
@@ -213,8 +214,21 @@ export default function Dashboard({
     }
   }, []);
 
-  const { user, locale } = useContext(UserContext);
-  const texts = getTexts({ page: "dashboard", locale: locale, user: user, location: location });
+  const parseWelcomeMessage = m => {
+    const message = m.replaceAll("${user.first_name}", user.first_name)
+    return m.replaceAll("${user.first_name}", user.first_name)
+  }
+
+  const getWelcomeMessage = () => {
+    //Hallo {User}, +quickInfo
+    if(user) {
+      return parseWelcomeMessage(welcomeMessageLoggedIn ? welcomeMessageLoggedIn : texts.welcome_message_logged_in)
+    } else {
+      return parseWelcomeMessage(welcomeMessageLoggedOut? welcomeMessageLoggedOut : texts.welcome_message_logged_out)
+    }
+  }
+
+  const welcomeMessage = getWelcomeMessage()
 
   return (
     <div className={`${classes.welcomeBanner} ${className}`}>
@@ -226,7 +240,7 @@ export default function Dashboard({
             <Box sx={{ marginLeft: theme.spacing(1), width: "100%" }}>
               <div className={`${classes.welcomeMessage}`}>
                 <Typography style={{ fontWeight: "600" }}>
-                  {user ? texts.welcome_message_logged_in : texts.welcome_message_logged_out}
+                  {welcomeMessage}
                 </Typography>
               </div>
             </Box>

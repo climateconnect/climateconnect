@@ -20,7 +20,6 @@ const useStyles = makeStyles((theme)=>({
     backgroundColor: "#207178",
     borderRadius: "10px",
     opacity: 1,
-    // padding: "9px 0 0 13px",
     padding: theme.spacing(1),
     paddingRight: theme.spacing(4),
   },
@@ -28,7 +27,6 @@ const useStyles = makeStyles((theme)=>({
     backgroundColor: "#E0E0E0",
     borderRadius: "10px",
     opacity: 1,
-    // padding: "9px 0 0 13px",
     padding: theme.spacing(1),
     paddingRight: theme.spacing(4),
   },
@@ -55,6 +53,9 @@ const useStyles = makeStyles((theme)=>({
   loader: {
     display: "inline-block",
     marginRight: theme.spacing(0.25),
+  },
+  youtubeWrapper: {
+    maxWidth: "640px",
   }
 }));
 
@@ -87,8 +88,7 @@ export default function MessageContent({
   );
 
   const opts = {
-    height: "390",
-    width: "640",
+    width: "100%",
     host: "https://www.youtube-nocookie.com",
     playerVars: {
       // https://developers.google.com/youtube/player_parameters
@@ -107,7 +107,11 @@ export default function MessageContent({
             let video_id = YouTubeGetID(w);
             const ampersandPosition = video_id.indexOf("&");
             if (ampersandPosition !== -1) video_id = video_id.substring(0, ampersandPosition);
-            return <YouTube videoId={video_id} opts={opts as any} />;
+            return (
+              <div className={classes.youtubeWrapper}>
+                <YouTube videoId={video_id} opts={opts as any} />
+              </div>
+            )
           } else {
             return <Linkify componentDecorator={componentDecorator}>{w + " "}</Linkify>;
           }

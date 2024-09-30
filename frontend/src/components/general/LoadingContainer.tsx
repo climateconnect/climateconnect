@@ -26,7 +26,6 @@ export default function LoadingContainer({ headerHeight, footerHeight }) {
   });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
-  console.log(texts)
   return (
     <div className={classes.spinnerContainer}>
       <div>
