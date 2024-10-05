@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => {
       backgroundSize: "calc(100% - 1px) 100%",
       borderRadius: "5px",
       textAlign: "center",
-      height: "350px",
+      height: "390px",
       boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;",
       padding: "0 14px",
     },
