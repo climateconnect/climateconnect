@@ -8,4 +8,5 @@ export interface HeaderProps {
   isHubPage?: boolean;
   hubName?: string;
   isLocationHub?: boolean;
+  isLandingPage?: boolean;
 }

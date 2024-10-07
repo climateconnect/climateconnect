@@ -2,6 +2,7 @@
 /node_modules
 /.pnp
 .pnp.js
+/devlink
 
 # testing
 /coverage
@@ -12,5 +13,4 @@
 
 # production
 /build
-/devlink
 *.tsbuildinfo

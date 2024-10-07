@@ -49,7 +49,6 @@ import DropDownButton from "./DropDownButton";
 import LanguageSelect from "./LanguageSelect";
 import StaticPageLinks from "./StaticPageLinks";
 import { HeaderProps } from "./types";
-import { useRouter } from "next/router";
 
 type StyleProps = {
   transparentHeader?: boolean;
@@ -207,8 +206,8 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       justifyContent: "center",
     },
     landingPageNavColor: {
-      backgroundColor: "#207178"
-    }
+      backgroundColor: "#207178",
+    },
   };
 });
 
@@ -331,6 +330,7 @@ export default function Header({
   isHubPage,
   hubName,
   isLocationHub,
+  isLandingPage,
 }: HeaderProps) {
   const classes = useStyles({
     fixedHeader: fixedHeader,
@@ -358,7 +358,11 @@ export default function Header({
   const getLogo = () => {
     let imageUrl = "/images";
     if (isHubPage && hubName) {
-      imageUrl += `/hub_logos/ch_${hubName.toLowerCase()}_logo.svg`;
+      if (isLandingPage) {
+        imageUrl += `/hub_logos/ch_${hubName.toLowerCase()}_logo_white.svg`;
+      } else {
+        imageUrl += `/hub_logos/ch_${hubName.toLowerCase()}_logo.svg`;
+      }
     } else {
       imageUrl = loadDefaultLogo(transparentHeader, isMediumScreen);
     }
@@ -378,11 +382,18 @@ export default function Header({
     }
   };
 
+  const makeLogoLink = () => {
+    let logoLink = "/"
+    if(isLandingPage || (isHubPage && hubName)){
+      logoLink += `hubs/${hubName.toLowerCase()}`
+    }
+    return logoLink;
+  };
+
   const logo = getLogo();
+  const logoLink = makeLogoLink();
   const [hideHeader, setHideHeader] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const router = useRouter();
-  const isLandingPage = router.pathname === '/hubs/[hubUrl]/landingpage';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -402,12 +413,14 @@ export default function Header({
   return (
     <Box
       component="header"
-      className={`${classes.root} ${isLandingPage ? classes.landingPageNavColor : ""} ${className} ${!noSpacingBottom && classes.spacingBottom} ${
+      className={`${classes.root} ${
+        isLandingPage ? classes.landingPageNavColor : ""
+      } ${className} ${!noSpacingBottom && classes.spacingBottom} ${
         hideHeader ? classes.hideHeader : ""
       }`}
     >
       <Container className={classes.container}>
-        <Link href={localePrefix + "/"} className={classes.logoLink} underline="hover">
+        <Link href={localePrefix + logoLink} className={classes.logoLink} underline="hover">
           <img
             src={logo}
             alt={texts.climate_connect_logo}
