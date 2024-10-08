@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme) => ({
     top: 0,
     right: 20,
     background: props.isInPast ? theme.palette.secondary.extraLight : theme.palette.yellow.main,
-    zIndex: 10,
+    zIndex: 9,
     borderRadius: "0px 0px 8px 8px",
     padding: theme.spacing(1),
     boxShadow: `2px 3px 7px -2px ${theme.palette.secondary.main}`,
