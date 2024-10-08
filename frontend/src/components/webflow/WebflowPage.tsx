@@ -13,7 +13,7 @@ export default function WebflowPage({
  isStaticPage = true,
  transparentHeader,
  isHubPage,
- hubName,
+ hubUrl,
  isLandingPage
 }: any) {
  const { locale } = useContext(UserContext);
@@ -27,7 +27,7 @@ export default function WebflowPage({
        isStaticPage = {isStaticPage}
        transparentHeader = {transparentHeader}
        isHubPage = {isHubPage}
-       hubName = {hubName}
+       hubUrl = {hubUrl}
        isLandingPage={isLandingPage}
        //TODO(unused) hideHeadline
        noSpaceBottom

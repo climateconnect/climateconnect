@@ -328,7 +328,7 @@ export default function Header({
   transparentHeader,
   background,
   isHubPage,
-  hubName,
+  hubUrl,
   isLocationHub,
   isLandingPage,
 }: HeaderProps) {
@@ -357,16 +357,15 @@ export default function Header({
 
   const getLogo = () => {
     let imageUrl = "/images";
-    if (isHubPage && hubName) {
-      if (isLandingPage) {
-        imageUrl += `/hub_logos/ch_${hubName.toLowerCase()}_logo_white.svg`;
-      } else {
-        imageUrl += `/hub_logos/ch_${hubName.toLowerCase()}_logo.svg`;
+    if (isHubPage) {
+      if (hubUrl && isLandingPage) {
+        imageUrl += `/hub_logos/ch_${hubUrl.toLowerCase()}_logo_white.svg`;
+      } else if (isLocationHub) {
+        imageUrl += `/hub_logos/ch_${hubUrl}_logo.svg`;
       }
     } else {
       imageUrl = loadDefaultLogo(transparentHeader, isMediumScreen);
     }
-
     return imageUrl;
   };
 
@@ -383,9 +382,9 @@ export default function Header({
   };
 
   const makeLogoLink = () => {
-    let logoLink = "/"
-    if(isLandingPage || (isHubPage && hubName)){
-      logoLink += `hubs/${hubName.toLowerCase()}`
+    let logoLink = "/";
+    if (isLandingPage || (isHubPage && hubUrl)) {
+      logoLink += `hubs/${hubUrl.toLowerCase()}`;
     }
     return logoLink;
   };

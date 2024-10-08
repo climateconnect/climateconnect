@@ -58,7 +58,7 @@ const LandingPage = () => {
         transparentHeader={true}
         isStaticPage={false}
         isHubPage={true}
-        hubName={hubUrl}
+        hubUrl={hubUrl}
         isLandingPage={true}
       >
         <LandingPage.content />

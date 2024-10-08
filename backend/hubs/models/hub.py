@@ -107,6 +107,22 @@ class Hub(models.Model):
         blank=True,
     )
 
+    welcome_message_logged_in = models.CharField(
+        help_text="Displayed on the dashboard on location hubs when logged in. Starts with \"Hi $user.name\"",
+        verbose_name="Welcome message (logged in)",
+        max_length=2048,
+        null=True,
+        blank=True,
+    )
+
+    welcome_message_logged_out = models.CharField(
+        help_text="Displayed on the dashboard on location hubs when logged out.",
+        verbose_name="Welcome message (logged out)",
+        max_length=2048,
+        null=True,
+        blank=True,
+    )
+
     SECTOR_HUB_TYPE = 0
     LOCATION_HUB_TYPE = 1  # User can read and write to project or organization.
     HUB_TYPES = ((SECTOR_HUB_TYPE, "sector hub"), (LOCATION_HUB_TYPE, "location hub"))

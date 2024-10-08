@@ -6,7 +6,7 @@ export interface HeaderProps {
   transparentHeader?: boolean;
   background?: string;
   isHubPage?: boolean;
-  hubName?: string;
+  hubUrl?: string;
   isLocationHub?: boolean;
   isLandingPage?: boolean;
 }
