@@ -128,7 +128,13 @@ export async function getServerSideProps(ctx) {
   //Therefore our variable "language_code" mus include a ".xml" at the end and therefore the variable is called language_code_dot_xml
   const language_code_parsed = ctx.query.language_code_dot_xml.replace(".xml", "");
   const language_code = language_code_parsed === "en" ? "" : language_code_parsed;
-  const [projectEntries, organizationEntries, memberEntries, hubEntries, blogPosts] = await Promise.all([
+  const [
+    projectEntries, 
+    organizationEntries, 
+    memberEntries, 
+    hubEntries, 
+    blogPosts,
+  ] = await Promise.all([
     getEntries("projects", ctx.locale, language_code),
     getEntries("organizations", ctx.locale, language_code),
     getEntries("members", ctx.locale, language_code),

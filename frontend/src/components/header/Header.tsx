@@ -205,6 +205,9 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       display: "flex",
       justifyContent: "center",
     },
+    landingPageNavColor: {
+      backgroundColor: "#207178",
+    },
   };
 });
 
@@ -327,6 +330,7 @@ export default function Header({
   isHubPage,
   hubUrl,
   isLocationHub,
+  isLandingPage,
 }: HeaderProps) {
   const classes = useStyles({
     fixedHeader: fixedHeader,
@@ -353,12 +357,15 @@ export default function Header({
 
   const getLogo = () => {
     let imageUrl = "/images";
-    if (isHubPage && isLocationHub) {
-      imageUrl += `/hub_logos/ch_${hubUrl}_logo.svg`;
+    if (isHubPage) {
+      if (hubUrl && isLandingPage) {
+        imageUrl += `/hub_logos/ch_${hubUrl.toLowerCase()}_logo_white.svg`;
+      } else if (isLocationHub) {
+        imageUrl += `/hub_logos/ch_${hubUrl}_logo.svg`;
+      }
     } else {
       imageUrl = loadDefaultLogo(transparentHeader, isMediumScreen);
     }
-
     return imageUrl;
   };
 
@@ -374,7 +381,16 @@ export default function Header({
     }
   };
 
+  const makeLogoLink = () => {
+    let logoLink = "/";
+    if (isLandingPage || (isHubPage && hubUrl)) {
+      logoLink += `hubs/${hubUrl?.toLowerCase() || ""}`;
+    }
+    return logoLink;
+  };
+
   const logo = getLogo();
+  const logoLink = makeLogoLink();
   const [hideHeader, setHideHeader] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -396,12 +412,14 @@ export default function Header({
   return (
     <Box
       component="header"
-      className={`${classes.root} ${className} ${!noSpacingBottom && classes.spacingBottom} ${
+      className={`${classes.root} ${
+        isLandingPage ? classes.landingPageNavColor : ""
+      } ${className} ${!noSpacingBottom && classes.spacingBottom} ${
         hideHeader ? classes.hideHeader : ""
       }`}
     >
       <Container className={classes.container}>
-        <Link href={localePrefix + "/"} className={classes.logoLink} underline="hover">
+        <Link href={localePrefix + logoLink} className={classes.logoLink} underline="hover">
           <img
             src={logo}
             alt={texts.climate_connect_logo}

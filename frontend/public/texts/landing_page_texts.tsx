@@ -145,5 +145,9 @@ export default function getLandingPageTexts({ classes, isNarrowScreen }) {
       en: "Learn from",
       de: "Lerne von",
     },
+    return_to_hubs: {
+      en: "Return to hubs",
+      de: "Zurück zu den Knotenpunkten"
+    }
   };
 }
