@@ -200,15 +200,20 @@ export default function BrowseContent({
   useEffect(() => {
     let newHash = window?.location?.hash.replace("#", "");
 
-    if (newHash && TYPES_BY_TAB_VALUE.indexOf(newHash)) {
+    if (newHash && TYPES_BY_TAB_VALUE.indexOf(newHash) != -1) {
       setHash(newHash);
       setTabValue(TYPES_BY_TAB_VALUE.indexOf(newHash));
     } else if (newHash) {
       console.error("malicous hash detected");
       newHash = "";
       window.location.hash = "";
+      setHash("");
+      setTabValue(0);
     }
 
+    // TODO: is this if-clause relevant?
+    // as this useEffect does not contain any dependencies, it will only run
+    // once: when the component is mounted.
     if (!initialized) {
       // Update the state of the visual filters, like Select, Dialog, etc
       // Then actually fetch the data. We need a way to map what's
@@ -294,6 +299,9 @@ export default function BrowseContent({
       );
 
       const newFilters = { ...emptyFilters, ...splitQueryObject.filters };
+
+      //TODO: this name is confusing
+      // as this component contains a global with the same name
       const tabValue = TYPES_BY_TAB_VALUE[newValue];
       // Apply new filters with the query object immediately:
       handleApplyNewFilters({
