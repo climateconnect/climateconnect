@@ -4,6 +4,13 @@
 # https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates#target-branch
 version: 2
 updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    target-branch: "master"
+
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
