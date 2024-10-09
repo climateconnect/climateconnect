@@ -384,7 +384,7 @@ export default function Header({
   const makeLogoLink = () => {
     let logoLink = "/";
     if (isLandingPage || (isHubPage && hubUrl)) {
-      logoLink += `hubs/${hubUrl.toLowerCase()}`;
+      logoLink += `hubs/${hubUrl?.toLowerCase() || ""}`;
     }
     return logoLink;
   };
