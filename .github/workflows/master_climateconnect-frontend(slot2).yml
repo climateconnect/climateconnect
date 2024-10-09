@@ -21,11 +21,21 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: npm install, build, and test
+      - name: Install production dependencies
         run: |
           cd frontend
           yarn --production
+
+      - name: Sync Webflow Devlink
+        run: |
+          cd frontend
+          npx webflow devlink sync
+
+      - name: Build the project
+        run: |
+          cd frontend
           yarn build
+
         env:
           API_HOST: ${{ secrets.API_HOST }}
           API_URL: ${{ secrets.API_URL }}
