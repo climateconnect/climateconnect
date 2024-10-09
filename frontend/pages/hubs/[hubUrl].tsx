@@ -209,7 +209,7 @@ export default function Hub({
 
   const scrollToSolutions = () => {
     setNextStepTriggeredBy("showProjectsButton");
-    contentRef.current.scrollIntoView({ behavior: "smooth" });
+    contentRef!.current!.scrollIntoView({ behavior: "smooth" });
   };
 
   const customSearchBarLabels = {

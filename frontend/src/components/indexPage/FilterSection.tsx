@@ -1,4 +1,4 @@
-import { Button, Theme } from "@mui/material";
+import { Button, Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import TuneIcon from "@mui/icons-material/Tune";
@@ -6,6 +6,8 @@ import React, { useContext, useEffect, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import FilterSearchBar from "../filter/FilterSearchBar";
+import FilterContent from "../filter/FilterContent";
+import getFilters from "../../../public/data/possibleFilters";
 
 type MakeStylesProps = {
   applyBackgroundColor?: boolean;
@@ -49,37 +51,102 @@ const useStyles = makeStyles((theme) => {
       color: "black !important",
       borderColor: "black !important",
     },
+    tabContent: {
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
+    },
   };
 });
 
 type Props = {
-  filtersExpanded: boolean;
   onSubmit: Function;
-  setFiltersExpanded: Function;
   type?: any;
   customSearchBarLabels?: any;
   filterButtonRef?: any;
   searchValue?: any;
   hideFilterButton?: boolean;
   applyBackgroundColor?: boolean;
+
+  // FilterContent Dependencies:
+  errorMessage: any;
+  filters: any;
+  filterChoices: any;
+  handleApplyNewFilters: (newFilters: any) => void;
+  handleUpdateFilterValues: (valuesToUpdate: any) => void;
+  handleSetLocationOptionsOpen: (bool: boolean) => void;
+  initialLocationFilter: any;
+  locationInputRefs: any;
+  locationOptionsOpen: any;
+  nonFilterParams: any;
 };
 
 export default function FilterSection({
-  filtersExpanded,
   onSubmit,
-  setFiltersExpanded,
   type,
   customSearchBarLabels,
   filterButtonRef,
   searchValue,
   hideFilterButton,
   applyBackgroundColor,
+  // FilterContent Dependencies
+  errorMessage,
+  filters,
+  filterChoices,
+  handleApplyNewFilters,
+  handleSetLocationOptionsOpen,
+  handleUpdateFilterValues,
+  initialLocationFilter,
+  locationInputRefs,
+  locationOptionsOpen,
+  nonFilterParams,
 }: Props) {
   const classes = useStyles({
     applyBackgroundColor: applyBackgroundColor,
   });
   const { locale } = useContext(UserContext);
+  const isMobileScreenSize = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const isSmallScreenSize = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+
+  // State
   const [value, setValue] = useState(searchValue);
+
+  // TODO: do we need two state? Maybe one is sufficient?
+  // yes => if we switch from big screen to small screen, the filters would be still extended
+  // but this is an edge case. Most of the times ppl would not switch from big screen to mobile size screen
+
+  // Always default to filters being expanded
+  const [filtersExpanded, setFiltersExpanded] = useState(true);
+  // On mobile filters take up the whole screen, so they aren't expanded by default
+  // const [filtersExandedOnMobile, setFiltersExpandedOnMobile] = useState(false);
+
+  const onClickExpandFilters = () => {
+    setFiltersExpanded(!filtersExpanded);
+
+    // if (isMobileScreenSize) {
+    //   setFiltersExpandedOnMobile(true);
+    // } else {
+    //   setFiltersExpanded(true);
+    // }
+  };
+
+  const unexpandFilters = () => {
+    setFiltersExpanded(false);
+
+    // if (isMobileScreenSize) {
+    //   setFiltersExpandedOnMobile(false);
+    // } else {
+    //   setFiltersExpanded(false);
+    // }
+  };
+
+  useEffect(() => {
+    if (isMobileScreenSize || isSmallScreenSize) {
+      setFiltersExpanded(false);
+    } else {
+      setFiltersExpanded(true);
+    }
+  }, [isMobileScreenSize]);
+
   useEffect(
     function () {
       setValue(searchValue);
@@ -96,10 +163,6 @@ export default function FilterSection({
   const InputLabelClasses = {
     root: classes.inputLabel,
     notchedOutline: classes.inputLabel,
-  };
-
-  const onClickExpandFilters = () => {
-    setFiltersExpanded(!filtersExpanded);
   };
 
   const handleChangeValue = (e) => {
@@ -134,10 +197,35 @@ export default function FilterSection({
             }
             ref={filterButtonRef}
           >
-            Filter
+            {/* TODO: put into texts */}
+            {filtersExpanded ? "Hide filters" : "Show more filters"}
           </Button>
         )}
       </div>
+      {filtersExpanded && (
+        <FilterContent
+          applyFilters={handleApplyNewFilters}
+          className={classes.tabContent}
+          errorMessage={errorMessage}
+          filters={filters}
+          // filtersExpanded={isNarrowScreen ? filtersExandedOnMobile : filtersExpanded}
+          filtersExpanded={filtersExpanded}
+          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+          handleUpdateFilters={handleUpdateFilterValues}
+          initialLocationFilter={initialLocationFilter}
+          locationInputRef={locationInputRefs[type]}
+          locationOptionsOpen={locationOptionsOpen}
+          nonFilterParams={nonFilterParams}
+          possibleFilters={getFilters({
+            key: type,
+            filterChoices: filterChoices,
+            locale: locale,
+          })}
+          type={type}
+          // unexpandFilters={isNarrowScreen ? unexpandFiltersOnMobile : unexpandFilters}
+          unexpandFilters={unexpandFilters}
+        />
+      )}
     </div>
   );
 }

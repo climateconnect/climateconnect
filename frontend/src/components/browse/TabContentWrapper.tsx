@@ -17,22 +17,22 @@ export default function TabContentWrapper({
   tabValue,
   TYPES_BY_TAB_VALUE,
   type,
-  filtersExpanded,
+  // filtersExpanded,
   handleApplyNewFilters,
   filters,
   handleUpdateFilterValues,
   errorMessage,
   isMobileScreen,
-  filtersExandedOnMobile,
+  // filtersExandedOnMobile,
   handleSetLocationOptionsOpen,
   locationInputRefs,
   locationOptionsOpen,
   filterChoices,
-  unexpandFiltersOnMobile,
-  unexpandFilters,
+  // unexpandFiltersOnMobile,
+  // unexpandFilters,
   initialLocationFilter,
-  isFiltering,
-  state,
+  isFiltering, // TODO: rename it to isLoading, as the real process itself is "is filtering"
+  state, // TODO: maybe rename it to data
   children,
   hubName,
   nonFilterParams,
@@ -45,7 +45,7 @@ export default function TabContentWrapper({
       index={TYPES_BY_TAB_VALUE.indexOf(type)}
       //TODO(unused) className={classes.tabContent}
     >
-      {filtersExpanded && tabValue === TYPES_BY_TAB_VALUE.indexOf(type) && (
+      {/* {false && filtersExpanded && tabValue === TYPES_BY_TAB_VALUE.indexOf(type) && (
         <FilterContent
           className={classes.tabContent}
           type={TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf(type)]}
@@ -62,11 +62,11 @@ export default function TabContentWrapper({
             filterChoices: filterChoices,
             locale: locale,
           })}
-          unexpandFilters={isMobileScreen ? unexpandFiltersOnMobile : unexpandFilters}
+          // unexpandFilters={isMobileScreen ? unexpandFiltersOnMobile : unexpandFilters}
           initialLocationFilter={initialLocationFilter}
           nonFilterParams={nonFilterParams}
         />
-      )}
+      )} */}
 
       {/*
         We have two loading spinner states: filtering, and fetching more data.

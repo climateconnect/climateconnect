@@ -151,10 +151,10 @@ export default function BrowseContent({
     members: texts.members,
     ideas: texts.ideas,
   };
-  // Always default to filters being expanded
-  const [filtersExpanded, setFiltersExpanded] = useState(true);
-  // On mobile filters take up the whole screen, so they aren't expanded by default
-  const [filtersExandedOnMobile, setFiltersExpandedOnMobile] = useState(false);
+  // // Always default to filters being expanded
+  // const [filtersExpanded, setFiltersExpanded] = useState(true);
+  // // On mobile filters take up the whole screen, so they aren't expanded by default
+  // const [filtersExandedOnMobile, setFiltersExpandedOnMobile] = useState(false);
   const [state, setState] = useState(initialState);
   const locationInputRefs = {
     projects: useRef(null),
@@ -338,13 +338,13 @@ export default function BrowseContent({
     return queryObject;
   };
 
-  const unexpandFilters = () => {
-    setFiltersExpanded(false);
-  };
+  // const unexpandFilters = () => {
+  //   setFiltersExpanded(false);
+  // };
 
-  const unexpandFiltersOnMobile = () => {
-    setFiltersExpandedOnMobile(false);
-  };
+  // const unexpandFiltersOnMobile = () => {
+  //   setFiltersExpandedOnMobile(false);
+  // };
 
   const handleLoadMoreData = async (type) => {
     try {
@@ -421,10 +421,12 @@ export default function BrowseContent({
       closeFilters: closeFilters,
       nonFilterParams: nonFilterParams,
     });
-    if (res?.closeFilters) {
-      if (isNarrowScreen) setFiltersExpandedOnMobile(false);
-      else setFiltersExpanded(false);
-    }
+
+    // TODO: this should be performed by the filters itself
+    // if (res?.closeFilters) {
+    //   if (isNarrowScreen) setFiltersExpandedOnMobile(false);
+    //   else setFiltersExpanded(false);
+    // }
 
     if (res?.filteredItemsObject) {
       setState({
@@ -495,25 +497,41 @@ export default function BrowseContent({
   const tabContentWrapperProps = {
     tabValue: tabValue,
     TYPES_BY_TAB_VALUE: TYPES_BY_TAB_VALUE,
-    filtersExpanded: isNarrowScreen ? filtersExandedOnMobile : filtersExpanded,
+    // filtersExpanded: isNarrowScreen ? filtersExandedOnMobile : filtersExpanded,
     handleApplyNewFilters: handleApplyNewFilters,
     filters: filters,
     handleUpdateFilterValues: handleUpdateFilterValues,
     errorMessage: errorMessage,
     isMobileScreen: isNarrowScreen,
-    filtersExandedOnMobile: filtersExandedOnMobile,
+    // filtersExandedOnMobile: filtersExandedOnMobile,
     handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
     locationInputRefs: locationInputRefs,
     locationOptionsOpen: locationOptionsOpen,
     filterChoices: filterChoices,
-    unexpandFiltersOnMobile: unexpandFiltersOnMobile,
-    unexpandFilters: unexpandFilters,
+    // unexpandFiltersOnMobile: unexpandFiltersOnMobile,
+    // unexpandFilters: unexpandFilters,
     initialLocationFilter: initialLocationFilter,
     isFiltering: isFiltering,
     state: state,
     hubName: hubName,
     nonFilterParams: nonFilterParams,
   };
+  // TODO: reduce it
+
+  const filterContentProps = {
+    errorMessage: errorMessage,
+    filters: filters,
+    // filtersExandedOnMobile: filtersExandedOnMobile,
+    filterChoices: filterChoices,
+    handleApplyNewFilters: handleApplyNewFilters,
+    handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
+    handleUpdateFilterValues: handleUpdateFilterValues,
+    initialLocationFilter: initialLocationFilter,
+    locationInputRefs: locationInputRefs,
+    locationOptionsOpen: locationOptionsOpen,
+    nonFilterParams: nonFilterParams,
+  };
+
   return (
     <LoadingContext.Provider
       value={{
@@ -535,16 +553,18 @@ export default function BrowseContent({
       <Container maxWidth="lg" className={classes.contentRefContainer}>
         <div ref={contentRef} className={classes.contentRef} />
         <Suspense fallback={null}>
+          {/* TODO */}
           <FilterSection
-            filtersExpanded={isNarrowScreen ? filtersExandedOnMobile : filtersExpanded}
+            // filtersExpanded={isNarrowScreen ? filtersExandedOnMobile : filtersExpanded}
             onSubmit={handleSearchSubmit}
-            setFiltersExpanded={isNarrowScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
+            // setFiltersExpanded={isNarrowScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
             type={TYPES_BY_TAB_VALUE[tabValue]}
             customSearchBarLabels={customSearchBarLabels}
             filterButtonRef={filterButtonRef}
             searchValue={filters.search}
             hideFilterButton={tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas")}
             applyBackgroundColor={hubData?.hub_type === "location hub"}
+            {...filterContentProps}
           />
         </Suspense>
         {/* Desktop screens: show tabs under the search bar */}
