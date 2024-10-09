@@ -198,11 +198,17 @@ export default function BrowseContent({
   const [nonFilterParams, setNonFilterParams] = useState({});
 
   useEffect(() => {
-    const newHash = window?.location?.hash.replace("#", "");
-    if (window.location.hash) {
+    let newHash = window?.location?.hash.replace("#", "");
+
+    if (newHash && TYPES_BY_TAB_VALUE.indexOf(newHash)) {
       setHash(newHash);
       setTabValue(TYPES_BY_TAB_VALUE.indexOf(newHash));
+    } else if (newHash) {
+      console.error("malicous hash detected");
+      newHash = "";
+      window.location.hash = "";
     }
+
     if (!initialized) {
       // Update the state of the visual filters, like Select, Dialog, etc
       // Then actually fetch the data. We need a way to map what's
