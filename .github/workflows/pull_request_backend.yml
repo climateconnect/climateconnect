@@ -5,19 +5,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install ruff==0.0.271
+          pip install black==23.12.0  # Pin the version of black here
       - name: Run Black
-        uses: psf/black@stable
-        with:
-          src: backend
+        run: black backend  # run installed black version
+        # uses: psf/black@stable # this uses the newest version of black (>23.12)
+        # with:
+        #   src: backend
       # Include `--format=github` to enable automatic inline annotations.
       - name: Run Ruff
         run: ruff check --format=github backend
