@@ -497,27 +497,12 @@ export default function BrowseContent({
   const tabContentWrapperProps = {
     tabValue: tabValue,
     TYPES_BY_TAB_VALUE: TYPES_BY_TAB_VALUE,
-    // filtersExpanded: isNarrowScreen ? filtersExandedOnMobile : filtersExpanded,
-    handleApplyNewFilters: handleApplyNewFilters,
-    filters: filters,
-    handleUpdateFilterValues: handleUpdateFilterValues,
-    errorMessage: errorMessage,
-    isMobileScreen: isNarrowScreen,
-    // filtersExandedOnMobile: filtersExandedOnMobile,
-    handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
-    locationInputRefs: locationInputRefs,
-    locationOptionsOpen: locationOptionsOpen,
-    filterChoices: filterChoices,
-    // unexpandFiltersOnMobile: unexpandFiltersOnMobile,
-    // unexpandFilters: unexpandFilters,
-    initialLocationFilter: initialLocationFilter,
     isFiltering: isFiltering,
     state: state,
     hubName: hubName,
-    nonFilterParams: nonFilterParams,
   };
-  // TODO: reduce it
 
+  // TODO: reduce it
   const filterContentProps = {
     errorMessage: errorMessage,
     filters: filters,

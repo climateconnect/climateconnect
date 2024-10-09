@@ -110,33 +110,18 @@ export default function FilterSection({
   // State
   const [value, setValue] = useState(searchValue);
 
-  // TODO: do we need two state? Maybe one is sufficient?
-  // yes => if we switch from big screen to small screen, the filters would be still extended
-  // but this is an edge case. Most of the times ppl would not switch from big screen to mobile size screen
-
-  // Always default to filters being expanded
-  const [filtersExpanded, setFiltersExpanded] = useState(true);
+  // Attention: this default will be overwritten by the use Effect hook
+  // Defaults: isSmallScreenSize => false, otherwise true
   // On mobile filters take up the whole screen, so they aren't expanded by default
-  // const [filtersExandedOnMobile, setFiltersExpandedOnMobile] = useState(false);
+
+  const [filtersExpanded, setFiltersExpanded] = useState(true);
 
   const onClickExpandFilters = () => {
     setFiltersExpanded(!filtersExpanded);
-
-    // if (isMobileScreenSize) {
-    //   setFiltersExpandedOnMobile(true);
-    // } else {
-    //   setFiltersExpanded(true);
-    // }
   };
 
   const unexpandFilters = () => {
     setFiltersExpanded(false);
-
-    // if (isMobileScreenSize) {
-    //   setFiltersExpandedOnMobile(false);
-    // } else {
-    //   setFiltersExpanded(false);
-    // }
   };
 
   useEffect(() => {
@@ -208,7 +193,6 @@ export default function FilterSection({
           className={classes.tabContent}
           errorMessage={errorMessage}
           filters={filters}
-          // filtersExpanded={isNarrowScreen ? filtersExandedOnMobile : filtersExpanded}
           filtersExpanded={filtersExpanded}
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           handleUpdateFilters={handleUpdateFilterValues}
@@ -222,7 +206,6 @@ export default function FilterSection({
             locale: locale,
           })}
           type={type}
-          // unexpandFilters={isNarrowScreen ? unexpandFiltersOnMobile : unexpandFilters}
           unexpandFilters={unexpandFilters}
         />
       )}
