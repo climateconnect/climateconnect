@@ -3,6 +3,11 @@ import { membersWithAdditionalInfo } from "./getOptions";
 import { parseData } from "./parsingOperations";
 
 export async function getDataFromServer({ type, page, token, urlEnding, hubUrl, locale, idea }) {
+  if (!validParams(type, page, urlEnding, hubUrl, idea)) {
+    // TODO: maybe add reporting to spot, whether it works as intended on prod.
+    throw new Error("malicious url detected.");
+  }
+
   let url = `/api/${type}/?page=${page}`;
   if (hubUrl) {
     url += `&hub=${hubUrl}`;
@@ -63,4 +68,40 @@ export async function loadMoreData({ type, page, urlEnding, token, locale, hubUr
     console.log(e);
     throw e;
   }
+}
+
+function validParams(type: string, page: string, urlEnding: string, hubUrl: string, idea: string) {
+  if (!onlyChars(type)) {
+    console.error(`Invalid 'type=${type}'. Contains forbidden characters`);
+    return false;
+  }
+  if (!onlyChars(page)) {
+    console.error(`Invalid 'page=${page}'. Contains forbidden characters`);
+    return false;
+  }
+  if (!onlyUrlQueryParameterChars(urlEnding)) {
+    console.error(`Invalid 'urlEnding=${urlEnding}'. Contains forbidden characters`);
+    return false;
+  }
+  if (!onlyChars(hubUrl)) {
+    console.error(`Invalid 'type=${hubUrl}'. Contains forbidden characters`);
+    return false;
+  }
+  if (!onlyChars(idea)) {
+    console.error(`Invalid 'type=${idea}'. Contains forbidden characters`);
+    return false;
+  }
+  return true;
+}
+
+function onlyChars(value: string) {
+  // look for chacters that are not a-z,A-Z or 0-9
+  const regex = /[^a-zA-Z0-9]/;
+  return !regex.test(value);
+}
+
+function onlyUrlQueryParameterChars(value: string) {
+  // look for chacters that are not a-z,A-Z or 0-9 or = or &
+  const regex = /[^a-zA-Z0-9=&]/;
+  return !regex.test(value);
 }
