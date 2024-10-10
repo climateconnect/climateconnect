@@ -82,7 +82,6 @@ const useStyles = makeStyles<Theme, { displayContactButton?: boolean }>((theme) 
   },
   projectCategories: {
     cursor: "default",
-    
   },
   smallLocationIcon: {
     fontSize: 15,
