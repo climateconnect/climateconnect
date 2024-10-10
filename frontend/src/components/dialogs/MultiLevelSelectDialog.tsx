@@ -48,7 +48,6 @@ export default function MultiLevelSelectDialog({
 
     return 0;
   });
-
   const getTitle = () => {
     if (title) {
       return title;

@@ -472,7 +472,7 @@ function ListToChooseFrom({
       >
         {/* Map over all potential items; for example this could be the list
         of skills in the skills dialog */}
-        {itemsToSelectFrom.map((item, index) => {
+        {itemsToSelectFrom?.length > 0 &&  itemsToSelectFrom.map((item, index) => {
           // If current last item, is the last subcategory item
           // in the last item in the outer list, then ignore our
           // normal border styling, and paint the 1px bottom border.
