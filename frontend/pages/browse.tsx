@@ -63,42 +63,17 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter, pro
   const { locale } = useContext(UserContext);
 
   // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
-  const [filters, setFilters] = useState(
-    getInitialFilters({
-      filterChoices: filterChoices,
-      locale: locale,
-      initialLocationFilter: initialLocationFilter,
-    })
-  );
-  const [tabsWhereFiltersWereApplied, setTabsWhereFiltersWereApplied] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
-  const handleSetErrorMessage = (newMessage) => {
-    setErrorMessage(newMessage);
-  };
+  // const [filters, setFilters] = useState();
+  // getInitialFilters({
+  //   filterChoices: filterChoices,
+  //   locale: locale,
+  //   initialLocationFilter: initialLocationFilter,
+  // })
+  // const [tabsWhereFiltersWereApplied, setTabsWhereFiltersWereApplied] = useState([]);
 
-  const handleAddFilters = (newFilters) => {
-    setFilters({ ...filters, ...newFilters });
-  };
-
-  const handleSetTabsWhereFiltersWereApplied = (tabs) => {
-    setTabsWhereFiltersWereApplied(tabs);
-  };
-
-  const handleApplyNewFilters = async ({ type, newFilters, closeFilters }) => {
-    return await applyNewFilters({
-      type: type,
-      filters: filters,
-      newFilters: newFilters,
-      closeFilters: closeFilters,
-      filterChoices: filterChoices,
-      locale: locale,
-      token: token,
-      handleAddFilters: handleAddFilters,
-      handleSetErrorMessage: handleSetErrorMessage,
-      tabsWhereFiltersWereApplied,
-      handleSetTabsWhereFiltersWereApplied: handleSetTabsWhereFiltersWereApplied,
-    });
-  };
+  // const handleSetTabsWhereFiltersWereApplied = (tabs) => {
+  //   setTabsWhereFiltersWereApplied(tabs);
+  // };
 
   const isScrollingUp = !useScrollTrigger({
     disableHysteresis: false,
@@ -107,12 +82,32 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter, pro
   const atTopOfPage = TopOfPage({ initTopOfPage: true });
   const showOnScrollUp = isScrollingUp && !atTopOfPage;
 
-  const handleUpdateFilterValues = (valuesToUpdate) => {
-    setFilters({
-      ...filters,
-      ...valuesToUpdate,
-    });
-  };
+  // const handleAddFilters = (newFilters) => {
+  //   setFilters({ ...filters, ...newFilters });
+  // };
+
+  // const handleApplyNewFilters = async ({ type, newFilters, closeFilters }) => {
+  // return await applyNewFilters({
+  //   type: type,
+  //   filters: filters,
+  //   newFilters: newFilters,
+  //   closeFilters: closeFilters,
+  //   filterChoices: filterChoices,
+  //   locale: locale,
+  //   token: token,
+  //   handleAddFilters: handleAddFilters,
+  //   handleSetErrorMessage: () => {}, //TODO: handleSetErrorMessage,
+  //   tabsWhereFiltersWereApplied,
+  //   handleSetTabsWhereFiltersWereApplied: handleSetTabsWhereFiltersWereApplied,
+  // });
+  // };
+
+  // const handleUpdateFilterValues = (valuesToUpdate) => {
+  //   setFilters({
+  //     ...filters,
+  //     ...valuesToUpdate,
+  //   });
+  // };
 
   const contextValues = {
     projectTypes: projectTypes,
@@ -129,13 +124,17 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter, pro
         <BrowseContext.Provider value={contextValues}>
           <MainHeadingContainerMobile />
           <BrowseContent
-            applyNewFilters={handleApplyNewFilters}
-            filters={filters}
-            handleUpdateFilterValues={handleUpdateFilterValues}
-            errorMessage={errorMessage}
-            filterChoices={filterChoices}
-            handleSetErrorMessage={handleSetErrorMessage}
+            applyNewFilters={() => {}}
             hubsSubHeaderRef={hubsSubHeaderRef}
+            filterChoices={filterChoices}
+            // pass down the initial set of filters
+            // TODO: pased on the initial filters, SSR should be able
+            // to preload the data
+            initialFilters={getInitialFilters({
+              filterChoices: filterChoices,
+              locale: locale,
+              initialLocationFilter: initialLocationFilter,
+            })}
             initialLocationFilter={initialLocationFilter}
           />
         </BrowseContext.Provider>

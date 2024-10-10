@@ -43,6 +43,7 @@ export type Project = {
 };
 
 export type ProjectType = "project" | "idea" | "event";
+export type BrowseTabs = "projects" | "members" | "ideas" | "events" | "organizations";
 
 export type Organization = {
   location: any;

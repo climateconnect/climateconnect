@@ -146,8 +146,8 @@ export default function Hub({
   welcomeMessageLoggedIn,
   welcomeMessageLoggedOut,
   initialLocationFilter,
-  filterChoices,
-  sectorHubs,
+  filterChoices, //TODO: send down to BrowseComponent
+  // sectorHubs, // TODO unused
   allHubs,
   initialIdeaUrlSlug,
   hubLocation,
@@ -157,12 +157,17 @@ export default function Hub({
 }) {
   const classes = useStyles();
   let fabClass = shareProjectFabStyle(false);
+
+  // TODO: set initalFilters and filterChoices as a Context?
+
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
   const token = new Cookies().get("auth_token");
   const [hubAmbassador, setHubAmbassador] = useState(null);
 
   // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
+
+  // TODO: PUSH DOWN
   const [filters, setFilters] = useState(
     getInitialFilters({
       filterChoices: filterChoices,
@@ -171,10 +176,7 @@ export default function Hub({
     })
   );
   const [tabsWhereFiltersWereApplied, setTabsWhereFiltersWereApplied] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
-  const handleSetErrorMessage = (newMessage) => {
-    setErrorMessage(newMessage);
-  };
+
   const contentRef = useRef(null);
 
   /*
@@ -240,11 +242,11 @@ export default function Hub({
       filters: filters,
       newFilters: newFilters,
       closeFilters: closeFilters,
-      filterChoices: filterChoices,
-      locale: locale,
-      token: token,
+      filterChoices: filterChoices, //TODO: send down to BrowseComponent
+      locale: locale, //TODO: is created within BrowseComponent as well
+      token: token, //TODO: is created within BrowseComponent as well
       handleAddFilters: handleAddFilters,
-      handleSetErrorMessage: handleSetErrorMessage,
+      handleSetErrorMessage: () => {}, // TODO: handleSetErrorMessage,
       tabsWhereFiltersWereApplied: tabsWhereFiltersWereApplied,
       handleSetTabsWhereFiltersWereApplied: handleSetTabsWhereFiltersWereApplied,
       hubUrl: hubUrl,
@@ -255,13 +257,6 @@ export default function Hub({
   const closeHubHeaderImage = (e) => {
     e.preventDefault();
     console.log("closing hub header image");
-  };
-
-  const handleUpdateFilterValues = (valuesToUpdate) => {
-    setFilters({
-      ...filters,
-      ...valuesToUpdate,
-    });
   };
 
   const contextValues = {
@@ -335,20 +330,15 @@ export default function Hub({
           {!isLocationHub && <BrowseExplainer />}
           <BrowseContext.Provider value={contextValues}>
             <BrowseContent
-              applyNewFilters={handleApplyNewFilters}
+              applyNewFilters={() => {}}
+              initialLocationFilter={initialLocationFilter}
               contentRef={contentRef}
               customSearchBarLabels={customSearchBarLabels}
-              errorMessage={errorMessage}
               hubAmbassador={hubAmbassador}
-              filters={filters}
-              handleUpdateFilterValues={handleUpdateFilterValues}
-              filterChoices={filterChoices}
-              handleSetErrorMessage={handleSetErrorMessage}
               hideMembers={!isLocationHub}
               hubName={name}
               hubProjectsButtonRef={hubProjectsButtonRef}
               hubQuickInfoRef={hubQuickInfoRef}
-              initialLocationFilter={initialLocationFilter}
               // TODO: is this still needed?
               // initialOrganizations={initialOrganizations}
               // initialProjects={initialProjects}
@@ -360,7 +350,10 @@ export default function Hub({
               hubData={hubData}
               resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
               hubUrl={hubUrl}
-              tabNavigationRequested={requestTabNavigation}
+              filterChoices={filterChoices}
+              initialFilters={{}}
+              // TODO: unused?!
+              // tabNavigationRequested={requestTabNavigation}
             />
           </BrowseContext.Provider>
         </div>
