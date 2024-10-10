@@ -79,8 +79,15 @@ export default function ProfilePreviews({
 }
 
 function GridItem({ profile, showAdditionalInfo }) {
+  const classes = makeStyles({
+    gridElement: {
+      display: "flex",
+      justifyContent: "space-around",
+    },
+  })();
+
   return (
-    <Grid xs={12} sm={6} md={4} lg={3} component="li">
+    <Grid xs={12} sm={6} md={4} lg={3} component="li" className={classes.gridElement}>
       <ProfilePreview profile={profile} showAdditionalInfo={showAdditionalInfo} />
     </Grid>
   );
