@@ -150,7 +150,7 @@ export function splitFiltersFromQueryObject(queryObject, possibleFilters): any {
  * @param {string} locale the user's language, e.g. "en" or "de"
  * @param {string} token the user's login token to authenticate with the backend
  * @param {function} handleAddFilters a function that allows adding additional filters to the current ones
- * @param {function} handleSetErrorMessage function to display an error message
+ * @deprecated @param {function} handleSetErrorMessage function to display an error message
  * @param {Array} tabsWhereFiltersWereApplied is an array of the tabs where filters were already applied and therefore data doesn't need to be retrieved from the server again
  * @param {function} handleSetTabsWhereFiltersWereApplied function to change tabsWhereFiltersWereApplied
  * @param {string} hubUrl is set if only results from a certain hub should be displayed
@@ -164,9 +164,9 @@ export async function applyNewFilters({
   locale,
   token,
   handleAddFilters,
-  handleSetErrorMessage,
+  handleSetErrorMessage, // TODO: not used
   tabsWhereFiltersWereApplied,
-  handleSetTabsWhereFiltersWereApplied,
+  handleSetTabsWhereFiltersWereApplied, // TODO: implement this
   hubUrl,
   idea,
 }: any) {
@@ -239,6 +239,56 @@ export async function applyNewFilters({
 
     return {
       closeFilters: closeFilters,
+      filteredItemsObject: filteredItemsObject,
+      newUrlEnding: newUrlEnding,
+    };
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export async function v2applyNewFilters({
+  currentTab,
+  filters,
+  filterChoices,
+  locale,
+  token,
+  hubUrl,
+}: any) {
+  // TODO reimplement Caching
+  // * Record the tabs in which the filters were applied already
+  // * so one does not have to query them twice
+
+  const newUrlEnding = encodeQueryParamsFromFilters({
+    filters: filters,
+    infoMetadata: getInfoMetadataByType(currentTab, locale),
+    filterChoices: filterChoices,
+    locale: locale,
+  });
+
+  try {
+    const payload: any = {
+      type: currentTab,
+      page: 1,
+      token: token,
+      urlEnding: newUrlEnding,
+      locale: locale,
+    };
+
+    // TODO: remove searching for ideas
+    // if (idea) {
+    //   payload.idea = idea;
+    // }
+    if (hubUrl) {
+      payload.hubUrl = hubUrl;
+    }
+    const filteredItemsObject: any = await getDataFromServer(payload);
+
+    if (currentTab === "members") {
+      filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
+    }
+
+    return {
       filteredItemsObject: filteredItemsObject,
       newUrlEnding: newUrlEnding,
     };
