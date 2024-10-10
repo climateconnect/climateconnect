@@ -6,7 +6,6 @@ import React, { Suspense, useContext, useEffect, useMemo, useRef, useState } fro
 import Cookies from "universal-cookie";
 import getFilters from "../../../public/data/possibleFilters";
 import {
-  applyNewFilters,
   splitFiltersFromQueryObject,
   v2applyNewFilters,
 } from "../../../public/lib/filterOperations";
@@ -14,15 +13,7 @@ import { loadMoreData } from "../../../public/lib/getDataOperations";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import { getUserOrganizations } from "../../../public/lib/organizationOperations";
-import {
-  getInfoMetadataByType,
-  getReducedPossibleFilters,
-} from "../../../public/lib/parsingOperations";
-import {
-  findOptionByNameDeep,
-  getFilterUrl,
-  getSearchParams,
-} from "../../../public/lib/urlOperations";
+import { findOptionByNameDeep, getSearchParams } from "../../../public/lib/urlOperations";
 import getTexts from "../../../public/texts/texts";
 import FeedbackContext from "../context/FeedbackContext";
 import LoadingContext from "../context/LoadingContext";
@@ -33,6 +24,7 @@ import HubTabsNavigation from "../hub/HubTabsNavigation";
 import { BrowseTabs } from "../../types";
 
 const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
+// TODO: shall be deleted in future
 const IdeasBoard = React.lazy(() => import("../ideas/IdeasBoard"));
 const OrganizationPreviews = React.lazy(() => import("../organization/OrganizationPreviews"));
 const ProfilePreviews = React.lazy(() => import("../profile/ProfilePreviews"));
@@ -81,13 +73,13 @@ interface BrowseContentProps {
   initialFilters: any;
   filterChoices: any;
   initialLocationFilter: any;
-  applyNewFilters: any;
 
   // optional:
   hubsSubHeaderRef?: any;
   initialMembers?: any;
   initialOrganizations?: any;
   initialProjects?: any;
+  // TODO: remove in the future
   initialIdeas?: any;
   customSearchBarLabels?: any;
   hideMembers?: boolean;
@@ -95,11 +87,15 @@ interface BrowseContentProps {
   hubProjectsButtonRef?: any;
   hubQuickInfoRef?: any;
   nextStepTriggeredBy?: any;
+  // TODO: remove in the future
   showIdeas?: boolean;
   allHubs?: any;
   initialIdeaUrlSlug?: string;
+  // TODO: remove in the future (only used by Idea Board)
   hubLocation?: any;
   hubData?: any;
+  // TODO: remove: if this is still needed, it should not be implemented
+  // by a parent. The "resetting of cache" is none of the parents buisness
   resetTabsWhereFiltersWereApplied?: any;
   hubUrl?: string;
   hubAmbassador?: any;
@@ -120,8 +116,6 @@ export default function BrowseContent({
   nextStepTriggeredBy,
   showIdeas,
   allHubs,
-  initialIdeaUrlSlug,
-  hubLocation,
   hubData,
 
   // removed filter related params
@@ -264,96 +258,14 @@ export default function BrowseContent({
       loadDataBasedOnUrl();
 
       setInitialized(true);
-      return;
-      const tabKey = TYPES_BY_TAB_VALUE[tabValue];
-      const possibleFilters = getFilters({
-        key: tabKey,
-        filterChoices: filterChoices,
-        locale: locale,
-      });
-      const queryObject = getQueryObjectFromUrl(getSearchParams(window.location.search));
-      const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFilters);
-      const newFilters = {
-        ...queryObject.filters,
-      };
-      setNonFilterParams(splitQueryObject.nonFilters);
-      if (splitQueryObject?.nonFilters?.message) {
-        showFeedbackMessage({
-          message: splitQueryObject.nonFilters.message,
-        });
-      }
-
-      if (initialLocationFilter) {
-        const locationFilter: any = possibleFilters.find((f) => f.type === "location");
-        newFilters[locationFilter.key] = initialLocationFilter;
-      }
-
-      console.log("SET NEW FILTERS (1)", newFilters, splitQueryObject.nonFilters);
-      // Apply new filters with the query object immediately:
-      handleApplyNewFilters({
-        type: tabKey,
-        newFilters: newFilters,
-        closeFilters: false,
-        nonFilterParams: splitQueryObject.nonFilters,
-      });
-
-      // And then update state
-      setInitialized(true);
     }
   }, []);
 
   const handleTabChange = (event, newValue) => {
-    // Update the state of the visual filters, like Select, Dialog, etc
-    // Then actually fetch the data. We need a way to map what's
-    // in the query param, to what UI element is present on the screen. For
-    // example, if we have a MultiLevelSelect dialog representing categories
-    // and we have a ?&category=Food waste, then we need to update the
-    // the MultiLevelSelect dialog's selection to that value somehow.
-
-    // For each query param option, ensure that it's
-    // split into array before spreading onto the new filters object.
-    const emptyFilters = getReducedPossibleFilters(
-      getFilters({
-        key: TYPES_BY_TAB_VALUE[0],
-        filterChoices: filterChoices,
-        locale: locale,
-      })
-    );
-    delete emptyFilters.location;
-    const queryObject = getQueryObjectFromUrl(getSearchParams(window.location.search));
-    //location is always set to "" here
-
-    //persist the old location filter when switching tabs
-    const tabKey = TYPES_BY_TAB_VALUE[newValue];
-
-    if (tabKey === "events") {
-      // TODO: add event calendar here!
-    } else {
-      const possibleFilters = getFilters({
-        key: tabKey,
-        filterChoices: filterChoices,
-        locale: locale,
-      });
-      const locationFilter: any = possibleFilters.find((f) => f.type === "location");
-      queryObject[locationFilter.key] = filters[locationFilter.key];
-      const splitQueryObject = splitFiltersFromQueryObject(
-        /*TODO(undefined) newFilters*/ queryObject,
-        possibleFilters
-      );
-
-      const newFilters = { ...emptyFilters, ...splitQueryObject.filters };
-      const tabValue = TYPES_BY_TAB_VALUE[newValue];
-      // Apply new filters with the query object immediately:
-      handleApplyNewFilters({
-        type: tabValue,
-        newFilters: newFilters,
-        closeFilters: false,
-        nonFilterParams: splitQueryObject.nonFilters,
-      });
-    }
-
     window.location.hash = TYPES_BY_TAB_VALUE[newValue];
     setTabValue(newValue);
+    loadDataBasedOnUrl();
+    return;
   };
 
   // ###################################################
@@ -361,33 +273,19 @@ export default function BrowseContent({
   // LAB ZONE
   // ###################################################
   // ###################################################
+
+  // TODO: this is currently not used
+  // use it in the future to "cache" filter results
+  const [tabsWhereFiltersWereApplied, setTabsWhereFiltersWereApplied] = useState([]);
+
   const loadDataBasedOnUrl = async () => {
     console.log("start filtering/loading");
     setIsFiltering(true);
 
-    // TODO: the following should never be needed. Instead use the state
-    // and keep the state updated.
-    // If you do not want to use the state (which is fine), remove the state
-    // and use a service (util functions instead) to grab the current hash
-    // !!!
-    // I shall not rely on the state because this might lead to a race condition.
-    // Instead parse out the hash as in the upper section
-    // later during refactoring push it down to the other page
-    //
-    // const newHash = window?.location?.hash.replace("#", "");
-    // if (window.location.hash) {
-    //   setHash(newHash);
-    //   setTabValue(TYPES_BY_TAB_VALUE.indexOf(newHash));
-    // }
-    // console.log("new hash", newHash);
-
-    // const tabKey = newHash ? newHash : TYPES_BY_TAB_VALUE[0];
-    // console.log("tabkey", tabKey);
-
     // TODO: this might be a dumb idea, but shouldn't I basicly just parse url
     // to the server?
     // no, because there hidden filters as well. But these should be fixed/come from my parent
-    // there fore the access is simple
+    // therefore, the access is simple
 
     // ----------------------------
     // Unwrapping the BrowseConent < handleApplyNewFilters >
@@ -435,8 +333,8 @@ export default function BrowseContent({
 
       newState.items[currentTab] = res.filteredItemsObject[currentTab];
       newState.hasMore[currentTab] = res.filteredItemsObject.hasMore;
-      newState.urlEnding = res.newUrlEnding ?? "";
       newState.nextPages[currentTab] = 2;
+      newState.urlEnding = res.newUrlEnding ?? "";
 
       setState(newState);
       console.log("handle apply new filters: setting state success");
@@ -491,19 +389,6 @@ export default function BrowseContent({
   // We have 2 distinct loading states: filtering, and loading more data. For
   // each state, we want to treat the loading spinner a bit differently, hence
   // why we have two separate pieces of state
-  const [filters, setFilters] = useState(initialFilters ?? {});
-  const handleUpdateFilterValues = (valuesToUpdate) => {
-    setFilters({
-      ...filters,
-      ...valuesToUpdate,
-    });
-  };
-
-  const [tabsWhereFiltersWereApplied, setTabsWhereFiltersWereApplied] = useState([]);
-
-  const handleSetTabsWhereFiltersWereApplied = (tabs) => {
-    setTabsWhereFiltersWereApplied(tabs);
-  };
 
   const [isFiltering, setIsFiltering] = useState(false);
   const [isFetchingMoreData, setIsFetchingMoreData] = useState(false);
@@ -545,7 +430,7 @@ export default function BrowseContent({
     return queryObject;
   };
 
-  const handleLoadMoreData = async (type) => {
+  const handleLoadMoreData = async (type: BrowseTabs) => {
     try {
       setIsFetchingMoreData(true);
       const res = await loadMoreData({
@@ -583,144 +468,6 @@ export default function BrowseContent({
     }
   };
 
-  /**
-   * Sets loading state to true to until the results are
-   * returned from applying the new filters. Then updates the
-   * state, and persists the new filters as query params in the URL.
-   */
-  const handleApplyNewFilters = async ({ type, newFilters, closeFilters, nonFilterParams }) => {
-    // TODO: creating a new URL is not nessescary
-    // const newUrl = getFilterUrl({
-    //   activeFilters: newFilters,
-    //   infoMetadata: getInfoMetadataByType(type),
-    //   filterChoices: filterChoices,
-    //   locale: locale,
-    //   nonFilterParams: nonFilterParams,
-    // });
-    // if (newUrl !== window?.location?.href) {
-    //   window.history.pushState({}, "", newUrl);
-    // }
-    // TODO: end useless
-
-    // Only push state if there's a URL change. Be sure to account for the
-    // hash link / fragment on the end of the URL (e.g. #skills).
-    console.log("handle apply new filters");
-    if (!legacyModeEnabled && newFilters.location && !isLocationValid(newFilters.location)) {
-      indicateWrongLocation(
-        locationInputRefs[type],
-        setLocationOptionsOpen,
-        (errorMessage: string) => setErrorMessage(errorMessage),
-        texts
-      );
-      console.log("handle apply new filters: return in first if");
-      return;
-    }
-    console.log("handle apply new filters: skip first if");
-
-    setErrorMessage("");
-    setIsFiltering(true);
-    console.log("handle apply new filters: start filtering");
-    // const res = await applyNewFilters({
-    //   type: type,
-    //   newFilters: newFilters,
-    //   closeFilters: closeFilters,
-    //   nonFilterParams: nonFilterParams,
-    // });
-    console.log("handle apply new filters: filters");
-    console.log(newFilters);
-
-    const res = await applyNewFilters({
-      type: type,
-      filters: {}, // TODO: proper "last filter" => goal: caching
-      newFilters: newFilters,
-      closeFilters: closeFilters,
-      filterChoices: filterChoices,
-      locale: locale,
-      token: token,
-      handleAddFilters: (newFilters: any) => {}, // TODO: not really needed
-      handleSetErrorMessage: () => {}, //TODO: handleSetErrorMessage,
-      tabsWhereFiltersWereApplied,
-      handleSetTabsWhereFiltersWereApplied: handleSetTabsWhereFiltersWereApplied,
-    });
-
-    console.log("handle apply new filters: download done");
-
-    // TODO: this should be performed by the filters itself
-    // if (res?.closeFilters) {
-    //   if (isNarrowScreen) setFiltersExpandedOnMobile(false);
-    //   else setFiltersExpanded(false);
-    // }
-
-    console.log("handle apply new filters: try setting state");
-    console.log(res);
-    if (res?.filteredItemsObject) {
-      setState({
-        ...state,
-        items: { ...state.items, [type]: res.filteredItemsObject[type] },
-        hasMore: { ...state.hasMore, [type]: res.filteredItemsObject.hasMore },
-        urlEnding: res.newUrlEnding ?? "",
-        nextPages: { ...state.nextPages, [type]: 2 },
-      });
-      console.log("handle apply new filters: setting state success");
-    }
-    setIsFiltering(false);
-  };
-
-  /**
-   * Asynchonously get new projects, orgs or members. We render
-   * a loading spinner until the request is done.
-   */
-  const handleSearchSubmit = async (type, searchValue) => {
-    setIsFiltering(true);
-    const newFilters = { ...filters, search: searchValue };
-    const newUrl = getFilterUrl({
-      activeFilters: newFilters,
-      infoMetadata: getInfoMetadataByType(type),
-      filterChoices: filterChoices,
-      locale: locale,
-      nonFilterParams: nonFilterParams,
-    });
-    const res = await applyNewFilters({
-      type: type,
-      newFilters: newFilters,
-      closeFilters: false,
-      // TODO: I just hate my life. this filtering is interesting or just crazy
-    });
-    setIsFiltering(false);
-    if (newUrl !== window?.location?.href) {
-      window.history.pushState({}, "", newUrl);
-    }
-
-    if (res?.filteredItemsObject) {
-      setState({
-        ...state,
-        items: { ...state.items, [type]: res.filteredItemsObject[type] },
-        hasMore: { ...state.hasMore, [type]: res.filteredItemsObject.hasMore },
-        urlEnding: res.newUrlEnding ?? "",
-        nextPages: { ...state.nextPages, [type]: 2 },
-      });
-    }
-  };
-
-  const handleUpdateIdeaRating = (idea, newRating) => {
-    const ideaInState = state.items.ideas.find((si) => si.url_slug === idea.url_slug);
-    const ideaIndex = state.items.ideas.indexOf(ideaInState);
-    setState({
-      ...state,
-      items: {
-        ...state.items,
-        ideas: [
-          ...state.items.ideas.slice(0, ideaIndex),
-          {
-            ...idea,
-            rating: newRating,
-          },
-          ...state.items.ideas.slice(ideaIndex + 1),
-        ],
-      },
-    });
-  };
-
   // ###################################################
   // ###################################################
   // FILTER AND DATA LOADING ZONE
@@ -734,20 +481,6 @@ export default function BrowseContent({
     isFiltering: isFiltering,
     state: state,
     hubName: hubName,
-  };
-
-  // TODO: reduce it
-  const filterContentProps = {
-    errorMessage: errorMessage,
-    filters: filters,
-    // filtersExandedOnMobile: filtersExandedOnMobile,
-    filterChoices: filterChoices,
-    handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
-    handleUpdateFilterValues: handleUpdateFilterValues,
-    initialLocationFilter: initialLocationFilter,
-    locationInputRefs: locationInputRefs,
-    locationOptionsOpen: locationOptionsOpen,
-    nonFilterParams: nonFilterParams,
   };
 
   return (
@@ -773,20 +506,18 @@ export default function BrowseContent({
         <Suspense fallback={null}>
           {/* TODO */}
           <FilterSection
-            // filtersExpanded={isNarrowScreen ? filtersExandedOnMobile : filtersExpanded}
-            onSubmit={handleSearchSubmit}
-            // setFiltersExpanded={isNarrowScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
+            initialFilters={initialFilters}
             type={TYPES_BY_TAB_VALUE[tabValue]}
             customSearchBarLabels={customSearchBarLabels}
             filterButtonRef={filterButtonRef}
-            // TODO: fitersection should get an initalState and then deal with the filters on
-            // their own.
-            // BrowseContent does not need to interfere with the filters, as
-            // its resposibility is only the data display based on the URL
-            // searchValue={filters.search}
-
             applyBackgroundColor={hubData?.hub_type === "location hub"}
-            {...filterContentProps}
+            errorMessage={errorMessage}
+            filterChoices={filterChoices}
+            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+            initialLocationFilter={initialLocationFilter}
+            locationInputRefs={locationInputRefs}
+            locationOptionsOpen={locationOptionsOpen}
+            nonFilterParams={nonFilterParams}
           />
         </Suspense>
         {/* Desktop screens: show tabs under the search bar */}
@@ -861,7 +592,10 @@ export default function BrowseContent({
               />
             </TabContentWrapper>
           )}
-          <TabContentWrapper type={"ideas"} {...tabContentWrapperProps}>
+
+          {/* TODO: Idea Board shall be removed: handleUpdateIdeaRating is was already deleted, but this change might need to be
+          revoked so that the idea board can be removed on a seperate PR */}
+          {/* <TabContentWrapper type={"ideas"} {...tabContentWrapperProps}>
             <IdeasBoard
               hasMore={state.hasMore.ideas}
               loadFunc={() => handleLoadMoreData("ideas")}
@@ -876,7 +610,7 @@ export default function BrowseContent({
               resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
               filterChoices={filterChoices}
             />
-          </TabContentWrapper>
+          </TabContentWrapper> */}
         </Suspense>
       </Container>
       <Suspense fallback={null}>

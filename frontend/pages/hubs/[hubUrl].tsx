@@ -202,7 +202,7 @@ export default function Hub({
   //Refs and state for tutorial
   const hubQuickInfoRef = useRef(null);
   const hubProjectsButtonRef = useRef(null);
-  const [nextStepTriggeredBy, setNextStepTriggeredBy] = useState(false);
+  const [nextStepTriggeredBy, setNextStepTriggeredBy] = useState("");
   const [requestTabNavigation, tabNavigationRequested] = useState("foo");
 
   const navRequested = (tabKey) => {
@@ -330,8 +330,6 @@ export default function Hub({
           {!isLocationHub && <BrowseExplainer />}
           <BrowseContext.Provider value={contextValues}>
             <BrowseContent
-              applyNewFilters={() => {}}
-              initialLocationFilter={initialLocationFilter}
               contentRef={contentRef}
               customSearchBarLabels={customSearchBarLabels}
               hubAmbassador={hubAmbassador}
@@ -350,8 +348,14 @@ export default function Hub({
               hubData={hubData}
               resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
               hubUrl={hubUrl}
+              //filter related props
               filterChoices={filterChoices}
-              initialFilters={{}}
+              initialLocationFilter={initialLocationFilter}
+              initialFilters={getInitialFilters({
+                filterChoices: filterChoices,
+                locale: locale,
+                initialLocationFilter: initialLocationFilter,
+              })}
               // TODO: unused?!
               // tabNavigationRequested={requestTabNavigation}
             />
