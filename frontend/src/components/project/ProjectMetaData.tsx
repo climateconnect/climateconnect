@@ -250,7 +250,7 @@ const AdditionalPreviewInfo = ({ project }) => {
     projectTypes && projectTypes.length > 0
       ? projectTypes.find((t) => t.type_id === project.project_type)
       : { name: project.project_type, type_id: project.project_type };
-      
+
   return (
     <Box className={classes.additionalInfoContainer}>
       {project.number_of_comments > 0 && (
