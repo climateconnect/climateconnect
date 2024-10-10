@@ -3,9 +3,8 @@ import makeStyles from "@mui/styles/makeStyles";
 import parseHtml from "html-react-parser";
 import Head from "next/head";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix } from "../../public/lib/apiOperations";
-import { applyNewFilters, getInitialFilters } from "../../public/lib/filterOperations";
+import { getInitialFilters } from "../../public/lib/filterOperations";
 import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
@@ -146,7 +145,7 @@ export default function Hub({
   welcomeMessageLoggedIn,
   welcomeMessageLoggedOut,
   initialLocationFilter,
-  filterChoices, //TODO: send down to BrowseComponent
+  filterChoices,
   // sectorHubs, // TODO unused
   allHubs,
   initialIdeaUrlSlug,
@@ -158,37 +157,11 @@ export default function Hub({
   const classes = useStyles();
   let fabClass = shareProjectFabStyle(false);
 
-  // TODO: set initalFilters and filterChoices as a Context?
-
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
-  const token = new Cookies().get("auth_token");
   const [hubAmbassador, setHubAmbassador] = useState(null);
 
-  // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
-
-  // TODO: PUSH DOWN
-  const [filters, setFilters] = useState(
-    getInitialFilters({
-      filterChoices: filterChoices,
-      locale: locale,
-      initialLocationFilter: initialLocationFilter,
-    })
-  );
-  const [tabsWhereFiltersWereApplied, setTabsWhereFiltersWereApplied] = useState([]);
-
   const contentRef = useRef(null);
-
-  /*
-   * When you share an idea through CreateIdeaDialog, you will be
-   * redirected to the idea's board with the new idea open.
-   * However this redirect does not reset state which is why we need
-   * this function to make sure ideas are caught again after refreshing.
-   * otherwise the idea's board will be empty.
-   */
-  const resetTabsWhereFiltersWereApplied = () => {
-    setTabsWhereFiltersWereApplied([]);
-  };
 
   useEffect(() => {
     (async () => {
@@ -226,32 +199,6 @@ export default function Hub({
       : texts.search_for_climate_actors_in_sector,
     profiles: texts.search_profiles_in_location,
     ideas: texts.search_ideas_in_location,
-  };
-
-  const handleAddFilters = (newFilters) => {
-    setFilters({ ...filters, ...newFilters });
-  };
-
-  const handleSetTabsWhereFiltersWereApplied = (tabs) => {
-    setTabsWhereFiltersWereApplied(tabs);
-  };
-
-  const handleApplyNewFilters = async ({ type, newFilters, closeFilters, nonFilterParams }) => {
-    return await applyNewFilters({
-      type: type,
-      filters: filters,
-      newFilters: newFilters,
-      closeFilters: closeFilters,
-      filterChoices: filterChoices, //TODO: send down to BrowseComponent
-      locale: locale, //TODO: is created within BrowseComponent as well
-      token: token, //TODO: is created within BrowseComponent as well
-      handleAddFilters: handleAddFilters,
-      handleSetErrorMessage: () => {}, // TODO: handleSetErrorMessage,
-      tabsWhereFiltersWereApplied: tabsWhereFiltersWereApplied,
-      handleSetTabsWhereFiltersWereApplied: handleSetTabsWhereFiltersWereApplied,
-      hubUrl: hubUrl,
-      idea: nonFilterParams?.idea,
-    });
   };
 
   const closeHubHeaderImage = (e) => {
@@ -346,7 +293,6 @@ export default function Hub({
               initialIdeaUrlSlug={initialIdeaUrlSlug}
               hubLocation={hubLocation}
               hubData={hubData}
-              resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
               hubUrl={hubUrl}
               //filter related props
               filterChoices={filterChoices}

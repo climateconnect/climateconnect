@@ -96,7 +96,7 @@ interface BrowseContentProps {
   hubData?: any;
   // TODO: remove: if this is still needed, it should not be implemented
   // by a parent. The "resetting of cache" is none of the parents buisness
-  resetTabsWhereFiltersWereApplied?: any;
+  // resetTabsWhereFiltersWereApplied?: any;
   hubUrl?: string;
   hubAmbassador?: any;
   contentRef?: any;
@@ -131,7 +131,6 @@ export default function BrowseContent({
   filterChoices, // dict. of possible filters and their values
   initialLocationFilter,
 
-  resetTabsWhereFiltersWereApplied,
   hubUrl,
   hubAmbassador,
   contentRef,
