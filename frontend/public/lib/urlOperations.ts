@@ -40,7 +40,7 @@ const getFilterUrl = ({
           encodedNonFilterParams ? encodedNonFilterParams : ""
         }${idea ? `idea=${idea.url_slug}` : ""}`
       : "";
-      filteredQueryParams
+  filteredQueryParams;
   // Build a URL with properties. E.g., /browse?...
   const origin = window?.location?.origin;
   const pathname = window?.location?.pathname;
