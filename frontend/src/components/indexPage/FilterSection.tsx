@@ -69,9 +69,6 @@ type Props = {
   // customize search text
   customSearchBarLabels?: any;
 
-  // handlers
-  onSubmit: Function;
-
   // styles
   applyBackgroundColor: boolean;
 
@@ -79,22 +76,26 @@ type Props = {
   //TODO: remove when Tutorial is removed
   filterButtonRef?: any;
 
-  // FilterContent Dependencies:
+  // errorMessage state
   errorMessage: any;
-  filters: any;
-  filterChoices: any;
-  handleSetLocationOptionsOpen: (bool: boolean) => void;
+
+  // initial values for filters
+  initialFilters: any;
   initialLocationFilter: any;
+
+  // TODO: rename to filterOption Definition
+  filterChoices: any;
+
+  // non filter params: e.g. TODO
+  nonFilterParams: any;
+
+  // Location Filter stuff // TODO: refactor them as well
+  handleSetLocationOptionsOpen: (bool: boolean) => void;
   locationInputRefs: any;
   locationOptionsOpen: any;
-  nonFilterParams: any;
-  handleUpdateFilterValues: any;
-  // new / after refactoring
-  initalFilters?: any;
 };
 
 export default function FilterSection({
-  onSubmit,
   type,
   customSearchBarLabels,
   // TODO: remove filterButtonRef if the tutorial is removed
@@ -103,15 +104,14 @@ export default function FilterSection({
   // FilterContent Dependencies
   errorMessage,
   // filters,
-  filterChoices,
+  initialFilters,
+  filterChoices, // TODO: rename to filterOptionDefinitions
   // handleApplyNewFilters,
   handleSetLocationOptionsOpen,
-  handleUpdateFilterValues,
   initialLocationFilter,
   locationInputRefs,
   locationOptionsOpen,
   nonFilterParams,
-  initalFilters,
 }: Props) {
   const classes = useStyles({
     applyBackgroundColor: applyBackgroundColor,
@@ -139,6 +139,8 @@ export default function FilterSection({
     setFiltersExpanded(false);
   };
 
+  // console.log(filterChoices);
+
   useEffect(() => {
     if (isMobileScreenSize || isSmallScreenSize) {
       setFiltersExpanded(false);
@@ -150,8 +152,6 @@ export default function FilterSection({
   // ##########################
   // Filter Search Bar
   // ##########################
-
-  const [searchValue, setSearchValue] = useState(initalFilters?.search ?? "");
 
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const searchBarLabels = {
@@ -165,10 +165,10 @@ export default function FilterSection({
     notchedOutline: classes.inputLabel,
   };
 
-  const handleChangeValue = (e) => {
-    e.preventDefault();
-    setSearchValue(e.target.value);
+  const onSubmitSearchBar = (e) => {
+    // TODO: reconstruct URL
   };
+
   // #############################################################
   // Experiments: "noone" actually needs to share information about the state
   // state is saved in the urls searchbar and the searchparams are just passed down to the server
@@ -209,6 +209,10 @@ export default function FilterSection({
     }
     return false;
   };
+
+  useEffect(() => {
+    applyNewFiltersToUrl(filters);
+  }, [filters]);
   // #############################################################
   // #############################################################
   // #############################################################
@@ -223,10 +227,8 @@ export default function FilterSection({
             label={customSearchBarLabels ? customSearchBarLabels[type] : searchBarLabels[type]}
             // Pass submit handler through to
             // the underlying search bar.
-            onSubmit={onSubmit}
             type={type}
-            value={searchValue}
-            onChange={handleChangeValue}
+            initialValue={initalFilters?.search ?? ""}
           />
         </div>
         <Button
