@@ -115,7 +115,6 @@ export default function Filters({
         {/* Map over the potential filters for each specific tab. For example, on the Members tab,
          the possible filters might be the location filter object, and the skills filter object. */}
         {possibleFilters?.map((filter) => {
-          
           // Get the current values for each potential filter
           // from what could already be previously selected
           const currentFilterValue = currentFilters[filter.key];
@@ -204,7 +203,10 @@ export default function Filters({
             };
 
             // TODO: what is the showIf property used for?
-            if ((!filter.showIf || currentFilters[filter.showIf.key] === filter.showIf.value) && filter.options ) {
+            if (
+              (!filter.showIf || currentFilters[filter.showIf.key] === filter.showIf.value) &&
+              filter.options
+            ) {
               component = (
                 <div key={filter.key}>
                   <Button
@@ -216,20 +218,20 @@ export default function Filters({
                     {filter.title}
                   </Button>
                   {/* For example, this could be the Skills dialog */}
-                    <MultiLevelSelectDialog
-                      options={filter?.options}
-                      onClose={() => handleClickDialogClose(filter.key)}
-                      onSave={(selectedSkills) => handleClickDialogSave(filter.key, selectedSkills)}
-                      open={open[filter.key] ? true : false}
-                      selectedItems={curSelectedItems}
-                      setSelectedItems={handleSetSelectedItems}
-                      type={filter.itemType}
-                      title={texts["add_" + filter.itemType.replace(" ", "_")]}
-                    />
+                  <MultiLevelSelectDialog
+                    options={filter?.options}
+                    onClose={() => handleClickDialogClose(filter.key)}
+                    onSave={(selectedSkills) => handleClickDialogSave(filter.key, selectedSkills)}
+                    open={open[filter.key] ? true : false}
+                    selectedItems={curSelectedItems}
+                    setSelectedItems={handleSetSelectedItems}
+                    type={filter.itemType}
+                    title={texts["add_" + filter.itemType.replace(" ", "_")]}
+                  />
                 </div>
-              )
-            }else{
-              component = (<></>)
+              );
+            } else {
+              component = <></>;
             }
           }
 

@@ -472,46 +472,47 @@ function ListToChooseFrom({
       >
         {/* Map over all potential items; for example this could be the list
         of skills in the skills dialog */}
-        {itemsToSelectFrom?.length > 0 &&  itemsToSelectFrom.map((item, index) => {
-          // If current last item, is the last subcategory item
-          // in the last item in the outer list, then ignore our
-          // normal border styling, and paint the 1px bottom border.
-          let isFinalListItem = false;
-          if (index === itemsToSelectFrom.length - 1) {
-            const lastParentListItem = parentList && parentList[parentList.length - 1];
-            const lastParentListItemSubcategories = lastParentListItem?.subcategories;
-            const finalItem =
-              lastParentListItemSubcategories &&
-              lastParentListItemSubcategories[lastParentListItemSubcategories.length - 1];
+        {itemsToSelectFrom?.length > 0 &&
+          itemsToSelectFrom.map((item, index) => {
+            // If current last item, is the last subcategory item
+            // in the last item in the outer list, then ignore our
+            // normal border styling, and paint the 1px bottom border.
+            let isFinalListItem = false;
+            if (index === itemsToSelectFrom.length - 1) {
+              const lastParentListItem = parentList && parentList[parentList.length - 1];
+              const lastParentListItemSubcategories = lastParentListItem?.subcategories;
+              const finalItem =
+                lastParentListItemSubcategories &&
+                lastParentListItemSubcategories[lastParentListItemSubcategories.length - 1];
 
-            // Does the current item match its parent's last item?
-            if (item.name === finalItem?.name) {
-              isFinalListItem = true;
+              // Does the current item match its parent's last item?
+              if (item.name === finalItem?.name) {
+                isFinalListItem = true;
+              }
             }
-          }
 
-          // We need to keep the key property in tact with the list
-          // item properties. OR we just check to see if the "name"s
-          // match, in which case they should already be selected.
+            // We need to keep the key property in tact with the list
+            // item properties. OR we just check to see if the "name"s
+            // match, in which case they should already be selected.
 
-          // convert selected to an Array if not
-          selected = Array.isArray(selected) ? selected : [selected];
+            // convert selected to an Array if not
+            selected = Array.isArray(selected) ? selected : [selected];
 
-          const isDisabled =
-            selected.filter(
-              // If the item is a raw string, we also accept that if it matches
-              // the name of the selected item. For example, the array could be
-              // ["Crafts"].
-              (selectedItem) => selectedItem.name === item.name || selectedItem === item.name
-            ).length === 1;
+            const isDisabled =
+              selected.filter(
+                // If the item is a raw string, we also accept that if it matches
+                // the name of the selected item. For example, the array could be
+                // ["Crafts"].
+                (selectedItem) => selectedItem.name === item.name || selectedItem === item.name
+              ).length === 1;
 
-          return (
-            <React.Fragment key={item.key}>
-              <ListItem
-                button
-                disabled={isDisabled}
-                classes={{
-                  root: `${classes.listItem}
+            return (
+              <React.Fragment key={item.key}>
+                <ListItem
+                  button
+                  disabled={isDisabled}
+                  classes={{
+                    root: `${classes.listItem}
                         ${index == 0 && classes.firstItem}
                         ${isSubList && classes.subListItem}
                         ${
@@ -538,62 +539,68 @@ function ListToChooseFrom({
                           classes.itemUnderExpandedSubList
                         }
                         ${isSubList && index >= parentList.length && classes.borderLeft}`,
-                  selected: classes.expanded,
-                }}
-                selected={expanded === item.key}
-                onClick={() => {
-                  if (item.subcategories && item.subcategories.length) {
-                    return onClickExpand(item.key);
-                  }
+                    selected: classes.expanded,
+                  }}
+                  selected={expanded === item.key}
+                  onClick={() => {
+                    if (item.subcategories && item.subcategories.length) {
+                      return onClickExpand(item.key);
+                    }
 
-                  return onClickSelect(item);
-                }}
-                disableRipple
-              >
-                <ListItemText primary={item.name} />
-                {item.subcategories && item.subcategories.length ? (
-                  <ListItemIcon>
-                    {isNarrowScreen || isInPopup ? (
-                      expanded === item.key ? (
-                        <ExpandLessIcon
-                          className={`${classes.icon} ${expanded === item.key && classes.expanded}`}
-                        />
+                    return onClickSelect(item);
+                  }}
+                  disableRipple
+                >
+                  <ListItemText primary={item.name} />
+                  {item.subcategories && item.subcategories.length ? (
+                    <ListItemIcon>
+                      {isNarrowScreen || isInPopup ? (
+                        expanded === item.key ? (
+                          <ExpandLessIcon
+                            className={`${classes.icon} ${
+                              expanded === item.key && classes.expanded
+                            }`}
+                          />
+                        ) : (
+                          <ExpandMoreIcon
+                            className={`${classes.icon} ${
+                              expanded === item.key && classes.expanded
+                            }`}
+                          />
+                        )
                       ) : (
-                        <ExpandMoreIcon
+                        <ArrowForwardIosIcon
                           className={`${classes.icon} ${expanded === item.key && classes.expanded}`}
                         />
-                      )
-                    ) : (
-                      <ArrowForwardIosIcon
-                        className={`${classes.icon} ${expanded === item.key && classes.expanded}`}
-                      />
-                    )}
-                  </ListItemIcon>
+                      )}
+                    </ListItemIcon>
+                  ) : (
+                    ""
+                  )}
+                </ListItem>
+                {/* Render the inner list items, if an outer list item has subcategories associated */}
+                {(isNarrowScreen || isInPopup) &&
+                item.subcategories &&
+                item.subcategories.length ? (
+                  <ListToChooseFrom
+                    expanded={expanded}
+                    isInPopup={isInPopup}
+                    isNarrowScreen={isNarrowScreen}
+                    isSubList
+                    itemsToSelectFrom={item.subcategories}
+                    key={item.key + "innersublist"}
+                    onClickExpand={onClickExpand}
+                    onClickSelect={onClickSelect}
+                    parentEl={item}
+                    parentList={itemsToSelectFrom}
+                    selected={selected}
+                  />
                 ) : (
-                  ""
+                  <></>
                 )}
-              </ListItem>
-              {/* Render the inner list items, if an outer list item has subcategories associated */}
-              {(isNarrowScreen || isInPopup) && item.subcategories && item.subcategories.length ? (
-                <ListToChooseFrom
-                  expanded={expanded}
-                  isInPopup={isInPopup}
-                  isNarrowScreen={isNarrowScreen}
-                  isSubList
-                  itemsToSelectFrom={item.subcategories}
-                  key={item.key + "innersublist"}
-                  onClickExpand={onClickExpand}
-                  onClickSelect={onClickSelect}
-                  parentEl={item}
-                  parentList={itemsToSelectFrom}
-                  selected={selected}
-                />
-              ) : (
-                <></>
-              )}
-            </React.Fragment>
-          );
-        })}
+              </React.Fragment>
+            );
+          })}
       </List>
       {/* Render the inner list items differently if not a narrow screen, or in a popup */}
       {!(isNarrowScreen || isInPopup) &&
