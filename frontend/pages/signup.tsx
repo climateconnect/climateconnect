@@ -13,7 +13,7 @@ import { redirectOnLogin } from "../public/lib/profileOperations";
 import {
   getLastCompletedTutorialStep,
   getLastStepBeforeSkip,
-} from "../public/lib/tutorialOperations";// TODO: delete fix 1320
+} from "../public/lib/tutorialOperations"; // TODO: delete fix 1320
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import Layout from "../src/components/layouts/layout";
@@ -40,10 +40,10 @@ export default function Signup() {
   const tutorialCookie = cookies.get("finishedTutorialSteps"); // TODO: delete fix 1320
   const isClimateActorCookie = cookies.get("tutorialVariables"); // TODO: delete fix 1320
   const curTutorialStep = getLastCompletedTutorialStep(tutorialCookie); // TODO: delete fix 1320
-  const lastCompletedTutorialStep =// TODO: delete fix 1320
-    curTutorialStep === -1// TODO: delete fix 1320
-      ? getLastStepBeforeSkip(cookies.get("lastStepBeforeSkipTutorial"))// TODO: delete fix 1320
-      : curTutorialStep;// TODO: delete fix 1320
+  const lastCompletedTutorialStep = // TODO: delete fix 1320
+    curTutorialStep === -1 // TODO: delete fix 1320
+      ? getLastStepBeforeSkip(cookies.get("lastStepBeforeSkipTutorial")) // TODO: delete fix 1320
+      : curTutorialStep; // TODO: delete fix 1320
   const steps = ["basicinfo", "personalinfo"];
   const [curStep, setCurStep] = useState(steps[0]);
   const [errorMessage, setErrorMessage] = useState("");

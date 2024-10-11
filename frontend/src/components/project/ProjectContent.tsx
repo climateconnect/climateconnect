@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 14,
   },
   //FIXME: added any type so that lsp does not complain about props.isPersonalProject
-  creator: (props: any) => ({ 
+  creator: (props: any) => ({
     paddingTop: props.isPersonalProject && theme.spacing(0.25),
     paddingLeft: theme.spacing(1),
     color: theme.palette.grey[800],
@@ -270,10 +270,13 @@ export default function ProjectContent({
             <Typography>
               {texts.finished} <TimeAgo date={new Date(project.end_date)} />. {texts.total_duration}
               :{" "}
-              {humanizeDuration(new Date(project.end_date).valueOf() - new Date(project.start_date).valueOf(), {
-                largest: 1,
-                language: locale,
-              })}
+              {humanizeDuration(
+                new Date(project.end_date).valueOf() - new Date(project.start_date).valueOf(),
+                {
+                  largest: 1,
+                  language: locale,
+                }
+              )}
             </Typography>
           )}
           {project.end_date && project.status.key === "cancelled" && (
@@ -282,12 +285,7 @@ export default function ProjectContent({
         </div>
       </div>
       <div className={classes.contentBlock}>
-        <Typography
-          component="h2"
-          variant="h6"
-          color="primary"
-          className={classes.subHeader}
-        >
+        <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
           {getProjectDescriptionHeadline()}
         </Typography>
         <Typography className={classes.projectDescription} component="div">
@@ -351,7 +349,9 @@ export default function ProjectContent({
         {project.timeline_posts && project.timeline_posts.length > 0 && (
           <div className={classes.progressContent}>
             <Posts
-              posts={project.timeline_posts.sort((a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf())}
+              posts={project.timeline_posts.sort(
+                (a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf()
+              )}
               type="progresspost"
             />
           </div>
