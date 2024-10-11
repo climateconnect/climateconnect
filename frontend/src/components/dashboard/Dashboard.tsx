@@ -187,8 +187,8 @@ type Props = {
   hubData?: Object;
   className?: any;
   location?: any;
-  welcomeMessageLoggedIn?: string,
-  welcomeMessageLoggedOut?: string
+  welcomeMessageLoggedIn?: string;
+  welcomeMessageLoggedOut?: string;
 };
 
 export default function Dashboard({
@@ -197,7 +197,7 @@ export default function Dashboard({
   className,
   location,
   welcomeMessageLoggedIn,
-  welcomeMessageLoggedOut
+  welcomeMessageLoggedOut,
 }: Props) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
@@ -214,21 +214,25 @@ export default function Dashboard({
     }
   }, []);
 
-  const parseWelcomeMessage = m => {
-    const message = m.replaceAll("${user.first_name}", user.first_name)
-    return m.replaceAll("${user.first_name}", user.first_name)
-  }
+  const parseWelcomeMessage = (m) => {
+    const message = m.replaceAll("${user.first_name}", user.first_name);
+    return m.replaceAll("${user.first_name}", user.first_name);
+  };
 
   const getWelcomeMessage = () => {
     //Hallo {User}, +quickInfo
-    if(user) {
-      return parseWelcomeMessage(welcomeMessageLoggedIn ? welcomeMessageLoggedIn : texts.welcome_message_logged_in)
+    if (user) {
+      return parseWelcomeMessage(
+        welcomeMessageLoggedIn ? welcomeMessageLoggedIn : texts.welcome_message_logged_in
+      );
     } else {
-      return parseWelcomeMessage(welcomeMessageLoggedOut? welcomeMessageLoggedOut : texts.welcome_message_logged_out)
+      return parseWelcomeMessage(
+        welcomeMessageLoggedOut ? welcomeMessageLoggedOut : texts.welcome_message_logged_out
+      );
     }
-  }
+  };
 
-  const welcomeMessage = getWelcomeMessage()
+  const welcomeMessage = getWelcomeMessage();
 
   return (
     <div className={`${classes.welcomeBanner} ${className}`}>
@@ -239,9 +243,7 @@ export default function Dashboard({
             {/* TODO: doing some left spacing here -- trying to keep spacing directly out of the UI components, and isolated within Box components directly  */}
             <Box sx={{ marginLeft: theme.spacing(1), width: "100%" }}>
               <div className={`${classes.welcomeMessage}`}>
-                <Typography style={{ fontWeight: "600" }}>
-                  {welcomeMessage}
-                </Typography>
+                <Typography style={{ fontWeight: "600" }}>{welcomeMessage}</Typography>
               </div>
             </Box>
           </div>
