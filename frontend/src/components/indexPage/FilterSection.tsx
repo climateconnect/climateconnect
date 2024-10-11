@@ -177,6 +177,17 @@ export default function FilterSection({
       initialLocationFilter: initialLocationFilter,
     })
   );
+
+  const handleOnSumbitSearchBar = (searchValue: string) => {
+    console.log("pre search update", filters);
+    // setting a value like the following  does not work, as
+    // the filters reference is not changing => useEffect will not run
+    // > filters.search = searchValue;
+    const updatedFilters = { ...filters, search: searchValue };
+    setFilters(updatedFilters);
+    console.log("post search update", updatedFilters);
+  };
+
   const handleUpdateFilters = (updatedFilters: any) => {
     setFilters(updatedFilters);
   };
@@ -206,7 +217,13 @@ export default function FilterSection({
   };
 
   useEffect(() => {
-    applyNewFiltersToUrl(filters);
+    console.log("filters changed, rerun apply");
+    applyNewFiltersToUrl({
+      type,
+      newFilters: filters,
+      closeFilters: false,
+      nonFilterParams: {},
+    });
   }, [filters]);
   // #############################################################
   // #############################################################
@@ -223,7 +240,8 @@ export default function FilterSection({
             // Pass submit handler through to
             // the underlying search bar.
             type={type}
-            initialValue={initalFilters?.search ?? ""}
+            onSubmit={handleOnSumbitSearchBar}
+            initialValue={initialFilters?.search ?? ""}
           />
         </div>
         <Button
@@ -248,7 +266,7 @@ export default function FilterSection({
           filters={filters}
           filtersExpanded={filtersExpanded}
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-          handleUpdateFilters={applyNewFiltersToUrl}
+          handleUpdateFilters={handleUpdateFilters}
           initialLocationFilter={initialLocationFilter}
           locationInputRef={locationInputRefs[type]}
           locationOptionsOpen={locationOptionsOpen}

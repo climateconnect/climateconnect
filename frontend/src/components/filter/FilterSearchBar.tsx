@@ -7,7 +7,7 @@ export default function FilterSearchBar({
   className,
   InputLabelClasses,
   label,
-  onChange,
+  // onChange,
   onSubmit,
   initialValue,
 }: any) {
@@ -26,7 +26,8 @@ export default function FilterSearchBar({
 
   const removeSearchFilter = () => {
     if (searchValue !== "") {
-      onChange({ preventDefault: () => {}, target: { value: "" } });
+      // onChange({ preventDefault: () => {}, target: { value: "" } });
+      setSearchValue("");
       onSubmit("");
     }
   };
