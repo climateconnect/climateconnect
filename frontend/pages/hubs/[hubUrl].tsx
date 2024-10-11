@@ -76,6 +76,19 @@ const DESCRIPTION_WEBFLOW_LINKS = {
 //potentially switch back to getinitialprops here?!
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hubUrl;
+  // FIXME:
+  // somehow, installHook.js.map gets requested:
+  //   { hubUrl: 'installHook.js.map' }
+  // huburl: installHook.js.map
+  //
+  // this leads to
+  // > hubData = null
+  //
+  // crashing the SSR when performing:
+  // > isLocationHub: hubData.hub_type === "location hub",
+
+  console.error(ctx.query);
+  console.error("huburl:", hubUrl);
   const ideaToOpen = ctx.query.idea;
 
   const [
@@ -108,6 +121,8 @@ export async function getServerSideProps(ctx) {
       name: hubData.name,
       headline: hubData.headline,
       subHeadline: hubData.sub_headline,
+      welcomeMessageLoggedIn: hubData.welcome_message_logged_in,
+      welcomeMessageLoggedOut: hubData.welcome_message_logged_out,
       image: hubData.image,
       quickInfo: hubData.quick_info,
       stats: hubData.stats,
@@ -141,6 +156,8 @@ export default function Hub({
   statBoxTitle,
   stats,
   subHeadline,
+  welcomeMessageLoggedIn,
+  welcomeMessageLoggedOut,
   initialLocationFilter,
   filterChoices,
   sectorHubs,
@@ -270,7 +287,7 @@ export default function Hub({
         headerBackground="#FFF"
         image={getImageUrl(image)}
         isHubPage
-        hubName={name}
+        hubUrl={hubUrl}
         hideDonationCampaign
         customFooterImage={hubData.custom_footer_image && getImageUrl(hubData.custom_footer_image)}
         isLocationHub={isLocationHub}
@@ -313,6 +330,8 @@ export default function Hub({
             }
             hubUrl={hubUrl}
             subHeadline={subHeadline}
+            welcomeMessageLoggedIn={welcomeMessageLoggedIn}
+            welcomeMessageLoggedOut={welcomeMessageLoggedOut}
             isLocationHub={isLocationHub}
             location={hubLocation}
             allHubs={allHubs}
@@ -394,16 +413,17 @@ const retrieveDescriptionFromWebflow = async (query, locale) => {
 
 const getHubData = async (url_slug, locale) => {
   try {
+    console.debug("load hub data:", `/api/hubs/${url_slug}/`);
     const resp = await apiRequest({
       method: "get",
       url: `/api/hubs/${url_slug}/`,
       locale: locale,
     });
+    console.error("HUB DATA: ", resp.data);
     return resp.data;
   } catch (err: any) {
     if (err.response && err.response.data)
-      console.log("Error in getHubData: " + err.response.data.detail);
-    console.log(err);
+      console.error("Error in getHubData: " + err.response.data.detail);
     return null;
   }
 };

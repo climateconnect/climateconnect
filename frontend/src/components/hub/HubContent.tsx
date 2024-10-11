@@ -119,6 +119,8 @@ export default function HubContent({
   statBoxTitle,
   scrollToSolutions,
   subHeadline,
+  welcomeMessageLoggedIn,
+  welcomeMessageLoggedOut,
   isLocationHub,
   hubAmbassador,
   location,
@@ -167,8 +169,8 @@ export default function HubContent({
                         allHubs={allHubs}
                         hubData={hubData}
                         location={location}
-                        headline={headline}
-                        hubUrl={hubUrl}
+                        welcomeMessageLoggedIn={welcomeMessageLoggedIn}
+                        welcomeMessageLoggedOut={welcomeMessageLoggedOut}
                       />
                     )}
                   </>
