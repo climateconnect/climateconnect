@@ -46,6 +46,12 @@ export default function getFilters({ key, filterChoices, locale }: getFiltersPar
 }
 
 const getLocationFilters = (texts) => {
+  // FIXME: LocationFilters currently do not include
+  // place=108921958&osm=62403&loc_type=relation
+  // but these are the values stored within the url
+  // Therefore, sharing an URL containing filters (and thus the new state management)
+  // did not properly use the location filter
+
   if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
     return [
       {

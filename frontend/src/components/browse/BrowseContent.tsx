@@ -290,6 +290,7 @@ export default function BrowseContent({
     console.log("Search Params:", getSearchParams(window.location.search));
 
     const queryObject = getQueryObjectFromUrl(getSearchParams(window.location.search));
+    console.log("QUERY OBJECT", queryObject);
 
     // TODO: not sure if this is nessecary
     const possibleFilters = getFilters({
@@ -297,9 +298,16 @@ export default function BrowseContent({
       filterChoices: filterChoices,
       locale: locale,
     });
+    console.log("POSSIBLE FILTERS", possibleFilters);
+
+    const locationFilter: any = possibleFilters.find((f) => f.type === "location");
+    console.log("LOCATION FILTER", locationFilter);
+
     const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFilters);
-    console.log(queryObject);
-    console.log(splitQueryObject);
+    console.log("filters", splitQueryObject.filters);
+    console.log("non filer params", splitQueryObject.nonFilters);
+
+    // queryObject[locationFilter.key] = filters[locationFilter.key];
 
     const filters = { ...splitQueryObject.filters };
     // TODO reimplement Caching
