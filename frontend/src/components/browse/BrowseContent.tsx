@@ -287,17 +287,21 @@ export default function BrowseContent({
     const currentTab = hash;
 
     // TODO: maybe be more carfull with "user input" (search params can be user/attacker controlled)
+    console.log("Search Params:", getSearchParams(window.location.search));
+
     const queryObject = getQueryObjectFromUrl(getSearchParams(window.location.search));
 
     // TODO: not sure if this is nessecary
-    // const possibleFilters = getFilters({
-    //   key: currentTab,
-    //   filterChoices: filterChoices,
-    //   locale: locale,
-    // });
-    // const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFilters);
+    const possibleFilters = getFilters({
+      key: currentTab,
+      filterChoices: filterChoices,
+      locale: locale,
+    });
+    const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFilters);
+    console.log(queryObject);
+    console.log(splitQueryObject);
 
-    const filters = { ...queryObject.filters };
+    const filters = { ...splitQueryObject.filters };
     // TODO reimplement Caching
     // * Record the tabs in which the filters were applied already
     // * so one does not have to query them twice

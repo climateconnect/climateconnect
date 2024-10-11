@@ -41,7 +41,7 @@ export default function getFilters({ key, filterChoices, locale }: getFiltersPar
     ];
   }
 
-  console.log("possibleFilters invalid input:" + key);
+  console.error("possibleFilters invalid input:" + key);
   return [];
 }
 
