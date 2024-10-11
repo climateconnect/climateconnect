@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     borderRadius: 10,
     backgroundColor: "#f0f2f5",
-    maxWidth: 300,
+    maxWidth: "100%",
   },
   showAllProjectsButton: (props) => ({
     marginBottom: props.isSmallScreen ? theme.spacing(0) : theme.spacing(1),

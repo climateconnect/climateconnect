@@ -14,6 +14,8 @@ class HubSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     headline = serializers.SerializerMethodField()
     sub_headline = serializers.SerializerMethodField()
+    welcome_message_logged_in = serializers.SerializerMethodField()
+    welcome_message_logged_out = serializers.SerializerMethodField()
     segway_text = serializers.SerializerMethodField()
     image_attribution = serializers.SerializerMethodField()
     quick_info = serializers.SerializerMethodField()
@@ -29,6 +31,8 @@ class HubSerializer(serializers.ModelSerializer):
             "quick_info",
             "stats",
             "sub_headline",
+            "welcome_message_logged_in",
+            "welcome_message_logged_out",
             "segway_text",
             "stat_box_title",
             "image_attribution",
@@ -46,6 +50,12 @@ class HubSerializer(serializers.ModelSerializer):
 
     def get_sub_headline(self, obj):
         return get_hub_attribute(obj, "sub_headline", get_language())
+    
+    def get_welcome_message_logged_in(self, obj):
+        return get_hub_attribute(obj, "welcome_message_logged_in", get_language())
+
+    def welcome_message_logged_out(self, obj):
+        return get_hub_attribute(obj, "welcome_message_logged_out", get_language())
 
     def get_segway_text(self, obj):
         return get_hub_attribute(obj, "segway_text", get_language())

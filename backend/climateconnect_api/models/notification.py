@@ -173,7 +173,6 @@ class Notification(models.Model):
         blank=True,
     )
 
-
     class Meta:
         verbose_name_plural = "Notifications"
         ordering = ["-created_at"]
@@ -221,7 +220,9 @@ class UserNotification(models.Model):
             self.user.first_name,
             self.user.last_name,
             self.notification.id,
-            self.notification.NOTIFICATION_TYPES[self.notification.notification_type][1],
+            self.notification.NOTIFICATION_TYPES[self.notification.notification_type][
+                1
+            ],
             self.notification.created_at,
         )
 
