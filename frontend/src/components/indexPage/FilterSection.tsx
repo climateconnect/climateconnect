@@ -86,9 +86,6 @@ type Props = {
   // TODO: rename to filterOption Definition
   filterChoices: any;
 
-  // non filter params: e.g. TODO
-  nonFilterParams: any;
-
   // Location Filter stuff // TODO: refactor them as well
   handleSetLocationOptionsOpen: (bool: boolean) => void;
   locationInputRefs: any;
@@ -111,7 +108,6 @@ export default function FilterSection({
   initialLocationFilter,
   locationInputRefs,
   locationOptionsOpen,
-  nonFilterParams,
 }: Props) {
   const classes = useStyles({
     applyBackgroundColor: applyBackgroundColor,
@@ -121,6 +117,7 @@ export default function FilterSection({
   // ##########################
   // Additional Filters Visibility
   // ##########################
+  const nonFilterParams = {};
 
   const isMobileScreenSize = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const isSmallScreenSize = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
@@ -138,8 +135,6 @@ export default function FilterSection({
   const unexpandFilters = () => {
     setFiltersExpanded(false);
   };
-
-  // console.log(filterChoices);
 
   useEffect(() => {
     if (isMobileScreenSize || isSmallScreenSize) {
@@ -175,7 +170,7 @@ export default function FilterSection({
   // or is there an issue?
   // #############################################################
 
-  const [filters, setFiters] = useState(
+  const [filters, setFilters] = useState(
     getInitialFilters({
       filterChoices: filterChoices,
       locale: locale,
@@ -183,7 +178,7 @@ export default function FilterSection({
     })
   );
   const handleUpdateFilters = (updatedFilters: any) => {
-    setFiters(updatedFilters);
+    setFilters(updatedFilters);
   };
 
   const addFilter = (filter: string, value: string) => {};

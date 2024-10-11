@@ -118,14 +118,6 @@ export default function BrowseContent({
   allHubs,
   hubData,
 
-  // removed filter related params
-  // applyNewFilters,
-  // filters,
-  // handleUpdateFilterValues,
-  // initialLocationFilter,
-
-  //
-
   // filter related values
   initialFilters, // dict. of initial filter setup
   filterChoices, // dict. of possible filters and their values
@@ -212,7 +204,12 @@ export default function BrowseContent({
     })();
   });
 
-  const { showFeedbackMessage } = useContext(FeedbackContext);
+  // ###################################################
+  // ###################################################
+  // FILTER AND DATA LOADING ZONE
+  // ###################################################
+  // ###################################################
+
   /**
    * Support the functionality of a user entering
    * a provided URL, that already has URL encoded
@@ -221,12 +218,6 @@ export default function BrowseContent({
    * that this isn't invoked on extraneous renders.
    */
   const [initialized, setInitialized] = useState(false);
-
-  /**
-   * -----------------------------------------
-   * HANDLE FILTER SATE AND pushed down stuff
-   */
-  const [nonFilterParams, setNonFilterParams] = useState({});
 
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -266,12 +257,6 @@ export default function BrowseContent({
     loadDataBasedOnUrl();
     return;
   };
-
-  // ###################################################
-  // ###################################################
-  // LAB ZONE
-  // ###################################################
-  // ###################################################
 
   // TODO: this is currently not used
   // use it in the future to "cache" filter results
@@ -380,11 +365,6 @@ export default function BrowseContent({
     };
   }, []);
 
-  // ###################################################
-  // ###################################################
-  // FILTER AND DATA LOADING ZONE
-  // ###################################################
-  // ###################################################
   // We have 2 distinct loading states: filtering, and loading more data. For
   // each state, we want to treat the loading spinner a bit differently, hence
   // why we have two separate pieces of state
@@ -516,7 +496,6 @@ export default function BrowseContent({
             initialLocationFilter={initialLocationFilter}
             locationInputRefs={locationInputRefs}
             locationOptionsOpen={locationOptionsOpen}
-            nonFilterParams={nonFilterParams}
           />
         </Suspense>
         {/* Desktop screens: show tabs under the search bar */}
@@ -593,7 +572,7 @@ export default function BrowseContent({
           )}
 
           {/* TODO: Idea Board shall be removed: handleUpdateIdeaRating is was already deleted, but this change might need to be
-          revoked so that the idea board can be removed on a seperate PR */}
+          revoked so that the idea board can be removed with a seperate PR */}
           {/* <TabContentWrapper type={"ideas"} {...tabContentWrapperProps}>
             <IdeasBoard
               hasMore={state.hasMore.ideas}
