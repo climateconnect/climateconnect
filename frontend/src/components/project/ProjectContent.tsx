@@ -31,7 +31,8 @@ const useStyles = makeStyles((theme) => ({
     display: "block",
     fontSize: 14,
   },
-  creator: (props) => ({
+  //FIXME: added any type so that lsp does not complain about props.isPersonalProject
+  creator: (props: any) => ({
     paddingTop: props.isPersonalProject && theme.spacing(0.25),
     paddingLeft: theme.spacing(1),
     color: theme.palette.grey[800],
@@ -137,13 +138,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ProjectContent({
-  collaborationSectionRef,
   discussionTabLabel,
   handleTabChange,
   latestParentComment,
   leaveProject,
   project,
-  projectDescriptionRef,
   projectTabsRef,
   typesByTabValue,
   showRequesters,
@@ -174,9 +173,11 @@ export default function ProjectContent({
       return MAX_DISPLAYED_DESCRIPTION_LENGTH;
     }
   };
+  // TODO: is 0 fine as a default value?
+  // previously, it was null. But with null, the lsp complains about "number <= null" checks
   const maxDisplayedDescriptionLength = project.description
     ? calculateMaxDisplayedDescriptionLength(project.description)
-    : null;
+    : 0;
 
   //return the right static text depending on the project type
   const getProjectDescriptionHeadline = () => {
@@ -269,31 +270,28 @@ export default function ProjectContent({
             <Typography>
               {texts.finished} <TimeAgo date={new Date(project.end_date)} />. {texts.total_duration}
               :{" "}
-              {humanizeDuration(new Date(project.end_date) - new Date(project.start_date), {
-                largest: 1,
-                language: locale,
-              })}
+              {humanizeDuration(
+                new Date(project.end_date).valueOf() - new Date(project.start_date).valueOf(),
+                {
+                  largest: 1,
+                  language: locale,
+                }
+              )}
             </Typography>
           )}
           {project.end_date && project.status.key === "cancelled" && (
-            <Typography>{texts.cancelled} :(</Typography>
+            <Typography>{texts.cancelled} :</Typography>
           )}
         </div>
       </div>
       <div className={classes.contentBlock}>
-        <Typography
-          component="h2"
-          variant="h6"
-          color="primary"
-          ref={projectDescriptionRef}
-          className={classes.subHeader}
-        >
+        <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
           {getProjectDescriptionHeadline()}
         </Typography>
         <Typography className={classes.projectDescription} component="div">
           {project.description ? (
             showFullDescription || project.description.length <= maxDisplayedDescriptionLength ? (
-              <MessageContent content={project.description} renderYoutubeVideos={1} />
+              <MessageContent content={project.description} renderYoutubeVideos={true} />
             ) : (
               <MessageContent
                 content={project.description.substr(0, maxDisplayedDescriptionLength) + "..."}
@@ -329,7 +327,7 @@ export default function ProjectContent({
           projectTabsRef={projectTabsRef}
         />
       )}
-      <div className={classes.contentBlock} ref={collaborationSectionRef}>
+      <div className={classes.contentBlock}>
         <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
           {texts.collaboration}
         </Typography>
@@ -351,7 +349,9 @@ export default function ProjectContent({
         {project.timeline_posts && project.timeline_posts.length > 0 && (
           <div className={classes.progressContent}>
             <Posts
-              posts={project.timeline_posts.sort((a, b) => new Date(b.date) - new Date(a.date))}
+              posts={project.timeline_posts.sort(
+                (a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf()
+              )}
               type="progresspost"
             />
           </div>
@@ -362,7 +362,7 @@ export default function ProjectContent({
 }
 
 function CollaborateContent({ project, texts }) {
-  const classes = useStyles();
+  const classes = useStyles(); // FIXME: useStyles expects a theme. Unsure what to input here
   return (
     <>
       <Typography variant="body2" className={classes.info}>
