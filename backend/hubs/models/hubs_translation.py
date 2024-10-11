@@ -44,6 +44,22 @@ class HubTranslation(models.Model):
         null=True,
         blank=True,
     )
+    
+    welcome_message_logged_in_translation = models.CharField(
+        help_text="Displayed on the dashboard on location hubs when logged in. Starts with \"Hi $user.name\"",
+        verbose_name="Translation of welcome message (logged in)",
+        max_length=2048,
+        null=True,
+        blank=True,
+    )
+
+    welcome_message_logged_out_translation = models.CharField(
+        help_text="Displayed on the dashboard on location hubs when logged out.",
+        verbose_name="Translation of welcome message (logged out)",
+        max_length=2048,
+        null=True,
+        blank=True,
+    )
 
     segway_text_translation = models.TextField(
         help_text="Translation of segway_text column",
