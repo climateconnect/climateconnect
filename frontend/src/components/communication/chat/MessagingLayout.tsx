@@ -82,7 +82,7 @@ export default function MessagingLayout({
 
   const handleMessageKeydown = (event) => {
     if (event.key === "Enter")
-      if (event.ctrlKey) onSendMessage();
+      if (event.ctrlKey) onSendMessage(event);
       else {
         setShowSendHelper(true);
       }

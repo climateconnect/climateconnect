@@ -166,5 +166,25 @@
   "no_chats_found_for_this_search": {
     "en": "No matches found for your search",
     "de": "Keine Suchergebnisse gefunden"
+  },
+  "return_to_project_to_approve_or_ignore": {
+    "en": "Click the link to return to your project request and approve or ignore the requester.",
+    "de": "Klicken Sie auf den Link, um zu Ihrer Projektanfrage zurückzukehren und den Antragsteller zu genehmigen oder zu ignorieren."
+  },
+  "this_message_is_part_of_users_request": {
+    "en": "This message is part of ",
+    "de": "Diese Nachricht ist Teil von "
+  },
+  "request_to_join_your_project": {
+    "en": "request to join your project",
+    "de": "Anfrage zur Teilnahme an Ihrem Projekt"
+  },
+  "user_request_to_join_project": {
+    "en": "your request to join",
+    "de": "Ihr Antrag auf Beitritt"
+  },
+  "if_you_are_not_sure_answer_here_in_the_chat": {
+    "en": "If you are not sure answer here in the chat",
+    "de": "Wenn Sie sich nicht sicher sind, antworten Sie hier im Chat"
   }
 }
