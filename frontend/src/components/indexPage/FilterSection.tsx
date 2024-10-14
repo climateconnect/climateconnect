@@ -1,4 +1,4 @@
-import { Button, Theme } from "@mui/material";
+import { Button, Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import TuneIcon from "@mui/icons-material/Tune";
@@ -6,6 +6,12 @@ import React, { useContext, useEffect, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import FilterSearchBar from "../filter/FilterSearchBar";
+import FilterContent from "../filter/FilterContent";
+import getFilters from "../../../public/data/possibleFilters";
+import { getFilterUrl } from "../../../public/lib/urlOperations";
+import { getInfoMetadataByType } from "../../../public/lib/parsingOperations";
+import { BrowseTabs } from "../../types";
+import { getInitialFilters } from "../../../public/lib/filterOperations";
 
 type MakeStylesProps = {
   applyBackgroundColor?: boolean;
@@ -49,43 +55,99 @@ const useStyles = makeStyles((theme) => {
       color: "black !important",
       borderColor: "black !important",
     },
+    tabContent: {
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
+    },
   };
 });
 
 type Props = {
-  filtersExpanded: boolean;
-  onSubmit: Function;
-  setFiltersExpanded: Function;
-  type?: any;
+  // current page
+  type: BrowseTabs;
+
+  // customize search text
   customSearchBarLabels?: any;
+
+  // styles
+  applyBackgroundColor: boolean;
+
+  //deprecated
+  //TODO: remove when Tutorial is removed
   filterButtonRef?: any;
-  searchValue?: any;
-  hideFilterButton?: boolean;
-  applyBackgroundColor?: boolean;
+
+  // errorMessage state
+  errorMessage: any;
+
+  // initial values for filters
+  initialFilters: any;
+  initialLocationFilter: any;
+
+  // TODO: rename to filterOption Definition
+  filterChoices: any;
+
+  // Location Filter stuff // TODO: refactor them as well
+  handleSetLocationOptionsOpen: (bool: boolean) => void;
+  locationInputRefs: any;
+  locationOptionsOpen: any;
 };
 
 export default function FilterSection({
-  filtersExpanded,
-  onSubmit,
-  setFiltersExpanded,
   type,
   customSearchBarLabels,
+  // TODO: remove filterButtonRef if the tutorial is removed
   filterButtonRef,
-  searchValue,
-  hideFilterButton,
   applyBackgroundColor,
+  // FilterContent Dependencies
+  errorMessage,
+  // filters,
+  initialFilters,
+  filterChoices, // TODO: rename to filterOptionDefinitions
+  // handleApplyNewFilters,
+  handleSetLocationOptionsOpen,
+  initialLocationFilter,
+  locationInputRefs,
+  locationOptionsOpen,
 }: Props) {
   const classes = useStyles({
     applyBackgroundColor: applyBackgroundColor,
   });
   const { locale } = useContext(UserContext);
-  const [value, setValue] = useState(searchValue);
-  useEffect(
-    function () {
-      setValue(searchValue);
-    },
-    [searchValue]
-  );
+
+  // ##########################
+  // Additional Filters Visibility
+  // ##########################
+  const nonFilterParams = {};
+
+  const isMobileScreenSize = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const isSmallScreenSize = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+
+  // Attention: this default will be overwritten by the use Effect hook
+  // Defaults: isSmallScreenSize => false, otherwise true
+  // On mobile filters take up the whole screen, so they aren't expanded by default
+
+  const [filtersExpanded, setFiltersExpanded] = useState(true);
+
+  const onClickExpandFilters = () => {
+    setFiltersExpanded(!filtersExpanded);
+  };
+
+  const unexpandFilters = () => {
+    setFiltersExpanded(false);
+  };
+
+  useEffect(() => {
+    if (isMobileScreenSize || isSmallScreenSize) {
+      setFiltersExpanded(false);
+    } else {
+      setFiltersExpanded(true);
+    }
+  }, [isMobileScreenSize]);
+
+  // ##########################
+  // Filter Search Bar
+  // ##########################
+
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const searchBarLabels = {
     projects: texts.search_projects,
@@ -98,14 +160,74 @@ export default function FilterSection({
     notchedOutline: classes.inputLabel,
   };
 
-  const onClickExpandFilters = () => {
-    setFiltersExpanded(!filtersExpanded);
+  const onSubmitSearchBar = (e) => {
+    // TODO: reconstruct URL
   };
 
-  const handleChangeValue = (e) => {
-    e.preventDefault();
-    setValue(e.target.value);
+  // #############################################################
+  // Experiments: "noone" actually needs to share information about the state
+  // state is saved in the urls searchbar and the searchparams are just passed down to the server
+  // or is there an issue?
+  // #############################################################
+
+  const [filters, setFilters] = useState(
+    getInitialFilters({
+      filterChoices: filterChoices,
+      locale: locale,
+      initialLocationFilter: initialLocationFilter,
+    })
+  );
+
+  const handleOnSumbitSearchBar = (searchValue: string) => {
+    console.log("pre search update", filters);
+    // setting a value like the following  does not work, as
+    // the filters reference is not changing => useEffect will not run
+    // > filters.search = searchValue;
+    const updatedFilters = { ...filters, search: searchValue };
+    setFilters(updatedFilters);
+    console.log("post search update", updatedFilters);
   };
+
+  const handleUpdateFilters = (updatedFilters: any) => {
+    setFilters(updatedFilters);
+  };
+
+  const addFilter = (filter: string, value: string) => {};
+
+  const applyNewFiltersToUrl = ({ type, newFilters, closeFilters, nonFilterParams }) => {
+    const newUrl = getFilterUrl({
+      activeFilters: newFilters,
+      infoMetadata: getInfoMetadataByType(type),
+      filterChoices: filterChoices,
+      locale: locale,
+      nonFilterParams: nonFilterParams,
+    });
+
+    // update url only if it differs from the current url
+    if (newUrl !== window?.location?.href) {
+      window.history.pushState({}, "", newUrl);
+
+      // TODO: refactor into a custom lib function
+      const urlChangeEvent = new CustomEvent("urlChange", {});
+      window.dispatchEvent(urlChangeEvent);
+
+      return true;
+    }
+    return false;
+  };
+
+  useEffect(() => {
+    console.log("filters changed, rerun apply");
+    applyNewFiltersToUrl({
+      type,
+      newFilters: filters,
+      closeFilters: false,
+      nonFilterParams: {},
+    });
+  }, [filters]);
+  // #############################################################
+  // #############################################################
+  // #############################################################
 
   return (
     <div /*TODO(undefined) className={classes.filterSection} */>
@@ -117,27 +239,47 @@ export default function FilterSection({
             label={customSearchBarLabels ? customSearchBarLabels[type] : searchBarLabels[type]}
             // Pass submit handler through to
             // the underlying search bar.
-            onSubmit={onSubmit}
             type={type}
-            value={value}
-            onChange={handleChangeValue}
+            onSubmit={handleOnSumbitSearchBar}
+            initialValue={initialFilters?.search ?? ""}
           />
         </div>
-        {!hideFilterButton && (
-          <Button
-            variant="outlined"
-            color="grey"
-            className={classes.filterButton}
-            onClick={onClickExpandFilters}
-            startIcon={
-              filtersExpanded ? <HighlightOffIcon color="primary" /> : <TuneIcon color="primary" />
-            }
-            ref={filterButtonRef}
-          >
-            Filter
-          </Button>
-        )}
+        <Button
+          variant="outlined"
+          color="grey"
+          className={classes.filterButton}
+          onClick={onClickExpandFilters}
+          startIcon={
+            filtersExpanded ? <HighlightOffIcon color="primary" /> : <TuneIcon color="primary" />
+          }
+          ref={filterButtonRef}
+        >
+          {/* TODO: put into texts */}
+          {filtersExpanded ? "Hide filters" : "Show more filters"}
+        </Button>
       </div>
+      {filtersExpanded && (
+        <FilterContent
+          applyFilters={applyNewFiltersToUrl}
+          className={classes.tabContent}
+          errorMessage={errorMessage}
+          filters={filters}
+          filtersExpanded={filtersExpanded}
+          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+          handleUpdateFilters={handleUpdateFilters}
+          initialLocationFilter={initialLocationFilter}
+          locationInputRef={locationInputRefs[type]}
+          locationOptionsOpen={locationOptionsOpen}
+          nonFilterParams={nonFilterParams}
+          possibleFilters={getFilters({
+            key: type,
+            filterChoices: filterChoices,
+            locale: locale,
+          })}
+          type={type}
+          unexpandFilters={unexpandFilters}
+        />
+      )}
     </div>
   );
 }

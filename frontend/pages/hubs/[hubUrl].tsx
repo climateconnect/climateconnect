@@ -3,9 +3,8 @@ import makeStyles from "@mui/styles/makeStyles";
 import parseHtml from "html-react-parser";
 import Head from "next/head";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix } from "../../public/lib/apiOperations";
-import { applyNewFilters, getInitialFilters } from "../../public/lib/filterOperations";
+import { getInitialFilters } from "../../public/lib/filterOperations";
 import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
@@ -147,7 +146,7 @@ export default function Hub({
   welcomeMessageLoggedOut,
   initialLocationFilter,
   filterChoices,
-  sectorHubs,
+  // sectorHubs, // TODO unused
   allHubs,
   initialIdeaUrlSlug,
   hubLocation,
@@ -157,36 +156,12 @@ export default function Hub({
 }) {
   const classes = useStyles();
   let fabClass = shareProjectFabStyle(false);
+
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
-  const token = new Cookies().get("auth_token");
   const [hubAmbassador, setHubAmbassador] = useState(null);
 
-  // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
-  const [filters, setFilters] = useState(
-    getInitialFilters({
-      filterChoices: filterChoices,
-      locale: locale,
-      initialLocationFilter: initialLocationFilter,
-    })
-  );
-  const [tabsWhereFiltersWereApplied, setTabsWhereFiltersWereApplied] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
-  const handleSetErrorMessage = (newMessage) => {
-    setErrorMessage(newMessage);
-  };
   const contentRef = useRef(null);
-
-  /*
-   * When you share an idea through CreateIdeaDialog, you will be
-   * redirected to the idea's board with the new idea open.
-   * However this redirect does not reset state which is why we need
-   * this function to make sure ideas are caught again after refreshing.
-   * otherwise the idea's board will be empty.
-   */
-  const resetTabsWhereFiltersWereApplied = () => {
-    setTabsWhereFiltersWereApplied([]);
-  };
 
   useEffect(() => {
     (async () => {
@@ -200,7 +175,7 @@ export default function Hub({
   //Refs and state for tutorial
   const hubQuickInfoRef = useRef(null);
   const hubProjectsButtonRef = useRef(null);
-  const [nextStepTriggeredBy, setNextStepTriggeredBy] = useState(false);
+  const [nextStepTriggeredBy, setNextStepTriggeredBy] = useState("");
   const [requestTabNavigation, tabNavigationRequested] = useState("foo");
 
   const navRequested = (tabKey) => {
@@ -209,7 +184,7 @@ export default function Hub({
 
   const scrollToSolutions = () => {
     setNextStepTriggeredBy("showProjectsButton");
-    contentRef.current.scrollIntoView({ behavior: "smooth" });
+    contentRef!.current!.scrollIntoView({ behavior: "smooth" });
   };
 
   const customSearchBarLabels = {
@@ -226,42 +201,9 @@ export default function Hub({
     ideas: texts.search_ideas_in_location,
   };
 
-  const handleAddFilters = (newFilters) => {
-    setFilters({ ...filters, ...newFilters });
-  };
-
-  const handleSetTabsWhereFiltersWereApplied = (tabs) => {
-    setTabsWhereFiltersWereApplied(tabs);
-  };
-
-  const handleApplyNewFilters = async ({ type, newFilters, closeFilters, nonFilterParams }) => {
-    return await applyNewFilters({
-      type: type,
-      filters: filters,
-      newFilters: newFilters,
-      closeFilters: closeFilters,
-      filterChoices: filterChoices,
-      locale: locale,
-      token: token,
-      handleAddFilters: handleAddFilters,
-      handleSetErrorMessage: handleSetErrorMessage,
-      tabsWhereFiltersWereApplied: tabsWhereFiltersWereApplied,
-      handleSetTabsWhereFiltersWereApplied: handleSetTabsWhereFiltersWereApplied,
-      hubUrl: hubUrl,
-      idea: nonFilterParams?.idea,
-    });
-  };
-
   const closeHubHeaderImage = (e) => {
     e.preventDefault();
     console.log("closing hub header image");
-  };
-
-  const handleUpdateFilterValues = (valuesToUpdate) => {
-    setFilters({
-      ...filters,
-      ...valuesToUpdate,
-    });
   };
 
   const contextValues = {
@@ -335,20 +277,13 @@ export default function Hub({
           {!isLocationHub && <BrowseExplainer />}
           <BrowseContext.Provider value={contextValues}>
             <BrowseContent
-              applyNewFilters={handleApplyNewFilters}
               contentRef={contentRef}
               customSearchBarLabels={customSearchBarLabels}
-              errorMessage={errorMessage}
               hubAmbassador={hubAmbassador}
-              filters={filters}
-              handleUpdateFilterValues={handleUpdateFilterValues}
-              filterChoices={filterChoices}
-              handleSetErrorMessage={handleSetErrorMessage}
               hideMembers={!isLocationHub}
               hubName={name}
               hubProjectsButtonRef={hubProjectsButtonRef}
               hubQuickInfoRef={hubQuickInfoRef}
-              initialLocationFilter={initialLocationFilter}
               // TODO: is this still needed?
               // initialOrganizations={initialOrganizations}
               // initialProjects={initialProjects}
@@ -358,9 +293,17 @@ export default function Hub({
               initialIdeaUrlSlug={initialIdeaUrlSlug}
               hubLocation={hubLocation}
               hubData={hubData}
-              resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
               hubUrl={hubUrl}
-              tabNavigationRequested={requestTabNavigation}
+              //filter related props
+              filterChoices={filterChoices}
+              initialLocationFilter={initialLocationFilter}
+              initialFilters={getInitialFilters({
+                filterChoices: filterChoices,
+                locale: locale,
+                initialLocationFilter: initialLocationFilter,
+              })}
+              // TODO: unused?!
+              // tabNavigationRequested={requestTabNavigation}
             />
           </BrowseContext.Provider>
         </div>

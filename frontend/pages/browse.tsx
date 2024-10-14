@@ -1,9 +1,8 @@
 // 3rd party or built-in imports
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 import NextCookies from "next-cookies";
-import React, { useContext, useRef, useState } from "react";
-import Cookies from "universal-cookie";
-import { applyNewFilters, getInitialFilters } from "../public/lib/filterOperations";
+import React, { useContext, useRef } from "react";
+import { getInitialFilters } from "../public/lib/filterOperations";
 import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
@@ -58,47 +57,7 @@ export async function getServerSideProps(ctx) {
 }
 
 export default function Browse({ filterChoices, hubs, initialLocationFilter, projectTypes }) {
-  const cookies = new Cookies();
-  const token = cookies.get("auth_token");
   const { locale } = useContext(UserContext);
-
-  // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
-  const [filters, setFilters] = useState(
-    getInitialFilters({
-      filterChoices: filterChoices,
-      locale: locale,
-      initialLocationFilter: initialLocationFilter,
-    })
-  );
-  const [tabsWhereFiltersWereApplied, setTabsWhereFiltersWereApplied] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
-  const handleSetErrorMessage = (newMessage) => {
-    setErrorMessage(newMessage);
-  };
-
-  const handleAddFilters = (newFilters) => {
-    setFilters({ ...filters, ...newFilters });
-  };
-
-  const handleSetTabsWhereFiltersWereApplied = (tabs) => {
-    setTabsWhereFiltersWereApplied(tabs);
-  };
-
-  const handleApplyNewFilters = async ({ type, newFilters, closeFilters }) => {
-    return await applyNewFilters({
-      type: type,
-      filters: filters,
-      newFilters: newFilters,
-      closeFilters: closeFilters,
-      filterChoices: filterChoices,
-      locale: locale,
-      token: token,
-      handleAddFilters: handleAddFilters,
-      handleSetErrorMessage: handleSetErrorMessage,
-      tabsWhereFiltersWereApplied,
-      handleSetTabsWhereFiltersWereApplied: handleSetTabsWhereFiltersWereApplied,
-    });
-  };
 
   const isScrollingUp = !useScrollTrigger({
     disableHysteresis: false,
@@ -106,13 +65,6 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter, pro
   });
   const atTopOfPage = TopOfPage({ initTopOfPage: true });
   const showOnScrollUp = isScrollingUp && !atTopOfPage;
-
-  const handleUpdateFilterValues = (valuesToUpdate) => {
-    setFilters({
-      ...filters,
-      ...valuesToUpdate,
-    });
-  };
 
   const contextValues = {
     projectTypes: projectTypes,
@@ -129,13 +81,19 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter, pro
         <BrowseContext.Provider value={contextValues}>
           <MainHeadingContainerMobile />
           <BrowseContent
-            applyNewFilters={handleApplyNewFilters}
-            filters={filters}
-            handleUpdateFilterValues={handleUpdateFilterValues}
-            errorMessage={errorMessage}
-            filterChoices={filterChoices}
-            handleSetErrorMessage={handleSetErrorMessage}
             hubsSubHeaderRef={hubsSubHeaderRef}
+            filterChoices={filterChoices}
+            //
+            // TODO: pased on the initial filters, SSR should be able
+            // to preload the data
+            // TODO: SSR can also consider the query to prefetch all data
+            //
+            // pass down the initial set of filters
+            initialFilters={getInitialFilters({
+              filterChoices: filterChoices,
+              locale: locale,
+              initialLocationFilter: initialLocationFilter,
+            })}
             initialLocationFilter={initialLocationFilter}
           />
         </BrowseContext.Provider>

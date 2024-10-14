@@ -1,31 +1,34 @@
 import { IconButton, InputAdornment, TextField } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import SearchIcon from "@mui/icons-material/Search";
-import React from "react";
+import React, { useState } from "react";
 
 export default function FilterSearchBar({
   className,
   InputLabelClasses,
   label,
-  onChange,
-  onSubmit = () => {},
-  type,
-  value,
+  // onChange,
+  onSubmit,
+  initialValue,
 }: any) {
+  const [searchValue, setSearchValue] = useState(initialValue);
+
+  // TODO: One could also just use a form?
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       // Perform the search: this invokes the search
       // handling func from its top-level ancestor, within browse.js
       const currentSearchValue = event?.target?.value;
-      onSubmit(type, currentSearchValue);
+      onSubmit(currentSearchValue);
       event.target.blur();
     }
   };
 
   const removeSearchFilter = () => {
-    if (value !== "") {
-      onChange({ preventDefault: () => {}, target: { value: "" } });
-      onSubmit(type, "");
+    if (searchValue !== "") {
+      // onChange({ preventDefault: () => {}, target: { value: "" } });
+      setSearchValue("");
+      onSubmit("");
     }
   };
 
@@ -38,7 +41,7 @@ export default function FilterSearchBar({
             <SearchIcon />
           </InputAdornment>
         ),
-        endAdornment: value && (
+        endAdornment: searchValue && (
           <InputAdornment position="end">
             <IconButton size="small" onClick={removeSearchFilter}>
               <CloseIcon />
@@ -50,12 +53,14 @@ export default function FilterSearchBar({
       InputLabelProps={{
         classes: InputLabelClasses,
       }}
-      onChange={onChange}
+      onChange={(e) => {
+        setSearchValue(e.target.value);
+      }}
       onKeyDown={handleKeyDown}
       placeholder={label}
       size="small"
       variant="outlined"
-      value={value && value}
+      value={searchValue}
     />
   );
 }

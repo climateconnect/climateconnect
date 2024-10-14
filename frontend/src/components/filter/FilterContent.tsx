@@ -4,11 +4,10 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { getLocationFilterKeys } from "../../../public/data/locationFilters";
 import { getReducedPossibleFilters } from "../../../public/lib/parsingOperations";
-import theme from "../../themes/theme";
+// import theme from "../../themes/theme";
 import FilterOverlay from "./FilterOverlay";
 import Filters from "./Filters";
 import SelectedFilters from "./SelectedFilters";
-
 /**
  * Util to return an array of all potential items associated with
  * a given selected filter. Traverses options, and subcategories
@@ -87,20 +86,20 @@ export default function FilterContent({
   applyFilters,
   className,
   errorMessage,
+  filters,
   filtersExpanded,
   handleSetLocationOptionsOpen,
+  handleUpdateFilters,
+  initialLocationFilter,
   locationInputRef,
   locationOptionsOpen,
+  nonFilterParams,
   possibleFilters,
   type,
   unexpandFilters,
-  initialLocationFilter,
-  filters,
-  handleUpdateFilters,
-  nonFilterParams,
 }) {
-  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.between("xs", "lg"));
-  const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.between("xs", "lg"));
+  const isSmallScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
 
   const possibleFiltersFirstHalf = possibleFilters.slice(0, Math.ceil(possibleFilters.length / 2));
   const possibleFiltersSecondHalf = possibleFilters.slice(
