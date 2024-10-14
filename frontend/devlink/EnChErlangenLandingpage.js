@@ -37,10 +37,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
             alt=""
             src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/659680ce18c9fd0e673be88a_Line%201.svg"
           />
-          <_Builtin.Block
-            className={_utils.cx(_styles, "div-block-190")}
-            tag="div"
-          >
+          <_Builtin.Block className={_utils.cx(_styles, "div-block-190")} tag="div">
             <_Builtin.SliderWrapper
               className={_utils.cx(_styles, "slider-9")}
               navSpacing={3}
@@ -68,29 +65,18 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 </_Builtin.SliderSlide>
                 <_Builtin.SliderSlide tag="div">
                   <_Builtin.Block
-                    className={_utils.cx(
-                      _styles,
-                      "div-headerpic-ch-er",
-                      "pic2"
-                    )}
+                    className={_utils.cx(_styles, "div-headerpic-ch-er", "pic2")}
                     tag="div"
                   />
                 </_Builtin.SliderSlide>
                 <_Builtin.SliderSlide tag="div">
                   <_Builtin.Block
-                    className={_utils.cx(
-                      _styles,
-                      "div-headerpic-ch-er",
-                      "pic-3"
-                    )}
+                    className={_utils.cx(_styles, "div-headerpic-ch-er", "pic-3")}
                     tag="div"
                   />
                 </_Builtin.SliderSlide>
               </_Builtin.SliderMask>
-              <_Builtin.SliderArrow
-                className={_utils.cx(_styles, "left-arrow-6")}
-                dir="left"
-              >
+              <_Builtin.SliderArrow className={_utils.cx(_styles, "left-arrow-6")} dir="left">
                 <_Builtin.Icon
                   widget={{
                     type: "icon",
@@ -98,10 +84,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                   }}
                 />
               </_Builtin.SliderArrow>
-              <_Builtin.SliderArrow
-                className={_utils.cx(_styles, "right-arrow-6")}
-                dir="right"
-              >
+              <_Builtin.SliderArrow className={_utils.cx(_styles, "right-arrow-6")} dir="right">
                 <_Builtin.Icon
                   widget={{
                     type: "icon",
@@ -109,39 +92,23 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                   }}
                 />
               </_Builtin.SliderArrow>
-              <_Builtin.SliderNav
-                className={_utils.cx(_styles, "slide-nav-5")}
-              />
+              <_Builtin.SliderNav className={_utils.cx(_styles, "slide-nav-5")} />
             </_Builtin.SliderWrapper>
           </_Builtin.Block>
-          <_Builtin.Block
-            className={_utils.cx(_styles, "div-block-195")}
-            tag="div"
-          >
-            <_Builtin.Heading
-              className={_utils.cx(_styles, "heading-117-copy")}
-              tag="h1"
-            >
-              <_Builtin.Span
-                className={_utils.cx(_styles, "text-span-22-copy")}
-              >
+          <_Builtin.Block className={_utils.cx(_styles, "div-block-195")} tag="div">
+            <_Builtin.Heading className={_utils.cx(_styles, "heading-117-copy")} tag="h1">
+              <_Builtin.Span className={_utils.cx(_styles, "text-span-22-copy")}>
                 {"Act together "}
               </_Builtin.Span>
               {"for Erlangen"}
             </_Builtin.Heading>
-            <_Builtin.Block
-              className={_utils.cx(_styles, "text-block-31-copy")}
-              tag="div"
-            >
+            <_Builtin.Block className={_utils.cx(_styles, "text-block-31-copy")} tag="div">
               {
                 "The ClimateHub shows you the big levers in climate protection. Find projects and groups from Erlangen to get involved yourself and increase your handprint."
               }
             </_Builtin.Block>
             <_Builtin.Block
-              className={_utils.cj(
-                _utils.cx(_styles, "div-block-168"),
-                "w-clearfix"
-              )}
+              className={_utils.cj(_utils.cx(_styles, "div-block-168"), "w-clearfix")}
               tag="div"
             >
               <_Builtin.Link
@@ -165,10 +132,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
             href: "#Handprint1",
           }}
         >
-          <_Builtin.Block
-            className={_utils.cx(_styles, "text-block-19-copy")}
-            tag="div"
-          >
+          <_Builtin.Block className={_utils.cx(_styles, "text-block-19-copy")} tag="div">
             {"More about the ClimateHub"}
           </_Builtin.Block>
           <_Builtin.Image
@@ -203,14 +167,8 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
             alt=""
             src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/65941be2e6398748e3c0ce2d_Pfad%2013421.svg"
           />
-          <_Builtin.Block
-            className={_utils.cx(_styles, "div-block-182")}
-            tag="div"
-          >
-            <_Builtin.Heading
-              className={_utils.cx(_styles, "heading-125")}
-              tag="h2"
-            >
+          <_Builtin.Block className={_utils.cx(_styles, "div-block-182")} tag="div">
+            <_Builtin.Heading className={_utils.cx(_styles, "heading-125")} tag="h2">
               {"Leave your guilty climate conscience at home!"}
             </_Builtin.Heading>
             <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-143")}>
@@ -219,20 +177,11 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
               }
             </_Builtin.Paragraph>
           </_Builtin.Block>
-          <_Builtin.Block
-            className={_utils.cx(_styles, "div-block-183")}
-            tag="div"
-          >
-            <_Builtin.Heading
-              className={_utils.cx(_styles, "heading-125-copy")}
-              tag="h2"
-            >
+          <_Builtin.Block className={_utils.cx(_styles, "div-block-183")} tag="div">
+            <_Builtin.Heading className={_utils.cx(_styles, "heading-125-copy")} tag="h2">
               {"We'll show you how..."}
             </_Builtin.Heading>
-            <_Builtin.Block
-              className={_utils.cx(_styles, "div-block-218")}
-              tag="div"
-            >
+            <_Builtin.Block className={_utils.cx(_styles, "div-block-218")} tag="div">
               <_Builtin.Image
                 className={_utils.cx(_styles, "image-155")}
                 loading="lazy"
@@ -242,13 +191,8 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/65cf634dee821446d0eba5c5_Torstrasse-autofrei-Berlin-by-Tom-Meiser-Timo-Schmid-2048x1365.webp"
               />
             </_Builtin.Block>
-            <_Builtin.Block
-              className={_utils.cx(_styles, "text-block-58")}
-              tag="div"
-            >
-              {
-                "Torstraße autofrei Berlin by Tom Meiser & Timo Schmid, CC BY-NC-SA 4.0"
-              }
+            <_Builtin.Block className={_utils.cx(_styles, "text-block-58")} tag="div">
+              {"Torstraße autofrei Berlin by Tom Meiser & Timo Schmid, CC BY-NC-SA 4.0"}
             </_Builtin.Block>
           </_Builtin.Block>
         </_Builtin.BlockContainer>
@@ -275,20 +219,11 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
             alt=""
             src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/65950e6a9f9d9ac3981b0213_Pfad%2013403.svg"
           />
-          <_Builtin.Heading
-            className={_utils.cx(_styles, "heading-116-copy")}
-            tag="h1"
-          >
+          <_Builtin.Heading className={_utils.cx(_styles, "heading-116-copy")} tag="h1">
             {"Your climate network in Erlangen"}
           </_Builtin.Heading>
-          <_Builtin.Block
-            className={_utils.cx(_styles, "div-block-186")}
-            tag="div"
-          >
-            <_Builtin.Block
-              className={_utils.cx(_styles, "div-block-154-copy-2")}
-              tag="div"
-            >
+          <_Builtin.Block className={_utils.cx(_styles, "div-block-186")} tag="div">
+            <_Builtin.Block className={_utils.cx(_styles, "div-block-154-copy-2")} tag="div">
               <_Builtin.Paragraph>
                 {
                   "The ClimateHub brings together all those active on climate issues in Erlangen. Whether it's projects that are just getting started, long-established organizations or events that you can just drop by. There's something for everyone. Try it out and join in!"
@@ -302,49 +237,28 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
               fadeIn={500}
               fadeOut={500}
             >
-              <_Builtin.TabsMenu
-                className={_utils.cx(_styles, "tabs-menu-4")}
-                tag="div"
-              >
+              <_Builtin.TabsMenu className={_utils.cx(_styles, "tabs-menu-4")} tag="div">
                 <_Builtin.TabsLink
                   className={_utils.cx(_styles, "tab-link-ch")}
                   data-w-id="ed0de107-cdbe-babf-7028-2ebe7cb541fe"
                   data-w-tab="Mitmachen"
                   block="inline"
                 >
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "div-block-184")}
-                    tag="div"
-                  >
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "div-block-dots")}
-                      tag="div"
-                    />
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "div-block-185")}
-                      tag="div"
-                    >
+                  <_Builtin.Block className={_utils.cx(_styles, "div-block-184")} tag="div">
+                    <_Builtin.Block className={_utils.cx(_styles, "div-block-dots")} tag="div" />
+                    <_Builtin.Block className={_utils.cx(_styles, "div-block-185")} tag="div">
                       <_Builtin.Block
-                        className={_utils.cx(
-                          _styles,
-                          "text-block-45-without-break"
-                        )}
+                        className={_utils.cx(_styles, "text-block-45-without-break")}
                         tag="div"
                       >
                         {"Join in"}
                       </_Builtin.Block>
-                      <_Builtin.Block
-                        className={_utils.cx(_styles, "text-block-46")}
-                        tag="div"
-                      >
+                      <_Builtin.Block className={_utils.cx(_styles, "text-block-46")} tag="div">
                         {"Get involved and enlarge your handprint"}
                       </_Builtin.Block>
                     </_Builtin.Block>
                   </_Builtin.Block>
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "div-block-188")}
-                    tag="div"
-                  />
+                  <_Builtin.Block className={_utils.cx(_styles, "div-block-188")} tag="div" />
                 </_Builtin.TabsLink>
                 <_Builtin.TabsLink
                   className={_utils.cx(_styles, "tab-link-ch")}
@@ -352,38 +266,18 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                   data-w-tab="Teilen"
                   block="inline"
                 >
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "div-block-184")}
-                    tag="div"
-                  >
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "div-block-dots")}
-                      tag="div"
-                    />
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "div-block-185")}
-                      tag="div"
-                    >
-                      <_Builtin.Block
-                        className={_utils.cx(_styles, "text-block-45")}
-                        tag="div"
-                      >
+                  <_Builtin.Block className={_utils.cx(_styles, "div-block-184")} tag="div">
+                    <_Builtin.Block className={_utils.cx(_styles, "div-block-dots")} tag="div" />
+                    <_Builtin.Block className={_utils.cx(_styles, "div-block-185")} tag="div">
+                      <_Builtin.Block className={_utils.cx(_styles, "text-block-45")} tag="div">
                         {"Share"}
                       </_Builtin.Block>
-                      <_Builtin.Block
-                        className={_utils.cx(_styles, "text-block-46")}
-                        tag="div"
-                      >
-                        {
-                          "Show others what you are working on and find collaborators"
-                        }
+                      <_Builtin.Block className={_utils.cx(_styles, "text-block-46")} tag="div">
+                        {"Show others what you are working on and find collaborators"}
                       </_Builtin.Block>
                     </_Builtin.Block>
                   </_Builtin.Block>
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "div-block-188")}
-                    tag="div"
-                  />
+                  <_Builtin.Block className={_utils.cx(_styles, "div-block-188")} tag="div" />
                 </_Builtin.TabsLink>
                 <_Builtin.TabsLink
                   className={_utils.cx(_styles, "tab-link-ch")}
@@ -391,38 +285,20 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                   data-w-tab="Treffen"
                   block="inline"
                 >
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "div-block-184")}
-                    tag="div"
-                  >
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "div-block-dots")}
-                      tag="div"
-                    />
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "div-block-185")}
-                      tag="div"
-                    >
-                      <_Builtin.Block
-                        className={_utils.cx(_styles, "text-block-45")}
-                        tag="div"
-                      >
+                  <_Builtin.Block className={_utils.cx(_styles, "div-block-184")} tag="div">
+                    <_Builtin.Block className={_utils.cx(_styles, "div-block-dots")} tag="div" />
+                    <_Builtin.Block className={_utils.cx(_styles, "div-block-185")} tag="div">
+                      <_Builtin.Block className={_utils.cx(_styles, "text-block-45")} tag="div">
                         {"Meet"}
                       </_Builtin.Block>
-                      <_Builtin.Block
-                        className={_utils.cx(_styles, "text-block-46")}
-                        tag="div"
-                      >
+                      <_Builtin.Block className={_utils.cx(_styles, "text-block-46")} tag="div">
                         {"Find local events with impact and more...."}
                       </_Builtin.Block>
                     </_Builtin.Block>
                   </_Builtin.Block>
                 </_Builtin.TabsLink>
               </_Builtin.TabsMenu>
-              <_Builtin.TabsContent
-                className={_utils.cx(_styles, "tabs-content-3")}
-                tag="div"
-              >
+              <_Builtin.TabsContent className={_utils.cx(_styles, "tabs-content-3")} tag="div">
                 <_Builtin.TabsPane tag="div" data-w-tab="Mitmachen">
                   <_Builtin.Image
                     className={_utils.cx(_styles, "image-132")}
@@ -456,17 +332,9 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
               </_Builtin.TabsContent>
             </_Builtin.TabsWrapper>
           </_Builtin.Block>
-          <_Builtin.Block
-            className={_utils.cx(_styles, "div-block-186-copy")}
-            tag="div"
-          >
-            <_Builtin.Block
-              className={_utils.cx(_styles, "div-block-154-copy-2")}
-              tag="div"
-            >
-              <_Builtin.Paragraph
-                className={_utils.cx(_styles, "paragraph-138-copy-2")}
-              >
+          <_Builtin.Block className={_utils.cx(_styles, "div-block-186-copy")} tag="div">
+            <_Builtin.Block className={_utils.cx(_styles, "div-block-154-copy-2")} tag="div">
+              <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-138-copy-2")}>
                 {
                   "Im ClimateHub kommen alle Klimaaktiven in Erlangen zusammen. Ob Projekte die erst noch starten, alt eingesessene Organisationen oder Events zum einfach mal anschauen. Für jeden ist etwas dabei. Probiere es aus und sei dabei!"
                 }
@@ -479,32 +347,17 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
               fadeIn={500}
               fadeOut={500}
             >
-              <_Builtin.TabsMenu
-                className={_utils.cx(_styles, "tabs-menu-4-copy")}
-                tag="div"
-              >
+              <_Builtin.TabsMenu className={_utils.cx(_styles, "tabs-menu-4-copy")} tag="div">
                 <_Builtin.TabsLink
                   className={_utils.cx(_styles, "tab-link-ch")}
                   data-w-id="ed0de107-cdbe-babf-7028-2ebe7cb54225"
                   data-w-tab="Mitmachen"
                   block="inline"
                 >
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "div-block-184")}
-                    tag="div"
-                  >
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "div-block-dots")}
-                      tag="div"
-                    />
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "div-block-185")}
-                      tag="div"
-                    >
-                      <_Builtin.Block
-                        className={_utils.cx(_styles, "text-block-45")}
-                        tag="div"
-                      >
+                  <_Builtin.Block className={_utils.cx(_styles, "div-block-184")} tag="div">
+                    <_Builtin.Block className={_utils.cx(_styles, "div-block-dots")} tag="div" />
+                    <_Builtin.Block className={_utils.cx(_styles, "div-block-185")} tag="div">
+                      <_Builtin.Block className={_utils.cx(_styles, "text-block-45")} tag="div">
                         {"Mitmachen"}
                       </_Builtin.Block>
                       <_Builtin.Block
@@ -515,10 +368,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                       </_Builtin.Block>
                     </_Builtin.Block>
                   </_Builtin.Block>
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "div-block-188")}
-                    tag="div"
-                  />
+                  <_Builtin.Block className={_utils.cx(_styles, "div-block-188")} tag="div" />
                 </_Builtin.TabsLink>
                 <_Builtin.TabsLink
                   className={_utils.cx(_styles, "tab-link-ch")}
@@ -526,38 +376,21 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                   data-w-tab="Teilen"
                   block="inline"
                 >
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "div-block-184")}
-                    tag="div"
-                  >
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "div-block-dots")}
-                      tag="div"
-                    />
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "div-block-185")}
-                      tag="div"
-                    >
-                      <_Builtin.Block
-                        className={_utils.cx(_styles, "text-block-45")}
-                        tag="div"
-                      >
+                  <_Builtin.Block className={_utils.cx(_styles, "div-block-184")} tag="div">
+                    <_Builtin.Block className={_utils.cx(_styles, "div-block-dots")} tag="div" />
+                    <_Builtin.Block className={_utils.cx(_styles, "div-block-185")} tag="div">
+                      <_Builtin.Block className={_utils.cx(_styles, "text-block-45")} tag="div">
                         {"Teilen"}
                       </_Builtin.Block>
                       <_Builtin.Block
                         className={_utils.cx(_styles, "text-block-46-copy")}
                         tag="div"
                       >
-                        {
-                          "Zeig anderen woran du arbeitest und finde Mitstreiter"
-                        }
+                        {"Zeig anderen woran du arbeitest und finde Mitstreiter"}
                       </_Builtin.Block>
                     </_Builtin.Block>
                   </_Builtin.Block>
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "div-block-188")}
-                    tag="div"
-                  />
+                  <_Builtin.Block className={_utils.cx(_styles, "div-block-188")} tag="div" />
                 </_Builtin.TabsLink>
                 <_Builtin.TabsLink
                   className={_utils.cx(_styles, "tab-link-ch")}
@@ -565,22 +398,10 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                   data-w-tab="Treffen"
                   block="inline"
                 >
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "div-block-184")}
-                    tag="div"
-                  >
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "div-block-dots")}
-                      tag="div"
-                    />
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "div-block-185")}
-                      tag="div"
-                    >
-                      <_Builtin.Block
-                        className={_utils.cx(_styles, "text-block-45")}
-                        tag="div"
-                      >
+                  <_Builtin.Block className={_utils.cx(_styles, "div-block-184")} tag="div">
+                    <_Builtin.Block className={_utils.cx(_styles, "div-block-dots")} tag="div" />
+                    <_Builtin.Block className={_utils.cx(_styles, "div-block-185")} tag="div">
+                      <_Builtin.Block className={_utils.cx(_styles, "text-block-45")} tag="div">
                         {"Treffen"}
                       </_Builtin.Block>
                       <_Builtin.Block
@@ -593,10 +414,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                   </_Builtin.Block>
                 </_Builtin.TabsLink>
               </_Builtin.TabsMenu>
-              <_Builtin.TabsContent
-                className={_utils.cx(_styles, "tabs-content-3-copy")}
-                tag="div"
-              >
+              <_Builtin.TabsContent className={_utils.cx(_styles, "tabs-content-3-copy")} tag="div">
                 <_Builtin.TabsPane tag="div" data-w-tab="Mitmachen">
                   <_Builtin.Image
                     className={_utils.cx(_styles, "image-132")}
@@ -654,10 +472,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
           }}
           tag="div"
         >
-          <_Builtin.Heading
-            className={_utils.cx(_styles, "heading-123")}
-            tag="h1"
-          >
+          <_Builtin.Heading className={_utils.cx(_styles, "heading-123")} tag="h1">
             {"What we have already achieved together"}
           </_Builtin.Heading>
           <_Builtin.SliderWrapper
@@ -679,14 +494,8 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
             navInvert={false}
           >
             <_Builtin.SliderMask className={_utils.cx(_styles, "mask-4")}>
-              <_Builtin.SliderSlide
-                className={_utils.cx(_styles, "slide-12")}
-                tag="div"
-              >
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "slide-wrapper")}
-                  tag="div"
-                >
+              <_Builtin.SliderSlide className={_utils.cx(_styles, "slide-12")} tag="div">
+                <_Builtin.Block className={_utils.cx(_styles, "slide-wrapper")} tag="div">
                   <_Builtin.Block
                     className={_utils.cj(
                       _utils.cx(_styles, "div-project-card-slide"),
@@ -702,35 +511,19 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                       alt="Stecker-Solaer Gruppenbild"
                       src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bdeebd308f8ac4a32c201_DSC04561_edited%20(Mittel).jpg"
                     />
-                    <_Builtin.Heading
-                      className={_utils.cx(_styles, "heading-118")}
-                      tag="h2"
-                    >
-                      {
-                        "Stecker-Solaer: the balcony solar consultation in Erlangen"
-                      }
+                    <_Builtin.Heading className={_utils.cx(_styles, "heading-118")} tag="h2">
+                      {"Stecker-Solaer: the balcony solar consultation in Erlangen"}
                     </_Builtin.Heading>
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "text-block-33")}
-                      tag="div"
-                    >
+                    <_Builtin.Block className={_utils.cx(_styles, "text-block-33")} tag="div">
                       {"Made possible by the ClimateHub"}
                     </_Builtin.Block>
-                    <_Builtin.Paragraph
-                      className={_utils.cx(_styles, "paragraph-139")}
-                    >
+                    <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-139")}>
                       {
                         "Stecker-Solaer is a voluntary balcony solar advisory service that was made possible by the ClimateHub Erlangen and our climate networker. With several hundred consultations and many information stands and presentations, countless installations have been made possible."
                       }
                     </_Builtin.Paragraph>
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "div-block-158")}
-                      tag="div"
-                    >
-                      <_Builtin.Block
-                        className={_utils.cx(_styles, "div-block-159")}
-                        tag="div"
-                      >
+                    <_Builtin.Block className={_utils.cx(_styles, "div-block-158")} tag="div">
+                      <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                         <_Builtin.Image
                           className={_utils.cx(_styles, "image-121")}
                           width="auto"
@@ -739,17 +532,11 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                           alt="Herz icon"
                           src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bd91736364e7718c3a6e0_favorite_FILL1_wght400_GRAD0_opsz48.svg"
                         />
-                        <_Builtin.Block
-                          className={_utils.cx(_styles, "text-block-34")}
-                          tag="div"
-                        >
+                        <_Builtin.Block className={_utils.cx(_styles, "text-block-34")} tag="div">
                           {"5"}
                         </_Builtin.Block>
                       </_Builtin.Block>
-                      <_Builtin.Block
-                        className={_utils.cx(_styles, "div-block-159")}
-                        tag="div"
-                      >
+                      <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                         <_Builtin.Image
                           className={_utils.cx(_styles, "image-121")}
                           width="auto"
@@ -758,10 +545,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                           alt="Kommentar Icon"
                           src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bd91736364e7718c3a6e4_mode_comment_FILL0_wght400_GRAD0_opsz48.svg"
                         />
-                        <_Builtin.Block
-                          className={_utils.cx(_styles, "text-block-34")}
-                          tag="div"
-                        >
+                        <_Builtin.Block className={_utils.cx(_styles, "text-block-34")} tag="div">
                           {"2"}
                         </_Builtin.Block>
                       </_Builtin.Block>
@@ -771,7 +555,8 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                       button={true}
                       block=""
                       options={{
-                        href: "https://climateconnect.earth/en/organizations/balkon-solarberatung-erlangen",
+                        href:
+                          "https://climateconnect.earth/en/organizations/balkon-solarberatung-erlangen",
                       }}
                     >
                       {"Learn more"}
@@ -780,10 +565,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 </_Builtin.Block>
               </_Builtin.SliderSlide>
               <_Builtin.SliderSlide tag="div">
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "slide-wrapper")}
-                  tag="div"
-                >
+                <_Builtin.Block className={_utils.cx(_styles, "slide-wrapper")} tag="div">
                   <_Builtin.Block
                     className={_utils.cj(
                       _utils.cx(_styles, "div-project-card-slide"),
@@ -799,33 +581,19 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                       alt=""
                       src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bf9ba4e33d016c1da2c9c_1013944031e70ee06f7743005c3dedcc73268601.jpeg"
                     />
-                    <_Builtin.Heading
-                      className={_utils.cx(_styles, "heading-118")}
-                      tag="h3"
-                    >
+                    <_Builtin.Heading className={_utils.cx(_styles, "heading-118")} tag="h3">
                       {"Climate-friendly commercial kitchens in Erlangen"}
                     </_Builtin.Heading>
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "text-block-33")}
-                      tag="div"
-                    >
+                    <_Builtin.Block className={_utils.cx(_styles, "text-block-33")} tag="div">
                       {"Made possible by the ClimateHub"}
                     </_Builtin.Block>
-                    <_Builtin.Paragraph
-                      className={_utils.cx(_styles, "paragraph-139")}
-                    >
+                    <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-139")}>
                       {
                         "Erlangen canteen kitchens to become climate-friendly; this is exactly what the group has dedicated itself to. A lot has already been achieved with information events for the managers. Much more is planned after the restart in December 23!"
                       }
                     </_Builtin.Paragraph>
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "div-block-158")}
-                      tag="div"
-                    >
-                      <_Builtin.Block
-                        className={_utils.cx(_styles, "div-block-159")}
-                        tag="div"
-                      >
+                    <_Builtin.Block className={_utils.cx(_styles, "div-block-158")} tag="div">
+                      <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                         <_Builtin.Image
                           className={_utils.cx(_styles, "image-121")}
                           width="auto"
@@ -834,17 +602,11 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                           alt="Herz icon"
                           src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bd91736364e7718c3a6e0_favorite_FILL1_wght400_GRAD0_opsz48.svg"
                         />
-                        <_Builtin.Block
-                          className={_utils.cx(_styles, "text-block-34")}
-                          tag="div"
-                        >
+                        <_Builtin.Block className={_utils.cx(_styles, "text-block-34")} tag="div">
                           {"5"}
                         </_Builtin.Block>
                       </_Builtin.Block>
-                      <_Builtin.Block
-                        className={_utils.cx(_styles, "div-block-159")}
-                        tag="div"
-                      >
+                      <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                         <_Builtin.Image
                           className={_utils.cx(_styles, "image-121")}
                           width="auto"
@@ -853,10 +615,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                           alt="Kommentar Icon"
                           src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bd91736364e7718c3a6e4_mode_comment_FILL0_wght400_GRAD0_opsz48.svg"
                         />
-                        <_Builtin.Block
-                          className={_utils.cx(_styles, "text-block-34")}
-                          tag="div"
-                        >
+                        <_Builtin.Block className={_utils.cx(_styles, "text-block-34")} tag="div">
                           {"2"}
                         </_Builtin.Block>
                       </_Builtin.Block>
@@ -866,7 +625,8 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                       button={true}
                       block=""
                       options={{
-                        href: "https://climateconnect.earth/en/projects/klima-kantinen?hubPage=erlangen",
+                        href:
+                          "https://climateconnect.earth/en/projects/klima-kantinen?hubPage=erlangen",
                         target: "_blank",
                       }}
                     >
@@ -876,10 +636,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 </_Builtin.Block>
               </_Builtin.SliderSlide>
               <_Builtin.SliderSlide tag="div">
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "slide-wrapper")}
-                  tag="div"
-                >
+                <_Builtin.Block className={_utils.cx(_styles, "slide-wrapper")} tag="div">
                   <_Builtin.Block
                     className={_utils.cj(
                       _utils.cx(_styles, "div-project-card-slide"),
@@ -895,33 +652,19 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                       alt="Klimakonferenz Erlangen 2022 Gruppenbild"
                       src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/65578094380f50fff167d9cd_nmb-Klimakonferenz-2022-0265-min%20(Mittel).jpg"
                     />
-                    <_Builtin.Heading
-                      className={_utils.cx(_styles, "heading-118")}
-                      tag="h3"
-                    >
+                    <_Builtin.Heading className={_utils.cx(_styles, "heading-118")} tag="h3">
                       {"Climate participation days"}
                     </_Builtin.Heading>
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "text-block-33")}
-                      tag="div"
-                    >
+                    <_Builtin.Block className={_utils.cx(_styles, "text-block-33")} tag="div">
                       {"Organised by the ClimateHub"}
                     </_Builtin.Block>
-                    <_Builtin.Paragraph
-                      className={_utils.cx(_styles, "paragraph-139")}
-                    >
+                    <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-139")}>
                       {
                         "We have already organised 3 Erlangen Climate Participation Days. A total of almost 300 people have been motivated to take part. In addition, numerous new projects have been created for Erlangen."
                       }
                     </_Builtin.Paragraph>
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "div-block-158")}
-                      tag="div"
-                    >
-                      <_Builtin.Block
-                        className={_utils.cx(_styles, "div-block-159")}
-                        tag="div"
-                      >
+                    <_Builtin.Block className={_utils.cx(_styles, "div-block-158")} tag="div">
+                      <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                         <_Builtin.Image
                           className={_utils.cx(_styles, "image-121")}
                           width="auto"
@@ -930,17 +673,11 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                           alt="Herz icon"
                           src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bd91736364e7718c3a6e0_favorite_FILL1_wght400_GRAD0_opsz48.svg"
                         />
-                        <_Builtin.Block
-                          className={_utils.cx(_styles, "text-block-34")}
-                          tag="div"
-                        >
+                        <_Builtin.Block className={_utils.cx(_styles, "text-block-34")} tag="div">
                           {"10"}
                         </_Builtin.Block>
                       </_Builtin.Block>
-                      <_Builtin.Block
-                        className={_utils.cx(_styles, "div-block-159")}
-                        tag="div"
-                      >
+                      <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                         <_Builtin.Image
                           className={_utils.cx(_styles, "image-121")}
                           width="auto"
@@ -949,10 +686,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                           alt="Kommentar Icon"
                           src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bd91736364e7718c3a6e4_mode_comment_FILL0_wght400_GRAD0_opsz48.svg"
                         />
-                        <_Builtin.Block
-                          className={_utils.cx(_styles, "text-block-34")}
-                          tag="div"
-                        >
+                        <_Builtin.Block className={_utils.cx(_styles, "text-block-34")} tag="div">
                           {"3"}
                         </_Builtin.Block>
                       </_Builtin.Block>
@@ -971,10 +705,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 </_Builtin.Block>
               </_Builtin.SliderSlide>
             </_Builtin.SliderMask>
-            <_Builtin.SliderArrow
-              className={_utils.cx(_styles, "left-arrow-7")}
-              dir="left"
-            >
+            <_Builtin.SliderArrow className={_utils.cx(_styles, "left-arrow-7")} dir="left">
               <_Builtin.Icon
                 widget={{
                   type: "icon",
@@ -982,10 +713,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 }}
               />
             </_Builtin.SliderArrow>
-            <_Builtin.SliderArrow
-              className={_utils.cx(_styles, "right-arrow-7")}
-              dir="right"
-            >
+            <_Builtin.SliderArrow className={_utils.cx(_styles, "right-arrow-7")} dir="right">
               <_Builtin.Icon
                 widget={{
                   type: "icon",
@@ -1000,14 +728,8 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
               "The ClimateHub and our climate networker Sophia have already made many new projects and initiatives possible! Anyone can take part in our regular events on a wide range of topics. We actively bring functioning projects from other cities to Erlangen."
             }
           </_Builtin.Paragraph>
-          <_Builtin.Block
-            className={_utils.cx(_styles, "bullet-points-wrapper-ass")}
-            tag="div"
-          >
-            <_Builtin.Block
-              className={_utils.cx(_styles, "bullet-points-ch", "ass")}
-              tag="div"
-            >
+          <_Builtin.Block className={_utils.cx(_styles, "bullet-points-wrapper-ass")} tag="div">
+            <_Builtin.Block className={_utils.cx(_styles, "bullet-points-ch", "ass")} tag="div">
               <_Builtin.Image
                 loading="lazy"
                 width="78"
@@ -1015,23 +737,14 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 alt=""
                 src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/6597e23553aab5ce1c098350_Group%20icon.svg"
               />
-              <_Builtin.Block
-                className={_utils.cx(_styles, "text-block-48")}
-                tag="div"
-              >
+              <_Builtin.Block className={_utils.cx(_styles, "text-block-48")} tag="div">
                 {"54"}
               </_Builtin.Block>
-              <_Builtin.Block
-                className={_utils.cx(_styles, "text-block-49")}
-                tag="div"
-              >
+              <_Builtin.Block className={_utils.cx(_styles, "text-block-49")} tag="div">
                 {"Erlangen climate organisation are involved"}
               </_Builtin.Block>
             </_Builtin.Block>
-            <_Builtin.Block
-              className={_utils.cx(_styles, "bullet-points-ch", "ass")}
-              tag="div"
-            >
+            <_Builtin.Block className={_utils.cx(_styles, "bullet-points-ch", "ass")} tag="div">
               <_Builtin.Image
                 loading="lazy"
                 width="78"
@@ -1039,23 +752,14 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 alt=""
                 src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/6597e252dd71645e2a7799a8_Gruppe%208362.svg"
               />
-              <_Builtin.Block
-                className={_utils.cx(_styles, "text-block-48")}
-                tag="div"
-              >
+              <_Builtin.Block className={_utils.cx(_styles, "text-block-48")} tag="div">
                 {"12+"}
               </_Builtin.Block>
-              <_Builtin.Block
-                className={_utils.cx(_styles, "text-block-49")}
-                tag="div"
-              >
+              <_Builtin.Block className={_utils.cx(_styles, "text-block-49")} tag="div">
                 {"New climate projects and initiatives made possible"}
               </_Builtin.Block>
             </_Builtin.Block>
-            <_Builtin.Block
-              className={_utils.cx(_styles, "bullet-points-ch", "ass")}
-              tag="div"
-            >
+            <_Builtin.Block className={_utils.cx(_styles, "bullet-points-ch", "ass")} tag="div">
               <_Builtin.Image
                 loading="lazy"
                 width="78"
@@ -1063,16 +767,10 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 alt=""
                 src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/646bc53bdebf2b39a2dd72a7_Komponente%2057%20%E2%80%93%204.svg"
               />
-              <_Builtin.Block
-                className={_utils.cx(_styles, "text-block-48")}
-                tag="div"
-              >
+              <_Builtin.Block className={_utils.cx(_styles, "text-block-48")} tag="div">
                 {"5000+"}
               </_Builtin.Block>
-              <_Builtin.Block
-                className={_utils.cx(_styles, "text-block-49")}
-                tag="div"
-              >
+              <_Builtin.Block className={_utils.cx(_styles, "text-block-49")} tag="div">
                 {"Erlangeners reached"}
               </_Builtin.Block>
             </_Builtin.Block>
@@ -1082,10 +780,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
             tag="div"
           >
             <_Builtin.Block
-              className={_utils.cj(
-                _utils.cx(_styles, "div-project-card"),
-                "w-clearfix"
-              )}
+              className={_utils.cj(_utils.cx(_styles, "div-project-card"), "w-clearfix")}
               tag="div"
             >
               <_Builtin.Image
@@ -1096,33 +791,19 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 alt="Stecker-Solaer Gruppenbild"
                 src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bdeebd308f8ac4a32c201_DSC04561_edited%20(Mittel).jpg"
               />
-              <_Builtin.Heading
-                className={_utils.cx(_styles, "heading-118")}
-                tag="h3"
-              >
+              <_Builtin.Heading className={_utils.cx(_styles, "heading-118")} tag="h3">
                 {"Stecker-Solaer: die Balkonsolarberatung in Erlangen "}
               </_Builtin.Heading>
-              <_Builtin.Block
-                className={_utils.cx(_styles, "text-block-33")}
-                tag="div"
-              >
+              <_Builtin.Block className={_utils.cx(_styles, "text-block-33")} tag="div">
                 {"Durch den ClimateHub möglich gemacht"}
               </_Builtin.Block>
-              <_Builtin.Paragraph
-                className={_utils.cx(_styles, "paragraph-139")}
-              >
+              <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-139")}>
                 {
                   "Stecker-Solaer ist eine ehrenamtliche Balkonsolarberatung die durch den ClimateHub Erlangen und unseren Klimaverentzer ermöglicht wurde. Mit inzwischen xxx Beratungen und vielen Infoständen konnten unzählige Anlagen möglich gemacht werden."
                 }
               </_Builtin.Paragraph>
-              <_Builtin.Block
-                className={_utils.cx(_styles, "div-block-158")}
-                tag="div"
-              >
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "div-block-159")}
-                  tag="div"
-                >
+              <_Builtin.Block className={_utils.cx(_styles, "div-block-158")} tag="div">
+                <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                   <_Builtin.Image
                     className={_utils.cx(_styles, "image-121")}
                     loading="lazy"
@@ -1131,17 +812,11 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                     alt="Herz icon"
                     src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bd91736364e7718c3a6e0_favorite_FILL1_wght400_GRAD0_opsz48.svg"
                   />
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "text-block-34")}
-                    tag="div"
-                  >
+                  <_Builtin.Block className={_utils.cx(_styles, "text-block-34")} tag="div">
                     {"5"}
                   </_Builtin.Block>
                 </_Builtin.Block>
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "div-block-159")}
-                  tag="div"
-                >
+                <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                   <_Builtin.Image
                     className={_utils.cx(_styles, "image-121")}
                     loading="lazy"
@@ -1150,10 +825,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                     alt="Kommentar Icon"
                     src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bd91736364e7718c3a6e4_mode_comment_FILL0_wght400_GRAD0_opsz48.svg"
                   />
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "text-block-34")}
-                    tag="div"
-                  >
+                  <_Builtin.Block className={_utils.cx(_styles, "text-block-34")} tag="div">
                     {"2"}
                   </_Builtin.Block>
                 </_Builtin.Block>
@@ -1170,10 +842,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
               </_Builtin.Link>
             </_Builtin.Block>
             <_Builtin.Block
-              className={_utils.cj(
-                _utils.cx(_styles, "div-project-card"),
-                "w-clearfix"
-              )}
+              className={_utils.cj(_utils.cx(_styles, "div-project-card"), "w-clearfix")}
               tag="div"
             >
               <_Builtin.Image
@@ -1184,33 +853,19 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 alt=""
                 src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bf9ba4e33d016c1da2c9c_1013944031e70ee06f7743005c3dedcc73268601.jpeg"
               />
-              <_Builtin.Heading
-                className={_utils.cx(_styles, "heading-118")}
-                tag="h3"
-              >
+              <_Builtin.Heading className={_utils.cx(_styles, "heading-118")} tag="h3">
                 {"Klimafreundliche Großküchen in Erlangen"}
               </_Builtin.Heading>
-              <_Builtin.Block
-                className={_utils.cx(_styles, "text-block-33")}
-                tag="div"
-              >
+              <_Builtin.Block className={_utils.cx(_styles, "text-block-33")} tag="div">
                 {"Durch den ClimateHub möglich gemacht"}
               </_Builtin.Block>
-              <_Builtin.Paragraph
-                className={_utils.cx(_styles, "paragraph-139")}
-              >
+              <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-139")}>
                 {
                   "Stecker-Solaer ist eine ehrenamtliche Balkonsolarberatung die durch den ClimateHub Erlangen und unseren Klimaverentzer ermöglicht wurde. Mit inzwischen xxx Beratungen und vielen Infoständen konnten unzählige Anlagen möglich gemacht werden."
                 }
               </_Builtin.Paragraph>
-              <_Builtin.Block
-                className={_utils.cx(_styles, "div-block-158")}
-                tag="div"
-              >
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "div-block-159")}
-                  tag="div"
-                >
+              <_Builtin.Block className={_utils.cx(_styles, "div-block-158")} tag="div">
+                <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                   <_Builtin.Image
                     className={_utils.cx(_styles, "image-121")}
                     loading="lazy"
@@ -1219,17 +874,11 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                     alt="Herz icon"
                     src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bd91736364e7718c3a6e0_favorite_FILL1_wght400_GRAD0_opsz48.svg"
                   />
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "text-block-34")}
-                    tag="div"
-                  >
+                  <_Builtin.Block className={_utils.cx(_styles, "text-block-34")} tag="div">
                     {"5"}
                   </_Builtin.Block>
                 </_Builtin.Block>
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "div-block-159")}
-                  tag="div"
-                >
+                <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                   <_Builtin.Image
                     className={_utils.cx(_styles, "image-121")}
                     loading="lazy"
@@ -1238,10 +887,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                     alt="Kommentar Icon"
                     src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bd91736364e7718c3a6e4_mode_comment_FILL0_wght400_GRAD0_opsz48.svg"
                   />
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "text-block-34")}
-                    tag="div"
-                  >
+                  <_Builtin.Block className={_utils.cx(_styles, "text-block-34")} tag="div">
                     {"2"}
                   </_Builtin.Block>
                 </_Builtin.Block>
@@ -1258,10 +904,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
               </_Builtin.Link>
             </_Builtin.Block>
             <_Builtin.Block
-              className={_utils.cj(
-                _utils.cx(_styles, "div-project-card"),
-                "w-clearfix"
-              )}
+              className={_utils.cj(_utils.cx(_styles, "div-project-card"), "w-clearfix")}
               tag="div"
             >
               <_Builtin.Image
@@ -1272,33 +915,19 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 alt="Stecker-Solaer Gruppenbild"
                 src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bdeebd308f8ac4a32c201_DSC04561_edited%20(Mittel).jpg"
               />
-              <_Builtin.Heading
-                className={_utils.cx(_styles, "heading-118")}
-                tag="h3"
-              >
+              <_Builtin.Heading className={_utils.cx(_styles, "heading-118")} tag="h3">
                 {"Stecker-Solaer: die Balkonsolarberatung in Erlangen "}
               </_Builtin.Heading>
-              <_Builtin.Block
-                className={_utils.cx(_styles, "text-block-33")}
-                tag="div"
-              >
+              <_Builtin.Block className={_utils.cx(_styles, "text-block-33")} tag="div">
                 {"Durch den ClimateHub möglich gemacht"}
               </_Builtin.Block>
-              <_Builtin.Paragraph
-                className={_utils.cx(_styles, "paragraph-139")}
-              >
+              <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-139")}>
                 {
                   "Stecker-Solaer ist eine ehrenamtliche Balkonsolarberatung die durch den ClimateHub Erlangen und unseren Klimaverentzer ermöglicht wurde. Mit inzwischen xxx Beratungen und vielen Infoständen konnten unzählige Anlagen möglich gemacht werden."
                 }
               </_Builtin.Paragraph>
-              <_Builtin.Block
-                className={_utils.cx(_styles, "div-block-158")}
-                tag="div"
-              >
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "div-block-159")}
-                  tag="div"
-                >
+              <_Builtin.Block className={_utils.cx(_styles, "div-block-158")} tag="div">
+                <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                   <_Builtin.Image
                     className={_utils.cx(_styles, "image-121")}
                     loading="lazy"
@@ -1307,17 +936,11 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                     alt="Herz icon"
                     src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bd91736364e7718c3a6e0_favorite_FILL1_wght400_GRAD0_opsz48.svg"
                   />
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "text-block-34")}
-                    tag="div"
-                  >
+                  <_Builtin.Block className={_utils.cx(_styles, "text-block-34")} tag="div">
                     {"5"}
                   </_Builtin.Block>
                 </_Builtin.Block>
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "div-block-159")}
-                  tag="div"
-                >
+                <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                   <_Builtin.Image
                     className={_utils.cx(_styles, "image-121")}
                     loading="lazy"
@@ -1326,10 +949,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                     alt="Kommentar Icon"
                     src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bd91736364e7718c3a6e4_mode_comment_FILL0_wght400_GRAD0_opsz48.svg"
                   />
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "text-block-34")}
-                    tag="div"
-                  >
+                  <_Builtin.Block className={_utils.cx(_styles, "text-block-34")} tag="div">
                     {"2"}
                   </_Builtin.Block>
                 </_Builtin.Block>
@@ -1346,10 +966,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
               </_Builtin.Link>
             </_Builtin.Block>
             <_Builtin.Block
-              className={_utils.cj(
-                _utils.cx(_styles, "div-project-card"),
-                "w-clearfix"
-              )}
+              className={_utils.cj(_utils.cx(_styles, "div-project-card"), "w-clearfix")}
               tag="div"
             >
               <_Builtin.Image
@@ -1360,33 +977,19 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 alt="Stecker-Solaer Gruppenbild"
                 src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bdeebd308f8ac4a32c201_DSC04561_edited%20(Mittel).jpg"
               />
-              <_Builtin.Heading
-                className={_utils.cx(_styles, "heading-118")}
-                tag="h3"
-              >
+              <_Builtin.Heading className={_utils.cx(_styles, "heading-118")} tag="h3">
                 {"Stecker-Solaer: die Balkonsolarberatung in Erlangen "}
               </_Builtin.Heading>
-              <_Builtin.Block
-                className={_utils.cx(_styles, "text-block-33")}
-                tag="div"
-              >
+              <_Builtin.Block className={_utils.cx(_styles, "text-block-33")} tag="div">
                 {"Durch den ClimateHub möglich gemacht"}
               </_Builtin.Block>
-              <_Builtin.Paragraph
-                className={_utils.cx(_styles, "paragraph-139")}
-              >
+              <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-139")}>
                 {
                   "Stecker-Solaer ist eine ehrenamtliche Balkonsolarberatung die durch den ClimateHub Erlangen und unseren Klimaverentzer ermöglicht wurde. Mit inzwischen xxx Beratungen und vielen Infoständen konnten unzählige Anlagen möglich gemacht werden."
                 }
               </_Builtin.Paragraph>
-              <_Builtin.Block
-                className={_utils.cx(_styles, "div-block-158")}
-                tag="div"
-              >
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "div-block-159")}
-                  tag="div"
-                >
+              <_Builtin.Block className={_utils.cx(_styles, "div-block-158")} tag="div">
+                <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                   <_Builtin.Image
                     className={_utils.cx(_styles, "image-121")}
                     loading="lazy"
@@ -1395,17 +998,11 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                     alt="Herz icon"
                     src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bd91736364e7718c3a6e0_favorite_FILL1_wght400_GRAD0_opsz48.svg"
                   />
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "text-block-34")}
-                    tag="div"
-                  >
+                  <_Builtin.Block className={_utils.cx(_styles, "text-block-34")} tag="div">
                     {"5"}
                   </_Builtin.Block>
                 </_Builtin.Block>
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "div-block-159")}
-                  tag="div"
-                >
+                <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                   <_Builtin.Image
                     className={_utils.cx(_styles, "image-121")}
                     loading="lazy"
@@ -1414,10 +1011,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                     alt="Kommentar Icon"
                     src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bd91736364e7718c3a6e4_mode_comment_FILL0_wght400_GRAD0_opsz48.svg"
                   />
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "text-block-34")}
-                    tag="div"
-                  >
+                  <_Builtin.Block className={_utils.cx(_styles, "text-block-34")} tag="div">
                     {"2"}
                   </_Builtin.Block>
                 </_Builtin.Block>
@@ -1434,14 +1028,8 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
               </_Builtin.Link>
             </_Builtin.Block>
           </_Builtin.Block>
-          <_Builtin.Block
-            className={_utils.cx(_styles, "div-block-160")}
-            tag="div"
-          >
-            <_Builtin.Heading
-              className={_utils.cx(_styles, "heading-119")}
-              tag="h1"
-            >
+          <_Builtin.Block className={_utils.cx(_styles, "div-block-160")} tag="div">
+            <_Builtin.Heading className={_utils.cx(_styles, "heading-119")} tag="h1">
               {'"Become part of it too!"'}
             </_Builtin.Heading>
             <_Builtin.Link
@@ -1478,15 +1066,9 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
           }}
           tag="div"
         >
-          <_Builtin.Block
-            className={_utils.cx(_styles, "div-block-163")}
-            tag="div"
-          >
+          <_Builtin.Block className={_utils.cx(_styles, "div-block-163")} tag="div">
             <_Builtin.Block tag="div">
-              <_Builtin.Heading
-                className={_utils.cx(_styles, "heading-124")}
-                tag="h1"
-              >
+              <_Builtin.Heading className={_utils.cx(_styles, "heading-124")} tag="h1">
                 {"Always there for you: your climate networker"}
               </_Builtin.Heading>
               <_Builtin.Paragraph>
@@ -1500,10 +1082,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 <br />
               </_Builtin.Paragraph>
             </_Builtin.Block>
-            <_Builtin.Block
-              className={_utils.cx(_styles, "div-block-162")}
-              tag="div"
-            >
+            <_Builtin.Block className={_utils.cx(_styles, "div-block-162")} tag="div">
               <_Builtin.Image
                 className={_utils.cx(_styles, "image-122")}
                 loading="lazy"
@@ -1512,16 +1091,10 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 alt="Profilbild Sophia Thomas Klimakoordinatorin Erlangen"
                 src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/655de9d926c33aacb4766f5c_KMTMR23%201415_7595%20(Klein).jpg"
               />
-              <_Builtin.Heading
-                className={_utils.cx(_styles, "heading-120")}
-                tag="h2"
-              >
+              <_Builtin.Heading className={_utils.cx(_styles, "heading-120")} tag="h2">
                 {"Sophia Thomas"}
               </_Builtin.Heading>
-              <_Builtin.Block
-                className={_utils.cx(_styles, "text-block-35")}
-                tag="div"
-              >
+              <_Builtin.Block className={_utils.cx(_styles, "text-block-35")} tag="div">
                 {'"Let\'s make climate protection a joint task in Erlangen!"'}
               </_Builtin.Block>
               <_Builtin.Link
@@ -1551,27 +1124,16 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
           }}
           tag="div"
         >
-          <_Builtin.Block
-            className={_utils.cx(_styles, "div-block-164")}
-            tag="div"
-          >
-            <_Builtin.Block
-              className={_utils.cx(_styles, "div-block-165")}
-              tag="div"
-            >
-              <_Builtin.Heading tag="h1">
-                {"How does the ClimateHub work?"}
-              </_Builtin.Heading>
+          <_Builtin.Block className={_utils.cx(_styles, "div-block-164")} tag="div">
+            <_Builtin.Block className={_utils.cx(_styles, "div-block-165")} tag="div">
+              <_Builtin.Heading tag="h1">{"How does the ClimateHub work?"}</_Builtin.Heading>
               <_Builtin.Paragraph>
                 {
                   "The ClimateHub is a non-profit contact point for all people who are committed to climate protection in Erlangen and who want to get involved. We have our own online platform as a digital exchange platform and our local networker Sophia on site. Together, we bring all the city's stakeholders together to fight the climate crisis. With many events and campaigns, we inspire even more people to get involved in climate protection."
                 }
               </_Builtin.Paragraph>
             </_Builtin.Block>
-            <_Builtin.Block
-              className={_utils.cx(_styles, "div-block-166")}
-              tag="div"
-            >
+            <_Builtin.Block className={_utils.cx(_styles, "div-block-166")} tag="div">
               <_Builtin.DropdownWrapper
                 className={_utils.cx(_styles, "accordeon-ch")}
                 data-w-id="ed0de107-cdbe-babf-7028-2ebe7cb54315"
@@ -1590,27 +1152,16 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                       icon: "dropdown-toggle",
                     }}
                   />
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "text-block-36")}
-                    tag="div"
-                  >
+                  <_Builtin.Block className={_utils.cx(_styles, "text-block-36")} tag="div">
                     {"Online Plattform"}
                   </_Builtin.Block>
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "div-block-167")}
-                    tag="div"
-                  />
+                  <_Builtin.Block className={_utils.cx(_styles, "div-block-167")} tag="div" />
                 </_Builtin.DropdownToggle>
                 <_Builtin.DropdownList
-                  className={_utils.cj(
-                    _utils.cx(_styles, "dropdown-list-4"),
-                    "w-clearfix"
-                  )}
+                  className={_utils.cj(_utils.cx(_styles, "dropdown-list-4"), "w-clearfix")}
                   tag="nav"
                 >
-                  <_Builtin.Paragraph
-                    className={_utils.cx(_styles, "paragraph-140")}
-                  >
+                  <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-140")}>
                     {
                       "The platform brings together all groups from Erlangen and makes them easy to find. It is a central exchange point for interested and active people."
                     }
@@ -1646,24 +1197,13 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                       icon: "dropdown-toggle",
                     }}
                   />
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "text-block-36")}
-                    tag="div"
-                  >
+                  <_Builtin.Block className={_utils.cx(_styles, "text-block-36")} tag="div">
                     {"Event calendar"}
                   </_Builtin.Block>
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "div-block-167")}
-                    tag="div"
-                  />
+                  <_Builtin.Block className={_utils.cx(_styles, "div-block-167")} tag="div" />
                 </_Builtin.DropdownToggle>
-                <_Builtin.DropdownList
-                  className={_utils.cx(_styles, "dropdown-list-4")}
-                  tag="nav"
-                >
-                  <_Builtin.Paragraph
-                    className={_utils.cx(_styles, "paragraph-140")}
-                  >
+                <_Builtin.DropdownList className={_utils.cx(_styles, "dropdown-list-4")} tag="nav">
+                  <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-140")}>
                     {
                       "Here you can find upcoming events in Erlangen. The calendar is managed by Sophia and the events are regularly advertised via our email and social media channels."
                     }
@@ -1688,27 +1228,16 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                       icon: "dropdown-toggle",
                     }}
                   />
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "text-block-36")}
-                    tag="div"
-                  >
+                  <_Builtin.Block className={_utils.cx(_styles, "text-block-36")} tag="div">
                     {"ClimateMatch"}
                   </_Builtin.Block>
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "div-block-167")}
-                    tag="div"
-                  />
+                  <_Builtin.Block className={_utils.cx(_styles, "div-block-167")} tag="div" />
                 </_Builtin.DropdownToggle>
                 <_Builtin.DropdownList
-                  className={_utils.cj(
-                    _utils.cx(_styles, "dropdown-list-4"),
-                    "w-clearfix"
-                  )}
+                  className={_utils.cj(_utils.cx(_styles, "dropdown-list-4"), "w-clearfix")}
                   tag="nav"
                 >
-                  <_Builtin.Paragraph
-                    className={_utils.cx(_styles, "paragraph-140")}
-                  >
+                  <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-140")}>
                     {
                       "Answer 4 short questions and you've found the right project. Write to the person responsible right away and get started!"
                     }
@@ -1743,27 +1272,16 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                       icon: "dropdown-toggle",
                     }}
                   />
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "text-block-36")}
-                    tag="div"
-                  >
+                  <_Builtin.Block className={_utils.cx(_styles, "text-block-36")} tag="div">
                     {"Ideas"}
                   </_Builtin.Block>
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "div-block-167")}
-                    tag="div"
-                  />
+                  <_Builtin.Block className={_utils.cx(_styles, "div-block-167")} tag="div" />
                 </_Builtin.DropdownToggle>
                 <_Builtin.DropdownList
-                  className={_utils.cj(
-                    _utils.cx(_styles, "dropdown-list-4"),
-                    "w-clearfix"
-                  )}
+                  className={_utils.cj(_utils.cx(_styles, "dropdown-list-4"), "w-clearfix")}
                   tag="nav"
                 >
-                  <_Builtin.Paragraph
-                    className={_utils.cx(_styles, "paragraph-140")}
-                  >
+                  <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-140")}>
                     {
                       "Do you have an idea and are looking for support to realise it? Use the ideas board to find the right people to help you."
                     }
@@ -1798,24 +1316,13 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                       icon: "dropdown-toggle",
                     }}
                   />
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "text-block-36")}
-                    tag="div"
-                  >
+                  <_Builtin.Block className={_utils.cx(_styles, "text-block-36")} tag="div">
                     {"Online Chat"}
                   </_Builtin.Block>
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "div-block-167")}
-                    tag="div"
-                  />
+                  <_Builtin.Block className={_utils.cx(_styles, "div-block-167")} tag="div" />
                 </_Builtin.DropdownToggle>
-                <_Builtin.DropdownList
-                  className={_utils.cx(_styles, "dropdown-list-4")}
-                  tag="nav"
-                >
-                  <_Builtin.Paragraph
-                    className={_utils.cx(_styles, "paragraph-140")}
-                  >
+                <_Builtin.DropdownList className={_utils.cx(_styles, "dropdown-list-4")} tag="nav">
+                  <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-140")}>
                     {
                       "You can reach all climate activists from your city via the Climate Connect chat. Write a message if you would like to take part in a project or have a question."
                     }
@@ -1839,10 +1346,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
           }}
           tag="div"
         >
-          <_Builtin.Heading
-            className={_utils.cx(_styles, "heading-121")}
-            tag="h1"
-          >
+          <_Builtin.Heading className={_utils.cx(_styles, "heading-121")} tag="h1">
             {"Our supporters about the ClimateHub"}
           </_Builtin.Heading>
         </_Builtin.BlockContainer>
@@ -1862,10 +1366,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
           alt=""
           src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/638db96c0d5f31c3b0ca3c57_Icon%20material-format-quote.svg"
         />
-        <_Builtin.Block
-          className={_utils.cx(_styles, "quoteswrapper")}
-          tag="div"
-        >
+        <_Builtin.Block className={_utils.cx(_styles, "quoteswrapper")} tag="div">
           <QuoteWOCms
             nameQuote="Stefan Jessenberger"
             quote='"Die Klimakrise lässt sich nur durch die Aktivierung großer Teile der Gesellschaft bekämpfen. Deshalb freut es mich, dass der ClimateHub Menschen auf lokaler Ebene mit bereits aktiven Gruppen zusammenbringt. "'
@@ -1912,10 +1413,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
           alt=""
           src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/638db96c0d5f31c3b0ca3c57_Icon%20material-format-quote.svg"
         />
-        <_Builtin.Block
-          className={_utils.cx(_styles, "quoteswrapper")}
-          tag="div"
-        >
+        <_Builtin.Block className={_utils.cx(_styles, "quoteswrapper")} tag="div">
           <_Builtin.NotSupported _atom="DynamoWrapper" />
         </_Builtin.Block>
       </_Builtin.Section>
@@ -1932,16 +1430,11 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
           }}
           tag="div"
         >
-          <_Builtin.Block
-            className={_utils.cx(_styles, "div-block-200")}
-            tag="div"
-          >
+          <_Builtin.Block className={_utils.cx(_styles, "div-block-200")} tag="div">
             <_Builtin.Block tag="div">
               <_Builtin.Heading tag="h1">{"Find your group"}</_Builtin.Heading>
               <_Builtin.Paragraph>
-                {
-                  "You can find all active climate groups in Erlangen on the ClimateHub"
-                }
+                {"You can find all active climate groups in Erlangen on the ClimateHub"}
               </_Builtin.Paragraph>
               <_Builtin.SliderWrapper
                 className={_utils.cx(_styles, "slider-orgs-ch")}
@@ -1962,18 +1455,9 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 navInvert={false}
               >
                 <_Builtin.SliderMask className={_utils.cx(_styles, "mask-4")}>
-                  <_Builtin.SliderSlide
-                    className={_utils.cx(_styles, "slide-12")}
-                    tag="div"
-                  >
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "slide-wrapper")}
-                      tag="div"
-                    >
-                      <_Builtin.Block
-                        className={_utils.cx(_styles, "div-org-cards")}
-                        tag="div"
-                      >
+                  <_Builtin.SliderSlide className={_utils.cx(_styles, "slide-12")} tag="div">
+                    <_Builtin.Block className={_utils.cx(_styles, "slide-wrapper")} tag="div">
+                      <_Builtin.Block className={_utils.cx(_styles, "div-org-cards")} tag="div">
                         <_Builtin.Image
                           className={_utils.cx(_styles, "image-org-logo")}
                           loading="lazy"
@@ -1982,33 +1466,19 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                           alt="sneep Logo"
                           src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bf7dd5f3329028b31effb_277ad08ee6ea0f75097b7b79cf31f0c28358daa2.jpeg"
                         />
-                        <_Builtin.Block
-                          className={_utils.cx(_styles, "text-block-38")}
-                          tag="div"
-                        >
+                        <_Builtin.Block className={_utils.cx(_styles, "text-block-38")} tag="div">
                           {"Hochschulgruppe"}
                         </_Builtin.Block>
-                        <_Builtin.Heading
-                          className={_utils.cx(_styles, "heading-118")}
-                          tag="h2"
-                        >
+                        <_Builtin.Heading className={_utils.cx(_styles, "heading-118")} tag="h2">
                           {"sneep"}
                         </_Builtin.Heading>
-                        <_Builtin.Paragraph
-                          className={_utils.cx(_styles, "paragraph-139")}
-                        >
+                        <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-139")}>
                           {
                             "Wir sind eine studentische Organisation an der Friedrich-Alexander-Universität, die sich mit Nachhaltigkeitsthemen beschäftigt."
                           }
                         </_Builtin.Paragraph>
-                        <_Builtin.Block
-                          className={_utils.cx(_styles, "div-block-158")}
-                          tag="div"
-                        >
-                          <_Builtin.Block
-                            className={_utils.cx(_styles, "div-block-159")}
-                            tag="div"
-                          >
+                        <_Builtin.Block className={_utils.cx(_styles, "div-block-158")} tag="div">
+                          <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                             <_Builtin.Image
                               className={_utils.cx(_styles, "image-124")}
                               loading="lazy"
@@ -2024,10 +1494,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                               {"15"}
                             </_Builtin.Block>
                           </_Builtin.Block>
-                          <_Builtin.Block
-                            className={_utils.cx(_styles, "div-block-159")}
-                            tag="div"
-                          >
+                          <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                             <_Builtin.Image
                               className={_utils.cx(_styles, "image-124")}
                               loading="lazy"
@@ -2048,10 +1515,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                     </_Builtin.Block>
                   </_Builtin.SliderSlide>
                   <_Builtin.SliderSlide tag="div">
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "slide-wrapper")}
-                      tag="div"
-                    >
+                    <_Builtin.Block className={_utils.cx(_styles, "slide-wrapper")} tag="div">
                       <_Builtin.Block
                         className={_utils.cj(
                           _utils.cx(_styles, "div-project-card-slide"),
@@ -2067,33 +1531,19 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                           alt=""
                           src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bf9ba4e33d016c1da2c9c_1013944031e70ee06f7743005c3dedcc73268601.jpeg"
                         />
-                        <_Builtin.Heading
-                          className={_utils.cx(_styles, "heading-118")}
-                          tag="h3"
-                        >
+                        <_Builtin.Heading className={_utils.cx(_styles, "heading-118")} tag="h3">
                           {"Klimafreundliche Großküchen in Erlangen"}
                         </_Builtin.Heading>
-                        <_Builtin.Block
-                          className={_utils.cx(_styles, "text-block-33")}
-                          tag="div"
-                        >
+                        <_Builtin.Block className={_utils.cx(_styles, "text-block-33")} tag="div">
                           {"Durch den ClimateHub möglich gemacht"}
                         </_Builtin.Block>
-                        <_Builtin.Paragraph
-                          className={_utils.cx(_styles, "paragraph-139")}
-                        >
+                        <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-139")}>
                           {
                             "Stecker-Solaer ist eine ehrenamtliche Balkonsolarberatung die durch den ClimateHub Erlangen und unseren Klimaverentzer ermöglicht wurde. Mit inzwischen xxx Beratungen und vielen Infoständen konnten unzählige Anlagen möglich gemacht werden."
                           }
                         </_Builtin.Paragraph>
-                        <_Builtin.Block
-                          className={_utils.cx(_styles, "div-block-158")}
-                          tag="div"
-                        >
-                          <_Builtin.Block
-                            className={_utils.cx(_styles, "div-block-159")}
-                            tag="div"
-                          >
+                        <_Builtin.Block className={_utils.cx(_styles, "div-block-158")} tag="div">
+                          <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                             <_Builtin.Image
                               className={_utils.cx(_styles, "image-121")}
                               width="auto"
@@ -2109,10 +1559,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                               {"5"}
                             </_Builtin.Block>
                           </_Builtin.Block>
-                          <_Builtin.Block
-                            className={_utils.cx(_styles, "div-block-159")}
-                            tag="div"
-                          >
+                          <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                             <_Builtin.Image
                               className={_utils.cx(_styles, "image-121")}
                               width="auto"
@@ -2143,10 +1590,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                     </_Builtin.Block>
                   </_Builtin.SliderSlide>
                   <_Builtin.SliderSlide tag="div">
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "slide-wrapper")}
-                      tag="div"
-                    >
+                    <_Builtin.Block className={_utils.cx(_styles, "slide-wrapper")} tag="div">
                       <_Builtin.Block
                         className={_utils.cj(
                           _utils.cx(_styles, "div-project-card-slide"),
@@ -2162,33 +1606,19 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                           alt="Klimakonferenz Erlangen 2022 Gruppenbild"
                           src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/65578094380f50fff167d9cd_nmb-Klimakonferenz-2022-0265-min%20(Mittel).jpg"
                         />
-                        <_Builtin.Heading
-                          className={_utils.cx(_styles, "heading-118")}
-                          tag="h3"
-                        >
+                        <_Builtin.Heading className={_utils.cx(_styles, "heading-118")} tag="h3">
                           {"Klima-Mitmach-Tage"}
                         </_Builtin.Heading>
-                        <_Builtin.Block
-                          className={_utils.cx(_styles, "text-block-33")}
-                          tag="div"
-                        >
+                        <_Builtin.Block className={_utils.cx(_styles, "text-block-33")} tag="div">
                           {"Durch den ClimateHub möglich gemacht"}
                         </_Builtin.Block>
-                        <_Builtin.Paragraph
-                          className={_utils.cx(_styles, "paragraph-139")}
-                        >
+                        <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-139")}>
                           {
                             "Bereits 3 Erlanger Klima-Mitmach-Tage haben wir organisiert. So konnten insgeamt über 200 Menschen zum mitmachen motiviert werden. Außerdem sind so zahlreiche neue Projekt für Erlangen entstanden."
                           }
                         </_Builtin.Paragraph>
-                        <_Builtin.Block
-                          className={_utils.cx(_styles, "div-block-158")}
-                          tag="div"
-                        >
-                          <_Builtin.Block
-                            className={_utils.cx(_styles, "div-block-159")}
-                            tag="div"
-                          >
+                        <_Builtin.Block className={_utils.cx(_styles, "div-block-158")} tag="div">
+                          <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                             <_Builtin.Image
                               className={_utils.cx(_styles, "image-121")}
                               width="auto"
@@ -2204,10 +1634,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                               {"10"}
                             </_Builtin.Block>
                           </_Builtin.Block>
-                          <_Builtin.Block
-                            className={_utils.cx(_styles, "div-block-159")}
-                            tag="div"
-                          >
+                          <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                             <_Builtin.Image
                               className={_utils.cx(_styles, "image-121")}
                               width="auto"
@@ -2254,15 +1681,10 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                     }}
                   />
                 </_Builtin.SliderArrow>
-                <_Builtin.SliderNav
-                  className={_utils.cx(_styles, "slide-nav-4")}
-                />
+                <_Builtin.SliderNav className={_utils.cx(_styles, "slide-nav-4")} />
               </_Builtin.SliderWrapper>
             </_Builtin.Block>
-            <_Builtin.Block
-              className={_utils.cx(_styles, "div-block-orgs")}
-              tag="div"
-            >
+            <_Builtin.Block className={_utils.cx(_styles, "div-block-orgs")} tag="div">
               <_Builtin.Link
                 className={_utils.cx(_styles, "div-org-cards")}
                 button={false}
@@ -2279,33 +1701,19 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                   alt="sneep Logo"
                   src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bf7dd5f3329028b31effb_277ad08ee6ea0f75097b7b79cf31f0c28358daa2.jpeg"
                 />
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "text-block-38")}
-                  tag="div"
-                >
+                <_Builtin.Block className={_utils.cx(_styles, "text-block-38")} tag="div">
                   {"University group"}
                 </_Builtin.Block>
-                <_Builtin.Heading
-                  className={_utils.cx(_styles, "heading-118")}
-                  tag="h3"
-                >
+                <_Builtin.Heading className={_utils.cx(_styles, "heading-118")} tag="h3">
                   {"sneep"}
                 </_Builtin.Heading>
-                <_Builtin.Paragraph
-                  className={_utils.cx(_styles, "paragraph-139")}
-                >
+                <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-139")}>
                   {
                     "We are a student organisation at Friedrich-Alexander University that deals with sustainability issues."
                   }
                 </_Builtin.Paragraph>
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "div-block-158")}
-                  tag="div"
-                >
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "div-block-159")}
-                    tag="div"
-                  >
+                <_Builtin.Block className={_utils.cx(_styles, "div-block-158")} tag="div">
+                  <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                     <_Builtin.Image
                       className={_utils.cx(_styles, "image-124")}
                       loading="lazy"
@@ -2314,17 +1722,11 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                       alt="Icon Gruppe"
                       src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bf5f26f6e865b2f5ebeea_Pfad%2010815.svg"
                     />
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "text-block-34")}
-                      tag="div"
-                    >
+                    <_Builtin.Block className={_utils.cx(_styles, "text-block-34")} tag="div">
                       {"15"}
                     </_Builtin.Block>
                   </_Builtin.Block>
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "div-block-159")}
-                    tag="div"
-                  >
+                  <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                     <_Builtin.Image
                       className={_utils.cx(_styles, "image-124")}
                       loading="lazy"
@@ -2333,10 +1735,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                       alt="Icon Projekt"
                       src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bf5f2d308f8ac4a487899_content_paste_black_24dp.svg"
                     />
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "text-block-34")}
-                      tag="div"
-                    >
+                    <_Builtin.Block className={_utils.cx(_styles, "text-block-34")} tag="div">
                       {"8"}
                     </_Builtin.Block>
                   </_Builtin.Block>
@@ -2347,7 +1746,8 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 button={false}
                 block="inline"
                 options={{
-                  href: "https://climateconnect.earth/en/organizations/EnergiewendeER(H)langene.V.9",
+                  href:
+                    "https://climateconnect.earth/en/organizations/EnergiewendeER(H)langene.V.9",
                 }}
               >
                 <_Builtin.Image
@@ -2358,33 +1758,19 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                   alt="Logo Energiewende ER(H)langen e.V."
                   src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bf832b7a633cd6bb8ffbe_Logo_EWERH_eV-2x.jpg"
                 />
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "text-block-38")}
-                  tag="div"
-                >
+                <_Builtin.Block className={_utils.cx(_styles, "text-block-38")} tag="div">
                   {"Association"}
                 </_Builtin.Block>
-                <_Builtin.Heading
-                  className={_utils.cx(_styles, "heading-118")}
-                  tag="h3"
-                >
+                <_Builtin.Heading className={_utils.cx(_styles, "heading-118")} tag="h3">
                   {"Energiewende ER(H)langen e.V."}
                 </_Builtin.Heading>
-                <_Builtin.Paragraph
-                  className={_utils.cx(_styles, "paragraph-139")}
-                >
+                <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-139")}>
                   {
                     "For the energy transition and climate protection in Erlangen and the district of Erlangen-Höchstadt"
                   }
                 </_Builtin.Paragraph>
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "div-block-158")}
-                  tag="div"
-                >
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "div-block-159")}
-                    tag="div"
-                  >
+                <_Builtin.Block className={_utils.cx(_styles, "div-block-158")} tag="div">
+                  <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                     <_Builtin.Image
                       className={_utils.cx(_styles, "image-124")}
                       loading="lazy"
@@ -2393,17 +1779,11 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                       alt="Icon Gruppe"
                       src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bf5f26f6e865b2f5ebeea_Pfad%2010815.svg"
                     />
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "text-block-34")}
-                      tag="div"
-                    >
+                    <_Builtin.Block className={_utils.cx(_styles, "text-block-34")} tag="div">
                       {"10"}
                     </_Builtin.Block>
                   </_Builtin.Block>
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "div-block-159")}
-                    tag="div"
-                  >
+                  <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                     <_Builtin.Image
                       className={_utils.cx(_styles, "image-124")}
                       loading="lazy"
@@ -2412,10 +1792,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                       alt="Icon Projekt"
                       src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bf5f2d308f8ac4a487899_content_paste_black_24dp.svg"
                     />
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "text-block-34")}
-                      tag="div"
-                    >
+                    <_Builtin.Block className={_utils.cx(_styles, "text-block-34")} tag="div">
                       {"5"}
                     </_Builtin.Block>
                   </_Builtin.Block>
@@ -2426,7 +1803,8 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 button={false}
                 block="inline"
                 options={{
-                  href: "https://climateconnect.earth/en/organizations/KlimafreundlicheGro%C3%9Fk%C3%BCchenER177",
+                  href:
+                    "https://climateconnect.earth/en/organizations/KlimafreundlicheGro%C3%9Fk%C3%BCchenER177",
                 }}
               >
                 <_Builtin.Image
@@ -2437,33 +1815,19 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                   alt=""
                   src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bf9ba4e33d016c1da2c9c_1013944031e70ee06f7743005c3dedcc73268601.jpeg"
                 />
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "text-block-38")}
-                  tag="div"
-                >
+                <_Builtin.Block className={_utils.cx(_styles, "text-block-38")} tag="div">
                   {"Volunteer group"}
                 </_Builtin.Block>
-                <_Builtin.Heading
-                  className={_utils.cx(_styles, "heading-118")}
-                  tag="h3"
-                >
+                <_Builtin.Heading className={_utils.cx(_styles, "heading-118")} tag="h3">
                   {"Klimafreundliche Großküchen ER"}
                 </_Builtin.Heading>
-                <_Builtin.Paragraph
-                  className={_utils.cx(_styles, "paragraph-139")}
-                >
+                <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-139")}>
                   {
                     "We network canteen kitchen managers in Erlangen and the region to enable a transformation towards more climate-friendly menus."
                   }
                 </_Builtin.Paragraph>
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "div-block-158")}
-                  tag="div"
-                >
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "div-block-159")}
-                    tag="div"
-                  >
+                <_Builtin.Block className={_utils.cx(_styles, "div-block-158")} tag="div">
+                  <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                     <_Builtin.Image
                       className={_utils.cx(_styles, "image-124")}
                       loading="lazy"
@@ -2472,17 +1836,11 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                       alt="Icon Gruppe"
                       src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bf5f26f6e865b2f5ebeea_Pfad%2010815.svg"
                     />
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "text-block-34")}
-                      tag="div"
-                    >
+                    <_Builtin.Block className={_utils.cx(_styles, "text-block-34")} tag="div">
                       {"8"}
                     </_Builtin.Block>
                   </_Builtin.Block>
-                  <_Builtin.Block
-                    className={_utils.cx(_styles, "div-block-159")}
-                    tag="div"
-                  >
+                  <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
                     <_Builtin.Image
                       className={_utils.cx(_styles, "image-124")}
                       loading="lazy"
@@ -2491,10 +1849,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                       alt="Icon Projekt"
                       src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bf5f2d308f8ac4a487899_content_paste_black_24dp.svg"
                     />
-                    <_Builtin.Block
-                      className={_utils.cx(_styles, "text-block-34")}
-                      tag="div"
-                    >
+                    <_Builtin.Block className={_utils.cx(_styles, "text-block-34")} tag="div">
                       {"3"}
                     </_Builtin.Block>
                   </_Builtin.Block>
@@ -2510,10 +1865,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
               href: "https://climateconnect.earth/de/hubs/erlangen?&#organizations",
             }}
           >
-            <_Builtin.Block
-              className={_utils.cx(_styles, "text-block-37")}
-              tag="div"
-            >
+            <_Builtin.Block className={_utils.cx(_styles, "text-block-37")} tag="div">
               {"Entdecke alle Organisationen "}
             </_Builtin.Block>
             <_Builtin.Image
@@ -2540,26 +1892,15 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
           }}
           tag="div"
         >
-          <_Builtin.Block
-            className={_utils.cx(_styles, "div-block-214")}
-            tag="div"
-          >
+          <_Builtin.Block className={_utils.cx(_styles, "div-block-214")} tag="div">
             <_Builtin.Block
-              className={_utils.cj(
-                _utils.cx(_styles, "div-block-215"),
-                "w-clearfix"
-              )}
+              className={_utils.cj(_utils.cx(_styles, "div-block-215"), "w-clearfix")}
               tag="div"
             >
-              <_Builtin.Heading
-                className={_utils.cx(_styles, "heading-138")}
-                tag="h2"
-              >
+              <_Builtin.Heading className={_utils.cx(_styles, "heading-138")} tag="h2">
                 {"4 questions to happiness"}
               </_Builtin.Heading>
-              <_Builtin.Paragraph
-                className={_utils.cx(_styles, "paragraph-153")}
-              >
+              <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-153")}>
                 {
                   "The ClimateMatch helps you to find the right group or the perfect project for your commitment in 4 short questions. "
                 }
@@ -2576,75 +1917,36 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 {"Do the ClimateMatch"}
               </_Builtin.Link>
             </_Builtin.Block>
-            <_Builtin.Block
-              className={_utils.cx(_styles, "cm-4-points-wrapper")}
-              tag="div"
-            >
-              <_Builtin.Block
-                className={_utils.cx(_styles, "cm-point-wrapper")}
-                tag="div"
-              >
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "text-block-56")}
-                  tag="div"
-                >
+            <_Builtin.Block className={_utils.cx(_styles, "cm-4-points-wrapper")} tag="div">
+              <_Builtin.Block className={_utils.cx(_styles, "cm-point-wrapper")} tag="div">
+                <_Builtin.Block className={_utils.cx(_styles, "text-block-56")} tag="div">
                   {"1."}
                 </_Builtin.Block>
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "text-block-57")}
-                  tag="div"
-                >
+                <_Builtin.Block className={_utils.cx(_styles, "text-block-57")} tag="div">
                   {"Your favorite topic"}
                 </_Builtin.Block>
               </_Builtin.Block>
-              <_Builtin.Block
-                className={_utils.cx(_styles, "cm-point-wrapper")}
-                tag="div"
-              >
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "text-block-56")}
-                  tag="div"
-                >
+              <_Builtin.Block className={_utils.cx(_styles, "cm-point-wrapper")} tag="div">
+                <_Builtin.Block className={_utils.cx(_styles, "text-block-56")} tag="div">
                   {"2."}
                 </_Builtin.Block>
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "text-block-57")}
-                  tag="div"
-                >
+                <_Builtin.Block className={_utils.cx(_styles, "text-block-57")} tag="div">
                   {"Your skills"}
                 </_Builtin.Block>
               </_Builtin.Block>
-              <_Builtin.Block
-                className={_utils.cx(_styles, "cm-point-wrapper")}
-                tag="div"
-              >
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "text-block-56")}
-                  tag="div"
-                >
+              <_Builtin.Block className={_utils.cx(_styles, "cm-point-wrapper")} tag="div">
+                <_Builtin.Block className={_utils.cx(_styles, "text-block-56")} tag="div">
                   {"3."}
                 </_Builtin.Block>
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "text-block-57")}
-                  tag="div"
-                >
+                <_Builtin.Block className={_utils.cx(_styles, "text-block-57")} tag="div">
                   {"Your perfect engagement"}
                 </_Builtin.Block>
               </_Builtin.Block>
-              <_Builtin.Block
-                className={_utils.cx(_styles, "cm-point-wrapper")}
-                tag="div"
-              >
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "text-block-56")}
-                  tag="div"
-                >
+              <_Builtin.Block className={_utils.cx(_styles, "cm-point-wrapper")} tag="div">
+                <_Builtin.Block className={_utils.cx(_styles, "text-block-56")} tag="div">
                   {"4."}
                 </_Builtin.Block>
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "text-block-57")}
-                  tag="div"
-                >
+                <_Builtin.Block className={_utils.cx(_styles, "text-block-57")} tag="div">
                   {"Your Impact 🎉"}
                 </_Builtin.Block>
               </_Builtin.Block>
@@ -2666,14 +1968,8 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
           }}
           tag="div"
         >
-          <_Builtin.Block
-            className={_utils.cx(_styles, "div-block-217")}
-            tag="div"
-          >
-            <_Builtin.Heading
-              className={_utils.cx(_styles, "heading-137")}
-              tag="h1"
-            >
+          <_Builtin.Block className={_utils.cx(_styles, "div-block-217")} tag="div">
+            <_Builtin.Heading className={_utils.cx(_styles, "heading-137")} tag="h1">
               {"Stay up to date"}
             </_Builtin.Heading>
             <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-154")}>
@@ -2692,10 +1988,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
               {"To the newsletter archive"}
             </_Builtin.Link>
           </_Builtin.Block>
-          <_Builtin.Block
-            className={_utils.cx(_styles, "div-block-216")}
-            tag="div"
-          />
+          <_Builtin.Block className={_utils.cx(_styles, "div-block-216")} tag="div" />
         </_Builtin.BlockContainer>
       </_Builtin.Section>
       <_Builtin.Section
@@ -2711,10 +2004,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
           }}
           tag="div"
         >
-          <_Builtin.Heading
-            className={_utils.cx(_styles, "heading-122")}
-            tag="h1"
-          >
+          <_Builtin.Heading className={_utils.cx(_styles, "heading-122")} tag="h1">
             {"Our supporters and partners"}
           </_Builtin.Heading>
           <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-141")}>
@@ -2722,10 +2012,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
               "The members of the ClimateHub bring it to life - our partners made the ClimateHub possible in the first place."
             }
           </_Builtin.Paragraph>
-          <_Builtin.Block
-            className={_utils.cx(_styles, "div-block-178")}
-            tag="div"
-          >
+          <_Builtin.Block className={_utils.cx(_styles, "div-block-178")} tag="div">
             <_Builtin.Image
               loading="lazy"
               width="auto"
@@ -2733,10 +2020,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
               alt="Logo FAU"
               src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/653916042221d135dd06a034_friedrich-alexander-universitaet-fau-logo.jpg"
             />
-            <_Builtin.Block
-              className={_utils.cx(_styles, "div-block-201")}
-              tag="div"
-            />
+            <_Builtin.Block className={_utils.cx(_styles, "div-block-201")} tag="div" />
             <_Builtin.Image
               loading="lazy"
               width="auto"
@@ -2744,10 +2028,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
               alt="sneep Logo"
               src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bf7dd5f3329028b31effb_277ad08ee6ea0f75097b7b79cf31f0c28358daa2.jpeg"
             />
-            <_Builtin.Block
-              className={_utils.cx(_styles, "div-block-202")}
-              tag="div"
-            />
+            <_Builtin.Block className={_utils.cx(_styles, "div-block-202")} tag="div" />
             <_Builtin.Image
               loading="lazy"
               width="200"
@@ -2765,10 +2046,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
         }}
         tag="div"
       >
-        <_Builtin.Container
-          className={_utils.cx(_styles, "container-50")}
-          tag="div"
-        >
+        <_Builtin.Container className={_utils.cx(_styles, "container-50")} tag="div">
           <_Builtin.Image
             className={_utils.cx(_styles, "image-81")}
             loading="lazy"
@@ -2785,14 +2063,8 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
             alt="Climate Connect Team steht an Infostand"
             src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/655de70183fc7da42342309c__DSC3970%20(Klein).jpg"
           />
-          <_Builtin.Block
-            className={_utils.cx(_styles, "div-block-111-copy")}
-            tag="div"
-          >
-            <_Builtin.Heading
-              className={_utils.cx(_styles, "heading-101-copy")}
-              tag="h1"
-            >
+          <_Builtin.Block className={_utils.cx(_styles, "div-block-111-copy")} tag="div">
+            <_Builtin.Heading className={_utils.cx(_styles, "heading-101-copy")} tag="h1">
               {"Donate now and make the ClimateHub Erlangen possible!"}
             </_Builtin.Heading>
             <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-124")}>
@@ -2800,29 +2072,16 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 "For as little as €2 a month, you can help ClimateHub make a difference in the long term. This makes us less dependent on annual subsidies and grants. This gives us a lot of planning security and we can achieve more."
               }
             </_Builtin.Paragraph>
-            <_Builtin.Block
-              className={_utils.cx(_styles, "dono-page-button-wrapper")}
-              tag="div"
-            >
+            <_Builtin.Block className={_utils.cx(_styles, "dono-page-button-wrapper")} tag="div">
               <_Builtin.Block
-                className={_utils.cj(
-                  _utils.cx(_styles, "div-block-112"),
-                  "w-clearfix"
-                )}
+                className={_utils.cj(_utils.cx(_styles, "div-block-112"), "w-clearfix")}
                 tag="div"
               >
-                <_Builtin.Block
-                  className={_utils.cx(_styles, "text-block-16")}
-                  tag="div"
-                >
+                <_Builtin.Block className={_utils.cx(_styles, "text-block-16")} tag="div">
                   {"Support the Climate Connect gUG:"}
                 </_Builtin.Block>
                 <_Builtin.Link
-                  className={_utils.cx(
-                    _styles,
-                    "button-in-main-color",
-                    "dono-page"
-                  )}
+                  className={_utils.cx(_styles, "button-in-main-color", "dono-page")}
                   button={true}
                   block=""
                   options={{
@@ -2860,29 +2119,13 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
         tag="footer"
         id="footer"
       >
-        <_Builtin.Container
-          className={_utils.cx(_styles, "container-2")}
-          tag="div"
-        >
-          <_Builtin.Block
-            className={_utils.cx(_styles, "footer-flex-container")}
-            tag="div"
-          >
-            <_Builtin.Block
-              className={_utils.cx(_styles, "div-block-6-lleft")}
-              tag="div"
-            >
-              <_Builtin.Heading
-                className={_utils.cx(_styles, "footer-heading")}
-                tag="h2"
-              >
+        <_Builtin.Container className={_utils.cx(_styles, "container-2")} tag="div">
+          <_Builtin.Block className={_utils.cx(_styles, "footer-flex-container")} tag="div">
+            <_Builtin.Block className={_utils.cx(_styles, "div-block-6-lleft")} tag="div">
+              <_Builtin.Heading className={_utils.cx(_styles, "footer-heading")} tag="h2">
                 {"General"}
               </_Builtin.Heading>
-              <_Builtin.List
-                className={_utils.cx(_styles, "list-footer")}
-                tag="ul"
-                unstyled={true}
-              >
+              <_Builtin.List className={_utils.cx(_styles, "list-footer")} tag="ul" unstyled={true}>
                 <_Builtin.ListItem
                   list={{
                     type: "",
@@ -2969,21 +2212,11 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 </_Builtin.ListItem>
               </_Builtin.List>
             </_Builtin.Block>
-            <_Builtin.Block
-              className={_utils.cx(_styles, "div-block-6")}
-              tag="div"
-            >
-              <_Builtin.Heading
-                className={_utils.cx(_styles, "footer-heading")}
-                tag="h2"
-              >
+            <_Builtin.Block className={_utils.cx(_styles, "div-block-6")} tag="div">
+              <_Builtin.Heading className={_utils.cx(_styles, "footer-heading")} tag="h2">
                 {"Contact us"}
               </_Builtin.Heading>
-              <_Builtin.List
-                className={_utils.cx(_styles, "list-footer")}
-                tag="ul"
-                unstyled={true}
-              >
+              <_Builtin.List className={_utils.cx(_styles, "list-footer")} tag="ul" unstyled={true}>
                 <_Builtin.ListItem
                   list={{
                     type: "",
@@ -3018,21 +2251,11 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 </_Builtin.ListItem>
               </_Builtin.List>
             </_Builtin.Block>
-            <_Builtin.Block
-              className={_utils.cx(_styles, "div-block-6")}
-              tag="div"
-            >
-              <_Builtin.Heading
-                className={_utils.cx(_styles, "footer-heading")}
-                tag="h2"
-              >
+            <_Builtin.Block className={_utils.cx(_styles, "div-block-6")} tag="div">
+              <_Builtin.Heading className={_utils.cx(_styles, "footer-heading")} tag="h2">
                 {"Browse"}
               </_Builtin.Heading>
-              <_Builtin.List
-                className={_utils.cx(_styles, "list-footer")}
-                tag="ul"
-                unstyled={true}
-              >
+              <_Builtin.List className={_utils.cx(_styles, "list-footer")} tag="ul" unstyled={true}>
                 <_Builtin.ListItem
                   list={{
                     type: "",
@@ -3103,21 +2326,11 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 </_Builtin.ListItem>
               </_Builtin.List>
             </_Builtin.Block>
-            <_Builtin.Block
-              className={_utils.cx(_styles, "div-block-6")}
-              tag="div"
-            >
-              <_Builtin.Heading
-                className={_utils.cx(_styles, "footer-heading")}
-                tag="h2"
-              >
+            <_Builtin.Block className={_utils.cx(_styles, "div-block-6")} tag="div">
+              <_Builtin.Heading className={_utils.cx(_styles, "footer-heading")} tag="h2">
                 {"Legal"}
               </_Builtin.Heading>
-              <_Builtin.List
-                className={_utils.cx(_styles, "list-footer")}
-                tag="ul"
-                unstyled={true}
-              >
+              <_Builtin.List className={_utils.cx(_styles, "list-footer")} tag="ul" unstyled={true}>
                 <_Builtin.ListItem
                   list={{
                     type: "",
@@ -3171,22 +2384,13 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                 </_Builtin.ListItem>
               </_Builtin.List>
             </_Builtin.Block>
-            <_Builtin.Block
-              className={_utils.cx(_styles, "div-block-6-nl")}
-              tag="div"
-            >
-              <_Builtin.Heading
-                className={_utils.cx(_styles, "footer-heading")}
-                tag="h2"
-              >
+            <_Builtin.Block className={_utils.cx(_styles, "div-block-6-nl")} tag="div">
+              <_Builtin.Heading className={_utils.cx(_styles, "footer-heading")} tag="h2">
                 {"Newsletter"}
               </_Builtin.Heading>
               <_Builtin.List tag="ul" unstyled={true}>
                 <_Builtin.ListItem
-                  className={_utils.cj(
-                    _utils.cx(_styles, "list-item-4"),
-                    "w-clearfix"
-                  )}
+                  className={_utils.cj(_utils.cx(_styles, "list-item-4"), "w-clearfix")}
                   list={{
                     type: "",
                   }}
@@ -3199,9 +2403,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
                       href: "#",
                     }}
                   >
-                    <_Builtin.Strong
-                      className={_utils.cx(_styles, "bold-text")}
-                    >
+                    <_Builtin.Strong className={_utils.cx(_styles, "bold-text")}>
                       {
                         "Registriere dich, um jeden Monat Neuigkeiten aus dem ClimateHub zu erhalten und keine Events zu verpassen."
                       }
@@ -3296,10 +2498,7 @@ export function EnChErlangenLandingpage({ as: _Component = _Builtin.Block }) {
             />
           </_Builtin.Link>
         </_Builtin.Container>
-        <_Builtin.Block
-          className={_utils.cx(_styles, "text-block-3")}
-          tag="div"
-        >
+        <_Builtin.Block className={_utils.cx(_styles, "text-block-3")} tag="div">
           {"Made with 💚 for 🌎"}
         </_Builtin.Block>
       </_Builtin.Section>

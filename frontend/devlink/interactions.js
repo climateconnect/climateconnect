@@ -1,10 +1,5 @@
 import * as React from "react";
-import {
-  debounce,
-  dispatchCustomEvent,
-  replaceSelector,
-  useLayoutEffect,
-} from "./utils";
+import { debounce, dispatchCustomEvent, replaceSelector, useLayoutEffect } from "./utils";
 const enhanceIXData = (data, styles) => {
   const newIXData = structuredClone(data);
   for (const id in newIXData.events) {
@@ -15,8 +10,7 @@ const enhanceIXData = (data, styles) => {
     }
   }
   for (const id in newIXData.actionLists) {
-    const { actionItemGroups, continuousParameterGroups } =
-      newIXData.actionLists[id];
+    const { actionItemGroups, continuousParameterGroups } = newIXData.actionLists[id];
     if (actionItemGroups) {
       for (const { actionItems } of actionItemGroups) {
         for (const { config } of actionItems) {
@@ -73,8 +67,7 @@ export const InteractionsProvider = ({ children, createEngine }) => {
       for (const s in styles) {
         if (!ixStyles.current[s]?.includes(styles[s])) {
           const currentStyle = ixStyles.current[s];
-          ixStyles.current[s] =
-            CSS.escape(styles[s]) + (currentStyle ? ` ${currentStyle}` : "");
+          ixStyles.current[s] = CSS.escape(styles[s]) + (currentStyle ? ` ${currentStyle}` : "");
         }
       }
     }
@@ -85,8 +78,7 @@ export const InteractionsProvider = ({ children, createEngine }) => {
       value={{
         initEngine,
         restartEngine: () =>
-          debouncedInit.current &&
-          debouncedInit.current(ixData.current, ixStyles.current),
+          debouncedInit.current && debouncedInit.current(ixData.current, ixStyles.current),
       }}
     >
       {children}
@@ -111,10 +103,7 @@ export const useInteractions = (data, styles) => {
 };
 export function triggerIXEvent(element, active) {
   if (!element) return;
-  dispatchCustomEvent(
-    element,
-    active ? "COMPONENT_ACTIVE" : "COMPONENT_INACTIVE"
-  );
+  dispatchCustomEvent(element, active ? "COMPONENT_ACTIVE" : "COMPONENT_INACTIVE");
 }
 export function useIXEvent(element, active) {
   useLayoutEffect(() => {

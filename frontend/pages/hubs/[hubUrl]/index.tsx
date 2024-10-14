@@ -76,7 +76,7 @@ const DESCRIPTION_WEBFLOW_LINKS = {
 //potentially switch back to getinitialprops here?!
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx?.params?.hubUrl;
-  
+
   const ideaToOpen = ctx?.query?.idea;
 
   const [
@@ -162,7 +162,7 @@ export default function Hub({
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
   const token = new Cookies().get("auth_token");
   const [hubAmbassador, setHubAmbassador] = useState(null);
-  
+
   // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
   const [filters, setFilters] = useState(
     getInitialFilters({

@@ -4,10 +4,7 @@ import * as _Builtin from "./_Builtin";
 import * as _utils from "./utils";
 import _styles from "./Test.module.css";
 
-export function Test({
-  as: _Component = _Builtin.DropdownWrapper,
-  dropdownRuntimeProps = {},
-}) {
+export function Test({ as: _Component = _Builtin.DropdownWrapper, dropdownRuntimeProps = {} }) {
   return (
     <_Component
       className={_utils.cx(_styles, "dropdown")}
@@ -16,27 +13,18 @@ export function Test({
       hover={true}
       {...dropdownRuntimeProps}
     >
-      <_Builtin.DropdownToggle
-        className={_utils.cx(_styles, "dropdown-toggle-4")}
-        tag="div"
-      >
+      <_Builtin.DropdownToggle className={_utils.cx(_styles, "dropdown-toggle-4")} tag="div">
         <_Builtin.Icon
           widget={{
             type: "icon",
             icon: "dropdown-toggle",
           }}
         />
-        <_Builtin.Block
-          className={_utils.cx(_styles, "text-block-23")}
-          tag="div"
-        >
+        <_Builtin.Block className={_utils.cx(_styles, "text-block-23")} tag="div">
           {"Zu deinem ClimateHub"}
         </_Builtin.Block>
       </_Builtin.DropdownToggle>
-      <_Builtin.DropdownList
-        className={_utils.cx(_styles, "dropdown-list-3")}
-        tag="nav"
-      >
+      <_Builtin.DropdownList className={_utils.cx(_styles, "dropdown-list-3")} tag="nav">
         <_Builtin.DropdownLink
           options={{
             href: "#",

@@ -95,7 +95,7 @@ export default function WideLayout({
   hideDonationCampaign,
   customFooterImage,
   noHeader,
-  isLandingPage
+  isLandingPage,
 }: Props) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);

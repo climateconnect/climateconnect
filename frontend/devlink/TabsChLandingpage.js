@@ -20,46 +20,25 @@ export function TabsChLandingpage({ as: _Component = _Builtin.TabsWrapper }) {
       fadeIn={500}
       fadeOut={500}
     >
-      <_Builtin.TabsMenu
-        className={_utils.cx(_styles, "tabs-menu-4")}
-        tag="div"
-      >
+      <_Builtin.TabsMenu className={_utils.cx(_styles, "tabs-menu-4")} tag="div">
         <_Builtin.TabsLink
           className={_utils.cx(_styles, "tab-link-ch")}
           data-w-id="b605d6e5-f794-423f-c1d7-680ccdf53517"
           data-w-tab="Mitmachen"
           block="inline"
         >
-          <_Builtin.Block
-            className={_utils.cx(_styles, "div-block-184")}
-            tag="div"
-          >
-            <_Builtin.Block
-              className={_utils.cx(_styles, "div-block-dots")}
-              tag="div"
-            />
-            <_Builtin.Block
-              className={_utils.cx(_styles, "div-block-185")}
-              tag="div"
-            >
-              <_Builtin.Block
-                className={_utils.cx(_styles, "text-block-45")}
-                tag="div"
-              >
+          <_Builtin.Block className={_utils.cx(_styles, "div-block-184")} tag="div">
+            <_Builtin.Block className={_utils.cx(_styles, "div-block-dots")} tag="div" />
+            <_Builtin.Block className={_utils.cx(_styles, "div-block-185")} tag="div">
+              <_Builtin.Block className={_utils.cx(_styles, "text-block-45")} tag="div">
                 {"Mitmachen"}
               </_Builtin.Block>
-              <_Builtin.Block
-                className={_utils.cx(_styles, "text-block-46")}
-                tag="div"
-              >
+              <_Builtin.Block className={_utils.cx(_styles, "text-block-46")} tag="div">
                 {"Bring dich ein und vergrößere deinen Handabdruck"}
               </_Builtin.Block>
             </_Builtin.Block>
           </_Builtin.Block>
-          <_Builtin.Block
-            className={_utils.cx(_styles, "div-block-188")}
-            tag="div"
-          />
+          <_Builtin.Block className={_utils.cx(_styles, "div-block-188")} tag="div" />
         </_Builtin.TabsLink>
         <_Builtin.TabsLink
           className={_utils.cx(_styles, "tab-link-ch")}
@@ -67,36 +46,18 @@ export function TabsChLandingpage({ as: _Component = _Builtin.TabsWrapper }) {
           data-w-tab="Teilen"
           block="inline"
         >
-          <_Builtin.Block
-            className={_utils.cx(_styles, "div-block-184")}
-            tag="div"
-          >
-            <_Builtin.Block
-              className={_utils.cx(_styles, "div-block-dots")}
-              tag="div"
-            />
-            <_Builtin.Block
-              className={_utils.cx(_styles, "div-block-185")}
-              tag="div"
-            >
-              <_Builtin.Block
-                className={_utils.cx(_styles, "text-block-45")}
-                tag="div"
-              >
+          <_Builtin.Block className={_utils.cx(_styles, "div-block-184")} tag="div">
+            <_Builtin.Block className={_utils.cx(_styles, "div-block-dots")} tag="div" />
+            <_Builtin.Block className={_utils.cx(_styles, "div-block-185")} tag="div">
+              <_Builtin.Block className={_utils.cx(_styles, "text-block-45")} tag="div">
                 {"Teilen"}
               </_Builtin.Block>
-              <_Builtin.Block
-                className={_utils.cx(_styles, "text-block-46")}
-                tag="div"
-              >
+              <_Builtin.Block className={_utils.cx(_styles, "text-block-46")} tag="div">
                 {"Zeig anderen woran du arbeitest und finde Mitstreiter"}
               </_Builtin.Block>
             </_Builtin.Block>
           </_Builtin.Block>
-          <_Builtin.Block
-            className={_utils.cx(_styles, "div-block-188")}
-            tag="div"
-          />
+          <_Builtin.Block className={_utils.cx(_styles, "div-block-188")} tag="div" />
         </_Builtin.TabsLink>
         <_Builtin.TabsLink
           className={_utils.cx(_styles, "tab-link-ch")}
@@ -104,38 +65,20 @@ export function TabsChLandingpage({ as: _Component = _Builtin.TabsWrapper }) {
           data-w-tab="Treffen"
           block="inline"
         >
-          <_Builtin.Block
-            className={_utils.cx(_styles, "div-block-184")}
-            tag="div"
-          >
-            <_Builtin.Block
-              className={_utils.cx(_styles, "div-block-dots")}
-              tag="div"
-            />
-            <_Builtin.Block
-              className={_utils.cx(_styles, "div-block-185")}
-              tag="div"
-            >
-              <_Builtin.Block
-                className={_utils.cx(_styles, "text-block-45")}
-                tag="div"
-              >
+          <_Builtin.Block className={_utils.cx(_styles, "div-block-184")} tag="div">
+            <_Builtin.Block className={_utils.cx(_styles, "div-block-dots")} tag="div" />
+            <_Builtin.Block className={_utils.cx(_styles, "div-block-185")} tag="div">
+              <_Builtin.Block className={_utils.cx(_styles, "text-block-45")} tag="div">
                 {"Treffen"}
               </_Builtin.Block>
-              <_Builtin.Block
-                className={_utils.cx(_styles, "text-block-46")}
-                tag="div"
-              >
+              <_Builtin.Block className={_utils.cx(_styles, "text-block-46")} tag="div">
                 {"Finde lokale Events mit Impact und mehr...."}
               </_Builtin.Block>
             </_Builtin.Block>
           </_Builtin.Block>
         </_Builtin.TabsLink>
       </_Builtin.TabsMenu>
-      <_Builtin.TabsContent
-        className={_utils.cx(_styles, "tabs-content-3")}
-        tag="div"
-      >
+      <_Builtin.TabsContent className={_utils.cx(_styles, "tabs-content-3")} tag="div">
         <_Builtin.TabsPane tag="div" data-w-tab="Mitmachen">
           <_Builtin.Image
             className={_utils.cx(_styles, "image-132")}

@@ -2,10 +2,7 @@
 import * as React from "react";
 import { DevLinkContext } from "../devlinkContext";
 import * as utils from "../utils";
-export const Block = React.forwardRef(function Block(
-  { tag = "div", ...props },
-  ref
-) {
+export const Block = React.forwardRef(function Block({ tag = "div", ...props }, ref) {
   return React.createElement(tag, {
     ...props,
     ref,
@@ -18,14 +15,7 @@ export const Blockquote = React.forwardRef(function Blockquote(props, ref) {
   return <blockquote {...props} ref={ref} />;
 });
 export const Link = React.forwardRef(function Link(
-  {
-    options = { href: "#" },
-    className = "",
-    button = false,
-    children,
-    block = "",
-    ...props
-  },
+  { options = { href: "#" }, className = "", button = false, children, block = "", ...props },
   ref
 ) {
   const { renderLink: UserLink } = React.useContext(DevLinkContext);
@@ -75,10 +65,7 @@ export const Image = React.forwardRef(function Image({ alt, ...props }, ref) {
     <img alt={alt || ""} {...props} ref={ref} />
   );
 });
-export const Section = React.forwardRef(function Section(
-  { tag = "section", ...props },
-  ref
-) {
+export const Section = React.forwardRef(function Section({ tag = "section", ...props }, ref) {
   return React.createElement(tag, {
     ...props,
     ref,
@@ -134,10 +121,7 @@ export const Layout = React.forwardRef(function Layout(
     ref,
   });
 });
-export const Cell = React.forwardRef(function Cell(
-  { tag = "div", className = "", ...props },
-  ref
-) {
+export const Cell = React.forwardRef(function Cell({ tag = "div", className = "", ...props }, ref) {
   return React.createElement(tag, {
     className: className + " w-layout-cell",
     ...props,
@@ -155,20 +139,14 @@ export const HtmlEmbed = React.forwardRef(function HtmlEmbed(
     ref,
   });
 });
-export const Grid = React.forwardRef(function Grid(
-  { tag = "div", className = "", ...props },
-  ref
-) {
+export const Grid = React.forwardRef(function Grid({ tag = "div", className = "", ...props }, ref) {
   return React.createElement(tag, {
     className: className + " w-layout-grid",
     ...props,
     ref,
   });
 });
-export const Icon = React.forwardRef(function Icon(
-  { widget, className = "", ...props },
-  ref
-) {
+export const Icon = React.forwardRef(function Icon({ widget, className = "", ...props }, ref) {
   return React.createElement("div", {
     className: className + ` w-icon-${widget.icon}`,
     ...props,
@@ -203,19 +181,12 @@ export const Row = React.forwardRef(function Row(
     { className: className + " w-row", ...props, ref },
     columns
       ? React.Children.map(children, (child, index) => {
-          if (child && typeof child === "object" && child.type !== Column)
-            return child;
-          const columnClasses = Object.entries(columns ?? {}).reduce(
-            (acc, [key, value]) => {
-              const width = transformWidths(
-                value === "custom" ? "6|6" : value,
-                index
-              );
-              acc.add(width ? columnClass(width, key) : "");
-              return acc;
-            },
-            new Set()
-          );
+          if (child && typeof child === "object" && child.type !== Column) return child;
+          const columnClasses = Object.entries(columns ?? {}).reduce((acc, [key, value]) => {
+            const width = transformWidths(value === "custom" ? "6|6" : value, index);
+            acc.add(width ? columnClass(width, key) : "");
+            return acc;
+          }, new Set());
           return React.cloneElement(child, {
             columnClasses: [...columnClasses].join(" "),
             ...child.props,
@@ -224,11 +195,6 @@ export const Row = React.forwardRef(function Row(
       : children
   );
 });
-export const NotSupported = React.forwardRef(function NotSupported(
-  { _atom = "" },
-  ref
-) {
-  return (
-    <div ref={ref}>{`This builtin is not currently supported: ${_atom}`}</div>
-  );
+export const NotSupported = React.forwardRef(function NotSupported({ _atom = "" }, ref) {
+  return <div ref={ref}>{`This builtin is not currently supported: ${_atom}`}</div>;
 });

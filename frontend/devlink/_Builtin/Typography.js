@@ -1,9 +1,6 @@
 "use client";
 import * as React from "react";
-export const Heading = React.forwardRef(function Heading(
-  { tag = "h1", ...props },
-  ref
-) {
+export const Heading = React.forwardRef(function Heading({ tag = "h1", ...props }, ref) {
   return React.createElement(tag, {
     ...props,
     ref,
@@ -24,10 +21,7 @@ export const Strong = React.forwardRef(function Strong(props, ref) {
     ref,
   });
 });
-export const Figure = React.forwardRef(function Figure(
-  { className = "", figure, ...props },
-  ref
-) {
+export const Figure = React.forwardRef(function Figure({ className = "", figure, ...props }, ref) {
   const { type, align } = figure;
   if (align) {
     className += `w-richtext-align-${align} `;

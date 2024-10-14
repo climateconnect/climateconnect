@@ -1,14 +1,9 @@
 "use client";
 import React from "react";
 import { cj } from "../utils";
-const getAspectRatio = ({ width, height }) =>
-  height && width ? height / width : 0;
+const getAspectRatio = ({ width, height }) => (height && width ? height / width : 0);
 export const Video = React.forwardRef(function Video(
-  {
-    className = "",
-    options = { height: 0, width: 0, title: "", url: "" },
-    ...props
-  },
+  { className = "", options = { height: 0, width: 0, title: "", url: "" }, ...props },
   ref
 ) {
   const { height, title, url, width } = options;

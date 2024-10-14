@@ -27,18 +27,10 @@ export const Facebook = React.forwardRef(function Facebook(
     show_faces: "false",
     share: "false",
   };
-  const queryParams = Object.keys(params).map(
-    (key) => `${key}=${encodeURIComponent(params[key])}`
-  );
-  const frameSrc = `https://www.facebook.com/plugins/like.php?${queryParams.join(
-    "&"
-  )}`;
+  const queryParams = Object.keys(params).map((key) => `${key}=${encodeURIComponent(params[key])}`);
+  const frameSrc = `https://www.facebook.com/plugins/like.php?${queryParams.join("&")}`;
   return (
-    <div
-      {...props}
-      className={className + " w-widget w-widget-facebook"}
-      ref={ref}
-    >
+    <div {...props} className={className + " w-widget w-widget-facebook"} ref={ref}>
       <iframe
         title="Facebook Like Button"
         src={frameSrc}

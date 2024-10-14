@@ -8,10 +8,7 @@ export type RenderLink = React.FC<{
   ref?: React.Ref<HTMLAnchorElement>;
 }>;
 export type RenderImage = React.FC<
-  React.DetailedHTMLProps<
-    React.ImgHTMLAttributes<HTMLImageElement>,
-    HTMLImageElement
-  >
+  React.DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>
 >;
 export declare const DevLinkContext: any;
 type DevLinkProviderProps = {

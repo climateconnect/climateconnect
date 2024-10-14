@@ -33,9 +33,7 @@ export function UncoveringUtopie({ as: _Component = _Builtin.Block }) {
         />
       </_Builtin.Block>
       <_Builtin.Block className={_utils.cx(_styles, "text-block-58")} tag="div">
-        {
-          "Torstraße autofrei Berlin by Tom Meiser & Timo Schmid, CC BY-NC-SA 4.0"
-        }
+        {"Torstraße autofrei Berlin by Tom Meiser & Timo Schmid, CC BY-NC-SA 4.0"}
       </_Builtin.Block>
     </_Component>
   );

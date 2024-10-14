@@ -129,10 +129,10 @@ export async function getServerSideProps(ctx) {
   const language_code_parsed = ctx.query.language_code_dot_xml.replace(".xml", "");
   const language_code = language_code_parsed === "en" ? "" : language_code_parsed;
   const [
-    projectEntries, 
-    organizationEntries, 
-    memberEntries, 
-    hubEntries, 
+    projectEntries,
+    organizationEntries,
+    memberEntries,
+    hubEntries,
     blogPosts,
   ] = await Promise.all([
     getEntries("projects", ctx.locale, language_code),

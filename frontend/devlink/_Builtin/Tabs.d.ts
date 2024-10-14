@@ -45,9 +45,7 @@ export declare const TabsLink: React.ForwardRefExoticComponent<
 type TabsContentProps = {
   tag?: React.ElementType;
   className?: string;
-  children?:
-    | React.ReactElement<TabsPaneProps>[]
-    | React.ReactElement<TabsPaneProps>;
+  children?: React.ReactElement<TabsPaneProps>[] | React.ReactElement<TabsPaneProps>;
 };
 export declare const TabsContent: React.ForwardRefExoticComponent<
   TabsContentProps & React.RefAttributes<unknown>

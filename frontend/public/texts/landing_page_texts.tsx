@@ -147,7 +147,7 @@ export default function getLandingPageTexts({ classes, isNarrowScreen }) {
     },
     return_to_hubs: {
       en: "Return to hubs",
-      de: "Zurück zu den Knotenpunkten"
-    }
+      de: "Zurück zu den Knotenpunkten",
+    },
   };
 }

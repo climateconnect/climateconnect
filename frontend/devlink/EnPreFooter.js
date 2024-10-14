@@ -13,14 +13,9 @@ export function EnPreFooter({ as: _Component = _Builtin.Section }) {
       }}
       tag="div"
     >
-      <_Builtin.Container
-        className={_utils.cx(_styles, "pre-footer-con")}
-        tag="div"
-      >
+      <_Builtin.Container className={_utils.cx(_styles, "pre-footer-con")} tag="div">
         <_Builtin.Heading className={_utils.cx(_styles, "heading-8")} tag="h2">
-          <_Builtin.Span className={_utils.cx(_styles, "text-span")}>
-            {"Collaborate"}
-          </_Builtin.Span>
+          <_Builtin.Span className={_utils.cx(_styles, "text-span")}>{"Collaborate"}</_Builtin.Span>
           {", get inspired, and make a real impact on "}
           <_Builtin.Span className={_utils.cx(_styles, "text-span-2")}>
             {"climate change!"}

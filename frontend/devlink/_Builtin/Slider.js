@@ -123,10 +123,10 @@ function useAutoplay() {
     goToNextSlide,
   } = React.useContext(SliderContext);
   const [autoMaxCount, setAutoMaxCount] = React.useState(0);
-  const autoMaxReached = React.useMemo(
-    () => autoMaxCount >= autoMax && autoMax > 0,
-    [autoMax, autoMaxCount]
-  );
+  const autoMaxReached = React.useMemo(() => autoMaxCount >= autoMax && autoMax > 0, [
+    autoMax,
+    autoMaxCount,
+  ]);
   React.useEffect(() => {
     const shouldAutoplay = autoplay && !autoMaxReached && !isAutoplayPaused;
     if (shouldAutoplay) {
@@ -154,10 +154,7 @@ export const SliderMask = React.forwardRef(function SliderMask(
       const childrenList = React.Children.toArray(_children).filter((child) =>
         React.isValidElement(child)
       );
-      if (
-        childrenList.length === 1 &&
-        childrenList[0]?.type === React.Fragment
-      ) {
+      if (childrenList.length === 1 && childrenList[0]?.type === React.Fragment) {
         return extractNonFragmentChildren(childrenList[0].props.children);
       } else {
         return childrenList;
@@ -226,9 +223,9 @@ export const SliderSlide = React.forwardRef(function SliderSlide(
       return {
         ...base,
         opacity: isSlideActive ? 1 : 0,
-        transition: `opacity ${duration}ms ${
-          EASING_FUNCTIONS[easing]
-        } 0s, transform 1ms linear ${isSlideActive ? 0 : duration}ms`,
+        transition: `opacity ${duration}ms ${EASING_FUNCTIONS[easing]} 0s, transform 1ms linear ${
+          isSlideActive ? 0 : duration
+        }ms`,
       };
     }
     if (animation === "outin") {
@@ -244,9 +241,9 @@ export const SliderSlide = React.forwardRef(function SliderSlide(
       return {
         ...base,
         opacity: isSlideActive ? 1 : 0,
-        transition: `opacity ${duration}ms ${
-          EASING_FUNCTIONS[easing]
-        } 0s, transform 1ms linear ${isSlideActive ? 0 : duration}ms`,
+        transition: `opacity ${duration}ms ${EASING_FUNCTIONS[easing]} 0s, transform 1ms linear ${
+          isSlideActive ? 0 : duration
+        }ms`,
       };
     }
     if (animation === "over") {
@@ -303,8 +300,7 @@ export const SliderArrow = React.forwardRef(function SliderArrow(
   });
   const isHidden = React.useMemo(() => {
     if (dir === "left" && hideArrows && current === 0) return true;
-    if (dir === "right" && hideArrows && current === slideAmount - 1)
-      return true;
+    if (dir === "right" && hideArrows && current === slideAmount - 1) return true;
     return false;
   }, [dir, hideArrows, current, slideAmount]);
   return (
@@ -329,10 +325,7 @@ export const SliderArrow = React.forwardRef(function SliderArrow(
     </div>
   );
 });
-export const SliderNav = React.forwardRef(function SliderNav(
-  { className = "", ...props },
-  ref
-) {
+export const SliderNav = React.forwardRef(function SliderNav({ className = "", ...props }, ref) {
   const {
     slideAmount,
     navInvert,
@@ -404,9 +397,9 @@ export const SliderNav = React.forwardRef(function SliderNav(
       onMouseLeave={(e) => e.stopPropagation()}
       className={cj(
         className,
-        `w-slider-nav ${navInvert ? "w-slider-nav-invert" : ""} ${
-          navShadow ? "w-shadow" : ""
-        } ${navRound ? "w-round" : ""} ${navNumbers ? "w-num" : ""}`
+        `w-slider-nav ${navInvert ? "w-slider-nav-invert" : ""} ${navShadow ? "w-shadow" : ""} ${
+          navRound ? "w-round" : ""
+        } ${navNumbers ? "w-num" : ""}`
       )}
       ref={ref}
     >

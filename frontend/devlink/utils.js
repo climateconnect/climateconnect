@@ -1,10 +1,8 @@
 import * as React from "react";
-export const cx = (style, ...classNames) =>
-  cj(...classNames.map((c) => style[c] ?? c));
+export const cx = (style, ...classNames) => cj(...classNames.map((c) => style[c] ?? c));
 export const cj = (...classNames) => classNames.filter(Boolean).join(" ");
 const UNESCAPED_CHARS = /(\\b|\\f|\\r\\n|\\n|\\r|\\t|\\v)/gm;
-export const removeUnescaped = (value) =>
-  decodeURIComponent(value).replace(UNESCAPED_CHARS, "");
+export const removeUnescaped = (value) => decodeURIComponent(value).replace(UNESCAPED_CHARS, "");
 const CSS_CLASS = /\.-?[_a-zA-Z]+[_a-zA-Z0-9-]*/g;
 const WHITE_SPACE = /\s+/g;
 export const replaceSelector = (selector, styles) => {
@@ -62,13 +60,9 @@ export const EASING_FUNCTIONS = {
   "ease-in-out-back": "cubic-bezier(0.68, -0.6, 0.32, 1.6)",
 };
 export const isServer = typeof window === "undefined";
-export const useLayoutEffect = isServer
-  ? () => undefined
-  : React.useLayoutEffect;
+export const useLayoutEffect = isServer ? () => undefined : React.useLayoutEffect;
 export function useResizeObserver(ref, fn, options) {
-  const [prevWidth, setPrevWidth] = React.useState(
-    ref.current?.clientWidth || 0
-  );
+  const [prevWidth, setPrevWidth] = React.useState(ref.current?.clientWidth || 0);
   React.useEffect(() => {
     if (ref.current?.clientWidth) {
       setPrevWidth(ref.current.clientWidth);
@@ -119,20 +113,14 @@ function isScriptPresent(regex) {
 export function loadScript(src, options) {
   return new Promise((resolve, reject) => {
     try {
-      const {
-        async = true,
-        type = "text/javascript",
-        defer = true,
-        cacheRegex,
-      } = options ?? {};
+      const { async = true, type = "text/javascript", defer = true, cacheRegex } = options ?? {};
       if (!src)
         return reject({
           loaded: false,
           error: true,
           message: "No src provided",
         });
-      if (cacheRegex && isScriptPresent(cacheRegex))
-        return resolve({ loaded: true, error: false });
+      if (cacheRegex && isScriptPresent(cacheRegex)) return resolve({ loaded: true, error: false });
       const tag = document.createElement("script");
       const container = document.head || document.body;
       tag.type = type;
@@ -197,9 +185,7 @@ export function extractElement(elements, type) {
         extracted = element;
         return null;
       }
-      const children = removeElementByType(
-        React.Children.toArray(element.props.children)
-      );
+      const children = removeElementByType(React.Children.toArray(element.props.children));
       return React.cloneElement(element, element.props, ...children);
     });
   }

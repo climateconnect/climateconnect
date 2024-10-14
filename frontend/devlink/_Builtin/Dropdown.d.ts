@@ -26,9 +26,7 @@ export declare const DropdownToggle: React.ForwardRefExoticComponent<
   } & React.RefAttributes<unknown>
 >;
 type DropdownListProps = DropdownProps & {
-  children:
-    | React.ReactElement<DropdownLinkProps>
-    | React.ReactElement<DropdownLinkProps>[];
+  children: React.ReactElement<DropdownLinkProps> | React.ReactElement<DropdownLinkProps>[];
 };
 export declare const DropdownList: React.ForwardRefExoticComponent<
   {
@@ -37,9 +35,7 @@ export declare const DropdownList: React.ForwardRefExoticComponent<
   } & {
     children?: React.ReactNode;
   } & {
-    children:
-      | React.ReactElement<DropdownLinkProps>
-      | React.ReactElement<DropdownLinkProps>[];
+    children: React.ReactElement<DropdownLinkProps> | React.ReactElement<DropdownLinkProps>[];
   } & React.RefAttributes<unknown>
 >;
 type DropdownLinkProps = DropdownProps & LinkProps;

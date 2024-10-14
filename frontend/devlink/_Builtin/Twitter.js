@@ -48,11 +48,5 @@ export const Twitter = React.forwardRef(function Twitter(
       isComponentMounted = false;
     };
   }, []);
-  return (
-    <div
-      {...props}
-      className={className + " w-widget w-widget-twitter"}
-      ref={innerRef}
-    />
-  );
+  return <div {...props} className={className + " w-widget w-widget-twitter"} ref={innerRef} />;
 });

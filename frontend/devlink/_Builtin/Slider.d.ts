@@ -33,23 +33,13 @@ export declare const SliderContext: React.Context<
     setAutoplayPause: React.Dispatch<React.SetStateAction<boolean>>;
   }
 >;
-type SliderChildrenType =
-  | SliderSlideProps
-  | SliderArrowProps
-  | SliderNavProps
-  | SliderMaskProps;
+type SliderChildrenType = SliderSlideProps | SliderArrowProps | SliderNavProps | SliderMaskProps;
 export declare const SliderWrapper: React.ForwardRefExoticComponent<
   SliderConfig & {
     className?: string | undefined;
     children?:
-      | React.ReactElement<
-          SliderChildrenType,
-          string | React.JSXElementConstructor<any>
-        >
-      | React.ReactElement<
-          SliderChildrenType,
-          string | React.JSXElementConstructor<any>
-        >[]
+      | React.ReactElement<SliderChildrenType, string | React.JSXElementConstructor<any>>
+      | React.ReactElement<SliderChildrenType, string | React.JSXElementConstructor<any>>[]
       | undefined;
   } & React.RefAttributes<HTMLDivElement>
 >;

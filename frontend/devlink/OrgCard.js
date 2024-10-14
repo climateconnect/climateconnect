@@ -27,10 +27,7 @@ export function OrgCard({ as: _Component = _Builtin.Block }) {
         }
       </_Builtin.Paragraph>
       <_Builtin.Block className={_utils.cx(_styles, "div-block-158")} tag="div">
-        <_Builtin.Block
-          className={_utils.cx(_styles, "div-block-159")}
-          tag="div"
-        >
+        <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
           <_Builtin.Image
             className={_utils.cx(_styles, "image-124")}
             loading="lazy"
@@ -39,17 +36,11 @@ export function OrgCard({ as: _Component = _Builtin.Block }) {
             alt="Icon Gruppe"
             src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bf5f26f6e865b2f5ebeea_Pfad%2010815.svg"
           />
-          <_Builtin.Block
-            className={_utils.cx(_styles, "text-block-34")}
-            tag="div"
-          >
+          <_Builtin.Block className={_utils.cx(_styles, "text-block-34")} tag="div">
             {"15"}
           </_Builtin.Block>
         </_Builtin.Block>
-        <_Builtin.Block
-          className={_utils.cx(_styles, "div-block-159")}
-          tag="div"
-        >
+        <_Builtin.Block className={_utils.cx(_styles, "div-block-159")} tag="div">
           <_Builtin.Image
             className={_utils.cx(_styles, "image-124")}
             loading="lazy"
@@ -58,10 +49,7 @@ export function OrgCard({ as: _Component = _Builtin.Block }) {
             alt="Icon Projekt"
             src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/651bf5f2d308f8ac4a487899_content_paste_black_24dp.svg"
           />
-          <_Builtin.Block
-            className={_utils.cx(_styles, "text-block-34")}
-            tag="div"
-          >
+          <_Builtin.Block className={_utils.cx(_styles, "text-block-34")} tag="div">
             {"7"}
           </_Builtin.Block>
         </_Builtin.Block>

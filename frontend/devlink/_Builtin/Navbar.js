@@ -44,12 +44,8 @@ function getAnimationKeyframes({ axis = "Y", start, end }) {
   const t = `translate${axis}`;
   return [{ transform: `${t}(${start}px)` }, { transform: `${t}(${end}px)` }];
 }
-export const NavbarWrapper = React.forwardRef(function NavbarWrapper(
-  props,
-  ref
-) {
-  const { animation, docHeight, easing, easing2, duration, noScroll } =
-    props.config;
+export const NavbarWrapper = React.forwardRef(function NavbarWrapper(props, ref) {
+  const { animation, docHeight, easing, easing2, duration, noScroll } = props.config;
   const root = React.useRef(null);
   const menu = React.useRef(null);
   const animOver = /^over/.test(animation);
@@ -58,9 +54,7 @@ export const NavbarWrapper = React.forwardRef(function NavbarWrapper(
   React.useImperativeHandle(ref, () => root.current);
   const getBodyHeight = React.useCallback(() => {
     if (isServer) return;
-    return docHeight
-      ? document.documentElement.scrollHeight
-      : document.body.scrollHeight;
+    return docHeight ? document.documentElement.scrollHeight : document.body.scrollHeight;
   }, [docHeight]);
   const getOverlayHeight = React.useCallback(() => {
     if (isServer || !root.current) return;
@@ -116,15 +110,7 @@ export const NavbarWrapper = React.forwardRef(function NavbarWrapper(
         fill: "forwards",
       });
     }
-  }, [
-    animDirect,
-    animOver,
-    duration,
-    easing,
-    getBodyHeight,
-    getOffsetHeight,
-    isOpen,
-  ]);
+  }, [animDirect, animOver, duration, easing, getBodyHeight, getOffsetHeight, isOpen]);
   useLayoutEffect(() => {
     if (isOpen && noScroll) {
       document.body.style.overflowY = "hidden";
@@ -165,10 +151,7 @@ export const NavbarWrapper = React.forwardRef(function NavbarWrapper(
 });
 const maybeExtractChildMenu = (children, isOpen) => {
   if (!isOpen) return { childMenu: null, rest: children };
-  const { extracted, tree } = extractElement(
-    React.Children.toArray(children),
-    NavbarMenu
-  );
+  const { extracted, tree } = extractElement(React.Children.toArray(children), NavbarMenu);
   return { childMenu: extracted, rest: tree };
 };
 function Navbar({ tag = "div", className = "", children, config, ...props }) {
@@ -180,17 +163,14 @@ function Navbar({ tag = "div", className = "", children, config, ...props }) {
     },
     [setShouldExtractMenu]
   );
-  const bodyRef = React.useRef(
-    typeof document !== "undefined" ? document.body : null
-  );
+  const bodyRef = React.useRef(typeof document !== "undefined" ? document.body : null);
   useResizeObserver(bodyRef, extractMenuCallback);
   const { childMenu, rest } = React.useMemo(
     () => maybeExtractChildMenu(children, shouldExtractMenu),
     [children, shouldExtractMenu]
   );
   const handleFocus = (e) => {
-    const inputFocused =
-      document.activeElement?.tagName.toLowerCase() === "input";
+    const inputFocused = document.activeElement?.tagName.toLowerCase() === "input";
     const linkList = root.current ? Array.from(getLinksList(root.current)) : [];
     const linkAmount = linkList.length;
     switch (e.key) {
@@ -222,9 +202,7 @@ function Navbar({ tag = "div", className = "", children, config, ...props }) {
       }
       case KEY_CODES.TAB: {
         setTimeout(() => {
-          setFocusedLink(
-            linkList.findIndex((link) => link === document.activeElement)
-          );
+          setFocusedLink(linkList.findIndex((link) => link === document.activeElement));
         }, 0);
         break;
       }
@@ -257,8 +235,7 @@ function Navbar({ tag = "div", className = "", children, config, ...props }) {
   );
 }
 function NavbarOverlay({ children }) {
-  const { isOpen, getOverlayHeight, toggleOpen } =
-    React.useContext(NavbarContext);
+  const { isOpen, getOverlayHeight, toggleOpen } = React.useContext(NavbarContext);
   const overlayToggleOpen = React.useCallback(
     (e) => {
       if (e.target === e.currentTarget) {
@@ -328,8 +305,7 @@ export const NavbarMenu = React.forwardRef(function NavbarMenu(
   { tag = "nav", className = "", ...props },
   ref
 ) {
-  const { getBodyHeight, animOver, isOpen, menu } =
-    React.useContext(NavbarContext);
+  const { getBodyHeight, animOver, isOpen, menu } = React.useContext(NavbarContext);
   React.useImperativeHandle(ref, () => menu.current);
   return React.createElement(tag, {
     ...props,
@@ -339,10 +315,7 @@ export const NavbarMenu = React.forwardRef(function NavbarMenu(
     ref: menu,
   });
 });
-export const NavbarLink = React.forwardRef(function NavbarLink(
-  { className = "", ...props },
-  ref
-) {
+export const NavbarLink = React.forwardRef(function NavbarLink({ className = "", ...props }, ref) {
   const { isOpen } = React.useContext(NavbarContext);
   return (
     <Link

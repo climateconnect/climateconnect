@@ -1,14 +1,9 @@
 import * as React from "react";
 import { CSSModules } from "./types";
 export declare const cx: (style: CSSModules, ...classNames: string[]) => string;
-export declare const cj: (
-  ...classNames: (string | boolean | undefined)[]
-) => string;
+export declare const cj: (...classNames: (string | boolean | undefined)[]) => string;
 export declare const removeUnescaped: (value: string) => string;
-export declare const replaceSelector: (
-  selector: string,
-  styles: CSSModules
-) => string;
+export declare const replaceSelector: (selector: string, styles: CSSModules) => string;
 export declare function debounce<T extends (...args: any[]) => void>(
   this: void,
   func: T,
@@ -75,17 +70,9 @@ export declare const KEY_CODES: {
   END: string;
   TAB: string;
 };
-export declare function dispatchCustomEvent(
-  element: Document | Element,
-  eventName: string
-): void;
-export declare function useClickOut(
-  ref: React.RefObject<HTMLElement>,
-  action: () => void
-): void;
-export declare function extractElement<
-  T extends React.JSXElementConstructor<any>
->(
+export declare function dispatchCustomEvent(element: Document | Element, eventName: string): void;
+export declare function useClickOut(ref: React.RefObject<HTMLElement>, action: () => void): void;
+export declare function extractElement<T extends React.JSXElementConstructor<any>>(
   elements: React.ReactNode[],
   type: T
 ): {

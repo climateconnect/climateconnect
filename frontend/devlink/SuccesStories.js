@@ -15,10 +15,7 @@ export function SuccesStories({
       }}
       tag="div"
     >
-      <_Builtin.Container
-        className={_utils.cx(_styles, "container-34")}
-        tag="div"
-      >
+      <_Builtin.Container className={_utils.cx(_styles, "container-34")} tag="div">
         <_Builtin.Heading className={_utils.cx(_styles, "heading-39")} tag="h3">
           {"Comment les ClimatesHubs ont accéléré l'impact en ville"}
         </_Builtin.Heading>

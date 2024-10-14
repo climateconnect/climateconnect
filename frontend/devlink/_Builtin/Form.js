@@ -5,18 +5,11 @@ function onKeyDownInputHandlers(e) {
   e.stopPropagation();
 }
 export const FormWrapper = React.forwardRef(function FormWrapper(
-  {
-    className = "",
-    state: initialState = "normal",
-    onSubmit,
-    children,
-    ...props
-  },
+  { className = "", state: initialState = "normal", onSubmit, children, ...props },
   ref
 ) {
   const [state, setState] = React.useState(initialState);
-  const formName =
-    (children.find((c) => c.type === FormForm)?.props)["data-name"] ?? "Form";
+  const formName = (children.find((c) => c.type === FormForm)?.props)["data-name"] ?? "Form";
   return React.createElement(
     "div",
     {
@@ -93,10 +86,7 @@ export const FormWrapper = React.forwardRef(function FormWrapper(
 export const FormForm = React.forwardRef(function FormForm(props, ref) {
   return React.createElement("form", { ...props, ref });
 });
-export const FormBlockLabel = React.forwardRef(function FormBlockLabel(
-  props,
-  ref
-) {
+export const FormBlockLabel = React.forwardRef(function FormBlockLabel(props, ref) {
   return React.createElement("label", { ...props, ref });
 });
 export const FormTextInput = React.forwardRef(function FormTextInput(
@@ -131,15 +121,16 @@ export const FormInlineLabel = React.forwardRef(function FormInlineLabel(
     ref,
   });
 });
-export const FormCheckboxWrapper = React.forwardRef(
-  function FormCheckboxWrapper({ className = "", ...props }, ref) {
-    return React.createElement("label", {
-      className: className + " w-checkbox",
-      ...props,
-      ref,
-    });
-  }
-);
+export const FormCheckboxWrapper = React.forwardRef(function FormCheckboxWrapper(
+  { className = "", ...props },
+  ref
+) {
+  return React.createElement("label", {
+    className: className + " w-checkbox",
+    ...props,
+    ref,
+  });
+});
 export const FormRadioWrapper = React.forwardRef(function FormRadioWrapper(
   { className = "", ...props },
   ref
@@ -159,14 +150,7 @@ const CHECKED_CLASS = "w--redirected-checked";
 const FOCUSED_CLASS = "w--redirected-focus";
 const FOCUSED_VISIBLE_CLASS = "w--redirected-focus-visible";
 export const FormBooleanInput = React.forwardRef(function FormBooleanInput(
-  {
-    className = "",
-    checked = false,
-    type = "checkbox",
-    inputType,
-    customClassName,
-    ...props
-  },
+  { className = "", checked = false, type = "checkbox", inputType, customClassName, ...props },
   ref
 ) {
   const [isChecked, setIsChecked] = React.useState(checked);
@@ -209,12 +193,7 @@ export const FormBooleanInput = React.forwardRef(function FormBooleanInput(
     return (
       <>
         <div className={currentClassName} />
-        <input
-          ref={ref}
-          {...props}
-          {...inputProps}
-          style={HIDE_DEFAULT_INPUT_STYLES}
-        />
+        <input ref={ref} {...props} {...inputProps} style={HIDE_DEFAULT_INPUT_STYLES} />
       </>
     );
   }
@@ -238,12 +217,7 @@ export const FormRadioInput = React.forwardRef(function FormRadioInput(
   ref
 ) {
   return (
-    <FormBooleanInput
-      {...props}
-      ref={ref}
-      type="radio"
-      className={className + " w-radio-input"}
-    />
+    <FormBooleanInput {...props} ref={ref} type="radio" className={className + " w-radio-input"} />
   );
 });
 const MAX_FILE_SIZE_DEFAULT = 10485760;
@@ -254,74 +228,76 @@ const FileUploadContext = React.createContext({
   setFiles: () => undefined,
   setError: () => undefined,
 });
-export const FormFileUploadWrapper = React.forwardRef(
-  function FormFileUploadWrapper(
-    { maxSize = MAX_FILE_SIZE_DEFAULT, ...props },
-    ref
-  ) {
-    const [files, setFiles] = React.useState(null);
-    const [error, setError] = React.useState(null);
-    return React.createElement(
-      FileUploadContext.Provider,
-      {
-        value: { files, setFiles, error, setError, maxSize },
-      },
-      React.createElement(_FormFileUploadWrapper, { ...props, ref })
-    );
-  }
-);
-export const _FormFileUploadWrapper = React.forwardRef(
-  function _FormFileUploadWrapper({ className = "", ...props }, ref) {
-    return React.createElement("div", {
-      className: className + " w-file-upload",
-      ...props,
-      ref,
-    });
-  }
-);
-export const FormFileUploadDefault = React.forwardRef(
-  function FormFileUploadDefault({ className = "", ...props }, ref) {
-    const { files, error } = React.useContext(FileUploadContext);
-    return React.createElement("div", {
-      className: className + " w-file-upload-default",
-      ...props,
-      ref,
-      style: {
-        ...props.style,
-        display: !files || error ? "block" : "none",
-      },
-    });
-  }
-);
-export const FormFileUploadInput = React.forwardRef(
-  function FormFileUploadInput({ className = "", ...props }, ref) {
-    const { setFiles, setError, maxSize } = React.useContext(FileUploadContext);
-    return React.createElement("input", {
-      ...props,
-      className: className + " w-file-upload-input",
-      type: "file",
-      onKeyDown: onKeyDownInputHandlers,
-      onChange: (e) => {
-        if (e.target.files) {
-          if (e.target.files[0] && e.target.files[0].size <= maxSize) {
-            setError(null);
-            setFiles(e.target.files);
-          } else setError("SIZE_ERROR");
-        }
-      },
-      ref,
-    });
-  }
-);
-export const FormFileUploadLabel = React.forwardRef(
-  function FormFileUploadLabel({ className = "", ...props }, ref) {
-    return React.createElement("label", {
-      className: className + " w-file-upload-label",
-      ...props,
-      ref,
-    });
-  }
-);
+export const FormFileUploadWrapper = React.forwardRef(function FormFileUploadWrapper(
+  { maxSize = MAX_FILE_SIZE_DEFAULT, ...props },
+  ref
+) {
+  const [files, setFiles] = React.useState(null);
+  const [error, setError] = React.useState(null);
+  return React.createElement(
+    FileUploadContext.Provider,
+    {
+      value: { files, setFiles, error, setError, maxSize },
+    },
+    React.createElement(_FormFileUploadWrapper, { ...props, ref })
+  );
+});
+export const _FormFileUploadWrapper = React.forwardRef(function _FormFileUploadWrapper(
+  { className = "", ...props },
+  ref
+) {
+  return React.createElement("div", {
+    className: className + " w-file-upload",
+    ...props,
+    ref,
+  });
+});
+export const FormFileUploadDefault = React.forwardRef(function FormFileUploadDefault(
+  { className = "", ...props },
+  ref
+) {
+  const { files, error } = React.useContext(FileUploadContext);
+  return React.createElement("div", {
+    className: className + " w-file-upload-default",
+    ...props,
+    ref,
+    style: {
+      ...props.style,
+      display: !files || error ? "block" : "none",
+    },
+  });
+});
+export const FormFileUploadInput = React.forwardRef(function FormFileUploadInput(
+  { className = "", ...props },
+  ref
+) {
+  const { setFiles, setError, maxSize } = React.useContext(FileUploadContext);
+  return React.createElement("input", {
+    ...props,
+    className: className + " w-file-upload-input",
+    type: "file",
+    onKeyDown: onKeyDownInputHandlers,
+    onChange: (e) => {
+      if (e.target.files) {
+        if (e.target.files[0] && e.target.files[0].size <= maxSize) {
+          setError(null);
+          setFiles(e.target.files);
+        } else setError("SIZE_ERROR");
+      }
+    },
+    ref,
+  });
+});
+export const FormFileUploadLabel = React.forwardRef(function FormFileUploadLabel(
+  { className = "", ...props },
+  ref
+) {
+  return React.createElement("label", {
+    className: className + " w-file-upload-label",
+    ...props,
+    ref,
+  });
+});
 export const FormFileUploadText = React.forwardRef(function FormFileUploadText(
   { className = "", ...props },
   ref
@@ -342,73 +318,73 @@ export const FormFileUploadInfo = React.forwardRef(function FormFileUploadInfo(
     ref,
   });
 });
-export const FormFileUploadUploading = React.forwardRef(
-  function FormFileUploadUploading({ className = "", ...props }, ref) {
-    return React.createElement("div", {
-      className: className + " w-file-upload-uploading",
-      style: { ...props.style, display: "none" },
+export const FormFileUploadUploading = React.forwardRef(function FormFileUploadUploading(
+  { className = "", ...props },
+  ref
+) {
+  return React.createElement("div", {
+    className: className + " w-file-upload-uploading",
+    style: { ...props.style, display: "none" },
+    ...props,
+    ref,
+  });
+});
+export const FormFileUploadUploadingBtn = React.forwardRef(function FormFileUploadUploadingBtn(
+  { className = "", ...props },
+  ref
+) {
+  return React.createElement("div", {
+    className: className + " w-file-upload-uploading-btn",
+    ...props,
+    ref,
+  });
+});
+export const FormFileUploadUploadingIcon = React.forwardRef(function FormFileUploadUploadingIcon(
+  { className = "", ...props },
+  ref
+) {
+  return React.createElement(
+    "svg",
+    {
+      className: className + " icon w-icon-file-upload-uploading",
       ...props,
       ref,
-    });
-  }
-);
-export const FormFileUploadUploadingBtn = React.forwardRef(
-  function FormFileUploadUploadingBtn({ className = "", ...props }, ref) {
-    return React.createElement("div", {
-      className: className + " w-file-upload-uploading-btn",
-      ...props,
-      ref,
-    });
-  }
-);
-export const FormFileUploadUploadingIcon = React.forwardRef(
-  function FormFileUploadUploadingIcon({ className = "", ...props }, ref) {
-    return React.createElement(
-      "svg",
-      {
-        className: className + " icon w-icon-file-upload-uploading",
-        ...props,
-        ref,
-      },
-      <>
-        <path
-          fill="currentColor"
-          opacity=".2"
-          d="M15 30a15 15 0 1 1 0-30 15 15 0 0 1 0 30zm0-3a12 12 0 1 0 0-24 12 12 0 0 0 0 24z"
-        ></path>
-        <path
-          fill="currentColor"
-          opacity=".75"
-          d="M0 15A15 15 0 0 1 15 0v3A12 12 0 0 0 3 15H0z"
-        >
-          <animateTransform
-            attributeName="transform"
-            attributeType="XML"
-            dur="0.6s"
-            from="0 15 15"
-            repeatCount="indefinite"
-            to="360 15 15"
-            type="rotate"
-          ></animateTransform>
-        </path>
-      </>
-    );
-  }
-);
-export const FormFileUploadSuccess = React.forwardRef(
-  function FormFileUploadSuccess({ className = "", ...props }, ref) {
-    const { files, error } = React.useContext(FileUploadContext);
-    return React.createElement("div", {
-      className: className + " w-file-upload-success",
-      ...props,
-      ref,
-      style: {
-        ...props.style,
-        display: Boolean(files) && !error ? "block" : "none",
-      },
-    });
-  }
-);
+    },
+    <>
+      <path
+        fill="currentColor"
+        opacity=".2"
+        d="M15 30a15 15 0 1 1 0-30 15 15 0 0 1 0 30zm0-3a12 12 0 1 0 0-24 12 12 0 0 0 0 24z"
+      ></path>
+      <path fill="currentColor" opacity=".75" d="M0 15A15 15 0 0 1 15 0v3A12 12 0 0 0 3 15H0z">
+        <animateTransform
+          attributeName="transform"
+          attributeType="XML"
+          dur="0.6s"
+          from="0 15 15"
+          repeatCount="indefinite"
+          to="360 15 15"
+          type="rotate"
+        ></animateTransform>
+      </path>
+    </>
+  );
+});
+export const FormFileUploadSuccess = React.forwardRef(function FormFileUploadSuccess(
+  { className = "", ...props },
+  ref
+) {
+  const { files, error } = React.useContext(FileUploadContext);
+  return React.createElement("div", {
+    className: className + " w-file-upload-success",
+    ...props,
+    ref,
+    style: {
+      ...props.style,
+      display: Boolean(files) && !error ? "block" : "none",
+    },
+  });
+});
 export const FormFileUploadFile = React.forwardRef(function FormFileUploadFile(
   { className = "", ...props },
   ref
@@ -419,61 +395,65 @@ export const FormFileUploadFile = React.forwardRef(function FormFileUploadFile(
     ref,
   });
 });
-export const FormFileUploadFileName = React.forwardRef(
-  function FormFileUploadFileName({ className = "", ...props }, ref) {
-    const { files } = React.useContext(FileUploadContext);
-    return React.createElement(
-      "div",
-      {
-        className: className + " w-file-upload-file-name",
-        ...props,
-        ref,
-      },
-      files && files[0].name
-    );
-  }
-);
-export const FormFileUploadRemoveLink = React.forwardRef(
-  function FormFileUploadRemoveLink({ className = "", ...props }, ref) {
-    const { setFiles } = React.useContext(FileUploadContext);
-    return React.createElement("div", {
-      className: className + " w-file-remove-link",
+export const FormFileUploadFileName = React.forwardRef(function FormFileUploadFileName(
+  { className = "", ...props },
+  ref
+) {
+  const { files } = React.useContext(FileUploadContext);
+  return React.createElement(
+    "div",
+    {
+      className: className + " w-file-upload-file-name",
       ...props,
       ref,
-      onClick: () => {
-        setFiles(null);
-      },
-    });
-  }
-);
-export const FormFileUploadError = React.forwardRef(
-  function FormFileUploadError({ className = "", ...props }, ref) {
-    const { error } = React.useContext(FileUploadContext);
-    return React.createElement("div", {
-      className: className + " w-file-upload-error",
+    },
+    files && files[0].name
+  );
+});
+export const FormFileUploadRemoveLink = React.forwardRef(function FormFileUploadRemoveLink(
+  { className = "", ...props },
+  ref
+) {
+  const { setFiles } = React.useContext(FileUploadContext);
+  return React.createElement("div", {
+    className: className + " w-file-remove-link",
+    ...props,
+    ref,
+    onClick: () => {
+      setFiles(null);
+    },
+  });
+});
+export const FormFileUploadError = React.forwardRef(function FormFileUploadError(
+  { className = "", ...props },
+  ref
+) {
+  const { error } = React.useContext(FileUploadContext);
+  return React.createElement("div", {
+    className: className + " w-file-upload-error",
+    ...props,
+    ref,
+    style: {
+      ...props.style,
+      display: error ? "block" : "none",
+    },
+  });
+});
+export const FormFileUploadErrorMsg = React.forwardRef(function FormFileUploadErrorMsg(
+  { errors, className = "", ...props },
+  ref
+) {
+  const { error } = React.useContext(FileUploadContext);
+  return React.createElement(
+    "div",
+    {
+      className: className + " w-file-upload-error-msg",
       ...props,
       ref,
-      style: {
-        ...props.style,
-        display: error ? "block" : "none",
-      },
-    });
-  }
-);
-export const FormFileUploadErrorMsg = React.forwardRef(
-  function FormFileUploadErrorMsg({ errors, className = "", ...props }, ref) {
-    const { error } = React.useContext(FileUploadContext);
-    return React.createElement(
-      "div",
-      {
-        className: className + " w-file-upload-error-msg",
-        ...props,
-        ref,
-      },
-      errors[error ?? "GENERIC_ERROR"]
-    );
-  }
-);
+    },
+    errors[error ?? "GENERIC_ERROR"]
+  );
+});
 export const FormButton = React.forwardRef(function FormButton(
   { className = "", value, ...props },
   ref

@@ -38,9 +38,7 @@ type NavbarProps = {
   tag: React.ElementType;
   config: NavbarConfig;
   className?: string;
-  children?:
-    | React.ReactElement<NavbarChildrenType>[]
-    | React.ReactElement<NavbarChildrenType>;
+  children?: React.ReactElement<NavbarChildrenType>[] | React.ReactElement<NavbarChildrenType>;
 };
 export declare const NavbarWrapper: React.ForwardRefExoticComponent<
   NavbarProps & React.RefAttributes<unknown>

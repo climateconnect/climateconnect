@@ -1,10 +1,9 @@
 import * as React from "react";
-export type ElementProps<T extends keyof HTMLElementTagNameMap> =
-  React.HTMLAttributes<HTMLElementTagNameMap[T]>;
-export type Props<
-  T extends keyof HTMLElementTagNameMap,
-  U = unknown
-> = ElementProps<T> & React.PropsWithChildren<U>;
+export type ElementProps<T extends keyof HTMLElementTagNameMap> = React.HTMLAttributes<
+  HTMLElementTagNameMap[T]
+>;
+export type Props<T extends keyof HTMLElementTagNameMap, U = unknown> = ElementProps<T> &
+  React.PropsWithChildren<U>;
 export declare const Block: React.ForwardRefExoticComponent<
   {
     tag?: React.ElementType<any, keyof React.JSX.IntrinsicElements> | undefined;
@@ -13,9 +12,7 @@ export declare const Block: React.ForwardRefExoticComponent<
   } & React.HTMLAttributes<HTMLOrSVGElement> &
     React.RefAttributes<unknown>
 >;
-export declare const Span: React.ForwardRefExoticComponent<
-  React.RefAttributes<HTMLSpanElement>
->;
+export declare const Span: React.ForwardRefExoticComponent<React.RefAttributes<HTMLSpanElement>>;
 export declare const Blockquote: React.ForwardRefExoticComponent<
   React.RefAttributes<HTMLQuoteElement>
 >;
