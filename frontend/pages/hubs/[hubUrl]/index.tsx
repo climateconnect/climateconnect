@@ -4,34 +4,34 @@ import parseHtml from "html-react-parser";
 import Head from "next/head";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
-import { apiRequest, getLocalePrefix } from "../../public/lib/apiOperations";
-import { applyNewFilters, getInitialFilters } from "../../public/lib/filterOperations";
+import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
+import { applyNewFilters, getInitialFilters } from "../../../public/lib/filterOperations";
 import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
   getProjectTypeOptions,
   getSkillsOptions,
   getStatusOptions,
-} from "../../public/lib/getOptions";
-import { getAllHubs } from "../../public/lib/hubOperations";
-import { getImageUrl } from "../../public/lib/imageOperations";
-import { getLocationFilteredBy } from "../../public/lib/locationOperations";
-import getTexts from "../../public/texts/texts";
-import BrowseContent from "../../src/components/browse/BrowseContent";
-import UserContext from "../../src/components/context/UserContext";
-import BrowseExplainer from "../../src/components/hub/BrowseExplainer";
-import FashionDescription from "../../src/components/hub/description/FashionDescription";
-import FoodDescription from "../../src/components/hub/description/FoodDescription";
-import HubContent from "../../src/components/hub/HubContent";
-import HubHeaderImage from "../../src/components/hub/HubHeaderImage";
-import NavigationSubHeader from "../../src/components/hub/NavigationSubHeader";
-import WideLayout from "../../src/components/layouts/WideLayout";
-import DonationCampaignInformation from "../../src/components/staticpages/donate/DonationCampaignInformation";
-import { retrievePage } from "../../src/utils/webflow";
+} from "../../../public/lib/getOptions";
+import { getAllHubs } from "../../../public/lib/hubOperations";
+import { getImageUrl } from "../../../public/lib/imageOperations";
+import { getLocationFilteredBy } from "../../../public/lib/locationOperations";
+import getTexts from "../../../public/texts/texts";
+import BrowseContent from "../../../src/components/browse/BrowseContent";
+import UserContext from "../../../src/components/context/UserContext";
+import BrowseExplainer from "../../../src/components/hub/BrowseExplainer";
+import FashionDescription from "../../../src/components/hub/description/FashionDescription";
+import FoodDescription from "../../../src/components/hub/description/FoodDescription";
+import HubContent from "../../../src/components/hub/HubContent";
+import HubHeaderImage from "../../../src/components/hub/HubHeaderImage";
+import NavigationSubHeader from "../../../src/components/hub/NavigationSubHeader";
+import WideLayout from "../../../src/components/layouts/WideLayout";
+import DonationCampaignInformation from "../../../src/components/staticpages/donate/DonationCampaignInformation";
+import { retrievePage } from "../../../src/utils/webflow";
 import AddIcon from "@mui/icons-material/Add";
 import { Theme } from "@mui/material/styles";
-import theme from "../../src/themes/theme";
-import BrowseContext from "../../src/components/context/BrowseContext";
+import theme from "../../../src/themes/theme";
+import BrowseContext from "../../../src/components/context/BrowseContext";
 
 const useStyles = makeStyles((theme) => ({
   moreInfoSoon: {
@@ -75,8 +75,9 @@ const DESCRIPTION_WEBFLOW_LINKS = {
 
 //potentially switch back to getinitialprops here?!
 export async function getServerSideProps(ctx) {
-  const hubUrl = ctx.query.hubUrl;
-  const ideaToOpen = ctx.query.idea;
+  const hubUrl = ctx?.params?.hubUrl;
+
+  const ideaToOpen = ctx?.query?.idea;
 
   const [
     hubData,
