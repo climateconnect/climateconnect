@@ -99,10 +99,7 @@ export default function ChatContent({
             );
           })}
           {user_role.role_type === ROLE_TYPES.all_type && (
-            <Button
-              startIcon={<GroupAddIcon />}
-              onClick={handleToggleMemberManagementExpanded}
-            >
+            <Button startIcon={<GroupAddIcon />} onClick={handleToggleMemberManagementExpanded}>
               {texts.manage}
             </Button>
           )}

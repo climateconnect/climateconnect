@@ -30,7 +30,7 @@ export async function getServerSideProps(ctx) {
     };
   }
   if (!messages_object) throw Error("impossible");
-  
+
   return {
     props: {
       chat_uuid: ctx.query.chatUUID,
@@ -56,7 +56,7 @@ export default function Chat({
   hasMore,
   rolesOptions,
   chat_id,
-  idea
+  idea,
 }) {
   const token = new Cookies().get("auth_token");
   const { chatSocket, user, socketConnectionState, locale } = useContext(UserContext);
@@ -199,8 +199,8 @@ export default function Chat({
         ],
       });
     } catch (err: any) {
-      console.log("Error!")
-      console.log(err)
+      console.log("Error!");
+      console.log(err);
       if (err.response && err.response.data)
         console.log("Error in sendChatMessageThroughPostRequest: " + err.response.data.detail);
       setErrorMessage(err.response.data.detail);

@@ -95,7 +95,6 @@ class Messages extends React.Component {
     }
   }
 
-
   render() {
     const loadMore = async (page) => {
       if (!this.state.isLoading) {
@@ -130,7 +129,7 @@ class Messages extends React.Component {
             return (
               <Message
                 message={message}
-                associatedJoinRequest = {message?.associated_join_request}
+                associatedJoinRequest={message?.associated_join_request}
                 key={index}
                 classes={this.props.classes}
                 isPrivateChat={this.props.isPrivateChat}

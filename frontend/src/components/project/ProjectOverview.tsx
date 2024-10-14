@@ -163,7 +163,7 @@ export default function ProjectOverview({
   showFollowers,
   showLikes,
   toggleShowFollowers,
-  toggleShowLikes
+  toggleShowLikes,
 }: Props) {
   const classes = useStyles({});
   const { locale, user } = useContext(UserContext);

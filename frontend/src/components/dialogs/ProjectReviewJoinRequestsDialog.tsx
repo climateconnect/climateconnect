@@ -161,12 +161,7 @@ const UserDoNotExist = ({ texts, classes, locale, url }) => (
   </>
 );
 
-const ProjectRequesters = ({
-  initialRequesters,
-  project,
-  getRequestersList,
-  handleClose,
-}) => {
+const ProjectRequesters = ({ initialRequesters, project, getRequestersList, handleClose }) => {
   const [requesters, setRequesters] = useState(initialRequesters);
   const { locale } = useContext(UserContext);
   const cookies = new Cookies();
@@ -213,14 +208,7 @@ const ProjectRequesters = ({
  * Separate cohesive component that encapsulates
  * all the requester state and functionality together.
  */
-const Requester = ({
-  locale,
-  project,
-  requester,
-  requestId,
-  token,
-  handleUpdateRequesters,
-}) => {
+const Requester = ({ locale, project, requester, requestId, token, handleUpdateRequesters }) => {
   const classes = useStyles();
   const { showFeedbackMessage } = useContext(FeedbackContext);
   const texts = getTexts({ page: "general", locale: locale });
@@ -261,7 +249,7 @@ const Requester = ({
       console.log(e);
     }
   }
-  
+
   return (
     <>
       <Link

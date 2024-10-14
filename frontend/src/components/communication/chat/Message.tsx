@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
     border: "1px solid #707070",
     color: "#484848",
     paddingTop: "6px",
-    paddingBottom: "6px"
+    paddingBottom: "6px",
   },
   approveText: {
     color: "#207178",
@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
   },
   pendingText: {
     color: "#F8F8F8",
-    lineHeight: "3"
+    lineHeight: "3",
   },
   projectRecivedMessage: {
     backgroundColor: "white",
@@ -80,8 +80,8 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(4),
   },
   chatClarification: {
-    margin: "2px 0"
-  }
+    margin: "2px 0",
+  },
 }));
 
 const JoinProjectMessage = ({
@@ -149,7 +149,9 @@ const JoinProjectMessage = ({
             {associatedJoinRequest?.project_name}
             {`". `}
           </a>
-          <p className={ownClasses.chatClarification}>{texts.if_you_are_not_sure_answer_here_in_the_chat}</p>
+          <p className={ownClasses.chatClarification}>
+            {texts.if_you_are_not_sure_answer_here_in_the_chat}
+          </p>
         </Typography>
       )}
       {!received && (

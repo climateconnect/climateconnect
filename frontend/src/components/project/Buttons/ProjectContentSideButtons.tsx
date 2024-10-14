@@ -97,7 +97,7 @@ export default function ProjectContentSideButtons({
           requestId: r.id,
           user: r.user_profile,
           message: r.message,
-          chat_uuid: r.chat_uuid
+          chat_uuid: r.chat_uuid,
         };
         return user;
       });
@@ -106,7 +106,7 @@ export default function ProjectContentSideButtons({
     } catch (e) {
       console.log(e.response.data);
     }
-    
+
     const userPermission =
       user && project?.team?.find((m) => m.id === user.id)
         ? project.team.find((m) => m.id === user.id).permission

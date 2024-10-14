@@ -793,11 +793,11 @@
   },
   "send_request": {
     "en": "SEND REQUEST",
-    "de" : "ANFRAGE SENDEN"
+    "de": "ANFRAGE SENDEN"
   },
   "ignore": {
     "en": "IGNORE",
-    "de" : "IGNORIEREN"
+    "de": "IGNORIEREN"
   },
   "message_back": {
     "en": "MESSAGE BACK",

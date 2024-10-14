@@ -51,7 +51,7 @@ export default function ProjectJoinDialog({
   const chips = [
     { id: 1, label: texts.already_part_of_this_project, requiresTextbox: false },
     { id: 2, label: texts.get_active_to_project, requiresTextbox: true },
-  ]
+  ];
   const disableSubmit = !selectedChip || (showTextbox && !description);
 
   const handleClose = () => {
@@ -70,7 +70,7 @@ export default function ProjectJoinDialog({
 
   const handleSelectAnswer = (chipId) => {
     const clickedChip = chips.find((chip) => chip.id === chipId);
-    if(clickedChip){
+    if (clickedChip) {
       setSelectedChip(chipId);
       setShowTextbox(clickedChip.requiresTextbox || false);
     }
@@ -128,8 +128,8 @@ export default function ProjectJoinDialog({
                   size="small"
                   className={classes.chip}
                   style={{
-                    backgroundColor: selectedChip === data.id ? '#207178' : '#e0e0e0',
-                    color: selectedChip === data.id ? '#fff' : '#000',
+                    backgroundColor: selectedChip === data.id ? "#207178" : "#e0e0e0",
+                    color: selectedChip === data.id ? "#fff" : "#000",
                   }}
                 />
               );
@@ -152,7 +152,7 @@ export default function ProjectJoinDialog({
                 color="primary"
                 href={"#"}
                 onClick={() => handleSendProjectJoinRequest(description)}
-                disabled = {disableSubmit}
+                disabled={disableSubmit}
               >
                 {texts.send_request}
               </Button>

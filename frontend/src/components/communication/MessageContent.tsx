@@ -7,9 +7,9 @@ import YouTube from "react-youtube";
 import youtubeRegex from "youtube-regex";
 import { getFragmentsWithMentions } from "../../utils/mentions_markdown";
 import UserContext from "../context/UserContext";
-import TimeContainer from "./chat/TimeContainer"
+import TimeContainer from "./chat/TimeContainer";
 
-const useStyles = makeStyles((theme)=>({
+const useStyles = makeStyles((theme) => ({
   link: {
     color: "inherit",
     "&:visited": {
@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme)=>({
   },
   youtubeWrapper: {
     maxWidth: "640px",
-  }
+  },
 }));
 
 type Props = {
@@ -74,7 +74,7 @@ export default function MessageContent({
   associatedJoinRequest,
   sentDate,
   received,
-  unconfirmed
+  unconfirmed,
 }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -111,7 +111,7 @@ export default function MessageContent({
               <div className={classes.youtubeWrapper}>
                 <YouTube videoId={video_id} opts={opts as any} />
               </div>
-            )
+            );
           } else {
             return <Linkify componentDecorator={componentDecorator}>{w + " "}</Linkify>;
           }
@@ -164,7 +164,7 @@ export default function MessageContent({
                 >
                   {fragments}
                 </Typography>
-                <TimeContainer received={received} unconfirmed={unconfirmed} sentDate={sentDate}/>
+                <TimeContainer received={received} unconfirmed={unconfirmed} sentDate={sentDate} />
               </div>
             )}
           </div>

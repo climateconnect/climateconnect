@@ -85,7 +85,7 @@ export default function getTexts<P extends Page>({
   climateMatchQuestion,
   hubAmbassador,
   creator,
-  count
+  count,
 }: Args<P>) {
   // These are the multiple text files for various translations. They're
   // split up to reduce the amount of work required to download
@@ -125,7 +125,7 @@ export default function getTexts<P extends Page>({
       url_slug: url_slug,
       locale: locale,
       creator: creator,
-      count: count
+      count: count,
     }),
     settings: settings_texts,
     tutorial: getTutorialTexts({ hubName: hubName, classes: classes, locale: locale }),

@@ -65,7 +65,7 @@ type Props = {
   handleSendProjectJoinRequest: Function;
   requestedToJoin: boolean;
   className?: string;
-  handleOpenJoinDialog: Function
+  handleOpenJoinDialog: Function;
 };
 
 export default function JoinButton({
@@ -74,7 +74,7 @@ export default function JoinButton({
   handleSendProjectJoinRequest,
   requestedToJoin,
   className,
-  handleOpenJoinDialog
+  handleOpenJoinDialog,
 }: Props) {
   const classes = useStyles();
 
