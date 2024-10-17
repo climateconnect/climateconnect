@@ -1,6 +1,7 @@
 import { Button } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useEffect, useRef, useState } from "react";
+import Head from "next/head";
 import { IconButton } from "@mui/material";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
@@ -149,8 +150,18 @@ export default function Index() {
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
+  const schemaMarkup = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Climate Connect",
+    url: "https://climateconnect.earth/",
+  };
+
   return (
     <BrowseContext.Provider value={contextValues}>
+      <Head>
+        <script type="application/ld+json">{JSON.stringify(schemaMarkup)}</script>
+      </Head>
       <WideLayout
         /*TODO(unused) hideTitle */
         fixedHeader

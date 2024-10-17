@@ -47,10 +47,10 @@ export default function ProfilePage({ profile, projects, organizations, ideas, p
     <WideLayout
       title={profile ? texts.persons_profile : texts.not_found}
       description={
-        profile.name +
+        profile?.name +
         " | " +
-        profile.info.location +
-        (profile.info.bio ? " | " + profile.info.bio : "")
+        profile?.info?.location +
+        (profile?.info?.bio ? " | " + profile?.info?.bio : "")
       }
     >
       {profile ? (

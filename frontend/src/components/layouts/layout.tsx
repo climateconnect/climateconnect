@@ -30,6 +30,7 @@ export default function Layout({
   messageType,
   isLoading,
   isStaticPage,
+  canonicalUrl,
 }: any) {
   const classes = useStyles({ donationCampaignRunning: process.env.DONATION_CAMPAIGN_RUNNING });
   const [hideAlertMessage, setHideAlertMessage] = React.useState(false);
@@ -43,8 +44,9 @@ export default function Layout({
       setInitialMessageType("error");
     }
   }, []);
+
   return (
-    <LayoutWrapper theme={theme} title={title}>
+    <LayoutWrapper theme={theme} title={title} canonicalUrl={canonicalUrl}>
       <Header noSpacingBottom isStaticPage={isStaticPage} />
       {<DonationCampaignInformation />}
       {isLoading ? (
