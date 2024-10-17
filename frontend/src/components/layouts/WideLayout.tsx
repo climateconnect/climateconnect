@@ -64,6 +64,7 @@ type Props = {
   customFooterImage?: string;
   isLocationHub?: boolean;
   noHeader?: boolean;
+  canonicalUrl?: string;
 };
 //Wrapper layout component for pages where the content takes the whole width of the screen
 export default function WideLayout({
@@ -94,6 +95,7 @@ export default function WideLayout({
   hideDonationCampaign,
   customFooterImage,
   noHeader,
+  canonicalUrl,
 }: Props) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);
@@ -127,6 +129,7 @@ export default function WideLayout({
       useFloodStdFont={useFloodStdFont}
       theme={theme}
       image={image}
+      canonicalUrl={canonicalUrl}
     >
       {!noHeader && (
         <Header
