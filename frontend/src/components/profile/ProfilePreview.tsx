@@ -11,7 +11,9 @@ const useStyles = makeStyles((theme) => {
   return {
     avatarWithInfo: {
       textAlign: "center",
-      width: theme.spacing(40),
+      alginSelf: "center",
+      maxWidth: theme.spacing(36),
+      padding: theme.spacing(2),
     },
     avatar: {
       height: theme.spacing(20),
