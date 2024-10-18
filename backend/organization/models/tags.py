@@ -20,6 +20,7 @@ class OrganizationTags(models.Model):
 
     # Adding this because we use organization tags to filter organization
     # and its not possible to filter Name because it contains spaces.
+    # TODO (Karol): Maybe I am just blind, but I don't see where this is used.
     key = models.CharField(
         help_text="Points to key of the tag. Example: `Student organization` becomes studentorganization",
         verbose_name="Key",

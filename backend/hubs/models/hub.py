@@ -108,7 +108,7 @@ class Hub(models.Model):
     )
 
     welcome_message_logged_in = models.CharField(
-        help_text="Displayed on the dashboard on location hubs when logged in. Starts with \"Hi $user.name\"",
+        help_text='Displayed on the dashboard on location hubs when logged in. Starts with "Hi $user.name"',
         verbose_name="Welcome message (logged in)",
         max_length=2048,
         null=True,

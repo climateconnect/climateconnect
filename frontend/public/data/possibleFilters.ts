@@ -5,8 +5,15 @@ import GroupIcon from "@mui/icons-material/Group";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import getTexts from "../texts/texts";
+import { BrowseTabs, CcLocale } from "../../src/types";
 
-export default function getFilters({ key, filterChoices, locale }) {
+type getFiltersParam = {
+  key: BrowseTabs | "all";
+  filterChoices: any;
+  locale: CcLocale;
+};
+
+export default function getFilters({ key, filterChoices, locale }: getFiltersParam) {
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const english_texts = getTexts({ page: "filter_and_search", locale: "en" });
   if (!filterChoices) {
@@ -34,11 +41,17 @@ export default function getFilters({ key, filterChoices, locale }) {
     ];
   }
 
-  console.log("possibleFilters invalid input:" + key);
+  console.error("possibleFilters invalid input:" + key);
   return [];
 }
 
 const getLocationFilters = (texts) => {
+  // FIXME: LocationFilters currently do not include
+  // place=108921958&osm=62403&loc_type=relation
+  // but these are the values stored within the url
+  // Therefore, sharing an URL containing filters (and thus the new state management)
+  // did not properly use the location filter
+
   if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
     return [
       {
