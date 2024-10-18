@@ -110,7 +110,9 @@ urls = [
         common_views.ListAvailabilitiesView.as_view(),
         name="list-availabilities-api",
     ),
+    # TODO (Karol): Missing api/ prefix in the path
     path("skills/", common_views.ListSkillsView.as_view(), name="list-skills-api"),
+    # TODO (Karol): Missing api/ prefix in the path
     path(
         "parentskills/",
         common_views.ListParentSkillsView.as_view(),
