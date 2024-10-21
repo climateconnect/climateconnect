@@ -76,6 +76,19 @@ const DESCRIPTION_WEBFLOW_LINKS = {
 //potentially switch back to getinitialprops here?!
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hubUrl;
+  // FIXME:
+  // somehow, installHook.js.map gets requested:
+  //   { hubUrl: 'installHook.js.map' }
+  // huburl: installHook.js.map
+  //
+  // this leads to
+  // > hubData = null
+  //
+  // crashing the SSR when performing:
+  // > isLocationHub: hubData.hub_type === "location hub",
+
+  console.error(ctx.query);
+  console.error("huburl:", hubUrl);
   const ideaToOpen = ctx.query.idea;
 
   const [
@@ -198,9 +211,6 @@ export default function Hub({
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
   //Refs and state for tutorial
-  const hubQuickInfoRef = useRef(null);
-  const hubProjectsButtonRef = useRef(null);
-  const [nextStepTriggeredBy, setNextStepTriggeredBy] = useState(false);
   const [requestTabNavigation, tabNavigationRequested] = useState("foo");
 
   const navRequested = (tabKey) => {
@@ -208,7 +218,6 @@ export default function Hub({
   };
 
   const scrollToSolutions = () => {
-    setNextStepTriggeredBy("showProjectsButton");
     contentRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -306,7 +315,6 @@ export default function Hub({
             />
           )}
           <HubContent
-            hubQuickInfoRef={hubQuickInfoRef}
             headline={headline}
             hubAmbassador={hubAmbassador}
             quickInfo={quickInfo}
@@ -324,7 +332,6 @@ export default function Hub({
             subHeadline={subHeadline}
             welcomeMessageLoggedIn={welcomeMessageLoggedIn}
             welcomeMessageLoggedOut={welcomeMessageLoggedOut}
-            hubProjectsButtonRef={hubProjectsButtonRef}
             isLocationHub={isLocationHub}
             location={hubLocation}
             allHubs={allHubs}
@@ -336,7 +343,7 @@ export default function Hub({
           <BrowseContext.Provider value={contextValues}>
             <BrowseContent
               applyNewFilters={handleApplyNewFilters}
-              contentRef={contentRef}
+              contentRef={contentRef} // TOOD: is this a dead prop as well?
               customSearchBarLabels={customSearchBarLabels}
               errorMessage={errorMessage}
               hubAmbassador={hubAmbassador}
@@ -346,13 +353,10 @@ export default function Hub({
               handleSetErrorMessage={handleSetErrorMessage}
               hideMembers={!isLocationHub}
               hubName={name}
-              hubProjectsButtonRef={hubProjectsButtonRef}
-              hubQuickInfoRef={hubQuickInfoRef}
               initialLocationFilter={initialLocationFilter}
               // TODO: is this still needed?
               // initialOrganizations={initialOrganizations}
               // initialProjects={initialProjects}
-              nextStepTriggeredBy={nextStepTriggeredBy}
               showIdeas={isLocationHub}
               allHubs={allHubs}
               initialIdeaUrlSlug={initialIdeaUrlSlug}
@@ -409,16 +413,17 @@ const retrieveDescriptionFromWebflow = async (query, locale) => {
 
 const getHubData = async (url_slug, locale) => {
   try {
+    console.debug("load hub data:", `/api/hubs/${url_slug}/`);
     const resp = await apiRequest({
       method: "get",
       url: `/api/hubs/${url_slug}/`,
       locale: locale,
     });
+    console.error("HUB DATA: ", resp.data);
     return resp.data;
   } catch (err: any) {
     if (err.response && err.response.data)
-      console.log("Error in getHubData: " + err.response.data.detail);
-    console.log(err);
+      console.error("Error in getHubData: " + err.response.data.detail);
     return null;
   }
 };

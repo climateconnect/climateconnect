@@ -137,13 +137,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ProjectContent({
-  collaborationSectionRef,
   discussionTabLabel,
   handleTabChange,
   latestParentComment,
   leaveProject,
   project,
-  projectDescriptionRef,
   projectTabsRef,
   typesByTabValue,
   showRequesters,
@@ -281,13 +279,7 @@ export default function ProjectContent({
         </div>
       </div>
       <div className={classes.contentBlock}>
-        <Typography
-          component="h2"
-          variant="h6"
-          color="primary"
-          ref={projectDescriptionRef}
-          className={classes.subHeader}
-        >
+        <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
           {getProjectDescriptionHeadline()}
         </Typography>
         <Typography className={classes.projectDescription} component="div">
@@ -329,7 +321,7 @@ export default function ProjectContent({
           projectTabsRef={projectTabsRef}
         />
       )}
-      <div className={classes.contentBlock} ref={collaborationSectionRef}>
+      <div className={classes.contentBlock}>
         <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
           {texts.collaboration}
         </Typography>
