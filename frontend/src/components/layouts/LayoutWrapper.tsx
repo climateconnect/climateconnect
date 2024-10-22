@@ -69,6 +69,7 @@ export default function LayoutWrapper({
   description,
   image,
   useFloodStdFont,
+  canonicalUrl,
 }: any) {
   const [snackbarProps, setSnackbarProps] = useState({
     open: false,
@@ -159,6 +160,7 @@ export default function LayoutWrapper({
         <meta property="og:type" content="website" />
 
         <meta name="description" content={description ? description : defaultDescription} />
+        {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
       </Head>
       {/* If theme is falsy, slience the MUI console.warning for having an undefined theme */}
       <ThemeProvider theme={theme}>

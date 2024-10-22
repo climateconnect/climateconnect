@@ -2,7 +2,7 @@ import NextCookies from "next-cookies";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../../public/data/role_types";
-import { apiRequest } from "../../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix } from "../../public/lib/apiOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
@@ -70,6 +70,7 @@ const parseComments = (comments) => {
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const projectUrl = encodeURI(ctx.query.projectId);
+
   const [
     project,
     members,
@@ -224,7 +225,7 @@ export default function ProjectPage({
       description={project?.short_description}
       message={message?.message}
       messageType={message?.messageType}
-      title={project ? project.name : texts.project + " " + texts.not_found}
+      title={project ? project?.name : texts.project + " " + texts.not_found}
       subHeader={
         !tinyScreen ? (
           <HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef} onlyShowDropDown={true} />
@@ -233,6 +234,11 @@ export default function ProjectPage({
         )
       }
       image={project ? getImageUrl(project.image) : undefined}
+      canonicalUrl={
+        project.url_slug
+          ? `${process.env.BASE_URL + getLocalePrefix(locale)}/projects/${project?.url_slug}`
+          : ""
+      }
     >
       <BrowseContext.Provider value={contextValues}>
         {project ? (

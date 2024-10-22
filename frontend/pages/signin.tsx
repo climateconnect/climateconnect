@@ -96,7 +96,12 @@ export default function Signin() {
   };
 
   return (
-    <Layout title={texts.log_in} isLoading={isLoading} messageType="error">
+    <Layout
+      title={texts.log_in}
+      isLoading={isLoading}
+      messageType="error"
+      canonicalUrl={`${process.env.BASE_URL + getLocalePrefix(locale) + "/signin"}`}
+    >
       <Form
         fields={fields}
         messages={messages}
