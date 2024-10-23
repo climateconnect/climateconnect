@@ -307,7 +307,6 @@ class CreateProjectView(APIView):
             organization = check_organization(int(request.data["parent_organization"]))
         else:
             organization = None
-        print("request>>>>>>>>>>>>>>>>>>>.", request.data)
         required_params = [
             "name",
             "status",
@@ -509,7 +508,6 @@ class ProjectAPIView(APIView):
             serializer = EditProjectSerializer(project, many=False)
         else:
             serializer = ProjectSerializer(project, many=False)
-            print("serializer.data>>>>>>>>>>>>>.",serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, url_slug, format=None):
