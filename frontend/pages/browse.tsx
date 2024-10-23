@@ -89,11 +89,6 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter, pro
             // TODO: SSR can also consider the query to prefetch all data
             //
             // pass down the initial set of filters
-            initialFilters={getInitialFilters({
-              filterChoices: filterChoices,
-              locale: locale,
-              initialLocationFilter: initialLocationFilter,
-            })}
             initialLocationFilter={initialLocationFilter}
           />
         </BrowseContext.Provider>
