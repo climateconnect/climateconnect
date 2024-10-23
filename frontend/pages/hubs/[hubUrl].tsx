@@ -4,7 +4,6 @@ import parseHtml from "html-react-parser";
 import Head from "next/head";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { apiRequest, getLocalePrefix } from "../../public/lib/apiOperations";
-import { getInitialFilters } from "../../public/lib/filterOperations";
 import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
@@ -213,6 +212,8 @@ export default function Hub({
   return (
     <>
       {hubDescription && hubDescription.headContent && (
+        // TODO: parseHtml is dangerous
+        // check / ask, whether the input is safe
         <Head>{parseHtml(hubDescription.headContent)}</Head>
       )}
       <WideLayout
@@ -297,11 +298,6 @@ export default function Hub({
               //filter related props
               filterChoices={filterChoices}
               initialLocationFilter={initialLocationFilter}
-              initialFilters={getInitialFilters({
-                filterChoices: filterChoices,
-                locale: locale,
-                initialLocationFilter: initialLocationFilter,
-              })}
               // TODO: unused?!
               // tabNavigationRequested={requestTabNavigation}
             />

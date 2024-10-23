@@ -70,7 +70,6 @@ const useStyles = makeStyles((theme) => {
 });
 
 interface BrowseContentProps {
-  initialFilters: any;
   filterChoices: any;
   initialLocationFilter: any;
 
@@ -119,7 +118,6 @@ export default function BrowseContent({
   hubData,
 
   // filter related values
-  initialFilters, // dict. of initial filter setup
   filterChoices, // dict. of possible filters and their values
   initialLocationFilter,
 
@@ -270,9 +268,6 @@ export default function BrowseContent({
     // to the server?
     // no, because there hidden filters as well. But these should be fixed/come from my parent
     // therefore, the access is simple
-
-    // ----------------------------
-    // Unwrapping the BrowseConent < handleApplyNewFilters >
 
     // TODO: ignoring the location indication for now. Maybe it does not belong to this
     // component anyways
@@ -497,7 +492,6 @@ export default function BrowseContent({
         <Suspense fallback={null}>
           {/* TODO */}
           <FilterSection
-            initialFilters={initialFilters}
             type={TYPES_BY_TAB_VALUE[tabValue]}
             customSearchBarLabels={customSearchBarLabels}
             filterButtonRef={filterButtonRef}

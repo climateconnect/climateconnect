@@ -79,8 +79,7 @@ type Props = {
   // errorMessage state
   errorMessage: any;
 
-  // initial values for filters
-  initialFilters: any;
+  // initial values for filters (ssr)
   initialLocationFilter: any;
 
   // TODO: rename to filterOption Definition
@@ -101,11 +100,11 @@ export default function FilterSection({
   // FilterContent Dependencies
   errorMessage,
   // filters,
-  initialFilters,
   filterChoices, // TODO: rename to filterOptionDefinitions
+  initialLocationFilter,
+
   // handleApplyNewFilters,
   handleSetLocationOptionsOpen,
-  initialLocationFilter,
   locationInputRefs,
   locationOptionsOpen,
 }: Props) {
@@ -241,7 +240,7 @@ export default function FilterSection({
             // the underlying search bar.
             type={type}
             onSubmit={handleOnSumbitSearchBar}
-            initialValue={initialFilters?.search ?? ""}
+            initialValue={filters?.search ?? ""}
           />
         </div>
         <Button
