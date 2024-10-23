@@ -216,7 +216,7 @@ export default function FilterSection({
   };
 
   useEffect(() => {
-    console.log("filters changed, rerun apply");
+    console.debug("[FilterSection]: Filters changed => applying to URL");
     applyNewFiltersToUrl({
       type,
       newFilters: filters,

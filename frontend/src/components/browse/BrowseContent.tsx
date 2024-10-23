@@ -264,7 +264,7 @@ export default function BrowseContent({
   const [tabsWhereFiltersWereApplied, setTabsWhereFiltersWereApplied] = useState([]);
 
   const loadDataBasedOnUrl = async () => {
-    console.log("start filtering/loading");
+    console.debug("[BrowseContent]: start filtering/loading");
     setIsFiltering(true);
 
     // clear current error message
@@ -294,7 +294,7 @@ export default function BrowseContent({
       newState.urlEnding = res.newUrlEnding ?? "";
 
       setState(newState);
-      console.log("handle apply new filters: setting state success");
+      console.debug("[BrowseContent]: handle apply new filters: setting state success");
     }
     setIsFiltering(false);
   };
@@ -329,7 +329,7 @@ export default function BrowseContent({
 
     const handleURLChange = () => {
       const queryParams = new URLSearchParams(window.location.search);
-      console.log("new query params:", queryParams);
+      console.debug("[BrowseContent]: url update => new URLSearchParams:", queryParams);
       loadDataBasedOnUrl();
     };
 

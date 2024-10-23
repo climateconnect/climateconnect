@@ -18,7 +18,7 @@ export async function getDataFromServer({ type, page, token, urlEnding, hubUrl, 
   }
 
   try {
-    console.log(`Getting data for ${type} at ${url}`);
+    console.debug(`[getDataOperation]: Getting data for ${type} at ${url}`);
     const resp = await apiRequest({ method: "get", url, token, locale });
     if (resp.data.length === 0) {
       console.log(`No data of type ${type} found...`);

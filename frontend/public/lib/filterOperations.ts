@@ -4,7 +4,11 @@ import possibleFilters from "../data/possibleFilters";
 import { getDataFromServer } from "./getDataOperations";
 import { membersWithAdditionalInfo } from "./getOptions";
 import { getInfoMetadataByType, getReducedPossibleFilters } from "./parsingOperations";
-import { encodeQueryParamsFromFilters, findOptionByNameDeep } from "./urlOperations";
+import {
+  encodeQueryParamsFromFilters,
+  findOptionByNameDeep,
+  getSearchParams,
+} from "./urlOperations";
 import { BrowseTabs, CcLocale, FilterChoices } from "../../src/types";
 import getFilters from "../data/possibleFilters";
 
@@ -119,12 +123,6 @@ export function getInitialFilters({
   locale: CcLocale;
   initialLocationFilter: any;
 }) {
-  console.log(filterChoices);
-  console.log(
-    possibleFilters({ key: "all", filterChoices: filterChoices, locale: locale }),
-    initialLocationFilter
-  );
-
   return {
     ...getReducedPossibleFilters(
       possibleFilters({ key: "all", filterChoices: filterChoices, locale: locale }),
@@ -276,7 +274,8 @@ export async function v2applyNewFilters(
   // * so one does not have to query them twice
 
   // recreate the query object from the url
-  const searchQueryObject = getQueryObjectFromUrl(locationSearch, filterChoices, locale);
+  const searchParams = getSearchParams(locationSearch);
+  const searchQueryObject = getQueryObjectFromUrl(searchParams, filterChoices, locale);
 
   // TODO: ignoring the location indication for now. Maybe it does not belong to this
   // component anyways
@@ -339,6 +338,14 @@ const getQueryObjectFromUrl = (query: any, filterChoices: FilterChoices, locale:
     filterChoices: filterChoices,
     locale: locale,
   });
+
+  // TODO: (Karol) mayebe I am wrong, but shouldn't this simplyfied using the URLSearchParams API?
+  // e.g. for URLSearchParams:
+  //
+  // obj =  new URLSearchParams("search=Test&search=Test2")
+  // obj.get("search") // "Test"
+  // obj.getAll("search") // ["Test", "Test2"]
+
   const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFiltersMetadata);
   for (const [key, value] of Object.entries(splitQueryObject.filters) as any) {
     const metadata = possibleFiltersMetadata.find((f) => f.key === key);
