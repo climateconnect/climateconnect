@@ -4,8 +4,9 @@ import possibleFilters from "../data/possibleFilters";
 import { getDataFromServer } from "./getDataOperations";
 import { membersWithAdditionalInfo } from "./getOptions";
 import { getInfoMetadataByType, getReducedPossibleFilters } from "./parsingOperations";
-import { encodeQueryParamsFromFilters } from "./urlOperations";
-import { CcLocale, FilterChoices } from "../../src/types";
+import { encodeQueryParamsFromFilters, findOptionByNameDeep } from "./urlOperations";
+import { BrowseTabs, CcLocale, FilterChoices } from "../../src/types";
+import getFilters from "../data/possibleFilters";
 
 const getLocationFilterUrl = (location) => {
   /*Pass place id. If the place id is found in our db we can use it's polygon,
@@ -262,17 +263,35 @@ export async function applyNewFilters({
   }
 }
 
-export async function v2applyNewFilters({
-  currentTab,
-  filters,
-  filterChoices, // TODO: add type: FilterChoices
-  locale,
-  token,
-  hubUrl,
-}: any) {
+export async function v2applyNewFilters(
+  currentTab: BrowseTabs,
+  locationSearch: string,
+  filterChoices: FilterChoices,
+  locale: CcLocale,
+  token: string,
+  hubUrl: string | undefined
+) {
   // TODO reimplement Caching
   // * Record the tabs in which the filters were applied already
   // * so one does not have to query them twice
+
+  // recreate the query object from the url
+  const searchQueryObject = getQueryObjectFromUrl(locationSearch, filterChoices, locale);
+
+  // TODO: ignoring the location indication for now. Maybe it does not belong to this
+  // component anyways
+  // if (!legacyModeEnabled && newFilters.location && !isLocationValid(newFilters.location)) {
+  // hadnle
+
+  // reconstruct url by rebuilding filters from the query object
+  // ----------------
+  const possibleFilters = getFilters({
+    key: currentTab,
+    filterChoices: filterChoices,
+    locale: locale,
+  });
+  const splitQueryObject = splitFiltersFromQueryObject(searchQueryObject, possibleFilters);
+  const filters = { ...splitQueryObject.filters };
 
   const newUrlEnding = encodeQueryParamsFromFilters({
     filters: filters,
@@ -280,6 +299,7 @@ export async function v2applyNewFilters({
     filterChoices: filterChoices,
     locale: locale,
   });
+  // ----------------
 
   try {
     const payload: any = {
@@ -311,3 +331,39 @@ export async function v2applyNewFilters({
     console.log(e);
   }
 }
+
+const getQueryObjectFromUrl = (query: any, filterChoices: FilterChoices, locale: CcLocale) => {
+  const queryObject = _.cloneDeep(query);
+  const possibleFiltersMetadata = getFilters({
+    key: "all",
+    filterChoices: filterChoices,
+    locale: locale,
+  });
+  const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFiltersMetadata);
+  for (const [key, value] of Object.entries(splitQueryObject.filters) as any) {
+    const metadata = possibleFiltersMetadata.find((f) => f.key === key);
+
+    if (value.indexOf(",") > 0) {
+      queryObject[key] = value.split(",").map((v) => getValueInCurrentLanguage(metadata, v));
+    } else if (
+      metadata?.type === "multiselect" ||
+      metadata?.type === "openMultiSelectDialogButton"
+    ) {
+      queryObject[key] = [getValueInCurrentLanguage(metadata, value)];
+    } else if (key === "radius") {
+      queryObject[key] = value + "km";
+    }
+  }
+  return queryObject;
+};
+
+/* We always save filter values in the url in english.
+                Therefore we need to get the name in the current language
+                when retrieving them from the query object */
+const getValueInCurrentLanguage = (metadata, value) => {
+  return findOptionByNameDeep({
+    filterChoices: metadata.options,
+    propertyToFilterBy: "original_name",
+    valueToFilterBy: value,
+  }).name;
+};

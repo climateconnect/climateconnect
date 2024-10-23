@@ -4,16 +4,12 @@ import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
 import _ from "lodash";
 import React, { Suspense, useContext, useEffect, useMemo, useRef, useState } from "react";
 import Cookies from "universal-cookie";
-import getFilters from "../../../public/data/possibleFilters";
-import {
-  splitFiltersFromQueryObject,
-  v2applyNewFilters,
-} from "../../../public/lib/filterOperations";
+import { v2applyNewFilters } from "../../../public/lib/filterOperations";
 import { loadMoreData } from "../../../public/lib/getDataOperations";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import { getUserOrganizations } from "../../../public/lib/organizationOperations";
-import { findOptionByNameDeep, getSearchParams } from "../../../public/lib/urlOperations";
+import { getSearchParams } from "../../../public/lib/urlOperations";
 import getTexts from "../../../public/texts/texts";
 import LoadingContext from "../context/LoadingContext";
 import UserContext from "../context/UserContext";
@@ -21,6 +17,7 @@ import LoadingSpinner from "../general/LoadingSpinner";
 import MobileBottomMenu from "./MobileBottomMenu";
 import HubTabsNavigation from "../hub/HubTabsNavigation";
 import { BrowseTabs, FilterChoices } from "../../types";
+import { useRouter } from "next/router";
 
 const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
 // TODO: shall be deleted in future
@@ -268,11 +265,6 @@ export default function BrowseContent({
     // no, because there hidden filters as well. But these should be fixed/come from my parent
     // therefore, the access is simple
 
-    // TODO: ignoring the location indication for now. Maybe it does not belong to this
-    // component anyways
-    // if (!legacyModeEnabled && newFilters.location && !isLocationValid(newFilters.location)) {
-    // hadnle
-
     // clear current error message
     setErrorMessage("");
     // set the state to loading/filtering data
@@ -280,42 +272,15 @@ export default function BrowseContent({
     // TODO: remove after rename
     const currentTab = hash;
 
-    // TODO: maybe be more carfull with "user input" (search params can be user/attacker controlled)
-    console.log("Search Params:", getSearchParams(window.location.search));
-
-    const queryObject = getQueryObjectFromUrl(getSearchParams(window.location.search));
-    console.log("QUERY OBJECT", queryObject);
-
-    // TODO: not sure if this is nessecary
-    const possibleFilters = getFilters({
-      key: currentTab,
-      filterChoices: filterChoices,
-      locale: locale,
-    });
-    console.log("POSSIBLE FILTERS", possibleFilters);
-
-    const locationFilter: any = possibleFilters.find((f) => f.type === "location");
-    console.log("LOCATION FILTER", locationFilter);
-
-    const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFilters);
-    console.log("filters", splitQueryObject.filters);
-    console.log("non filer params", splitQueryObject.nonFilters);
-
-    // queryObject[locationFilter.key] = filters[locationFilter.key];
-
-    const filters = { ...splitQueryObject.filters };
-    // TODO reimplement Caching
-    // * Record the tabs in which the filters were applied already
-    // * so one does not have to query them twice
-    console.log("current filters:", filters);
-    const res = await v2applyNewFilters({
+    const res = await v2applyNewFilters(
       currentTab,
-      filters,
+      // TODO: maybe be more carfull with "user input" (search params can be user/attacker controlled)
+      window.location.search,
       filterChoices,
       locale,
       token,
-      hubUrl,
-    });
+      hubUrl
+    );
     // adjust data based on the result of applyNewFilters
     if (res?.filteredItemsObject) {
       // TODO: is a copy needed, as setState is only triggered after updating everything
@@ -335,6 +300,7 @@ export default function BrowseContent({
   // Handle an URL Change
   // extract filters and update data
   useEffect(() => {
+    //TODO: use the useRouter Hook
     // one could install react-router dom to
     // listen for url updates, that do not navigate.
     // -----------
@@ -378,42 +344,6 @@ export default function BrowseContent({
   const [isFiltering, setIsFiltering] = useState(false);
   const [isFetchingMoreData, setIsFetchingMoreData] = useState(false);
   const filterButtonRef = useRef(null);
-
-  /* We always save filter values in the url in english.
-                Therefore we need to get the name in the current language
-                when retrieving them from the query object */
-  const getValueInCurrentLanguage = (metadata, value) => {
-    return findOptionByNameDeep({
-      filterChoices: metadata.options,
-      propertyToFilterBy: "original_name",
-      valueToFilterBy: value,
-    }).name;
-  };
-
-  const getQueryObjectFromUrl = (query) => {
-    const queryObject = _.cloneDeep(query);
-    const possibleFiltersMetadata = getFilters({
-      key: "all",
-      filterChoices: filterChoices,
-      locale: locale,
-    });
-    const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFiltersMetadata);
-    for (const [key, value] of Object.entries(splitQueryObject.filters) as any) {
-      const metadata = possibleFiltersMetadata.find((f) => f.key === key);
-
-      if (value.indexOf(",") > 0) {
-        queryObject[key] = value.split(",").map((v) => getValueInCurrentLanguage(metadata, v));
-      } else if (
-        metadata?.type === "multiselect" ||
-        metadata?.type === "openMultiSelectDialogButton"
-      ) {
-        queryObject[key] = [getValueInCurrentLanguage(metadata, value)];
-      } else if (key === "radius") {
-        queryObject[key] = value + "km";
-      }
-    }
-    return queryObject;
-  };
 
   const handleLoadMoreData = async (type: BrowseTabs) => {
     try {

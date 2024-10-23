@@ -40,6 +40,7 @@ export type FilterDefinition = {
   tooltipText?: string;
 };
 
+// TODO: rename to getPossibleFilters or getEmtpyFiltersObject
 export default function getFilters({
   key,
   filterChoices,
