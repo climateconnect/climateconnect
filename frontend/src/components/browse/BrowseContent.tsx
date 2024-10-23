@@ -9,7 +9,6 @@ import { loadMoreData } from "../../../public/lib/getDataOperations";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import { getUserOrganizations } from "../../../public/lib/organizationOperations";
-import { getSearchParams } from "../../../public/lib/urlOperations";
 import getTexts from "../../../public/texts/texts";
 import LoadingContext from "../context/LoadingContext";
 import UserContext from "../context/UserContext";
@@ -200,7 +199,7 @@ export default function BrowseContent({
 
   // ###################################################
   // ###################################################
-  // FILTER AND DATA LOADING ZONE
+  // DATA LOADING ZONE
   // ###################################################
   // ###################################################
 
@@ -210,6 +209,11 @@ export default function BrowseContent({
    * query params from a filter in it. In this use
    * case, we should automatically set the filters dynamically. Ensure
    * that this isn't invoked on extraneous renders.
+   *
+   * In fact, we use the url as the source of truth for the filters.
+   * Thus, the FilterSection update the URL and onURLChange the BrowseeContent
+   * will trigger a new query, await the data and distribute it to the
+   * different tabs views / components.
    */
   const [initialized, setInitialized] = useState(false);
 
@@ -227,6 +231,9 @@ export default function BrowseContent({
         setTabValue(0);
       }
     }
+
+    // TODO: (Karol) is this still needed? I am just confused as this useEffect will only run
+    // once on mount. Thus, the initialized state will always be false.
 
     if (!initialized) {
       // Update the state of the visual filters, like Select, Dialog, etc
@@ -259,11 +266,6 @@ export default function BrowseContent({
   const loadDataBasedOnUrl = async () => {
     console.log("start filtering/loading");
     setIsFiltering(true);
-
-    // TODO: this might be a dumb idea, but shouldn't I basicly just parse url
-    // to the server?
-    // no, because there hidden filters as well. But these should be fixed/come from my parent
-    // therefore, the access is simple
 
     // clear current error message
     setErrorMessage("");
@@ -385,7 +387,7 @@ export default function BrowseContent({
 
   // ###################################################
   // ###################################################
-  // FILTER AND DATA LOADING ZONE
+  // DATA LOADING ZONE
   // ENDS HERE
   // ###################################################
   // ###################################################
