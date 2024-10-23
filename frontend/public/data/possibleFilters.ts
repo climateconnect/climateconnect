@@ -13,7 +13,38 @@ type getFiltersParam = {
   locale: CcLocale;
 };
 
-export default function getFilters({ key, filterChoices, locale }: getFiltersParam) {
+export type FilterKey =
+  | "city"
+  | "country"
+  | "location"
+  | "search"
+  | "skills"
+  | "organization_type"
+  | "status"
+  | "category"
+  | "collaboration";
+
+export type FilterTextDefinition = {
+  type: string;
+  key: FilterKey;
+};
+
+export type FilterDefinition = {
+  icon: any;
+  iconName: string;
+  title: string;
+  type: string;
+  key: FilterKey;
+  options?: any; // TODO
+  itemType?: string;
+  tooltipText?: string;
+};
+
+export default function getFilters({
+  key,
+  filterChoices,
+  locale,
+}: getFiltersParam): (FilterTextDefinition | FilterDefinition)[] {
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const english_texts = getTexts({ page: "filter_and_search", locale: "en" });
   if (!filterChoices) {
@@ -45,7 +76,7 @@ export default function getFilters({ key, filterChoices, locale }: getFiltersPar
   return [];
 }
 
-const getLocationFilters = (texts) => {
+const getLocationFilters = (texts): FilterDefinition[] => {
   // FIXME: LocationFilters currently do not include
   // place=108921958&osm=62403&loc_type=relation
   // but these are the values stored within the url
@@ -82,16 +113,18 @@ const getLocationFilters = (texts) => {
   ];
 };
 
-const getSearchFilter = () => {
+const getSearchFilter = (): FilterTextDefinition => {
   return {
     type: "search",
     key: "search",
   };
 };
 
-const getIdeasFilters = (filterChoices, texts) => [...getLocationFilters(texts)];
+const getIdeasFilters = (filterChoices, texts): FilterDefinition[] => [
+  ...getLocationFilters(texts),
+];
 
-const getMembersFilters = (filterChoices, texts) => [
+const getMembersFilters = (filterChoices, texts): (FilterTextDefinition | FilterDefinition)[] => [
   ...getLocationFilters(texts),
   getSearchFilter(),
   {
@@ -106,7 +139,10 @@ const getMembersFilters = (filterChoices, texts) => [
   },
 ];
 
-const getOrganizationsFilters = (filterChoices, texts) => [
+const getOrganizationsFilters = (
+  filterChoices,
+  texts
+): (FilterTextDefinition | FilterDefinition)[] => [
   ...getLocationFilters(texts),
   getSearchFilter(),
   {
@@ -120,7 +156,11 @@ const getOrganizationsFilters = (filterChoices, texts) => [
   },
 ];
 
-const getProjectsFilters = (filterChoices, texts, english_texts) => [
+const getProjectsFilters = (
+  filterChoices,
+  texts,
+  english_texts
+): (FilterTextDefinition | FilterDefinition)[] => [
   ...getLocationFilters(texts),
   getSearchFilter(),
   {
