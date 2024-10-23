@@ -1,170 +1,213 @@
 {
   "login_required": {
     "en": "You need to be logged in to see your chats",
-    "de": "Du musst eingeloggt sein, um deine Chats zu sehen"
+    "de": "Du musst eingeloggt sein, um deine Chats zu sehen",
+    "fr": "Tu dois être connecté pour voir tes messages"
+
   },
   "cannot_leave_private_chats": {
     "en": "You can only leave group chats, not private chats",
-    "de": "Do kannst nur Gruppenchats verlassen, keine privaten Chats"
+    "de": "Do kannst nur Gruppenchats verlassen, keine privaten Chats",
+    "fr": "Tu ne peux quitter que les groupes de messages, pas les messages privés"
   },
   "left_group_chat": {
     "en": "You successfully left the group chat",
-    "de": "Du hast den Gruppenchat erfolgreich verlassen"
+    "de": "Du hast den Gruppenchat erfolgreich verlassen",
+    "fr": "Tu as quitté le groupe"
   },
   "chat_with": {
     "en": "Chat with",
-    "de": "Chat mit"
+    "de": "Chat mit",
+    "fr": "Discutes avec"
   },
   "return_to_inbox": {
     "en": "Return to inbox",
-    "de": "Zurück zum Posteingang"
+    "de": "Zurück zum Posteingang",
+    "fr": "Retourner vers la boite de réception"
   },
   "confirm_leave_chat": {
     "en": "Do you really want to leave this group chat?",
-    "de": "Möchtest du diesen Gruppenchat wirklich verlassen?"
+    "de": "Möchtest du diesen Gruppenchat wirklich verlassen?",
+    "fr": "Veux-tu vraiment quitter ce groupe?"
   },
   "cant_rejoin": {
     "en": "You will not be able to rejoin without being invited",
-    "de": "Du kannst nur wieder beitreten, wenn du eingeladen wirst"
+    "de": "Du kannst nur wieder beitreten, wenn du eingeladen wirst",
+    "fr": "Tu ne pourras le rejoindre sans y être réinvité"
   },
   "you_have_to_log_in_to_see_your_inbox": {
     "en": "You have to log in to see your inbox.",
-    "de": "Du musst eingeloggt sein, um deinen Posteingang zu sehen"
+    "de": "Du musst eingeloggt sein, um deinen Posteingang zu sehen",
+    "fr": "Tu dois être connecté pour voir ta boite de réception"
   },
   "please_set_a_group_name_if_youre_starting_a_chat_with_more_than_one_member": {
     "en": "Please set a group name if you're starting a chat with more than one member",
-    "de": "Bitte lege einen Gruppennamen fest, wenn du einen Chat mit mehr als einem Mitglied startest"
+    "de": "Bitte lege einen Gruppennamen fest, wenn du einen Chat mit mehr als einem Mitglied startest",
+    "fr": "Choisis un nom de groupe lorsque tu créées un groupe"
   },
   "please_add_one_or_more_users_to_chat_to_by_searching_them_in_the_search_bar_above": {
     "en": "Please add one or more users to chat to by searching for them in the search bar below",
-    "de": "Bitte füge einen oder mehrere Benutzer*innen zum Chatten hinzu, indem du sie in der Suchleiste unten suchst"
+    "de": "Bitte füge einen oder mehrere Benutzer*innen zum Chatten hinzu, indem du sie in der Suchleiste unten suchst",
+    "fr": "Invite un ou plusieurs membres à discuter en les cherchants dans la bare en dessous"
   },
   "search_user_to_message": {
     "en": "Search user to message",
-    "de": "Benutzer zum Kontaktieren suchen"
+    "de": "Benutzer zum Kontaktieren suchen",
+    "fr": "Cherche un membre pour discuter"
   },
   "add_more_chat_participants": {
     "en": "Add more chat participants",
-    "de": "Weitere Chat-Teilnehmer*innen hinzufügen"
+    "de": "Weitere Chat-Teilnehmer*innen hinzufügen",
+    "fr": "Ajouter un membre à la conversation"
   },
   "type_the_name_of_the_users_you_want_to_message": {
     "en": "Type the name of the user(s) you want to message",
-    "de": "Gib den Namen der Benutzer*innen ein, die du konktaktieren möchtest"
+    "de": "Gib den Namen der Benutzer*innen ein, die du konktaktieren möchtest",
+    "fr": "Tape le nom du membre que tu veux contacter"
   },
   "group_chat_creation_possible": {
     "en": "Search for multiple users to create a group",
-    "de": "Wähle mehrere Benutzer*innen aus, um eine Gruppe zu erstellen"
+    "de": "Wähle mehrere Benutzer*innen aus, um eine Gruppe zu erstellen",
+    "fr": "Cherches plusieurs membres pour créer un groupe"
   },
   "group_chat_name": {
     "en": "Group chat name",
-    "de": "Name des Gruppenchats"
+    "de": "Name des Gruppenchats",
+    "fr": "Nom du groupe"
   },
   "start_chat": {
     "en": "Start Chat",
-    "de": "Chat starten"
+    "de": "Chat starten",
+    "fr": "Commencer à discuter"
   },
   "new_chat": {
     "en": "New Chat",
-    "de": "Neuer Chat"
+    "de": "Neuer Chat",
+    "fr": "Nouvelle discussion"
   },
   "chat_has_been_created": {
     "en": "Chat has been created",
-    "de": "Chat wurde erstellt"
+    "de": "Chat wurde erstellt",
+    "fr": "La conversation a été créée"
   },
   "message": {
     "en": "Message",
-    "de": "Nachricht"
+    "de": "Nachricht",
+    "fr": "Message"
   },
   "manage": {
     "en": "Manage",
-    "de": "Verwalten"
+    "de": "Verwalten",
+    "fr": "Gérer"
   },
   "back_to_inbox": {
     "en": "Back to inbox",
-    "de": "Zurück zum Posteingang"
+    "de": "Zurück zum Posteingang",
+    "fr": "Retour vers la boite de réception"
   },
   "leave_group_chat": {
     "en": "Leave group chat",
-    "de": "Chat verlassen"
+    "de": "Chat verlassen",
+    "fr": "Quitter le groupe"
   },
   "manage_chat_members": {
     "en": "Manage chat members",
-    "de": "Verwalten von Chat-Mitgliedern"
+    "de": "Verwalten von Chat-Mitgliedern",
+    "fr": "Gérer les membres de la discussion"
   },
   "hide_chat_participants": {
     "en": "Hide chat participants",
-    "de": "Chat-Teilnehmer*innen ausblenden"
+    "de": "Chat-Teilnehmer*innen ausblenden",
+    "fr": "Cacher les membres de la discussion"
   },
   "show_chat_participants": {
     "en": "Show chat participants",
-    "de": "Chat-Teilnehmer*innen anzeigen"
+    "de": "Chat-Teilnehmer*innen anzeigen",
+    "fr": "Montrer les participants de la discussion"
   },
   "you_have_successfully_updated_this_chats_participants": {
     "en": "You have successfully updated this chat's participants!",
-    "de": "Du hast die Teilnehmer*innen dieses Chats erfolgreich aktualisiert!"
+    "de": "Du hast die Teilnehmer*innen dieses Chats erfolgreich aktualisiert!",
+    "fr": "Tu as mis à jour les participants de la conversation"
   },
   "there_must_be_exactly_one_creator_of_an_organization": {
     "en": "There must be exactly one Super Admin of an organization.",
-    "de": "Es muss genau einen Super Admin einer Organisation geben"
+    "de": "Es muss genau einen Super Admin einer Organisation geben",
+    "fr": "Il doit y avoir un seul super admin par organisation"
   },
   "there_wasnt_a_creator": {
     "en": "There wasn't a Super Admin",
-    "de": "Es gab noch keine(n) Super Admin"
+    "de": "Es gab noch keine(n) Super Admin",
+    "fr": "Il n'y a pas de super Admin"
   },
   "search_for_users_to_add_to_this_group_chat": {
     "en": "Search for users to add to this group chat",
-    "de": "Nach Benutzer*innen suchen, die zu diesem Gruppenchat hinzugefügt werden sollen"
+    "de": "Nach Benutzer*innen suchen, die zu diesem Gruppenchat hinzugefügt werden sollen",
+    "fr": "Rechercher des membres à ajouter dans le groupe"
   },
   "you_havent_chatted_to_anybody_yet_click_on": {
     "en": "You haven't chatted to anybody yet! Click on the 'New Chat' button to start reaching out to other climate actors!",
-    "de": "Du hast noch mit niemandem gechattet! Klicke auf die Schaltfläche 'Neuer Chat', um mit anderen Klimaakteuren in Kontakt zu treten!"
+    "de": "Du hast noch mit niemandem gechattet! Klicke auf die Schaltfläche 'Neuer Chat', um mit anderen Klimaakteuren in Kontakt zu treten!",
+    "fr": "Tu n'as encore échangé avec personne! CLique sur le bouton 'nouveau message' pour rencontrer d'autres membres de Climate Connect!"
   },
   "sending_message": {
     "en": "sending message",
-    "de": "sende Nachricht"
+    "de": "sende Nachricht",
+    "fr": "Envoie du message"
   },
   "this_is_the_very_beginning_of_your_conversation_with": {
     "en": "This is the very beginning of your conversation with",
-    "de": "Dies ist der Beginn deines Gesprächs mit"
+    "de": "Dies ist der Beginn deines Gesprächs mit",
+    "fr": "C'est le début de ta conversation avec"
   },
   "this_is_the_very_beginning_of_your_conversation_in": {
     "en": "This is the very beginning of your conversation in",
-    "de": "Dies ist der Beginn deines Gesprächs in"
+    "de": "Dies ist der Beginn deines Gesprächs in",
+    "fr": "C'est le tout début de ta conersation dans"
   },
   "write_a_message_to_get_the_conversation_started": {
     "en": "Write a message to get the conversation started!",
-    "de": "Schreib eine Nachricht, um das Gespräch in Gang zu bringen!"
+    "de": "Schreib eine Nachricht, um das Gespräch in Gang zu bringen!",
+    "fr": "Ecris un message pour lancer la conversation"
   },
   "you_have_an_unsent_message_are_you_sure_you_want_to_leave": {
     "en": "You have an unsent message. Are you sure you want to leave?",
-    "de": "Du hast eine nicht gesendete Nachricht. Bist du sicher, dass du gehen willst?"
+    "de": "Du hast eine nicht gesendete Nachricht. Bist du sicher, dass du gehen willst?",
+    "fr": "Tu as un message non lu. Es-tu sûr de vouloir quitter?"
   },
   "here_you_can_discuss": {
     "en": "Here you can chat about how to implement the idea ",
-    "de": "Hier könnt ihr darüber reden, wie ihr diese Idee umsetzen könnt: "
+    "de": "Hier könnt ihr darüber reden, wie ihr diese Idee umsetzen könnt: ",
+    "fr": "Ici tu peux disucter de comment concrétiser cette idée"
   },
   "everybody_who_clicked_join_is_in_this_group": {
     "en": "Everybody who clicked the \"join\" button on the idea's page is in this chat group",
-    "de": "Alle, die auf den \"Mitmachen\" Knopf auf der Ideenseite geklickt haben, sind in diesem Gruppenchat"
+    "de": "Alle, die auf den \"Mitmachen\" Knopf auf der Ideenseite geklickt haben, sind in diesem Gruppenchat",
+    "fr": "Tous ceux qui ont cliqué sur le bouton \"Rejoindre\"sur la page de l'idée sont dans cette conversation"
   },
   "find_a_chat": {
     "en": "Find a chat",
-    "de": "Chat Suchen"
+    "de": "Chat Suchen",
+    "fr": "Trouver une conversation"
   },
   "open_chat_from_search": {
     "en": "Open Chat",
-    "de": "Chat Öffnen"
+    "de": "Chat Öffnen",
+    "fr": "Ouvrir une conversation"
   },
   "enter_chat_name_to_open": {
     "en": "Enter the chat name you want to open...",
-    "de": "Name des Chat, den du öffnen möchtest..."
+    "de": "Name des Chat, den du öffnen möchtest...",
+    "fr": "Entrer le nom de la conversation qu tu souhaites ouvrir..."
   },
   "type_the_name_of_a_user_or_group_to_open_a_chat_with": {
     "en": "Type the name of a user or group you want to open",
-    "de": "Gib den Namen des Benutzers oder der Gruppe ein, die du kontaktieren möchtest"
+    "de": "Gib den Namen des Benutzers oder der Gruppe ein, die du kontaktieren möchtest",
+    "fr": "Tape le nom de la discussion du membre ou du groupe que tu veux ouvrir"
   },
   "no_chats_found_for_this_search": {
     "en": "No matches found for your search",
-    "de": "Keine Suchergebnisse gefunden"
+    "de": "Keine Suchergebnisse gefunden",
+    "fr": "Pas de résultats"
   }
 }
