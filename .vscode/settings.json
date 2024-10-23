@@ -1,5 +1,16 @@
 {
   "typescript.tsdk": "./frontend/node_modules/typescript/lib",
   "python.defaultInterpreterPath": "./backend/.venv/bin/python3",
-  "python.formatting.provider": "black"
+  "python.formatting.provider": "black",
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "Climate connect local",
+      "database": "backend",
+      "username": "backend"
+    }
+  ]
 }
