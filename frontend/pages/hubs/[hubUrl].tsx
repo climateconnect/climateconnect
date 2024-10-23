@@ -30,6 +30,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { Theme } from "@mui/material/styles";
 import theme from "../../src/themes/theme";
 import BrowseContext from "../../src/components/context/BrowseContext";
+import { FilterChoices } from "../../src/types";
 
 const useStyles = makeStyles((theme) => ({
   moreInfoSoon: {
@@ -114,6 +115,7 @@ export async function getServerSideProps(ctx) {
       statBoxTitle: hubData.stat_box_title,
       image_attribution: hubData.image_attribution,
       hubLocation: hubData.location?.length > 0 ? hubData.location[0] : null,
+      // TODO (Karol): maybe rename it to filterOptions
       filterChoices: {
         project_categories: project_categories,
         organization_types: organization_types,
@@ -153,6 +155,8 @@ export default function Hub({
   hubDescription,
   projectTypes,
 }) {
+  filterChoices as FilterChoices; // TODO (Karol): maybe rename it to filterOptions
+
   const classes = useStyles();
   let fabClass = shareProjectFabStyle(false);
 

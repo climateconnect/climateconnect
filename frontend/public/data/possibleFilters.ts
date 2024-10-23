@@ -5,11 +5,11 @@ import GroupIcon from "@mui/icons-material/Group";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import getTexts from "../texts/texts";
-import { BrowseTabs, CcLocale } from "../../src/types";
+import { BrowseTabs, CcLocale, FilterChoices } from "../../src/types";
 
 type getFiltersParam = {
   key: BrowseTabs | "all";
-  filterChoices: any;
+  filterChoices: FilterChoices;
   locale: CcLocale;
 };
 

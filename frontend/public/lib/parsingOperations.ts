@@ -1,6 +1,7 @@
 import getProjectInfoMetadata from "../data/getProjectInfoMetadata";
 import { getLocationFilterKeys } from "../data/locationFilters";
 import getOrganizationInfoMetadata from "../data/organization_info_metadata";
+import { FilterDefinition, FilterTextDefinition } from "../data/possibleFilters";
 import profile_info_metadata from "../data/profile_info_metadata";
 
 export function parseData({ type, data }) {
@@ -51,8 +52,12 @@ export function getInfoMetadataByType(type, locale?) {
   if (type === "projects") return getProjectInfoMetadata();
 }
 
-export function getReducedPossibleFilters(possibleFilters, locationFilter = undefined) {
-  const reducedPossibleFilters = possibleFilters.reduce((map, obj) => {
+export function getReducedPossibleFilters(
+  possibleFilters: (FilterTextDefinition | FilterDefinition)[],
+  locationFilter = undefined
+) {
+  //TODO: fix type
+  const reducedPossibleFilters: any = possibleFilters.reduce((map, obj) => {
     const locationKeys = getLocationFilterKeys();
     //don't add location keys to the reduced possible filters. They are represented by the locationFilter
     if (locationKeys.includes(obj.key)) {
@@ -67,6 +72,7 @@ export function getReducedPossibleFilters(possibleFilters, locationFilter = unde
 
     return map;
   }, {});
+
   if (locationFilter) {
     reducedPossibleFilters.location = locationFilter;
   }

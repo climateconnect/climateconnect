@@ -5,6 +5,7 @@ import { getDataFromServer } from "./getDataOperations";
 import { membersWithAdditionalInfo } from "./getOptions";
 import { getInfoMetadataByType, getReducedPossibleFilters } from "./parsingOperations";
 import { encodeQueryParamsFromFilters } from "./urlOperations";
+import { CcLocale, FilterChoices } from "../../src/types";
 
 const getLocationFilterUrl = (location) => {
   /*Pass place id. If the place id is found in our db we can use it's polygon,
@@ -108,7 +109,21 @@ export function getUnaffectedTabs({ tabs, filterChoices, locale, filters, newFil
   });
 }
 
-export function getInitialFilters({ filterChoices, locale, initialLocationFilter }) {
+export function getInitialFilters({
+  filterChoices,
+  locale,
+  initialLocationFilter,
+}: {
+  filterChoices: FilterChoices;
+  locale: CcLocale;
+  initialLocationFilter: any;
+}) {
+  console.log(filterChoices);
+  console.log(
+    possibleFilters({ key: "all", filterChoices: filterChoices, locale: locale }),
+    initialLocationFilter
+  );
+
   return {
     ...getReducedPossibleFilters(
       possibleFilters({ key: "all", filterChoices: filterChoices, locale: locale }),
@@ -250,7 +265,7 @@ export async function applyNewFilters({
 export async function v2applyNewFilters({
   currentTab,
   filters,
-  filterChoices,
+  filterChoices, // TODO: add type: FilterChoices
   locale,
   token,
   hubUrl,

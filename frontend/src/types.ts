@@ -1,4 +1,10 @@
 import { Dayjs } from "dayjs";
+import {
+  OrganizationTag,
+  ProjectTagsOption,
+  SkillsOption,
+  StatusOption,
+} from "../public/lib/getOptions";
 
 export type User = {
   id: string;
@@ -71,3 +77,12 @@ declare module "@mui/material/styles/createPalette" {
     extraLight?: string;
   }
 }
+
+// Types for the filter options
+
+export type FilterChoices = {
+  project_categories: ProjectTagsOption[] | null;
+  organization_types: OrganizationTag[] | null;
+  skills: SkillsOption[] | null;
+  project_statuses: StatusOption[] | null;
+};

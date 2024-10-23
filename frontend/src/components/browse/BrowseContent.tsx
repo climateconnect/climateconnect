@@ -15,13 +15,12 @@ import { indicateWrongLocation, isLocationValid } from "../../../public/lib/loca
 import { getUserOrganizations } from "../../../public/lib/organizationOperations";
 import { findOptionByNameDeep, getSearchParams } from "../../../public/lib/urlOperations";
 import getTexts from "../../../public/texts/texts";
-import FeedbackContext from "../context/FeedbackContext";
 import LoadingContext from "../context/LoadingContext";
 import UserContext from "../context/UserContext";
 import LoadingSpinner from "../general/LoadingSpinner";
 import MobileBottomMenu from "./MobileBottomMenu";
 import HubTabsNavigation from "../hub/HubTabsNavigation";
-import { BrowseTabs } from "../../types";
+import { BrowseTabs, FilterChoices } from "../../types";
 
 const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
 // TODO: shall be deleted in future
@@ -70,7 +69,7 @@ const useStyles = makeStyles((theme) => {
 });
 
 interface BrowseContentProps {
-  filterChoices: any;
+  filterChoices: FilterChoices; // TODO (Karol): maybe rename it to filterOptions
   initialLocationFilter: any;
 
   // optional:

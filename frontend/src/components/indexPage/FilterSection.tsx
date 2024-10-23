@@ -10,7 +10,7 @@ import FilterContent from "../filter/FilterContent";
 import getFilters from "../../../public/data/possibleFilters";
 import { getFilterUrl } from "../../../public/lib/urlOperations";
 import { getInfoMetadataByType } from "../../../public/lib/parsingOperations";
-import { BrowseTabs } from "../../types";
+import { BrowseTabs, FilterChoices } from "../../types";
 import { getInitialFilters } from "../../../public/lib/filterOperations";
 
 type MakeStylesProps = {
@@ -83,7 +83,7 @@ type Props = {
   initialLocationFilter: any;
 
   // TODO: rename to filterOption Definition
-  filterChoices: any;
+  filterChoices: FilterChoices;
 
   // Location Filter stuff // TODO: refactor them as well
   handleSetLocationOptionsOpen: (bool: boolean) => void;
