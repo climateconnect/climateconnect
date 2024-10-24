@@ -161,6 +161,7 @@ export default function Hub({
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
   const token = new Cookies().get("auth_token");
   const [hubAmbassador, setHubAmbassador] = useState(null);
+  const [hubSupporter, setHubSupporter] = useState(null);
 
   // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
   const [filters, setFilters] = useState(
@@ -191,7 +192,10 @@ export default function Hub({
   useEffect(() => {
     (async () => {
       const retrievedHubAmbassador = await getHubAmbassadorData(hubUrl, locale);
+      const retrivedHubSupporter = await getHubSupporterData(hubUrl, locale);
       setHubAmbassador(retrievedHubAmbassador);
+      setHubSupporter(retrivedHubSupporter);
+
     })();
   }, []);
 
@@ -309,6 +313,7 @@ export default function Hub({
             hubQuickInfoRef={hubQuickInfoRef}
             headline={headline}
             hubAmbassador={hubAmbassador}
+            hubSupporter={hubSupporter}
             quickInfo={quickInfo}
             statBoxTitle={statBoxTitle}
             stats={stats}
@@ -434,6 +439,21 @@ const getHubAmbassadorData = async (url_slug, locale) => {
   } catch (err: any) {
     if (err.response && err.response.data)
       console.log("Error in getHubAmbassadorData: " + err.response.data.detail);
+    console.log(err);
+    return null;
+  }
+};
+const getHubSupporterData = async (url_slug, locale) => {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: `/api/hubs/${url_slug}/supporter/`,
+      locale: locale,
+    });
+    return resp.data;
+  } catch (err: any) {
+    if (err.response && err.response.data)
+      console.log("Error in getHubSupporterData: " + err.response.data.detail);
     console.log(err);
     return null;
   }

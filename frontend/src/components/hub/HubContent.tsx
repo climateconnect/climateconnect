@@ -14,6 +14,7 @@ import ContactAmbassadorButton from "./ContactAmbassadorButton";
 import Dashboard from "../dashboard/Dashboard";
 import LocalAmbassadorInfoBox from "./LocalAmbassadorInfoBox";
 import HubHeadlineContainer from "./HubHeadlineContainer";
+import HubSupporterSlider from "./HubSupporterSlider";
 
 type MakeStylesProps = {
   isLocationHub: boolean;
@@ -125,6 +126,7 @@ export default function HubContent({
   hubProjectsButtonRef,
   isLocationHub,
   hubAmbassador,
+  hubSupporter,
   location,
   allHubs,
   hubData,
@@ -185,9 +187,15 @@ export default function HubContent({
                 )}
                 {!isNarrowScreen &&
                   (!user ? (
-                    <LocalAmbassadorInfoBox hubAmbassador={hubAmbassador} hubData={hubData} />
+                    <>
+                      <LocalAmbassadorInfoBox hubAmbassador={hubAmbassador} hubData={hubData} />
+                      <HubSupporterSlider supportersList={hubSupporter} />
+                    </>
                   ) : (
-                    <ContactAmbassadorButton hubAmbassador={hubAmbassador} mobile={false} />
+                    <>
+                      <ContactAmbassadorButton hubAmbassador={hubAmbassador} mobile={false} />
+                      <HubSupporterSlider supportersList={hubSupporter} />
+                    </>
                   ))}
               </div>
             </Container>
