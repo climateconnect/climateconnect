@@ -14,4 +14,9 @@ urlpatterns = [
     path(
         "sector_hubs/", hub_views.ListSectorHubsView.as_view(), name="list-sector-hubs"
     ),
+    path(
+        "hubs/<str:url_slug>/supporter/",
+        hub_views.HubSupporterAPIView.as_view(),
+        name="hub-supporter-api-view",
+    ),
 ]

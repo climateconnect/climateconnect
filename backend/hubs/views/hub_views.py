@@ -3,8 +3,9 @@ from hubs.serializers.hub import (
     HubAmbassadorSerializer,
     HubSerializer,
     HubStubSerializer,
+    HubSupporterSerializer
 )
-from hubs.models.hub import Hub, HubAmbassador
+from hubs.models.hub import Hub, HubAmbassador, HubSupporter
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -61,3 +62,22 @@ class ListSectorHubsView(ListAPIView):
         return Hub.objects.filter(hub_type=Hub.SECTOR_HUB_TYPE).filter(
             importance__gte=1
         )
+    
+class HubSupporterAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, url_slug):
+        try:
+            hub = Hub.objects.get(url_slug=str(url_slug))
+        except Hub.DoesNotExist:
+            return Response(
+                {"message": "Hub not found: {}".format(url_slug)},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        supporter = HubSupporter.objects.filter(hub=hub)
+
+        if supporter.exists():
+            serializer = HubSupporterSerializer(supporter, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(None, status=status.HTTP_404_NOT_FOUND)
