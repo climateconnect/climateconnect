@@ -26,9 +26,8 @@ const useStyles = makeStyles((theme) => ({
       right: 0,
     },
     width: 320,
-    // flexGrow: 1, 
+    // flexGrow: 1,
     // maxWidth: 320
-
   },
   projectImage: {
     height: 150,
@@ -55,8 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const  CarouselItem = ({ supporter }) => {
-  
+const CarouselItem = ({ supporter }) => {
   const { locale } = useContext(UserContext);
   const isSmallOrMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const classes = useStyles();
@@ -65,13 +63,13 @@ const  CarouselItem = ({ supporter }) => {
       {isSmallOrMediumScreen ? (
         <Image src={getImageUrl(supporter?.logo)} />
       ) : (
-        <img src={getImageUrl(supporter?.logo)} width={50} height={50}/>
+        <img src={getImageUrl(supporter?.logo)} width={50} height={50} />
       )}
     </div>
   );
-}
+};
 
-const HubSupporterSlider = ({supportersList}) => {
+const HubSupporterSlider = ({ supportersList }) => {
   const classes = useStyles();
   const under500 = useMediaQuery<Theme>("(max-width: 500px)");
   const responsive = {
@@ -84,7 +82,8 @@ const HubSupporterSlider = ({supportersList}) => {
   return (
     <div className={classes.root}>
       <Carousel responsive={responsive} infinite={supportersList?.length > 1} arrows={!under500}>
-        {supportersList?.length > 0 && supportersList.map((data, index) => <CarouselItem key={index} supporter={data}/>)}
+        {supportersList?.length > 0 &&
+          supportersList.map((data, index) => <CarouselItem key={index} supporter={data} />)}
       </Carousel>
     </div>
   );

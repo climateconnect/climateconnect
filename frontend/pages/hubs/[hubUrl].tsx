@@ -195,7 +195,6 @@ export default function Hub({
       const retrivedHubSupporter = await getHubSupporterData(hubUrl, locale);
       setHubAmbassador(retrievedHubAmbassador);
       setHubSupporter(retrivedHubSupporter);
-
     })();
   }, []);
 
