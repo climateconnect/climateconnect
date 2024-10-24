@@ -3,6 +3,7 @@ from location.models import Location
 from organization.models.tags import ProjectTags
 from django.db import models
 from django.contrib.auth.models import User
+from organization.models.organization import Organization
 
 
 def hub_image_path(instance, filename):
@@ -11,6 +12,9 @@ def hub_image_path(instance, filename):
 
 def hub_footer_image_path(instance, filename):
     return "hub_footers/{}/{}".format(instance.id, filename)
+
+def hub_supporter_logo_path(instance, filename):
+    return "hub_supporter_logo/{}/{}".format(instance.id, filename)
 
 
 class HubStat(models.Model):
@@ -300,3 +304,65 @@ class HubAmbassador(models.Model):
             self.user.first_name + " " + self.user.last_name,
             self.title,
         )
+    
+class HubSupporter(models.Model):
+    name = models.CharField(
+        help_text="Supporter name",
+        verbose_name="Supporter name",
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    subtitle = models.CharField(
+        help_text="Supporter subtitle",
+        verbose_name="subtitle",
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    logo = models.ImageField(
+        help_text="Supporter logo",
+        verbose_name="Logo",
+        null=True,
+        blank=True,
+        upload_to=hub_supporter_logo_path,
+    )
+    hub = models.ForeignKey(
+        Hub,
+        help_text="Supported Hubs by the Supporter",
+        verbose_name="Hub",
+        related_name="supporter_hub",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
+    importance = models.PositiveSmallIntegerField(
+        help_text="The larger the number, the more to the top this hub will be displayed on the hubs overview page",
+        verbose_name="Importance (1-100)",
+        default=100,
+    )
+    organization = models.ForeignKey(
+        Organization,
+        help_text="Points to the supporter's organization",
+        verbose_name="Organization",
+        related_name="supporter_organization",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
+    language = models.ForeignKey(
+        Language,
+        related_name="supporter_language",
+        help_text="The original language of the supporter",
+        verbose_name="Language",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+    class Meta:
+        app_label = "hubs"
+        verbose_name = "Hub Supporter"
+        verbose_name_plural = "Hub Supporter"
+
+    def __str__(self):
+        return "%s" % (self.name)
