@@ -24,6 +24,7 @@ def get_template_id(template_key, lang_code):
         return getattr(settings, template_key)
 
 
+# We don't send more than one email notification per 3 hours
 def check_send_email_notification(user):
     three_hours_ago = datetime.now() - timedelta(hours=3)
     recent_email_notification = EmailNotification.objects.filter(
@@ -55,7 +56,6 @@ def send_email(
     lang_code = get_user_lang_code(user)
     subject = subjects_by_language[lang_code]
     template_id = get_template_id(template_key=template_key, lang_code=lang_code)
-
     data = {
         "Messages": [
             {
@@ -80,19 +80,16 @@ def send_email(
             }
         ]
     }
-
     try:
         mail = mailjet_send_api.send.create(data=data)
-
         if notification:
             EmailNotification.objects.create(
                 user=user, created_at=datetime.now(), notification=notification
             )
-
         return mail
     except Exception as ex:
         logger.error("%s: Error sending email: %s" % (send_email.__name__, ex))
-
+       
 
 def get_user_verification_url(verification_key, lang_url):
     # TODO: Set expire time for user verification

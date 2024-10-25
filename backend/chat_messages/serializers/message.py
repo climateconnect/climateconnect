@@ -11,15 +11,19 @@ from chat_messages.models import (
 from climateconnect_api.models import UserProfile
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from django.utils import timezone
-
+from organization.models.members import MembershipRequests
 
 class MessageSerializer(serializers.ModelSerializer):
     sender = serializers.SerializerMethodField()
     read_at = serializers.SerializerMethodField()
+    associated_join_request = serializers.SerializerMethodField()
 
     class Meta:
         model = Message
-        fields = ("id", "content", "sent_at", "read_at", "updated_at", "sender")
+        fields = (
+            "id", "content", "sent_at", "read_at", 
+            "updated_at", "sender", "associated_join_request"
+        )
 
     def get_sender(self, obj):
         user_profile = UserProfile.objects.filter(user=obj.sender)[0]
@@ -37,7 +41,21 @@ class MessageSerializer(serializers.ModelSerializer):
             if receiver_object.exists():
                 return receiver_object[0].read_at
 
-
+    # If there is a MembershipRequest linked to this message, return the MembershipRequest
+    def get_associated_join_request(self, obj):
+        try:
+            join_request = MembershipRequests.objects.get(
+                approved_at=None, rejected_at=None, message=obj
+            )
+            return {
+                "join_request_created_at": join_request.requested_at,
+                "project_url_slug": join_request.target_project.url_slug,
+                "project_name": join_request.target_project.name,
+                "requestId": join_request.id
+            }
+        except MembershipRequests.DoesNotExist:
+            return None
+        
 class MessageParticipantSerializer(serializers.ModelSerializer):
     last_message = serializers.SerializerMethodField()
     unread_count = serializers.SerializerMethodField()

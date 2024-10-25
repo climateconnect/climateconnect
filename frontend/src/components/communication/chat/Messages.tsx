@@ -23,6 +23,11 @@ const styles = (theme) => {
       padding: theme.spacing(1),
       paddingRight: theme.spacing(4),
     },
+    // receiveMessageFromJoinRequest: {
+    //   backgroundColor: theme.palette.info.light,
+    //   padding: theme.spacing(1),
+    //   paddingRight: theme.spacing(4),
+    // },
     sentMessage: {
       backgroundColor: theme.palette.primary.main,
       padding: theme.spacing(1),
@@ -124,6 +129,7 @@ class Messages extends React.Component {
             return (
               <Message
                 message={message}
+                associatedJoinRequest={message?.associated_join_request}
                 key={index}
                 classes={this.props.classes}
                 isPrivateChat={this.props.isPrivateChat}

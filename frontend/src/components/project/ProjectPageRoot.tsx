@@ -26,6 +26,7 @@ import ProjectOverview from "./ProjectOverview";
 import ProjectSideBar from "./ProjectSideBar";
 import ProjectTeamContent from "./ProjectTeamContent";
 import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMediaShareButton";
+import ProjectJoinDialog from "../dialogs/ProjectJoinDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -170,7 +171,7 @@ export default function ProjectPageRoot({
    * Calls backend, sending a request to join this project based
    * on user token stored in cookies.
    */
-  const handleSendProjectJoinRequest = async () => {
+  const handleSendProjectJoinRequest = async (message) => {
     // Get the actual project name from the URL, removing any query params
     // and projects/ prefix. For example,
     // "/projects/Anotherproject6?projectId=Anotherproject6" -> "Anotherproject6"
@@ -185,7 +186,8 @@ export default function ProjectPageRoot({
         method: "post",
         url: `/api/projects/${strippedProjectName}/request_membership/${user.url_slug}/`,
         payload: {
-          message: "Would like to join the project!",
+          message: message,
+          // message: "Would like to join the project!",
           // TODO: currently, we default user's availability to 4. In
           // the future, we could consider customizing this option
           user_availability: "4",
@@ -195,12 +197,21 @@ export default function ProjectPageRoot({
           Authorization: `Token ${token}`,
         },
       });
+
+      /* 
+        Let the backend do this:
+        const chat = await startPrivateChat(user, token, locale);
+        await sendChatMessageThroughPostRequest(message, chat.chat_uuid, token, locale);
+      */
+
+      handleCloseJoinDialog();
       showFeedbackMessage({
         message: texts.your_request_has_been_sent,
         success: true,
       });
       handleJoinRequest(true);
     } catch (error) {
+      handleCloseJoinDialog();
       showFeedbackMessage({
         message: error?.response?.data?.message,
         error: true,
@@ -419,6 +430,14 @@ export default function ProjectPageRoot({
     handleReadNotifications(NOTIFICATION_TYPES.indexOf("join_project_request"));
   };
 
+  const [showJoinDialog, setShowJoinDialog] = useState(false);
+  const handleOpenJoinDialog = () => {
+    setShowJoinDialog(!showJoinDialog);
+  };
+  const handleCloseJoinDialog = () => {
+    setShowJoinDialog(false);
+  };
+
   const [gotParams, setGotParams] = useState(false);
   useEffect(() => {
     if (!gotParams) {
@@ -530,6 +549,7 @@ export default function ProjectPageRoot({
             toggleShowRequests={toggleShowRequests}
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
             requestedToJoinProject={requestedToJoinProject}
+            handleOpenJoinDialog={handleOpenJoinDialog}
           />
         </TabContent>
         <TabContent value={tabValue} index={1}>
@@ -603,7 +623,14 @@ export default function ProjectPageRoot({
         confirmText={texts.yes}
         cancelText={texts.no}
       />
-
+      <ProjectJoinDialog
+        open={showJoinDialog}
+        onClose={handleCloseJoinDialog}
+        user={user}
+        projectAdmin={projectAdmin}
+        handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+        url={"projects/" + project.url_slug}
+      />
       <Tutorial
         fixedPosition
         pointerRefs={{

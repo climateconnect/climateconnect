@@ -7,27 +7,79 @@ import YouTube from "react-youtube";
 import youtubeRegex from "youtube-regex";
 import { getFragmentsWithMentions } from "../../utils/mentions_markdown";
 import UserContext from "../context/UserContext";
+import TimeContainer from "./chat/TimeContainer";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   link: {
     color: "inherit",
     "&:visited": {
       color: "inherit",
     },
   },
+  sentTextContainer: {
+    backgroundColor: "#207178",
+    borderRadius: "10px",
+    opacity: 1,
+    padding: theme.spacing(1),
+    paddingRight: theme.spacing(4),
+  },
+  recievedTextContainer: {
+    backgroundColor: "#E0E0E0",
+    borderRadius: "10px",
+    opacity: 1,
+    padding: theme.spacing(1),
+    paddingRight: theme.spacing(4),
+  },
+  sentTextDesign: {
+    color: "white",
+    textAlign: "left",
+  },
+  textDesign: {
+    color: "#484848",
+    textAlign: "left",
+  },
+  time: {
+    fontSize: 10,
+    float: "right",
+    marginRight: theme.spacing(-3),
+    color: theme.palette.secondary.main,
+  },
+  timeContainer: {
+    paddingLeft: theme.spacing(4),
+  },
+  sentTime: {
+    color: "#bdb8c7",
+  },
+  loader: {
+    display: "inline-block",
+    marginRight: theme.spacing(0.25),
+  },
   youtubeWrapper: {
     maxWidth: "640px",
   },
-});
+}));
 
 type Props = {
   content?: any;
   renderYoutubeVideos?: boolean;
+  associatedJoinRequest?: object;
+  sentDate?: any;
+  received?: boolean;
+  unconfirmed?: any;
 };
 
-export default function MessageContent({ content, renderYoutubeVideos = false }: Props) {
+export default function MessageContent({
+  content,
+  renderYoutubeVideos = false,
+  associatedJoinRequest,
+  sentDate,
+  received,
+  unconfirmed,
+}: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
+  // console.log("sentDate",sentDate);
+
   //workaround to get target="_blank" because setting 'properties' on the Linkify component doesn't work
   const componentDecorator = (href, text, key) => (
     <a href={href} className={classes.link} key={key} target="_blank" rel="noopener noreferrer">
@@ -98,9 +150,23 @@ export default function MessageContent({ content, renderYoutubeVideos = false }:
         const fragments = getFragmentsWithMentions(content, true, locale);
         return (
           <div key={index}>
-            <Typography display="inline" style={{ alignSelf: "flex-start" }}>
-              {fragments}
-            </Typography>
+            {!associatedJoinRequest && (
+              <Typography display="inline" style={{ alignSelf: "flex-start" }}>
+                {fragments}
+              </Typography>
+            )}
+            {associatedJoinRequest && (
+              <div className={received ? classes.recievedTextContainer : classes.sentTextContainer}>
+                <Typography
+                  className={received ? classes.textDesign : classes.sentTextDesign}
+                  display="inline"
+                  style={{ alignSelf: "flex-start" }}
+                >
+                  {fragments}
+                </Typography>
+                <TimeContainer received={received} unconfirmed={unconfirmed} sentDate={sentDate} />
+              </div>
+            )}
           </div>
         );
       })}

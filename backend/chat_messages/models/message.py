@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from ideas.models.ideas import Idea
 
-
+#MessageParticipants=Chats
 class MessageParticipants(models.Model):
     chat_uuid = models.UUIDField(
         help_text="Unique ID for each message connection",
@@ -108,7 +108,7 @@ class Message(models.Model):
         MessageParticipants,
         related_name="participant_message",
         help_text="Points to a table where chat was initialized between participants",
-        verbose_name="Message participant",
+        verbose_name="Chat",
         null=False,
         blank=False,
         on_delete=models.CASCADE,

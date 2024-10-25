@@ -85,7 +85,6 @@ export default function ChatContent({
   const handleClose = () => {
     setShowSendHelper(false);
   };
-
   return (
     <>
       {showChatParticipants && (
@@ -100,11 +99,7 @@ export default function ChatContent({
             );
           })}
           {user_role.role_type === ROLE_TYPES.all_type && (
-            <Button
-              className={classes.manageMembersButton}
-              startIcon={<GroupAddIcon />}
-              onClick={handleToggleMemberManagementExpanded}
-            >
+            <Button startIcon={<GroupAddIcon />} onClick={handleToggleMemberManagementExpanded}>
               {texts.manage}
             </Button>
           )}
