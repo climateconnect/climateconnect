@@ -222,7 +222,7 @@ export default function BrowseContent({
       const queryObject = getQueryObjectFromUrl(getSearchParams(window.location.search));
       const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFilters);
       const newFilters = {
-        ...queryObject.filters,
+        ...splitQueryObject.filters,
       };
       setNonFilterParams(splitQueryObject.nonFilters);
       if (splitQueryObject?.nonFilters?.message) {
