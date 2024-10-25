@@ -76,19 +76,6 @@ const DESCRIPTION_WEBFLOW_LINKS = {
 //potentially switch back to getinitialprops here?!
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hubUrl;
-  // FIXME:
-  // somehow, installHook.js.map gets requested:
-  //   { hubUrl: 'installHook.js.map' }
-  // huburl: installHook.js.map
-  //
-  // this leads to
-  // > hubData = null
-  //
-  // crashing the SSR when performing:
-  // > isLocationHub: hubData.hub_type === "location hub",
-
-  console.error(ctx.query);
-  console.error("huburl:", hubUrl);
   const ideaToOpen = ctx.query.idea;
 
   const [
@@ -413,13 +400,11 @@ const retrieveDescriptionFromWebflow = async (query, locale) => {
 
 const getHubData = async (url_slug, locale) => {
   try {
-    console.debug("load hub data:", `/api/hubs/${url_slug}/`);
     const resp = await apiRequest({
       method: "get",
       url: `/api/hubs/${url_slug}/`,
       locale: locale,
     });
-    console.error("HUB DATA: ", resp.data);
     return resp.data;
   } catch (err: any) {
     if (err.response && err.response.data)
