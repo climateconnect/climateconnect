@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
   dashboardAndStatboxWrapper: (props: MakeStylesProps) => ({
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "flex-start",
+    alignItems: "strech",
   }),
   infoBoxContainer: {
     marginTop: theme.spacing(0),

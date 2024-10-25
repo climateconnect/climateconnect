@@ -1,21 +1,17 @@
 import React, { useContext } from "react";
 import makeStyles from "@mui/styles/makeStyles";
-import Image from "next/image";
 import Carousel from "react-multi-carousel";
-import { Link, Theme, useMediaQuery } from "@mui/material";
+import { Theme, useMediaQuery } from "@mui/material";
 import UserContext from "../context/UserContext";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    // position: "absolute",
-    left: 50,
-    right: 50,
-    border: `1px solid ${theme.palette.secondary.main}`,
-    borderRadius: 20,
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
+    backgroundColor: "#207178",
+    borderRadius: 4,
+    paddingBottom: "15px",
+    paddingRight: "5px",
+    paddingLeft: "5px",
     [theme.breakpoints.down("xl")]: {
       left: theme.spacing(1),
       right: theme.spacing(1),
@@ -26,31 +22,60 @@ const useStyles = makeStyles((theme) => ({
       right: 0,
     },
     width: 320,
+    //instead of width we can use flexGrow && maxWidth
     // flexGrow: 1,
     // maxWidth: 320
   },
-  projectImage: {
-    height: 150,
-    paddingRight: theme.spacing(2),
+  carouseltitle: {
+    color: "#FFFFFF",
+    fontSize: "13px",
+    margin: "2px",
+    textAlign: "center",
+  },
+  carouselContainer: {
+    backgroundColor: "#F0F2F5",
+    borderRadius: "4px",
+    position: "relative",
+  },
+  customDot: {
+    bottom: "-16px",
+    "& .react-multi-carousel-dot--active button": {
+      background: "white",
+    },
+    "& li button": {
+      width: "7px",
+      height: "7px",
+      border: "none",
+      background: "#66BCB5",
+    },
+  },
+
+  itemContainer: {
+    display: "flex",
+  },
+  supporterImg: {
+    borderRadius: "50%",
+  },
+  supporterDetails: {
+    paddingLeft: "15px",
+  },
+  supporterName: {
+    fontSize: "17px",
+    fontWeight: "600",
+    marginBottom: "8px",
+  },
+  supporterSubtitle: {
+    margin: "0",
+    fontSize: "12px",
+    color: "#484848",
   },
   carouselEntry: {
-    paddingLeft: theme.spacing(16),
-    paddingRight: theme.spacing(16),
+    padding: " 8px 9px 15px 16px",
     display: "flex",
-    justifyContent: "center",
+    justifyContent: "left",
     [theme.breakpoints.down("md")]: {
       padding: 0,
     },
-  },
-  noUnderline: {
-    textDecoration: "inherit",
-    "&:hover": {
-      textDecoration: "inherit",
-    },
-    color: "inherit",
-  },
-  projectCard: {
-    width: 290,
   },
 }));
 
@@ -61,9 +86,20 @@ const CarouselItem = ({ supporter }) => {
   return (
     <div className={classes.carouselEntry}>
       {isSmallOrMediumScreen ? (
-        <Image src={getImageUrl(supporter?.logo)} />
+        <img src={getImageUrl(supporter?.logo)} />
       ) : (
-        <img src={getImageUrl(supporter?.logo)} width={50} height={50} />
+        <div className={classes.itemContainer}>
+          <img
+            src={getImageUrl(supporter?.logo)}
+            width={76}
+            height={76}
+            className={classes.supporterImg}
+          />
+          <div className={classes.supporterDetails}>
+            <p className={classes.supporterName}>{supporter?.name}</p>
+            <p className={classes.supporterSubtitle}>Unterstützer: Klima-Champion</p>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -81,10 +117,22 @@ const HubSupporterSlider = ({ supportersList }) => {
 
   return (
     <div className={classes.root}>
-      <Carousel responsive={responsive} infinite={supportersList?.length > 1} arrows={!under500}>
-        {supportersList?.length > 0 &&
-          supportersList.map((data, index) => <CarouselItem key={index} supporter={data} />)}
-      </Carousel>
+      <p className={classes.carouseltitle}>Der ClimateHub wird unterstützt durch:</p>
+      <div className={classes.carouselContainer}>
+        <Carousel
+          responsive={responsive}
+          infinite={supportersList?.length > 1}
+          arrows={false}
+          showDots={true}
+          renderDotsOutside={true}
+          dotListClass={classes.customDot}
+          autoPlay={true}
+          autoPlaySpeed={10000}
+        >
+          {supportersList?.length > 0 &&
+            supportersList.map((data, index) => <CarouselItem key={index} supporter={data} />)}
+        </Carousel>
+      </div>
     </div>
   );
 };
