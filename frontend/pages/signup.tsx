@@ -1,6 +1,5 @@
 import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import Cookies from "universal-cookie";
 import { apiRequest } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
 import {
@@ -29,12 +28,8 @@ export default function Signup() {
     newsletter: "",
     sendNewsletter: undefined,
   });
-  const cookies = new Cookies();
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
-
-  //Information about the completion state of the tutorial
-  const isClimateActorCookie = cookies.get("tutorialVariables"); // TODO: fix 1320: not sure about that one
 
   const steps = ["basicinfo", "personalinfo"];
   const [curStep, setCurStep] = useState(steps[0]);
@@ -94,7 +89,6 @@ export default function Signup() {
       last_name: values.last_name.trim(),
       location: parseLocation(location),
       send_newsletter: values.sendNewsletter,
-      is_activist: isClimateActorCookie?.isActivist, // TODO: fix-1320: not sure about that one
       source_language: locale,
     };
     const headers = {
