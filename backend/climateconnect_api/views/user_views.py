@@ -148,7 +148,7 @@ class SignUpView(APIView):
             send_newsletter=request.data["send_newsletter"],
             language=source_language,
         )
-        if "is_activist" in request.data:  # TODO: fix-1320 (Do we still want it)
+        if "is_activist" in request.data:
             user_profile.is_activist = request.data["is_activist"]
         if settings.AUTO_VERIFY is True:
             user_profile.is_profile_verified = True

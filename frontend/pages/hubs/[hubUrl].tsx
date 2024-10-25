@@ -330,7 +330,7 @@ export default function Hub({
           <BrowseContext.Provider value={contextValues}>
             <BrowseContent
               applyNewFilters={handleApplyNewFilters}
-              contentRef={contentRef} // TOOD: is this a dead prop as well?
+              contentRef={contentRef}
               customSearchBarLabels={customSearchBarLabels}
               errorMessage={errorMessage}
               hubAmbassador={hubAmbassador}

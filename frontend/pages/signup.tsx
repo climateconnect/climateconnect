@@ -98,7 +98,7 @@ export default function Signup() {
     setIsLoading(true);
     apiRequest({
       method: "post",
-      url: "/signup/", // TODO: fix-1320: see backend api as 'last_completed_tutorial_step' will be removed
+      url: "/signup/",
       payload: payload,
       headers: headers,
       locale: locale,
