@@ -1,6 +1,5 @@
 import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import Cookies from "universal-cookie";
 import { apiRequest } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
 import {
@@ -10,10 +9,6 @@ import {
   parseLocation,
 } from "../public/lib/locationOperations";
 import { redirectOnLogin } from "../public/lib/profileOperations";
-import {
-  getLastCompletedTutorialStep,
-  getLastStepBeforeSkip,
-} from "../public/lib/tutorialOperations"; // TODO: delete fix 1320
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import Layout from "../src/components/layouts/layout";
@@ -33,17 +28,8 @@ export default function Signup() {
     newsletter: "",
     sendNewsletter: undefined,
   });
-  const cookies = new Cookies();
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
-  //Information about the completion state of the tutorial
-  const tutorialCookie = cookies.get("finishedTutorialSteps"); // TODO: delete fix 1320
-  const isClimateActorCookie = cookies.get("tutorialVariables"); // TODO: delete fix 1320
-  const curTutorialStep = getLastCompletedTutorialStep(tutorialCookie); // TODO: delete fix 1320
-  const lastCompletedTutorialStep = // TODO: delete fix 1320
-    curTutorialStep === -1 // TODO: delete fix 1320
-      ? getLastStepBeforeSkip(cookies.get("lastStepBeforeSkipTutorial")) // TODO: delete fix 1320
-      : curTutorialStep; // TODO: delete fix 1320
   const steps = ["basicinfo", "personalinfo"];
   const [curStep, setCurStep] = useState(steps[0]);
   const [errorMessage, setErrorMessage] = useState("");
@@ -102,9 +88,6 @@ export default function Signup() {
       last_name: values.last_name.trim(),
       location: parseLocation(location),
       send_newsletter: values.sendNewsletter,
-      from_tutorial: params?.from_tutorial === "true",
-      is_activist: isClimateActorCookie?.isActivist,
-      last_completed_tutorial_step: lastCompletedTutorialStep,
       source_language: locale,
     };
     const headers = {
@@ -114,7 +97,7 @@ export default function Signup() {
     setIsLoading(true);
     apiRequest({
       method: "post",
-      url: "/signup/",
+      url: "/signup/", // TODO: fix-1320: see backend api as 'last_completed_tutorial_step' will be removed
       payload: payload,
       headers: headers,
       locale: locale,

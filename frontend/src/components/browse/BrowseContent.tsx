@@ -32,7 +32,6 @@ const IdeasBoard = React.lazy(() => import("../ideas/IdeasBoard"));
 const OrganizationPreviews = React.lazy(() => import("../organization/OrganizationPreviews"));
 const ProfilePreviews = React.lazy(() => import("../profile/ProfilePreviews"));
 const ProjectPreviews = React.lazy(() => import("../project/ProjectPreviews"));
-const Tutorial = React.lazy(() => import("../tutorial/Tutorial"));
 const TabContentWrapper = React.lazy(() => import("./TabContentWrapper"));
 
 const useStyles = makeStyles((theme) => {
@@ -84,10 +83,6 @@ export default function BrowseContent({
   handleSetErrorMessage,
   hideMembers,
   hubName,
-  hubProjectsButtonRef,
-  hubQuickInfoRef,
-  hubsSubHeaderRef,
-  nextStepTriggeredBy,
   showIdeas,
   allHubs,
   initialIdeaUrlSlug,
@@ -125,10 +120,6 @@ export default function BrowseContent({
   };
 
   const token = new Cookies().get("auth_token");
-  //saving these refs for the tutorial
-  const firstProjectCardRef = useRef(null);
-  const filterButtonRef = useRef(null);
-  const organizationsTabRef = useRef(null);
 
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles();
@@ -526,7 +517,6 @@ export default function BrowseContent({
           tabValue={tabValue}
           handleTabChange={handleTabChange}
           type_names={type_names}
-          organizationsTabRef={organizationsTabRef}
           hubUrl={hubUrl}
           className={classes.hubsTabNavigation}
           allHubs={allHubs}
@@ -541,7 +531,6 @@ export default function BrowseContent({
             setFiltersExpanded={isNarrowScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
             type={TYPES_BY_TAB_VALUE[tabValue]}
             customSearchBarLabels={customSearchBarLabels}
-            filterButtonRef={filterButtonRef}
             searchValue={filters.search}
             hideFilterButton={tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas")}
             applyBackgroundColor={hubData?.hub_type === "location hub"}
@@ -570,7 +559,6 @@ export default function BrowseContent({
                   </div>
                 );
               }
-              if (index === 1) tabProps.ref = organizationsTabRef;
               return <Tab {...tabProps} key={index} />;
             })}
           </Tabs>
@@ -581,7 +569,6 @@ export default function BrowseContent({
             handleTabChange={handleTabChange}
             TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
             //TODO(unused) type_names={type_names}
-            organizationsTabRef={organizationsTabRef}
             hubAmbassador={hubAmbassador}
           />
         )}
@@ -596,7 +583,6 @@ export default function BrowseContent({
               loadFunc={() => handleLoadMoreData("projects")}
               parentHandlesGridItems
               projects={state.items.projects}
-              firstProjectCardRef={firstProjectCardRef}
               hubUrl={hubUrl}
             />
           </TabContentWrapper>
@@ -637,23 +623,6 @@ export default function BrowseContent({
           </TabContentWrapper>
         </Suspense>
       </Container>
-      <Suspense fallback={null}>
-        <Tutorial
-          fixedPosition
-          pointerRefs={{
-            projectCardRef: firstProjectCardRef,
-            filterButtonRef: filterButtonRef,
-            organizationsTabRef: organizationsTabRef,
-            hubsSubHeaderRef: hubsSubHeaderRef,
-            hubQuickInfoRef: hubQuickInfoRef,
-            hubProjectsButtonRef: hubProjectsButtonRef,
-          }}
-          hubName={hubName}
-          nextStepTriggeredBy={nextStepTriggeredBy}
-          handleTabChange={handleTabChange}
-          typesByTabValue={TYPES_BY_TAB_VALUE}
-        />
-      </Suspense>
     </LoadingContext.Provider>
   );
 }
