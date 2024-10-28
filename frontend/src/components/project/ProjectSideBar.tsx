@@ -7,6 +7,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
+import HubSupporter from "../hub/HubSupporter";
 
 const useStyles = makeStyles((theme) => ({
   projectCard: {
@@ -42,6 +43,9 @@ const useStyles = makeStyles((theme) => ({
     fontSize: props.isSmallScreen ? 14 : 12,
     width: props.isSmallScreen ? "100%" : "95%",
   }),
+  supporterSliderWidth: {
+    width: "100%",
+  },
 }));
 
 export default function ProjectSideBar({
@@ -51,6 +55,7 @@ export default function ProjectSideBar({
   locale,
   texts,
   isSmallScreen,
+  hubSupporter,
 }) {
   const classes = useStyles({
     showSimilarProjects: showSimilarProjects,
@@ -70,11 +75,18 @@ export default function ProjectSideBar({
           </Typography>
         </>
       ) : (
-        <IconButton size="small" onClick={handleHideContent}>
-          <MenuIcon />
-        </IconButton>
+        <>
+          {hubSupporter && (
+            <HubSupporter
+              supportersList={hubSupporter}
+              containerClass={classes.supporterSliderWidth}
+            />
+          )}
+          <IconButton size="small" onClick={handleHideContent}>
+            <MenuIcon />
+          </IconButton>
+        </>
       )}
-
       <div
         className={
           isSmallScreen

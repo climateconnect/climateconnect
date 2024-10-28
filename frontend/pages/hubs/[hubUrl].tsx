@@ -365,6 +365,7 @@ export default function Hub({
               resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
               hubUrl={hubUrl}
               tabNavigationRequested={requestTabNavigation}
+              hubSupporter={hubSupporter}
             />
           </BrowseContext.Provider>
         </div>

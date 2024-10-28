@@ -34,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 5,
     border: `3px solid ${theme.palette.primary.main}`,
     marginTop: props.isLocationHub ? theme.spacing(2) : theme.spacing(-11),
+    marginBottom: theme.spacing(2),
 
     ["@media(max-width:960px)"]: {
       maxWidth: 550,

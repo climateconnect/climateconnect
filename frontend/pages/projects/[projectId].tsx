@@ -69,7 +69,8 @@ const parseComments = (comments) => {
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
-  const projectUrl = encodeURI(ctx.query.projectId);
+  const projectUrl = encodeURI(ctx?.query?.projectId);
+  const hubPage = encodeURI(ctx?.query?.hubPage);
   const [
     project,
     members,
@@ -78,6 +79,7 @@ export async function getServerSideProps(ctx) {
     userInteractions,
     hubs,
     similarProjects,
+    hubSupporter,
   ] = await Promise.all([
     getProjectByIdIfExists(projectUrl, auth_token, ctx.locale),
     getProjectMembersByIdIfExists(projectUrl, ctx.locale),
@@ -86,6 +88,7 @@ export async function getServerSideProps(ctx) {
     auth_token ? getUsersInteractionWithProject(projectUrl, auth_token, ctx.locale) : false,
     getAllHubs(ctx.locale),
     getSimilarProjects(projectUrl, ctx.locale),
+    hubPage ? getHubSupporter(hubPage, ctx.locale) : null,
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -98,6 +101,7 @@ export async function getServerSideProps(ctx) {
       hasRequestedToJoin: userInteractions.has_requested_to_join,
       hubs: hubs,
       similarProjects: similarProjects,
+      hubSupporter: hubSupporter,
     }),
   };
 }
@@ -112,6 +116,7 @@ export default function ProjectPage({
   hasRequestedToJoin,
   hubs,
   similarProjects,
+  hubSupporter,
 }) {
   const token = new Cookies().get("auth_token");
   const [curComments, setCurComments] = useState(parseComments(comments));
@@ -271,6 +276,7 @@ export default function ProjectPage({
                   showSimilarProjects={showSimilarProjects}
                   locale={locale}
                   texts={texts}
+                  hubSupporter={hubSupporter}
                 />
               )}
             </div>
@@ -388,7 +394,21 @@ async function getSimilarProjects(projectUrl, locale) {
     return null;
   }
 }
-
+const getHubSupporter = async (url_slug, locale) => {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: `/api/hubs/${url_slug}/supporter/`,
+      locale: locale,
+    });
+    return resp.data;
+  } catch (err: any) {
+    if (err.response && err.response.data)
+      console.log("Error in getHubSupporterData: " + err.response.data.detail);
+    console.log(err);
+    return null;
+  }
+};
 function parseProject(project) {
   return {
     name: project.name,

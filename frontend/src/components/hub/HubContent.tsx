@@ -14,7 +14,7 @@ import ContactAmbassadorButton from "./ContactAmbassadorButton";
 import Dashboard from "../dashboard/Dashboard";
 import LocalAmbassadorInfoBox from "./LocalAmbassadorInfoBox";
 import HubHeadlineContainer from "./HubHeadlineContainer";
-import HubSupporterSlider from "./HubSupporterSlider";
+import HubSupporter from "./HubSupporter";
 
 type MakeStylesProps = {
   isLocationHub: boolean;
@@ -195,18 +195,26 @@ export default function HubContent({
                 )}
                 {!isNarrowScreen &&
                   (!user ? (
-                    <div className={classes.ambassadorAndSupporters}>
-                      <LocalAmbassadorInfoBox
-                        hubAmbassador={hubAmbassador}
-                        hubData={hubData}
-                        hubSupportersExists={hubSupporter ? true : false}
-                      />
-                      <HubSupporterSlider supportersList={hubSupporter} />
-                    </div>
+                    <>
+                      {hubAmbassador && (
+                        <div className={classes.ambassadorAndSupporters}>
+                          <LocalAmbassadorInfoBox
+                            hubAmbassador={hubAmbassador}
+                            hubData={hubData}
+                            hubSupportersExists={hubSupporter ? true : false}
+                          />
+                          {hubSupporter?.length > 0 && (
+                            <HubSupporter supportersList={hubSupporter} />
+                          )}
+                        </div>
+                      )}
+                    </>
                   ) : (
                     <>
-                      <ContactAmbassadorButton hubAmbassador={hubAmbassador} mobile={false} />
-                      <HubSupporterSlider supportersList={hubSupporter} />
+                      {hubAmbassador && (
+                        <ContactAmbassadorButton hubAmbassador={hubAmbassador} mobile={false} />
+                      )}
+                      {hubSupporter?.length > 0 && <HubSupporter supportersList={hubSupporter} />}
                     </>
                   ))}
               </div>
