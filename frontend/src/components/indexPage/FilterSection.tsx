@@ -159,10 +159,6 @@ export default function FilterSection({
     notchedOutline: classes.inputLabel,
   };
 
-  const onSubmitSearchBar = (e) => {
-    // TODO: reconstruct URL
-  };
-
   // #############################################################
   // Experiments: "noone" actually needs to share information about the state
   // state is saved in the urls searchbar and the searchparams are just passed down to the server
@@ -190,8 +186,6 @@ export default function FilterSection({
   const handleUpdateFilters = (updatedFilters: any) => {
     setFilters(updatedFilters);
   };
-
-  const addFilter = (filter: string, value: string) => {};
 
   const applyNewFiltersToUrl = ({ type, newFilters, closeFilters, nonFilterParams }) => {
     const newUrl = getFilterUrl({
