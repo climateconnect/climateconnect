@@ -52,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
 
   itemContainer: {
     display: "flex",
+    alignItems: "center",
   },
   supporterImg: {
     borderRadius: "50%",
@@ -97,7 +98,7 @@ const CarouselItem = ({ supporter }) => {
           />
           <div className={classes.supporterDetails}>
             <p className={classes.supporterName}>{supporter?.name}</p>
-            <p className={classes.supporterSubtitle}>Unterstützer: Klima-Champion</p>
+            <p className={classes.supporterSubtitle}>Unterstützer: {supporter.subtitle}</p>
           </div>
         </div>
       )}
@@ -107,7 +108,7 @@ const CarouselItem = ({ supporter }) => {
 
 const HubSupporterSlider = ({ supportersList }) => {
   const classes = useStyles();
-  const under500 = useMediaQuery<Theme>("(max-width: 500px)");
+  // const under500 = useMediaQuery<Theme>("(max-width: 500px)");
   const responsive = {
     all: {
       breakpoint: { max: 10000, min: 0 },

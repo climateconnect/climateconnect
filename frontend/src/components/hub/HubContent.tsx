@@ -61,6 +61,12 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1,
     border: "1px solid white",
   },
+  ambassadorAndSupporters: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "baseline",
+    gap: "5px",
+  },
   buttonContainer: (props: MakeStylesProps) => ({
     display: props.isLocationHub ? "none" : "flex",
     justifyContent: "center",
@@ -82,6 +88,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "strech",
+    // alignItems: "flex-start"
   }),
   infoBoxContainer: {
     marginTop: theme.spacing(0),
@@ -139,6 +146,7 @@ export default function HubContent({
   const texts = getTexts({ page: "hub", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const [expanded, setExpanded] = React.useState(false);
+
   const handleClickExpand = () => {
     if (expanded === false) {
       setFixed(true);
@@ -187,10 +195,14 @@ export default function HubContent({
                 )}
                 {!isNarrowScreen &&
                   (!user ? (
-                    <>
-                      <LocalAmbassadorInfoBox hubAmbassador={hubAmbassador} hubData={hubData} />
+                    <div className={classes.ambassadorAndSupporters}>
+                      <LocalAmbassadorInfoBox
+                        hubAmbassador={hubAmbassador}
+                        hubData={hubData}
+                        hubSupportersExists={hubSupporter ? true : false}
+                      />
                       <HubSupporterSlider supportersList={hubSupporter} />
-                    </>
+                    </div>
                   ) : (
                     <>
                       <ContactAmbassadorButton hubAmbassador={hubAmbassador} mobile={false} />

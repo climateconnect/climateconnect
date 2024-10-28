@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LocalAmbassadorInfoBox({ hubAmbassador, hubData }) {
+export default function LocalAmbassadorInfoBox({ hubAmbassador, hubData, hubSupportersExists }) {
   const classes = useStyles();
   const { locale, user } = useContext(UserContext);
   const cookies = new Cookies();
@@ -70,12 +70,14 @@ export default function LocalAmbassadorInfoBox({ hubAmbassador, hubData }) {
   };
   return (
     <div className={classes.root}>
-      <div className={classes.upperSection}>
-        <Typography color="primary" className={classes.headline}>
-          {texts.do_you_need_support}
-        </Typography>
-        <Typography color="secondary">{texts.local_ambassador_is_there_for_you}</Typography>
-      </div>
+      {!hubSupportersExists && (
+        <div className={classes.upperSection}>
+          <Typography color="primary" className={classes.headline}>
+            {texts.do_you_need_support}
+          </Typography>
+          <Typography color="secondary">{texts.local_ambassador_is_there_for_you}</Typography>
+        </div>
+      )}
       <div className={classes.lowerSection}>
         <Avatar
           className={classes.avatar}
