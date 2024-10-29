@@ -18,15 +18,6 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: "15px",
     paddingRight: "5px",
     paddingLeft: "5px",
-    [theme.breakpoints.down("xl")]: {
-      left: theme.spacing(1),
-      right: theme.spacing(1),
-    },
-    [theme.breakpoints.down("md")]: {
-      border: "none",
-      left: 0,
-      right: 0,
-    },
     width: 320,
     //instead of width we can use flexGrow && maxWidth
     // flexGrow: 1,
@@ -45,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
   },
   customDot: {
     bottom: "-16px",
+    // access the class name of the react-multi-carousel to change the dot color
     "& .react-multi-carousel-dot--active button": {
       background: "white",
     },
@@ -118,10 +110,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CarouselItem = ({ supporter }) => {
-  const classes = useStyles();
+const CarouselItem = ({ supporter, classes, texts }) => {
   return (
-    <div className={classes.carouselEntry}>
+    <div className={classes.carouselEntry} key={supporter.name}>
       <div className={classes.itemContainer}>
         <img
           src={getImageUrl(supporter?.logo)}
@@ -132,24 +123,25 @@ const CarouselItem = ({ supporter }) => {
         />
         <div className={classes.supporterDetails}>
           <p className={classes.supporterName}>{supporter?.name}</p>
-          <p className={classes.supporterSubtitle}>Unterstützer: {supporter.subtitle}</p>
+          <p className={classes.supporterSubtitle}>
+            {texts.supporter}: {supporter.subtitle}
+          </p>
         </div>
       </div>
     </div>
   );
 };
 
-const HubSupporterSlider = ({ classes, containerClass, supportersList }) => {
+const HubSupporterSlider = ({ classes, texts, containerClass, supportersList }) => {
   const responsive = {
     all: {
       breakpoint: { max: 10000, min: 0 },
       items: 1,
     },
   };
-  console.log("containerClass", containerClass);
   return (
     <div className={`${classes.root} ${containerClass}`}>
-      <p className={classes.carouseltitle}>Der ClimateHub wird unterstützt durch:</p>
+      <p className={classes.carouseltitle}>{texts.the_limateHub_is_supported_by}:</p>
       <div className={classes.carouselContainer}>
         <Carousel
           responsive={responsive}
@@ -162,48 +154,62 @@ const HubSupporterSlider = ({ classes, containerClass, supportersList }) => {
           autoPlaySpeed={10000}
         >
           {supportersList?.length > 0 &&
-            supportersList.map((data, index) => <CarouselItem key={index} supporter={data} />)}
+            supportersList.map((data) => (
+              <CarouselItem supporter={data} classes={classes} texts={texts} />
+            ))}
         </Carousel>
       </div>
     </div>
   );
 };
 
+const HubSupporterInSmallDevice = ({ classes, supportersList, texts }) => {
+  const slicedSupporterForSmallDevice = supportersList.slice(0, 3);
+
+  return (
+    <div className={classes.containerInSmallDevices}>
+      {supportersList?.length > 0 &&
+        slicedSupporterForSmallDevice.map((supporter) => (
+          <img
+            src={getImageUrl(supporter?.logo)}
+            width={45}
+            height={45}
+            alt={supporter.name}
+            className={classes.supporterImgSmallDevice}
+            key={supporter.name}
+          />
+        ))}
+      {supportersList?.length > 3 && (
+        <Typography className={classes.textAlign}>
+          <Link href={"#"} className={classes.allSupporters}>
+            {texts.all_supporters} <ArrowRightIcon className={classes.arrowIcon} />{" "}
+          </Link>
+        </Typography>
+      )}
+    </div>
+  );
+};
+
 const HubSupporter = ({ supportersList, containerClass }) => {
-  const classes = useStyles();
+  const classes = useStyles({ containerClass: containerClass });
   const isSmallOrMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
-  const slicedSupporterForSmallDevice = supportersList.slice(0, 3);
   return (
     <>
       {!isSmallOrMediumScreen ? (
         <HubSupporterSlider
           classes={classes}
+          texts={texts}
           containerClass={containerClass}
           supportersList={supportersList}
         />
       ) : (
-        <div className={classes.containerInSmallDevices}>
-          {supportersList?.length > 0 &&
-            slicedSupporterForSmallDevice.map((supporter) => (
-              <img
-                src={getImageUrl(supporter?.logo)}
-                width={45}
-                height={45}
-                alt={supporter.name}
-                className={classes.supporterImgSmallDevice}
-                key={supporter.name}
-              />
-            ))}
-          {supportersList?.length > 3 && (
-            <Typography className={classes.textAlign}>
-              <Link href={"#"} className={classes.allSupporters}>
-                {texts.all_supporters} <ArrowRightIcon className={classes.arrowIcon} />{" "}
-              </Link>
-            </Typography>
-          )}
-        </div>
+        <HubSupporterInSmallDevice
+          classes={classes}
+          supportersList={supportersList}
+          texts={texts}
+        />
       )}
     </>
   );
