@@ -7,8 +7,16 @@ import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 
-type MakeStylesProps = {
-  containerClass: string;
+type Supporter = {
+  name: string;
+  subtitle: string;
+  logo: string;
+  importance: number;
+};
+
+type HubSupporter = {
+  supportersList: Supporter[];
+  containerClass?: string;
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -63,13 +71,13 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "600",
     marginBottom: "8px",
   },
-  supporterSubtitle: (props: MakeStylesProps) => ({
+  supporterSubtitle: (containerClass) => ({
     margin: "0",
     fontSize: "12px",
     color: "#484848",
     // fontWeight: 600,
     whiteSpace: "nowrap",
-    width: props.containerClass ? "170px" : "200px",
+    width: containerClass ? "170px" : "200px",
     overflow: "hidden",
     OTextOverflow: "ellipsis",
     textOverflow: "ellipsis",
@@ -109,6 +117,33 @@ const useStyles = makeStyles((theme) => ({
     color: "#207178",
   },
 }));
+
+const HubSupporter = ({ supportersList, containerClass }: HubSupporter) => {
+  const classes = useStyles({ containerClass: containerClass });
+  const isSmallOrMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "hub", locale: locale });
+  return (
+    <>
+      {!isSmallOrMediumScreen ? (
+        <HubSupporterSlider
+          classes={classes}
+          texts={texts}
+          containerClass={containerClass}
+          supportersList={supportersList}
+        />
+      ) : (
+        <HubSupporterInSmallDevice
+          classes={classes}
+          supportersList={supportersList}
+          texts={texts}
+        />
+      )}
+    </>
+  );
+};
+
+export default HubSupporter;
 
 const CarouselItem = ({ supporter, classes, texts }) => {
   return (
@@ -189,30 +224,3 @@ const HubSupporterInSmallDevice = ({ classes, supportersList, texts }) => {
     </div>
   );
 };
-
-const HubSupporter = ({ supportersList, containerClass }) => {
-  const classes = useStyles({ containerClass: containerClass });
-  const isSmallOrMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
-  const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "hub", locale: locale });
-  return (
-    <>
-      {!isSmallOrMediumScreen ? (
-        <HubSupporterSlider
-          classes={classes}
-          texts={texts}
-          containerClass={containerClass}
-          supportersList={supportersList}
-        />
-      ) : (
-        <HubSupporterInSmallDevice
-          classes={classes}
-          supportersList={supportersList}
-          texts={texts}
-        />
-      )}
-    </>
-  );
-};
-
-export default HubSupporter;
