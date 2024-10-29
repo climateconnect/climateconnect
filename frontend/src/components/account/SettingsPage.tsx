@@ -397,13 +397,6 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
             href={getLocalePrefix(locale) + "/resetpassword"}
             className={`${classes.forgotPasswordLink} ${classes.primaryColor}`}
           >
-            {/* TODO: (Karol) a tag not required after next v13 
-          
-          The <Link> Component no longer requires manually adding an <a> tag as a child. 
-          This behavior was added as an experimental option in version 12.2 and is now the default.
-          In Next.js 13, <Link> always renders <a> and allows you to forward props to the underlying tag.
-          */}
-
             {texts.i_forgot_my_password}
           </Link>
         </div>
@@ -563,12 +556,6 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         {texts.if_you_wish_to_delete_this_account}
         <div className={classes.spaceStrings} />
         <Link href="mailto:contact@climateconnect.earth" className={classes.primaryColor}>
-          {/* TODO: (Karol) a tag not required after next v13 
-          
-          The <Link> Component no longer requires manually adding an <a> tag as a child. 
-          This behavior was added as an experimental option in version 12.2 and is now the default.
-          In Next.js 13, <Link> always renders <a> and allows you to forward props to the underlying tag.
-          */}
           {emailLink}
         </Link>
       </Typography>
