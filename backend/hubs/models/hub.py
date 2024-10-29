@@ -363,6 +363,7 @@ class HubSupporter(models.Model):
         app_label = "hubs"
         verbose_name = "Hub Supporter"
         verbose_name_plural = "Hub Supporter"
+        ordering = ["-importance"]
 
     def __str__(self):
         return "%s" % (self.name)

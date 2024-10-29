@@ -192,9 +192,11 @@ export default function Hub({
   useEffect(() => {
     (async () => {
       const retrievedHubAmbassador = await getHubAmbassadorData(hubUrl, locale);
-      const retrivedHubSupporter = await getHubSupporterData(hubUrl, locale);
       setHubAmbassador(retrievedHubAmbassador);
-      setHubSupporter(retrivedHubSupporter);
+      if (isLocationHub) {
+        const retrivedHubSupporter = await getHubSupporterData(hubUrl, locale);
+        setHubSupporter(retrivedHubSupporter);
+      }
     })();
   }, []);
 

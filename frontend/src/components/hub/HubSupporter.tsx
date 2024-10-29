@@ -141,7 +141,7 @@ const HubSupporterSlider = ({ classes, texts, containerClass, supportersList }) 
   };
   return (
     <div className={`${classes.root} ${containerClass}`}>
-      <p className={classes.carouseltitle}>{texts.the_limateHub_is_supported_by}:</p>
+      <p className={classes.carouseltitle}>{texts.the_limateHub_is_supported_by + " :"}</p>
       <div className={classes.carouselContainer}>
         <Carousel
           responsive={responsive}
