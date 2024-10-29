@@ -405,6 +405,12 @@ export default function Form({
           )}
           {bottomLink ? (
             <Link href={bottomLink.href}>
+              {/* TODO: (Karol) a tag not required after next v13 
+            
+            The <Link> Component no longer requires manually adding an <a> tag as a child. 
+            This behavior was added as an experimental option in version 12.2 and is now the default.
+            In Next.js 13, <Link> always renders <a> and allows you to forward props to the underlying tag.
+            */}
               <a className={classes.bottomMessages}>{bottomLink.text}</a>
             </Link>
           ) : (
