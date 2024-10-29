@@ -393,20 +393,21 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           <Button variant="contained" color="primary" type="submit">
             {texts.change_password}
           </Button>
-          <Link href={getLocalePrefix(locale) + "/resetpassword"}>
+          <Link
+            href={getLocalePrefix(locale) + "/resetpassword"}
+            className={`${classes.forgotPasswordLink} ${classes.primaryColor}`}
+          >
             {/* TODO: (Karol) a tag not required after next v13 
-            
-            The <Link> Component no longer requires manually adding an <a> tag as a child. 
-            This behavior was added as an experimental option in version 12.2 and is now the default.
-            In Next.js 13, <Link> always renders <a> and allows you to forward props to the underlying tag.
-            */}
-            <a className={`${classes.forgotPasswordLink} ${classes.primaryColor}`}>
-              {texts.i_forgot_my_password}
-            </a>
+          
+          The <Link> Component no longer requires manually adding an <a> tag as a child. 
+          This behavior was added as an experimental option in version 12.2 and is now the default.
+          In Next.js 13, <Link> always renders <a> and allows you to forward props to the underlying tag.
+          */}
+
+            {texts.i_forgot_my_password}
           </Link>
         </div>
       </form>
-
       <Typography className={classes.lowerHeaders} color="primary" variant="h5" component="h2">
         {texts.change_linked_email}
       </Typography>
@@ -561,14 +562,14 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         <InfoOutlinedIcon />
         {texts.if_you_wish_to_delete_this_account}
         <div className={classes.spaceStrings} />
-        <Link href="mailto:contact@climateconnect.earth">
+        <Link href="mailto:contact@climateconnect.earth" className={classes.primaryColor}>
           {/* TODO: (Karol) a tag not required after next v13 
-            
-            The <Link> Component no longer requires manually adding an <a> tag as a child. 
-            This behavior was added as an experimental option in version 12.2 and is now the default.
-            In Next.js 13, <Link> always renders <a> and allows you to forward props to the underlying tag.
-            */}
-          <a className={classes.primaryColor}>{emailLink}</a>
+          
+          The <Link> Component no longer requires manually adding an <a> tag as a child. 
+          This behavior was added as an experimental option in version 12.2 and is now the default.
+          In Next.js 13, <Link> always renders <a> and allows you to forward props to the underlying tag.
+          */}
+          {emailLink}
         </Link>
       </Typography>
     </>
