@@ -26,7 +26,7 @@ import UserContext from "../context/UserContext";
 import LoadingSpinner from "../general/LoadingSpinner";
 import MobileBottomMenu from "./MobileBottomMenu";
 import HubTabsNavigation from "../hub/HubTabsNavigation";
-import HubSupporter from "../hub/HubSupporter";
+import HubSupporters from "../hub/HubSupporters";
 
 const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
 const IdeasBoard = React.lazy(() => import("../ideas/IdeasBoard"));
@@ -101,7 +101,7 @@ export default function BrowseContent({
   hubUrl,
   hubAmbassador,
   contentRef,
-  hubSupporter,
+  hubSupporters,
 }: any) {
   const initialState = {
     items: {
@@ -535,7 +535,7 @@ export default function BrowseContent({
         />
       )}
       <Container maxWidth="lg" className={classes.contentRefContainer}>
-        {isNarrowScreen && hubSupporter && <HubSupporter supportersList={hubSupporter} />}
+        {isNarrowScreen && hubSupporters && <HubSupporters supportersList={hubSupporters} />}
         <div ref={contentRef} className={classes.contentRef} />
         <Suspense fallback={null}>
           <FilterSection

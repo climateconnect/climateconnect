@@ -161,7 +161,7 @@ export default function Hub({
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
   const token = new Cookies().get("auth_token");
   const [hubAmbassador, setHubAmbassador] = useState(null);
-  const [hubSupporter, setHubSupporter] = useState(null);
+  const [hubSupporters, setHubSupporters] = useState(null);
 
   // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
   const [filters, setFilters] = useState(
@@ -194,8 +194,8 @@ export default function Hub({
       const retrievedHubAmbassador = await getHubAmbassadorData(hubUrl, locale);
       setHubAmbassador(retrievedHubAmbassador);
       if (isLocationHub) {
-        const retrivedHubSupporter = await getHubSupporterData(hubUrl, locale);
-        setHubSupporter(retrivedHubSupporter);
+        const retrivedHubSupporters = await getHubSupportersData(hubUrl, locale);
+        setHubSupporters(retrivedHubSupporters);
       }
     })();
   }, []);
@@ -314,7 +314,7 @@ export default function Hub({
             hubQuickInfoRef={hubQuickInfoRef}
             headline={headline}
             hubAmbassador={hubAmbassador}
-            hubSupporter={hubSupporter}
+            hubSupporters={hubSupporters}
             quickInfo={quickInfo}
             statBoxTitle={statBoxTitle}
             stats={stats}
@@ -367,7 +367,7 @@ export default function Hub({
               resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
               hubUrl={hubUrl}
               tabNavigationRequested={requestTabNavigation}
-              hubSupporter={hubSupporter}
+              hubSupporters={hubSupporters}
             />
           </BrowseContext.Provider>
         </div>
@@ -445,17 +445,17 @@ const getHubAmbassadorData = async (url_slug, locale) => {
     return null;
   }
 };
-const getHubSupporterData = async (url_slug, locale) => {
+const getHubSupportersData = async (url_slug, locale) => {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: `/api/hubs/${url_slug}/supporter/`,
+      url: `/api/hubs/${url_slug}/supporters/`,
       locale: locale,
     });
     return resp.data;
   } catch (err: any) {
     if (err.response && err.response.data)
-      console.log("Error in getHubSupporterData: " + err.response.data.detail);
+      console.log("Error in getHubSupportersData: " + err.response.data.detail);
     console.log(err);
     return null;
   }

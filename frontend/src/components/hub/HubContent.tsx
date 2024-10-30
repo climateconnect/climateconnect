@@ -14,7 +14,7 @@ import ContactAmbassadorButton from "./ContactAmbassadorButton";
 import Dashboard from "../dashboard/Dashboard";
 import LocalAmbassadorInfoBox from "./LocalAmbassadorInfoBox";
 import HubHeadlineContainer from "./HubHeadlineContainer";
-import HubSupporter from "./HubSupporter";
+import HubSupporters from "./HubSupporters";
 
 type MakeStylesProps = {
   isLocationHub: boolean;
@@ -65,7 +65,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "baseline",
-    gap: "5px",
   },
   buttonContainer: (props: MakeStylesProps) => ({
     display: props.isLocationHub ? "none" : "flex",
@@ -87,8 +86,8 @@ const useStyles = makeStyles((theme) => ({
   dashboardAndStatboxWrapper: (props: MakeStylesProps) => ({
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "strech",
-    // alignItems: "flex-start"
+    margin: "16px auto",
+    alignItems: "flex-start",
   }),
   infoBoxContainer: {
     marginTop: theme.spacing(0),
@@ -133,7 +132,7 @@ export default function HubContent({
   hubProjectsButtonRef,
   isLocationHub,
   hubAmbassador,
-  hubSupporter,
+  hubSupporters,
   location,
   allHubs,
   hubData,
@@ -201,10 +200,10 @@ export default function HubContent({
                           <LocalAmbassadorInfoBox
                             hubAmbassador={hubAmbassador}
                             hubData={hubData}
-                            hubSupportersExists={hubSupporter ? true : false}
+                            hubSupportersExists={hubSupporters ? true : false}
                           />
-                          {hubSupporter?.length > 0 && (
-                            <HubSupporter supportersList={hubSupporter} />
+                          {hubSupporters?.length > 0 && (
+                            <HubSupporters supportersList={hubSupporters} />
                           )}
                         </div>
                       )}
@@ -214,7 +213,9 @@ export default function HubContent({
                       {hubAmbassador && (
                         <ContactAmbassadorButton hubAmbassador={hubAmbassador} mobile={false} />
                       )}
-                      {hubSupporter?.length > 0 && <HubSupporter supportersList={hubSupporter} />}
+                      {hubSupporters?.length > 0 && (
+                        <HubSupporters supportersList={hubSupporters} />
+                      )}
                     </>
                   ))}
               </div>

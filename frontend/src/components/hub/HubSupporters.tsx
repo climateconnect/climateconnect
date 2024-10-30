@@ -55,35 +55,34 @@ const useStyles = makeStyles((theme) => ({
       background: "#66BCB5",
     },
   },
-
   itemContainer: {
     display: "flex",
     alignItems: "center",
+    gap: "15px",
   },
   supporterImg: {
     borderRadius: "50%",
   },
-  supporterDetails: {
-    paddingLeft: "15px",
-  },
-  supporterName: {
+  supporterName: (containerClass) => ({
     fontSize: "17px",
     fontWeight: "600",
-    marginBottom: "8px",
-  },
-  supporterSubtitle: (containerClass) => ({
-    margin: "0",
-    fontSize: "12px",
-    color: "#484848",
-    // fontWeight: 600,
     whiteSpace: "nowrap",
     width: containerClass ? "170px" : "200px",
     overflow: "hidden",
-    OTextOverflow: "ellipsis",
+    textOverflow: "ellipsis",
+    margin: 0,
+  }),
+  supporterSubtitle: (containerClass) => ({
+    margin: 0,
+    fontSize: "12px",
+    color: "#484848",
+    whiteSpace: "nowrap",
+    width: containerClass ? "170px" : "200px",
+    overflow: "hidden",
     textOverflow: "ellipsis",
   }),
   carouselEntry: {
-    padding: " 8px 9px 15px 10px",
+    padding: " 8px",
     display: "flex",
     justifyContent: "left",
     [theme.breakpoints.down("md")]: {
@@ -118,7 +117,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const HubSupporter = ({ supportersList, containerClass }: HubSupporter) => {
+const HubSupporters = ({ supportersList, containerClass }: HubSupporter) => {
   const classes = useStyles({ containerClass: containerClass });
   const isSmallOrMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const { locale } = useContext(UserContext);
@@ -126,14 +125,14 @@ const HubSupporter = ({ supportersList, containerClass }: HubSupporter) => {
   return (
     <>
       {!isSmallOrMediumScreen ? (
-        <HubSupporterSlider
+        <HubSupportersSlider
           classes={classes}
           texts={texts}
           containerClass={containerClass}
           supportersList={supportersList}
         />
       ) : (
-        <HubSupporterInSmallDevice
+        <HubSupportersInSmallDevice
           classes={classes}
           supportersList={supportersList}
           texts={texts}
@@ -143,7 +142,7 @@ const HubSupporter = ({ supportersList, containerClass }: HubSupporter) => {
   );
 };
 
-export default HubSupporter;
+export default HubSupporters;
 
 const CarouselItem = ({ supporter, classes, texts }) => {
   return (
@@ -156,7 +155,7 @@ const CarouselItem = ({ supporter, classes, texts }) => {
           alt={supporter.name}
           className={classes.supporterImg}
         />
-        <div className={classes.supporterDetails}>
+        <div>
           <p className={classes.supporterName}>{supporter?.name}</p>
           <p className={classes.supporterSubtitle}>
             {texts.supporter}: {supporter.subtitle}
@@ -167,7 +166,7 @@ const CarouselItem = ({ supporter, classes, texts }) => {
   );
 };
 
-const HubSupporterSlider = ({ classes, texts, containerClass, supportersList }) => {
+const HubSupportersSlider = ({ classes, texts, containerClass, supportersList }) => {
   const responsive = {
     all: {
       breakpoint: { max: 10000, min: 0 },
@@ -176,7 +175,7 @@ const HubSupporterSlider = ({ classes, texts, containerClass, supportersList }) 
   };
   return (
     <div className={`${classes.root} ${containerClass}`}>
-      <p className={classes.carouseltitle}>{texts.the_limateHub_is_supported_by + " :"}</p>
+      <p className={classes.carouseltitle}>{texts.the_climatehub_is_supported_by + " :"}</p>
       <div className={classes.carouselContainer}>
         <Carousel
           responsive={responsive}
@@ -185,7 +184,7 @@ const HubSupporterSlider = ({ classes, texts, containerClass, supportersList }) 
           showDots={true}
           renderDotsOutside={true}
           dotListClass={classes.customDot}
-          autoPlay={true}
+          // autoPlay={true}
           autoPlaySpeed={10000}
         >
           {supportersList?.length > 0 &&
@@ -198,7 +197,7 @@ const HubSupporterSlider = ({ classes, texts, containerClass, supportersList }) 
   );
 };
 
-const HubSupporterInSmallDevice = ({ classes, supportersList, texts }) => {
+const HubSupportersInSmallDevice = ({ classes, supportersList, texts }) => {
   const slicedSupporterForSmallDevice = supportersList.slice(0, 3);
 
   return (

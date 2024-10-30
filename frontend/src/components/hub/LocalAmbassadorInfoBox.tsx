@@ -13,8 +13,9 @@ import Router from "next/router";
 const useStyles = makeStyles((theme) => ({
   root: {
     background: "white",
-    marginTop: theme.spacing(2),
-    marginLeft: theme.spacing(4),
+    // marginTop: theme.spacing(2),
+    marginBottom: "auto",
+    marginLeft: "auto",
     maxWidth: 320,
   },
   upperSection: {

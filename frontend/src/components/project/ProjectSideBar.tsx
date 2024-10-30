@@ -7,7 +7,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
-import HubSupporter from "../hub/HubSupporter";
+import HubSupporters from "../hub/HubSupporters";
 
 const useStyles = makeStyles((theme) => ({
   projectCard: {
@@ -44,7 +44,8 @@ const useStyles = makeStyles((theme) => ({
     width: props.isSmallScreen ? "100%" : "95%",
   }),
   supporterSliderWidth: {
-    width: "100%",
+    width: "95%",
+    marginTop: "8px",
   },
 }));
 
@@ -55,7 +56,7 @@ export default function ProjectSideBar({
   locale,
   texts,
   isSmallScreen,
-  hubSupporter,
+  hubSupporters,
 }) {
   const classes = useStyles({
     showSimilarProjects: showSimilarProjects,
@@ -76,12 +77,6 @@ export default function ProjectSideBar({
         </>
       ) : (
         <>
-          {hubSupporter && (
-            <HubSupporter
-              supportersList={hubSupporter}
-              containerClass={classes.supporterSliderWidth}
-            />
-          )}
           <IconButton size="small" onClick={handleHideContent}>
             <MenuIcon />
           </IconButton>
@@ -101,11 +96,16 @@ export default function ProjectSideBar({
         )}
         {showSimilarProjects && (
           <>
+            {hubSupporters && (
+              <HubSupporters
+                supportersList={hubSupporters}
+                containerClass={classes.supporterSliderWidth}
+              />
+            )}
             <ProjectPreviews
               displayOnePreviewInRow={shouldDisplayOneProjectInRow}
               projects={similarProjects}
             />
-
             <Button
               color="primary"
               variant="outlined"

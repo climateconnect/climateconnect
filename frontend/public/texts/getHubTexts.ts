@@ -143,7 +143,7 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
       en: "All supporters",
       de: "Alle Unterstützer",
     },
-    the_limateHub_is_supported_by: {
+    the_climatehub_is_supported_by: {
       en: "The ClimateHub is supported by",
       de: "Der ClimateHub wird unterstützt durch",
     },

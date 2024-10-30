@@ -79,7 +79,7 @@ export async function getServerSideProps(ctx) {
     userInteractions,
     hubs,
     similarProjects,
-    hubSupporter,
+    hubSupporters,
   ] = await Promise.all([
     getProjectByIdIfExists(projectUrl, auth_token, ctx.locale),
     getProjectMembersByIdIfExists(projectUrl, ctx.locale),
@@ -88,7 +88,7 @@ export async function getServerSideProps(ctx) {
     auth_token ? getUsersInteractionWithProject(projectUrl, auth_token, ctx.locale) : false,
     getAllHubs(ctx.locale),
     getSimilarProjects(projectUrl, ctx.locale),
-    hubPage ? getHubSupporter(hubPage, ctx.locale) : null,
+    hubPage ? getHubSupporters(hubPage, ctx.locale) : null,
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -101,7 +101,7 @@ export async function getServerSideProps(ctx) {
       hasRequestedToJoin: userInteractions.has_requested_to_join,
       hubs: hubs,
       similarProjects: similarProjects,
-      hubSupporter: hubSupporter,
+      hubSupporters: hubSupporters,
     }),
   };
 }
@@ -116,7 +116,7 @@ export default function ProjectPage({
   hasRequestedToJoin,
   hubs,
   similarProjects,
-  hubSupporter,
+  hubSupporters,
 }) {
   const token = new Cookies().get("auth_token");
   const [curComments, setCurComments] = useState(parseComments(comments));
@@ -276,7 +276,7 @@ export default function ProjectPage({
                   showSimilarProjects={showSimilarProjects}
                   locale={locale}
                   texts={texts}
-                  hubSupporter={hubSupporter}
+                  hubSupporters={hubSupporters}
                 />
               )}
             </div>
@@ -394,17 +394,17 @@ async function getSimilarProjects(projectUrl, locale) {
     return null;
   }
 }
-const getHubSupporter = async (url_slug, locale) => {
+const getHubSupporters = async (url_slug, locale) => {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: `/api/hubs/${url_slug}/supporter/`,
+      url: `/api/hubs/${url_slug}/supporters/`,
       locale: locale,
     });
     return resp.data;
   } catch (err: any) {
     if (err.response && err.response.data)
-      console.log("Error in getHubSupporterData: " + err.response.data.detail);
+      console.log("Error in getHubSupportersData: " + err.response.data.detail);
     console.log(err);
     return null;
   }

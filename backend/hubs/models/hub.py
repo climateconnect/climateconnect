@@ -329,7 +329,7 @@ class HubSupporter(models.Model):
     )
     hub = models.ForeignKey(
         Hub,
-        help_text="Supported Hubs by the Supporter",
+        help_text="Supported Hub by the Supporter",
         verbose_name="Hub",
         related_name="supporter_hub",
         null=True,
