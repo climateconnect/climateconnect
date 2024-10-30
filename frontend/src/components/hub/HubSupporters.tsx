@@ -214,13 +214,11 @@ const HubSupportersInSmallDevice = ({ classes, containerClass, supportersList, t
             key={supporter.name}
           />
         ))}
-      {supportersList?.length > 3 && (
-        <Typography className={classes.textAlign}>
-          <Link href={"#"} className={classes.allSupporters}>
-            {texts.all_supporters} <ArrowRightIcon className={classes.arrowIcon} />{" "}
-          </Link>
-        </Typography>
-      )}
+      <Typography className={classes.textAlign}>
+        <Link href={"#"} className={classes.allSupporters}>
+          {texts.all_supporters} <ArrowRightIcon className={classes.arrowIcon} />{" "}
+        </Link>
+      </Typography>
     </div>
   );
 };
