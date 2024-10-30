@@ -94,6 +94,7 @@ export default function ProjectPageRoot({
   handleHideContent,
   requestedToJoinProject,
   handleJoinRequest,
+  hubSupporters,
 }) {
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
@@ -119,6 +120,9 @@ export default function ProjectPageRoot({
     belowMedium: showSimilarProjects
       ? useMediaQuery<Theme>("(max-width:1300px)")
       : useMediaQuery<Theme>("(max-width:1100px)"),
+    // need refactor to change the names. this one should be 'belowLarge'
+    betweenTinyAndLarg: useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg")),
+    // And 'belowLarge' should be 'belowXLarge'
     belowLarge: useMediaQuery<Theme>((theme) => theme.breakpoints.down("xl")),
   };
 
@@ -548,15 +552,18 @@ export default function ProjectPageRoot({
             setCurComments={setCurComments}
           />
         </TabContent>
-        {screenSize.belowSmall && (
-          <ProjectSideBar
-            showSimilarProjects={showSimilarProjects}
-            isSmallScreen
-            texts={texts}
-            handleHideContent={handleHideContent}
-            similarProjects={similarProjects}
-            locale={locale}
-          />
+        {screenSize.betweenTinyAndLarg && (
+          <>
+            <ProjectSideBar
+              showSimilarProjects={showSimilarProjects}
+              isSmallScreen
+              texts={texts}
+              handleHideContent={handleHideContent}
+              similarProjects={similarProjects}
+              locale={locale}
+              hubSupporters={hubSupporters}
+            />
+          </>
         )}
       </Container>
 

@@ -266,6 +266,7 @@ export default function ProjectPage({
                 showSimilarProjects={showSimilarProjects}
                 requestedToJoinProject={requestedToJoinProject}
                 handleJoinRequest={handleJoinRequest}
+                hubSupporters={hubSupporters}
               />
             </div>
             <div className={classes.secondaryContent}>

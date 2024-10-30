@@ -119,7 +119,7 @@ const useStyles = makeStyles((theme) => ({
 
 const HubSupporters = ({ supportersList, containerClass }: HubSupporter) => {
   const classes = useStyles({ containerClass: containerClass });
-  const isSmallOrMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+  const isSmallOrMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
   return (
@@ -134,6 +134,7 @@ const HubSupporters = ({ supportersList, containerClass }: HubSupporter) => {
       ) : (
         <HubSupportersInSmallDevice
           classes={classes}
+          containerClass={containerClass}
           supportersList={supportersList}
           texts={texts}
         />
@@ -197,11 +198,11 @@ const HubSupportersSlider = ({ classes, texts, containerClass, supportersList })
   );
 };
 
-const HubSupportersInSmallDevice = ({ classes, supportersList, texts }) => {
+const HubSupportersInSmallDevice = ({ classes, containerClass, supportersList, texts }) => {
   const slicedSupporterForSmallDevice = supportersList.slice(0, 3);
 
   return (
-    <div className={classes.containerInSmallDevices}>
+    <div className={`${classes.containerInSmallDevices} ${containerClass}`}>
       {supportersList?.length > 0 &&
         slicedSupporterForSmallDevice.map((supporter) => (
           <img
