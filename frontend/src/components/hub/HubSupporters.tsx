@@ -97,7 +97,6 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "4px",
     padding: "10px",
     marginBottom: theme.spacing(3),
-    marginTop: theme.spacing(2),
   },
   supporterImgSmallDevice: {
     borderRadius: "50%",
@@ -111,6 +110,9 @@ const useStyles = makeStyles((theme) => ({
     color: "#484848",
     fontWeight: "600",
     fontSize: "17px",
+    [theme.breakpoints.down("sm")]: {
+      fontSize: "15px",
+    },
   },
   arrowIcon: {
     color: "#207178",
@@ -185,7 +187,7 @@ const HubSupportersSlider = ({ classes, texts, containerClass, supportersList })
           showDots={true}
           renderDotsOutside={true}
           dotListClass={classes.customDot}
-          // autoPlay={true}
+          autoPlay={true}
           autoPlaySpeed={10000}
         >
           {supportersList?.length > 0 &&
