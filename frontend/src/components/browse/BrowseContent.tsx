@@ -215,7 +215,6 @@ export default function BrowseContent({
    * will trigger a new query, await the data and distribute it to the
    * different tabs views / components.
    */
-  const [initialized, setInitialized] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -232,24 +231,7 @@ export default function BrowseContent({
       }
     }
 
-    // TODO: (Karol) is this still needed? I am just confused as this useEffect will only run
-    // once on mount. Thus, the initialized state will always be false.
-
-    if (!initialized) {
-      // Update the state of the visual filters, like Select, Dialog, etc
-      // Then actually fetch the data. We need a way to map what's
-      // in the query param, to what UI element is present on the screen. For
-      // example, if we have a MultiLevelSelect dialog representing categories
-      // and we have a ?&category=Food waste, then we need to update the
-      // the MultiLevelSelect dialog's selection to that value somehow.
-
-      // For each query param option, ensure that it's
-      // split into array before spreading onto the new filters object.
-
-      loadDataBasedOnUrl();
-
-      setInitialized(true);
-    }
+    loadDataBasedOnUrl();
   }, []);
 
   const handleTabChange = (event, newValue) => {
