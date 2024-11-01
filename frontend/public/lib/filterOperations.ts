@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { getLocationFilterKeys } from "../data/locationFilters";
-import possibleFilters from "../data/possibleFilters";
+import possibleFilters, { FilterDefinition, FilterTextDefinition } from "../data/possibleFilters";
 import { getDataFromServer } from "./getDataOperations";
 import { membersWithAdditionalInfo } from "./getOptions";
 import { getInfoMetadataByType, getReducedPossibleFilters } from "./parsingOperations";
@@ -133,7 +133,10 @@ export function getInitialFilters({
 }
 
 //Splits a query array from a url into filters and non-fitlers
-export function splitFiltersFromQueryObject(queryObject, possibleFilters): any {
+function splitFiltersFromQueryObject(
+  queryObject,
+  possibleFilters
+): { filters: any; nonFilters: any } {
   if (!queryObject) return { filters: {}, nonFilters: {} };
   const possibleFilterKeys = possibleFilters.map((f) => f.key);
   const filters = Object.keys(queryObject).reduce((obj, curKey) => {
@@ -261,6 +264,32 @@ export async function applyNewFilters({
   }
 }
 
+export function getFiltersFromSearchString(
+  currentTab: BrowseTabs,
+  searchQueryString: string,
+  filterChoices: FilterChoices,
+  locale: CcLocale
+): {
+  filters: any;
+  // filtersFromSearch: (FilterTextDefinition | FilterDefinition)[];
+  nonFilters: any;
+} {
+  const searchParams = getSearchParams(searchQueryString);
+  const searchQueryObject = getQueryObjectFromUrl(searchParams, filterChoices, locale);
+  // TODO: ignoring the location indication for now. Maybe it does not belong to this
+  // component anyways
+  // if (!legacyModeEnabled && newFilters.location && !isLocationValid(newFilters.location)) {
+  // handle
+
+  const possibleFilters = getFilters({
+    key: currentTab,
+    filterChoices: filterChoices,
+    locale: locale,
+  });
+
+  return splitFiltersFromQueryObject(searchQueryObject, possibleFilters);
+}
+
 export async function v2applyNewFilters(
   currentTab: BrowseTabs,
   locationSearch: string,
@@ -273,24 +302,14 @@ export async function v2applyNewFilters(
   // * Record the tabs in which the filters were applied already
   // * so one does not have to query them twice
 
-  // recreate the query object from the url
-  const searchParams = getSearchParams(locationSearch);
-  const searchQueryObject = getQueryObjectFromUrl(searchParams, filterChoices, locale);
-
-  // TODO: ignoring the location indication for now. Maybe it does not belong to this
-  // component anyways
-  // if (!legacyModeEnabled && newFilters.location && !isLocationValid(newFilters.location)) {
-  // hadnle
-
-  // reconstruct url by rebuilding filters from the query object
-  // ----------------
-  const possibleFilters = getFilters({
-    key: currentTab,
-    filterChoices: filterChoices,
-    locale: locale,
-  });
-  const splitQueryObject = splitFiltersFromQueryObject(searchQueryObject, possibleFilters);
+  const splitQueryObject = getFiltersFromSearchString(
+    currentTab,
+    locationSearch,
+    filterChoices,
+    locale
+  );
   const filters = { ...splitQueryObject.filters };
+  console.log("[FilterOperations v2apply]: filters", filters);
 
   const newUrlEnding = encodeQueryParamsFromFilters({
     filters: filters,

@@ -11,7 +11,10 @@ import getFilters from "../../../public/data/possibleFilters";
 import { getFilterUrl } from "../../../public/lib/urlOperations";
 import { getInfoMetadataByType } from "../../../public/lib/parsingOperations";
 import { BrowseTabs, FilterChoices } from "../../types";
-import { getInitialFilters } from "../../../public/lib/filterOperations";
+import {
+  getFiltersFromSearchString,
+  getInitialFilters,
+} from "../../../public/lib/filterOperations";
 
 type MakeStylesProps = {
   applyBackgroundColor?: boolean;
@@ -116,7 +119,6 @@ export default function FilterSection({
   // ##########################
   // Additional Filters Visibility
   // ##########################
-  const nonFilterParams = {};
 
   const isMobileScreenSize = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const isSmallScreenSize = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
@@ -160,30 +162,46 @@ export default function FilterSection({
   };
 
   // #############################################################
-  // Experiments: "noone" actually needs to share information about the state
-  // state is saved in the urls searchbar and the searchparams are just passed down to the server
-  // or is there an issue?
+  // load initial filters from URL
+  //
+  // Idea: maybe a custom use hook would suit this case:
+  // e.g. useFilters() that returns the filters and nonFilters states
+  // but deals with the inital load?
   // #############################################################
 
-  const [filters, setFilters] = useState(
-    getInitialFilters({
-      filterChoices: filterChoices,
-      locale: locale,
-      initialLocationFilter: initialLocationFilter,
-    })
-  );
+  const ret = getFiltersFromSearchString(type, window.location.search, filterChoices, locale);
+  const filtersFromURL = ret.filters;
+  const nonFiltersFromURL = ret.nonFilters;
+  const initialEmptyFilters = getInitialFilters({
+    filterChoices: filterChoices,
+    locale: locale,
+    initialLocationFilter: initialLocationFilter,
+  });
+
+  // filters State
+  const [filters, setFilters] = useState({ ...initialEmptyFilters, ...filtersFromURL });
+
+  const handleAddFiltersByMerging = (newFilters) => {
+    setFilters({ ...filters, ...newFilters });
+  };
+
+  // other URL params
+  const [nonFilterParams, setNonFilterParams] = useState(nonFiltersFromURL);
 
   const handleOnSumbitSearchBar = (searchValue: string) => {
-    console.log("pre search update", filters);
-    // setting a value like the following  does not work, as
-    // the filters reference is not changing => useEffect will not run
+    // setting a value via
     // > filters.search = searchValue;
+    // does not work, as
+    // the filters reference is not changing => useEffect will not run
+
+    // TODO: shouldn't this be a merge? (technically it is already a merge :D)
     const updatedFilters = { ...filters, search: searchValue };
     setFilters(updatedFilters);
-    console.log("post search update", updatedFilters);
   };
 
   const handleUpdateFilters = (updatedFilters: any) => {
+    // TODO: shouldn't this be a merge?
+    // currently it works, but I am not sure where the merge is performed
     setFilters(updatedFilters);
   };
 
