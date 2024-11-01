@@ -197,6 +197,13 @@ export default function BrowseContent({
     })();
   });
 
+  const handleTabChange = (event, newValue) => {
+    window.location.hash = TYPES_BY_TAB_VALUE[newValue];
+    setTabValue(newValue);
+    loadDataBasedOnUrl();
+    return;
+  };
+
   // ###################################################
   // ###################################################
   // DATA LOADING ZONE
@@ -233,13 +240,6 @@ export default function BrowseContent({
 
     loadDataBasedOnUrl();
   }, []);
-
-  const handleTabChange = (event, newValue) => {
-    window.location.hash = TYPES_BY_TAB_VALUE[newValue];
-    setTabValue(newValue);
-    loadDataBasedOnUrl();
-    return;
-  };
 
   // TODO: this is currently not used
   // use it in the future to "cache" filter results
@@ -284,30 +284,7 @@ export default function BrowseContent({
   // Handle an URL Change
   // extract filters and update data
   useEffect(() => {
-    //TODO: use the useRouter Hook
-    // one could install react-router dom to
-    // listen for url updates, that do not navigate.
-    // -----------
-    // Another option is the following *hack*:
-    //
-    // Listener:
-    //    window.addEventListener("popstate", ...);
-    // or
-    //    window.addEventListener("hashchange", ...);
-    //
-    // Sending Component
-    //    window.history.pushState({}, "", newUrl);
-    //    let tmp = window.location.hash;
-    //    window.location.hash = "force update";
-    //    window.location.hash = tmp;
-    // -----------
-    // another option is a "callback" function
-    // -----------
-    // I decided to implement the following solution as
-    //    - it is lightweight
-    //    - the filters will be safed in the URL anyways (UX reasons)
-    //    - no additional dependency
-    //    - "low" complexity (vanilla JS)
+    //TODO: use the useRouter Hook (next router) to listen for URL changes
 
     const handleURLChange = () => {
       const queryParams = new URLSearchParams(window.location.search);
@@ -321,8 +298,8 @@ export default function BrowseContent({
     };
   }, []);
 
-  // We have 2 distinct loading states: filtering, and loading more data. For
-  // each state, we want to treat the loading spinner a bit differently, hence
+  // We have 2 distinct loading procedures: filtering, and loading more data. For
+  // each procedures, we want to treat the loading spinner a bit differently, hence
   // why we have two separate pieces of state
 
   const [isFiltering, setIsFiltering] = useState(false);
