@@ -147,10 +147,6 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
       en: "The ClimateHub is supported by",
       de: "Der ClimateHub wird unterstützt durch",
     },
-    supporter: {
-      en: "Supporter",
-      de: "Unterstützer",
-    },
   };
 
   if (hubName === "Fashion") return { ...generalHubTexts, ...getFashionHubDescription() };

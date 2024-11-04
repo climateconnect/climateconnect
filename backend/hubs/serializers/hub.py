@@ -7,7 +7,6 @@ from hubs.models import Hub, HubStat, HubAmbassador, HubSupporter
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from climateconnect_api.models import UserProfile
 
-
 class HubSerializer(serializers.ModelSerializer):
     stats = serializers.SerializerMethodField()
     hub_type = serializers.SerializerMethodField()
@@ -175,10 +174,11 @@ class HubStatSerializer(serializers.ModelSerializer):
 class HubSupporterSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     subtitle = serializers.SerializerMethodField()
-    
+    organization_url_slug = serializers.SerializerMethodField()
+
     class Meta:
         model = HubSupporter
-        fields = ("name", "subtitle", "logo", "importance")
+        fields = ("name", "subtitle", "logo", "importance", "organization_url_slug")
 
     def get_name(self, obj):
         return get_hub_supporter_attribute(obj, "name", get_language())
@@ -188,4 +188,9 @@ class HubSupporterSerializer(serializers.ModelSerializer):
         return obj.logo
     def get_importance(self, obj):
         return obj.importance
+    def get_organization_url_slug(self, obj): 
+        if obj.organization:
+            return obj.organization.url_slug  
+        return None
+
     

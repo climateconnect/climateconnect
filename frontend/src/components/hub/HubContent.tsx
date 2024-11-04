@@ -65,6 +65,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "baseline",
+    gap: "14px",
   },
   buttonContainer: (props: MakeStylesProps) => ({
     display: props.isLocationHub ? "none" : "flex",
@@ -87,7 +88,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     margin: "16px auto",
-    alignItems: "flex-start",
+    alignItems: "end",
   }),
   infoBoxContainer: {
     marginTop: theme.spacing(0),

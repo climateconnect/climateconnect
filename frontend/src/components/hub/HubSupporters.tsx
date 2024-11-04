@@ -6,6 +6,7 @@ import UserContext from "../context/UserContext";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 
 type Supporter = {
   name: string;
@@ -27,9 +28,10 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: "5px",
     paddingLeft: "5px",
     width: 320,
-    //instead of width we can use flexGrow && maxWidth
-    // flexGrow: 1,
-    // maxWidth: 320
+    [`@media (min-width: 900px) and (max-width: 1200px)`]: {
+      marginLeft: "20px",
+      alignSelf: "end",
+    },
   },
   carouseltitle: {
     color: "#FFFFFF",
@@ -70,7 +72,11 @@ const useStyles = makeStyles((theme) => ({
     width: containerClass ? "170px" : "200px",
     overflow: "hidden",
     textOverflow: "ellipsis",
+    color: "black",
     margin: 0,
+    "& a": {
+      textDecoration: "underline",
+    },
   }),
   supporterSubtitle: (containerClass) => ({
     margin: 0,
@@ -80,6 +86,9 @@ const useStyles = makeStyles((theme) => ({
     width: containerClass ? "170px" : "200px",
     overflow: "hidden",
     textOverflow: "ellipsis",
+    [`@media (min-width: 1200px) and (max-width: 1370px)`]: {
+      width: "130px",
+    },
   }),
   carouselEntry: {
     padding: " 8px",
@@ -121,7 +130,7 @@ const useStyles = makeStyles((theme) => ({
 
 const HubSupporters = ({ supportersList, containerClass }: HubSupporter) => {
   const classes = useStyles({ containerClass: containerClass });
-  const isSmallOrMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
+  const isSmallOrMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
   return (
@@ -132,6 +141,7 @@ const HubSupporters = ({ supportersList, containerClass }: HubSupporter) => {
           texts={texts}
           containerClass={containerClass}
           supportersList={supportersList}
+          locale={locale}
         />
       ) : (
         <HubSupportersInSmallDevice
@@ -147,7 +157,7 @@ const HubSupporters = ({ supportersList, containerClass }: HubSupporter) => {
 
 export default HubSupporters;
 
-const CarouselItem = ({ supporter, classes, texts }) => {
+const CarouselItem = ({ supporter, classes, locale }) => {
   return (
     <div className={classes.carouselEntry} key={supporter.name}>
       <div className={classes.itemContainer}>
@@ -159,17 +169,29 @@ const CarouselItem = ({ supporter, classes, texts }) => {
           className={classes.supporterImg}
         />
         <div>
-          <p className={classes.supporterName}>{supporter?.name}</p>
-          <p className={classes.supporterSubtitle}>
-            {texts.supporter}: {supporter.subtitle}
+          <p className={classes.supporterName}>
+            {supporter?.organization_url_slug ? (
+              <Link
+                href={
+                  getLocalePrefix(locale) + "/organizations/" + supporter?.organization_url_slug
+                }
+                underline="hover"
+                className={classes.supporterName}
+              >
+                {supporter?.name}
+              </Link>
+            ) : (
+              supporter?.name
+            )}
           </p>
+          <p className={classes.supporterSubtitle}>{supporter.subtitle}</p>
         </div>
       </div>
     </div>
   );
 };
 
-const HubSupportersSlider = ({ classes, texts, containerClass, supportersList }) => {
+const HubSupportersSlider = ({ classes, texts, containerClass, supportersList, locale }) => {
   const responsive = {
     all: {
       breakpoint: { max: 10000, min: 0 },
@@ -192,7 +214,7 @@ const HubSupportersSlider = ({ classes, texts, containerClass, supportersList })
         >
           {supportersList?.length > 0 &&
             supportersList.map((data) => (
-              <CarouselItem supporter={data} classes={classes} texts={texts} />
+              <CarouselItem supporter={data} classes={classes} locale={locale} />
             ))}
         </Carousel>
       </div>

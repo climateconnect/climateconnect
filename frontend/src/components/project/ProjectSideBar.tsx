@@ -46,6 +46,10 @@ const useStyles = makeStyles((theme) => ({
   supporterSliderWidth: {
     width: "95%",
     marginTop: "8px",
+    marginBottom: theme.spacing(2),
+    [`@media (min-width: 900px) and (max-width: 1200px)`]: {
+      marginLeft: 0,
+    },
   },
 }));
 

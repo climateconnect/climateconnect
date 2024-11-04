@@ -189,8 +189,8 @@ class Hub(models.Model):
     )
 
     importance = models.PositiveSmallIntegerField(
-        help_text="The larger the number, the more to the top this hub will be displayed on the hubs overview page",
-        verbose_name="Importance (1-100)",
+        help_text="The larger the number, the more to the top this hub will be displayed on the hubs overview page.(Putting importance to 0 will hide the hub)",
+        verbose_name="Importance (0-100)",
         default=100,
     )
 
@@ -337,8 +337,8 @@ class HubSupporter(models.Model):
         on_delete=models.CASCADE,
     )
     importance = models.PositiveSmallIntegerField(
-        help_text="The larger the number, the more to the top this hub will be displayed on the hubs overview page",
-        verbose_name="Importance (1-100)",
+        help_text="The larger the number, the more to the top this hub will be displayed on the hubs overview page. (Putting importance to 0 will hide the supporter)",
+        verbose_name="Importance (0-100)",
         default=100,
     )
     organization = models.ForeignKey(

@@ -74,7 +74,7 @@ class HubSupporterAPIView(APIView):
                 {"message": "Hub not found: {}".format(url_slug)},
                 status=status.HTTP_404_NOT_FOUND,
             )
-        supporter = HubSupporter.objects.filter(hub=hub)
+        supporter = HubSupporter.objects.filter(hub=hub, importance__gte=1)
 
         if supporter.exists():
             serializer = HubSupporterSerializer(supporter, many=True)
