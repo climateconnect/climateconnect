@@ -104,6 +104,7 @@ export default function ProjectSideBar({
               <HubSupporters
                 supportersList={hubSupporters}
                 containerClass={classes.supporterSliderWidth}
+                mobileVersion={isSmallScreen}
               />
             )}
             <ProjectPreviews

@@ -18,6 +18,7 @@ type Supporter = {
 type HubSupporter = {
   supportersList: Supporter[];
   containerClass?: string;
+  mobileVersion?: boolean;
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -74,9 +75,6 @@ const useStyles = makeStyles((theme) => ({
     textOverflow: "ellipsis",
     color: "black",
     margin: 0,
-    "& a": {
-      textDecoration: "underline",
-    },
   }),
   supporterSubtitle: (containerClass) => ({
     margin: 0,
@@ -128,14 +126,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const HubSupporters = ({ supportersList, containerClass }: HubSupporter) => {
+const HubSupporters = ({ supportersList, containerClass, mobileVersion }: HubSupporter) => {
   const classes = useStyles({ containerClass: containerClass });
   const isSmallOrMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
   return (
     <>
-      {!isSmallOrMediumScreen ? (
+      {(!isSmallOrMediumScreen && !mobileVersion) ? (
         <HubSupportersSlider
           classes={classes}
           texts={texts}
@@ -175,7 +173,7 @@ const CarouselItem = ({ supporter, classes, locale }) => {
                 href={
                   getLocalePrefix(locale) + "/organizations/" + supporter?.organization_url_slug
                 }
-                underline="hover"
+                underline="none"
                 className={classes.supporterName}
               >
                 {supporter?.name}
