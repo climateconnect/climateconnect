@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     background: "white",
     maxWidth: 320,
-    marginLeft: "auto"
+    marginLeft: "auto",
   },
   upperSection: {
     padding: theme.spacing(2),

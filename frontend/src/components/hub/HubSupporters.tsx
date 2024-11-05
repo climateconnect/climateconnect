@@ -133,7 +133,7 @@ const HubSupporters = ({ supportersList, containerClass, mobileVersion }: HubSup
   const texts = getTexts({ page: "hub", locale: locale });
   return (
     <>
-      {(!isSmallOrMediumScreen && !mobileVersion) ? (
+      {!isSmallOrMediumScreen && !mobileVersion ? (
         <HubSupportersSlider
           classes={classes}
           texts={texts}
