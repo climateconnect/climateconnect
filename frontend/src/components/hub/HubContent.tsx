@@ -64,7 +64,6 @@ const useStyles = makeStyles((theme) => ({
   ambassadorAndSupporters: {
     display: "flex",
     flexDirection: "column",
-    alignItems: "baseline",
     gap: "14px",
   },
   buttonContainer: (props: MakeStylesProps) => ({
