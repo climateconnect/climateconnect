@@ -39,7 +39,6 @@ SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG", "false") == "true"  # needs to gravitate towards False!
-
 ALLOWED_HOSTS = get_allowed_hosts(env("ALLOWED_HOSTS"))
 
 INTERNAL_IPS = [
