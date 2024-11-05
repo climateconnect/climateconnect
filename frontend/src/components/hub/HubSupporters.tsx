@@ -81,11 +81,11 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "12px",
     color: "#484848",
     whiteSpace: "nowrap",
-    width: containerClass ? "170px" : "200px",
+    width: containerClass ? "160px" : "200px",
     overflow: "hidden",
     textOverflow: "ellipsis",
     [`@media (min-width: 1200px) and (max-width: 1370px)`]: {
-      width: "130px",
+      width: "125px",
     },
   }),
   carouselEntry: {
