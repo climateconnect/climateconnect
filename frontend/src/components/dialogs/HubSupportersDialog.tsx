@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import GenericDialog from "../../components/dialogs/GenericDialog";
+import GenericDialog from "./GenericDialog";
 import makeStyles from "@mui/styles/makeStyles";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import { Link } from "@mui/material";

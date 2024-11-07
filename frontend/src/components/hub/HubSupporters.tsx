@@ -7,7 +7,7 @@ import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
-import HubSupportersDialog from "./HubSupportersDialog";
+import HubSupportersDialog from "../dialogs/HubSupportersDialog";
 import { Supporter } from "../../types";
 
 // type Supporter = {
