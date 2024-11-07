@@ -61,6 +61,7 @@ export default function ProjectSideBar({
   texts,
   isSmallScreen,
   hubSupporters,
+  hubName,
 }) {
   const classes = useStyles({
     showSimilarProjects: showSimilarProjects,
@@ -105,6 +106,7 @@ export default function ProjectSideBar({
                 supportersList={hubSupporters}
                 containerClass={classes.supporterSliderWidth}
                 mobileVersion={isSmallScreen}
+                hubName={hubName}
               />
             )}
             <ProjectPreviews

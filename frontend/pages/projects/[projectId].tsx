@@ -102,6 +102,7 @@ export async function getServerSideProps(ctx) {
       hubs: hubs,
       similarProjects: similarProjects,
       hubSupporters: hubSupporters,
+      hubPage,
     }),
   };
 }
@@ -117,6 +118,7 @@ export default function ProjectPage({
   hubs,
   similarProjects,
   hubSupporters,
+  hubPage,
 }) {
   const token = new Cookies().get("auth_token");
   const [curComments, setCurComments] = useState(parseComments(comments));
@@ -267,6 +269,7 @@ export default function ProjectPage({
                 requestedToJoinProject={requestedToJoinProject}
                 handleJoinRequest={handleJoinRequest}
                 hubSupporters={hubSupporters}
+                hubPage={hubPage}
               />
             </div>
             <div className={classes.secondaryContent}>
@@ -278,6 +281,7 @@ export default function ProjectPage({
                   locale={locale}
                   texts={texts}
                   hubSupporters={hubSupporters}
+                  hubName={hubPage}
                 />
               )}
             </div>

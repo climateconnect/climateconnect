@@ -95,6 +95,7 @@ export default function ProjectPageRoot({
   requestedToJoinProject,
   handleJoinRequest,
   hubSupporters,
+  hubPage,
 }) {
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
@@ -562,6 +563,7 @@ export default function ProjectPageRoot({
               similarProjects={similarProjects}
               locale={locale}
               hubSupporters={hubSupporters}
+              hubName={hubPage}
             />
           </>
         )}

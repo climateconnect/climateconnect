@@ -535,7 +535,9 @@ export default function BrowseContent({
         />
       )}
       <Container maxWidth="lg" className={classes.contentRefContainer}>
-        {isNarrowScreen && hubSupporters && <HubSupporters supportersList={hubSupporters} />}
+        {isNarrowScreen && hubSupporters && (
+          <HubSupporters supportersList={hubSupporters} hubName={hubName} />
+        )}
         <div ref={contentRef} className={classes.contentRef} />
         <Suspense fallback={null}>
           <FilterSection
