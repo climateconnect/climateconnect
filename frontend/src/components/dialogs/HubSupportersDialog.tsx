@@ -54,8 +54,6 @@ const useStyles = makeStyles((theme) => ({
   supporterName: () => ({
     fontSize: "17px",
     fontWeight: "600",
-    whiteSpace: "nowrap",
-    width: "160px",
     overflow: "hidden",
     textOverflow: "ellipsis",
     color: "black",
@@ -65,8 +63,6 @@ const useStyles = makeStyles((theme) => ({
     margin: 0,
     fontSize: "15px",
     color: "#484848",
-    whiteSpace: "nowrap",
-    width: "160px",
     overflow: "hidden",
     textOverflow: "ellipsis",
   }),
@@ -91,6 +87,26 @@ const HubSupportersDialog = ({ supporters, open, onClose, hubName }: HubSupporte
     onClose();
   };
 
+  const HubSupporterCarouselEntry = ({supporter}) => (
+    <div className={classes.carouselEntry} key={supporter.name}>
+      <div className={classes.itemContainer}>
+        <img
+          src={getImageUrl(supporter?.logo)}
+          width={76}
+          height={76}
+          alt={supporter.name}
+          className={classes.supporterImg}
+        />
+        <div>
+          <p className={classes.supporterName}>                    
+            {supporter?.name}
+          </p>
+          <p className={classes.supporterSubtitle}>{supporter.subtitle}</p>
+        </div>
+      </div>
+    </div>
+  )
+
   return (
     <GenericDialog
       onClose={handleClose}
@@ -106,37 +122,23 @@ const HubSupportersDialog = ({ supporters, open, onClose, hubName }: HubSupporte
     >
       {supporters?.length > 0 &&
         supporters.map((supporter) => (
-          <div className={classes.carouselEntry} key={supporter.name}>
-            <div className={classes.itemContainer}>
-              <img
-                src={getImageUrl(supporter?.logo)}
-                width={76}
-                height={76}
-                alt={supporter.name}
-                className={classes.supporterImg}
-              />
-              <div>
-                <p className={classes.supporterName}>
-                  {supporter?.organization_url_slug ? (
-                    <Link
-                      href={
-                        getLocalePrefix(locale) +
-                        "/organizations/" +
-                        supporter?.organization_url_slug
-                      }
-                      underline="none"
-                      className={classes.supporterName}
-                    >
-                      {supporter?.name}
-                    </Link>
-                  ) : (
-                    supporter?.name
-                  )}
-                </p>
-                <p className={classes.supporterSubtitle}>{supporter.subtitle}</p>
-              </div>
-            </div>
-          </div>
+          <>
+            {supporter?.organization_url_slug ? (
+              <Link
+                href={
+                  getLocalePrefix(locale) +
+                  "/organizations/" +
+                  supporter?.organization_url_slug
+                }
+                underline="none"
+                className={classes.supporterName}
+              >
+                  <HubSupporterCarouselEntry supporter={supporter} />
+              </Link>
+            ) : (
+              <HubSupporterCarouselEntry supporter={supporter} />
+            )}     
+          </>
         ))}
 
       <div className={classes.donate}>{texts.would_you_like_to_support_the_ClimateHub}</div>

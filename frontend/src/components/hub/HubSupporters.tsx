@@ -103,6 +103,7 @@ const useStyles = makeStyles((theme) => ({
   containerInSmallDevices: {
     display: "flex",
     gap: "20px",
+    width: "100%",
     alignItems: "center",
     backgroundColor: "#EEEFEEE8",
     borderRadius: "4px",
@@ -253,7 +254,7 @@ const HubSupportersInSmallDevice = ({
   const slicedSupporterForSmallDevice = supportersList.slice(0, 3);
 
   return (
-    <div className={`${classes.containerInSmallDevices} ${containerClass}`}>
+    <Button onClick={showAllSupporters} className={`${classes.containerInSmallDevices} ${containerClass}`}>
       {supportersList?.length > 0 &&
         slicedSupporterForSmallDevice.map((supporter) => (
           <img
@@ -266,10 +267,10 @@ const HubSupportersInSmallDevice = ({
           />
         ))}
       <Typography className={classes.textAlign}>
-        <Button onClick={showAllSupporters} className={classes.allSupporters}>
+        <div className={classes.allSupporters}>
           {texts.all_supporters} <ArrowRightIcon className={classes.arrowIcon} />{" "}
-        </Button>
+        </div>
       </Typography>
-    </div>
+    </Button>
   );
 };

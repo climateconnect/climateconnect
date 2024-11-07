@@ -148,7 +148,7 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
       de: "Der ClimateHub wird unterstützt durch",
     },
     all_supporters_and_sponsoring_members: {
-      en: "All supporters and sponsoring members of ClimateHub",
+      en: "All supporters of the ClimateHub",
       de: "Alle Unterstützer und Fördermitglieder des ClimateHub",
     },
     would_you_like_to_support_the_ClimateHub: {
