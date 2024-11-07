@@ -203,7 +203,7 @@ export default function HubContent({
                             hubSupportersExists={hubSupporters ? true : false}
                           />
                           {hubSupporters?.length > 0 && (
-                            <HubSupporters supportersList={hubSupporters} />
+                            <HubSupporters supportersList={hubSupporters} hubName={hubData?.name} />
                           )}
                         </div>
                       )}
@@ -214,7 +214,7 @@ export default function HubContent({
                         <ContactAmbassadorButton hubAmbassador={hubAmbassador} mobile={false} />
                       )}
                       {hubSupporters?.length > 0 && (
-                        <HubSupporters supportersList={hubSupporters} />
+                        <HubSupporters supportersList={hubSupporters} hubName={hubData?.name} />
                       )}
                     </>
                   ))}

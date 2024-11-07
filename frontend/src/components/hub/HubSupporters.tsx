@@ -1,24 +1,28 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import Carousel from "react-multi-carousel";
-import { Theme, useMediaQuery, Link, Typography } from "@mui/material";
+import { Theme, useMediaQuery, Link, Typography, Button } from "@mui/material";
 import UserContext from "../context/UserContext";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import HubSupportersDialog from "./HubSupportersDialog";
+import { Supporter } from "../../types";
 
-type Supporter = {
-  name: string;
-  subtitle: string;
-  logo: string;
-  importance: number;
-};
+// type Supporter = {
+//   name: string;
+//   subtitle: string;
+//   logo: string;
+//   importance: number;
+//   organization_url_slug: string;
+// };
 
 type HubSupporter = {
   supportersList: Supporter[];
   containerClass?: string;
   mobileVersion?: boolean;
+  hubName: string;
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -70,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "17px",
     fontWeight: "600",
     whiteSpace: "nowrap",
-    width: containerClass ? "170px" : "200px",
+    width: containerClass ? "160px" : "200px",
     overflow: "hidden",
     textOverflow: "ellipsis",
     color: "black",
@@ -85,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
     overflow: "hidden",
     textOverflow: "ellipsis",
     [`@media (min-width: 1200px) and (max-width: 1370px)`]: {
-      width: "125px",
+      width: "150px",
     },
   }),
   carouselEntry: {
@@ -117,6 +121,7 @@ const useStyles = makeStyles((theme) => ({
     color: "#484848",
     fontWeight: "600",
     fontSize: "17px",
+    textTransform: "none",
     [theme.breakpoints.down("sm")]: {
       fontSize: "15px",
     },
@@ -126,11 +131,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const HubSupporters = ({ supportersList, containerClass, mobileVersion }: HubSupporter) => {
+const HubSupporters = ({
+  supportersList,
+  containerClass,
+  mobileVersion,
+  hubName,
+}: HubSupporter) => {
   const classes = useStyles({ containerClass: containerClass });
   const isSmallOrMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
+  const [openSupportersDialog, setOpenSupportersDialog] = useState(false);
+  const toggleOpenSupportersDialog = () => {
+    setOpenSupportersDialog(!openSupportersDialog);
+  };
   return (
     <>
       {!isSmallOrMediumScreen && !mobileVersion ? (
@@ -142,12 +156,21 @@ const HubSupporters = ({ supportersList, containerClass, mobileVersion }: HubSup
           locale={locale}
         />
       ) : (
-        <HubSupportersInSmallDevice
-          classes={classes}
-          containerClass={containerClass}
-          supportersList={supportersList}
-          texts={texts}
-        />
+        <>
+          <HubSupportersInSmallDevice
+            classes={classes}
+            containerClass={containerClass}
+            supportersList={supportersList}
+            texts={texts}
+            showAllSupporters={toggleOpenSupportersDialog}
+          />
+          <HubSupportersDialog
+            supporters={supportersList}
+            open={openSupportersDialog}
+            onClose={toggleOpenSupportersDialog}
+            hubName={hubName}
+          />
+        </>
       )}
     </>
   );
@@ -220,7 +243,13 @@ const HubSupportersSlider = ({ classes, texts, containerClass, supportersList, l
   );
 };
 
-const HubSupportersInSmallDevice = ({ classes, containerClass, supportersList, texts }) => {
+const HubSupportersInSmallDevice = ({
+  classes,
+  containerClass,
+  supportersList,
+  texts,
+  showAllSupporters,
+}) => {
   const slicedSupporterForSmallDevice = supportersList.slice(0, 3);
 
   return (
@@ -237,9 +266,9 @@ const HubSupportersInSmallDevice = ({ classes, containerClass, supportersList, t
           />
         ))}
       <Typography className={classes.textAlign}>
-        <Link href={"#"} className={classes.allSupporters}>
+        <Button onClick={showAllSupporters} className={classes.allSupporters}>
           {texts.all_supporters} <ArrowRightIcon className={classes.arrowIcon} />{" "}
-        </Link>
+        </Button>
       </Typography>
     </div>
   );
