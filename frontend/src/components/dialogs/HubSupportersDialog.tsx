@@ -62,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
   supporterSubtitle: () => ({
     margin: 0,
     fontSize: "15px",
+    fontWeight: "normal",
     color: "#484848",
     overflow: "hidden",
     textOverflow: "ellipsis",
@@ -87,7 +88,7 @@ const HubSupportersDialog = ({ supporters, open, onClose, hubName }: HubSupporte
     onClose();
   };
 
-  const HubSupporterCarouselEntry = ({supporter}) => (
+  const HubSupporterCarouselEntry = ({ supporter }) => (
     <div className={classes.carouselEntry} key={supporter.name}>
       <div className={classes.itemContainer}>
         <img
@@ -98,14 +99,12 @@ const HubSupportersDialog = ({ supporters, open, onClose, hubName }: HubSupporte
           className={classes.supporterImg}
         />
         <div>
-          <p className={classes.supporterName}>                    
-            {supporter?.name}
-          </p>
+          <p className={classes.supporterName}>{supporter?.name}</p>
           <p className={classes.supporterSubtitle}>{supporter.subtitle}</p>
         </div>
       </div>
     </div>
-  )
+  );
 
   return (
     <GenericDialog
@@ -126,18 +125,16 @@ const HubSupportersDialog = ({ supporters, open, onClose, hubName }: HubSupporte
             {supporter?.organization_url_slug ? (
               <Link
                 href={
-                  getLocalePrefix(locale) +
-                  "/organizations/" +
-                  supporter?.organization_url_slug
+                  getLocalePrefix(locale) + "/organizations/" + supporter?.organization_url_slug
                 }
                 underline="none"
                 className={classes.supporterName}
               >
-                  <HubSupporterCarouselEntry supporter={supporter} />
+                <HubSupporterCarouselEntry supporter={supporter} />
               </Link>
             ) : (
               <HubSupporterCarouselEntry supporter={supporter} />
-            )}     
+            )}
           </>
         ))}
 

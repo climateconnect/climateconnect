@@ -83,6 +83,7 @@ const useStyles = makeStyles((theme) => ({
   supporterSubtitle: (containerClass) => ({
     margin: 0,
     fontSize: "12px",
+    fontWeight: "normal",
     color: "#484848",
     whiteSpace: "nowrap",
     width: containerClass ? "160px" : "200px",
@@ -254,7 +255,10 @@ const HubSupportersInSmallDevice = ({
   const slicedSupporterForSmallDevice = supportersList.slice(0, 3);
 
   return (
-    <Button onClick={showAllSupporters} className={`${classes.containerInSmallDevices} ${containerClass}`}>
+    <Button
+      onClick={showAllSupporters}
+      className={`${classes.containerInSmallDevices} ${containerClass}`}
+    >
       {supportersList?.length > 0 &&
         slicedSupporterForSmallDevice.map((supporter) => (
           <img
