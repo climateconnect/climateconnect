@@ -359,7 +359,7 @@ export default function Hub({
               // initialOrganizations={initialOrganizations}
               // initialProjects={initialProjects}
               nextStepTriggeredBy={nextStepTriggeredBy}
-              showIdeas={isLocationHub}
+              showIdeas={false}
               allHubs={allHubs}
               initialIdeaUrlSlug={initialIdeaUrlSlug}
               hubLocation={hubLocation}
