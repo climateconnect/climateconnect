@@ -4,8 +4,9 @@ import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
 import _ from "lodash";
 import React, { Suspense, useContext, useEffect, useMemo, useRef, useState } from "react";
 import Cookies from "universal-cookie";
-import { v2applyNewFilters } from "../../../public/lib/filterOperations";
-import { loadMoreData } from "../../../public/lib/getDataOperations";
+import { loadDataBasedOnNewFilters } from "../../../public/lib/filterOperations";
+import { loadMoreData } from "../../../public/lib/CachedDataOperations";
+// import { loadMoreData } from "../../../public/lib/getDataOperations";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import { getUserOrganizations } from "../../../public/lib/organizationOperations";
@@ -198,10 +199,14 @@ export default function BrowseContent({
   });
 
   const handleTabChange = (event, newValue) => {
-    window.location.hash = TYPES_BY_TAB_VALUE[newValue];
+    // TODO: sanatize newValue
+
+    const newTab = TYPES_BY_TAB_VALUE[newValue];
+    setHash(newTab);
     setTabValue(newValue);
-    loadDataBasedOnUrl();
-    return;
+    window.location.hash = newTab;
+
+    loadDataBasedOnUrl(newTab);
   };
 
   // ###################################################
@@ -232,20 +237,23 @@ export default function BrowseContent({
       if (tabIdx != -1) {
         setHash(newHash);
         setTabValue(tabIdx);
+        loadDataBasedOnUrl(newHash);
       } else {
         setHash(TYPES_BY_TAB_VALUE[0]);
         setTabValue(0);
+        loadDataBasedOnUrl(TYPES_BY_TAB_VALUE[0]);
       }
     }
-
-    loadDataBasedOnUrl();
   }, []);
 
   // TODO: this is currently not used
   // use it in the future to "cache" filter results
   const [tabsWhereFiltersWereApplied, setTabsWhereFiltersWereApplied] = useState([]);
 
-  const loadDataBasedOnUrl = async () => {
+  const loadDataBasedOnUrl = async (newTab?: BrowseTabs) => {
+    // this method will be called on URL change and (!) on tab change
+    // if the tab changed, the hash State will be updated via setState
+
     console.debug("[BrowseContent]: start filtering/loading");
     setIsFiltering(true);
 
@@ -254,9 +262,9 @@ export default function BrowseContent({
     // set the state to loading/filtering data
     setIsFiltering(true);
     // TODO: remove after rename
-    const currentTab = hash;
+    const currentTab = newTab ? newTab : hash;
 
-    const res = await v2applyNewFilters(
+    const res = await loadDataBasedOnNewFilters(
       currentTab,
       // TODO: maybe be more carfull with "user input" (search params can be user/attacker controlled)
       window.location.search,
@@ -283,6 +291,9 @@ export default function BrowseContent({
 
   // Handle an URL Change
   // extract filters and update data
+
+  // TODO: this useEffect is not nessecary
+  //https://react.dev/learn/you-might-not-need-an-effect#subscribing-to-an-external-store
   useEffect(() => {
     //TODO: use the useRouter Hook (next router) to listen for URL changes
 
