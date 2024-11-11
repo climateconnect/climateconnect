@@ -1,7 +1,8 @@
 import _ from "lodash";
 import { getLocationFilterKeys } from "../data/locationFilters";
 import possibleFilters, { FilterDefinition, FilterTextDefinition } from "../data/possibleFilters";
-import { getDataFromServer } from "./getDataOperations";
+// import { getDataFromServer } from "./getDataOperations";
+import { getDataFromServer } from "./getCachedDataOperations";
 import { membersWithAdditionalInfo } from "./getOptions";
 import { getInfoMetadataByType, getReducedPossibleFilters } from "./parsingOperations";
 import {
@@ -263,6 +264,10 @@ export async function applyNewFilters({
     console.log(e);
   }
 }
+// ---------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------
 
 export function getFiltersFromSearchString(
   currentTab: BrowseTabs,
@@ -290,7 +295,8 @@ export function getFiltersFromSearchString(
   return splitFiltersFromQueryObject(searchQueryObject, possibleFilters);
 }
 
-export async function v2applyNewFilters(
+// v2 of the loading data based on new filters function
+export async function loadDataBasedOnNewFilters(
   currentTab: BrowseTabs,
   locationSearch: string,
   filterChoices: FilterChoices,
@@ -298,10 +304,6 @@ export async function v2applyNewFilters(
   token: string,
   hubUrl: string | undefined
 ) {
-  // TODO reimplement Caching
-  // * Record the tabs in which the filters were applied already
-  // * so one does not have to query them twice
-
   const splitQueryObject = getFiltersFromSearchString(
     currentTab,
     locationSearch,
@@ -318,23 +320,23 @@ export async function v2applyNewFilters(
     locale: locale,
   });
   // ----------------
+  // costruct payload and perform loading
+  const payload: any = {
+    type: currentTab,
+    page: 1,
+    token: token,
+    urlEnding: newUrlEnding,
+    locale: locale,
+  };
+  // TODO: remove searching for ideas
+  // if (idea) {
+  //   payload.idea = idea;
+  // }
+  if (hubUrl) {
+    payload.hubUrl = hubUrl;
+  }
 
   try {
-    const payload: any = {
-      type: currentTab,
-      page: 1,
-      token: token,
-      urlEnding: newUrlEnding,
-      locale: locale,
-    };
-
-    // TODO: remove searching for ideas
-    // if (idea) {
-    //   payload.idea = idea;
-    // }
-    if (hubUrl) {
-      payload.hubUrl = hubUrl;
-    }
     const filteredItemsObject: any = await getDataFromServer(payload);
 
     if (currentTab === "members") {

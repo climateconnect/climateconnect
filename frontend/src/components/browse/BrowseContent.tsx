@@ -5,8 +5,8 @@ import _ from "lodash";
 import React, { Suspense, useContext, useEffect, useMemo, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { loadDataBasedOnNewFilters } from "../../../public/lib/filterOperations";
-import { loadMoreData } from "../../../public/lib/CachedDataOperations";
 // import { loadMoreData } from "../../../public/lib/getDataOperations";
+import { loadMoreData } from "../../../public/lib/getCachedDataOperations";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import { getUserOrganizations } from "../../../public/lib/organizationOperations";
@@ -17,7 +17,7 @@ import LoadingSpinner from "../general/LoadingSpinner";
 import MobileBottomMenu from "./MobileBottomMenu";
 import HubTabsNavigation from "../hub/HubTabsNavigation";
 import { BrowseTabs, FilterChoices } from "../../types";
-import { useRouter } from "next/router";
+// import { useRouter } from "next/router";
 
 const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
 // TODO: shall be deleted in future
@@ -161,6 +161,7 @@ export default function BrowseContent({
   const texts = useMemo(() => getTexts({ page: "general", locale: locale }), [locale]);
 
   // TODO: maybe rename this "hash" to "currentTab"
+  // TOOD: good location for a custom hook that keeps the url hash and this
   const [hash, setHash] = useState<BrowseTabs>(TYPES_BY_TAB_VALUE[0]);
   // TODO: maybe rename this "tabValue" to "currentIdx"
   const [tabValue, setTabValue] = useState(0);
