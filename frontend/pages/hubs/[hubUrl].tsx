@@ -163,6 +163,7 @@ export default function Hub({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
   const [hubAmbassador, setHubAmbassador] = useState(null);
+  const [hubSupporters, setHubSupporters] = useState(null);
 
   const contentRef = useRef(null);
 
@@ -170,6 +171,10 @@ export default function Hub({
     (async () => {
       const retrievedHubAmbassador = await getHubAmbassadorData(hubUrl, locale);
       setHubAmbassador(retrievedHubAmbassador);
+      if (isLocationHub) {
+        const retrivedHubSupporters = await getHubSupportersData(hubUrl, locale);
+        setHubSupporters(retrivedHubSupporters);
+      }
     })();
   }, []);
 
@@ -256,6 +261,7 @@ export default function Hub({
             hubQuickInfoRef={hubQuickInfoRef}
             headline={headline}
             hubAmbassador={hubAmbassador}
+            hubSupporters={hubSupporters}
             quickInfo={quickInfo}
             statBoxTitle={statBoxTitle}
             stats={stats}
@@ -293,7 +299,7 @@ export default function Hub({
               // initialOrganizations={initialOrganizations}
               // initialProjects={initialProjects}
               nextStepTriggeredBy={nextStepTriggeredBy}
-              showIdeas={isLocationHub}
+              showIdeas={false}
               allHubs={allHubs}
               initialIdeaUrlSlug={initialIdeaUrlSlug}
               hubLocation={hubLocation}
@@ -304,6 +310,7 @@ export default function Hub({
               initialLocationFilter={initialLocationFilter}
               // TODO: unused?!
               // tabNavigationRequested={requestTabNavigation}
+              hubSupporters={hubSupporters}
             />
           </BrowseContext.Provider>
         </div>
@@ -377,6 +384,21 @@ const getHubAmbassadorData = async (url_slug, locale) => {
   } catch (err: any) {
     if (err.response && err.response.data)
       console.log("Error in getHubAmbassadorData: " + err.response.data.detail);
+    console.log(err);
+    return null;
+  }
+};
+const getHubSupportersData = async (url_slug, locale) => {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: `/api/hubs/${url_slug}/supporters/`,
+      locale: locale,
+    });
+    return resp.data;
+  } catch (err: any) {
+    if (err.response && err.response.data)
+      console.log("Error in getHubSupportersData: " + err.response.data.detail);
     console.log(err);
     return null;
   }

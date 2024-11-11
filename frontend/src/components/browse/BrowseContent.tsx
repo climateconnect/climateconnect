@@ -18,6 +18,7 @@ import MobileBottomMenu from "./MobileBottomMenu";
 import HubTabsNavigation from "../hub/HubTabsNavigation";
 import { BrowseTabs, FilterChoices } from "../../types";
 // import { useRouter } from "next/router";
+import HubSupporters from "../hub/HubSupporters";
 
 const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
 // TODO: shall be deleted in future
@@ -95,6 +96,7 @@ interface BrowseContentProps {
   hubUrl?: string;
   hubAmbassador?: any;
   contentRef?: any;
+  hubSupporters: any;
 }
 
 export default function BrowseContent({
@@ -120,6 +122,7 @@ export default function BrowseContent({
   hubUrl,
   hubAmbassador,
   contentRef,
+  hubSupporters,
 }: BrowseContentProps) {
   const initialState = {
     items: {
@@ -390,6 +393,9 @@ export default function BrowseContent({
         />
       )}
       <Container maxWidth="lg" className={classes.contentRefContainer}>
+        {isNarrowScreen && hubSupporters && (
+          <HubSupporters supportersList={hubSupporters} hubName={hubName} />
+        )}
         <div ref={contentRef} className={classes.contentRef} />
         <Suspense fallback={null}>
           {/* TODO */}

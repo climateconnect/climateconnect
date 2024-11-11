@@ -86,3 +86,11 @@ export type FilterChoices = {
   skills: SkillsOption[] | null;
   project_statuses: StatusOption[] | null;
 };
+
+export type Supporter = {
+  name: string;
+  subtitle: string;
+  logo: string;
+  importance: number;
+  organization_url_slug: string;
+};
