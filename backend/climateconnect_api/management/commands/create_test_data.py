@@ -15,6 +15,8 @@ from climateconnect_api.models import (
     Skill,
 )
 from organization.models import ProjectStatus, Project, Organization
+from hubs.models.hub import Hub
+from location.models import Location
 
 
 def create_language_test_data():
@@ -207,8 +209,7 @@ def create_project_test_data(number_of_rows: int):
                 language=english_language,
             )
 
-            parent_user = UserProfile.objects.all()[i].user
-
+            parent_user = User.objects.all()[i]
             ProjectParents.objects.create(project=project, parent_user=parent_user)
             admin_role = Role.objects.get(role_type=Role.ALL_TYPE)
             all_availabilities = list(Availability.objects.all())
@@ -404,6 +405,151 @@ def create_skills():
             )
 
 
+def create_hub_test_data():
+    """Creates one location hub and one sector hub.
+    Will add the first location of the location table if a location exists.
+
+    If your database does not contain any locations, start up the webpage and
+    enter a location in the filters. This will trigger a request to the location api
+    and automaticly create one.
+    Adding one manually or in this script is more complex, as you would need to create
+    the polygon of the new location"""
+
+    print("Creating hub test data...")
+    LOCATION_HUB_NAME = "Test Location Hub"
+    SECTOR_HUB_NAME = "Test Sector Hub"
+
+    english_language = Language.objects.filter(language_code="en")[0]
+
+    # the following fields have been omitted during the creation:
+    # image_attribution, image, icon, thumbnail_image, importance
+    # stats, filter_parent_tags, stat_box_title, custom_footer_image
+
+    # special case location: location will be set, if a location exists
+
+    if not Hub.objects.filter(name=LOCATION_HUB_NAME).exists():
+        Hub.objects.create(
+            name=LOCATION_HUB_NAME,
+            url_slug="test-location-hub",
+            headline=f"Test Headline:{LOCATION_HUB_NAME}",
+            sub_headline=f"This is the subheadline for '{LOCATION_HUB_NAME}'",
+            hub_type=1,
+            segway_text=f"This isthe segway text for '{LOCATION_HUB_NAME}'",
+            quick_info=f"some quick informations on {LOCATION_HUB_NAME}",
+            language=english_language,
+        )
+        print(LOCATION_HUB_NAME, "location hub was created.")
+    else:
+        print(LOCATION_HUB_NAME, "location hub already exists.")
+
+    if not Hub.objects.filter(name=SECTOR_HUB_NAME).exists():
+        Hub.objects.create(
+            name=SECTOR_HUB_NAME,
+            url_slug="test-location-hub",
+            headline=f"Test Headline:{SECTOR_HUB_NAME}",
+            sub_headline=f"This is the subheadline for '{SECTOR_HUB_NAME}'",
+            hub_type=0,
+            segway_text=f"This isthe segway text for '{SECTOR_HUB_NAME}'",
+            quick_info=f"some quick informations on {SECTOR_HUB_NAME}",
+            language=english_language,
+        )
+        print(SECTOR_HUB_NAME, "location hub was created.")
+    else:
+        print(SECTOR_HUB_NAME, "location hub already exists.")
+
+    # set location of the testhubs if unset
+    print(Location.objects)
+    if Location.objects.exists():
+        location = Location.objects.get()
+
+        loc_hub = Hub.objects.filter(name=LOCATION_HUB_NAME).get()
+        if not loc_hub.location.exists():
+            loc_hub.location.add(location)
+            print(f"added location '{location}' to {loc_hub}")
+    else:
+        print("no location found ... skipping 'adding location to test hubs'")
+    print("finished creating hub test data!")
+
+
+from organization.models.type import ProjectTypesChoices
+
+
+def create_event_test_data(number_of_rows: int):
+    print("Creating event test data...")
+    if number_of_rows < 10:
+        print("number_of_rows is too small for the event pages.")
+        print("'number_of_rows=10' will be used for the events instead")
+        number_of_rows = 10
+
+    english_language = Language.objects.filter(language_code="en")[0]
+    try:
+        location = Location.objects.get(id=1)
+    except Location.DoesNotExist:
+        location = None
+        print("[WARNING]: no location avaible.")
+        print("[WARNING]: location will not be added to the events")
+
+    for i in range(number_of_rows):
+        name = "Test Event {}".format(i)
+        url_slug = name.replace(" ", "")
+
+        if not Project.objects.filter(name=name).exists():
+            # start creating some dates in the past and
+            # continue to add 5 days for each new row.
+            # This way, there will be some events in the past,
+            # and some in the future
+            # Additionally, due to the "5 days" step
+            # each month should include more than 6 events
+            # which helps
+            event_data = (
+                timezone.now()
+                - timezone.timedelta(days=12)
+                + timezone.timedelta(days=i * 5)
+            )
+
+            project = Project.objects.create(
+                name=name,
+                city="Test {}".format(i),
+                collaborators_welcome=True,
+                country="Germany",
+                short_description="This is a test event.",
+                start_date=event_data,
+                status=ProjectStatus.objects.get(name="In Progress"),
+                url_slug=url_slug,
+                language=english_language,
+                project_type=ProjectTypesChoices.event,
+                loc=location,
+            )
+
+            N = len(UserProfile.objects.all())
+            parent_user = UserProfile.objects.all()[i % N].user
+
+            ProjectParents.objects.create(project=project, parent_user=parent_user)
+            admin_role = Role.objects.get(role_type=Role.ALL_TYPE)
+            all_availabilities = list(Availability.objects.all())
+            example_availability = random.choice(all_availabilities)
+            ProjectMember.objects.create(
+                project=project,
+                user=parent_user,
+                role=admin_role,
+                availability=example_availability,
+                role_in_project="Project manager",
+            )
+
+            number_of_test_project_tags = 5
+            ProjectTagging.objects.create(
+                project=project,
+                project_tag=ProjectTags.objects.all()[
+                    int((i / number_of_rows) * number_of_test_project_tags)
+                ],
+            )
+            print("{} project created.".format(name))
+        else:
+            print("{} project already exists.".format(name))
+
+    pass
+
+
 class Command(BaseCommand):
     help = "Creates test data of user's availability to volunteer to an organization."
 
@@ -423,3 +569,5 @@ class Command(BaseCommand):
         create_organization_tags_test_data()
         create_project_test_data(number_of_rows=number_of_rows)
         create_skills()
+        create_hub_test_data()
+        create_event_test_data(number_of_rows=number_of_rows)
