@@ -1,30 +1,37 @@
 {
   "cookie_banner_headline": {
     "en": "Cookie information and settings",
-    "de": "Cookie-Informationen und Einstellungen"
+    "de": "Cookie-Informationen und Einstellungen",
+    "fr": "Information Cookies et paramétres"
   },
   "cookie_explanation": {
     "en": "We use cookies in order to offer you an optimal service and to further improve our websites on the basis of statistics.",
-    "de": "Wir verwenden Cookies, um dir einen optimalen Service zu bieten und unsere Webseiten auf Basis von Statistiken weiter zu verbessern."
+    "de": "Wir verwenden Cookies, um dir einen optimalen Service zu bieten und unsere Webseiten auf Basis von Statistiken weiter zu verbessern.",
+    "fr": "On utilise les cookies afin de vous fournir un service optimal et en vue d'améliorations de notre site sur la base des statistiques récupérées."
   },
   "for_more_information_check_out_our": {
     "en": "For more information check out our",
-    "de": "Für weitere Informationen besuche unser"
+    "de": "Für weitere Informationen besuche unser",
+    "fr": "Pour plus d'informations consulte notre"
   },
   "cookies_necessary": {
     "en": "Necessary",
-    "de": "Essentiell"
+    "de": "Essentiell",
+    "fr": "Essentiels"
   },
   "cookies_statistics": {
     "en": "Statistics",
-    "de": "Statistik"
+    "de": "Statistik",
+    "fr": "Statiques"
   },
   "confirm_selection": {
     "en": "Confirm Selection",
-    "de": "Auswahl bestätigen"
+    "de": "Auswahl bestätigen",
+    "fr": "Confirmer ton choix"
   },
   "enable_all_cookies": {
     "en": "Enable all cookies",
-    "de": "Alle Cookies aktivieren"
+    "de": "Alle Cookies aktivieren",
+    "fr": "Autoriser tous les cookies"
   }
 }
