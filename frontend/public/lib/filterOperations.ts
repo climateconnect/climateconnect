@@ -89,7 +89,6 @@ export function getFiltersFromSearchString(
  * @param {Object} filterChoices the choices for select and multiselect filters
  * @param {string} locale the user's language, e.g. "en" or "de"
  * @param {string} token the user's login token to authenticate with the backend
- * @deprecated @param {function} handleSetErrorMessage function to display an error message
  * @param {string} hubUrl is set if only results from a certain hub should be displayed
  */
 export async function loadDataBasedOnNewFilters(
