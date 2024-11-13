@@ -1,5 +1,8 @@
 import logging
 import traceback
+from datetime import datetime
+from django.utils import timezone
+
 from django.db.models import Case, When
 from organization.utility.follow import (
     get_list_of_project_followers,
@@ -296,6 +299,101 @@ class ListProjectsView(ListAPIView):
             )
         )
         return projects.order_by(preferred_order)
+
+
+class EventsOrderingFilter(OrderingFilter):
+    def filter_queryset(self, request, queryset, view):
+        ordering = request.query_params.get("sort_by")
+        if ordering is not None:
+            if ordering == "newest":
+                queryset = queryset.order_by("-id")
+            elif ordering == "oldest":
+                queryset = queryset.order_by("id")
+        return queryset
+
+
+class ListEventView(ListAPIView):
+    permission_classes = [AllowAny]
+    filter_backends = [SearchFilter, DjangoFilterBackend, EventsOrderingFilter]
+    search_fields = ["name", "translation_project__name_translation"]
+    filterset_fields = ["collaborators_welcome"]
+    pagination_class = ProjectsPagination
+    serializer_class = ProjectStubSerializer
+
+    def __parse_date(self, date_str):
+        try:
+            # Check if it's a timestamp in seconds since epoch
+            if date_str.isdigit():
+                # Convert from seconds since epoch
+                return datetime.fromtimestamp(int(date_str), tz=timezone.utc)
+
+            # Try parsing as YYYY-MM-DD
+            try:
+                return datetime.strptime(date_str, "%Y-%m-%d").replace(
+                    tzinfo=timezone.utc
+                )
+            except ValueError:
+                pass
+
+            # Try parsing as DD-MM-YYYY
+            try:
+                return datetime.strptime(date_str, "%d-%m-%Y").replace(
+                    tzinfo=timezone.utc
+                )
+            except ValueError:
+                pass
+
+            # If none of the formats match, return None (or raise an error)
+            return None
+        except Exception as e:
+            print("Error parsing start_date:", e)
+            return None
+
+    def get_queryset(self):
+        """
+        Filters events based on query parameters.
+
+        Query Parameters:
+        - start_date (str or int): The start date to filter events from. Format: YYYY-MM-DD or epoch timestamp
+        - end_date (str or int): The end date to filter events until. Format: YYYY-MM-DD or epoch timestamp
+
+        Example:
+        /events?start_date=2023-01-01&end_date=2023-12-31
+        """
+        events = (
+            Project.objects.filter(
+                # TODO (Karol): maybe a "is_active=true" would be smart (like in the projects, but I do not know
+                # when the flag is set)
+                is_draft=False,
+                project_type=ProjectTypesChoices.event,
+            )
+            .select_related("loc", "language", "status")
+            .prefetch_related(
+                "skills",
+                "tag_project",
+                "project_comment",
+                "project_liked",
+                "project_following",
+            )
+        )
+
+        # TODO: add filtering by hub
+        # TODO: add filtering by location
+        if "start_date" in self.request.query_params:
+            start_date = self.request.query_params.get("start_date")
+            start_date = self.__parse_date(start_date)
+
+            if start_date is not None:
+                events = events.filter(start_date__gte=start_date)
+
+        if "end_date" in self.request.query_params:
+            end_date = self.request.query_params.get("end_date")
+            end_date = self.__parse_date(end_date)
+
+            if end_date:
+                events = events.filter(end_date__lte=end_date)
+
+        return events
 
 
 class CreateProjectView(APIView):

@@ -224,4 +224,6 @@ urlpatterns = [
         project_views.SimilarProjects.as_view(),
         name="similar-projects",
     ),
+    # events endpoints
+    path("events/", project_views.ListEventView.as_view(), name="list-projects"),
 ]
