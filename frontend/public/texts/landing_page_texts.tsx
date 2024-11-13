@@ -158,8 +158,10 @@ export default function getLandingPageTexts({ classes, isNarrowScreen }) {
       de: "ClimateHub",
     },
     find_fellow_campaigners_for_climate_protection_idea: {
-      en: "Find fellow campaigners for your climate protection idea, share your climate project with others. Register now and make a difference with the right commitment. Do you need support? ",
-      de: "Finde Mitstreiter:innen für deine Klimaschutz Idee, teile dein Klima Projekt mit anderen. Jetzt anmelden und mit dem richtigen Engagement einen Unterschied machen. Brauchst du Unterstützung? ",
+      en:
+        "Find fellow campaigners for your climate protection idea, share your climate project with others. Register now and make a difference with the right commitment. Do you need support? ",
+      de:
+        "Finde Mitstreiter:innen für deine Klimaschutz Idee, teile dein Klima Projekt mit anderen. Jetzt anmelden und mit dem richtigen Engagement einen Unterschied machen. Brauchst du Unterstützung? ",
     },
     coordinates_the_climateHub: {
       en: "coordinates the ClimateHub",
