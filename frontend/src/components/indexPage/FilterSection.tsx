@@ -16,9 +16,9 @@ import {
   getInitialFilters,
 } from "../../../public/lib/filterOperations";
 
-type MakeStylesProps = {
+interface MakeStylesProps {
   applyBackgroundColor?: boolean;
-};
+}
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -116,17 +116,13 @@ export default function FilterSection({
   });
   const { locale } = useContext(UserContext);
 
-  // ##########################
   // Additional Filters Visibility
-  // ##########################
-
   const isMobileScreenSize = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const isSmallScreenSize = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
 
-  // Attention: this default will be overwritten by the use Effect hook
-  // Defaults: isSmallScreenSize => false, otherwise true
-  // On mobile filters take up the whole screen, so they aren't expanded by default
-
+  // Attention: this default will be overwritten by the use Effect hook:
+  // If isSmallScreenSize then false, otherwise true
+  // Reason: On mobile filters take up the whole screen, so they aren't expanded by default
   const [filtersExpanded, setFiltersExpanded] = useState(true);
 
   const onClickExpandFilters = () => {
@@ -205,6 +201,7 @@ export default function FilterSection({
     setFilters(updatedFilters);
   };
 
+  // TODO (Karol): closeFilters is unused, did I miss something during refactoring?
   const applyNewFiltersToUrl = ({ type, newFilters, closeFilters, nonFilterParams }) => {
     const newUrl = getFilterUrl({
       activeFilters: newFilters,
@@ -218,7 +215,7 @@ export default function FilterSection({
     if (newUrl !== window?.location?.href) {
       window.history.pushState({}, "", newUrl);
 
-      // TODO: refactor into a custom lib function
+      // TODO: refactor with react-router after upgrade
       const urlChangeEvent = new CustomEvent("urlChange", {});
       window.dispatchEvent(urlChangeEvent);
 
@@ -236,9 +233,6 @@ export default function FilterSection({
       nonFilterParams: {},
     });
   }, [filters]);
-  // #############################################################
-  // #############################################################
-  // #############################################################
 
   return (
     <div /*TODO(undefined) className={classes.filterSection} */>
