@@ -90,9 +90,6 @@ interface BrowseContentProps {
   // TODO: remove in the future (only used by Idea Board)
   hubLocation?: any;
   hubData?: any;
-  // TODO: remove: if this is still needed, it should not be implemented
-  // by a parent. The "resetting of cache" is none of the parents buisness
-  // resetTabsWhereFiltersWereApplied?: any;
   hubUrl?: string;
   hubAmbassador?: any;
   contentRef?: any;
@@ -164,7 +161,7 @@ export default function BrowseContent({
   const texts = useMemo(() => getTexts({ page: "general", locale: locale }), [locale]);
 
   // TODO: maybe rename this "hash" to "currentTab"
-  // TOOD: good location for a custom hook that keeps the url hash and this
+  // TOOD: good location for a custom hook that keeps the url hash and this state in sync
   const [hash, setHash] = useState<BrowseTabs>(TYPES_BY_TAB_VALUE[0]);
   // TODO: maybe rename this "tabValue" to "currentIdx"
   const [tabValue, setTabValue] = useState(0);
@@ -203,7 +200,10 @@ export default function BrowseContent({
   });
 
   const handleTabChange = (event, newValue) => {
-    // TODO: sanatize newValue
+    newValue = parseInt(newValue, 10);
+    if (isNaN(newValue)) {
+      return;
+    }
 
     const newTab = TYPES_BY_TAB_VALUE[newValue];
     setHash(newTab);
@@ -214,11 +214,7 @@ export default function BrowseContent({
   };
 
   // ###################################################
-  // ###################################################
-  // DATA LOADING ZONE
-  // ###################################################
-  // ###################################################
-
+  // LOADING DATA FEATURES
   /**
    * Support the functionality of a user entering
    * a provided URL, that already has URL encoded
@@ -234,6 +230,7 @@ export default function BrowseContent({
 
   const [errorMessage, setErrorMessage] = useState("");
 
+  // load the hash from the URL on mount
   useEffect(() => {
     const newHash = window?.location?.hash.replace("#", "") as BrowseTabs;
     if (window.location.hash) {
@@ -250,10 +247,16 @@ export default function BrowseContent({
     }
   }, []);
 
-  // TODO: this is currently not used
-  // use it in the future to "cache" filter results
-  const [tabsWhereFiltersWereApplied, setTabsWhereFiltersWereApplied] = useState([]);
-
+  /**
+   * Loads data based on the current URL or a new tab selection.
+   * This method is/should be called on URL change and tab change.
+   *
+   * @param {BrowseTabs} [newTab] - The new tab to load data for.
+   * If not provided, the current hash state is used.
+   * This value in nessary if this function is called on tab change. As setState(hash) is async,
+   * the hash state might not be updated yet.
+   * @returns {Promise<void>} - A promise that resolves when the data loading is complete.
+   */
   const loadDataBasedOnUrl = async (newTab?: BrowseTabs) => {
     // this method will be called on URL change and (!) on tab change
     // if the tab changed, the hash State will be updated via setState
@@ -296,11 +299,10 @@ export default function BrowseContent({
   // Handle an URL Change
   // extract filters and update data
 
+  // TODO: use the useRouter Hook (next router) to listen for URL changes
   // TODO: this useEffect is not nessecary
   //https://react.dev/learn/you-might-not-need-an-effect#subscribing-to-an-external-store
   useEffect(() => {
-    //TODO: use the useRouter Hook (next router) to listen for URL changes
-
     const handleURLChange = () => {
       const queryParams = new URLSearchParams(window.location.search);
       console.debug("[BrowseContent]: url update => new URLSearchParams:", queryParams);
