@@ -149,5 +149,25 @@ export default function getLandingPageTexts({ classes, isNarrowScreen }) {
       en: "Return to hubs",
       de: "Zurück zu den Knotenpunkten",
     },
+    find_suitable_climate_protection_commitment: {
+      en: "Find your suitable climate protection commitment in",
+      de: "Finde dein passendes Klimaschutz Engagement in",
+    },
+    climateHub: {
+      en: "ClimateHub",
+      de: "ClimateHub",
+    },
+    find_fellow_campaigners_for_climate_protection_idea: {
+      en: "Find fellow campaigners for your climate protection idea, share your climate project with others. Register now and make a difference with the right commitment. Do you need support? ",
+      de: "Finde Mitstreiter:innen für deine Klimaschutz Idee, teile dein Klima Projekt mit anderen. Jetzt anmelden und mit dem richtigen Engagement einen Unterschied machen. Brauchst du Unterstützung? ",
+    },
+    coordinates_the_climateHub: {
+      en: "coordinates the ClimateHub",
+      de: "koordiniert den ClimateHub",
+    },
+    is_there_for_you: {
+      en: "and is there for you",
+      de: "und ist für dich da.",
+    },
   };
 }

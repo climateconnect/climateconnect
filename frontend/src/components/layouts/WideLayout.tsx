@@ -65,6 +65,7 @@ type Props = {
   isLocationHub?: boolean;
   noHeader?: boolean;
   isLandingPage?: boolean;
+  showSuffix?: boolean;
 };
 //Wrapper layout component for pages where the content takes the whole width of the screen
 export default function WideLayout({
@@ -96,6 +97,7 @@ export default function WideLayout({
   customFooterImage,
   noHeader,
   isLandingPage,
+  showSuffix,
 }: Props) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);
@@ -129,6 +131,7 @@ export default function WideLayout({
       useFloodStdFont={useFloodStdFont}
       theme={theme}
       image={image}
+      showSuffix={showSuffix}
     >
       {!noHeader && (
         <Header
