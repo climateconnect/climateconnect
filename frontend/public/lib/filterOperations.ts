@@ -60,6 +60,8 @@ export function getFiltersFromSearchString(
  * Fetches data from the server based on the newly provided
  * filters. Returns an object with the new filter data, as well
  * as other options.
+ * By using CachedDataOperations.getDataFromServer, the data is
+ * cached based on the url (including e.g. hub, filters, ...).
  *
  * @param {string} currentTab one of ["projects", "organizations", "members", "ideas"] (ideas is deprecated)
  * @param {string} locationSearch the search query (e.g. current window.search.path)
