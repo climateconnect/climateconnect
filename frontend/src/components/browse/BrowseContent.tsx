@@ -96,7 +96,7 @@ interface BrowseContentProps {
   hubUrl?: string;
   hubAmbassador?: any;
   contentRef?: any;
-  hubSupporters: any;
+  hubSupporters?: any;
 }
 
 export default function BrowseContent({
