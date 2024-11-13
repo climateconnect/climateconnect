@@ -69,7 +69,8 @@ const parseComments = (comments) => {
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
-  const projectUrl = encodeURI(ctx.query.projectId);
+  const projectUrl = encodeURI(ctx?.query?.projectId);
+  const hubPage = encodeURI(ctx?.query?.hubPage);
   const [
     project,
     members,
@@ -78,6 +79,7 @@ export async function getServerSideProps(ctx) {
     userInteractions,
     hubs,
     similarProjects,
+    hubSupporters,
   ] = await Promise.all([
     getProjectByIdIfExists(projectUrl, auth_token, ctx.locale),
     getProjectMembersByIdIfExists(projectUrl, ctx.locale),
@@ -86,6 +88,7 @@ export async function getServerSideProps(ctx) {
     auth_token ? getUsersInteractionWithProject(projectUrl, auth_token, ctx.locale) : false,
     getAllHubs(ctx.locale),
     getSimilarProjects(projectUrl, ctx.locale),
+    hubPage ? getHubSupporters(hubPage, ctx.locale) : null,
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -98,6 +101,8 @@ export async function getServerSideProps(ctx) {
       hasRequestedToJoin: userInteractions?.has_requested_to_join,
       hubs: hubs,
       similarProjects: similarProjects,
+      hubSupporters: hubSupporters,
+      hubPage,
     }),
   };
 }
@@ -112,6 +117,8 @@ export default function ProjectPage({
   hasRequestedToJoin,
   hubs,
   similarProjects,
+  hubSupporters,
+  hubPage,
 }) {
   const token = new Cookies().get("auth_token");
   const [curComments, setCurComments] = useState(parseComments(comments));
@@ -261,6 +268,8 @@ export default function ProjectPage({
                 showSimilarProjects={showSimilarProjects}
                 requestedToJoinProject={requestedToJoinProject}
                 handleJoinRequest={handleJoinRequest}
+                hubSupporters={hubSupporters}
+                hubPage={hubPage}
               />
             </div>
             <div className={classes.secondaryContent}>
@@ -271,6 +280,8 @@ export default function ProjectPage({
                   showSimilarProjects={showSimilarProjects}
                   locale={locale}
                   texts={texts}
+                  hubSupporters={hubSupporters}
+                  hubName={hubPage}
                 />
               )}
             </div>
@@ -388,7 +399,21 @@ async function getSimilarProjects(projectUrl, locale) {
     return null;
   }
 }
-
+const getHubSupporters = async (url_slug, locale) => {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: `/api/hubs/${url_slug}/supporters/`,
+      locale: locale,
+    });
+    return resp.data;
+  } catch (err: any) {
+    if (err.response && err.response.data)
+      console.log("Error in getHubSupportersData: " + err.response.data.detail);
+    console.log(err);
+    return null;
+  }
+};
 function parseProject(project) {
   return {
     name: project.name,
