@@ -149,6 +149,7 @@ export default function BrowseContent({
   const firstProjectCardRef = useRef(null);
   const organizationsTabRef = useRef(null);
 
+  // TODO: this is not used after the refactor: do we still need the legacy mode?
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles();
   const TYPES_BY_TAB_VALUE: BrowseTabs[] = hideMembers
@@ -228,6 +229,7 @@ export default function BrowseContent({
    * different tabs views / components.
    */
 
+  // TODO: reimplemenation of the error message (previously used for invlaid location)
   const [errorMessage, setErrorMessage] = useState("");
 
   // load the hash from the URL on mount
@@ -361,11 +363,7 @@ export default function BrowseContent({
     }
   };
 
-  // ###################################################
-  // ###################################################
-  // DATA LOADING ZONE
-  // ENDS HERE
-  // ###################################################
+  // END: LOADING DATA FEATURES
   // ###################################################
 
   const tabContentWrapperProps = {
