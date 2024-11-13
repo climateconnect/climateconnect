@@ -30,28 +30,6 @@ export function getInitialFilters({
   };
 }
 
-//Splits a query array from a url into filters and non-fitlers
-function splitFiltersFromQueryObject(
-  queryObject,
-  possibleFilters
-): { filters: any; nonFilters: any } {
-  if (!queryObject) return { filters: {}, nonFilters: {} };
-  const possibleFilterKeys = possibleFilters.map((f) => f.key);
-  const filters = Object.keys(queryObject).reduce((obj, curKey) => {
-    if (possibleFilterKeys.includes(curKey)) {
-      obj[curKey] = queryObject[curKey];
-    }
-    return obj;
-  }, {});
-  const restOfQueryObject = Object.keys(queryObject).reduce((obj, curKey) => {
-    if (!possibleFilterKeys.includes(curKey)) {
-      obj[curKey] = queryObject[curKey];
-    }
-    return obj;
-  }, {});
-  return { filters: filters, nonFilters: restOfQueryObject };
-}
-
 export function getFiltersFromSearchString(
   currentTab: BrowseTabs,
   searchQueryString: string,
@@ -145,6 +123,32 @@ export async function loadDataBasedOnNewFilters(
   } catch (e) {
     console.log(e);
   }
+}
+
+// ##############################
+// # Helper functions
+// ##############################
+
+//Splits a query array from a url into filters and non-fitlers
+function splitFiltersFromQueryObject(
+  queryObject,
+  possibleFilters
+): { filters: any; nonFilters: any } {
+  if (!queryObject) return { filters: {}, nonFilters: {} };
+  const possibleFilterKeys = possibleFilters.map((f) => f.key);
+  const filters = Object.keys(queryObject).reduce((obj, curKey) => {
+    if (possibleFilterKeys.includes(curKey)) {
+      obj[curKey] = queryObject[curKey];
+    }
+    return obj;
+  }, {});
+  const restOfQueryObject = Object.keys(queryObject).reduce((obj, curKey) => {
+    if (!possibleFilterKeys.includes(curKey)) {
+      obj[curKey] = queryObject[curKey];
+    }
+    return obj;
+  }, {});
+  return { filters: filters, nonFilters: restOfQueryObject };
 }
 
 const getQueryObjectFromUrl = (query: any, filterChoices: FilterChoices, locale: CcLocale) => {
