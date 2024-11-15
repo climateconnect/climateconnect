@@ -1,110 +1,137 @@
 {
   "browse": {
     "en": "Browse",
-    "de": "Browse"
+    "de": "Browse",
+    "fr": "Parcourir"
   },
   "hubs": {
     "en": "Hubs",
-    "de": "Hubs"
+    "de": "Hubs",
+    "fr": "Hubs"
   },
   "about": {
     "en": "About",
-    "de": "Über uns"
+    "de": "Über uns",
+    "fr": "A propos"
   },
   "association": {
     "en": "Association",
-    "de": "Verein"
+    "de": "Verein",
+    "fr": "Association"
   },
   "press": {
     "en": "Press",
-    "de": "Presse"
+    "de": "Presse",
+    "fr": "Press"
   },
   "join": {
     "en": "Join",
-    "de": "Mitmachen"
+    "de": "Mitmachen",
+    "fr": "Rejoindre"
   },
   "blog": {
     "en": "Blog",
-    "de": "Blog"
+    "de": "Blog",
+    "fr": "Blog"
   },
   "team": {
     "en": "Team",
-    "de": "Team"
+    "de": "Team",
+    "fr": "Equipe"
   },
   "notifications": {
     "en": "Notifications",
-    "de": "Benachrichtigungen"
+    "de": "Benachrichtigungen",
+    "fr": "Notifications"
   },
   "picture_of_our_earth": {
     "en": "Picture of our earth",
-    "de": "Bild von unserer Erde"
+    "de": "Bild von unserer Erde",
+    "fr": "Photo de la terre"
   },
   "general": {
     "en": "General",
-    "de": "Allgemein"
+    "de": "Allgemein",
+    "fr": "Général"
   },
   "contact": {
     "en": "Contact",
-    "de": "Kontakt"
+    "de": "Kontakt",
+    "fr": "Contact"
   },
   "leave_feedback": {
     "en": "Leave feedback",
-    "de": "Feedback geben"
+    "de": "Feedback geben",
+    "fr": "Laisser un commentaire"
   },
   "legal": {
     "en": "Legal",
-    "de": "Rechtliches"
+    "de": "Rechtliches",
+    "fr": "Legal"
   },
   "imprint": {
     "en": "Imprint",
-    "de": "Impressum"
+    "de": "Impressum",
+    "fr": "Impression"
   },
   "privacy": {
     "en": "Privacy",
-    "de": "Datenschutz"
+    "de": "Datenschutz",
+    "fr": "Protection des données"
   },
   "terms": {
     "en": "Terms",
-    "de": "AGBs"
+    "de": "AGBs",
+    "fr": "Conditions Général d'Utilisation"
   },
   "newsletter": {
     "en": "Newsletter",
-    "de": "Newsletter"
+    "de": "Newsletter",
+    "fr": "Newsletter"
   },
   "sign_up_to_get_updates_about_climate_connect": {
     "en": "Sign up to get updates about Climate Connect and a summary of highlight projects every month!",
-    "de": "Registriere dich, um jeden Monat Neuigkeiten über Climate Connect zu erhalten und zu Projekte informiert zu werden!"
+    "de": "Registriere dich, um jeden Monat Neuigkeiten über Climate Connect zu erhalten und zu Projekte informiert zu werden!",
+    "fr": "Inscris toi pour recevoir des nouvelles de la communauté Climate Connect et un aperçu des différents projets chaque mois!"
   },
   "latest_newsletter": {
     "en": "Latest newsletter",
-    "de": "Aktueller Newsletter"
+    "de": "Aktueller Newsletter",
+    "fr": "Dernière Newsletter"
   },
   "view_sector_hubs": {
     "en": "View sector hubs",
-    "de": "Hubs anzeigen"
+    "de": "Hubs anzeigen",
+    "fr": "Voir les Hubs"
   },
   "all_hubs": {
     "en": "All Hubs",
-    "de": "Alle Hubs"
+    "de": "Alle Hubs",
+    "fr": "Tous les Hubs"
   },
   "all_projects": {
     "en": "All Projects",
-    "de": "Alle Projekte"
+    "de": "Alle Projekte",
+    "fr": "Tous les projets"
   },
   "jobs": {
     "en": "Jobs",
-    "de": "Jobs"
+    "de": "Jobs",
+    "fr": "Offre emploi"
   },
   "donorforest": {
     "en": "Donor Forest",
-    "de": "Spendenwald"
+    "de": "Spendenwald",
+    "fr": "Forêt des donneurs"
   },
   "transparency": {
     "en": "Transparency",
-    "de": "Transparenz"
+    "de": "Transparenz",
+    "fr": "Transparence"
   },
   "projects_worldwide": {
     "en": "Projects worldwide",
-    "de": "Projekte weltweit"
+    "de": "Projekte weltweit",
+    "fr": "Projets dans le monde"
   }
 }
