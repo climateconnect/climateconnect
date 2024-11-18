@@ -201,7 +201,12 @@ export default function Dashboard({
 }: Props) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
-  const texts = getTexts({ page: "dashboard", locale: locale, user: user, location: location });
+  const texts = getTexts({
+    page: "dashboard",
+    locale: locale,
+    user: user || undefined,
+    location: location,
+  });
   const [userOrganizations, setUserOrganizations] = useState(null);
   const [isCreateIdeaOpen, setCreateIdeaOpen] = useState(false);
   const token = new Cookies().get("auth_token");
