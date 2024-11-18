@@ -205,6 +205,9 @@ export default function BrowseContent({
       setHash(newHash);
       setTabValue(TYPES_BY_TAB_VALUE.indexOf(newHash));
     }
+
+    // this init is nessesary to be resilient if the component is remounted
+    // see https://react.dev/learn/you-might-not-need-an-effect#initializing-the-application
     if (!initialized) {
       // Update the state of the visual filters, like Select, Dialog, etc
       // Then actually fetch the data. We need a way to map what's
