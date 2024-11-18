@@ -206,11 +206,12 @@ export default function Dashboard({
   const [isCreateIdeaOpen, setCreateIdeaOpen] = useState(false);
   const token = new Cookies().get("auth_token");
 
-  useEffect(async function () {
+  useEffect(() => {
     if (userOrganizations === null) {
       setUserOrganizations("");
-      const userOrgsFromServer = await getUserOrganizations(token, locale);
-      setUserOrganizations(userOrgsFromServer || []);
+      getUserOrganizations(token, locale).then((userOrgsFromServer) => {
+        setUserOrganizations(userOrgsFromServer || []);
+      });
     }
   }, []);
 
