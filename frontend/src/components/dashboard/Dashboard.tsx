@@ -12,7 +12,6 @@ import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import UserImage from "./UserImage";
-import CreateIdeaDialog from "../ideas/createIdea/CreateIdeaDialog";
 import { getUserOrganizations } from "../../../public/lib/organizationOperations";
 
 const useStyles = makeStyles((theme) => {
@@ -203,7 +202,6 @@ export default function Dashboard({
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "dashboard", locale: locale, user: user, location: location });
   const [userOrganizations, setUserOrganizations] = useState(null);
-  const [isCreateIdeaOpen, setCreateIdeaOpen] = useState(false);
   const token = new Cookies().get("auth_token");
 
   useEffect(async function () {
@@ -256,29 +254,6 @@ export default function Dashboard({
           show them the other controls. */}
           {user ? (
             <>
-              <HoverButton
-                startIcon={<EmojiObjectsIcon />}
-                label={texts.ideas}
-                items={[
-                  // TODO: implement tab change based on link -- this might
-                  // be more involved than we thought
-                  // {
-                  //   name: "Create idea",
-                  //   // url_slug: `${getLocalePrefix(locale)}/${item.url_slug}/`,
-                  //   url_slug: `#ideas`,
-                  // },
-                  {
-                    name: texts.create_idea,
-                    // url_slug: `${getLocalePrefix(locale)}/${item.url_slug}/`,
-                    url_slug: "#",
-                    onClick: () => setCreateIdeaOpen(true),
-                  },
-                  {
-                    name: texts.my_ideas,
-                    url_slug: `/profiles/${user.url_slug}#ideas`,
-                  },
-                ]}
-              />
               <HoverButton
                 startIcon={<AssignmentIcon />}
                 label={texts.projects}
@@ -337,15 +312,6 @@ export default function Dashboard({
           )}
         </div>
       </div>
-      <CreateIdeaDialog
-        open={isCreateIdeaOpen}
-        onClose={() => setCreateIdeaOpen(false)}
-        allHubs={allHubs}
-        userOrganizations={userOrganizations}
-        hubLocation={location}
-        hubData={hubData}
-        resetTabsWhereFiltersWereApplied={() => {}}
-      />
     </div>
   );
 }
