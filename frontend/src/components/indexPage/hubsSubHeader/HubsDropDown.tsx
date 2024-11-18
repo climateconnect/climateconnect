@@ -5,7 +5,7 @@ import React, { useContext, useRef } from "react";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
 import DropDownList from "../../header/DropDownList";
-import {buildHubUrl} from "../../../../public/lib/urlBuilder";
+import { buildHubUrl } from "../../../../public/lib/urlBuilder";
 
 type MakeStylesProps = {
   height: number;
@@ -54,7 +54,7 @@ export default function HubsDropDown({
 
   const dropDownHubItems = hubs.map((h) => ({
     // href: `/hubs/${h.url_slug}/`,
-    href: buildHubUrl({hubUrlSlug: h?.url_slug, pathType: "hubBrowse" }),
+    href: buildHubUrl({ hubUrlSlug: h?.url_slug, pathType: "hubBrowse" }),
     text: h.name,
   }));
 

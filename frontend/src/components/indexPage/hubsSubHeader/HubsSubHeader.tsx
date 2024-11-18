@@ -7,7 +7,7 @@ import theme from "../../../themes/theme";
 import UserContext from "../../context/UserContext";
 import GoBackFromProjectPageButton from "../../project/Buttons/GoBackFromProjectPageButton";
 import HubLinks from "./HubLinks";
-import {buildHubUrl} from "../../../../public/lib/urlBuilder";
+import { buildHubUrl } from "../../../../public/lib/urlBuilder";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -70,7 +70,7 @@ export default function HubsSubHeader({ hubs, subHeaderRef, onlyShowDropDown }: 
               className={classes.link}
               key={"/hubs"}
               // href={`${getLocalePrefix(locale)}/hubs/`}
-              href={buildHubUrl({locale: locale, pathType: "allHubs" })}
+              href={buildHubUrl({ locale: locale, pathType: "allHubs" })}
               underline="hover"
             >
               {texts.all_hubs}

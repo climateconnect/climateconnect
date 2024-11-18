@@ -5,7 +5,7 @@ import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-import {buildHubUrl} from "../../../public/lib/urlBuilder"
+import { buildHubUrl } from "../../../public/lib/urlBuilder";
 
 const useStyles = makeStyles<Theme, { disableBoxShadow?: boolean }>((theme) => ({
   root: (props) => ({
@@ -42,7 +42,7 @@ export default function HubPreview({ hub, disableBoxShadow = false }) {
 
   return (
     <Link
-      href={buildHubUrl({locale: locale, hubUrlSlug: hub?.url_slug, pathType: "hubBrowse"})}
+      href={buildHubUrl({ locale: locale, hubUrlSlug: hub?.url_slug, pathType: "hubBrowse" })}
       // href={getLocalePrefix(locale) + `/hubs/${hub.url_slug}`}
       className={classes.noUnderline}
       underline="hover"

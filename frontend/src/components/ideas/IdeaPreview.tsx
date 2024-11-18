@@ -173,8 +173,7 @@ export default function IdeaPreview({
                 pathType: "hubBrowse",
                 includeBaseUrl: true,
               })
-              // `${process.env.BASE_URL}/hubs/${idea?.hub_shared_in?.url_slug}?idea=${idea?.url_slug}#ideas`
-            : 
+            : // `${process.env.BASE_URL}/hubs/${idea?.hub_shared_in?.url_slug}?idea=${idea?.url_slug}#ideas`
               `${window.location.origin}${window.location.pathname}?idea=${idea?.url_slug}${window.location.hash}`
         }
         underline="hover"

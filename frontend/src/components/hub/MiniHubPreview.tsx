@@ -7,7 +7,7 @@ import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import SelectField from "../general/SelectField";
-import {buildHubUrl} from "../../../public/lib/urlBuilder";
+import { buildHubUrl } from "../../../public/lib/urlBuilder";
 
 const useStyles = makeStyles<Theme, any>((theme) => ({
   link: {
@@ -85,7 +85,9 @@ export default function MiniHubPreview({
   };
   return (
     <Link
-      href={hub && buildHubUrl({locale: locale, hubUrlSlug: hub?.url_slug, pathType: "hubBrowse"})}
+      href={
+        hub && buildHubUrl({ locale: locale, hubUrlSlug: hub?.url_slug, pathType: "hubBrowse" })
+      }
       // href={hub && getLocalePrefix(locale) + `/hubs/${hub.url_slug}`}
       target="_blank"
       className={classes.link}

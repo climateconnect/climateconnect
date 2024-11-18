@@ -51,7 +51,11 @@ const isValidHubUrl = (hubUrl: string) => {
 const NotFoundPage = ({ texts }: any) => {
   return (
     <WideLayout>
-      <PageNotFound itemName="landing page" returnText={texts.return_to_hubs} returnLink={buildHubUrl()} />
+      <PageNotFound
+        itemName="landing page"
+        returnText={texts.return_to_hubs}
+        returnLink={buildHubUrl()}
+      />
     </WideLayout>
   );
 };

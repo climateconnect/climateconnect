@@ -86,7 +86,11 @@ export default function HubLinks({
               className={linkClassName}
               key={hub.url_slug}
               // href={`${getLocalePrefix(locale)}/hubs/${hub.url_slug}`}
-              href={buildHubUrl({hubUrlSlug: hub?.url_slug, locale: locale, pathType: "hubBrowse"})}
+              href={buildHubUrl({
+                hubUrlSlug: hub?.url_slug,
+                locale: locale,
+                pathType: "hubBrowse",
+              })}
               underline="hover"
             >
               {hub.name}
