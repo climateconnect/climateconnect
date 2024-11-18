@@ -15,6 +15,7 @@ import {
   ProjectCommentReplyNotification,
 } from "./CommentNotifications";
 import GenericNotification from "./GenericNotification";
+import { buildHubUrl } from "../../../../public/lib/urlBuilder";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -244,8 +245,14 @@ const MentionNotification = ({ notification, texts, locale }) => {
   } else {
     urlEnding =
       entityType === "project"
-        ? `/projects/${notification.project.url_slug}/#comments`
-        : `/hubs/${notification.idea.hub_url_slug}?idea=${notification.idea.url_slug}#ideas`;
+        ? `/projects/${notification?.project?.url_slug}/#comments`
+        : buildHubUrl({
+            hubUrlSlug: notification?.idea?.hub_url_slug,
+            queryParams: `idea=${notification?.idea?.url_slug}`,
+            hash: "ideas",
+            pathType: "hubBrowse",
+          });
+    // : `/hubs/${notification.idea.hub_url_slug}?idea=${notification.idea.url_slug}#ideas`;
   }
 
   const previewText = getFragmentsWithMentions(notification[commentProp]?.content, false, locale);

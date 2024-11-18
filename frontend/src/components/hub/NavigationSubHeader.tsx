@@ -6,6 +6,7 @@ import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import HubLinks from "../indexPage/hubsSubHeader/HubLinks";
+import {buildHubUrl} from "../../../public/lib/urlBuilder";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,7 +63,8 @@ export default function NavigationSubHeader({ hubName, allHubs, isLocationHub }:
               {" / "}
               <Link
                 className={classes.link}
-                href={getLocalePrefix(locale) + "/hubs"}
+                href={buildHubUrl({locale: locale, pathType: "allHubs"})}
+                // href={getLocalePrefix(locale) + "/hubs"}
                 underline="hover"
               >
                 {texts.hubs}

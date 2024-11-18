@@ -14,6 +14,7 @@ import LoadingSpinner from "../general/LoadingSpinner";
 import ClimateMatchResult from "./ClimateMatchResult";
 import ClimateMatchResultsOverviewBar from "./ClimateMatchResultsOverviewBar";
 import { getParams } from "../../../public/lib/generalOperations";
+import { buildHubUrl } from "../../../public/lib/urlBuilder";
 
 const useStyles = makeStyles((theme) => ({
   headerContainer: {
@@ -162,7 +163,11 @@ export default function ClimateMatchResultsRoot({}) {
             <div className={classes.backButtonsContainer}>
               <Button
                 className={classes.backButton}
-                href={`${getLocalePrefix(locale)}/hubs/${fromHub?.url_slug}`}
+                href={buildHubUrl({
+                  locale: locale,
+                  hubUrlSlug: fromHub?.url_slug,
+                  pathType: "hubBrowse",
+                })}
               >
                 <ArrowBackIosIcon className={classes.backIcon} />
                 {texts.climatehub} {fromHub?.name}

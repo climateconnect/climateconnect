@@ -13,6 +13,7 @@ import IdeaHubIcon from "./IdeaHubIcon";
 import IdeaRatingIcon from "./IdeaRatingIcon";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
+import { buildHubUrl } from "../../../public/lib/urlBuilder";
 
 const useStyles = makeStyles<Theme, { borderColor?: any }>((theme) => ({
   noUnderline: {
@@ -165,8 +166,16 @@ export default function IdeaPreview({
         onClick={handleCardClick}
         href={
           sendToIdeaPageOnClick
-            ? `${process.env.BASE_URL}/hubs/${idea?.hub_shared_in?.url_slug}?idea=${idea?.url_slug}#ideas`
-            : `${window.location.origin}${window.location.pathname}?idea=${idea?.url_slug}${window.location.hash}`
+            ? buildHubUrl({
+                hubUrlSlug: idea?.hub_shared_in?.url_slug,
+                queryParams: `idea=${idea?.url_slug}`,
+                hash: "ideas",
+                pathType: "hubBrowse",
+                includeBaseUrl: true,
+              })
+              // `${process.env.BASE_URL}/hubs/${idea?.hub_shared_in?.url_slug}?idea=${idea?.url_slug}#ideas`
+            : 
+              `${window.location.origin}${window.location.pathname}?idea=${idea?.url_slug}${window.location.hash}`
         }
         underline="hover"
       >
