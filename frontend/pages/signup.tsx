@@ -21,7 +21,6 @@ import BasicInfo from "../src/components/signup/BasicInfo";
 import AddInfo from "./../src/components/signup/AddInfo";
 import HorizontalSplitLayout from "./../src/components/layouts/HorizontalSplitLayout";
 import Image from "next/image";
-import { WidthFull } from "@mui/icons-material";
 
 export default function Signup() {
   const { ReactGA } = useContext(UserContext);
