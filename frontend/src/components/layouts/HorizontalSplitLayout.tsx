@@ -1,7 +1,29 @@
 import React from "react";
 import { Grid, Theme, useMediaQuery } from "@mui/material";
 
-const HorizontalSplitLayout = ({ left, right }) => {
+interface HorizontalSplitLayoutProps {
+  left: React.ReactNode;
+  right: React.ReactNode;
+  leftGridProps?: {
+    xs?: boolean | "auto" | number;
+    md?: boolean | "auto" | number;
+    lg?: boolean | "auto" | number;
+    [key: string]: any;
+  };
+  rightGridProps?: {
+    xs?: boolean | "auto" | number;
+    md?: boolean | "auto" | number;
+    lg?: boolean | "auto" | number;
+    [key: string]: any;
+  };
+}
+
+const HorizontalSplitLayout: React.FC<HorizontalSplitLayoutProps> = ({
+  left,
+  right,
+  leftGridProps,
+  rightGridProps,
+}) => {
   // check the breakpoint for the right pane
   // if the breakpoint is not satisfied, the right pane will be hidden
   const rightPaneHidden = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
@@ -9,12 +31,12 @@ const HorizontalSplitLayout = ({ left, right }) => {
   return (
     <Grid container spacing={2}>
       {/* left pane */}
-      <Grid item xs={12} md={7}>
+      <Grid item xs={12} md={7} {...leftGridProps}>
         {left}
       </Grid>
       {/* right pane */}
       {!rightPaneHidden && (
-        <Grid item md={5}>
+        <Grid item md={5} {...rightGridProps}>
           {right}
         </Grid>
       )}
