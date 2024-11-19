@@ -1,4 +1,5 @@
-import { Typography } from "@mui/material";
+import { Button, Card, Typography, IconButton } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -43,7 +44,6 @@ export default function BasicInfo({ handleSubmit, errorMessage, values }) {
 
   const messages = {
     submitMessage: texts.next_step,
-    headerMessage: texts.step_1_basic_information,
     bottomMessage: texts.already_have_an_account,
   };
 
@@ -53,11 +53,16 @@ export default function BasicInfo({ handleSubmit, errorMessage, values }) {
   };
 
   return (
-    <>
-      <Typography color="secondary" className={classes.appealText}>
+    <Card style={{ borderRadius: "3rem", padding: "2.5rem" }}>
+      <div style={{ display: "flex", gap: "2rem", verticalAlign: "center" }}>
+        <IconButton aria-label="delete">
+          <ArrowBackIcon />
+        </IconButton>
+        <Typography style={{ alignSelf: "center" }}>Step 1 of 3: Email and password</Typography>
+      </div>
+      <Typography color="primary">{texts.sign_up}</Typography>
+      <Typography color="secondary">
         {texts.here_you_can_create_your_personal_account}
-      </Typography>
-      <Typography color="secondary" className={classes.appealText}>
         {texts.you_will_have_an_opportunity_to_create_or_add_an_organization_once_signed_up}
       </Typography>
       <Form
@@ -67,6 +72,6 @@ export default function BasicInfo({ handleSubmit, errorMessage, values }) {
         onSubmit={(event, values) => handleSubmit(event, values)}
         errorMessage={errorMessage}
       />
-    </>
+    </Card>
   );
 }

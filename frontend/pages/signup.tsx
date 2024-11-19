@@ -19,6 +19,9 @@ import UserContext from "../src/components/context/UserContext";
 import Layout from "../src/components/layouts/layout";
 import BasicInfo from "../src/components/signup/BasicInfo";
 import AddInfo from "./../src/components/signup/AddInfo";
+import HorizontalSplitLayout from "./../src/components/layouts/HorizontalSplitLayout";
+import Image from "next/image";
+import { WidthFull } from "@mui/icons-material";
 
 export default function Signup() {
   const { ReactGA } = useContext(UserContext);
@@ -150,17 +153,31 @@ export default function Signup() {
 
   return (
     <Layout
-      title={texts.sign_up}
+      // title={texts.sign_up}
       isLoading={isLoading}
       message={errorMessage}
       messageType={errorMessage && "error"}
     >
       {curStep === "basicinfo" ? (
-        <BasicInfo
-          values={userInfo}
-          handleSubmit={handleBasicInfoSubmit}
-          errorMessage={errorMessages[steps[0]]}
-        />
+        <HorizontalSplitLayout
+          left={
+            <BasicInfo
+              values={userInfo}
+              handleSubmit={handleBasicInfoSubmit}
+              errorMessage={errorMessages[steps[0]]}
+            />
+          }
+          right={
+            <div style={{ position: "relative", width: "100%", height: "100%" }}>
+              <Image
+                src="/images/sign_up/Mobile login-pana.svg"
+                alt="Sign Up"
+                layout="fill" // Image will cover the container
+                objectFit="contain" // Ensures it fills without stretching
+              />
+            </div>
+          }
+        ></HorizontalSplitLayout>
       ) : (
         curStep === "personalinfo" && (
           <AddInfo
