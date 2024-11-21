@@ -49,7 +49,7 @@ export default function getFaqTexts({ classes, locale }) {
       ),
       fr: (
         <>
-          Du kannst die Antwort auf deine Frage nicht finden? Schreibe einfach an{" "}
+          {"Tu ne trouves pas ta réponse? Contacte nous à "}
           <Link
             className={classes?.topText}
             href="mailto:contact@climateconnect.earth"
@@ -69,7 +69,7 @@ export default function getFaqTexts({ classes, locale }) {
     search_results_for: {
       en: "Search results for",
       de: "Suche Ergebnisse für",
-      fr: "Recherche de résultats pour"
+      fr: "Rechercher des résultats pour"
     },
     find_all_commonly_asked_questions_on_the_faq_page: {
       en: (
@@ -99,7 +99,7 @@ export default function getFaqTexts({ classes, locale }) {
           </Link>
           .
         </>
-      )
+      ),
       fr: (
         <>
           Trouve  toutes les questions communes et leurs réponses sur la{" "}
@@ -113,7 +113,7 @@ export default function getFaqTexts({ classes, locale }) {
           </Link>
           .
         </>
-      ),
+      )
     },
   };
 }
