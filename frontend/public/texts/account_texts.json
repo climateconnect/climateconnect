@@ -1,74 +1,92 @@
 {
   "add_type": {
     "en": "Add Type",
-    "de": "Typ hinzufügen"
-  },
+    "de": "Typ hinzufügen",
+    "fr": "Ajoutes un type"
+},
   "choose_type": {
     "en": "Choose an organization type",
-    "de": "Wähle einen Organisationstyp aus"
-  },
+    "de": "Wähle einen Organisationstyp aus",
+    "fr": "Choisis un type d'organisation"
+},
   "parent_organization": {
     "en": "Parent organization",
-    "de": "Mutterorganisation"
-  },
+    "de": "Mutterorganisation",
+    "fr": "Organisation Mére"
+},
   "please_upload_either_a_png_or_a_jpg_file": {
     "en": "Please upload either a png or a jpg file.",
-    "de": "Bitte wähle entweder eine PNG oder JPG Datei aus."
-  },
+    "de": "Bitte wähle entweder eine PNG oder JPG Datei aus.",
+    "fr": "Télécharges un format png ou jpg."
+},
   "add_background_image": {
     "en": "Add background image",
-    "de": "Hintergrundbild hinzufügen"
-  },
+    "de": "Hintergrundbild hinzufügen",
+    "fr": "Ajouter une image de fond"
+},
   "add_image": {
     "en": "Add image",
-    "de": "Bild hinzufügen"
-  },
+    "de": "Bild hinzufügen",
+    "fr": "Ajouter une image"
+},
   "first_name": {
     "en": "First name",
-    "de": "Vorname"
-  },
+    "de": "Vorname",
+    "fr": "Prénom"
+},
   "last_name": {
     "en": "Last name",
-    "de": "Nachname"
-  },
+    "de": "Nachname",
+    "fr": "Nom de famille"
+},
   "if_you_wish_to_delete": {
     "en": "If you wish to delete this account, send an email to",
-    "de": "Wenn du diesen Account löschen möchtest, sende bitte eine E-Mail an"
-  },
+    "de": "Wenn du diesen Account löschen möchtest, sende bitte eine E-Mail an",
+    "fr": "Envoies nous un email si tu souhaites supprimer ton compte"
+},
   "exit": {
     "en": "Exit",
-    "de": "Seite verlassen"
-  },
+    "de": "Seite verlassen",
+    "fr": "Quitter la page"
+},
   "do_you_really_want_to_exit_without_saving": {
     "en": "Do you really want to exit without saving?",
-    "de": "Möchtest du die Seite wirklich verlassen, ohne zu speichern?"
-  },
+    "de": "Möchtest du die Seite wirklich verlassen, ohne zu speichern?",
+    "fr": "Veux-tu vraiment quitter sans sauvegarder?"
+},
   "edit": {
     "en": "Edit",
-    "de": "Bearbeiten"
-  },
+    "de": "Bearbeiten",
+    "fr": "Editer"
+},
   "edit_avatar": {
     "en": "Edit Avatar",
-    "de": "Profilbild Bearbeiten"
-  },
+    "de": "Profilbild Bearbeiten",
+    "fr": "Editer l'avatar"
+},
   "remove_avatar": {
     "en": "Remove Avatar",
-    "de": "Profilbild entfernen"
-  },
+    "de": "Profilbild entfernen",
+    "fr": "Supprimer l'avatar"
+},
   "add_avatar": {
     "en": "Add Avatar",
-    "de": "Profilbild hinzufügen"
-  },
+    "de": "Profilbild hinzufügen",
+    "fr": "Ajouter un avatar"
+},
   "do_you_really_want_to_remove_avatar": {
     "en": "Do you really want to remove your avatar image?",
-    "de": "Möchtest du wirklich dein Profilbild entfernen?"
-  },
+    "de": "Möchtest du wirklich dein Profilbild entfernen?",
+    "fr": "Veux-tu vraiment enlever l'image de ton avatar?"
+},
   "remove_background_image": {
     "en": "Remove background image",
-    "de": "Hintergrundbild entfernen"
-  },
+    "de": "Hintergrundbild entfernen",
+    "fr": "Enlever l'image de fond"
+},
   "do_you_really_want_to_remove_background_image": {
     "en": "Do you really want to remove your background image?",
-    "de": "Möchtest du wirklich dein Hintergrundbild entfernen?"
-  }
+    "de": "Möchtest du wirklich dein Hintergrundbild entfernen?",
+    "fr": "Veux-tu vraiment enlever l'image de fond?"
+}
 }

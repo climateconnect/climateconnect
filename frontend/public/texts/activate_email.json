@@ -1,6 +1,7 @@
 {
   "log_in_to_verify_email": {
     "en": "You have to log in to verify your new email.",
-    "de": "Du musst dich einloggen, um deine E-Mail Adresse zu verifizieren."
+    "de": "Du musst dich einloggen, um deine E-Mail Adresse zu verifizieren.",
+    "fr": "Tu dois te connecter pour vérifier ton adresse e-mail."
   }
 }

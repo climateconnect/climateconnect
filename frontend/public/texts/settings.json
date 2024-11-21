@@ -1,206 +1,257 @@
 {
   "new_email_verification": {
     "en": "New Email verification",
-    "de": "Neue E-Mail Adresse verifizieren"
+    "de": "Neue E-Mail Adresse verifizieren",
+    "fr": "Vérification du nouvel email"
   },
   "verifying_new_email": {
     "en": "Verifying your new email address...",
-    "de": "Überprüfe deine neuen E-Mail Adresse..."
+    "de": "Überprüfe deine neuen E-Mail Adresse...",
+    "fr": "Vérification de la nouvelle adresse mail"
   },
   "enter_your_new_password": {
     "en": "Enter your new password",
-    "de": "Gib dein neues Passwort ein"
+    "de": "Gib dein neues Passwort ein",
+    "fr": "Entre ton nouveau mots de passe"
   },
   "enter_your_new_password_again": {
     "en": "Enter your new password again",
-    "de": "Gib dein neues Passwort erneut ein"
+    "de": "Gib dein neues Passwort erneut ein",
+    "fr": "Entre encore ton nouveau mots de passe"
   },
   "set_new_password": {
     "en": "Set new password",
-    "de": "Lege ein neues Passwort fest"
+    "de": "Lege ein neues Passwort fest",
+    "fr": "Définis un nouveau mot de passe"
   },
   "passwords_dont_match": {
     "en": "Passwords don't match.",
-    "de": "Passwörter stimmen nicht überein"
+    "de": "Passwörter stimmen nicht überein",
+    "fr": "Les mots de passe ne correspondent pas"
   },
   "set_a_new_password": {
     "en": "Set a new password",
-    "de": "Lege ein neues Passwort fest"
+    "de": "Lege ein neues Passwort fest",
+    "fr": "Définir un nouveau mots de passe"
   },
   "click_here_to_get_another_password_reset_email": {
     "en": "Click here to get another password reset email",
-    "de": "Klicke hier, um eine weitere E-Mail zu bekommen, um das Passwort zurückzusetzen "
+    "de": "Klicke hier, um eine weitere E-Mail zu bekommen, um das Passwort zurückzusetzen ",
+    "fr": "Clique ici pour recevoir un autre e-mail afin de réinitialiser le mot de passe"
   },
   "account_verified": {
     "en": "Account verified",
-    "de": "Konto verifiziert"
+    "de": "Konto verifiziert",
+    "fr": "Compte vérifié"
   },
   "send_verification_email_again": {
     "en": "Send verification email again",
-    "de": "Verifizierungs-E-Mail erneut senden"
+    "de": "Verifizierungs-E-Mail erneut senden",
+    "fr": "Envoyer un email de vérification"
   },
   "resend_verification_email": {
     "en": "Resend verification email",
-    "de": "Verifizierungs-E-Mail erneut senden"
+    "de": "Verifizierungs-E-Mail erneut senden",
+    "fr": "Renvoyer un email de vérification"
   },
   "send_password_reset_email": {
     "en": "Send password reset email",
-    "de": "Sende eine E-Mail, um dein Passwort zurückzusetzen"
+    "de": "Sende eine E-Mail, um dein Passwort zurückzusetzen",
+    "fr": "Envoie un e-mail pour réinitialiser ton mot de passe"
   },
   "enter_your_login_email": {
     "en": "Enter your login email",
-    "de": "Gib deine E-Mail Adresse ein"
+    "de": "Gib deine E-Mail Adresse ein",
+    "fr": "Saisis ton adresse e-mail "
   },
   "you_didnt_enter_an_email": {
     "en": "You didn't enter an email.",
-    "de": "Du hast keine E-Mail Adresse eingegeben"
+    "de": "Du hast keine E-Mail Adresse eingegeben",
+    "fr": "Tu n'as pas saisis ton email"
   },
   "reset_password": {
     "en": "Reset Password",
-    "de": "Passwort zurücksetzen"
+    "de": "Passwort zurücksetzen",
+    "fr": "Renouveller le mots de passe"
   },
   "send_newsletter_text": {
     "en": "Receive emails about updates, news and interesting projects (~once per month)",
-    "de": "E-Mails über Updates, Neuigkeiten und interessante Projekte erhalten (ca. einmal pro Monat)"
+    "de": "E-Mails über Updates, Neuigkeiten und interessante Projekte erhalten (ca. einmal pro Monat)",
+    "fr": "recevoir des e-mails sur les mises à jour, les nouveautés et les projets intéressants (environ une fois par mois)"
   },
   "email_on_private_chat_message_text": {
     "en": "Get notified when somebody sends you a personal chat message",
-    "de": "Ich möchte benachrichtigt werden, wenn mir jemand persönlich schreibt"
+    "de": "Ich möchte benachrichtigt werden, wenn mir jemand persönlich schreibt",
+    "fr": "Etre informé quand quelqu'un t'envoie un message sur la plateforme"
   },
   "email_on_group_chat_message_text": {
     "en": "Get notified when somebody sends you a chat message in a group",
-    "de": "Ich möchte benachrichtigt werden, wenn jemand mir in einen Gruppenchat schreibt"
+    "de": "Ich möchte benachrichtigt werden, wenn jemand mir in einen Gruppenchat schreibt",
+    "fr": "Etre informé quand quelqu'un t'envoie un message dans une conversation de groupe"
   },
   "email_on_comment_on_your_project_text": {
     "en": "Get notified when somebody leaves a comment on a project you're part of",
-    "de": "Ich möchte benachrichtigt werden, wenn jemand ein Projekt kommentiert, an dem ich beteiligt bin"
+    "de": "Ich möchte benachrichtigt werden, wenn jemand ein Projekt kommentiert, an dem ich beteiligt bin",
+    "fr": "Etre informé quand quelqu'un laisse un commentaire sur un projet dont tu fais partie"
   },
   "email_on_comment_on_your_idea_text": {
     "en": "Get notified when somebody leaves a comment on an idea you're part of",
-    "de": "Ich möchte benachrichtigt werden, wenn jemand eine Idee kommentiert, an der ich beteiligt bin"
+    "de": "Ich möchte benachrichtigt werden, wenn jemand eine Idee kommentiert, an der ich beteiligt bin",
+    "fr": "Etre informé quand quelqu'un laisse un commentaire sur idée dont tu fais partie"
   },
   "email_on_reply_to_your_comment_text": {
     "en": "Get notified when somebody replies to your comment",
-    "de": "Ich möchte benachrichtigt werden, wenn jemand auf meinen Kommentar antwortet"
+    "de": "Ich möchte benachrichtigt werden, wenn jemand auf meinen Kommentar antwortet",
+    "fr": "Etre informé quand quelqu'un répond à un de tes commentaires"
   },
   "email_on_new_project_follower_text": {
     "en": "Get notified when somebody follows a project you're part of.",
-    "de": "Ich möchte benachrichtigt werden, wenn jemand einem Projekt folgt, an dem ich beteiligt bin"
+    "de": "Ich möchte benachrichtigt werden, wenn jemand einem Projekt folgt, an dem ich beteiligt bin",
+    "fr": "Etre informé quand quelqu'un suis un projet dont tu fais partie"
   },
   "email_on_new_project_like_text": {
     "en": "Get notified when somebody likes your project",
-    "de": "Ich möchte benachrichtigt werden, wenn jemand mein Projekt liked"
+    "de": "Ich möchte benachrichtigt werden, wenn jemand mein Projekt liked",
+    "fr": "Etre informé quand quelqu'un aime l'un de tes projets"
   },
   "email_on_mention_text": {
     "en": "Get notified when somebody mentions you in comment.",
-    "de": "Ich möchte benachrichtigt werden, wenn mich jemand in einem Kommentar erwähnt"
+    "de": "Ich möchte benachrichtigt werden, wenn mich jemand in einem Kommentar erwähnt",
+    "fr": "Etre informé quand quelqu'un te mentionne en commentaire"
   },
   "email_on_new_idea_join_text": {
     "en": "Get notified when somebody joins an ideas team that you're also part of",
-    "de": "Ich möchte benachrichtigt werden, wenn jemand neues bei einer Idee mitmacht, an der ich beteiligt bin"
+    "de": "Ich möchte benachrichtigt werden, wenn jemand neues bei einer Idee mitmacht, an der ich beteiligt bin",
+    "fr": "Etre informé quand quelqu'un rejoint l'équipe d'une idée dont tu fais partie"
   },
   "email_on_join_request_text": {
     "en": "Get notified when somebody asks to join your project or idea",
-    "de": "Ich möchte benachrichtigt werden, wenn jemand bei meiner Organisation oder Projekt mitmachen will"
+    "de": "Ich möchte benachrichtigt werden, wenn jemand bei meiner Organisation oder Projekt mitmachen will",
+    "fr": "Etre informé quand quelqu'un te demande de rejoindre ton projet ou ton idée"
   },
   "accepted_statistics_text": {
     "en": "Enable Statistics cookies to help us improve Climate Connect",
-    "de": "Aktiviere Statistik-Cookies, damit wir Climate Connect verbessern können"
+    "de": "Aktiviere Statistik-Cookies, damit wir Climate Connect verbessern können",
+    "fr": "Accépter les cookies statistiques et aide à améliorer Climate Connect"
   },
   "to_edit_your_settings": {
     "en": "to edit your settings.",
-    "de": ", um deine Einstellungen zu bearbeiten"
+    "de": ", um deine Einstellungen zu bearbeiten",
+    "fr": "pour modifier tes paramètres"
   },
   "your_new_passwords_dont_match": {
     "en": "Your new passwords don't match",
-    "de": "Deine neuen Passwörter stimmen nicht überein"
+    "de": "Deine neuen Passwörter stimmen nicht überein",
+    "fr": "Tes nouveaux mots de passes ne correspondent pas"
   },
   "your_new_email_can_not_be_the_same_as_your_old_email": {
     "en": "Your new email can not be the same as your old email.",
-    "de": "Deine neue E-Mail Adresse kann nicht dieselbe wie die alte sein"
+    "de": "Deine neue E-Mail Adresse kann nicht dieselbe wie die alte sein",
+    "fr": "Ton nouvel email ne peut être identique à'ancien"
   },
   "an_e_mail_to_confirm_this_e_mail_address_change_has_been_sent_to_your_old_e_mail_address": {
     "en": "An email to confirm this email address change has been sent to your old email address.",
-    "de": "Zur Bestätigung der Adressänderung wurde eine E-Mail an deine alte E-Mail Adresse gesendet"
+    "de": "Zur Bestätigung der Adressänderung wurde eine E-Mail an deine alte E-Mail Adresse gesendet",
+    "fr": "Un email de confirmation de changement d'adresse mail t'as été envoyé à ton ancienne adresse mail."
   },
   "you_havent_made_any_changes": {
     "en": "You haven't made any changes.",
-    "de": "Du hast keine Veränderungen vorgenommen"
+    "de": "Du hast keine Veränderungen vorgenommen",
+    "fr": "Tu n'as fait aucun changement"
   },
   "cookie_settings_successfully_updated": {
     "en": "Cookie settings successfully updated.",
-    "de": "Cookie-Einstellungen erfolgreich aktualisiert"
+    "de": "Cookie-Einstellungen erfolgreich aktualisiert",
+    "fr": "Mise à jour réussie des paramètres des cookies"
   },
   "change_password": {
     "en": "Change Password",
-    "de": "Passwort ändern"
+    "de": "Passwort ändern",
+    "fr": "Changer de mots de passe"
   },
   "make_sure_it_is_at_least_8_characters_including_a_number_and_an_uppercase_letter": {
     "en": "Make sure it is at least 8 characters including a number and an uppercase letter.",
-    "de": "Achte darauf, dass dein Passwort mindestens 8 Zeichen umfasst, darunter eine Zahl und einen Großbuchstaben"
+    "de": "Achte darauf, dass dein Passwort mindestens 8 Zeichen umfasst, darunter eine Zahl und einen Großbuchstaben",
+    "fr": "Veille à ce que ton mot de passe contienne au moins 8 caractères, dont un chiffre et une lettre majuscule."
   },
   "change_linked_email": {
     "en": "Change linked email",
-    "de": "Verknüpfte E-Mail ändern"
+    "de": "Verknüpfte E-Mail ändern",
+    "fr": "Modifier l'e-mail lié "
   },
   "your_linked_email_is": {
     "en": "Your linked email is",
-    "de": "Deine verknüpfte E-Mail ist"
+    "de": "Deine verknüpfte E-Mail ist",
+    "fr": "L'email lié est"
   },
   "new_email": {
     "en": "New Email",
-    "de": "Neue E-Mail Adresse"
+    "de": "Neue E-Mail Adresse",
+    "fr": "Nouvelle adresse mail"
   },
   "change_email": {
     "en": "Change email",
-    "de": "E-Mail Adresse ändern"
+    "de": "E-Mail Adresse ändern",
+    "fr": "Modifier l'adresse e-mail"
   },
   "change_email_text": {
     "en": "Changing your email will not change the email you use for Login. It will just change the email that your E-Mails are delivered to.",
-    "de": "Wenn du deine E-Mail Adresse änderst, ändert sich nicht die E-Mail Adresse, die du zum Anmelden verwendest. Es wird nur die E-Mail Adresse geändert, an die deine E-Mails zugestellt werden"
+    "de": "Wenn du deine E-Mail Adresse änderst, ändert sich nicht die E-Mail Adresse, die du zum Anmelden verwendest. Es wird nur die E-Mail Adresse geändert, an die deine E-Mails zugestellt werden",
+    "fr": "Modifier ton email ne changera pas celui que tu utilises pour te connecter. Il modifiera simplement l'adresse électronique à laquelle tes courriers électroniques sont envoyés."
   },
   "change_email_preferences": {
     "en": "Change email preferences",
-    "de": "E-Mail Einstellungen ändern"
+    "de": "E-Mail Einstellungen ändern",
+    "fr": "Modifier les préférences d'email"
   },
   "change_preferences": {
     "en": "Change preferences",
-    "de": "Einstellungen ändern"
+    "de": "Einstellungen ändern",
+    "fr": "Modifier les préférences"
   },
   "change_cookie_settings": {
     "en": "Change cookie settings",
-    "de": "Cookie Einstellungen ändern"
+    "de": "Cookie Einstellungen ändern",
+    "fr": "Modifier les paramètres de cookies"
   },
   "edit_your_profile_page": {
     "en": "Edit your profile page",
-    "de": "Profilseite bearbeiten"
+    "de": "Profilseite bearbeiten",
+    "fr": "Modifier ta page de profil"
   },
   "edit_profile_page": {
     "en": "Edit profile page",
-    "de": "Profilseite bearbeiten"
+    "de": "Profilseite bearbeiten",
+    "fr": "Modifier page de profil"
   },
   "if_you_wish_to_delete_this_account": {
     "en": "If you wish to delete this account, send an email to",
-    "de": "Wenn du das Konto löschen willst, sende eine E-Mail an"
+    "de": "Wenn du das Konto löschen willst, sende eine E-Mail an",
+    "fr": "Si tu souhaites supprimer ce compte, envoie un email à"
   },
   "old_password": {
     "en": "Old Password",
-    "de": "Altes Passwort"
+    "de": "Altes Passwort",
+    "fr": "Ancien mots de passe"
   },
   "new_password": {
     "en": "New Password",
-    "de": "Neues Passwort"
+    "de": "Neues Passwort",
+    "fr": "Nouveau mots de passe"
   },
   "confirm_new_password": {
     "en": "Confirm new password",
-    "de": "Neues Passwort bestätigen"
+    "de": "Neues Passwort bestätigen",
+    "fr": "Confirme le nouveau mots de passe"
   },
   "email_on_new_org_follower_text": {
     "en": "Get notified when somebody follows an organization you're part of",
-    "de": "Ich möchte benachrichtigt werden, wenn jemand einer Organisation folgt, von der ich Teil bin."
+    "de": "Ich möchte benachrichtigt werden, wenn jemand einer Organisation folgt, von der ich Teil bin.",
+    "fr": "Etre informé quand quelqu'un suis une organisation dont tu fais partie"
   },
   "email_on_new_org_project_text": {
     "en": "Get notified when an organization you follow posts an update",
-    "de": "Ich möchte benachrichtigt werden, wenn eine Organisation, der ich folge, eine Update postet"
+    "de": "Ich möchte benachrichtigt werden, wenn eine Organisation, der ich folge, eine Update postet",
+    "fr": "Etre informé quand une organisation que tu suis publie un nouveau projet"
   }
 }
