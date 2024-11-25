@@ -3,7 +3,7 @@ from location.serializers import LocationSerializer
 from django.utils.translation import get_language
 from hubs.utility.hub import get_hub_attribute, get_hub_stat_attribute, get_hub_supporter_attribute
 from rest_framework import serializers
-from hubs.models import Hub, HubStat, HubAmbassador, HubSupporter
+from hubs.models import Hub, HubStat, HubAmbassador, HubSupporter, HubThemeColor, HubTheme
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from climateconnect_api.models import UserProfile
 
@@ -193,4 +193,15 @@ class HubSupporterSerializer(serializers.ModelSerializer):
             return obj.organization.url_slug  
         return None
 
-    
+class HubThemeColorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HubThemeColor
+        fields = ['main', 'light', 'lightHover', 'extraLight']
+        
+class HubThemeSerializer(serializers.ModelSerializer):
+    primary_color = HubThemeColorSerializer()
+    secondary_color = HubThemeColorSerializer()
+
+    class Meta:
+        model = HubTheme
+        fields = ['primary_color', 'secondary_color']

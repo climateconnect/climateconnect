@@ -80,7 +80,6 @@ class HubStat(models.Model):
     def __str__(self):
         return "%s" % (self.name)
 
-
 class Hub(models.Model):
     name = models.CharField(
         help_text="Points to hub name", verbose_name="Name", max_length=1024
@@ -367,3 +366,80 @@ class HubSupporter(models.Model):
 
     def __str__(self):
         return "%s" % (self.name)
+
+class HubThemeColor(models.Model): 
+    main = models.CharField(
+        help_text="main color",
+        verbose_name="main color",
+        max_length=200,
+        null=True,
+        blank=True,
+    )
+    light = models.CharField(
+        help_text="light color",
+        verbose_name="light color",
+        max_length=200,
+        null=True,
+        blank=True,
+    )
+    lightHover = models.CharField(
+        help_text="lightHover color",
+        verbose_name="lightHover color",
+        max_length=200,
+        null=True,
+        blank=True,
+    )
+    extraLight = models.CharField(
+        help_text="extraLight color",
+        verbose_name="extraLight color",
+        max_length=200,
+        null=True,
+        blank=True,
+    )
+    class Meta:
+        app_label = "hubs"
+        verbose_name = "Hub Theme Color"
+        verbose_name_plural = "Hub Theme Color"
+
+    def __str__(self):
+        return f"ThemeColor {self.id} - Main: {self.main}"
+
+class HubTheme(models.Model): 
+    hub = models.OneToOneField(
+        Hub,
+        related_name="hub_theme",
+        help_text="The theme for the hub",
+        verbose_name="hub_theme",
+        on_delete=models.CASCADE,
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    primary_color = models.ForeignKey(
+        HubThemeColor,
+        related_name="primary_color",
+        help_text="primary_color",
+        verbose_name="primary_color",
+        on_delete=models.CASCADE,
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    secondary_color = models.ForeignKey(
+        HubThemeColor,
+        related_name="secondary_color",
+        help_text="secondary_color",
+        verbose_name="secondary_color",
+        on_delete=models.CASCADE,
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    
+    class Meta:
+        app_label = "hubs"
+        verbose_name = "Hub Theme"
+        verbose_name_plural = "Hub Theme"
+
+    def __str__(self):
+        return f"Theme for Hub {self.hub.name}"

@@ -7,7 +7,9 @@ from hubs.models import (
     HubStatTranslation,
     HubAmbassador,
     HubSupporter,
-    HubSupporterTranslation
+    HubSupporterTranslation,
+    HubTheme,
+    HubThemeColor,
 )
 
 admin.site.register(Hub, admin.ModelAdmin)
@@ -23,3 +25,9 @@ admin.site.register(HubAmbassador, admin.ModelAdmin)
 admin.site.register(HubSupporter, admin.ModelAdmin)
 
 admin.site.register(HubSupporterTranslation, admin.ModelAdmin)
+
+admin.site.register(HubTheme, admin.ModelAdmin)
+
+admin.site.register(HubThemeColor, admin.ModelAdmin)
+
+
