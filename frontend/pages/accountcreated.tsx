@@ -44,7 +44,7 @@ export default function AccountCreated() {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
 
-  const cardContent = !verified ? (
+  const cardContent = verified ? (
     <>
       <Typography color="primary" variant="h1" className={classes.marginBottom}>
         {texts.congratulations_you_have_created_your_account}
