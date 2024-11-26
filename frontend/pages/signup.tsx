@@ -38,6 +38,8 @@ export default function Signup() {
     newsletter: "",
     sendNewsletter: undefined,
   });
+  const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
+
   const cookies = new Cookies();
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
@@ -152,10 +154,9 @@ export default function Signup() {
     });
     setCurStep(steps[0]);
   };
-  const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
 
   return (
-    <WideLayout>
+    <WideLayout message={errorMessage} messageType="error" isLoading={isLoading}>
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
         <ThemeProvider theme={themeSignUp}>
           <ContentImageSplitView
