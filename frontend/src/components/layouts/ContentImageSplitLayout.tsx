@@ -8,7 +8,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// rename to ContentImageSplitScreen
 interface ContentImageSplitViewProps {
   content: React.ReactNode;
   image: React.ReactNode;
@@ -22,8 +21,8 @@ interface ContentImageSplitViewProps {
     md?: "auto" | number;
     lg?: "auto" | number;
   };
-  reversed?: boolean;
   minHeight?: string;
+  direction?: "row" | "row-reverse" | "column" | "column-reverse";
 }
 
 const ContentImageSplitView: React.FC<ContentImageSplitViewProps> = ({
@@ -31,8 +30,8 @@ const ContentImageSplitView: React.FC<ContentImageSplitViewProps> = ({
   image,
   leftGridSizes,
   rightGridSizes,
-  reversed,
   minHeight,
+  direction,
 }) => {
   // check the breakpoint for the right pane
   // if the breakpoint is not satisfied, the right pane will be hidden
@@ -48,7 +47,7 @@ const ContentImageSplitView: React.FC<ContentImageSplitViewProps> = ({
         justifyContent: "center",
         minHeight: minHeight ? minHeight : "",
       }}
-      direction={reversed ? "row-reverse" : "row"}
+      direction={direction ? direction : "row"}
     >
       {/* content pane */}
       <Grid item xs={12} md={7} {...leftGridSizes} className={classes.centerItems}>

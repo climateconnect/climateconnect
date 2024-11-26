@@ -1,8 +1,9 @@
 import {
+  Button,
   Card,
   CardContent,
   Container,
-  Paper,
+  Link,
   Theme,
   ThemeProvider,
   Typography,
@@ -19,15 +20,18 @@ import ContentImageSplitView from "../src/components/layouts/ContentImageSplitLa
 import WideLayout from "../src/components/layouts/WideLayout";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    textAlign: "center",
-    padding: theme.spacing(5),
-  },
   italic: {
     fontStyle: "italic",
   },
   centerText: {
     textAlign: "center",
+  },
+  centerContent: {
+    display: "flex",
+    justifyContent: "center",
+  },
+  marginBottom: {
+    marginBottom: theme.spacing(5),
   },
 }));
 
@@ -40,11 +44,17 @@ export default function AccountCreated() {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
 
-  const cardContent = verified ? (
+  const cardContent = !verified ? (
     <>
-      <Typography variant="h5">{texts.congratulations_you_have_created_your_account}</Typography>
-      <Typography variant="h4">
-        <a href={getLocalePrefix(locale) + "/signin"}>{texts.click_here_to_log_in}</a>
+      <Typography color="primary" variant="h1" className={classes.marginBottom}>
+        {texts.congratulations_you_have_created_your_account}
+      </Typography>
+      <Typography color="primary" variant="h3" className={classes.centerContent}>
+        <Link href={getLocalePrefix(locale) + "/signin"}>
+          <Button variant="contained" color="primary" style={{ alignSelf: "center" }}>
+            {texts.click_here_to_log_in}
+          </Button>
+        </Link>
       </Typography>
     </>
   ) : (
@@ -75,7 +85,7 @@ export default function AccountCreated() {
         <ThemeProvider theme={themeSignUp}>
           <ContentImageSplitView
             minHeight="75vh"
-            reversed={true}
+            direction="row-reverse"
             content={
               <Card>
                 <CardContent>{cardContent}</CardContent>

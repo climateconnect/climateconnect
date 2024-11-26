@@ -171,7 +171,6 @@ export default function Signup() {
       <ThemeProvider theme={themeSignUp}>
         <ContentImageSplitView
           minHeight="80vh"
-          reversed={false}
           content={
             curStep === "basicinfo" ? (
               <BasicInfo
