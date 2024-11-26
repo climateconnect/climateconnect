@@ -790,5 +790,17 @@
   "invalid_value": {
     "en": "Invalid Value",
     "de": "Ungültiger Wert"
+  },
+  "submit" : {
+    "en": "Submit",
+    "de": "Absenden"
+  },
+  "step_1_of_2_sign_up": {
+    "en": "Step 1 of 2: Email and password",
+    "de": "Schritt 1 von 2: E-Mail und Passwort"
+  },
+  "step_2_of_2_sign_up": {
+    "en": "Step 2 of 2: Basic Info",
+    "de": "Schritt 2 von 2: Grundlegende Informationen"
   }
 }

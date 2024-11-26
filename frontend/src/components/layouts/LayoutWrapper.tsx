@@ -168,7 +168,10 @@ export default function LayoutWrapper({
           </div>
         ) : (
           <FeedbackContext.Provider value={contextValues}>
-            <div className={`${!fixedHeight && !noSpaceForFooter && classes.leaveSpaceForFooter}`}>
+            <div
+              className={`${!fixedHeight && !noSpaceForFooter && classes.leaveSpaceForFooter}`}
+              style={{ display: "flex", flexDirection: "column" }}
+            >
               {children}
               {!acceptedNecessary && bannerOpen && initialized && (
                 <CookieBanner closeBanner={closeBanner} />

@@ -192,4 +192,80 @@ const theme = createTheme(coreTheme, {
   },
 });
 
+export const themeSignUp = createTheme(coreTheme, {
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        containedSizeMedium: {
+          borderRadius: 3,
+          paddingLeft: coreTheme.spacing(4),
+          paddingRight: coreTheme.spacing(4),
+          paddingTop: coreTheme.spacing(1),
+          paddingBottom: coreTheme.spacing(1),
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          // borderRadius: "3rem",
+          padding: "50px 65px",
+          // background: "#F8F8F8",
+          boxShadow: "inset 1px 1px 6px #00000014, 6px 4px 10px #00000029",
+          borderRadius: "60px",
+        },
+      },
+    },
+    MuiCardContent: {
+      styleOverrides: {
+        root: {
+          padding: 0,
+          paddingBottom: "0 !important", // otherwise the "last child" rule will overwrite the padding 0 rule
+          margin: 0,
+        },
+      },
+    },
+
+    // font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold) var(--unnamed-font-size-50)/var(--unnamed-line-spacing-68) var(--unnamed-font-family-open-sans);
+    // letter-spacing: var(--unnamed-character-spacing-0);
+    // color: var(--unnamed-color-207178);
+    // text-align: left;
+    // font: normal normal bold 50px/68px Open Sans;
+    // letter-spacing: 0px;
+    // color: #207178;
+    // opacity: 1;
+
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          // textAlign: "center",
+          // padding: coreTheme.spacing(5),
+        },
+        h1: {
+          letterSpacing: 0,
+          fontWeight: "bold",
+          // TODO: not sure what 50px/68px means
+          // fontSize: "50px/68px",
+          // fontSize: "1.9rem", // 30.4px on 16px base
+          fontSize: "40px", // 30.4px on 16px base
+          textAlign: "left",
+          marginBottom: "0.5rem",
+        },
+        h3: {
+          letterSpacing: 0,
+          // TODO: not sure what 50px/68px means
+          // fontSize: "25px/34px",
+          // fontSize: "0.9rem", // 14.4px on 16px base
+          fontSize: "20px",
+          textAlign: "left",
+          marginBottom: "0.5rem",
+        },
+        subtitle1: {
+          fontSize: "16px",
+        },
+      },
+    },
+  },
+});
+
 export default theme;

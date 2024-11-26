@@ -295,8 +295,9 @@ export default function getProfileTexts({ profile, locale }) {
       ),
     },
     signup_step_2_headline: {
-      en: "Step 2: A little bit about yourself",
-      de: "Schritt 2: Ein paar Infos über dich",
+      en: "Add your Name and Location. This way People can find you and know where you are from.",
+      de:
+        "Füge deinen Namen und deinen Standort hinzu. So können dich andere finden und wissen, woher du kommst.",
     },
     repeat_password: {
       en: "Repeat Password",

@@ -21,6 +21,16 @@ import BasicInfo from "../src/components/signup/BasicInfo";
 import AddInfo from "./../src/components/signup/AddInfo";
 import HorizontalSplitLayout from "./../src/components/layouts/HorizontalSplitLayout";
 import Image from "next/image";
+import { ThemeProvider } from "@emotion/react";
+import { themeSignUp } from "../src/themes/theme";
+import makeStyles from "@mui/styles/makeStyles";
+
+const useStyles = makeStyles({
+  slimSubmitButton: {
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
+});
 
 export default function Signup() {
   const { ReactGA } = useContext(UserContext);
@@ -35,6 +45,7 @@ export default function Signup() {
     newsletter: "",
     sendNewsletter: undefined,
   });
+  const classes = useStyles();
   const cookies = new Cookies();
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
@@ -157,15 +168,31 @@ export default function Signup() {
       message={errorMessage}
       messageType={errorMessage && "error"}
     >
-      {curStep === "basicinfo" ? (
+      <ThemeProvider theme={themeSignUp}>
         <HorizontalSplitLayout
           left={
-            <BasicInfo
-              values={userInfo}
-              handleSubmit={handleBasicInfoSubmit}
-              errorMessage={errorMessages[steps[0]]}
-            />
+            curStep === "basicinfo" ? (
+              <BasicInfo
+                values={userInfo}
+                handleSubmit={handleBasicInfoSubmit}
+                errorMessage={errorMessages[steps[0]]}
+              />
+            ) : (
+              curStep === "personalinfo" && (
+                <AddInfo
+                  values={userInfo}
+                  handleSubmit={handleAddInfoSubmit}
+                  errorMessage={errorMessages[steps[1]]}
+                  handleGoBack={handleGoBackFromAddInfo}
+                  locationInputRef={locationInputRef}
+                  locationOptionsOpen={locationOptionsOpen}
+                  handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+                />
+              )
+            )
           }
+          leftGridProps={{ md: 7 }}
+          rightGridProps={{ md: 5 }}
           right={
             <div style={{ position: "relative", width: "100%", height: "100%" }}>
               <Image
@@ -177,19 +204,7 @@ export default function Signup() {
             </div>
           }
         ></HorizontalSplitLayout>
-      ) : (
-        curStep === "personalinfo" && (
-          <AddInfo
-            values={userInfo}
-            handleSubmit={handleAddInfoSubmit}
-            errorMessage={errorMessages[steps[1]]}
-            handleGoBack={handleGoBackFromAddInfo}
-            locationInputRef={locationInputRef}
-            locationOptionsOpen={locationOptionsOpen}
-            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-          />
-        )
-      )}
+      </ThemeProvider>
     </Layout>
   );
 }

@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
 
 const verified = false;
 
+// TODO: update styles (refresh page style)
 export default function AccountCreated() {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
