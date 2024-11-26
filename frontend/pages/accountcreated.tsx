@@ -1,13 +1,21 @@
-import { Card, CardContent, Container, Paper, ThemeProvider, Typography } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Container,
+  Paper,
+  Theme,
+  ThemeProvider,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../public/lib/apiOperations";
 import Image from "next/image";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
-import Layout from "../src/components/layouts/layout";
 import { themeSignUp } from "../src/themes/theme";
-import HorizontalSplitLayout from "../src/components/layouts/HorizontalSplitLayout";
+import ContentImageSplitView from "../src/components/layouts/ContentImageSplitLayout";
 import WideLayout from "../src/components/layouts/WideLayout";
 
 const useStyles = makeStyles((theme) => ({
@@ -21,16 +29,14 @@ const useStyles = makeStyles((theme) => ({
   centerText: {
     textAlign: "center",
   },
-  signUpLayoutWrapper: {
-    minHeight: "80vh",
-    allignItems: "stretch",
-  },
 }));
 
 const verified = false;
 
 export default function AccountCreated() {
   const classes = useStyles();
+  const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
+
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
 
@@ -65,26 +71,25 @@ export default function AccountCreated() {
 
   return (
     <WideLayout title={texts.account_created}>
-      <Container maxWidth="xl">
+      <Container maxWidth={hugeScreen ? "xl" : "lg"}>
         <ThemeProvider theme={themeSignUp}>
-          <HorizontalSplitLayout
-            wrapperProps={{ className: classes.signUpLayoutWrapper, direction: "row-reverse" }}
-            left={
+          <ContentImageSplitView
+            minHeight="80vh"
+            reversed={true}
+            content={
               <Card>
                 <CardContent>{cardContent}</CardContent>
               </Card>
             }
-            right={
-              <div style={{ position: "relative", width: "100%", height: "100%" }}>
-                <Image
-                  src="/images/sign_up/success-factors-pana.svg"
-                  alt="Sign Up"
-                  layout="fill" // Image will cover the container
-                  objectFit="contain" // Ensures it fills without stretching
-                />
-              </div>
+            image={
+              <Image
+                src="/images/sign_up/success-factors-pana.svg"
+                alt="Sign Up"
+                layout="fill" // Image will cover the container
+                objectFit="contain" // Ensures it fills without stretching
+              />
             }
-          ></HorizontalSplitLayout>
+          ></ContentImageSplitView>
         </ThemeProvider>
       </Container>
     </WideLayout>
