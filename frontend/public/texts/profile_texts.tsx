@@ -173,8 +173,10 @@ export default function getProfileTexts({ profile, locale }) {
       de: "Glückwunsch! Nur noch ein Schritt, um Deine Anmeldung abzuschließen!",
     },
     please_click_on_the_link_we_emailed_you_to_activate_your_account: {
-      en: "Please click on the link we just emailed you to activate your account.",
-      de: "Bitte klicke auf den Link, um dein Konto zu aktivieren.",
+      en:
+        "We have sent you an E-Mail with a link! Please click on the link to activate your account.",
+      de:
+        "Wir haben dir eine E-Mail mit einem Link geschickt! Bitte klicke auf den Link, um dein Konto zu aktivieren.",
     },
     make_sure_to_also_check_your_spam: {
       en: "Make sure to also check your spam/junk folder in case you can't find the link.",

@@ -251,6 +251,13 @@ export const themeSignUp = createTheme(coreTheme, {
           textAlign: "left",
           marginBottom: "0.5rem",
         },
+        h2: {
+          letterSpacing: 0,
+          fontWeight: "bold",
+          fontSize: "30px", // 30.4px on 16px base
+          textAlign: "left",
+          marginBottom: "0.5rem",
+        },
         h3: {
           letterSpacing: 0,
           // TODO: not sure what 50px/68px means
