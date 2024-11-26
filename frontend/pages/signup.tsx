@@ -160,7 +160,7 @@ export default function Signup() {
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
         <ThemeProvider theme={themeSignUp}>
           <ContentImageSplitView
-            minHeight="80vh"
+            minHeight="75vh"
             content={
               curStep === "basicinfo" ? (
                 <BasicInfo
