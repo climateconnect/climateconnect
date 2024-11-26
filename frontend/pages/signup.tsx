@@ -30,6 +30,11 @@ const useStyles = makeStyles({
     paddingTop: 0,
     paddingBottom: 0,
   },
+
+  signUpLayoutWrapper: {
+    minHeight: "80vh",
+    placeContent: "center",
+  },
 });
 
 export default function Signup() {
@@ -170,6 +175,7 @@ export default function Signup() {
     >
       <ThemeProvider theme={themeSignUp}>
         <HorizontalSplitLayout
+          wrapperProps={{ className: classes.signUpLayoutWrapper }}
           left={
             curStep === "basicinfo" ? (
               <BasicInfo
