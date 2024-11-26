@@ -156,7 +156,7 @@ export default function Signup() {
   };
 
   return (
-    <WideLayout message={errorMessage} messageType="error" isLoading={isLoading}>
+    <WideLayout message={errorMessage} messageType={errorMessage && "error"} isLoading={isLoading}>
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
         <ThemeProvider theme={themeSignUp}>
           <ContentImageSplitView

@@ -205,14 +205,6 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       display: "flex",
       justifyContent: "center",
     },
-    // signupButton: {
-    //   background: theme.palette.primary.main,
-    //   marginLeft: theme.spacing(1), // to also include the margin from the buttonMarginLeft class
-    //   color: theme.palette.primary.contrastText,
-    //   "&:hover": {
-    //     color: theme.palette.primary.main,
-    //   },
-    // },
   };
 });
 
@@ -280,7 +272,6 @@ const getLinks = (path_to_redirect, texts, isLocationHub) => [
     isOutlinedInHeader: true,
     onlyShowLoggedOut: true,
     alwaysDisplayDirectly: true,
-    // className: "signupButton",
   },
 ];
 
