@@ -202,7 +202,7 @@ export default function Signup() {
           right={
             <div style={{ position: "relative", width: "100%", height: "100%" }}>
               <Image
-                src="/images/sign_up/Mobile login-pana.svg"
+                src="/images/sign_up/mobile-login-pana.svg"
                 alt="Sign Up"
                 layout="fill" // Image will cover the container
                 objectFit="contain" // Ensures it fills without stretching
