@@ -21,7 +21,7 @@ import AddInfo from "./../src/components/signup/AddInfo";
 import ContentImageSplitView from "../src/components/layouts/ContentImageSplitLayout";
 import Image from "next/image";
 import { ThemeProvider } from "@emotion/react";
-import { themeSignUp } from "../src/themes/theme";
+import { themeSignUp } from "../src/themes/signupTheme";
 import WideLayout from "../src/components/layouts/WideLayout";
 import { Container, Theme, useMediaQuery } from "@mui/material";
 

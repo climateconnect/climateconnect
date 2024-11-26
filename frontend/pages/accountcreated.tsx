@@ -15,7 +15,7 @@ import { getLocalePrefix } from "../public/lib/apiOperations";
 import Image from "next/image";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
-import { themeSignUp } from "../src/themes/theme";
+import { themeSignUp } from "../src/themes/signupTheme";
 import ContentImageSplitView from "../src/components/layouts/ContentImageSplitLayout";
 import WideLayout from "../src/components/layouts/WideLayout";
 
