@@ -61,7 +61,7 @@ export default function AccountCreated() {
         {texts.please_click_on_the_link_we_emailed_you_to_activate_your_account}
       </Typography>
       <br />
-      <Typography component="p" variant="h3">
+      <Typography color="primary" component="p" variant="h3">
         {texts.make_sure_to_also_check_your_spam}
         <br />
         {texts.if_the_email_does_not_arrive_after_5_minutes}
@@ -74,7 +74,7 @@ export default function AccountCreated() {
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
         <ThemeProvider theme={themeSignUp}>
           <ContentImageSplitView
-            minHeight="80vh"
+            minHeight="75vh"
             reversed={true}
             content={
               <Card>

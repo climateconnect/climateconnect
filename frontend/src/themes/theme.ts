@@ -225,6 +225,13 @@ export const themeSignUp = createTheme(coreTheme, {
         },
       },
     },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          textDecoration: "underline",
+        },
+      },
+    },
 
     // font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold) var(--unnamed-font-size-50)/var(--unnamed-line-spacing-68) var(--unnamed-font-family-open-sans);
     // letter-spacing: var(--unnamed-character-spacing-0);
