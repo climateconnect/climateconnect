@@ -51,7 +51,7 @@ export default function AccountCreated() {
       </Typography>
       <Typography color="primary" variant="h3" className={classes.centerContent}>
         <Link href={getLocalePrefix(locale) + "/signin"}>
-          <Button variant="contained" color="primary" style={{ alignSelf: "center" }}>
+          <Button variant="contained" color="primary">
             {texts.click_here_to_log_in}
           </Button>
         </Link>

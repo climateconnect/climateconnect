@@ -23,14 +23,6 @@ import ContentImageSplitView from "../src/components/layouts/ContentImageSplitLa
 import Image from "next/image";
 import { ThemeProvider } from "@emotion/react";
 import { themeSignUp } from "../src/themes/theme";
-import makeStyles from "@mui/styles/makeStyles";
-
-const useStyles = makeStyles({
-  slimSubmitButton: {
-    paddingTop: 0,
-    paddingBottom: 0,
-  },
-});
 
 export default function Signup() {
   const { ReactGA } = useContext(UserContext);
@@ -45,7 +37,6 @@ export default function Signup() {
     newsletter: "",
     sendNewsletter: undefined,
   });
-  const classes = useStyles();
   const cookies = new Cookies();
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
@@ -162,12 +153,7 @@ export default function Signup() {
   };
 
   return (
-    <Layout
-      // title={texts.sign_up}
-      isLoading={isLoading}
-      message={errorMessage}
-      messageType={errorMessage && "error"}
-    >
+    <Layout isLoading={isLoading} message={errorMessage} messageType={errorMessage && "error"}>
       <ThemeProvider theme={themeSignUp}>
         <ContentImageSplitView
           minHeight="80vh"
