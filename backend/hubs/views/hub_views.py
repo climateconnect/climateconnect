@@ -96,7 +96,7 @@ class HubThemeAPIView(APIView):
             hub_theme = HubTheme.objects.get(hub=hub)
         except HubTheme.DoesNotExist:
             return Response(
-                {"message": "Hub  theme not found: {}".format(url_slug)},
+                {"message": "Hub theme not found: {}".format(url_slug)},
                 status=status.HTTP_404_NOT_FOUND,
             )
           

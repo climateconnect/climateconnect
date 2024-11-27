@@ -52,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("sm")]: {
       fontSize: 22,
     },
+    // color: theme.palette.text.primary,
     color: "white",
     padding: theme.spacing(1),
   },
@@ -126,7 +127,6 @@ export default function LoggedOutLocationHubBox({ headline, isLocationHub, locat
 
   const texts = getTexts({ page: "dashboard", locale: locale, location: location });
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
-
   const classes = useStyles({ isLocationHub: isLocationHub, isNarrowScreen: isNarrowScreen });
 
   const REASONS_TO_JOIN = [

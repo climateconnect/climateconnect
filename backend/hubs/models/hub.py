@@ -415,9 +415,9 @@ class HubTheme(models.Model):
         null=True,
         blank=True,
     )
-    primary_color = models.ForeignKey(
+    primary = models.ForeignKey(
         HubThemeColor,
-        related_name="primary_color",
+        related_name="primary",
         help_text="primary_color",
         verbose_name="primary_color",
         on_delete=models.CASCADE,
@@ -425,9 +425,9 @@ class HubTheme(models.Model):
         null=True,
         blank=True,
     )
-    secondary_color = models.ForeignKey(
+    secondary = models.ForeignKey(
         HubThemeColor,
-        related_name="secondary_color",
+        related_name="secondary",
         help_text="secondary_color",
         verbose_name="secondary_color",
         on_delete=models.CASCADE,
@@ -435,7 +435,17 @@ class HubTheme(models.Model):
         null=True,
         blank=True,
     )
-    
+    text = models.ForeignKey(
+        HubThemeColor,
+        related_name="text",
+        help_text="Set the text color",
+        verbose_name="text_color",
+        on_delete=models.CASCADE,
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+
     class Meta:
         app_label = "hubs"
         verbose_name = "Hub Theme"

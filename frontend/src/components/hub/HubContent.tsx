@@ -4,7 +4,6 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
-import theme from "../../themes/theme";
 import MessageContent from "../communication/MessageContent";
 import UserContext from "../context/UserContext";
 import ElementOnScreen from "../hooks/ElementOnScreen";
@@ -15,6 +14,7 @@ import Dashboard from "../dashboard/Dashboard";
 import LocalAmbassadorInfoBox from "./LocalAmbassadorInfoBox";
 import HubHeadlineContainer from "./HubHeadlineContainer";
 import HubSupporters from "./HubSupporters";
+import theme from "../../themes/theme";
 
 type MakeStylesProps = {
   isLocationHub: boolean;

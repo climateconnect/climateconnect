@@ -10,14 +10,6 @@ import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import HubSupportersDialog from "../dialogs/HubSupportersDialog";
 import { Supporter } from "../../types";
 
-// type Supporter = {
-//   name: string;
-//   subtitle: string;
-//   logo: string;
-//   importance: number;
-//   organization_url_slug: string;
-// };
-
 type HubSupporter = {
   supportersList: Supporter[];
   containerClass?: string;
@@ -27,7 +19,7 @@ type HubSupporter = {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: "#207178",
+    backgroundColor: theme.palette.primary.main,
     borderRadius: 4,
     paddingBottom: "15px",
     paddingRight: "5px",
