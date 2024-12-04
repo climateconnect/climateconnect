@@ -7,21 +7,21 @@ export const transformThemeData = (data) => {
     palette: {
       ...palette,
       primary: {
-        main: data?.primary?.main ,
-        light: data?.primary?.light ,
-        extraLight: data?.primary?.extraLight ,
-        contrastText: data?.primary?.contrastText ,
+        main: data?.primary?.main,
+        light: data?.primary?.light,
+        extraLight: data?.primary?.extraLight,
+        contrastText: data?.primary?.contrastText,
       },
       secondary: {
-        main: data?.secondary?.main ,
-        light: data?.secondary?.light ,
+        main: data?.secondary?.main,
+        light: data?.secondary?.light,
         extraLight: data?.secondary?.extraLight,
-        contrastText: data?.secondary?.contrastText ,
+        contrastText: data?.secondary?.contrastText,
       },
       background: {
         default: data?.primary?.background_default,
         paper: data?.primary?.background_paper,
-      }
+      },
     },
   };
 

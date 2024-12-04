@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.primary.main, // The color is set to "theme.palette.primary.main" as a default. Ideally, this should use `theme.palette.secondary.contrastText`.
         // However, in the ClimateConnect hubs, the contrastText color is white.
         background: "white", // The background is set to "white" as a default. Ideally, this should use `theme.palette.secondary.main`.
-                            // However, in the ClimateConnect hubs, the secondary color is black, which results in an undesirable black background.
+        // However, in the ClimateConnect hubs, the secondary color is black, which results in an undesirable black background.
         borderRadius: 15,
         paddingTop: 3,
         paddingBottom: 3,

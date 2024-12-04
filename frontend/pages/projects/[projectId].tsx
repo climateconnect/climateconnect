@@ -93,7 +93,6 @@ export async function getServerSideProps(ctx) {
     getSimilarProjects(projectUrl, ctx.locale),
     hubPage ? getHubSupporters(hubPage, ctx.locale) : null,
     hubPage ? getHubTheme(hubPage) : null,
-
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -146,7 +145,7 @@ export default function ProjectPage({
     const projectTypeOptions = await getProjectTypeOptions(locale);
     setProjectTypes(projectTypeOptions);
   };
-  
+
   useEffect(function () {
     retrieveAndSetProjectTypes();
   }, []);
