@@ -21,13 +21,14 @@ const coreTheme = createTheme({
     primary: {
       main: "#207178",
       light: "#66BCB5",
-      lightHover: "#7dd1ca",
       extraLight: "#D7F7F5",
+      contrastText: "#FFFFFF",
     },
     secondary: {
       main: "#484848",
       light: "#484848c2",
       extraLight: "#EBEBEB",
+      contrastText: "#207178",
     },
     yellow: {
       main: "#FFDE0A",

@@ -382,13 +382,6 @@ class HubThemeColor(models.Model):
         null=True,
         blank=True,
     )
-    lightHover = models.CharField(
-        help_text="lightHover color",
-        verbose_name="lightHover color",
-        max_length=200,
-        null=True,
-        blank=True,
-    )
     extraLight = models.CharField(
         help_text="extraLight color",
         verbose_name="extraLight color",
@@ -396,6 +389,28 @@ class HubThemeColor(models.Model):
         null=True,
         blank=True,
     )
+    contrastText = models.CharField(
+        help_text="contrastText color",
+        verbose_name="contrastText color",
+        max_length=200,
+        null=True,
+        blank=True,
+    )
+    background_default = models.CharField(
+        help_text="default background color",
+        verbose_name="default background color",
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    background_paper = models.CharField(
+        help_text="paper background color",
+        verbose_name="paper background color",
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+
     class Meta:
         app_label = "hubs"
         verbose_name = "Hub Theme Color"
@@ -435,17 +450,6 @@ class HubTheme(models.Model):
         null=True,
         blank=True,
     )
-    text = models.ForeignKey(
-        HubThemeColor,
-        related_name="text",
-        help_text="Set the text color",
-        verbose_name="text_color",
-        on_delete=models.CASCADE,
-        max_length=1024,
-        null=True,
-        blank=True,
-    )
-
     class Meta:
         app_label = "hubs"
         verbose_name = "Hub Theme"

@@ -196,14 +196,13 @@ class HubSupporterSerializer(serializers.ModelSerializer):
 class HubThemeColorSerializer(serializers.ModelSerializer):
     class Meta:
         model = HubThemeColor
-        fields = ['main', 'light', 'lightHover', 'extraLight']
+        fields = ['main', 'light', 'extraLight', 'contrastText', 'background_default', 'background_paper']
 
 class HubThemeSerializer(serializers.ModelSerializer):
     primary = HubThemeColorSerializer()
     secondary = HubThemeColorSerializer()
-    text = HubThemeColorSerializer()
 
     class Meta:
         model = HubTheme
-        fields = ['primary', 'secondary', 'text']
+        fields = ['primary', 'secondary']
     

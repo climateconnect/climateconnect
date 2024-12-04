@@ -52,8 +52,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("sm")]: {
       fontSize: 22,
     },
-    // color: theme.palette.text.primary,
-    color: "white",
+    color: theme.palette.primary.contrastText,
     padding: theme.spacing(1),
   },
   lowerBoxWrapper: {

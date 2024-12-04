@@ -30,7 +30,7 @@ import DonationCampaignInformation from "../../src/components/staticpages/donate
 import { retrievePage } from "../../src/utils/webflow";
 import AddIcon from "@mui/icons-material/Add";
 import { Theme } from "@mui/material/styles";
-import theme from "../../src/themes/theme";
+import theme from "../../src/themes/hubTheme";
 import BrowseContext from "../../src/components/context/BrowseContext";
 import { ThemeProvider } from "@mui/material/styles";
 import { transformThemeData } from "../../src/themes/transformThemeData";
