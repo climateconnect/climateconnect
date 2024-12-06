@@ -16,7 +16,6 @@ import LargeFooter from "./LargeFooter";
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(2),
-    height: theme.spacing(8),
     borderTop: `1px solid ${theme.palette.grey[100]}`,
     width: "100%",
     zIndex: "9",
