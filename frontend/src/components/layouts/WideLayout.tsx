@@ -41,7 +41,7 @@ type Props = {
   title?: string;
   message?: string;
   messageType?: string;
-  isLoading?: string;
+  isLoading?: boolean;
   fixedHeader?: boolean;
   transparentHeader?: boolean;
   isStaticPage?: boolean;
