@@ -29,5 +29,3 @@ admin.site.register(HubSupporterTranslation, admin.ModelAdmin)
 admin.site.register(HubTheme, admin.ModelAdmin)
 
 admin.site.register(HubThemeColor, admin.ModelAdmin)
-
-

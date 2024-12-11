@@ -13,6 +13,7 @@ def hub_image_path(instance, filename):
 def hub_footer_image_path(instance, filename):
     return "hub_footers/{}/{}".format(instance.id, filename)
 
+
 def hub_supporter_logo_path(instance, filename):
     return "hub_supporter_logo/{}/{}".format(instance.id, filename)
 
@@ -80,6 +81,7 @@ class HubStat(models.Model):
     def __str__(self):
         return "%s" % (self.name)
 
+
 class Hub(models.Model):
     name = models.CharField(
         help_text="Points to hub name", verbose_name="Name", max_length=1024
@@ -111,7 +113,7 @@ class Hub(models.Model):
     )
 
     welcome_message_logged_in = models.CharField(
-        help_text="Displayed on the dashboard on location hubs when logged in. Starts with \"Hi $user.name\"",
+        help_text='Displayed on the dashboard on location hubs when logged in. Starts with "Hi $user.name"',
         verbose_name="Welcome message (logged in)",
         max_length=2048,
         null=True,
@@ -303,7 +305,8 @@ class HubAmbassador(models.Model):
             self.user.first_name + " " + self.user.last_name,
             self.title,
         )
-    
+
+
 class HubSupporter(models.Model):
     name = models.CharField(
         help_text="Supporter name",
@@ -358,6 +361,7 @@ class HubSupporter(models.Model):
         null=True,
         blank=True,
     )
+
     class Meta:
         app_label = "hubs"
         verbose_name = "Hub Supporter"
@@ -367,7 +371,8 @@ class HubSupporter(models.Model):
     def __str__(self):
         return "%s" % (self.name)
 
-class HubThemeColor(models.Model): 
+
+class HubThemeColor(models.Model):
     main = models.CharField(
         help_text="main color",
         verbose_name="main color",
@@ -419,7 +424,8 @@ class HubThemeColor(models.Model):
     def __str__(self):
         return f"ThemeColor {self.id} - Main: {self.main}"
 
-class HubTheme(models.Model): 
+
+class HubTheme(models.Model):
     hub = models.OneToOneField(
         Hub,
         related_name="hub_theme",
@@ -450,6 +456,7 @@ class HubTheme(models.Model):
         null=True,
         blank=True,
     )
+
     class Meta:
         app_label = "hubs"
         verbose_name = "Hub Theme"
