@@ -13,6 +13,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     display: "flex",
     justifyContent: "center",
+    // color: theme.palette.primary.contrastText,
   },
   popper: {
     zIndex: 25,
