@@ -18,6 +18,13 @@ const useStyles = makeStyles({
     maxWidth: 700,
     margin: "0 auto 0 0", // basically a left align
   },
+
+  cardHeaderBox: {
+    display: "flex",
+    gap: "2rem",
+    alignItems: "center",
+    marginBottom: 2,
+  },
 });
 
 export default function AddInfo({
@@ -91,19 +98,11 @@ export default function AddInfo({
     <Card>
       {/* TODO: maybe use card Header instead (?)
       see https://mui.com/material-ui/react-card/ for other usefull card components */}
-      <Box
-        sx={{
-          display: "flex",
-          gap: "2rem",
-          alignItems: "center",
-          marginBottom: 2,
-        }}
-      >
+      <Box className={classes.cardHeaderBox}>
         <IconButton aria-label="close" onClick={() => handleGoBack(undefined, values)}>
           <ArrowBack />
         </IconButton>
         <Typography color="primary" variant="subtitle1" component="div">
-          {/* TODO: use texts */}
           {texts.step_2_of_2_sign_up}
         </Typography>
       </Box>
@@ -119,7 +118,6 @@ export default function AddInfo({
           onSubmit={(event, values) => handleSubmit(event, values)}
           errorMessage={errorMessage}
           onGoBack={handleGoBack}
-          /*TODO(undefined) fieldClassName={classes.fieldClassName} */
           autocomplete="off"
         />
       </CardContent>

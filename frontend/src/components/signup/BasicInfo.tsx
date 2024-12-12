@@ -73,7 +73,7 @@ export default function BasicInfo({ handleSubmit, errorMessage, values }) {
         <IconButton
           aria-label="close"
           onClick={() => {
-            console.debug("closed");
+            window.history.back();
           }}
         >
           <Close />

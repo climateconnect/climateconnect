@@ -35,8 +35,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const verified = false;
-
 export default function AccountCreated() {
   const classes = useStyles();
   const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
@@ -44,20 +42,7 @@ export default function AccountCreated() {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
 
-  const cardContent = verified ? (
-    <>
-      <Typography color="primary" variant="h1" className={classes.marginBottom}>
-        {texts.congratulations_you_have_created_your_account}
-      </Typography>
-      <Typography color="primary" variant="h3" className={classes.centerContent}>
-        <Link href={getLocalePrefix(locale) + "/signin"}>
-          <Button variant="contained" color="primary">
-            {texts.click_here_to_log_in}
-          </Button>
-        </Link>
-      </Typography>
-    </>
-  ) : (
+  const cardContent = (
     <div>
       <Typography
         color="primary"
