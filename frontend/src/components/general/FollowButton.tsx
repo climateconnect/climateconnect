@@ -1,4 +1,4 @@
-import { Button, CircularProgress, Link, Tooltip, Typography } from "@mui/material";
+import { Button, CircularProgress, Link, Tooltip, Typography, useTheme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { MouseEventHandler } from "react";
 import ButtonIcon from "./ButtonIcon";
@@ -96,6 +96,7 @@ export default function FollowButton({
     followingChangePending: followingChangePending,
     belowSmallScreen: screenSize?.belowSmall,
   });
+  const theme = useTheme();
   return (
     <span className={classes.followButtonContainer}>
       {/* conditionally display the tooltip if text is defined only, since this is also used for project follow button */}
@@ -106,7 +107,7 @@ export default function FollowButton({
           variant="contained"
           startIcon={
             showStartIcon ? (
-              <ButtonIcon icon="follow" size={27} color={isUserFollowing ? "earth" : "white"} />
+              <ButtonIcon icon="follow" size={27} color={isUserFollowing ? "earth" : theme.palette.primary.contrastText} />
             ) : (
               <></>
             )

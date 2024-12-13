@@ -19,13 +19,13 @@ const useStyles = makeStyles((theme) => ({
   },
   tab: {
     textTransform: "none",
-    color: theme.palette.primary.contrastText,
+    color: theme.palette.background.default_contrastText,
     fontSize: 16,
     "&.Mui-selected": {
       paddingLeft: theme.spacing(1),
       paddingRight: theme.spacing(1),
       "& .tabLabel": {
-        color: theme.palette.primary.main, // The color is set to "theme.palette.primary.main" as a default. Ideally, this should use `theme.palette.secondary.contrastText`.
+        color: theme.palette.background.default_contrastText, // The color is set to "theme.palette.primary.main" as a default. Ideally, this should use `theme.palette.secondary.contrastText`.
         // However, in the ClimateConnect hubs, the contrastText color is white.
         background: "white", // The background is set to "white" as a default. Ideally, this should use `theme.palette.secondary.main`.
         // However, in the ClimateConnect hubs, the secondary color is black, which results in an undesirable black background.
@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   climateMatchLink: {
-    color: theme.palette.primary.contrastText,
+    color: theme.palette.background.default_contrastText,
     fontWeight: 600,
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),

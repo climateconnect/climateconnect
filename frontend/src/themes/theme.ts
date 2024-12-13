@@ -23,6 +23,7 @@ const coreTheme = createTheme({
       light: "#66BCB5",
       extraLight: "#D7F7F5",
       contrastText: "#FFFFFF",
+      lightHover: "#7dd1ca",
     },
     secondary: {
       main: "#484848",
@@ -34,7 +35,10 @@ const coreTheme = createTheme({
       main: "#FFDE0A",
     },
     background: {
-      default: "#FFF",
+      default: "#FFFFFF",
+      paper: "#FFFFFF",
+      default_contrastText: "#FFFFFF",
+      paper_contrastText: "#207178",
     },
     action: {
       selected: "#387077",

@@ -1,4 +1,4 @@
-import { Button, Container, Link, Tooltip, Typography } from "@mui/material";
+import { Button, Container, Link, Tooltip, Typography, useTheme } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import Linkify from "react-linkify";
@@ -239,6 +239,7 @@ export default function ProjectOverview({
 }
 
 function ShortProjectInfo({ project }) {
+  const theme = useTheme();
   const classes = useStyles({});
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
@@ -250,7 +251,7 @@ function ShortProjectInfo({ project }) {
       <div className={classes.projectInfoEl}>
         <Typography>
           <Tooltip title={texts.location}>
-            <PlaceIcon color="primary" className={classes.icon} />
+            <PlaceIcon sx={{ color: theme.palette.background.paper_contrastText }} className={classes.icon} />
           </Tooltip>{" "}
           {project.location}
           {project.additional_loc_info && <> - {project.additional_loc_info}</>}
@@ -266,11 +267,11 @@ function ShortProjectInfo({ project }) {
           </Typography>
         </div>
       )}
-      {project.website && (
+      {project?.website && (
         <div className={classes.projectInfoEl}>
           <Typography>
             <Tooltip title={texts.website}>
-              <LanguageIcon color="primary" className={classes.icon} />
+              <LanguageIcon sx={{ color: theme.palette.background.paper_contrastText }} className={classes.icon} />
             </Tooltip>{" "}
             <Linkify componentDecorator={componentDecorator}>{project.website}</Linkify>
           </Typography>
@@ -279,7 +280,7 @@ function ShortProjectInfo({ project }) {
       <div className={classes.projectInfoEl}>
         <Typography>
           <Tooltip title={texts.categories}>
-            <ExploreIcon color="primary" className={classes.icon} />
+            <ExploreIcon sx={{ color: theme.palette.background.paper_contrastText }} className={classes.icon} />
           </Tooltip>{" "}
           {project.tags.join(", ")}
         </Typography>

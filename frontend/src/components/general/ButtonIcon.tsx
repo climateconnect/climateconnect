@@ -1,29 +1,30 @@
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
-
+import LikeIcon from "../../../public/images/like-white.svg";
+import FollowIcon from "../../../public/images/follow-white.svg";
 const useStyles = makeStyles(() => ({
   icon: (props) => ({
     height: props.size,
   }),
+  color: (props) => ({
+    fill: props.color,
+  })
 }));
 
 export default function ButtonIcon({ icon, color, size }) {
-  const classes = useStyles({ size });
+  const classes = useStyles({ size, color });
 
   if (icon === "like") {
-    if (color === "white") {
-      return <img className={classes.icon} src={"/images/like-white.svg"} />;
-    }
     if (color === "earth") {
       return <img className={classes.icon} src={"/images/like-planet-earth.svg"} />;
     }
-    if (color === "primary") {
-      return <img className={classes.icon} src={"/images/like-primary.svg"} />;
+    if (color !== "earth") {
+      return <LikeIcon className={`${classes.icon} ${classes.color}`} />;
     }
   }
   if (icon === "follow") {
-    if (color === "white") {
-      return <img className={classes.icon} src={"/images/follow-white.svg"} />;
+    if (color !== "earth") {
+      return <FollowIcon className={`${classes.icon} ${classes.color}`}/>
     }
     if (color === "earth") {
       return <img className={classes.icon} src={"/images/follow-planet-earth.svg"} />;

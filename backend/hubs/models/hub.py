@@ -396,21 +396,6 @@ class HubThemeColor(models.Model):
         null=True,
         blank=True,
     )
-    background_default = models.CharField(
-        help_text="default background color",
-        verbose_name="default background color",
-        max_length=1024,
-        null=True,
-        blank=True,
-    )
-    background_paper = models.CharField(
-        help_text="paper background color",
-        verbose_name="paper background color",
-        max_length=1024,
-        null=True,
-        blank=True,
-    )
-
     class Meta:
         app_label = "hubs"
         verbose_name = "Hub Theme Color"
@@ -445,6 +430,26 @@ class HubTheme(models.Model):
         related_name="secondary",
         help_text="secondary_color",
         verbose_name="secondary_color",
+        on_delete=models.CASCADE,
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    background_default = models.ForeignKey(
+        HubThemeColor,
+        related_name="background_default",
+        help_text="default background color",
+        verbose_name="default background color",
+        on_delete=models.CASCADE,
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    background_paper = models.ForeignKey(
+        HubThemeColor,
+        related_name="background_paper",
+        help_text="paper background color",
+        verbose_name="paper background color",
         on_delete=models.CASCADE,
         max_length=1024,
         null=True,

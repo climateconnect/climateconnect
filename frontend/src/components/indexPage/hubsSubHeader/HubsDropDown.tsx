@@ -13,7 +13,7 @@ type MakeStylesProps = {
 const useStyles = makeStyles((theme) => ({
   hubsDropDownButton: (props: MakeStylesProps) => ({
     textTransform: "none",
-    color: theme.palette.primary.contrastText,
+    color: theme.palette.background.default_contrastText,
     fontSize: 16,
     height: props.height ? props.height : 54,
     paddingTop: theme.spacing(2),

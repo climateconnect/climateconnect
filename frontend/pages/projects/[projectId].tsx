@@ -468,7 +468,6 @@ function parseProjectMembers(projectMembers) {
     };
   });
 }
-
 const getHubTheme = async (url_slug) => {
   try {
     const resp = await apiRequest({
