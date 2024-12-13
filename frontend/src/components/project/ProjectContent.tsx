@@ -284,7 +284,7 @@ export default function ProjectContent({
         <Typography
           component="h2"
           variant="h6"
-          color= {theme.palette.background.paper_contrastText }
+          color={theme.palette.background.paper_contrastText}
           ref={projectDescriptionRef}
           className={classes.subHeader}
         >
@@ -330,7 +330,12 @@ export default function ProjectContent({
         />
       )}
       <div className={classes.contentBlock} ref={collaborationSectionRef}>
-        <Typography component="h2" variant="h6" color={theme.palette.background.paper_contrastText} className={classes.subHeader}>
+        <Typography
+          component="h2"
+          variant="h6"
+          color={theme.palette.background.paper_contrastText}
+          className={classes.subHeader}
+        >
           {texts.collaboration}
         </Typography>
         {project.collaborators_welcome ? (
@@ -342,7 +347,12 @@ export default function ProjectContent({
         )}
       </div>
       <div className={classes.contentBlock}>
-        <Typography component="h2" variant="h6" color={theme.palette.background.paper_contrastText} className={classes.subHeader}>
+        <Typography
+          component="h2"
+          variant="h6"
+          color={theme.palette.background.paper_contrastText}
+          className={classes.subHeader}
+        >
           {texts.progress}
         </Typography>
         <Typography variant="body2" fontStyle="italic" fontWeight="bold">

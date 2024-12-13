@@ -1,4 +1,4 @@
-import { Container, Tab, Tabs, Typography, useTheme} from "@mui/material";
+import { Container, Tab, Tabs, Typography, useTheme } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
       width: 125,
     },
     "&.Mui-selected": {
-      color: theme.palette.background.paper_contrastText
+      color: theme.palette.background.paper_contrastText,
     },
   },
   projectInteractionButtonContainer: {
@@ -479,7 +479,7 @@ export default function ProjectPageRoot({
             variant={screenSize.belowSmall ? "fullWidth" : "standard"}
             value={tabValue}
             onChange={handleTabChange}
-            indicatorColor= "primary"
+            indicatorColor="primary"
           >
             <Tab label={texts.project} className={classes.tab} />
             <Tab label={teamTabLabel()} className={classes.tab} />

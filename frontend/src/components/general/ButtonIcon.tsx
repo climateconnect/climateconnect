@@ -8,7 +8,7 @@ const useStyles = makeStyles(() => ({
   }),
   color: (props) => ({
     fill: props.color,
-  })
+  }),
 }));
 
 export default function ButtonIcon({ icon, color, size }) {
@@ -24,7 +24,7 @@ export default function ButtonIcon({ icon, color, size }) {
   }
   if (icon === "follow") {
     if (color !== "earth") {
-      return <FollowIcon className={`${classes.icon} ${classes.color}`}/>
+      return <FollowIcon className={`${classes.icon} ${classes.color}`} />;
     }
     if (color === "earth") {
       return <img className={classes.icon} src={"/images/follow-planet-earth.svg"} />;

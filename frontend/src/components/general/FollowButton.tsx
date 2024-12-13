@@ -107,7 +107,11 @@ export default function FollowButton({
           variant="contained"
           startIcon={
             showStartIcon ? (
-              <ButtonIcon icon="follow" size={27} color={isUserFollowing ? "earth" : theme.palette.primary.contrastText} />
+              <ButtonIcon
+                icon="follow"
+                size={27}
+                color={isUserFollowing ? "earth" : theme.palette.primary.contrastText}
+              />
             ) : (
               <></>
             )

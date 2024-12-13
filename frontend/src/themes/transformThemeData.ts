@@ -27,7 +27,7 @@ export const transformThemeData = (data) => {
       },
     },
   };
-  
+
   return customTheme;
 };
 

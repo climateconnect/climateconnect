@@ -99,7 +99,7 @@ export default function LikeButton({
 }: Args) {
   const classes = useStyles({ likingChangePending: likingChangePending });
   const theme = useTheme();
-  
+
   if (screenSize?.belowSmall) {
     return (
       <span
@@ -113,7 +113,11 @@ export default function LikeButton({
           disabled={likingChangePending}
           size="large"
         >
-          <ButtonIcon icon="like" size={40} color={isUserLiking ? "earth" : theme.palette.primary.contrastText} />
+          <ButtonIcon
+            icon="like"
+            size={40}
+            color={isUserLiking ? "earth" : theme.palette.primary.contrastText}
+          />
         </IconButton>
         {numberOfLikes > 0 && (
           <Typography className={classes.likeNumberMobile}>• {numberOfLikes}</Typography>
@@ -130,7 +134,11 @@ export default function LikeButton({
           className={classes.mediumScreenIconButton}
           size="large"
         >
-          <ButtonIcon icon="like" size={40} color={isUserLiking ? "earth" : theme.palette.primary.contrastText} />
+          <ButtonIcon
+            icon="like"
+            size={40}
+            color={isUserLiking ? "earth" : theme.palette.primary.contrastText}
+          />
         </IconButton>
         {numberOfLikes > 0 && (
           <Link
@@ -153,9 +161,15 @@ export default function LikeButton({
         <Button
           onClick={handleToggleLikeProject}
           variant="contained"
-          startIcon={<ButtonIcon icon="like" size={26} color={isUserLiking ? "earth" : theme.palette.primary.contrastText} />}
+          startIcon={
+            <ButtonIcon
+              icon="like"
+              size={26}
+              color={isUserLiking ? "earth" : theme.palette.primary.contrastText}
+            />
+          }
           // Changing the color attribute to theme.palette.secondary?.main : theme.palette.primary?.main causes error
-          color={isUserLiking ?  "secondary" : "primary"}
+          color={isUserLiking ? "secondary" : "primary"}
           disabled={likingChangePending}
           className={classes.largeLikeButton}
         >
