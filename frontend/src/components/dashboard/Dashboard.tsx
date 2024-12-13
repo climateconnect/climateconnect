@@ -1,4 +1,14 @@
-import { Box, Button, Link, MenuItem, MenuList, Paper, Popper, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Link,
+  MenuItem,
+  MenuList,
+  Paper,
+  Popper,
+  Theme,
+  Typography,
+} from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -15,7 +25,7 @@ import UserImage from "./UserImage";
 import CreateIdeaDialog from "../ideas/createIdea/CreateIdeaDialog";
 import { getUserOrganizations } from "../../../public/lib/organizationOperations";
 
-const useStyles = makeStyles((theme) => {
+const useStyles = makeStyles((theme: Theme) => {
   return {
     welcomeBanner: {
       backgroundColor: theme.palette.primary.main,
@@ -201,16 +211,22 @@ export default function Dashboard({
 }: Props) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
-  const texts = getTexts({ page: "dashboard", locale: locale, user: user, location: location });
+  const texts = getTexts({
+    page: "dashboard",
+    locale: locale,
+    user: user || undefined,
+    location: location,
+  });
   const [userOrganizations, setUserOrganizations] = useState(null);
   const [isCreateIdeaOpen, setCreateIdeaOpen] = useState(false);
   const token = new Cookies().get("auth_token");
 
-  useEffect(async function () {
+  useEffect(() => {
     if (userOrganizations === null) {
       setUserOrganizations("");
-      const userOrgsFromServer = await getUserOrganizations(token, locale);
-      setUserOrganizations(userOrgsFromServer || []);
+      getUserOrganizations(token, locale).then((userOrgsFromServer) => {
+        setUserOrganizations(userOrgsFromServer || []);
+      });
     }
   }, []);
 

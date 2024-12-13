@@ -70,3 +70,11 @@ declare module "@mui/material/styles/createPalette" {
     extraLight?: string;
   }
 }
+
+export type Supporter = {
+  name: string;
+  subtitle: string;
+  logo: string;
+  importance: number;
+  organization_url_slug: string;
+};

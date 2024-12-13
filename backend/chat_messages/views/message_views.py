@@ -68,7 +68,6 @@ class StartPrivateChat(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        print("starting private chat")
         if "profile_url_slug" not in request.data:
             return Response(
                 {"message": "Required parameter is missing"},
@@ -82,7 +81,6 @@ class StartPrivateChat(APIView):
             return Response(
                 {"message": "Participant not found"}, status=status.HTTP_404_NOT_FOUND
             )
-        print("checking whether user can send message")
         can_start_chat = check_can_start_chat(request.user.user_profile)
         if can_start_chat is not True:
             return Response(

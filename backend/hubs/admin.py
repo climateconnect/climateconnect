@@ -6,6 +6,8 @@ from hubs.models import (
     HubTranslation,
     HubStatTranslation,
     HubAmbassador,
+    HubSupporter,
+    HubSupporterTranslation
 )
 
 admin.site.register(Hub, admin.ModelAdmin)
@@ -17,3 +19,7 @@ admin.site.register(HubTranslation, admin.ModelAdmin)
 admin.site.register(HubStatTranslation, admin.ModelAdmin)
 
 admin.site.register(HubAmbassador, admin.ModelAdmin)
+
+admin.site.register(HubSupporter, admin.ModelAdmin)
+
+admin.site.register(HubSupporterTranslation, admin.ModelAdmin)
