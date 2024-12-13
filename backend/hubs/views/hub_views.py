@@ -4,7 +4,7 @@ from hubs.serializers.hub import (
     HubSerializer,
     HubStubSerializer,
     HubSupporterSerializer,
-    HubThemeSerializer
+    HubThemeSerializer,
 )
 from hubs.models.hub import Hub, HubAmbassador, HubSupporter, HubTheme
 from rest_framework.views import APIView
@@ -63,7 +63,8 @@ class ListSectorHubsView(ListAPIView):
         return Hub.objects.filter(hub_type=Hub.SECTOR_HUB_TYPE).filter(
             importance__gte=1
         )
-    
+
+
 class HubSupporterAPIView(APIView):
     permission_classes = [AllowAny]
 
@@ -83,6 +84,7 @@ class HubSupporterAPIView(APIView):
         else:
             return Response(None, status=status.HTTP_404_NOT_FOUND)
 
+
 class HubThemeAPIView(APIView):
     def get(self, request, url_slug):
         try:
@@ -99,7 +101,6 @@ class HubThemeAPIView(APIView):
                 {"message": "Hub theme not found: {}".format(url_slug)},
                 status=status.HTTP_404_NOT_FOUND,
             )
-          
+
         serializer = HubThemeSerializer(hub_theme)
         return Response(serializer.data, status=status.HTTP_200_OK)
-        
