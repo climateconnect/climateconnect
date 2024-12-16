@@ -17,7 +17,7 @@ type HubSupportersDialogProps = {
 
 const useStyles = makeStyles((theme) => ({
   dialogTitle: {
-    color:theme.palette.background.default_contrastText,
+    color: theme.palette.background.default_contrastText,
     marginRight: 0,
     textAlign: "center",
     fontSize: "17px",
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "-5px",
     marginRight: "-10px",
     padding: 0,
-    color:theme.palette.background.default_contrastText,
+    color: theme.palette.background.default_contrastText,
     "& svg": {
       fontSize: "17px",
     },

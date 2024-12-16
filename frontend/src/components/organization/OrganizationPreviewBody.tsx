@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => {
     },
     placeIcon: {
       color: theme.palette.background.default_contrastText,
-    }
+    },
   };
 });
 
@@ -67,7 +67,7 @@ export default function OrganizationPreviewBody({ organization }) {
           <span className={classes.locationBox}>
             <span className={classes.cardIconBox}>
               <Tooltip title="location">
-                <PlaceIcon  className={classes.placeIcon} />
+                <PlaceIcon className={classes.placeIcon} />
               </Tooltip>
             </span>
             <span className={classes.locationNameBox}>

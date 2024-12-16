@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => {
     },
     icon: {
       color: theme.palette.background.default_contrastText,
-    }
+    },
   };
 });
 
@@ -133,7 +133,11 @@ export default function FilterSection({
             className={classes.filterButton}
             onClick={onClickExpandFilters}
             startIcon={
-              filtersExpanded ? <HighlightOffIcon className={classes.icon} /> : <TuneIcon className={classes.icon} />
+              filtersExpanded ? (
+                <HighlightOffIcon className={classes.icon} />
+              ) : (
+                <TuneIcon className={classes.icon} />
+              )
             }
             ref={filterButtonRef}
           >

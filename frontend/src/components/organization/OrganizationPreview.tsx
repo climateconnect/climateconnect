@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => {
     },
     iconColor: {
       color: theme.palette.background.default_contrastText,
-    }
+    },
   };
 });
 

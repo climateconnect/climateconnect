@@ -19,10 +19,10 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 25,
   },
   hoverBorderColor: {
-    '&:hover': {
-    color: theme.palette.background.default_contrastText,
-    }
-  }
+    "&:hover": {
+      color: theme.palette.background.default_contrastText,
+    },
+  },
 }));
 
 export default function DropDownList({

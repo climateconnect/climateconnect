@@ -109,7 +109,7 @@ const useStyles = makeStyles((theme: Theme) => {
     },
     linkText: {
       color: theme.palette.background.default_contrastText,
-    }
+    },
   };
 });
 
