@@ -40,13 +40,13 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     marginTop: theme.spacing(1),
-    borderColor: theme.palette.background.default_contrastText,
+    borderColor: theme.palette?.background?.default_contrastText,
     "&:hover": {
-      borderColor: theme.palette.background.default_contrastText,
+      borderColor: theme.palette?.background?.default_contrastText,
     },
   },
   secondaryTextColor: {
-    color: theme.palette.background.default_contrastText,
+    color: theme.palette?.background?.default_contrastText,
   },
 }));
 

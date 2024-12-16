@@ -15,6 +15,13 @@ declare module "@mui/material/Button" {
   }
 }
 
+declare module "@mui/material/styles" {
+  interface TypeBackground {
+    default_contrastText?: string;
+    paper_contrastText?: string;
+  }
+}
+
 // Create core theme so we can access spacing etc. when customizing components
 const coreTheme = createTheme({
   palette: {
