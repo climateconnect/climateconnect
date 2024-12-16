@@ -10,7 +10,7 @@ import HubsDropDown from "../indexPage/hubsSubHeader/HubsDropDown";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    background: theme.palette.background.default,
+    background: theme.palette.primary.main,
   },
   tabs: {
     "& .MuiTabs-indicator": {
@@ -19,16 +19,14 @@ const useStyles = makeStyles((theme) => ({
   },
   tab: {
     textTransform: "none",
-    color: theme.palette.background.default_contrastText,
+    color: theme.palette.primary.contrastText,
     fontSize: 16,
     "&.Mui-selected": {
       paddingLeft: theme.spacing(1),
       paddingRight: theme.spacing(1),
       "& .tabLabel": {
-        color: theme.palette.background.default_contrastText, // The color is set to "theme.palette.primary.main" as a default. Ideally, this should use `theme.palette.secondary.contrastText`.
-        // However, in the ClimateConnect hubs, the contrastText color is white.
-        background: "white", // The background is set to "white" as a default. Ideally, this should use `theme.palette.secondary.main`.
-        // However, in the ClimateConnect hubs, the secondary color is black, which results in an undesirable black background.
+        color: theme.palette.primary.main,
+        background: theme.palette.primary.contrastText,
         borderRadius: 15,
         paddingTop: 3,
         paddingBottom: 3,
@@ -73,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   climateMatchLink: {
-    color: theme.palette.background.default_contrastText,
+    color: theme.palette.primary.contrastText,
     fontWeight: 600,
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),

@@ -31,13 +31,13 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   carouseltitle: {
-    color: "#FFFFFF",
+    color: theme.palette?.primary?.contrastText,
     fontSize: "13px",
     margin: "2px",
     textAlign: "center",
   },
   carouselContainer: {
-    backgroundColor: "#F0F2F5",
+    backgroundColor: theme.palette.background.default,
     borderRadius: "4px",
     position: "relative",
   },
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
       width: "7px",
       height: "7px",
       border: "none",
-      background: "#66BCB5",
+      background: theme.palette.primary.light,
     },
   },
   itemContainer: {
@@ -98,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
     gap: "20px",
     width: "100%",
     alignItems: "center",
-    backgroundColor: "#EEEFEEE8",
+    backgroundColor: "#EEEFEE",
     borderRadius: "4px",
     padding: "10px",
     marginBottom: theme.spacing(3),
@@ -121,7 +121,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   arrowIcon: {
-    color: "#207178",
+    color: theme.palette.background.default_contrastText,
   },
 }));
 

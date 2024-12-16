@@ -5,12 +5,6 @@ const hubTheme = createTheme({
   ...theme,
   palette: {
     ...theme.palette,
-    background: {
-      default: theme.palette.primary.main,
-      paper: "#FFFFFF",
-      default_contrastText: "#FFFFFF",
-      paper_contrastText: "#207178",
-    },
   },
   typography: {
     ...theme.typography,

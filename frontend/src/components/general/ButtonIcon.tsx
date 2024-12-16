@@ -1,13 +1,15 @@
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
-import LikeIcon from "../../../public/images/like-white.svg";
-import FollowIcon from "../../../public/images/follow-white.svg";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import PersonIcon from "@mui/icons-material/Person";
+
 const useStyles = makeStyles(() => ({
   icon: (props) => ({
-    height: props.size,
+    height: props.color === "earth" ? props.size : "auto",
+    fontSize: props.color === "earth" ? "inherit" : `${props.size}px !important`,
   }),
   color: (props) => ({
-    fill: props.color,
+    color: props.color,
   }),
 }));
 
@@ -15,19 +17,17 @@ export default function ButtonIcon({ icon, color, size }) {
   const classes = useStyles({ size, color });
 
   if (icon === "like") {
-    if (color === "earth") {
-      return <img className={classes.icon} src={"/images/like-planet-earth.svg"} />;
-    }
-    if (color !== "earth") {
-      return <LikeIcon className={`${classes.icon} ${classes.color}`} />;
-    }
+    return color === "earth" ? (
+      <img className={classes.icon} src={"/images/like-planet-earth.svg"} />
+    ) : (
+      <FavoriteIcon className={`${classes.icon} ${classes.color}`} />
+    );
   }
   if (icon === "follow") {
-    if (color !== "earth") {
-      return <FollowIcon className={`${classes.icon} ${classes.color}`} />;
-    }
-    if (color === "earth") {
-      return <img className={classes.icon} src={"/images/follow-planet-earth.svg"} />;
-    }
+    return color === "earth" ? (
+      <img className={classes.icon} src={"/images/follow-planet-earth.svg"} />
+    ) : (
+      <PersonIcon className={`${classes.icon} ${classes.color}`} />
+    );
   }
 }

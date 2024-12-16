@@ -37,7 +37,7 @@ const coreTheme = createTheme({
     background: {
       default: "#FFFFFF",
       paper: "#FFFFFF",
-      default_contrastText: "#FFFFFF",
+      default_contrastText: "#207178",
       paper_contrastText: "#207178",
     },
     action: {
