@@ -4,7 +4,7 @@ from organization.models.tags import ProjectTags
 from django.db import models
 from django.contrib.auth.models import User
 from organization.models.organization import Organization
-
+from django.db.models import Q
 
 def hub_image_path(instance, filename):
     return "hubs/{}/{}".format(instance.id, filename)
@@ -407,9 +407,17 @@ class HubThemeColor(models.Model):
         verbose_name_plural = "Hub Theme Color"
 
     def __str__(self):
-        return f"ThemeColor {self.id} - Main: {self.main}"
-
-
+        
+        related_themes = HubTheme.objects.filter(
+            Q(primary=self) | Q(secondary=self) | Q(background_default=self) | Q(background_paper=self)
+        )
+        # Collect hub names
+        hub_names = [theme.hub.name for theme in related_themes if theme.hub]
+        if hub_names:
+            return f"ThemeColor {self.id} : {self.main} (Hub Name: {', '.join(hub_names)})"
+        else:
+            return f"ThemeColor {self.id} : {self.main}"
+        
 class HubTheme(models.Model):
     hub = models.OneToOneField(
         Hub,
