@@ -373,30 +373,37 @@ class HubSupporter(models.Model):
 
 
 class HubThemeColor(models.Model):
+    name = models.CharField(
+        help_text="Used to reference this color",
+        verbose_name="Name",
+        max_length=200,
+        null=True,
+        blank=True,
+    )
     main = models.CharField(
         help_text="main color",
-        verbose_name="main color",
+        verbose_name="Main Color",
         max_length=200,
         null=True,
         blank=True,
     )
     light = models.CharField(
-        help_text="light color",
-        verbose_name="light color",
+        help_text="the lighter variation of the main color",
+        verbose_name="Light Color",
         max_length=200,
         null=True,
         blank=True,
     )
     extraLight = models.CharField(
-        help_text="extraLight color",
-        verbose_name="extraLight color",
+        help_text="the extra light variation of the main color",
+        verbose_name="Extra Light Color",
         max_length=200,
         null=True,
         blank=True,
     )
     contrastText = models.CharField(
-        help_text="contrastText color",
-        verbose_name="contrastText color",
+        help_text="Color which has strong contrast to the main color. This color will be used for text and small elements if the main color is used for the background.",
+        verbose_name="Contrast Text Color",
         max_length=200,
         null=True,
         blank=True,
@@ -414,16 +421,16 @@ class HubThemeColor(models.Model):
         # Collect hub names
         hub_names = [theme.hub.name for theme in related_themes if theme.hub]
         if hub_names:
-            return f"ThemeColor {self.id} : {self.main} (Hub Name: {', '.join(hub_names)})"
+            return f"{self.name} : {self.main} (Hub Name: {', '.join(hub_names)})"
         else:
-            return f"ThemeColor {self.id} : {self.main}"
+            return f"{self.name} : {self.main}"
         
 class HubTheme(models.Model):
     hub = models.OneToOneField(
         Hub,
         related_name="hub_theme",
-        help_text="The theme for the hub",
-        verbose_name="hub_theme",
+        help_text="The hub for which the theme should be used",
+        verbose_name="Hub",
         on_delete=models.CASCADE,
         max_length=1024,
         null=True,
@@ -432,7 +439,7 @@ class HubTheme(models.Model):
     primary = models.ForeignKey(
         HubThemeColor,
         related_name="primary",
-        help_text="primary_color",
+        help_text="Use hex code (e.g. #FFF)",
         verbose_name="primary_color",
         on_delete=models.CASCADE,
         max_length=1024,
@@ -442,7 +449,7 @@ class HubTheme(models.Model):
     secondary = models.ForeignKey(
         HubThemeColor,
         related_name="secondary",
-        help_text="secondary_color",
+        help_text="Use hex code (e.g. #FFF)",
         verbose_name="secondary_color",
         on_delete=models.CASCADE,
         max_length=1024,
@@ -452,7 +459,7 @@ class HubTheme(models.Model):
     background_default = models.ForeignKey(
         HubThemeColor,
         related_name="background_default",
-        help_text="default background color",
+        help_text="Use hex code (e.g. #FFF)",
         verbose_name="default background color",
         on_delete=models.CASCADE,
         max_length=1024,
