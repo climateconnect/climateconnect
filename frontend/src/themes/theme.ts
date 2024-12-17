@@ -18,7 +18,6 @@ declare module "@mui/material/Button" {
 declare module "@mui/material/styles" {
   interface TypeBackground {
     default_contrastText?: string;
-    paper_contrastText?: string;
   }
 }
 
@@ -45,7 +44,6 @@ const coreTheme = createTheme({
       default: "#FFFFFF",
       paper: "#FFFFFF",
       default_contrastText: "#207178",
-      paper_contrastText: "#207178",
     },
     action: {
       selected: "#387077",

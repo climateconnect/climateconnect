@@ -20,12 +20,11 @@ export const transformThemeData = (data) => {
       },
       background: {
         default: data?.background_default?.main,
-        paper: data?.background_paper?.main,
+        paper: palette.background.paper,
         default_contrastText: data?.background_default?.contrastText,
-        paper_contrastText: data?.background_paper?.contrastText,
       },
     },
+    
   };
-
   return customTheme;
 };

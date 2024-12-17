@@ -411,10 +411,20 @@ class HubThemeColor(models.Model):
         related_themes = HubTheme.objects.filter(
             Q(primary=self) | Q(secondary=self) | Q(background_default=self) | Q(background_paper=self)
         )
-        # Collect hub names
-        hub_names = [theme.hub.name for theme in related_themes if theme.hub]
-        if hub_names:
-            return f"ThemeColor {self.id} : {self.main} (Hub Name: {', '.join(hub_names)})"
+        # Collect hub names with their roles
+        hub_info = []
+        for theme in related_themes:
+            if theme.primary == self:
+                hub_info.append(f"{theme.hub.name} Primary ")
+            elif theme.secondary == self:
+                hub_info.append(f"{theme.hub.name} Secondary ")
+            elif theme.background_default == self:
+                hub_info.append(f"{theme.hub.name} Background Default")
+            elif theme.background_paper == self:
+                hub_info.append(f"{theme.hub.name} Background Paper")
+
+        if hub_info:
+            return f" {', '.join(hub_info)} color"
         else:
             return f"ThemeColor {self.id} : {self.main}"
         

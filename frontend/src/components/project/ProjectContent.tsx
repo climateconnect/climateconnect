@@ -284,7 +284,7 @@ export default function ProjectContent({
         <Typography
           component="h2"
           variant="h6"
-          color={theme.palette.background.paper_contrastText}
+          color={theme.palette.background.default_contrastText}
           ref={projectDescriptionRef}
           className={classes.subHeader}
         >
@@ -333,7 +333,7 @@ export default function ProjectContent({
         <Typography
           component="h2"
           variant="h6"
-          color={theme.palette.background.paper_contrastText}
+          color={theme.palette.background.default_contrastText}
           className={classes.subHeader}
         >
           {texts.collaboration}
@@ -350,7 +350,7 @@ export default function ProjectContent({
         <Typography
           component="h2"
           variant="h6"
-          color={theme.palette.background.paper_contrastText}
+          color={theme.palette.background.default_contrastText}
           className={classes.subHeader}
         >
           {texts.progress}

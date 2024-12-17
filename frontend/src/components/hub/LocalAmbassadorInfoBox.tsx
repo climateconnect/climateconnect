@@ -84,7 +84,7 @@ export default function LocalAmbassadorInfoBox({ hubAmbassador, hubData, hubSupp
           >
             {texts.do_you_need_support}
           </Typography>
-          <Typography color="secondary">{texts.local_ambassador_is_there_for_you}</Typography>
+          <Typography>{texts.local_ambassador_is_there_for_you}</Typography>
         </div>
       )}
       <div className={classes.lowerSection}>
@@ -93,10 +93,10 @@ export default function LocalAmbassadorInfoBox({ hubAmbassador, hubData, hubSupp
           src={getImageUrl(hubAmbassador?.user?.thumbnail_image)}
         />
         <div>
-          <Typography className={classes.name} color="secondary">
+          <Typography className={classes.name}>
             {hubAmbassador?.user?.first_name} {hubAmbassador?.user?.last_name}
           </Typography>
-          <Typography color="secondary">
+          <Typography>
             {hubAmbassador?.title} {hubData.name}
           </Typography>
           <Button
