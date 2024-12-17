@@ -7,22 +7,23 @@ export const transformThemeData = (data) => {
     palette: {
       ...palette,
       primary: {
+        ...palette.primary,
         main: data?.primary?.main,
         light: data?.primary?.light,
         extraLight: data?.primary?.extraLight,
         contrastText: data?.primary?.contrastText,
       },
       secondary: {
+        ...palette.secondary,
         main: data?.secondary?.main,
         light: data?.secondary?.light,
         extraLight: data?.secondary?.extraLight,
         contrastText: data?.secondary?.contrastText,
       },
       background: {
+        ...palette.background,
         default: data?.background_default?.main,
-        paper: data?.background_paper?.main,
         default_contrastText: data?.background_default?.contrastText,
-        paper_contrastText: data?.background_paper?.contrastText,
       },
     },
   };

@@ -416,7 +416,7 @@ class HubThemeColor(models.Model):
     def __str__(self):
         
         related_themes = HubTheme.objects.filter(
-            Q(primary=self) | Q(secondary=self) | Q(background_default=self) | Q(background_paper=self)
+            Q(primary=self) | Q(secondary=self) | Q(background_default=self)
         )
         # Collect hub names
         hub_names = [theme.hub.name for theme in related_themes if theme.hub]
@@ -461,16 +461,6 @@ class HubTheme(models.Model):
         related_name="background_default",
         help_text="Use hex code (e.g. #FFF)",
         verbose_name="default background color",
-        on_delete=models.CASCADE,
-        max_length=1024,
-        null=True,
-        blank=True,
-    )
-    background_paper = models.ForeignKey(
-        HubThemeColor,
-        related_name="background_paper",
-        help_text="paper background color",
-        verbose_name="paper background color",
         on_delete=models.CASCADE,
         max_length=1024,
         null=True,
