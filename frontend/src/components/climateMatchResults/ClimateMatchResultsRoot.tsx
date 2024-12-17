@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     position: "relative",
     width: "100%",
-    height: "100vh",
+    minHeight: "100vh",
   },
   loadingOverlay: {
     background: theme.palette.primary.main,

@@ -3,7 +3,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { Box } from "@mui/system";
 
 const useStyles = makeStyles<Theme, { subtractedHeight?: string }>(() => ({
@@ -17,8 +17,8 @@ const useStyles = makeStyles<Theme, { subtractedHeight?: string }>(() => ({
     flexDirection: "column",
   }),
   text: {
-    fontSize: 18
-  }
+    fontSize: 18,
+  },
 }));
 export default function LoadingContainer({ headerHeight, footerHeight }) {
   const classes = useStyles({
@@ -26,33 +26,36 @@ export default function LoadingContainer({ headerHeight, footerHeight }) {
   });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
-  console.log(texts)
   return (
     <div className={classes.spinnerContainer}>
       <div>
         <LoadingIcon />
       </div>
-      <Typography component="div" className={classes.text}>{texts.loading_and_waiting}</Typography>
+      <Typography component="div" className={classes.text}>
+        {texts.loading_and_waiting}
+      </Typography>
     </div>
   );
 }
 
 function LoadingIcon() {
-  return (<Box
-    component="img"
-    src="/images/logo_spinner.svg" 
-    sx={{
-      height: 80,
-      width: 80,
-      animation: "spin 2s linear infinite",
-    "@keyframes spin": {
-      "0%": {
-        transform: "rotate(0deg)",
-      },
-      "100%": {
-        transform: "rotate(360deg)",
-      },
-    },
-    }}
-  />)
+  return (
+    <Box
+      component="img"
+      src="/images/logo_spinner.svg"
+      sx={{
+        height: 80,
+        width: 80,
+        animation: "spin 2s linear infinite",
+        "@keyframes spin": {
+          "0%": {
+            transform: "rotate(0deg)",
+          },
+          "100%": {
+            transform: "rotate(360deg)",
+          },
+        },
+      }}
+    />
+  );
 }

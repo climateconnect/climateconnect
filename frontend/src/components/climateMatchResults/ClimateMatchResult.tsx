@@ -82,6 +82,7 @@ const useStyles = makeStyles<Theme, { addBackground?: boolean }>((theme) => ({
     [theme.breakpoints.down("sm")]: {
       marginLeft: 0,
       fontWeight: 600,
+      overflowWrap: "anywhere",
     },
   },
   contactCreatorButtonContainer: {

@@ -1,12 +1,11 @@
 from climateconnect_api.utility.translation import get_attribute_in_correct_language
 from location.serializers import LocationSerializer
 from django.utils.translation import get_language
-from hubs.utility.hub import get_hub_attribute, get_hub_stat_attribute
+from hubs.utility.hub import get_hub_attribute, get_hub_stat_attribute, get_hub_supporter_attribute
 from rest_framework import serializers
-from hubs.models import Hub, HubStat, HubAmbassador
+from hubs.models import Hub, HubStat, HubAmbassador, HubSupporter
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from climateconnect_api.models import UserProfile
-
 
 class HubSerializer(serializers.ModelSerializer):
     stats = serializers.SerializerMethodField()
@@ -14,6 +13,8 @@ class HubSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     headline = serializers.SerializerMethodField()
     sub_headline = serializers.SerializerMethodField()
+    welcome_message_logged_in = serializers.SerializerMethodField()
+    welcome_message_logged_out = serializers.SerializerMethodField()
     segway_text = serializers.SerializerMethodField()
     image_attribution = serializers.SerializerMethodField()
     quick_info = serializers.SerializerMethodField()
@@ -29,6 +30,8 @@ class HubSerializer(serializers.ModelSerializer):
             "quick_info",
             "stats",
             "sub_headline",
+            "welcome_message_logged_in",
+            "welcome_message_logged_out",
             "segway_text",
             "stat_box_title",
             "image_attribution",
@@ -46,6 +49,12 @@ class HubSerializer(serializers.ModelSerializer):
 
     def get_sub_headline(self, obj):
         return get_hub_attribute(obj, "sub_headline", get_language())
+    
+    def get_welcome_message_logged_in(self, obj):
+        return get_hub_attribute(obj, "welcome_message_logged_in", get_language())
+
+    def welcome_message_logged_out(self, obj):
+        return get_hub_attribute(obj, "welcome_message_logged_out", get_language())
 
     def get_segway_text(self, obj):
         return get_hub_attribute(obj, "segway_text", get_language())
@@ -161,3 +170,27 @@ class HubStatSerializer(serializers.ModelSerializer):
 
     def get_source_name(self, obj):
         return get_hub_stat_attribute(obj, "source_name", get_language())
+
+class HubSupporterSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+    subtitle = serializers.SerializerMethodField()
+    organization_url_slug = serializers.SerializerMethodField()
+
+    class Meta:
+        model = HubSupporter
+        fields = ("name", "subtitle", "logo", "importance", "organization_url_slug")
+
+    def get_name(self, obj):
+        return get_hub_supporter_attribute(obj, "name", get_language())
+    def get_subtitle(self, obj):
+        return get_hub_supporter_attribute(obj, "subtitle", get_language())
+    def get_logo(self, obj):
+        return obj.logo
+    def get_importance(self, obj):
+        return obj.importance
+    def get_organization_url_slug(self, obj): 
+        if obj.organization:
+            return obj.organization.url_slug  
+        return None
+
+    

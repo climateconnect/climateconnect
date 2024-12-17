@@ -108,6 +108,8 @@ export async function getServerSideProps(ctx) {
       name: hubData.name,
       headline: hubData.headline,
       subHeadline: hubData.sub_headline,
+      welcomeMessageLoggedIn: hubData.welcome_message_logged_in,
+      welcomeMessageLoggedOut: hubData.welcome_message_logged_out,
       image: hubData.image,
       quickInfo: hubData.quick_info,
       stats: hubData.stats,
@@ -141,6 +143,8 @@ export default function Hub({
   statBoxTitle,
   stats,
   subHeadline,
+  welcomeMessageLoggedIn,
+  welcomeMessageLoggedOut,
   initialLocationFilter,
   filterChoices,
   sectorHubs,
@@ -157,6 +161,7 @@ export default function Hub({
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
   const token = new Cookies().get("auth_token");
   const [hubAmbassador, setHubAmbassador] = useState(null);
+  const [hubSupporters, setHubSupporters] = useState(null);
 
   // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
   const [filters, setFilters] = useState(
@@ -188,6 +193,10 @@ export default function Hub({
     (async () => {
       const retrievedHubAmbassador = await getHubAmbassadorData(hubUrl, locale);
       setHubAmbassador(retrievedHubAmbassador);
+      if (isLocationHub) {
+        const retrivedHubSupporters = await getHubSupportersData(hubUrl, locale);
+        setHubSupporters(retrivedHubSupporters);
+      }
     })();
   }, []);
 
@@ -274,7 +283,7 @@ export default function Hub({
         headerBackground="#FFF"
         image={getImageUrl(image)}
         isHubPage
-        hubName={name}
+        hubUrl={hubUrl}
         hideDonationCampaign
         customFooterImage={hubData.custom_footer_image && getImageUrl(hubData.custom_footer_image)}
         isLocationHub={isLocationHub}
@@ -305,6 +314,7 @@ export default function Hub({
             hubQuickInfoRef={hubQuickInfoRef}
             headline={headline}
             hubAmbassador={hubAmbassador}
+            hubSupporters={hubSupporters}
             quickInfo={quickInfo}
             statBoxTitle={statBoxTitle}
             stats={stats}
@@ -318,6 +328,8 @@ export default function Hub({
             }
             hubUrl={hubUrl}
             subHeadline={subHeadline}
+            welcomeMessageLoggedIn={welcomeMessageLoggedIn}
+            welcomeMessageLoggedOut={welcomeMessageLoggedOut}
             hubProjectsButtonRef={hubProjectsButtonRef}
             isLocationHub={isLocationHub}
             location={hubLocation}
@@ -347,7 +359,7 @@ export default function Hub({
               // initialOrganizations={initialOrganizations}
               // initialProjects={initialProjects}
               nextStepTriggeredBy={nextStepTriggeredBy}
-              showIdeas={isLocationHub}
+              showIdeas={false}
               allHubs={allHubs}
               initialIdeaUrlSlug={initialIdeaUrlSlug}
               hubLocation={hubLocation}
@@ -355,6 +367,7 @@ export default function Hub({
               resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
               hubUrl={hubUrl}
               tabNavigationRequested={requestTabNavigation}
+              hubSupporters={hubSupporters}
             />
           </BrowseContext.Provider>
         </div>
@@ -428,6 +441,21 @@ const getHubAmbassadorData = async (url_slug, locale) => {
   } catch (err: any) {
     if (err.response && err.response.data)
       console.log("Error in getHubAmbassadorData: " + err.response.data.detail);
+    console.log(err);
+    return null;
+  }
+};
+const getHubSupportersData = async (url_slug, locale) => {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: `/api/hubs/${url_slug}/supporters/`,
+      locale: locale,
+    });
+    return resp.data;
+  } catch (err: any) {
+    if (err.response && err.response.data)
+      console.log("Error in getHubSupportersData: " + err.response.data.detail);
     console.log(err);
     return null;
   }

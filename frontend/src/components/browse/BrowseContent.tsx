@@ -26,6 +26,7 @@ import UserContext from "../context/UserContext";
 import LoadingSpinner from "../general/LoadingSpinner";
 import MobileBottomMenu from "./MobileBottomMenu";
 import HubTabsNavigation from "../hub/HubTabsNavigation";
+import HubSupporters from "../hub/HubSupporters";
 
 const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
 const IdeasBoard = React.lazy(() => import("../ideas/IdeasBoard"));
@@ -100,6 +101,7 @@ export default function BrowseContent({
   hubUrl,
   hubAmbassador,
   contentRef,
+  hubSupporters,
 }: any) {
   const initialState = {
     items: {
@@ -203,6 +205,9 @@ export default function BrowseContent({
       setHash(newHash);
       setTabValue(TYPES_BY_TAB_VALUE.indexOf(newHash));
     }
+
+    // this init is nessesary to be resilient if the component is remounted
+    // see https://react.dev/learn/you-might-not-need-an-effect#initializing-the-application
     if (!initialized) {
       // Update the state of the visual filters, like Select, Dialog, etc
       // Then actually fetch the data. We need a way to map what's
@@ -222,7 +227,7 @@ export default function BrowseContent({
       const queryObject = getQueryObjectFromUrl(getSearchParams(window.location.search));
       const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFilters);
       const newFilters = {
-        ...queryObject.filters,
+        ...splitQueryObject.filters,
       };
       setNonFilterParams(splitQueryObject.nonFilters);
       if (splitQueryObject?.nonFilters?.message) {
@@ -533,6 +538,9 @@ export default function BrowseContent({
         />
       )}
       <Container maxWidth="lg" className={classes.contentRefContainer}>
+        {isNarrowScreen && hubSupporters && (
+          <HubSupporters supportersList={hubSupporters} hubName={hubName} />
+        )}
         <div ref={contentRef} className={classes.contentRef} />
         <Suspense fallback={null}>
           <FilterSection

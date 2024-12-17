@@ -59,7 +59,7 @@ type Props = {
   hideFooter?: boolean;
   resetAlertMessage?: () => void;
   isHubPage?: boolean;
-  hubName?: string;
+  hubUrl?: string;
   hideDonationCampaign?: boolean;
   customFooterImage?: string;
   isLocationHub?: boolean;
@@ -89,7 +89,7 @@ export default function WideLayout({
   hideFooter,
   resetAlertMessage,
   isHubPage,
-  hubName,
+  hubUrl,
   isLocationHub,
   hideDonationCampaign,
   customFooterImage,
@@ -136,7 +136,7 @@ export default function WideLayout({
           noSpacingBottom={isStaticPage}
           background={headerBackground}
           isHubPage={isHubPage}
-          hubName={hubName}
+          hubUrl={hubUrl}
           isLocationHub={isLocationHub}
         />
       )}
