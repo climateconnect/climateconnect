@@ -16,8 +16,9 @@ type ThemeProps = { noSpaceBottom?: boolean; isStaticPage?: boolean };
 const useStyles = makeStyles<Theme, ThemeProps>((theme) => ({
   main: (props) => ({
     padding: 0,
-    marginTop: props.isStaticPage ? 0 : -16,
-    marginBottom: props.noSpaceBottom ? 0 : theme.spacing(6),
+    paddingBottom: props.noSpaceBottom ? 0 : theme.spacing(6),
+    marginTop: 0,
+    // backgroundColor: "rgb(255, 236, 201);",
   }),
   alert: {
     textAlign: "center",
@@ -95,7 +96,7 @@ export default function WideLayout({
   customFooterImage,
   noHeader,
 }: Props) {
-  const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
+  const classes = useStyles({ noSpaceBottom: noSpaceBottom });
   const [alertOpen, setAlertOpen] = React.useState(true);
   const [initialMessageType, setInitialMessageType] = React.useState(null as any);
   const [initialMessage, setInitialMessage] = React.useState("");
@@ -133,7 +134,7 @@ export default function WideLayout({
           isStaticPage={isStaticPage}
           fixedHeader={fixedHeader}
           transparentHeader={transparentHeader}
-          noSpacingBottom={isStaticPage}
+          noSpacingBottom={true}
           background={headerBackground}
           isHubPage={isHubPage}
           hubUrl={hubUrl}
@@ -184,7 +185,6 @@ export default function WideLayout({
       )}
       {!hideFooter && (
         <Footer
-          noSpacingTop={noSpaceBottom}
           noAbsolutePosition={noSpaceBottom}
           showOnScrollUp={showOnScrollUp}
           large={isStaticPage || largeFooter}

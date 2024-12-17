@@ -19,6 +19,14 @@ const useStyles = makeStyles((theme) => ({
     borderTop: `1px solid ${theme.palette.grey[100]}`,
     width: "100%",
     zIndex: "9",
+
+    // mind, that these values are not used in the large footer
+    height: theme.spacing(8),
+    [theme.breakpoints.down("md")]: {
+      height: "auto",
+      // make sure, it leaves enough space for the mobile navigation bar
+      paddingBottom: theme.spacing(6),
+    },
   },
   absolutePosition: {
     position: "absolute",
@@ -28,10 +36,6 @@ const useStyles = makeStyles((theme) => ({
     position: "fixed",
     bottom: 0,
     backgroundColor: "#FFFFFF",
-    height: "49px",
-  },
-  spacingTop: {
-    marginTop: theme.spacing(2),
   },
   flexContainer: {
     display: "flex",
@@ -64,7 +68,6 @@ const useStyles = makeStyles((theme) => ({
       marginBottom: theme.spacing(1),
     },
   },
-
   inheritColor: {
     color: "inherit",
   },
@@ -89,7 +92,6 @@ const useStyles = makeStyles((theme) => ({
 //TODO: make footer stay on bottom on normal layout again
 export default function Footer({
   className,
-  noSpacingTop,
   noAbsolutePosition,
   showOnScrollUp,
   large,
@@ -99,7 +101,6 @@ export default function Footer({
     return (
       <SmallFooter
         className={className}
-        noSpacingTop={noSpacingTop}
         noAbsolutePosition={noAbsolutePosition}
         showOnScrollUp={showOnScrollUp}
         customFooterImage={customFooterImage}
@@ -108,15 +109,10 @@ export default function Footer({
   else return <LargeFooter className={className} />;
 }
 
-const SmallFooter = ({
-  className,
-  noSpacingTop,
-  noAbsolutePosition,
-  showOnScrollUp,
-  customFooterImage,
-}) => {
+const SmallFooter = ({ className, noAbsolutePosition, showOnScrollUp, customFooterImage }) => {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const isMobileScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   const socialMediaLinks = [
@@ -155,7 +151,8 @@ const SmallFooter = ({
   return (
     <Box
       component="footer"
-      className={`${className} ${classes.root} ${!noSpacingTop && classes.spacingTop} ${
+      className={`${className} ${classes.root} ${
+        !isMobileScreen &&
         !noAbsolutePosition &&
         (showOnScrollUp === true ? classes.relativePosition : classes.absolutePosition)
       }`}

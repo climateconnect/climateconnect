@@ -58,7 +58,7 @@ export default function FixedHeightLayout({ children, message, messageType, titl
           </Alert>
         )}
         {children}
-        <Footer noSpacingTop noAbsolutePosition className={classes.noFlex} />
+        <Footer noAbsolutePosition className={classes.noFlex} />
       </div>
     </LayoutWrapper>
   );

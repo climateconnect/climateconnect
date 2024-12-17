@@ -12,6 +12,10 @@ import DonationCampaignInformation from "../staticpages/donate/DonationCampaignI
 import LayoutWrapper from "./LayoutWrapper";
 
 const useStyles = makeStyles((theme) => ({
+  main: {
+    paddingBottom: theme.spacing(6),
+  },
+
   mainHeading: {
     textAlign: "center",
     margin: `${theme.spacing(4)} 0`,
@@ -50,7 +54,7 @@ export default function Layout({
       {isLoading ? (
         <LoadingContainer headerHeight={113} footerHeight={80} />
       ) : (
-        <>
+        <Container component="main" className={classes.main}>
           {(message || initialMessage) && !(hideAlertMessage === message) && (
             <Alert
               className={classes.alert}
@@ -74,7 +78,7 @@ export default function Layout({
             </Container>
             {children}
           </Container>
-        </>
+        </Container>
       )}
       <Footer />
     </LayoutWrapper>

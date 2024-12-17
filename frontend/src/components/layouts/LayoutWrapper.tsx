@@ -28,9 +28,14 @@ declare module "@mui/styles/defaultTheme" {
 const useStyles = makeStyles((theme) => ({
   leaveSpaceForFooter: {
     position: "relative",
-    //height of footer + spacing(1)
-    paddingBottom: theme.spacing(9),
     minHeight: "100vh",
+    //height of footer
+    paddingBottom: theme.spacing(8),
+    [theme.breakpoints.down("md")]: {
+      // on a mobile screen size, the footer is displayed as a fixed element
+      // instead of via
+      paddingBottom: 0,
+    },
   },
   spinnerContainer: {
     display: "flex",
