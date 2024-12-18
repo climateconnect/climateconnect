@@ -10,6 +10,7 @@ import LoadingContainer from "../general/LoadingContainer";
 import Header from "../header/Header";
 import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
 import LayoutWrapper from "./LayoutWrapper";
+import { DevLinkProvider } from "../../../devlink/DevLinkProvider";
 
 const useStyles = makeStyles((theme) => ({
   mainHeading: {
@@ -44,39 +45,41 @@ export default function Layout({
     }
   }, []);
   return (
-    <LayoutWrapper theme={theme} title={title}>
-      <Header noSpacingBottom isStaticPage={isStaticPage} />
-      {<DonationCampaignInformation />}
-      {isLoading ? (
-        <LoadingContainer headerHeight={113} footerHeight={80} />
-      ) : (
-        <>
-          {(message || initialMessage) && !(hideAlertMessage === message) && (
-            <Alert
-              className={classes.alert}
-              severity={
-                messageType ? messageType : initialMessageType ? initialMessageType : "success"
-              }
-              onClose={() => {
-                setHideAlertMessage(message);
-              }}
-            >
-              {getMessageFromUrl(message ? message : initialMessage)}
-            </Alert>
-          )}
-          <Container maxWidth="lg" component="main">
-            <Container maxWidth="sm">
-              {!hideHeadline && (
-                <Typography component="h1" variant="h5" className={classes.mainHeading}>
-                  {title}
-                </Typography>
-              )}
+    <DevLinkProvider>
+      <LayoutWrapper theme={theme} title={title}>
+        <Header noSpacingBottom isStaticPage={isStaticPage} />
+        {<DonationCampaignInformation />}
+        {isLoading ? (
+          <LoadingContainer headerHeight={113} footerHeight={80} />
+        ) : (
+          <>
+            {(message || initialMessage) && !(hideAlertMessage === message) && (
+              <Alert
+                className={classes.alert}
+                severity={
+                  messageType ? messageType : initialMessageType ? initialMessageType : "success"
+                }
+                onClose={() => {
+                  setHideAlertMessage(message);
+                }}
+              >
+                {getMessageFromUrl(message ? message : initialMessage)}
+              </Alert>
+            )}
+            <Container maxWidth="lg" component="main">
+              <Container maxWidth="sm">
+                {!hideHeadline && (
+                  <Typography component="h1" variant="h5" className={classes.mainHeading}>
+                    {title}
+                  </Typography>
+                )}
+              </Container>
+              {children}
             </Container>
-            {children}
-          </Container>
-        </>
-      )}
-      <Footer />
-    </LayoutWrapper>
+          </>
+        )}
+        <Footer />
+      </LayoutWrapper>
+    </DevLinkProvider>
   );
 }
