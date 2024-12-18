@@ -409,7 +409,7 @@ class HubThemeColor(models.Model):
     def __str__(self):
         
         related_themes = HubTheme.objects.filter(
-            Q(primary=self) | Q(secondary=self) | Q(background_default=self) | Q(background_paper=self)
+            Q(primary=self) | Q(secondary=self) | Q(background_default=self)
         )
         # Collect hub names with their roles
         hub_info = []
@@ -420,8 +420,6 @@ class HubThemeColor(models.Model):
                 hub_info.append(f"{theme.hub.name} Secondary ")
             elif theme.background_default == self:
                 hub_info.append(f"{theme.hub.name} Background Default")
-            elif theme.background_paper == self:
-                hub_info.append(f"{theme.hub.name} Background Paper")
 
         if hub_info:
             return f" {', '.join(hub_info)} color"
@@ -464,16 +462,6 @@ class HubTheme(models.Model):
         related_name="background_default",
         help_text="default background color",
         verbose_name="default background color",
-        on_delete=models.CASCADE,
-        max_length=1024,
-        null=True,
-        blank=True,
-    )
-    background_paper = models.ForeignKey(
-        HubThemeColor,
-        related_name="background_paper",
-        help_text="paper background color",
-        verbose_name="paper background color",
         on_delete=models.CASCADE,
         max_length=1024,
         null=True,
