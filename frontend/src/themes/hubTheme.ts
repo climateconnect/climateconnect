@@ -3,6 +3,9 @@ import theme from "./theme";
 
 const hubTheme = createTheme({
   ...theme,
+  palette: {
+    ...theme.palette,
+  },
   typography: {
     ...theme.typography,
     fontSize: 17,

@@ -1,4 +1,4 @@
-import { Button, CircularProgress, IconButton, Link, Typography } from "@mui/material";
+import { Button, CircularProgress, IconButton, Link, Typography, useTheme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { MouseEventHandler } from "react";
 import ButtonIcon from "../../general/ButtonIcon";
@@ -98,6 +98,7 @@ export default function LikeButton({
   bindLike,
 }: Args) {
   const classes = useStyles({ likingChangePending: likingChangePending });
+  const theme = useTheme();
 
   if (screenSize?.belowSmall) {
     return (
@@ -112,7 +113,11 @@ export default function LikeButton({
           disabled={likingChangePending}
           size="large"
         >
-          <ButtonIcon icon="like" size={40} color={isUserLiking ? "earth" : "primary"} />
+          <ButtonIcon
+            icon="like"
+            size={40}
+            color={isUserLiking ? "earth" : theme.palette.primary.contrastText}
+          />
         </IconButton>
         {numberOfLikes > 0 && (
           <Typography className={classes.likeNumberMobile}>• {numberOfLikes}</Typography>
@@ -129,7 +134,11 @@ export default function LikeButton({
           className={classes.mediumScreenIconButton}
           size="large"
         >
-          <ButtonIcon icon="like" size={40} color={isUserLiking ? "earth" : "primary"} />
+          <ButtonIcon
+            icon="like"
+            size={40}
+            color={isUserLiking ? "earth" : theme.palette.primary.contrastText}
+          />
         </IconButton>
         {numberOfLikes > 0 && (
           <Link
@@ -152,7 +161,14 @@ export default function LikeButton({
         <Button
           onClick={handleToggleLikeProject}
           variant="contained"
-          startIcon={<ButtonIcon icon="like" size={26} color={isUserLiking ? "earth" : "white"} />}
+          startIcon={
+            <ButtonIcon
+              icon="like"
+              size={26}
+              color={isUserLiking ? "earth" : theme.palette.primary.contrastText}
+            />
+          }
+          // Changing the color attribute to theme.palette.secondary?.main : theme.palette.primary?.main causes error
           color={isUserLiking ? "secondary" : "primary"}
           disabled={likingChangePending}
           className={classes.largeLikeButton}

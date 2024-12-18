@@ -1,4 +1,4 @@
-import { Container, Tab, Tabs, Typography } from "@mui/material";
+import { Container, Tab, Tabs, Typography, useTheme } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -60,6 +60,9 @@ const useStyles = makeStyles((theme) => ({
     width: 145,
     [theme.breakpoints.down("sm")]: {
       width: 125,
+    },
+    "&.Mui-selected": {
+      color: theme.palette.background.default_contrastText,
     },
   },
   projectInteractionButtonContainer: {
@@ -442,7 +445,7 @@ export default function ProjectPageRoot({
   });
 
   const latestParentComment = [project.comments[0]];
-
+  const theme = useTheme();
   return (
     <div className={classes.root}>
       <ProjectOverview

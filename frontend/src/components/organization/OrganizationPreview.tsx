@@ -68,6 +68,9 @@ const useStyles = makeStyles((theme) => {
       gridTemplateColumns: "40px min-content",
       justifyContent: "center",
     },
+    iconColor: {
+      color: theme.palette.background.default_contrastText,
+    },
   };
 });
 
@@ -88,7 +91,7 @@ export default function OrganizationPreview({ organization }) {
           <Box>
             <span className={classes.members}>
               <Tooltip title="Members in organization">
-                <GroupSharp color="primary" />
+                <GroupSharp className={classes.iconColor} />
               </Tooltip>
               <Typography>{organization.members_count}</Typography>
             </span>
@@ -96,7 +99,7 @@ export default function OrganizationPreview({ organization }) {
           <Box>
             <span className={classes.hubs}>
               <Tooltip title="Number of projects">
-                <AssignmentSharp color="primary" />
+                <AssignmentSharp className={classes.iconColor} />
               </Tooltip>
               <Typography>{organization.projects_count}</Typography>
             </span>

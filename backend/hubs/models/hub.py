@@ -4,7 +4,7 @@ from organization.models.tags import ProjectTags
 from django.db import models
 from django.contrib.auth.models import User
 from organization.models.organization import Organization
-
+from django.db.models import Q
 
 def hub_image_path(instance, filename):
     return "hubs/{}/{}".format(instance.id, filename)
@@ -12,6 +12,7 @@ def hub_image_path(instance, filename):
 
 def hub_footer_image_path(instance, filename):
     return "hub_footers/{}/{}".format(instance.id, filename)
+
 
 def hub_supporter_logo_path(instance, filename):
     return "hub_supporter_logo/{}/{}".format(instance.id, filename)
@@ -112,7 +113,7 @@ class Hub(models.Model):
     )
 
     welcome_message_logged_in = models.CharField(
-        help_text="Displayed on the dashboard on location hubs when logged in. Starts with \"Hi $user.name\"",
+        help_text='Displayed on the dashboard on location hubs when logged in. Starts with "Hi $user.name"',
         verbose_name="Welcome message (logged in)",
         max_length=2048,
         null=True,
@@ -304,7 +305,8 @@ class HubAmbassador(models.Model):
             self.user.first_name + " " + self.user.last_name,
             self.title,
         )
-    
+
+
 class HubSupporter(models.Model):
     name = models.CharField(
         help_text="Supporter name",
@@ -359,6 +361,7 @@ class HubSupporter(models.Model):
         null=True,
         blank=True,
     )
+
     class Meta:
         app_label = "hubs"
         verbose_name = "Hub Supporter"
@@ -367,3 +370,107 @@ class HubSupporter(models.Model):
 
     def __str__(self):
         return "%s" % (self.name)
+
+
+class HubThemeColor(models.Model):
+    main = models.CharField(
+        help_text="main color",
+        verbose_name="main color",
+        max_length=200,
+        null=True,
+        blank=True,
+    )
+    light = models.CharField(
+        help_text="light color",
+        verbose_name="light color",
+        max_length=200,
+        null=True,
+        blank=True,
+    )
+    extraLight = models.CharField(
+        help_text="extraLight color",
+        verbose_name="extraLight color",
+        max_length=200,
+        null=True,
+        blank=True,
+    )
+    contrastText = models.CharField(
+        help_text="contrastText color",
+        verbose_name="contrastText color",
+        max_length=200,
+        null=True,
+        blank=True,
+    )
+    class Meta:
+        app_label = "hubs"
+        verbose_name = "Hub Theme Color"
+        verbose_name_plural = "Hub Theme Color"
+
+    def __str__(self):
+        
+        related_themes = HubTheme.objects.filter(
+            Q(primary=self) | Q(secondary=self) | Q(background_default=self)
+        )
+        # Collect hub names with their roles
+        hub_info = []
+        for theme in related_themes:
+            if theme.primary == self:
+                hub_info.append(f"{theme.hub.name} Primary ")
+            elif theme.secondary == self:
+                hub_info.append(f"{theme.hub.name} Secondary ")
+            elif theme.background_default == self:
+                hub_info.append(f"{theme.hub.name} Background Default")
+
+        if hub_info:
+            return f" {', '.join(hub_info)} color"
+        else:
+            return f"ThemeColor {self.id} : {self.main}"
+        
+class HubTheme(models.Model):
+    hub = models.OneToOneField(
+        Hub,
+        related_name="hub_theme",
+        help_text="The theme for the hub",
+        verbose_name="hub_theme",
+        on_delete=models.CASCADE,
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    primary = models.ForeignKey(
+        HubThemeColor,
+        related_name="primary",
+        help_text="primary_color",
+        verbose_name="primary_color",
+        on_delete=models.CASCADE,
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    secondary = models.ForeignKey(
+        HubThemeColor,
+        related_name="secondary",
+        help_text="secondary_color",
+        verbose_name="secondary_color",
+        on_delete=models.CASCADE,
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    background_default = models.ForeignKey(
+        HubThemeColor,
+        related_name="background_default",
+        help_text="default background color",
+        verbose_name="default background color",
+        on_delete=models.CASCADE,
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    class Meta:
+        app_label = "hubs"
+        verbose_name = "Hub Theme"
+        verbose_name_plural = "Hub Theme"
+
+    def __str__(self):
+        return f"Theme for Hub {self.hub.name}"
