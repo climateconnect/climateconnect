@@ -15,6 +15,7 @@ import Dashboard from "../dashboard/Dashboard";
 import LocalAmbassadorInfoBox from "./LocalAmbassadorInfoBox";
 import HubHeadlineContainer from "./HubHeadlineContainer";
 import HubSupporters from "./HubSupporters";
+import { Prio1Willkommen } from "../../../devlink";
 
 type MakeStylesProps = {
   isLocationHub: boolean;
@@ -185,6 +186,8 @@ export default function HubContent({
                       />
                     )}
                   </>
+                ) : hubUrl === "prio1" ? (
+                  <Prio1Willkommen />
                 ) : (
                   <LoggedOutLocationHubBox
                     headline={headline}
