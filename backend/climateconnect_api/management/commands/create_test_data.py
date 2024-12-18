@@ -15,7 +15,7 @@ from climateconnect_api.models import (
     Skill,
 )
 from organization.models import ProjectStatus, Project, Organization
-
+from hubs.models import HubThemeColor, Hub, HubTheme
 
 def create_language_test_data():
     print("creating languages...")
@@ -403,6 +403,68 @@ def create_skills():
                 parent_skill_id=skill_record["parent_skill_id"],
             )
 
+def create_hub_test_data():
+    
+    # Creates two hubs, one with custom colors and one with default colors.
+    # define default color and hub
+    default_primary = HubThemeColor.objects.create(
+        main= "#207178",
+        light= "#66BCB5",
+        extraLight= "#D7F7F5",
+        contrastText= "#FFFFFF"
+    )
+    default_secondary = HubThemeColor.objects.create(
+        main= "#1986d2",
+        light= "#1976d2",
+        extraLight= "#1976d2",
+        contrastText= "#00043",
+    )
+    default_background_default = HubThemeColor.objects.create(
+        main= "#FFFFFF",
+        light= "#FFFFFF",
+        extraLight= "#FFFFFF",
+        contrastText= "#000033"
+    )
+    default_theme_hub = Hub.objects.create(
+        name="erlangen",
+    )
+    
+    default_hub_theme = HubTheme.objects.create(
+        hub=default_theme_hub,
+        primary=default_secondary,
+        secondary=default_primary,  
+        background_default=default_background_default,
+    )
+
+    # define custom color and hub
+    custom_primary = HubThemeColor.objects.create(
+        main= "#CCFF00",
+        light= "#CCFAA0",
+        extraLight= "#CCFABF",
+        contrastText= "#000033",
+    )
+    custom_secondary = HubThemeColor.objects.create(
+        main= "#3134C7",
+        light= "#7883FF",
+        extraLight= "#7F9FFF",
+        contrastText= "#000033",
+    )
+    custom_background_default = HubThemeColor.objects.create(
+        main= "#FFFFFF",
+        light= "#FFFFFF",
+        extraLight= "#FFFFFF",
+        contrastText= "#000033"
+    )
+    custom_theme_hub = Hub.objects.create(
+        name="prio1",
+    )
+    custom_hub_theme = HubTheme.objects.create(
+        hub=custom_theme_hub,
+        primary=custom_primary,
+        secondary=custom_secondary,
+        background_default=custom_background_default,
+    )
+    return default_hub_theme, custom_hub_theme
 
 class Command(BaseCommand):
     help = "Creates test data of user's availability to volunteer to an organization."
@@ -423,3 +485,4 @@ class Command(BaseCommand):
         create_organization_tags_test_data()
         create_project_test_data(number_of_rows=number_of_rows)
         create_skills()
+        create_hub_test_data()
