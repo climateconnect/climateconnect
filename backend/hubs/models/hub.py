@@ -381,21 +381,21 @@ class HubThemeColor(models.Model):
         blank=True,
     )
     main = models.CharField(
-        help_text="main color",
+        help_text="main color (use hex code, e.g. #FFF)",
         verbose_name="Main Color",
         max_length=200,
         null=True,
         blank=True,
     )
     light = models.CharField(
-        help_text="the lighter variation of the main color",
+        help_text="the lighter variation of the main color (use hex code, e.g. #FFF)",
         verbose_name="Light Color",
         max_length=200,
         null=True,
         blank=True,
     )
     extraLight = models.CharField(
-        help_text="the extra light variation of the main color",
+        help_text="the extra light variation of the main color (use hex code, e.g. #FFF)",
         verbose_name="Extra Light Color",
         max_length=200,
         null=True,
@@ -416,7 +416,6 @@ class HubThemeColor(models.Model):
     def __str__(self):
         
         related_themes = HubTheme.objects.filter(
-            Q(primary=self) | Q(secondary=self) | Q(background_default=self)
             Q(primary=self) | Q(secondary=self) | Q(background_default=self)
         )
         # Collect hub names
