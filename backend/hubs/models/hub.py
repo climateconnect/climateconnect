@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from organization.models.organization import Organization
 from django.db.models import Q
 
+
 def hub_image_path(instance, filename):
     return "hubs/{}/{}".format(instance.id, filename)
 
@@ -408,13 +409,14 @@ class HubThemeColor(models.Model):
         null=True,
         blank=True,
     )
+
     class Meta:
         app_label = "hubs"
         verbose_name = "Hub Theme Color"
         verbose_name_plural = "Hub Theme Color"
 
     def __str__(self):
-        
+
         related_themes = HubTheme.objects.filter(
             Q(primary=self) | Q(secondary=self) | Q(background_default=self)
         )
@@ -424,7 +426,8 @@ class HubThemeColor(models.Model):
             return f"{self.name} : {self.main} (Hub Name: {', '.join(hub_names)})"
         else:
             return f"{self.name} : {self.main}"
-        
+
+
 class HubTheme(models.Model):
     hub = models.OneToOneField(
         Hub,
@@ -466,6 +469,7 @@ class HubTheme(models.Model):
         null=True,
         blank=True,
     )
+
     class Meta:
         app_label = "hubs"
         verbose_name = "Hub Theme"

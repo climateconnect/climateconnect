@@ -181,9 +181,9 @@ def get_translations(
                             keys_to_ignore_for_translation,
                             depth + 1,
                         )
-                    finished_translations[target_language][
-                        key
-                    ] = translated_text_object["translated_text"]
+                    finished_translations[target_language][key] = (
+                        translated_text_object["translated_text"]
+                    )
     return {"translations": finished_translations, "source_language": source_language}
 
 

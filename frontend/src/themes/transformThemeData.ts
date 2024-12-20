@@ -27,8 +27,7 @@ export const transformThemeData = (data) => {
         default_contrastText: data?.background_default?.contrastText,
       },
     },
-    
   };
-  
+
   return customTheme;
 };

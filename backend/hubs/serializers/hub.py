@@ -65,7 +65,7 @@ class HubSerializer(serializers.ModelSerializer):
     def get_welcome_message_logged_in(self, obj):
         return get_hub_attribute(obj, "welcome_message_logged_in", get_language())
 
-    def welcome_message_logged_out(self, obj):
+    def get_welcome_message_logged_out(self, obj):
         return get_hub_attribute(obj, "welcome_message_logged_out", get_language())
 
     def get_segway_text(self, obj):
@@ -214,7 +214,8 @@ class HubSupporterSerializer(serializers.ModelSerializer):
 class HubThemeColorSerializer(serializers.ModelSerializer):
     class Meta:
         model = HubThemeColor
-        fields = ['main', 'light', 'extraLight', 'contrastText']
+        fields = ["main", "light", "extraLight", "contrastText"]
+
 
 class HubThemeSerializer(serializers.ModelSerializer):
     primary = HubThemeColorSerializer()
@@ -223,5 +224,4 @@ class HubThemeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = HubTheme
-        fields = ['primary', 'secondary', 'background_default']
-    
+        fields = ["primary", "secondary", "background_default"]

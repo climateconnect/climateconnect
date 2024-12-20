@@ -247,9 +247,9 @@ class OrganizationMemberSerializer(serializers.ModelSerializer):
             "user": user_profile,
             "permission": permission,
             "organization": instance.organization.name,
-            "time_per_week": None
-            if not instance.time_per_week
-            else instance.time_per_week.name,
+            "time_per_week": (
+                None if not instance.time_per_week else instance.time_per_week.name
+            ),
             "role_in_organization": instance.role_in_organization,
         }
 

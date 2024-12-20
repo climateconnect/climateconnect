@@ -15,7 +15,7 @@ from climateconnect_api.models import (
     Skill,
 )
 from organization.models import ProjectStatus, Project, Organization
-from hubs.models import HubThemeColor, Hub, HubTheme
+
 
 def create_language_test_data():
     print("creating languages...")
@@ -402,6 +402,7 @@ def create_skills():
                 updated_at=timezone.now(),
                 parent_skill_id=skill_record["parent_skill_id"],
             )
+
 
 class Command(BaseCommand):
     help = "Creates test data of user's availability to volunteer to an organization."
