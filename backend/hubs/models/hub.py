@@ -417,6 +417,7 @@ class HubThemeColor(models.Model):
         
         related_themes = HubTheme.objects.filter(
             Q(primary=self) | Q(secondary=self) | Q(background_default=self)
+            Q(primary=self) | Q(secondary=self) | Q(background_default=self)
         )
         # Collect hub names
         hub_names = [theme.hub.name for theme in related_themes if theme.hub]

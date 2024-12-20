@@ -252,7 +252,7 @@ function ShortProjectInfo({ project }) {
         <Typography>
           <Tooltip title={texts.location}>
             <PlaceIcon
-              sx={{ color: theme.palette.background.paper_contrastText }}
+              sx={{ color: theme.palette.background.default_contrastText }}
               className={classes.icon}
             />
           </Tooltip>{" "}
@@ -275,7 +275,7 @@ function ShortProjectInfo({ project }) {
           <Typography>
             <Tooltip title={texts.website}>
               <LanguageIcon
-                sx={{ color: theme.palette.background.paper_contrastText }}
+                sx={{ color: theme.palette.background.default_contrastText }}
                 className={classes.icon}
               />
             </Tooltip>{" "}
@@ -287,7 +287,7 @@ function ShortProjectInfo({ project }) {
         <Typography>
           <Tooltip title={texts.categories}>
             <ExploreIcon
-              sx={{ color: theme.palette.background.paper_contrastText }}
+              sx={{ color: theme.palette.background.default_contrastText }}
               className={classes.icon}
             />
           </Tooltip>{" "}

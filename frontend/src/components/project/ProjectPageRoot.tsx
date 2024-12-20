@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
       width: 125,
     },
     "&.Mui-selected": {
-      color: theme.palette.background.paper_contrastText,
+      color: theme.palette.background.default_contrastText,
     },
   },
   projectInteractionButtonContainer: {
