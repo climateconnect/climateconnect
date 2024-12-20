@@ -1,5 +1,6 @@
 import defaultTheme from "./hubTheme";
 
+// transform theme data received from the API into a structured theme object
 export const transformThemeData = (data) => {
   const { palette, ...restOfDefaultTheme } = defaultTheme;
   const customTheme = {

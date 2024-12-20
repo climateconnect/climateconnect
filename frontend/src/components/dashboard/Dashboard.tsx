@@ -104,7 +104,7 @@ const useStyles = makeStyles((theme: Theme) => {
     climateHubOption: {
       width: "100%",
     },
-    buttonLableColor: {
+    buttonLabelColor: {
       color: theme.palette.background.default_contrastText,
     },
     linkText: {
@@ -141,7 +141,7 @@ const HoverButton = ({ items, label, startIcon }) => {
     <>
       <Button
         aria-haspopup="true"
-        className={classes.buttonLableColor}
+        className={classes.buttonLabelColor}
         color="primary"
         onClick={handleOpen}
         onMouseEnter={handleOpen}
