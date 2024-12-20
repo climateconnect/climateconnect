@@ -281,9 +281,11 @@ def get_similar_projects(url_slug: str, return_count=5):
         lambda x: 1 if x == source_proj_parent_id else 0
     )
     df["is_same_city"] = df.apply(
-        lambda x: 1
-        if x["city"] == source_proj_city and x["country"] == source_proj_country
-        else 0,
+        lambda x: (
+            1
+            if x["city"] == source_proj_city and x["country"] == source_proj_country
+            else 0
+        ),
         axis=1,
     )
     df["is_same_language"] = df.language.apply(

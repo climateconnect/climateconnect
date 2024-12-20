@@ -40,6 +40,13 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     marginTop: theme.spacing(1),
+    borderColor: theme.palette?.background?.default_contrastText,
+    "&:hover": {
+      borderColor: theme.palette?.background?.default_contrastText,
+    },
+  },
+  secondaryTextColor: {
+    color: theme.palette?.background?.default_contrastText,
   },
 }));
 
@@ -71,10 +78,13 @@ export default function LocalAmbassadorInfoBox({ hubAmbassador, hubData, hubSupp
     <div className={classes.root}>
       {!hubSupportersExists && (
         <div className={classes.upperSection}>
-          <Typography color="primary" className={classes.headline}>
+          <Typography
+            color="primary"
+            className={`${classes.headline} ${classes.secondaryTextColor}`}
+          >
             {texts.do_you_need_support}
           </Typography>
-          <Typography color="secondary">{texts.local_ambassador_is_there_for_you}</Typography>
+          <Typography>{texts.local_ambassador_is_there_for_you}</Typography>
         </div>
       )}
       <div className={classes.lowerSection}>
@@ -83,13 +93,17 @@ export default function LocalAmbassadorInfoBox({ hubAmbassador, hubData, hubSupp
           src={getImageUrl(hubAmbassador?.user?.thumbnail_image)}
         />
         <div>
-          <Typography className={classes.name} color="secondary">
+          <Typography className={classes.name}>
             {hubAmbassador?.user?.first_name} {hubAmbassador?.user?.last_name}
           </Typography>
-          <Typography color="secondary">
+          <Typography>
             {hubAmbassador?.title} {hubData.name}
           </Typography>
-          <Button variant="outlined" className={classes.button} onClick={handleClickContact}>
+          <Button
+            variant="outlined"
+            className={`${classes.button} ${classes.secondaryTextColor}`}
+            onClick={handleClickContact}
+          >
             {texts.send_message}
           </Button>
         </div>

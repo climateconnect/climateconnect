@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) => {
       overflow: "hidden",
       OTextOverflow: "ellipsis",
       textOverflow: "ellipsis",
+      color: theme.palette.background.default_contrastText,
     },
     infoLink: {
       display: "flex",
@@ -49,6 +50,9 @@ const useStyles = makeStyles((theme) => {
       display: "grid",
       gridTemplateRows: "min-content",
     },
+    placeIcon: {
+      color: theme.palette.background.default_contrastText,
+    },
   };
 });
 
@@ -63,7 +67,7 @@ export default function OrganizationPreviewBody({ organization }) {
           <span className={classes.locationBox}>
             <span className={classes.cardIconBox}>
               <Tooltip title="location">
-                <PlaceIcon /*TODO(undefined) className={classes.placeIcon} */ color="primary" />
+                <PlaceIcon className={classes.placeIcon} />
               </Tooltip>
             </span>
             <span className={classes.locationNameBox}>

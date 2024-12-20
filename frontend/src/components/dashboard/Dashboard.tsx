@@ -104,6 +104,12 @@ const useStyles = makeStyles((theme: Theme) => {
     climateHubOption: {
       width: "100%",
     },
+    buttonLabelColor: {
+      color: theme.palette.background.default_contrastText,
+    },
+    linkText: {
+      color: theme.palette.background.default_contrastText,
+    },
   };
 });
 
@@ -135,7 +141,7 @@ const HoverButton = ({ items, label, startIcon }) => {
     <>
       <Button
         aria-haspopup="true"
-        className={classes.HoverButtonButton}
+        className={classes.buttonLabelColor}
         color="primary"
         onClick={handleOpen}
         onMouseEnter={handleOpen}
@@ -180,6 +186,7 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
               href={item.url_slug}
               onClick={() => handleClick(item.onClick)}
               underline="hover"
+              className={classes.linkText}
             >
               <MenuItem component="button" className={classes.climateHubOption}>
                 {item.name}

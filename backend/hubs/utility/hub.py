@@ -34,6 +34,7 @@ def get_hub_stat_attribute(
             return attribute_translation
     return getattr(hub_stat, attribute_name)
 
+
 def get_hub_supporter_attribute(
     hub_supporter: HubSupporter, attribute_name, language_code: str
 ) -> str:
@@ -46,7 +47,8 @@ def get_hub_supporter_attribute(
     ):
         translation = hub_supporter.translate_hub_supporter.get(
             # first hub_supporter is the field name in the HubSupporterTranslation model
-            language__language_code=language_code, hub_supporter=hub_supporter
+            language__language_code=language_code,
+            hub_supporter=hub_supporter,
         )
         attribute_translation = getattr(translation, attribute_name + "_translation")
         if attribute_translation and len(attribute_translation) > 0:
