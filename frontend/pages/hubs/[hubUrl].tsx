@@ -30,8 +30,10 @@ import DonationCampaignInformation from "../../src/components/staticpages/donate
 import { retrievePage } from "../../src/utils/webflow";
 import AddIcon from "@mui/icons-material/Add";
 import { Theme } from "@mui/material/styles";
-import theme from "../../src/themes/theme";
+import theme from "../../src/themes/hubTheme";
 import BrowseContext from "../../src/components/context/BrowseContext";
+import { ThemeProvider } from "@mui/material/styles";
+import { transformThemeData } from "../../src/themes/transformThemeData";
 
 const useStyles = makeStyles((theme) => ({
   moreInfoSoon: {
@@ -88,6 +90,7 @@ export async function getServerSideProps(ctx) {
     allHubs,
     hubDescription,
     projectTypes,
+    hubThemeData,
   ] = await Promise.all([
     getHubData(hubUrl, ctx.locale),
     getProjectTagsOptions(hubUrl, ctx.locale),
@@ -98,6 +101,7 @@ export async function getServerSideProps(ctx) {
     getAllHubs(ctx.locale, false),
     retrieveDescriptionFromWebflow(ctx.query, ctx.locale),
     getProjectTypeOptions(ctx.locale),
+    getHubTheme(hubUrl),
   ]);
 
   return {
@@ -128,6 +132,7 @@ export async function getServerSideProps(ctx) {
       initialIdeaUrlSlug: ideaToOpen ? encodeURIComponent(ideaToOpen) : null,
       hubDescription: hubDescription,
       projectTypes: projectTypes,
+      hubThemeData: hubThemeData,
     },
   };
 }
@@ -154,6 +159,7 @@ export default function Hub({
   hubData,
   hubDescription,
   projectTypes,
+  hubThemeData,
 }) {
   const classes = useStyles();
   let fabClass = shareProjectFabStyle(false);
@@ -290,101 +296,103 @@ export default function Hub({
         }
         isLocationHub={isLocationHub}
       >
-        <div className={classes.content}>
-          {<DonationCampaignInformation />}
-          {!isLocationHub && (
-            <NavigationSubHeader
-              type={"hub"}
-              hubName={name}
-              allHubs={allHubs}
-              isLocationHub={isLocationHub}
-              hubUrl={hubUrl}
-              navigationRequested={navRequested}
-            />
-          )}
-          {!isLocationHub && (
-            <HubHeaderImage
-              image={getImageUrl(image)}
-              source={image_attribution}
-              onClose={closeHubHeaderImage}
-              isLocationHub={isLocationHub}
+        <ThemeProvider theme={hubThemeData ? transformThemeData(hubThemeData) : theme}>
+          <div className={classes.content}>
+            {<DonationCampaignInformation />}
+            {!isLocationHub && (
+              <NavigationSubHeader
+                type={"hub"}
+                hubName={name}
+                allHubs={allHubs}
+                isLocationHub={isLocationHub}
+                hubUrl={hubUrl}
+                navigationRequested={navRequested}
+              />
+            )}
+            {!isLocationHub && (
+              <HubHeaderImage
+                image={getImageUrl(image)}
+                source={image_attribution}
+                onClose={closeHubHeaderImage}
+                isLocationHub={isLocationHub}
+                statBoxTitle={statBoxTitle}
+                stats={stats}
+              />
+            )}
+            <HubContent
+              hubQuickInfoRef={hubQuickInfoRef}
+              headline={headline}
+              hubAmbassador={hubAmbassador}
+              hubSupporters={hubSupporters}
+              quickInfo={quickInfo}
               statBoxTitle={statBoxTitle}
               stats={stats}
-            />
-          )}
-          <HubContent
-            hubQuickInfoRef={hubQuickInfoRef}
-            headline={headline}
-            hubAmbassador={hubAmbassador}
-            hubSupporters={hubSupporters}
-            quickInfo={quickInfo}
-            statBoxTitle={statBoxTitle}
-            stats={stats}
-            scrollToSolutions={scrollToSolutions}
-            detailledInfo={
-              hubDescription?.bodyContent ? (
-                <div dangerouslySetInnerHTML={{ __html: hubDescription.bodyContent }} />
-              ) : (
-                <HubDescription hub={hubUrl} texts={texts} />
-              )
-            }
-            hubUrl={hubUrl}
-            subHeadline={subHeadline}
-            welcomeMessageLoggedIn={welcomeMessageLoggedIn}
-            welcomeMessageLoggedOut={welcomeMessageLoggedOut}
-            hubProjectsButtonRef={hubProjectsButtonRef}
-            isLocationHub={isLocationHub}
-            location={hubLocation}
-            allHubs={allHubs}
-            hubData={hubData}
-            image={getImageUrl(image)}
-            source={image_attribution}
-          />
-          {!isLocationHub && <BrowseExplainer />}
-          <BrowseContext.Provider value={contextValues}>
-            <BrowseContent
-              applyNewFilters={handleApplyNewFilters}
-              contentRef={contentRef}
-              customSearchBarLabels={customSearchBarLabels}
-              errorMessage={errorMessage}
-              hubAmbassador={hubAmbassador}
-              filters={filters}
-              handleUpdateFilterValues={handleUpdateFilterValues}
-              filterChoices={filterChoices}
-              handleSetErrorMessage={handleSetErrorMessage}
-              hideMembers={!isLocationHub}
-              hubName={name}
-              hubProjectsButtonRef={hubProjectsButtonRef}
-              hubQuickInfoRef={hubQuickInfoRef}
-              initialLocationFilter={initialLocationFilter}
-              // TODO: is this still needed?
-              // initialOrganizations={initialOrganizations}
-              // initialProjects={initialProjects}
-              nextStepTriggeredBy={nextStepTriggeredBy}
-              showIdeas={false}
-              allHubs={allHubs}
-              initialIdeaUrlSlug={initialIdeaUrlSlug}
-              hubLocation={hubLocation}
-              hubData={hubData}
-              resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
+              scrollToSolutions={scrollToSolutions}
+              detailledInfo={
+                hubDescription?.bodyContent ? (
+                  <div dangerouslySetInnerHTML={{ __html: hubDescription.bodyContent }} />
+                ) : (
+                  <HubDescription hub={hubUrl} texts={texts} />
+                )
+              }
               hubUrl={hubUrl}
-              tabNavigationRequested={requestTabNavigation}
-              hubSupporters={hubSupporters}
+              subHeadline={subHeadline}
+              welcomeMessageLoggedIn={welcomeMessageLoggedIn}
+              welcomeMessageLoggedOut={welcomeMessageLoggedOut}
+              hubProjectsButtonRef={hubProjectsButtonRef}
+              isLocationHub={isLocationHub}
+              location={hubLocation}
+              allHubs={allHubs}
+              hubData={hubData}
+              image={getImageUrl(image)}
+              source={image_attribution}
             />
-          </BrowseContext.Provider>
-        </div>
-        {isSmallScreen && (
-          <Fab
-            className={fabClass.fabShareProject}
-            size="medium"
-            color="primary"
-            href={`${getLocalePrefix(locale)}/share`}
-            sx={{ bottom: (theme) => (hubAmbassador ? theme.spacing(11.5) : theme.spacing(5)) }}
-            // onClick={}
-          >
-            <AddIcon />
-          </Fab>
-        )}
+            {!isLocationHub && <BrowseExplainer />}
+            <BrowseContext.Provider value={contextValues}>
+              <BrowseContent
+                applyNewFilters={handleApplyNewFilters}
+                contentRef={contentRef}
+                customSearchBarLabels={customSearchBarLabels}
+                errorMessage={errorMessage}
+                hubAmbassador={hubAmbassador}
+                filters={filters}
+                handleUpdateFilterValues={handleUpdateFilterValues}
+                filterChoices={filterChoices}
+                handleSetErrorMessage={handleSetErrorMessage}
+                hideMembers={!isLocationHub}
+                hubName={name}
+                hubProjectsButtonRef={hubProjectsButtonRef}
+                hubQuickInfoRef={hubQuickInfoRef}
+                initialLocationFilter={initialLocationFilter}
+                // TODO: is this still needed?
+                // initialOrganizations={initialOrganizations}
+                // initialProjects={initialProjects}
+                nextStepTriggeredBy={nextStepTriggeredBy}
+                showIdeas={false}
+                allHubs={allHubs}
+                initialIdeaUrlSlug={initialIdeaUrlSlug}
+                hubLocation={hubLocation}
+                hubData={hubData}
+                resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
+                hubUrl={hubUrl}
+                tabNavigationRequested={requestTabNavigation}
+                hubSupporters={hubSupporters}
+              />
+            </BrowseContext.Provider>
+          </div>
+          {isSmallScreen && (
+            <Fab
+              className={fabClass.fabShareProject}
+              size="medium"
+              color="primary"
+              href={`${getLocalePrefix(locale)}/share`}
+              sx={{ bottom: (theme) => (hubAmbassador ? theme.spacing(11.5) : theme.spacing(5)) }}
+              // onClick={}
+            >
+              <AddIcon />
+            </Fab>
+          )}
+        </ThemeProvider>
       </WideLayout>
     </>
   );
@@ -458,6 +466,21 @@ const getHubSupportersData = async (url_slug, locale) => {
   } catch (err: any) {
     if (err.response && err.response.data)
       console.log("Error in getHubSupportersData: " + err.response.data.detail);
+    console.log(err);
+    return null;
+  }
+};
+
+const getHubTheme = async (url_slug) => {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: `/api/hubs/${url_slug}/theme/`,
+    });
+    return resp.data;
+  } catch (err: any) {
+    if (err.response && err.response.data)
+      console.log("Error in getHubThemeData: " + err.response.data.detail);
     console.log(err);
     return null;
   }

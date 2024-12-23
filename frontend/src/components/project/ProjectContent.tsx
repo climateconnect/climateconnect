@@ -1,4 +1,4 @@
-import { Button, Typography } from "@mui/material";
+import { Button, Typography, useTheme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -192,7 +192,7 @@ export default function ProjectContent({
     if (type === "idea") return texts.this_idea_hasnt_added_a_description_yet;
     return texts.this_project_hasnt_added_a_description_yet;
   };
-
+  const theme = useTheme();
   return (
     <>
       <div className={classes.contentBlock}>
@@ -284,7 +284,7 @@ export default function ProjectContent({
         <Typography
           component="h2"
           variant="h6"
-          color="primary"
+          color={theme.palette.background.default_contrastText}
           ref={projectDescriptionRef}
           className={classes.subHeader}
         >
@@ -330,7 +330,12 @@ export default function ProjectContent({
         />
       )}
       <div className={classes.contentBlock} ref={collaborationSectionRef}>
-        <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
+        <Typography
+          component="h2"
+          variant="h6"
+          color={theme.palette.background.default_contrastText}
+          className={classes.subHeader}
+        >
           {texts.collaboration}
         </Typography>
         {project.collaborators_welcome ? (
@@ -342,7 +347,12 @@ export default function ProjectContent({
         )}
       </div>
       <div className={classes.contentBlock}>
-        <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
+        <Typography
+          component="h2"
+          variant="h6"
+          color={theme.palette.background.default_contrastText}
+          className={classes.subHeader}
+        >
           {texts.progress}
         </Typography>
         <Typography variant="body2" fontStyle="italic" fontWeight="bold">

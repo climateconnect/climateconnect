@@ -54,6 +54,7 @@ const useStyles = makeStyles((theme) => {
       color: "#000",
     },
     disableHover: {
+      color: theme.palette.background?.default_contrastText,
       "&:hover": {
         textDecoration: "none",
       },

@@ -19,4 +19,9 @@ urlpatterns = [
         hub_views.HubSupporterAPIView.as_view(),
         name="hub-supporters-api-view",
     ),
+    path(
+        "hubs/<str:url_slug>/theme/",
+        hub_views.HubThemeAPIView.as_view(),
+        name="hub_theme_api_view",
+    ),
 ]
