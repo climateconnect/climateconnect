@@ -16,9 +16,14 @@ import {
 } from "../public/lib/tutorialOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
-import Layout from "../src/components/layouts/layout";
 import BasicInfo from "../src/components/signup/BasicInfo";
 import AddInfo from "./../src/components/signup/AddInfo";
+import ContentImageSplitView from "../src/components/layouts/ContentImageSplitLayout";
+import Image from "next/image";
+import { ThemeProvider } from "@emotion/react";
+import { themeSignUp } from "../src/themes/signupTheme";
+import WideLayout from "../src/components/layouts/WideLayout";
+import { Container, Theme, useMediaQuery } from "@mui/material";
 
 export default function Signup() {
   const { ReactGA } = useContext(UserContext);
@@ -33,6 +38,8 @@ export default function Signup() {
     newsletter: "",
     sendNewsletter: undefined,
   });
+  const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
+
   const cookies = new Cookies();
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
@@ -149,31 +156,50 @@ export default function Signup() {
   };
 
   return (
-    <Layout
+    <WideLayout
       title={texts.sign_up}
-      isLoading={isLoading}
       message={errorMessage}
       messageType={errorMessage && "error"}
+      isLoading={isLoading}
     >
-      {curStep === "basicinfo" ? (
-        <BasicInfo
-          values={userInfo}
-          handleSubmit={handleBasicInfoSubmit}
-          errorMessage={errorMessages[steps[0]]}
-        />
-      ) : (
-        curStep === "personalinfo" && (
-          <AddInfo
-            values={userInfo}
-            handleSubmit={handleAddInfoSubmit}
-            errorMessage={errorMessages[steps[1]]}
-            handleGoBack={handleGoBackFromAddInfo}
-            locationInputRef={locationInputRef}
-            locationOptionsOpen={locationOptionsOpen}
-            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-          />
-        )
-      )}
-    </Layout>
+      <Container maxWidth={hugeScreen ? "xl" : "lg"}>
+        <ThemeProvider theme={themeSignUp}>
+          <ContentImageSplitView
+            minHeight="75vh"
+            content={
+              curStep === "basicinfo" ? (
+                <BasicInfo
+                  values={userInfo}
+                  handleSubmit={handleBasicInfoSubmit}
+                  errorMessage={errorMessages[steps[0]]}
+                />
+              ) : (
+                curStep === "personalinfo" && (
+                  <AddInfo
+                    values={userInfo}
+                    handleSubmit={handleAddInfoSubmit}
+                    errorMessage={errorMessages[steps[1]]}
+                    handleGoBack={handleGoBackFromAddInfo}
+                    locationInputRef={locationInputRef}
+                    locationOptionsOpen={locationOptionsOpen}
+                    handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+                  />
+                )
+              )
+            }
+            leftGridSizes={{ md: 7 }}
+            rightGridSizes={{ md: 5 }}
+            image={
+              <Image
+                src="/images/sign_up/mobile-login-pana.svg"
+                alt="Sign Up"
+                layout="fill" // Image will cover the container
+                objectFit="contain" // Ensures it fills without stretching
+              />
+            }
+          ></ContentImageSplitView>
+        </ThemeProvider>
+      </Container>
+    </WideLayout>
   );
 }

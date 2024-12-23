@@ -22,7 +22,7 @@ declare module "@mui/material/styles" {
 }
 
 // Create core theme so we can access spacing etc. when customizing components
-const coreTheme = createTheme({
+export const coreTheme = createTheme({
   palette: {
     primary: {
       main: "#207178",
