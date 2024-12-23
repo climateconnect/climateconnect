@@ -307,7 +307,6 @@ class CreateProjectView(APIView):
             organization = check_organization(int(request.data["parent_organization"]))
         else:
             organization = None
-
         required_params = [
             "name",
             "status",
