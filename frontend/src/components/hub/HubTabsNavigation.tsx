@@ -19,14 +19,14 @@ const useStyles = makeStyles((theme) => ({
   },
   tab: {
     textTransform: "none",
-    color: "white",
+    color: theme.palette.primary.contrastText,
     fontSize: 16,
     "&.Mui-selected": {
       paddingLeft: theme.spacing(1),
       paddingRight: theme.spacing(1),
       "& .tabLabel": {
         color: theme.palette.primary.main,
-        background: "white",
+        background: theme.palette.primary.contrastText,
         borderRadius: 15,
         paddingTop: 3,
         paddingBottom: 3,
@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   climateMatchLink: {
-    color: "white",
+    color: theme.palette.primary.contrastText,
     fontWeight: 600,
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),

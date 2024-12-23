@@ -7,6 +7,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
+import HubSupporters from "../hub/HubSupporters";
 
 const useStyles = makeStyles((theme) => ({
   projectCard: {
@@ -42,6 +43,14 @@ const useStyles = makeStyles((theme) => ({
     fontSize: props.isSmallScreen ? 14 : 12,
     width: props.isSmallScreen ? "100%" : "95%",
   }),
+  supporterSliderWidth: {
+    width: "95%",
+    marginTop: "8px",
+    marginBottom: theme.spacing(2),
+    [`@media (min-width: 900px) and (max-width: 1200px)`]: {
+      marginLeft: 0,
+    },
+  },
 }));
 
 export default function ProjectSideBar({
@@ -51,6 +60,8 @@ export default function ProjectSideBar({
   locale,
   texts,
   isSmallScreen,
+  hubSupporters,
+  hubName,
 }) {
   const classes = useStyles({
     showSimilarProjects: showSimilarProjects,
@@ -70,11 +81,12 @@ export default function ProjectSideBar({
           </Typography>
         </>
       ) : (
-        <IconButton size="small" onClick={handleHideContent}>
-          <MenuIcon />
-        </IconButton>
+        <>
+          <IconButton size="small" onClick={handleHideContent}>
+            <MenuIcon />
+          </IconButton>
+        </>
       )}
-
       <div
         className={
           isSmallScreen
@@ -89,11 +101,18 @@ export default function ProjectSideBar({
         )}
         {showSimilarProjects && (
           <>
+            {hubSupporters && (
+              <HubSupporters
+                supportersList={hubSupporters}
+                containerClass={classes.supporterSliderWidth}
+                mobileVersion={isSmallScreen}
+                hubName={hubName}
+              />
+            )}
             <ProjectPreviews
               displayOnePreviewInRow={shouldDisplayOneProjectInRow}
               projects={similarProjects}
             />
-
             <Button
               color="primary"
               variant="outlined"

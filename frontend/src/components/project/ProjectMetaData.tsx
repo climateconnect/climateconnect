@@ -29,7 +29,7 @@ const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
     marginRight: theme.spacing(0.5),
     marginLeft: theme.spacing(-0.25),
     fontSize: "default",
-    color: theme.palette.primary.main,
+    color: theme.palette.background.default_contrastText,
   },
   categories: (props) => ({
     display: "flex",

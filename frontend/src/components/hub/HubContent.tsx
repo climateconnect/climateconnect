@@ -4,7 +4,6 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
-import theme from "../../themes/theme";
 import MessageContent from "../communication/MessageContent";
 import UserContext from "../context/UserContext";
 import ElementOnScreen from "../hooks/ElementOnScreen";
@@ -14,6 +13,8 @@ import ContactAmbassadorButton from "./ContactAmbassadorButton";
 import Dashboard from "../dashboard/Dashboard";
 import LocalAmbassadorInfoBox from "./LocalAmbassadorInfoBox";
 import HubHeadlineContainer from "./HubHeadlineContainer";
+import HubSupporters from "./HubSupporters";
+import theme from "../../themes/theme";
 
 type MakeStylesProps = {
   isLocationHub: boolean;
@@ -60,6 +61,11 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1,
     border: "1px solid white",
   },
+  ambassadorAndSupporters: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "14px",
+  },
   buttonContainer: (props: MakeStylesProps) => ({
     display: props.isLocationHub ? "none" : "flex",
     justifyContent: "center",
@@ -80,7 +86,8 @@ const useStyles = makeStyles((theme) => ({
   dashboardAndStatboxWrapper: (props: MakeStylesProps) => ({
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "flex-start",
+    margin: "16px auto",
+    alignItems: "end",
   }),
   infoBoxContainer: {
     marginTop: theme.spacing(0),
@@ -125,6 +132,7 @@ export default function HubContent({
   hubProjectsButtonRef,
   isLocationHub,
   hubAmbassador,
+  hubSupporters,
   location,
   allHubs,
   hubData,
@@ -137,6 +145,7 @@ export default function HubContent({
   const texts = getTexts({ page: "hub", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const [expanded, setExpanded] = React.useState(false);
+
   const handleClickExpand = () => {
     if (expanded === false) {
       setFixed(true);
@@ -185,9 +194,29 @@ export default function HubContent({
                 )}
                 {!isNarrowScreen &&
                   (!user ? (
-                    <LocalAmbassadorInfoBox hubAmbassador={hubAmbassador} hubData={hubData} />
+                    <>
+                      {hubAmbassador && (
+                        <div className={classes.ambassadorAndSupporters}>
+                          <LocalAmbassadorInfoBox
+                            hubAmbassador={hubAmbassador}
+                            hubData={hubData}
+                            hubSupportersExists={hubSupporters ? true : false}
+                          />
+                          {hubSupporters?.length > 0 && (
+                            <HubSupporters supportersList={hubSupporters} hubName={hubData?.name} />
+                          )}
+                        </div>
+                      )}
+                    </>
                   ) : (
-                    <ContactAmbassadorButton hubAmbassador={hubAmbassador} mobile={false} />
+                    <>
+                      {hubAmbassador && (
+                        <ContactAmbassadorButton hubAmbassador={hubAmbassador} mobile={false} />
+                      )}
+                      {hubSupporters?.length > 0 && (
+                        <HubSupporters supportersList={hubSupporters} hubName={hubData?.name} />
+                      )}
+                    </>
                   ))}
               </div>
             </Container>
