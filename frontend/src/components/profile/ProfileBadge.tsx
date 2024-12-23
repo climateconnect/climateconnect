@@ -28,6 +28,10 @@ const useStyles = makeStyles<Theme, { size: string; image?: string }>((theme) =>
 
 type Props = React.PropsWithChildren<{ className?: string; badge?; size?; contentOnly?: boolean }>;
 export default function ProfileBadge({ className, badge, children, size, contentOnly }: Props) {
+  // deactivated donorforest badge for now
+  // as the donorforest is not up to date
+  badge.is_donorforest_badge = false;
+
   const classes = useStyles({ image: getImageUrl(badge.image), size: size });
   if (contentOnly) {
     return <BadgeContent badge={badge} size={size} className={className} />;
@@ -57,7 +61,8 @@ const BadgeContent = ({ badge, size, className, withLink }: any) => {
   return (
     <Tooltip title={badge.name}>
       <div>
-        {withLink ? (
+        {/* disabled Link to donorforest for now */}
+        {withLink && false ? (
           <Link href={`${getLocalePrefix(locale)}/donorforest`} target="_blank" underline="hover">
             <Content badge={badge} size={size} className={className} />
           </Link>
