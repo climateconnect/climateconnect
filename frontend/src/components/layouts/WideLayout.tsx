@@ -11,6 +11,7 @@ import Header from "../header/Header";
 import ElementSpaceToTop from "../hooks/ElementSpaceToTop";
 import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
 import LayoutWrapper from "./LayoutWrapper";
+import HeaderForPRIO1 from "../header/HeaderForPRIO1";
 
 type ThemeProps = { noSpaceBottom?: boolean; isStaticPage?: boolean };
 const useStyles = makeStyles<Theme, ThemeProps>((theme) => ({
@@ -128,7 +129,7 @@ export default function WideLayout({
       theme={theme}
       image={image}
     >
-      {!noHeader && (
+      {!noHeader && hubUrl !== "erlangen" ? (
         <Header
           isStaticPage={isStaticPage}
           fixedHeader={fixedHeader}
@@ -139,6 +140,8 @@ export default function WideLayout({
           hubUrl={hubUrl}
           isLocationHub={isLocationHub}
         />
+      ) : (
+        <HeaderForPRIO1 />
       )}
       {isLoading ? (
         <LoadingContainer headerHeight={113} footerHeight={80} />
