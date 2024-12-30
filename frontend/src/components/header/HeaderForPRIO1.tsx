@@ -145,6 +145,10 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       marginRight: theme.spacing(1),
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(2),
+      boxShadow: "none",
+      "&:hover": {
+        boxShadow: "none",
+      },
     },
     notificationsHeadline: {
       padding: theme.spacing(2),
@@ -344,7 +348,6 @@ export default function HeaderForPRIO1({ background, isLocationHub }: HeaderProp
               toggleShowNotifications={toggleShowNotifications}
               onNotificationsClose={onNotificationsClose}
               notifications={notifications}
-              LINKS={LINKS}
               texts={texts}
             />
           )}
@@ -361,92 +364,66 @@ function NormalScreenLinks({
   toggleShowNotifications,
   onNotificationsClose,
   notifications,
-  LINKS,
   texts,
 }) {
   const { locale } = useContext(UserContext);
   const localePrefix = getLocalePrefix(locale);
   const classes = useStyles({});
-  const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
-  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("lg"));
+  // const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
+  // const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("lg"));
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts, locale);
   return (
     <Box className={classes.linkContainer}>
-      {LINKS.filter(
-        (link) =>
-          (!loggedInUser || !link.onlyShowLoggedOut) && (loggedInUser || !link.onlyShowLoggedIn)
-      ).map((link, index) => {
-        const buttonProps = getLinkButtonProps({
-          link: link,
-          index: index,
-          loggedInUser: loggedInUser,
-          classes: classes,
-          toggleShowNotifications: toggleShowNotifications,
-          localePrefix: localePrefix,
-        });
-        const Icon = link.icon;
-        if (!(isMediumScreen && link.hideOnMediumScreen))
-          return (
-            <React.Fragment key={index}>
-              <span className={classes.menuLink}>
-                {link.type === "languageSelect" ? (
-                  <LanguageSelect implementedIn={"HeaderForPRIO1"} />
-                ) : link.onlyShowIconOnNormalScreen ? (
-                  <>
-                    <IconButton {...buttonProps} className={classes.link} size="large">
-                      {link.hasBadge && notifications && notifications.length > 0 ? (
-                        <Badge badgeContent={notifications.length} color="error">
-                          <Icon />
-                        </Badge>
-                      ) : (
-                        <Icon />
-                      )}
-                    </IconButton>
-                    {link.type === "notificationsButton" && anchorEl && (
-                      <NotificationsBox
-                        anchorEl={anchorEl}
-                        keepMounted
-                        open={Boolean(anchorEl)}
-                        onClose={onNotificationsClose}
-                      >
-                        <Typography
-                          className={classes.notificationsHeadline}
-                          component="h1"
-                          variant="h5"
-                        >
-                          {texts.notifications}
-                        </Typography>
-                        <Divider />
-                        {notifications && notifications.length > 0 ? (
-                          notifications.map((n, index) => (
-                            <Notification key={index} notification={n} />
-                          ))
-                        ) : (
-                          <Notification key={index} isPlaceholder />
-                        )}
-                      </NotificationsBox>
-                    )}
-                  </>
-                ) : link?.showStaticLinksInDropdown ? (
-                  <DropDownButton options={STATIC_PAGE_LINKS} buttonProps={{ ...buttonProps }}>
-                    {isMediumScreen && link.mediumScreenText ? link.mediumScreenText : link.text}
-                  </DropDownButton>
-                ) : link?.showJustIconUnderSm && isSmallMediumScreen ? (
-                  <IconButton {...buttonProps} className={classes.link} size="large">
-                    <link.showJustIconUnderSm />
-                  </IconButton>
-                ) : (
-                  <Button {...buttonProps} className={classes.btnTextColor}>
-                    {link.icon && !(link.hideDesktopIconUnderSm && isSmallMediumScreen) && (
-                      <link.icon className={classes.normalScreenIcon} />
-                    )}
-                    {isMediumScreen && link.mediumScreenText ? link.mediumScreenText : link.text}
-                  </Button>
-                )}
-              </span>
-            </React.Fragment>
-          );
-      })}
+      <span className={classes.menuLink}>
+        <DropDownButton options={STATIC_PAGE_LINKS} className={classes.buttonMarginLeft}>
+          PRIO1-klima.net
+        </DropDownButton>
+      </span>
+      <span className={classes.menuLink}>
+        <Button
+          className={`${classes.btnTextColor} ${classes.shareProjectButton}`}
+          variant="contained"
+        >
+          Share project
+        </Button>
+      </span>
+      <span className={classes.menuLink}>
+        <LanguageSelect implementedIn={"HeaderForPRIO1"} />
+      </span>
+      <span className={classes.menuLink}>
+        <IconButton
+          className={classes.notificationsButton}
+          onClick={toggleShowNotifications}
+          size="large"
+        >
+          {notifications && notifications.length > 0 ? (
+            <Badge badgeContent={notifications.length} color="error">
+              <NotificationsIcon />
+            </Badge>
+          ) : (
+            <NotificationsIcon />
+          )}
+        </IconButton>
+
+        {anchorEl && (
+          <NotificationsBox
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={onNotificationsClose}
+          >
+            <Typography className={classes.notificationsHeadline} component="h1" variant="h5">
+              {texts.notifications}
+            </Typography>
+            <Divider />
+            {notifications && notifications.length > 0 ? (
+              notifications.map((n, index) => <Notification key={index} notification={n} />)
+            ) : (
+              <Notification isPlaceholder />
+            )}
+          </NotificationsBox>
+        )}
+      </span>
       {loggedInUser && (
         <LoggedInNormalScreen
           loggedInUser={loggedInUser}
