@@ -190,50 +190,51 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
   };
 });
 
-const getLinks = (path_to_redirect, texts, isLocationHub) => [
-  {
-    href: "#",
-    text: "PRIO1-klima.net",
-    iconForDrawer: InfoIcon,
-    showStaticLinksInDropdown: true,
-  },
+// const getLinks = (path_to_redirect, texts, isLocationHub) => [
+//   {
+//     href: "#",
+//     text: "PRIO1-klima.net",
+//     iconForDrawer: InfoIcon,
+//     showStaticLinksInDropdown: true,
+//   },
 
-  {
-    href: "/share",
-    text: texts.share_a_project,
-    mediumScreenText: texts.share,
-    iconForDrawer: AddCircleIcon,
-    isFilledInHeader: true,
-    className: "shareProjectButton",
-    hideOnMediumScreen: isLocationHub,
-    isOutlinedInHeader: true,
-  },
-  {
-    type: "languageSelect",
-  },
-  {
-    type: "notificationsButton",
-    text: texts.inbox,
-    iconForDrawer: NotificationsIcon,
-    hasBadge: true,
-    onlyShowIconOnNormalScreen: true,
-    onlyShowIconOnMobile: true,
-    className: "notificationsButton",
-    icon: NotificationsIcon,
-    alwaysDisplayDirectly: true,
-    onlyShowLoggedIn: true,
-  },
-  {
-    href: "/signup",
-    text: texts.sign_up,
-    iconForDrawer: AccountCircleIcon,
-    isOutlinedInHeader: true,
-    onlyShowLoggedOut: true,
-    alwaysDisplayDirectly: true,
-  },
-];
+//   {
+//     href: "/share",
+//     text: texts.share_a_project,
+//     mediumScreenText: texts.share,
+//     iconForDrawer: AddCircleIcon,
+//     isFilledInHeader: true,
+//     className: "shareProjectButton",
+//     hideOnMediumScreen: isLocationHub,
+//     isOutlinedInHeader: true,
+//   },
+//   {
+//     type: "languageSelect",
+//   },
+//   {
+//     type: "notificationsButton",
+//     text: texts.inbox,
+//     iconForDrawer: NotificationsIcon,
+//     hasBadge: true,
+//     onlyShowIconOnNormalScreen: true,
+//     onlyShowIconOnMobile: true,
+//     className: "notificationsButton",
+//     icon: NotificationsIcon,
+//     alwaysDisplayDirectly: true,
+//     onlyShowLoggedIn: true,
+//   },
+//   {
+//     href: "/signup",
+//     text: texts.sign_up,
+//     iconForDrawer: AccountCircleIcon,
+//     isOutlinedInHeader: true,
+//     onlyShowLoggedOut: true,
+//     alwaysDisplayDirectly: true,
+//   },
+// ];
 
 const getLoggedInLinks = ({ loggedInUser, texts }) => {
+  if (!loggedInUser) return [];
   return [
     {
       href: "/profiles/" + loggedInUser.url_slug,
@@ -260,18 +261,18 @@ const getLoggedInLinks = ({ loggedInUser, texts }) => {
       text: texts.settings,
       iconForDrawer: SettingsIcon,
     },
-    {
-      avatar: true,
-      href: "/profiles/" + loggedInUser.url_slug,
-      src: loggedInUser.image,
-      alt: texts.profile_image_of + " " + loggedInUser.name,
-      showOnMobileOnly: true,
-    },
-    {
-      isLogoutButton: true,
-      text: texts.log_out,
-      iconForDrawer: ExitToAppIcon,
-    },
+    // {
+    //   avatar: true,
+    //   href: "/profiles/" + loggedInUser.url_slug,
+    //   src: loggedInUser.image,
+    //   alt: texts.profile_image_of + " " + loggedInUser.name,
+    //   showOnMobileOnly: true,
+    // },
+    // {
+    //   isLogoutButton: true,
+    //   text: texts.log_out,
+    //   iconForDrawer: ExitToAppIcon,
+    // },
   ];
 };
 
@@ -286,14 +287,13 @@ export default function HeaderForPRIO1({ background, isLocationHub }: HeaderProp
   const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
-  const LINKS = getLinks(pathName, texts, isLocationHub);
   const toggleShowNotifications = (event) => {
     if (!anchorEl) setAnchorEl(event.currentTarget);
     else setAnchorEl(null);
   };
   const localePrefix = getLocalePrefix(locale);
 
-  const onNotificationsClose = () => setAnchorEl(null);
+  const notificationsOnClose = () => setAnchorEl(null);
 
   const [hideHeader, setHideHeader] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -330,23 +330,22 @@ export default function HeaderForPRIO1({ background, isLocationHub }: HeaderProp
             />
           </Link>
           {isNarrowScreen || isMediumScreen ? (
-            <NarrowScreenLinks
+            <NarrowScreenMenu
               loggedInUser={user}
               handleLogout={signOut}
               anchorEl={anchorEl}
               toggleShowNotifications={toggleShowNotifications}
-              onNotificationsClose={onNotificationsClose}
+              notificationsOnClose={notificationsOnClose}
               notifications={notifications}
-              LINKS={LINKS}
               texts={texts}
             />
           ) : (
-            <NormalScreenLinks
+            <NormalScreenMenu
               loggedInUser={user}
               handleLogout={signOut}
               anchorEl={anchorEl}
               toggleShowNotifications={toggleShowNotifications}
-              onNotificationsClose={onNotificationsClose}
+              notificationsOnClose={notificationsOnClose}
               notifications={notifications}
               texts={texts}
             />
@@ -357,26 +356,24 @@ export default function HeaderForPRIO1({ background, isLocationHub }: HeaderProp
   );
 }
 
-function NormalScreenLinks({
+function NormalScreenMenu({
   loggedInUser,
   handleLogout,
   anchorEl,
   toggleShowNotifications,
-  onNotificationsClose,
+  notificationsOnClose,
   notifications,
   texts,
 }) {
   const { locale } = useContext(UserContext);
   const localePrefix = getLocalePrefix(locale);
   const classes = useStyles({});
-  // const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
-  // const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("lg"));
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts, locale);
   return (
     <Box className={classes.linkContainer}>
       <span className={classes.menuLink}>
         <DropDownButton options={STATIC_PAGE_LINKS} className={classes.buttonMarginLeft}>
-          PRIO1-klima.net
+          {texts.PRIO1_klima}
         </DropDownButton>
       </span>
       <span className={classes.menuLink}>
@@ -384,48 +381,23 @@ function NormalScreenLinks({
           className={`${classes.btnTextColor} ${classes.shareProjectButton}`}
           variant="contained"
         >
-          Share project
+          {texts.share_a_project}
         </Button>
       </span>
       <span className={classes.menuLink}>
         <LanguageSelect implementedIn={"HeaderForPRIO1"} />
       </span>
-      <span className={classes.menuLink}>
-        <IconButton
-          className={classes.notificationsButton}
-          onClick={toggleShowNotifications}
-          size="large"
-        >
-          {notifications && notifications.length > 0 ? (
-            <Badge badgeContent={notifications.length} color="error">
-              <NotificationsIcon />
-            </Badge>
-          ) : (
-            <NotificationsIcon />
-          )}
-        </IconButton>
-
-        {anchorEl && (
-          <NotificationsBox
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={onNotificationsClose}
-          >
-            <Typography className={classes.notificationsHeadline} component="h1" variant="h5">
-              {texts.notifications}
-            </Typography>
-            <Divider />
-            {notifications && notifications.length > 0 ? (
-              notifications.map((n, index) => <Notification key={index} notification={n} />)
-            ) : (
-              <Notification isPlaceholder />
-            )}
-          </NotificationsBox>
-        )}
-      </span>
+      <NotificationsOrSignup
+        loggedInUser={loggedInUser}
+        classes={classes}
+        toggleShowNotifications={toggleShowNotifications}
+        notifications={notifications}
+        anchorEl={anchorEl}
+        notificationsOnClose={notificationsOnClose}
+        texts={texts}
+      />
       {loggedInUser && (
-        <LoggedInNormalScreen
+        <NormalScreenLogIn
           loggedInUser={loggedInUser}
           handleLogout={handleLogout}
           texts={texts}
@@ -436,211 +408,7 @@ function NormalScreenLinks({
   );
 }
 
-function NarrowScreenLinks({
-  loggedInUser,
-  handleLogout,
-  anchorEl,
-  toggleShowNotifications,
-  onNotificationsClose,
-  notifications,
-  LINKS,
-  texts,
-}) {
-  const { locale } = useContext(UserContext);
-  const localePrefix = getLocalePrefix(locale);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const openDrawer = setIsDrawerOpen.bind(null, true);
-  const closeDrawer = setIsDrawerOpen.bind(null, false);
-  const classes = useStyles({});
-  const linksOutsideDrawer = LINKS.filter(
-    (link) =>
-      link.alwaysDisplayDirectly === true &&
-      !(loggedInUser && link.onlyShowLoggedOut) &&
-      !(!loggedInUser && link.onlyShowLoggedIn)
-  );
-  return (
-    <>
-      <Box>
-        {linksOutsideDrawer.map((link, index) => {
-          const Icon = link.iconForDrawer;
-          const buttonProps = getLinkButtonProps({
-            link: link,
-            index: index,
-            loggedInUser: loggedInUser,
-            classes: classes,
-            toggleShowNotifications: toggleShowNotifications,
-            isNarrowScreen: true,
-            linksOutsideDrawer: linksOutsideDrawer,
-            localePrefix: localePrefix,
-          });
-          if (index === linksOutsideDrawer.length - 1) {
-            buttonProps.className = classes.marginRight;
-          }
-          return (
-            <React.Fragment key={index}>
-              {link.onlyShowIconOnMobile ? (
-                <>
-                  <IconButton
-                    color={theme?.palette?.primary?.contrastText}
-                    className={classes.marginRight}
-                    {...buttonProps}
-                    size="large"
-                  >
-                    {link.hasBadge && notifications && notifications.length > 0 ? (
-                      <Badge badgeContent={notifications.length} color="error">
-                        <Icon />
-                      </Badge>
-                    ) : (
-                      <Icon />
-                    )}
-                  </IconButton>
-                  {link.type === "notificationsButton" && anchorEl && (
-                    <NotificationsBox
-                      anchorEl={anchorEl}
-                      keepMounted
-                      open={Boolean(anchorEl)}
-                      onClose={onNotificationsClose}
-                    >
-                      <Typography
-                        className={classes.notificationsHeadline}
-                        component="h1"
-                        variant="h5"
-                      >
-                        {texts.notifications}
-                      </Typography>
-                      <Divider />
-                      {notifications && notifications.length > 0 ? (
-                        notifications.map((n, index) => (
-                          <Notification key={index} notification={n} />
-                        ))
-                      ) : (
-                        <Notification key={index} isPlaceholder />
-                      )}
-                    </NotificationsBox>
-                  )}
-                </>
-              ) : (
-                <span className={classes.menuLink}>
-                  {link.type === "languageSelect" ? (
-                    <LanguageSelect implementedIn={"HeaderForPRIO1"} />
-                  ) : (
-                    <Button
-                      // color={theme?.palette?.primary?.contrastText}
-                      {...buttonProps}
-                      key={index}
-                    >
-                      {link.text}
-                    </Button>
-                  )}
-                </span>
-              )}
-            </React.Fragment>
-          );
-        })}
-        <span className={classes.menuLink}>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            onClick={openDrawer}
-            size="large"
-          >
-            <MenuIcon />
-          </IconButton>
-        </span>
-        <SwipeableDrawer
-          anchor="right"
-          open={isDrawerOpen}
-          // `onOpen` is a required property, even though we don't use it.
-          onOpen={noop}
-          onClose={closeDrawer}
-          disableBackdropTransition={true}
-        >
-          <List>
-            <ListItem className={classes.languageSelectMobile}>
-              <LanguageSelect implementedIn={"HeaderForPRIO1"} />
-            </ListItem>
-            {LINKS.filter(
-              (link) =>
-                (!link.alwaysDisplayDirectly ||
-                  !(loggedInUser && link.alwaysDisplayDirectly === "loggedIn")) &&
-                !(loggedInUser && link.onlyShowLoggedOut) &&
-                !(!loggedInUser && link.onlyShowLoggedIn)
-            ).map((link, index) => {
-              const Icon = link.iconForDrawer;
-              if (link.type !== "languageSelect") {
-                return (
-                  <Link
-                    href={localePrefix + link.href}
-                    key={index}
-                    underline="hover"
-                    classNmae={classes.drawerLink}
-                  >
-                    <ListItem component="a" onClick={closeDrawer}>
-                      <ListItemIcon>
-                        <Icon className={classes.drawerItem} />
-                      </ListItemIcon>
-                      <ListItemText primary={link.text} className={classes.drawerItem} />
-                    </ListItem>
-                  </Link>
-                );
-              }
-            })}
-            {loggedInUser &&
-              getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts }).map((link, index) => {
-                const Icon: any = link.iconForDrawer;
-                const avatarProps = {
-                  className: classes.loggedInAvatarMobile,
-                  src: getImageUrl(loggedInUser.image),
-                  alt: loggedInUser.name,
-                };
-                if (link.avatar)
-                  return (
-                    <div className={classes.mobileAvatarContainer}>
-                      <Link href={"/profiles/" + loggedInUser.url_slug} underline="hover">
-                        {loggedInUser?.badges?.length > 0 ? (
-                          <ProfileBadge
-                            badge={loggedInUser?.badges[0]}
-                            size="medium"
-                            className={classes.badge}
-                          >
-                            <Avatar {...avatarProps} />
-                          </ProfileBadge>
-                        ) : (
-                          <Avatar {...avatarProps} />
-                        )}
-                      </Link>
-                    </div>
-                  );
-                else if (link.isLogoutButton)
-                  return (
-                    <ListItem button component="a" key={index} onClick={handleLogout}>
-                      <ListItemIcon>
-                        <Icon color="primary" />
-                      </ListItemIcon>
-                      <ListItemText primary={link.text} />
-                    </ListItem>
-                  );
-                else
-                  return (
-                    <Link href={localePrefix + link.href} key={index} underline="hover">
-                      <ListItem button component="a" onClick={closeDrawer}>
-                        <ListItemIcon>
-                          <Icon color="primary" />
-                        </ListItemIcon>
-                        <ListItemText primary={link.text} />
-                      </ListItem>
-                    </Link>
-                  );
-              })}
-          </List>
-        </SwipeableDrawer>
-      </Box>
-    </>
-  );
-}
-
-const LoggedInNormalScreen = ({ loggedInUser, handleLogout, texts, localePrefix }) => {
+const NormalScreenLogIn = ({ loggedInUser, handleLogout, texts, localePrefix }) => {
   const classes = useStyles({});
   const [menuOpen, setMenuOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
@@ -682,28 +450,29 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, texts, localePrefix 
         <Popper open={menuOpen} anchorEl={anchorRef.current} className={classes.loggedInPopper}>
           <Paper>
             <MenuList>
-              {getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts })
-                .filter((link) => !link.showOnMobileOnly)
-                .map((link, index) => {
-                  const menuItemProps: any = {
-                    component: "button",
-                    className: classes.loggedInLink,
-                  };
-                  if (link.isLogoutButton) menuItemProps.onClick = handleLogout;
-                  else menuItemProps.href = localePrefix + link.href;
-                  const MenuItem_ = MenuItem as any;
-                  return (
-                    <MenuItem_ // todo: type issue
-                      key={index}
-                      component="button"
-                      className={classes.loggedInLink}
-                      onClick={link.isLogoutButton && handleLogout}
-                      href={!link.isLogoutButton ? localePrefix + link.href : undefined}
-                    >
-                      {link.text}
-                    </MenuItem_>
-                  );
-                })}
+              {getLoggedInLinks({ loggedInUser, texts }).map((link, index) => {
+                return (
+                  <MenuItem
+                    key={index}
+                    component="button"
+                    className={classes.loggedInLink}
+                    onClick={handleLogout}
+                    href={localePrefix + link.href}
+                  >
+                    {link.text}
+                  </MenuItem>
+                );
+              })}
+              {loggedInUser && (
+                <MenuItem
+                  component="button"
+                  className={classes.loggedInLink}
+                  onClick={handleLogout}
+                  href={localePrefix + "logout"}
+                >
+                  {"logout"}
+                </MenuItem>
+              )}
             </MenuList>
           </Paper>
         </Popper>
@@ -712,37 +481,191 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, texts, localePrefix 
   );
 };
 
-const getLinkButtonProps = ({
-  link,
-  index,
+function NarrowScreenMenu({
+  loggedInUser,
+  handleLogout,
+  anchorEl,
+  toggleShowNotifications,
+  notificationsOnClose,
+  notifications,
+  texts,
+}) {
+  const { locale } = useContext(UserContext);
+  const localePrefix = getLocalePrefix(locale);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const openDrawer = setIsDrawerOpen.bind(null, true);
+  const closeDrawer = setIsDrawerOpen.bind(null, false);
+  const classes = useStyles({});
+  const loggedInLinks = getLoggedInLinks({ loggedInUser, texts });
+  const constantLinks = [
+    {
+      href: "#",
+      text: "PRIO1-klima.net",
+      iconForDrawer: InfoIcon,
+    },
+    {
+      href: "/share",
+      text: texts.share_a_project,
+      iconForDrawer: AddCircleIcon,
+    },
+  ];
+  const guestLinks = [
+    {
+      href: "/signup",
+      text: texts.sign_up,
+      iconForDrawer: AccountCircleIcon,
+    },
+  ];
+
+  const links = [...constantLinks, ...(loggedInUser ? [] : guestLinks), ...loggedInLinks];
+
+  return (
+    <>
+      <Box>
+        <NotificationsOrSignup
+          loggedInUser={loggedInUser}
+          classes={classes}
+          toggleShowNotifications={toggleShowNotifications}
+          notifications={notifications}
+          anchorEl={anchorEl}
+          notificationsOnClose={notificationsOnClose}
+          texts={texts}
+        />
+        <span className={classes.menuLink}>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={openDrawer}
+            size="large"
+          >
+            <MenuIcon />
+          </IconButton>
+        </span>
+        <SwipeableDrawer
+          anchor="right"
+          open={isDrawerOpen}
+          // `onOpen` is a required property, even though we don't use it.
+          onOpen={noop}
+          onClose={closeDrawer}
+          disableBackdropTransition={true}
+        >
+          <List>
+            <ListItem className={classes.languageSelectMobile}>
+              <LanguageSelect implementedIn={"HeaderForPRIO1"} />
+            </ListItem>
+            {links.map((link, index) => {
+              const Icon = link.iconForDrawer;
+              return (
+                <Link
+                  href={localePrefix + link.href}
+                  key={index}
+                  underline="hover"
+                  className={classes.drawerLink}
+                >
+                  <ListItem button component="a" onClick={closeDrawer}>
+                    <ListItemIcon>
+                      <Icon className={classes.drawerItem} />
+                    </ListItemIcon>
+                    <ListItemText primary={link.text} className={classes.drawerItem} />
+                  </ListItem>
+                </Link>
+              );
+            })}
+
+            {loggedInUser && (
+              <>
+                <div className={classes.mobileAvatarContainer}>
+                  <Link href={"/profiles/" + loggedInUser.url_slug} underline="hover">
+                    {loggedInUser?.badges?.length > 0 ? (
+                      <ProfileBadge
+                        badge={loggedInUser?.badges[0]}
+                        size="medium"
+                        className={classes.badge}
+                      >
+                        <Avatar
+                          alt={loggedInUser.name}
+                          src={getImageUrl(loggedInUser.image)}
+                          className={classes.loggedInAvatarMobile}
+                        />
+                      </ProfileBadge>
+                    ) : (
+                      <Avatar
+                        alt={loggedInUser.name}
+                        src={getImageUrl(loggedInUser.image)}
+                        className={classes.loggedInAvatarMobile}
+                      />
+                    )}
+                  </Link>
+                </div>
+                <ListItem button component="a" onClick={handleLogout}>
+                  <ListItemIcon>
+                    <ExitToAppIcon color="primary" />
+                  </ListItemIcon>
+                  <ListItemText primary={"logout"} />
+                </ListItem>
+              </>
+            )}
+          </List>
+        </SwipeableDrawer>
+      </Box>
+    </>
+  );
+}
+
+const NotificationsOrSignup = ({
   loggedInUser,
   classes,
   toggleShowNotifications,
-  isNarrowScreen,
-  linksOutsideDrawer,
-  localePrefix,
-}: any) => {
-  const buttonProps: any = {};
-  if (!isNarrowScreen && index !== 0) {
-    if (link.className) buttonProps.className = classes[link.className];
-    else buttonProps.className = classes.buttonMarginLeft;
-  }
-  if ((isNarrowScreen || loggedInUser || !link.vanillaIfLoggedOut) && link.isOutlinedInHeader) {
-    buttonProps.variant = "outlined";
-  }
-  const contained =
-    !isNarrowScreen && (loggedInUser || !link.vanillaIfLoggedOut) && link.isFilledInHeader;
-  if (contained) {
-    buttonProps.variant = "contained";
-  }
-
-  if (!isNarrowScreen && (loggedInUser || !link.vanillaIfLoggedOut) && link.icon) {
-    buttonProps.starticon = <link.icon />;
-  } else if (!contained && link.type !== "notificationsButton") buttonProps.color = "inherit";
-  if (link.type === "notificationsButton") buttonProps.onClick = toggleShowNotifications;
-  if (link.href) buttonProps.href = localePrefix + link.href;
-  if (isNarrowScreen && index === linksOutsideDrawer.length - 1) {
-    buttonProps.className = classes.marginRight;
-  }
-  return buttonProps;
+  notifications,
+  anchorEl,
+  notificationsOnClose,
+  texts,
+}) => {
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+  return (
+    <>
+      {loggedInUser ? (
+        <span className={classes.menuLink}>
+          <IconButton
+            className={isNarrowScreen ? classes.marginRight : ""}
+            onClick={toggleShowNotifications}
+            size="large"
+          >
+            {notifications && notifications.length > 0 ? (
+              <Badge badgeContent={notifications.length} color="error">
+                <NotificationsIcon />
+              </Badge>
+            ) : (
+              <NotificationsIcon />
+            )}
+          </IconButton>
+          {anchorEl && (
+            <NotificationsBox
+              anchorEl={anchorEl}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={notificationsOnClose}
+            >
+              <Typography className={classes.notificationsHeadline} component="h1" variant="h5">
+                {texts.notifications}
+              </Typography>
+              <Divider />
+              {notifications && notifications.length > 0 ? (
+                notifications.map((n, index) => <Notification key={index} notification={n} />)
+              ) : (
+                <Notification isPlaceholder />
+              )}
+            </NotificationsBox>
+          )}
+        </span>
+      ) : (
+        <span className={classes.menuLink}>
+          <Button color="primary" variant="outlined" className={classes.marginRight}>
+            {"signup"}
+          </Button>
+        </span>
+      )}
+    </>
+  );
 };
