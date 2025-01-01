@@ -25,8 +25,13 @@ import { themeSignUp } from "../src/themes/signupTheme";
 import WideLayout from "../src/components/layouts/WideLayout";
 import { Container, Theme, useMediaQuery } from "@mui/material";
 
+import { useRouter } from "next/router";
+
 export default function Signup() {
   const { ReactGA } = useContext(UserContext);
+
+  const queryParams = useRouter().query;
+  const hubSlug = Array.isArray(queryParams.hub) ? queryParams.hub[0] : queryParams.hub || "";
 
   const [userInfo, setUserInfo] = React.useState({
     email: "",
@@ -159,8 +164,10 @@ export default function Signup() {
     <WideLayout
       title={texts.sign_up}
       message={errorMessage}
+      isHubPage={hubSlug !== ""}
       messageType={errorMessage && "error"}
       isLoading={isLoading}
+      hubUrl={hubSlug}
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
         <ThemeProvider theme={themeSignUp}>
