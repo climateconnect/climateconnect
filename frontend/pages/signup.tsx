@@ -164,6 +164,7 @@ export default function Signup() {
     <WideLayout
       title={texts.sign_up}
       message={errorMessage}
+      isHubPage={hubSlug !== ""}
       messageType={errorMessage && "error"}
       isLoading={isLoading}
       hubUrl={hubSlug}
