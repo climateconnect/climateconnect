@@ -87,18 +87,25 @@ export const coreTheme = createTheme({
  */
 const theme = createTheme(coreTheme, {
   components: {
-    MuiLink: {
-      styleOverrides: {
-        root: {
-          textDecoration: "none",
-          "&:hover": {
-            textDecoration: "underline",
-            textDecorationColor: coreTheme.palette.background.default_contrastText,
-          },
-          // color: coreTheme.palette.background.default_contrastText,
-        },
-      },
-    },
+    // MuiLink: {
+    //   styleOverrides: {
+    //     root: {
+    //       textDecoration: "none",
+    //       "&:hover": {
+    //         textDecoration: "underline",
+    //         textDecorationColor: coreTheme.palette.background.default_contrastText,
+    //       },
+    //     },
+    //   },
+    // },
+    // MuiButton: {
+    //   styleOverrides: {
+    //     root: {
+    //       textTransform: "none",
+    //       color: coreTheme.palette.primary.contrastText,
+    //     },
+    //   },
+    // },
   },
 });
 

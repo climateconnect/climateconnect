@@ -19,7 +19,7 @@ import {
   SwipeableDrawer,
   Typography,
 } from "@mui/material";
-import { Theme, ThemeProvider } from "@mui/material/styles";
+import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -38,14 +38,12 @@ import { getStaticPageLinks } from "../../../public/data/getStaticPageLinks"; //
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
-import theme from "../../themes/Prio1HeaderTheme";
 import Notification from "../communication/notifications/Notification";
 import NotificationsBox from "../communication/notifications/NotificationsBox";
 import UserContext from "../context/UserContext";
 import ProfileBadge from "../profile/ProfileBadge";
 import DropDownButton from "./DropDownButton";
 import LanguageSelect from "./LanguageSelect";
-import StaticPageLinks from "./StaticPageLinks";
 import { HeaderProps } from "./types";
 
 type StyleProps = {
@@ -54,11 +52,9 @@ type StyleProps = {
 };
 
 const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
-  console.log("theme", theme);
-
   return {
     root: {
-      background: "#7883FF",
+      background: theme?.palette?.secondary?.light,
       transition: "all 0.25s linear", // use all instead of transform since the background color too is changing at some point. It'll be nice to have a smooth transition.
     },
     hideHeader: {
@@ -171,7 +167,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       display: "flex",
       justifyContent: "center",
     },
-    btnTextColor: {
+    btnIconTextColor: {
       color: theme.palette.primary.contrastText,
     },
     drawerItem: {
@@ -189,49 +185,6 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
     },
   };
 });
-
-// const getLinks = (path_to_redirect, texts, isLocationHub) => [
-//   {
-//     href: "#",
-//     text: "PRIO1-klima.net",
-//     iconForDrawer: InfoIcon,
-//     showStaticLinksInDropdown: true,
-//   },
-
-//   {
-//     href: "/share",
-//     text: texts.share_a_project,
-//     mediumScreenText: texts.share,
-//     iconForDrawer: AddCircleIcon,
-//     isFilledInHeader: true,
-//     className: "shareProjectButton",
-//     hideOnMediumScreen: isLocationHub,
-//     isOutlinedInHeader: true,
-//   },
-//   {
-//     type: "languageSelect",
-//   },
-//   {
-//     type: "notificationsButton",
-//     text: texts.inbox,
-//     iconForDrawer: NotificationsIcon,
-//     hasBadge: true,
-//     onlyShowIconOnNormalScreen: true,
-//     onlyShowIconOnMobile: true,
-//     className: "notificationsButton",
-//     icon: NotificationsIcon,
-//     alwaysDisplayDirectly: true,
-//     onlyShowLoggedIn: true,
-//   },
-//   {
-//     href: "/signup",
-//     text: texts.sign_up,
-//     iconForDrawer: AccountCircleIcon,
-//     isOutlinedInHeader: true,
-//     onlyShowLoggedOut: true,
-//     alwaysDisplayDirectly: true,
-//   },
-// ];
 
 const getLoggedInLinks = ({ loggedInUser, texts }) => {
   if (!loggedInUser) return [];
@@ -292,67 +245,41 @@ export default function HeaderForPRIO1({ background, isLocationHub }: HeaderProp
     else setAnchorEl(null);
   };
   const localePrefix = getLocalePrefix(locale);
-
   const notificationsOnClose = () => setAnchorEl(null);
 
-  const [hideHeader, setHideHeader] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setHideHeader(window.scrollY > lastScrollY); // hide when user scrolls down and show when user scrolls up
-
-      // remember last scroll position
-      setLastScrollY(window.scrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [lastScrollY]);
-
   return (
-    <ThemeProvider theme={theme}>
-      <Box
-        component="header"
-        className={`${classes.root} ${classes.spacingBottom} ${
-          hideHeader ? classes.hideHeader : ""
-        }`}
-      >
-        <Container className={classes.container}>
-          <Link href={localePrefix + "/"} className={classes.logoLink} underline="hover">
-            <img
-              src={`/images/hub_logos/prio1.png`}
-              alt={texts.climate_connect_logo}
-              className={classes.logo}
-            />
-          </Link>
-          {isNarrowScreen || isMediumScreen ? (
-            <NarrowScreenMenu
-              loggedInUser={user}
-              handleLogout={signOut}
-              anchorEl={anchorEl}
-              toggleShowNotifications={toggleShowNotifications}
-              notificationsOnClose={notificationsOnClose}
-              notifications={notifications}
-              texts={texts}
-            />
-          ) : (
-            <NormalScreenMenu
-              loggedInUser={user}
-              handleLogout={signOut}
-              anchorEl={anchorEl}
-              toggleShowNotifications={toggleShowNotifications}
-              notificationsOnClose={notificationsOnClose}
-              notifications={notifications}
-              texts={texts}
-            />
-          )}
-        </Container>
-      </Box>
-    </ThemeProvider>
+    <Box component="header" className={`${classes.root} ${classes.spacingBottom} `}>
+      <Container className={classes.container}>
+        <Link href={localePrefix + "/"} className={classes.logoLink} underline="hover">
+          <img
+            src={`/images/hub_logos/prio1.png`}
+            alt={texts.climate_connect_logo}
+            className={classes.logo}
+          />
+        </Link>
+        {isNarrowScreen || isMediumScreen ? (
+          <NarrowScreenMenu
+            loggedInUser={user}
+            handleLogout={signOut}
+            anchorEl={anchorEl}
+            toggleShowNotifications={toggleShowNotifications}
+            notificationsOnClose={notificationsOnClose}
+            notifications={notifications}
+            texts={texts}
+          />
+        ) : (
+          <NormalScreenMenu
+            loggedInUser={user}
+            handleLogout={signOut}
+            anchorEl={anchorEl}
+            toggleShowNotifications={toggleShowNotifications}
+            notificationsOnClose={notificationsOnClose}
+            notifications={notifications}
+            texts={texts}
+          />
+        )}
+      </Container>
+    </Box>
   );
 }
 
@@ -372,13 +299,18 @@ function NormalScreenMenu({
   return (
     <Box className={classes.linkContainer}>
       <span className={classes.menuLink}>
-        <DropDownButton options={STATIC_PAGE_LINKS} className={classes.buttonMarginLeft}>
+        <DropDownButton
+          options={STATIC_PAGE_LINKS}
+          buttonProps={{
+            className: `${classes.btnIconTextColor}`,
+          }}
+        >
           {texts.PRIO1_klima}
         </DropDownButton>
       </span>
       <span className={classes.menuLink}>
         <Button
-          className={`${classes.btnTextColor} ${classes.shareProjectButton}`}
+          className={`${classes.btnIconTextColor} ${classes.shareProjectButton}`}
           variant="contained"
         >
           {texts.share_a_project}
@@ -439,13 +371,13 @@ const NormalScreenLogIn = ({ loggedInUser, handleLogout, texts, localePrefix }) 
           ref={anchorRef}
         >
           {loggedInUser?.badges?.length > 0 ? (
-            <ProfileBadge badge={loggedInUser?.badges[0]} size="small" className={classes.badge}>
+            <ProfileBadge badge={loggedInUser?.badges[0]} size="small">
               <Avatar {...avatarProps} />
             </ProfileBadge>
           ) : (
             <Avatar {...avatarProps} />
           )}
-          <ArrowDropDownIcon />
+          <ArrowDropDownIcon className={classes.btnIconTextColor} />
         </Button>
         <Popper open={menuOpen} anchorEl={anchorRef.current} className={classes.loggedInPopper}>
           <Paper>
@@ -600,9 +532,9 @@ function NarrowScreenMenu({
                 </div>
                 <ListItem button component="a" onClick={handleLogout}>
                   <ListItemIcon>
-                    <ExitToAppIcon color="primary" />
+                    <ExitToAppIcon className={classes.drawerItem} />
                   </ListItemIcon>
-                  <ListItemText primary={"logout"} />
+                  <ListItemText primary={texts.log_out} className={classes.drawerItem} />
                 </ListItem>
               </>
             )}
@@ -634,10 +566,10 @@ const NotificationsOrSignup = ({
           >
             {notifications && notifications.length > 0 ? (
               <Badge badgeContent={notifications.length} color="error">
-                <NotificationsIcon />
+                <NotificationsIcon className={classes.btnIconTextColor} />
               </Badge>
             ) : (
-              <NotificationsIcon />
+              <NotificationsIcon className={classes.btnIconTextColor} />
             )}
           </IconButton>
           {anchorEl && (

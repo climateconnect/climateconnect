@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { getParams } from "../../../public/lib/generalOperations";
 import { getMessageFromUrl } from "../../../public/lib/parsingOperations";
 import theme from "../../themes/theme";
+import Prio1HeaderTheme from "../../themes/Prio1HeaderTheme";
 import Footer from "../footer/Footer";
 import LoadingContainer from "../general/LoadingContainer";
 import Header from "../header/Header";
@@ -126,7 +127,7 @@ export default function WideLayout({
       noSpaceForFooter={noSpaceBottom}
       description={description}
       useFloodStdFont={useFloodStdFont}
-      theme={theme}
+      theme={hubUrl !== "erlangen" ? theme : Prio1HeaderTheme}
       image={image}
     >
       {!noHeader && hubUrl !== "erlangen" ? (
