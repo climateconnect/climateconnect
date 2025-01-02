@@ -1,3 +1,4 @@
+from backend.hubs.models.hub import Hub
 from climateconnect_api.models.common import Availability, Skill
 from climateconnect_api.models.language import Language
 from django.db import models
@@ -324,6 +325,8 @@ class UserProfile(models.Model):
         verbose_name="Is profile restricted?",
         default=False,
     )
+
+    related_hubs= models.ManyToManyField(Hub, related_name="related_hubs", blank=True)
 
     class Meta:
         app_label = "climateconnect_api"
