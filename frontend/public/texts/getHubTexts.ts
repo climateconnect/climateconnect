@@ -171,10 +171,10 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
       en: "For actors",
       de: "Für Akteure",
     },
-    PRIO1_Hub:{
+    PRIO1_Hub: {
       en: "PRIO1 Hub",
       de: "PRIO1 Hub",
-    }
+    },
   };
 
   if (hubName === "Fashion") return { ...generalHubTexts, ...getFashionHubDescription() };
