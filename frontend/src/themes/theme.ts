@@ -33,7 +33,7 @@ export const coreTheme = createTheme({
     },
     secondary: {
       main: "#484848",
-      light: "#484848c2",
+      light: "#484848",
       extraLight: "#EBEBEB",
       contrastText: "#207178",
     },

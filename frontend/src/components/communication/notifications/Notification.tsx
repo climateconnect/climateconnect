@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme) => {
       textAlign: "center",
       display: "block",
       marginTop: theme.spacing(1),
+      color: theme.palette.background.default_contrastText,
     },
     notificationText: {
       overflow: "hidden",

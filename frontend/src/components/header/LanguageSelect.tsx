@@ -10,32 +10,46 @@ import UserContext from "../context/UserContext";
 import StyledMenu from "../general/StyledMenu";
 import StyledMenuItem from "../general/StyledMenuItem";
 
-const useStyles = makeStyles<Theme, { transparentHeader: boolean }>((theme) => ({
-  root: (props) => ({
-    color: props.transparentHeader ? "white" : theme.palette.primary.main,
-    cursor: "pointer",
-  }),
-  languageIcon: {
-    fontSize: 16,
-  },
-  popover: {
-    pointerEvents: "none",
-  },
-  popoverContent: {
-    pointerEvents: "auto",
-  },
-  centerText: {
-    textAlign: "center",
-  },
-}));
+const useStyles = makeStyles<Theme, { transparentHeader: boolean; implementedIn: string }>(
+  (theme) => ({
+    root: (props) => ({
+      color: props.transparentHeader
+        ? "white"
+        : props.implementedIn === "HeaderForPRIO1"
+        ? "#000033"
+        : theme.palette.primary.main,
+      cursor: "pointer",
+    }),
+    languageIcon: {
+      fontSize: 16,
+    },
+    popover: {
+      pointerEvents: "none",
+    },
+    popoverContent: {
+      pointerEvents: "auto",
+    },
+    centerText: {
+      textAlign: "center",
+    },
+  })
+);
 
 /**
  * Hover button that's used in the global navbar to switch
  * between multiple languages on hover (currently German and
  * English).
  */
-export default function LanguageSelect({ transparentHeader }) {
-  const classes = useStyles({ transparentHeader: transparentHeader });
+type LanguageSelectProps = {
+  transparentHeader?: boolean;
+  implementedIn: string;
+};
+
+export default function LanguageSelect({
+  transparentHeader = false,
+  implementedIn,
+}: LanguageSelectProps) {
+  const classes = useStyles({ transparentHeader, implementedIn });
   const { locale, locales, startLoading } = useContext(UserContext);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(buttonRef.current);

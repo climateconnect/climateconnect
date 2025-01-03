@@ -26,6 +26,7 @@ const useStyles = makeStyles<Theme, {}>((theme) => {
       WebkitBoxOrient: "vertical",
       display: "-webkit-box",
       wordBreak: "break-word",
+      color: theme.palette.background.default_contrastText,
     },
     listItemText: {
       whiteSpace: "normal",
