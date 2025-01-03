@@ -155,6 +155,26 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
       en: "Would you also like to support the ClimateHub?",
       de: "Du möchtest den ClimateHub auch unterstützen?",
     },
+    PRIO1_klima: {
+      en: "PRIO1-klima.net",
+      de: "PRIO1-klima.net",
+    },
+    PRIO1_Climate_Prize: {
+      en: "PRIO1 Climate Prize",
+      de: "PRIO1 Klimapreis",
+    },
+    for_young_people: {
+      en: "For young people",
+      de: "Für junge Menschen",
+    },
+    for_actors: {
+      en: "For actors",
+      de: "Für Akteure",
+    },
+    PRIO1_Hub:{
+      en: "PRIO1 Hub",
+      de: "PRIO1 Hub",
+    }
   };
 
   if (hubName === "Fashion") return { ...generalHubTexts, ...getFashionHubDescription() };

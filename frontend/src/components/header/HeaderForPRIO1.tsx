@@ -33,8 +33,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SettingsIcon from "@mui/icons-material/Settings";
 import noop from "lodash/noop";
-import React, { useContext, useEffect, useState } from "react";
-import { getStaticPageLinks } from "../../../public/data/getStaticPageLinks"; // Relative imports
+import React, { useContext, useState } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -183,6 +182,10 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
         backgroundColor: "transparent",
       },
     },
+    btnMain: {
+      borderColor: theme.palette.primary.contrastText,
+      color: theme.palette.primary.contrastText,
+    },
   };
 });
 
@@ -214,21 +217,24 @@ const getLoggedInLinks = ({ loggedInUser, texts }) => {
       text: texts.settings,
       iconForDrawer: SettingsIcon,
     },
-    // {
-    //   avatar: true,
-    //   href: "/profiles/" + loggedInUser.url_slug,
-    //   src: loggedInUser.image,
-    //   alt: texts.profile_image_of + " " + loggedInUser.name,
-    //   showOnMobileOnly: true,
-    // },
-    // {
-    //   isLogoutButton: true,
-    //   text: texts.log_out,
-    //   iconForDrawer: ExitToAppIcon,
-    // },
   ];
 };
-
+const PRIO1_StaticPageLinks = (hubTexts) => {
+  return [
+    {
+      href: "https://prio1-klima.net/klima-preis/",
+      text: hubTexts.PRIO1_Climate_Prize,
+    },
+    {
+      href: "https://prio1-klima.net/junge-menschen/",
+      text: hubTexts.for_young_people,
+    },
+    {
+      href: "https://prio1-klima.net/akteure/",
+      text: hubTexts.for_actors,
+    },
+  ];
+};
 export default function HeaderForPRIO1({ background, isLocationHub }: HeaderProps) {
   const classes = useStyles({
     background: background,
@@ -237,6 +243,8 @@ export default function HeaderForPRIO1({ background, isLocationHub }: HeaderProp
 
   const { user, signOut, notifications, pathName, locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
+  const hubTexts = getTexts({ page: "hub", locale: locale, hubName: "Prio1" });
+
   const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
@@ -266,6 +274,7 @@ export default function HeaderForPRIO1({ background, isLocationHub }: HeaderProp
             notificationsOnClose={notificationsOnClose}
             notifications={notifications}
             texts={texts}
+            pathName={pathName}
           />
         ) : (
           <NormalScreenMenu
@@ -276,6 +285,8 @@ export default function HeaderForPRIO1({ background, isLocationHub }: HeaderProp
             notificationsOnClose={notificationsOnClose}
             notifications={notifications}
             texts={texts}
+            hubTexts={hubTexts}
+            pathName={pathName}
           />
         )}
       </Container>
@@ -291,11 +302,13 @@ function NormalScreenMenu({
   notificationsOnClose,
   notifications,
   texts,
+  hubTexts,
+  pathName,
 }) {
   const { locale } = useContext(UserContext);
   const localePrefix = getLocalePrefix(locale);
   const classes = useStyles({});
-  const STATIC_PAGE_LINKS = getStaticPageLinks(texts, locale);
+  const STATIC_PAGE_LINKS = PRIO1_StaticPageLinks(hubTexts);
   return (
     <Box className={classes.linkContainer}>
       <span className={classes.menuLink}>
@@ -305,13 +318,14 @@ function NormalScreenMenu({
             className: `${classes.btnIconTextColor}`,
           }}
         >
-          {texts.PRIO1_klima}
+          {hubTexts.PRIO1_klima}
         </DropDownButton>
       </span>
       <span className={classes.menuLink}>
         <Button
           className={`${classes.btnIconTextColor} ${classes.shareProjectButton}`}
           variant="contained"
+          href={localePrefix + "/share"}
         >
           {texts.share_a_project}
         </Button>
@@ -327,6 +341,7 @@ function NormalScreenMenu({
         anchorEl={anchorEl}
         notificationsOnClose={notificationsOnClose}
         texts={texts}
+        pathName={pathName}
       />
       {loggedInUser && (
         <NormalScreenLogIn
@@ -388,7 +403,6 @@ const NormalScreenLogIn = ({ loggedInUser, handleLogout, texts, localePrefix }) 
                     key={index}
                     component="button"
                     className={classes.loggedInLink}
-                    onClick={handleLogout}
                     href={localePrefix + link.href}
                   >
                     {link.text}
@@ -400,9 +414,8 @@ const NormalScreenLogIn = ({ loggedInUser, handleLogout, texts, localePrefix }) 
                   component="button"
                   className={classes.loggedInLink}
                   onClick={handleLogout}
-                  href={localePrefix + "logout"}
                 >
-                  {"logout"}
+                  {texts.log_out}
                 </MenuItem>
               )}
             </MenuList>
@@ -421,6 +434,7 @@ function NarrowScreenMenu({
   notificationsOnClose,
   notifications,
   texts,
+  pathName,
 }) {
   const { locale } = useContext(UserContext);
   const localePrefix = getLocalePrefix(locale);
@@ -462,6 +476,7 @@ function NarrowScreenMenu({
           anchorEl={anchorEl}
           notificationsOnClose={notificationsOnClose}
           texts={texts}
+          pathName={pathName}
         />
         <span className={classes.menuLink}>
           <IconButton
@@ -553,7 +568,10 @@ const NotificationsOrSignup = ({
   anchorEl,
   notificationsOnClose,
   texts,
+  pathName,
 }) => {
+  const { locale } = useContext(UserContext);
+  const localePrefix = getLocalePrefix(locale);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   return (
     <>
@@ -593,8 +611,12 @@ const NotificationsOrSignup = ({
         </span>
       ) : (
         <span className={classes.menuLink}>
-          <Button color="primary" variant="outlined" className={classes.marginRight}>
-            {"signup"}
+          <Button
+            variant="outlined"
+            className={`${classes.marginRight} ${classes.btnMain}`}
+            href={localePrefix + "/signup?redirect=" + pathName}
+          >
+            {texts.sign_up}
           </Button>
         </span>
       )}
