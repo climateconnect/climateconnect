@@ -94,7 +94,7 @@ class Migration(migrations.Migration):
             name="extraLight",
             field=models.CharField(
                 blank=True,
-                help_text="the extra light variation of the main color",
+                help_text="the extra light variation of the main color (use hex code, e.g. #FFF)",
                 max_length=200,
                 null=True,
                 verbose_name="Extra Light Color",
@@ -105,7 +105,7 @@ class Migration(migrations.Migration):
             name="light",
             field=models.CharField(
                 blank=True,
-                help_text="the lighter variation of the main color",
+                help_text="the lighter variation of the main color (use hex code, e.g. #FFF)",
                 max_length=200,
                 null=True,
                 verbose_name="Light Color",
@@ -116,7 +116,7 @@ class Migration(migrations.Migration):
             name="main",
             field=models.CharField(
                 blank=True,
-                help_text="main color",
+                help_text="main color (use hex code, e.g. #FFF)",
                 max_length=200,
                 null=True,
                 verbose_name="Main Color",
