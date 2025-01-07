@@ -35,6 +35,7 @@ type Props = { hubUrl: string | undefined };
 export default function CustomBackground({ hubUrl }: Props) {
   const mobileScreenSize = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
 
+  // TODO: mobileScreenSize is not yet supported
   if (!hubUrl || mobileScreenSize) {
     return null;
   }
@@ -42,8 +43,8 @@ export default function CustomBackground({ hubUrl }: Props) {
   console.log("pathname: ", pathname);
 
   switch (hubUrl.toLowerCase()) {
-    case "prioone": {
-      if (pathname.endsWith("/hubs/prioOne")) {
+    case "prio1": {
+      if (pathname.endsWith("/hubs/prio1")) {
         return <PrioOneBackgroundBrowse />;
       } else if (pathname.endsWith("/signup") || pathname.endsWith("/login")) {
         return <PrioOneBackgroundAuth />;
@@ -58,7 +59,7 @@ export default function CustomBackground({ hubUrl }: Props) {
 
 function PrioOneBackgroundBrowse() {
   const classes = useStyles();
-  const height = 50;
+  const height = 52.1;
   const width = 100;
   const triangleBottom = width * 0.5;
   const triangleLeft = width * 3;
