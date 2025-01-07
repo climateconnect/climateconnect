@@ -24,10 +24,25 @@ import { ThemeProvider } from "@emotion/react";
 import { themeSignUp } from "../src/themes/signupTheme";
 import WideLayout from "../src/components/layouts/WideLayout";
 import { Container, Theme, useMediaQuery } from "@mui/material";
-
 import { useRouter } from "next/router";
 
-export default function Signup() {
+import getHubTheme from "../src/themes/fetchHubTheme";
+import { transformThemeData } from "../src/themes/transformThemeData";
+
+export async function getServerSideProps(ctx) {
+  const hubUrl = ctx.query.hub;
+
+  const hubThemeData = await getHubTheme(hubUrl);
+
+  return {
+    props: {
+      hubUrl: hubUrl,
+      hubThemeData: hubThemeData,
+    },
+  };
+}
+
+export default function Signup({ hubThemeData }) {
   const { ReactGA } = useContext(UserContext);
 
   const queryParams = useRouter().query;
@@ -160,6 +175,8 @@ export default function Signup() {
     setCurStep(steps[0]);
   };
 
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+
   return (
     <WideLayout
       title={texts.sign_up}
@@ -168,6 +185,7 @@ export default function Signup() {
       messageType={errorMessage && "error"}
       isLoading={isLoading}
       hubUrl={hubSlug}
+      customTheme={customTheme}
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
         <ThemeProvider theme={themeSignUp}>
