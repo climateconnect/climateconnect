@@ -45,6 +45,22 @@ class HubTranslation(models.Model):
         blank=True,
     )
 
+    welcome_message_logged_in_translation = models.CharField(
+        help_text='Displayed on the dashboard on location hubs when logged in. Starts with "Hi $user.name"',
+        verbose_name="Translation of welcome message (logged in)",
+        max_length=2048,
+        null=True,
+        blank=True,
+    )
+
+    welcome_message_logged_out_translation = models.CharField(
+        help_text="Displayed on the dashboard on location hubs when logged out.",
+        verbose_name="Translation of welcome message (logged out)",
+        max_length=2048,
+        null=True,
+        blank=True,
+    )
+
     segway_text_translation = models.TextField(
         help_text="Translation of segway_text column",
         verbose_name="Segway text translation",
@@ -151,4 +167,48 @@ class HubStatTranslation(models.Model):
     def __str__(self):
         return "{}: {} translation for hub stat {}".format(
             self.id, self.language.name, self.hub_stat.name
+        )
+
+
+class HubSupporterTranslation(models.Model):
+    hub_supporter = models.ForeignKey(
+        "hubs.HubSupporter",
+        related_name="translate_hub_supporter",
+        help_text="Points to Hub Support table",
+        verbose_name="Hub Supporter",
+        on_delete=models.CASCADE,
+    )
+
+    name_translation = models.CharField(
+        help_text="Translation of name column",
+        verbose_name="Name translation",
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+
+    subtitle_translation = models.CharField(
+        help_text="Translation of subtitle column",
+        verbose_name="Subtitle translation",
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+
+    language = models.ForeignKey(
+        Language,
+        related_name="hub_supporter_translation_lang",
+        help_text="Points to language table",
+        verbose_name="Language",
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        verbose_name = "Hub supporter translation"
+        verbose_name_plural = "Hub supporter translations"
+        unique_together = [["hub_supporter", "language"]]
+
+    def __str__(self):
+        return "{}: {} translation of hub {}".format(
+            self.id, self.language.name, self.hub_supporter.name
         )

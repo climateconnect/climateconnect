@@ -1,4 +1,4 @@
-from hubs.models import Hub, HubStat
+from hubs.models import Hub, HubStat, HubSupporter
 
 
 def get_hub_attribute(hub: Hub, attribute_name, language_code: str) -> str:
@@ -33,3 +33,24 @@ def get_hub_stat_attribute(
         if attribute_translation and len(attribute_translation) > 0:
             return attribute_translation
     return getattr(hub_stat, attribute_name)
+
+
+def get_hub_supporter_attribute(
+    hub_supporter: HubSupporter, attribute_name, language_code: str
+) -> str:
+    if (
+        hub_supporter.language is not None
+        and language_code != hub_supporter.language.language_code
+        and hub_supporter.translate_hub_supporter.filter(
+            language__language_code=language_code
+        ).exists()
+    ):
+        translation = hub_supporter.translate_hub_supporter.get(
+            # first hub_supporter is the field name in the HubSupporterTranslation model
+            language__language_code=language_code,
+            hub_supporter=hub_supporter,
+        )
+        attribute_translation = getattr(translation, attribute_name + "_translation")
+        if attribute_translation and len(attribute_translation) > 0:
+            return attribute_translation
+    return getattr(hub_supporter, attribute_name)

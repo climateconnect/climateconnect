@@ -12,27 +12,29 @@ import { getLocalePrefix } from "../../../public/lib/apiOperations";
 
 type MakeStylesProps = {
   isLocationHub: boolean;
+  isNarrowScreen: boolean;
 };
 
 const useStyles = makeStyles((theme) => ({
-  root: {
+  root: (props: MakeStylesProps) => ({
     display: "flex",
-    flexDirection: "column",
+    flexDirection: props.isNarrowScreen ? "column" : "row",
     [theme.breakpoints.down("md")]: {
       marginTop: theme.spacing(0),
       marginBottom: theme.spacing(-6),
     },
-  },
+  }),
   contentContainer: (props: MakeStylesProps) => ({
     minWidth: 300,
     background: theme.palette.primary.main,
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-around",
+    justifyContent: props.isNarrowScreen ? "space-around" : "flex-start",
     maxWidth: "800px",
     borderRadius: 5,
     border: `3px solid ${theme.palette.primary.main}`,
-    marginTop: props.isLocationHub ? theme.spacing(2) : theme.spacing(-11),
+    marginTop: props.isLocationHub ? 0 : theme.spacing(-11),
+    // marginBottom: theme.spacing(2),
 
     ["@media(max-width:960px)"]: {
       maxWidth: 550,
@@ -50,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("sm")]: {
       fontSize: 22,
     },
-    color: "white",
+    color: theme.palette.primary.contrastText,
     padding: theme.spacing(1),
   },
   lowerBoxWrapper: {
@@ -120,11 +122,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function LoggedOutLocationHubBox({ headline, isLocationHub, location }) {
-  const classes = useStyles({ isLocationHub: isLocationHub });
   const { locale, user } = useContext(UserContext);
 
   const texts = getTexts({ page: "dashboard", locale: locale, location: location });
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
+  const classes = useStyles({ isLocationHub: isLocationHub, isNarrowScreen: isNarrowScreen });
 
   const REASONS_TO_JOIN = [
     {

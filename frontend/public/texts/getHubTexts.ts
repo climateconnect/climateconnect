@@ -139,6 +139,22 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
       en: `${hubAmbassador?.user?.first_name} is responsible for the ClimateHub ${hubName} and is there for you.`,
       de: `${hubAmbassador?.user?.first_name} koordiniert den ClimateHub ${hubName} und ist für dich da.`,
     },
+    all_supporters: {
+      en: "All supporters",
+      de: "Alle Unterstützer",
+    },
+    the_climatehub_is_supported_by: {
+      en: "The ClimateHub is supported by",
+      de: "Der ClimateHub wird unterstützt durch",
+    },
+    all_supporters_and_sponsoring_members: {
+      en: "All supporters of the ClimateHub",
+      de: "Alle Unterstützer und Fördermitglieder des ClimateHub",
+    },
+    would_you_like_to_support_the_ClimateHub: {
+      en: "Would you also like to support the ClimateHub?",
+      de: "Du möchtest den ClimateHub auch unterstützen?",
+    },
   };
 
   if (hubName === "Fashion") return { ...generalHubTexts, ...getFashionHubDescription() };

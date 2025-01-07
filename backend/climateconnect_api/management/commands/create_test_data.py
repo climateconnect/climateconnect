@@ -207,7 +207,8 @@ def create_project_test_data(number_of_rows: int):
                 language=english_language,
             )
 
-            parent_user = User.objects.all()[i]
+            parent_user = UserProfile.objects.all()[i].user
+
             ProjectParents.objects.create(project=project, parent_user=parent_user)
             admin_role = Role.objects.get(role_type=Role.ALL_TYPE)
             all_availabilities = list(Availability.objects.all())

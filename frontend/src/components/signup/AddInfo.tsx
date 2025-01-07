@@ -1,17 +1,30 @@
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
+import ArrowBack from "@mui/icons-material/ArrowBack";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getLocationFields } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import Form from "./../general/Form";
+import { Box, Card, CardContent, IconButton, Typography } from "@mui/material";
 
-const useStyles = makeStyles(() => {
-  return {
-    checkboxLabels: {
-      fontSize: 14,
-    },
-  };
+const useStyles = makeStyles({
+  checkboxLabels: {
+    fontSize: 14,
+  },
+
+  formRootClass: {
+    padding: 0,
+    maxWidth: 700,
+    margin: "0 auto 0 0", // basically a left align
+  },
+
+  cardHeaderBox: {
+    display: "flex",
+    gap: "2rem",
+    alignItems: "center",
+    marginBottom: 2,
+  },
 });
 
 export default function AddInfo({
@@ -72,8 +85,8 @@ export default function AddInfo({
   ];
 
   const messages = {
-    submitMessage: texts.next_step,
-    headerMessage: texts.signup_step_2_headline,
+    submitMessage: texts.submit,
+    headerMessage: "",
   };
 
   const formAction = {
@@ -82,17 +95,32 @@ export default function AddInfo({
   };
 
   return (
-    <>
-      <Form
-        fields={fields}
-        messages={messages}
-        formAction={formAction}
-        onSubmit={(event, values) => handleSubmit(event, values)}
-        errorMessage={errorMessage}
-        onGoBack={handleGoBack}
-        /*TODO(undefined) fieldClassName={classes.fieldClassName} */
-        autocomplete="off"
-      />
-    </>
+    <Card>
+      {/* TODO: maybe use card Header instead (?)
+      see https://mui.com/material-ui/react-card/ for other usefull card components */}
+      <Box className={classes.cardHeaderBox}>
+        <IconButton aria-label="close" onClick={() => handleGoBack(undefined, values)}>
+          <ArrowBack />
+        </IconButton>
+        <Typography color="primary" variant="subtitle1" component="div">
+          {texts.step_2_of_2_sign_up}
+        </Typography>
+      </Box>
+      <CardContent>
+        <Typography color="primary" variant="h3">
+          {texts.signup_step_2_headline}
+        </Typography>
+        <Form
+          fields={fields}
+          className={classes.formRootClass}
+          messages={messages}
+          formAction={formAction}
+          onSubmit={(event, values) => handleSubmit(event, values)}
+          errorMessage={errorMessage}
+          onGoBack={handleGoBack}
+          autocomplete="off"
+        />
+      </CardContent>
+    </Card>
   );
 }

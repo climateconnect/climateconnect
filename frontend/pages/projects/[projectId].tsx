@@ -13,9 +13,11 @@ import HubsSubHeader from "../../src/components/indexPage/hubsSubHeader/HubsSubH
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { useMediaQuery } from "@mui/material";
 import { getImageUrl } from "../../public/lib/imageOperations";
-import { Theme } from "@mui/material/styles";
+import { Theme, ThemeProvider } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import ProjectSideBar from "../../src/components/project/ProjectSideBar";
+import { transformThemeData } from "../../src/themes/transformThemeData";
+import theme from "../../src/themes/hubTheme";
 
 type StyleProps = {
   showSimilarProjects: boolean;
@@ -69,7 +71,8 @@ const parseComments = (comments) => {
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
-  const projectUrl = encodeURI(ctx.query.projectId);
+  const projectUrl = encodeURI(ctx?.query?.projectId);
+  const hubPage = encodeURI(ctx?.query?.hubPage);
   const [
     project,
     members,
@@ -78,6 +81,8 @@ export async function getServerSideProps(ctx) {
     userInteractions,
     hubs,
     similarProjects,
+    hubSupporters,
+    hubThemeData,
   ] = await Promise.all([
     getProjectByIdIfExists(projectUrl, auth_token, ctx.locale),
     getProjectMembersByIdIfExists(projectUrl, ctx.locale),
@@ -86,6 +91,8 @@ export async function getServerSideProps(ctx) {
     auth_token ? getUsersInteractionWithProject(projectUrl, auth_token, ctx.locale) : false,
     getAllHubs(ctx.locale),
     getSimilarProjects(projectUrl, ctx.locale),
+    hubPage ? getHubSupporters(hubPage, ctx.locale) : null,
+    hubPage ? getHubTheme(hubPage) : null,
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -98,6 +105,9 @@ export async function getServerSideProps(ctx) {
       hasRequestedToJoin: userInteractions.has_requested_to_join,
       hubs: hubs,
       similarProjects: similarProjects,
+      hubSupporters: hubSupporters,
+      hubPage,
+      hubThemeData: hubThemeData,
     }),
   };
 }
@@ -112,6 +122,9 @@ export default function ProjectPage({
   hasRequestedToJoin,
   hubs,
   similarProjects,
+  hubSupporters,
+  hubPage,
+  hubThemeData,
 }) {
   const token = new Cookies().get("auth_token");
   const [curComments, setCurComments] = useState(parseComments(comments));
@@ -235,49 +248,55 @@ export default function ProjectPage({
       image={project ? getImageUrl(project.image) : undefined}
     >
       <BrowseContext.Provider value={contextValues}>
-        {project ? (
-          <div className={classes.contentWrapper}>
-            <div className={classes.mainContent}>
-              <ProjectPageRoot
-                project={{
-                  ...project,
-                  team: members,
-                  timeline_posts: posts,
-                  comments: curComments,
-                }}
-                setMessage={setMessage}
-                isUserFollowing={isUserFollowing}
-                setCurComments={setCurComments}
-                followingChangePending={followingChangePending}
-                likingChangePending={likingChangePending}
-                projectAdmin={members?.find((m) => m.permission === ROLE_TYPES.all_type)}
-                isUserLiking={isUserLiking}
-                numberOfLikes={numberOfLikes}
-                numberOfFollowers={numberOfFollowers}
-                handleFollow={handleFollow}
-                handleLike={handleLike}
-                similarProjects={similarProjects}
-                handleHideContent={handleHideContent}
-                showSimilarProjects={showSimilarProjects}
-                requestedToJoinProject={requestedToJoinProject}
-                handleJoinRequest={handleJoinRequest}
-              />
-            </div>
-            <div className={classes.secondaryContent}>
-              {!smallScreenSize && (
-                <ProjectSideBar
+        <ThemeProvider theme={hubThemeData ? transformThemeData(hubThemeData) : theme}>
+          {project ? (
+            <div className={classes.contentWrapper}>
+              <div className={classes.mainContent}>
+                <ProjectPageRoot
+                  project={{
+                    ...project,
+                    team: members,
+                    timeline_posts: posts,
+                    comments: curComments,
+                  }}
+                  setMessage={setMessage}
+                  isUserFollowing={isUserFollowing}
+                  setCurComments={setCurComments}
+                  followingChangePending={followingChangePending}
+                  likingChangePending={likingChangePending}
+                  projectAdmin={members?.find((m) => m.permission === ROLE_TYPES.all_type)}
+                  isUserLiking={isUserLiking}
+                  numberOfLikes={numberOfLikes}
+                  numberOfFollowers={numberOfFollowers}
+                  handleFollow={handleFollow}
+                  handleLike={handleLike}
                   similarProjects={similarProjects}
                   handleHideContent={handleHideContent}
                   showSimilarProjects={showSimilarProjects}
-                  locale={locale}
-                  texts={texts}
+                  requestedToJoinProject={requestedToJoinProject}
+                  handleJoinRequest={handleJoinRequest}
+                  hubSupporters={hubSupporters}
+                  hubPage={hubPage}
                 />
-              )}
+              </div>
+              <div className={classes.secondaryContent}>
+                {!smallScreenSize && (
+                  <ProjectSideBar
+                    similarProjects={similarProjects}
+                    handleHideContent={handleHideContent}
+                    showSimilarProjects={showSimilarProjects}
+                    locale={locale}
+                    texts={texts}
+                    hubSupporters={hubSupporters}
+                    hubName={hubPage}
+                  />
+                )}
+              </div>
             </div>
-          </div>
-        ) : (
-          <PageNotFound itemName={texts.project} />
-        )}
+          ) : (
+            <PageNotFound itemName={texts.project} />
+          )}
+        </ThemeProvider>
       </BrowseContext.Provider>
     </WideLayout>
   );
@@ -388,7 +407,21 @@ async function getSimilarProjects(projectUrl, locale) {
     return null;
   }
 }
-
+const getHubSupporters = async (url_slug, locale) => {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: `/api/hubs/${url_slug}/supporters/`,
+      locale: locale,
+    });
+    return resp.data;
+  } catch (err: any) {
+    if (err.response && err.response.data)
+      console.log("Error in getHubSupportersData: " + err.response.data.detail);
+    console.log(err);
+    return null;
+  }
+};
 function parseProject(project) {
   return {
     name: project.name,
@@ -435,3 +468,17 @@ function parseProjectMembers(projectMembers) {
     };
   });
 }
+const getHubTheme = async (url_slug) => {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: `/api/hubs/${url_slug}/theme/`,
+    });
+    return resp.data;
+  } catch (err: any) {
+    if (err.response && err.response.data)
+      console.log("Error in getHubThemeData: " + err.response.data.detail);
+    console.log(err);
+    return null;
+  }
+};

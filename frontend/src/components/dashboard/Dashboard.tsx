@@ -1,4 +1,14 @@
-import { Box, Button, Link, MenuItem, MenuList, Paper, Popper, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Link,
+  MenuItem,
+  MenuList,
+  Paper,
+  Popper,
+  Theme,
+  Typography,
+} from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -15,7 +25,7 @@ import UserImage from "./UserImage";
 import CreateIdeaDialog from "../ideas/createIdea/CreateIdeaDialog";
 import { getUserOrganizations } from "../../../public/lib/organizationOperations";
 
-const useStyles = makeStyles((theme) => {
+const useStyles = makeStyles((theme: Theme) => {
   return {
     welcomeBanner: {
       backgroundColor: theme.palette.primary.main,
@@ -94,6 +104,12 @@ const useStyles = makeStyles((theme) => {
     climateHubOption: {
       width: "100%",
     },
+    buttonLabelColor: {
+      color: theme.palette.background.default_contrastText,
+    },
+    linkText: {
+      color: theme.palette.background.default_contrastText,
+    },
   };
 });
 
@@ -125,7 +141,7 @@ const HoverButton = ({ items, label, startIcon }) => {
     <>
       <Button
         aria-haspopup="true"
-        className={classes.HoverButtonButton}
+        className={classes.buttonLabelColor}
         color="primary"
         onClick={handleOpen}
         onMouseEnter={handleOpen}
@@ -170,6 +186,7 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
               href={item.url_slug}
               onClick={() => handleClick(item.onClick)}
               underline="hover"
+              className={classes.linkText}
             >
               <MenuItem component="button" className={classes.climateHubOption}>
                 {item.name}
@@ -186,35 +203,59 @@ type Props = {
   allHubs?: Array<any>;
   hubData?: Object;
   className?: any;
-  headline?: string;
   location?: any;
-  hubUrl?: string;
+  welcomeMessageLoggedIn?: string;
+  welcomeMessageLoggedOut?: string;
 };
 
 export default function Dashboard({
   allHubs,
   hubData,
   className,
-  headline,
   location,
-  hubUrl,
+  welcomeMessageLoggedIn,
+  welcomeMessageLoggedOut,
 }: Props) {
   const classes = useStyles();
-
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({
+    page: "dashboard",
+    locale: locale,
+    user: user || undefined,
+    location: location,
+  });
   const [userOrganizations, setUserOrganizations] = useState(null);
   const [isCreateIdeaOpen, setCreateIdeaOpen] = useState(false);
   const token = new Cookies().get("auth_token");
 
-  useEffect(async function () {
+  useEffect(() => {
     if (userOrganizations === null) {
       setUserOrganizations("");
-      const userOrgsFromServer = await getUserOrganizations(token, locale);
-      setUserOrganizations(userOrgsFromServer || []);
+      getUserOrganizations(token, locale).then((userOrgsFromServer) => {
+        setUserOrganizations(userOrgsFromServer || []);
+      });
     }
   }, []);
 
-  const { user, locale } = useContext(UserContext);
-  const texts = getTexts({ page: "dashboard", locale: locale, user: user, location: location });
+  const parseWelcomeMessage = (m) => {
+    const message = m.replaceAll("${user.first_name}", user.first_name);
+    return m.replaceAll("${user.first_name}", user.first_name);
+  };
+
+  const getWelcomeMessage = () => {
+    //Hallo {User}, +quickInfo
+    if (user) {
+      return parseWelcomeMessage(
+        welcomeMessageLoggedIn ? welcomeMessageLoggedIn : texts.welcome_message_logged_in
+      );
+    } else {
+      return parseWelcomeMessage(
+        welcomeMessageLoggedOut ? welcomeMessageLoggedOut : texts.welcome_message_logged_out
+      );
+    }
+  };
+
+  const welcomeMessage = getWelcomeMessage();
 
   return (
     <div className={`${classes.welcomeBanner} ${className}`}>
@@ -225,9 +266,7 @@ export default function Dashboard({
             {/* TODO: doing some left spacing here -- trying to keep spacing directly out of the UI components, and isolated within Box components directly  */}
             <Box sx={{ marginLeft: theme.spacing(1), width: "100%" }}>
               <div className={`${classes.welcomeMessage}`}>
-                <Typography style={{ fontWeight: "600" }}>
-                  {user ? texts.welcome_message_logged_in : texts.welcome_message_logged_out}
-                </Typography>
+                <Typography style={{ fontWeight: "600" }}>{welcomeMessage}</Typography>
               </div>
             </Box>
           </div>

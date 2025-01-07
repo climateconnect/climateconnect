@@ -1,4 +1,4 @@
-import { Container, Tab, Tabs, Typography } from "@mui/material";
+import { Container, Tab, Tabs, Typography, useTheme } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -61,6 +61,9 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("sm")]: {
       width: 125,
     },
+    "&.Mui-selected": {
+      color: theme.palette.background.default_contrastText,
+    },
   },
   projectInteractionButtonContainer: {
     position: "relative",
@@ -94,6 +97,8 @@ export default function ProjectPageRoot({
   handleHideContent,
   requestedToJoinProject,
   handleJoinRequest,
+  hubSupporters,
+  hubPage,
 }) {
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
@@ -119,6 +124,9 @@ export default function ProjectPageRoot({
     belowMedium: showSimilarProjects
       ? useMediaQuery<Theme>("(max-width:1300px)")
       : useMediaQuery<Theme>("(max-width:1100px)"),
+    // need refactor to change the names. this one should be 'belowLarge'
+    betweenTinyAndLarg: useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg")),
+    // And 'belowLarge' should be 'belowXLarge'
     belowLarge: useMediaQuery<Theme>((theme) => theme.breakpoints.down("xl")),
   };
 
@@ -437,7 +445,7 @@ export default function ProjectPageRoot({
   });
 
   const latestParentComment = [project.comments[0]];
-
+  const theme = useTheme();
   return (
     <div className={classes.root}>
       <ProjectOverview
@@ -548,15 +556,19 @@ export default function ProjectPageRoot({
             setCurComments={setCurComments}
           />
         </TabContent>
-        {screenSize.belowSmall && (
-          <ProjectSideBar
-            showSimilarProjects={showSimilarProjects}
-            isSmallScreen
-            texts={texts}
-            handleHideContent={handleHideContent}
-            similarProjects={similarProjects}
-            locale={locale}
-          />
+        {screenSize.betweenTinyAndLarg && (
+          <>
+            <ProjectSideBar
+              showSimilarProjects={showSimilarProjects}
+              isSmallScreen
+              texts={texts}
+              handleHideContent={handleHideContent}
+              similarProjects={similarProjects}
+              locale={locale}
+              hubSupporters={hubSupporters}
+              hubName={hubPage}
+            />
+          </>
         )}
       </Container>
 

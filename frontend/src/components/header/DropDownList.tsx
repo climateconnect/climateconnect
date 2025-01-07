@@ -13,9 +13,15 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     display: "flex",
     justifyContent: "center",
+    color: theme.palette.background.default_contrastText,
   },
   popper: {
     zIndex: 25,
+  },
+  hoverBorderColor: {
+    "&:hover": {
+      color: theme.palette.background.default_contrastText,
+    },
   },
 }));
 
@@ -44,6 +50,7 @@ export default function DropDownList({
               href={`${getLocalePrefix(locale)}${item.href}`}
               onClick={loadOnClick && handleClickLink}
               underline="hover"
+              className={classes.hoverBorderColor}
             >
               <MenuItem component="button" className={classes.climateHubOption}>
                 {item.text}

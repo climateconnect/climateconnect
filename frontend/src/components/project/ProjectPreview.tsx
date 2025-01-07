@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => {
       "-moz-user-select": "none",
       "-ms-user-select": "none",
       userSelect: "none",
-      backgroundColor: theme.palette.background.default,
+      backgroundColor: theme.palette.background.paper,
       borderRadius: 3,
       boxShadow: "3px 3px 8px #E0E0E0",
       position: "relative",
@@ -95,7 +95,7 @@ const useStyles = makeStyles((theme) => {
     cardContentWithDescription: {
       position: "absolute",
       visibility: "visible",
-      background: "white",
+      background: theme.palette.background.paper,
       bottom: 0,
       minHeight: "100%",
     },

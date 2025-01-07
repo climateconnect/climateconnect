@@ -1,4 +1,5 @@
-import { Typography } from "@mui/material";
+import { Card, Typography, IconButton, Box, CardContent } from "@mui/material";
+import Close from "@mui/icons-material/Close";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -10,6 +11,12 @@ const useStyles = makeStyles({
   appealText: {
     textAlign: "center",
     fontWeight: "bold",
+  },
+
+  formRootClass: {
+    padding: 0,
+    maxWidth: 700,
+    margin: "0 auto 0 0", // basically a left align
   },
 });
 
@@ -43,7 +50,6 @@ export default function BasicInfo({ handleSubmit, errorMessage, values }) {
 
   const messages = {
     submitMessage: texts.next_step,
-    headerMessage: texts.step_1_basic_information,
     bottomMessage: texts.already_have_an_account,
   };
 
@@ -53,20 +59,47 @@ export default function BasicInfo({ handleSubmit, errorMessage, values }) {
   };
 
   return (
-    <>
-      <Typography color="secondary" className={classes.appealText}>
-        {texts.here_you_can_create_your_personal_account}
-      </Typography>
-      <Typography color="secondary" className={classes.appealText}>
-        {texts.you_will_have_an_opportunity_to_create_or_add_an_organization_once_signed_up}
-      </Typography>
-      <Form
-        fields={fields}
-        messages={messages}
-        bottomLink={bottomLink}
-        onSubmit={(event, values) => handleSubmit(event, values)}
-        errorMessage={errorMessage}
-      />
-    </>
+    <Card>
+      {/* TODO: maybe use card Header instead (?)
+      see https://mui.com/material-ui/react-card/ for other usefull card components */}
+      <Box
+        sx={{
+          display: "flex",
+          gap: "2rem",
+          alignItems: "center",
+          marginBottom: 2,
+        }}
+      >
+        <IconButton
+          aria-label="close"
+          onClick={() => {
+            window.history.back();
+          }}
+        >
+          <Close />
+        </IconButton>
+        <Typography color="primary" variant="subtitle1" component="div">
+          {/* TODO: use texts */}
+          {texts.step_1_of_2_sign_up}
+        </Typography>
+      </Box>
+      <CardContent>
+        <Typography color="primary" variant="h1">
+          {texts.sign_up}
+        </Typography>
+        <Typography color="primary" variant="h3">
+          {texts.here_you_can_create_your_personal_account}
+          {texts.you_will_have_an_opportunity_to_create_or_add_an_organization_once_signed_up}
+        </Typography>
+        <Form
+          className={classes.formRootClass}
+          fields={fields}
+          messages={messages}
+          bottomLink={bottomLink}
+          onSubmit={(event, values) => handleSubmit(event, values)}
+          errorMessage={errorMessage}
+        />
+      </CardContent>
+    </Card>
   );
 }
