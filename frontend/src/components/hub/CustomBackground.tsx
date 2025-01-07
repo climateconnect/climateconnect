@@ -14,10 +14,10 @@ const useStyles = makeStyles((theme) => ({
   },
 
   prioOneDefaultBackground: {
-    backgroundColor: "#3134C7",
+    backgroundColor: theme.palette.secondary.main,
   },
   prioOneAccentBackground: {
-    backgroundColor: "#7883FF",
+    borderLeftColor: theme.palette.secondary.light,
   },
 }));
 
@@ -76,12 +76,15 @@ function PrioOneBackgroundBrowse() {
             width: 0,
             height: 0,
             borderBottom: `${triangleBottom}vh` + " solid transparent",
-            borderLeft: `${triangleLeft}vh` + " solid #7883FF",
+            borderLeftWidth: `${triangleLeft}vh`,
+            borderLeftStyle: "solid",
+
             position: "absolute",
             top: 0,
             left: 0,
             transform: "rotate(0deg)",
           }}
+          className={classes.prioOneAccentBackground}
         />
       </div>
     </div>
@@ -90,18 +93,19 @@ function PrioOneBackgroundBrowse() {
 
 function PrioOneBackgroundAuth() {
   const classes = useStyles();
-
   return (
     <div className={`${classes.background} ${classes.prioOneDefaultBackground}`}>
       {/* Container within the background */}
       <div style={{ position: "relative" }}>
         {/* Upper triangle */}
         <div
+          className={classes.prioOneAccentBackground}
           style={{
             width: 0,
             height: 0,
             borderBottom: "50vw solid transparent",
-            borderLeft: "300vh solid #7883FF",
+            borderLeftWidth: `300vh`,
+            borderLeftStyle: "solid",
             position: "absolute",
             top: 0,
             left: 0,
