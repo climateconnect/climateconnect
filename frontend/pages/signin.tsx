@@ -3,13 +3,19 @@ import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
 import { redirectOnLogin } from "../public/lib/profileOperations";
 import getTexts from "../public/texts/texts";
-import Layout from "../src/components/layouts/layout";
+import WideLayout from "../src/components/layouts/WideLayout";
 import UserContext from "./../src/components/context/UserContext";
 import Form from "./../src/components/general/Form";
+import Image from "next/image";
+import { ThemeProvider } from "@emotion/react";
+import { themeSignUp } from "../src/themes/signupTheme";
+import { Card, CardContent, Typography, Container, Theme, useMediaQuery } from "@mui/material";
+import ContentImageSplitView from "../src/components/layouts/ContentImageSplitLayout";
 
 export default function Signin() {
   const { user, signIn, locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
+  const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
 
   const fields = [
     {
@@ -96,15 +102,49 @@ export default function Signin() {
   };
 
   return (
-    <Layout title={texts.log_in} isLoading={isLoading} messageType="error">
-      <Form
-        fields={fields}
-        messages={messages}
-        bottomLink={bottomLink}
-        usePercentage={false}
-        onSubmit={handleSubmit}
-        errorMessage={errorMessage}
-      />
-    </Layout>
+    <WideLayout
+      title={texts.log_in}
+      // message={errorMessage}
+      // messageType={errorMessage && "error"}
+      messageType="error"
+      isLoading={isLoading}
+    >
+      <Container maxWidth={hugeScreen ? "xl" : "lg"}>
+        <ThemeProvider theme={themeSignUp}>
+          <ContentImageSplitView
+            minHeight="75vh"
+            content={
+              <Card>
+                <CardContent>
+                  <Typography color="primary" variant="h1">
+                    {texts.log_in}
+                  </Typography>
+                  <Typography color="primary" variant="h3"></Typography>
+
+                  <Form
+                    fields={fields}
+                    messages={messages}
+                    bottomLink={bottomLink}
+                    usePercentage={false}
+                    onSubmit={handleSubmit}
+                    errorMessage={errorMessage}
+                  />
+                </CardContent>
+              </Card>
+            }
+            leftGridSizes={{ md: 7 }}
+            rightGridSizes={{ md: 5 }}
+            image={
+              <Image
+                src="/images/sign_up/mobile-login-pana.svg"
+                alt="Sign Up"
+                layout="fill" // Image will cover the container
+                objectFit="contain" // Ensures it fills without stretching
+              />
+            }
+          ></ContentImageSplitView>
+        </ThemeProvider>
+      </Container>
+    </WideLayout>
   );
 }
