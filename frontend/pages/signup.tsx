@@ -36,8 +36,8 @@ export async function getServerSideProps(ctx) {
 
   return {
     props: {
-      hubUrl: hubUrl,
-      hubThemeData: hubThemeData,
+      hubUrl: hubUrl || null, // undefined is not allowed in JSON, so we use null
+      hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
     },
   };
 }
