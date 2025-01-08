@@ -8,7 +8,11 @@ import UserContext from "../context/UserContext";
 import Form from "./../general/Form";
 import { Box, Card, CardContent, IconButton, Typography } from "@mui/material";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
+  contrastBackground: {
+    color: theme.palette.background.default_contrastText,
+  },
+
   checkboxLabels: {
     fontSize: 14,
   },
@@ -25,7 +29,7 @@ const useStyles = makeStyles({
     alignItems: "center",
     marginBottom: 2,
   },
-});
+}));
 
 export default function AddInfo({
   handleSubmit,
@@ -102,12 +106,12 @@ export default function AddInfo({
         <IconButton aria-label="close" onClick={() => handleGoBack(undefined, values)}>
           <ArrowBack />
         </IconButton>
-        <Typography color="primary" variant="subtitle1" component="div">
+        <Typography className={classes.contrastBackground} variant="subtitle1" component="div">
           {texts.step_2_of_2_sign_up}
         </Typography>
       </Box>
       <CardContent>
-        <Typography color="primary" variant="h3">
+        <Typography className={classes.contrastBackground} variant="h3">
           {texts.signup_step_2_headline}
         </Typography>
         <Form

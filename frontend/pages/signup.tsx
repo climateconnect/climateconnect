@@ -176,6 +176,9 @@ export default function Signup({ hubThemeData }) {
   };
 
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+  const customThemeSignUp = hubThemeData
+    ? transformThemeData(hubThemeData, themeSignUp)
+    : themeSignUp;
 
   return (
     <WideLayout
@@ -188,7 +191,7 @@ export default function Signup({ hubThemeData }) {
       customTheme={customTheme}
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
-        <ThemeProvider theme={themeSignUp}>
+        <ThemeProvider theme={customThemeSignUp}>
           <ContentImageSplitView
             minHeight="75vh"
             content={
