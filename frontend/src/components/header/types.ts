@@ -8,4 +8,6 @@ export interface HeaderProps {
   isHubPage?: boolean;
   hubUrl?: string;
   isLocationHub?: boolean;
+  getLinks: Function;
+  getLoggedInLinks: Function;
 }

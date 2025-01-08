@@ -278,23 +278,26 @@ export default function Hub({
   const contextValues = {
     projectTypes: projectTypes,
   };
+  const currentTheme = hubThemeData ? transformThemeData(hubThemeData) : theme;
 
   return (
     <>
       {hubDescription && hubDescription.headContent && (
         <Head>{parseHtml(hubDescription.headContent)}</Head>
       )}
-      <WideLayout
-        title={headline}
-        headerBackground="#FFF"
-        image={getImageUrl(image)}
-        isHubPage
-        hubUrl={hubUrl}
-        hideDonationCampaign
-        customFooterImage={hubData.custom_footer_image && getImageUrl(hubData.custom_footer_image)}
-        isLocationHub={isLocationHub}
-      >
-        <ThemeProvider theme={hubThemeData ? transformThemeData(hubThemeData) : theme}>
+      <ThemeProvider theme={currentTheme}>
+        <WideLayout
+          title={headline}
+          headerBackground={currentTheme.palette.secondary.light}
+          image={getImageUrl(image)}
+          isHubPage
+          hubUrl={hubUrl}
+          hideDonationCampaign
+          customFooterImage={
+            hubData.custom_footer_image && getImageUrl(hubData.custom_footer_image)
+          }
+          isLocationHub={isLocationHub}
+        >
           <div className={classes.content}>
             {<DonationCampaignInformation />}
             {!isLocationHub && (
@@ -390,8 +393,8 @@ export default function Hub({
               <AddIcon />
             </Fab>
           )}
-        </ThemeProvider>
-      </WideLayout>
+        </WideLayout>
+      </ThemeProvider>
     </>
   );
 }

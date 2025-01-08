@@ -33,6 +33,7 @@ export default function DropDownList({
   open,
   loadOnClick,
   popperRef,
+  target,
 }: any) {
   const classes = useStyles();
   const { locale, startLoading } = useContext(UserContext);
@@ -51,6 +52,7 @@ export default function DropDownList({
               onClick={loadOnClick && handleClickLink}
               underline="hover"
               className={classes.hoverBorderColor}
+              target={item.target || "_self"}
             >
               <MenuItem component="button" className={classes.climateHubOption}>
                 {item.text}

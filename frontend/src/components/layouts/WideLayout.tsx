@@ -4,16 +4,12 @@ import Alert from "@mui/material/Alert";
 import React, { useEffect, useState } from "react";
 import { getParams } from "../../../public/lib/generalOperations";
 import { getMessageFromUrl } from "../../../public/lib/parsingOperations";
-import theme from "../../themes/theme";
-import Prio1HeaderTheme from "../../themes/Prio1HeaderTheme";
 import Footer from "../footer/Footer";
 import LoadingContainer from "../general/LoadingContainer";
 import Header from "../header/Header";
 import ElementSpaceToTop from "../hooks/ElementSpaceToTop";
 import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
 import LayoutWrapper from "./LayoutWrapper";
-import HeaderForPRIO1 from "../header/HeaderForPRIO1";
-
 type ThemeProps = { noSpaceBottom?: boolean; isStaticPage?: boolean };
 const useStyles = makeStyles<Theme, ThemeProps>((theme) => ({
   main: (props) => ({
@@ -127,10 +123,9 @@ export default function WideLayout({
       noSpaceForFooter={noSpaceBottom}
       description={description}
       useFloodStdFont={useFloodStdFont}
-      theme={hubUrl !== "erlangen" ? theme : Prio1HeaderTheme}
       image={image}
     >
-      {!noHeader && hubUrl !== "erlangen" ? (
+      {!noHeader && (
         <Header
           isStaticPage={isStaticPage}
           fixedHeader={fixedHeader}
@@ -141,8 +136,6 @@ export default function WideLayout({
           hubUrl={hubUrl}
           isLocationHub={isLocationHub}
         />
-      ) : (
-        <HeaderForPRIO1 />
       )}
       {isLoading ? (
         <LoadingContainer headerHeight={113} footerHeight={80} />

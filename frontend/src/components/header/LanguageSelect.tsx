@@ -10,13 +10,13 @@ import UserContext from "../context/UserContext";
 import StyledMenu from "../general/StyledMenu";
 import StyledMenuItem from "../general/StyledMenuItem";
 
-const useStyles = makeStyles<Theme, { transparentHeader: boolean; implementedIn: string }>(
+const useStyles = makeStyles<Theme, { transparentHeader: boolean; isCustomHub: boolean }>(
   (theme) => ({
     root: (props) => ({
       color: props.transparentHeader
         ? "white"
-        : props.implementedIn === "HeaderForPRIO1"
-        ? "#000033"
+        : props.isCustomHub
+        ? theme.palette.primary.contrastText
         : theme.palette.primary.main,
       cursor: "pointer",
     }),
@@ -42,14 +42,14 @@ const useStyles = makeStyles<Theme, { transparentHeader: boolean; implementedIn:
  */
 type LanguageSelectProps = {
   transparentHeader?: boolean;
-  implementedIn: string;
+  isCustomHub: boolean;
 };
 
 export default function LanguageSelect({
   transparentHeader = false,
-  implementedIn,
+  isCustomHub,
 }: LanguageSelectProps) {
-  const classes = useStyles({ transparentHeader, implementedIn });
+  const classes = useStyles({ transparentHeader, isCustomHub });
   const { locale, locales, startLoading } = useContext(UserContext);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(buttonRef.current);
