@@ -20,7 +20,6 @@ import SelectField from "./SelectField";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: theme.spacing(4),
     maxWidth: 700,
     margin: "0 auto",
   },

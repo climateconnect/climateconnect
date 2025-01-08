@@ -152,11 +152,7 @@ export default function Signin({ hubSlug, hubThemeData }) {
             content={
               <Card>
                 <CardContent>
-                  <Typography color="primary" variant="h1">
-                    {texts.log_in}
-                  </Typography>
-                  <Typography color="primary" variant="h3"></Typography>
-
+                  <Typography variant="h1">{texts.log_in}</Typography>
                   <Form
                     fields={fields}
                     messages={messages}
