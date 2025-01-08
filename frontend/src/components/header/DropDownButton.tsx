@@ -35,7 +35,7 @@ export default function DropDownButton({ buttonProps, options, children, href }:
         onMouseEnter={handleShowOptions}
         onMouseLeave={handleHideOptions}
         {...buttonProps}
-        className={`${classes.button} ${buttonProps.className}`}
+        className={buttonProps ? `${classes.button} ${buttonProps.className}` : `${classes.button}`}
         href={href}
       >
         {children}
