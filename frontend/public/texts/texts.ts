@@ -22,6 +22,7 @@ import getProfileTexts from "./profile_texts";
 import getProjectTexts from "./project_texts";
 import settings_texts from "./settings.json";
 import getTutorialTexts from "./tutorial_texts";
+import custom_hub_texts from "./custom_hub_texts";
 
 type Page =
   | "about"
@@ -128,7 +129,15 @@ export default function getTexts<P extends Page>({
     tutorial: getTutorialTexts({ hubName: hubName, classes: classes, locale: locale }),
   };
 
-  const text = { ...texts[page], ...general_texts };
+  let text = { ...texts[page], ...general_texts };
+
+  if (hubName && hubName in custom_hub_texts) {
+    console.log("selected text", custom_hub_texts[hubName]);
+    // replaces/updates the general texts with the custom texts
+    // if no version is given, the default version is used
+    text = { ...text, ...custom_hub_texts[hubName] };
+  }
+
   const defaultLocale = "en";
 
   const result = {} as Record<string, string>;

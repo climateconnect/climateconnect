@@ -3,7 +3,6 @@ import Close from "@mui/icons-material/Close";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
-import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import Form from "./../general/Form";
 
@@ -20,10 +19,9 @@ const useStyles = makeStyles({
   },
 });
 
-export default function BasicInfo({ handleSubmit, errorMessage, values }) {
+export default function BasicInfo({ handleSubmit, errorMessage, values, texts }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "profile", locale: locale });
   const fields = [
     {
       required: true,

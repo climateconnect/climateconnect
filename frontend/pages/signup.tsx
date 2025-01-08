@@ -62,7 +62,7 @@ export default function Signup({ hubThemeData }) {
 
   const cookies = new Cookies();
   const { user, locale } = useContext(UserContext);
-  const texts = getTexts({ page: "profile", locale: locale });
+  const texts = getTexts({ page: "profile", locale: locale, hubName: hubSlug });
   //Information about the completion state of the tutorial
   const tutorialCookie = cookies.get("finishedTutorialSteps");
   const isClimateActorCookie = cookies.get("tutorialVariables");
@@ -197,6 +197,7 @@ export default function Signup({ hubThemeData }) {
                   values={userInfo}
                   handleSubmit={handleBasicInfoSubmit}
                   errorMessage={errorMessages[steps[0]]}
+                  texts={texts}
                 />
               ) : (
                 curStep === "personalinfo" && (
