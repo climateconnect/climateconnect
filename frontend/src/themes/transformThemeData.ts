@@ -26,6 +26,13 @@ export const transformThemeData = (data, baseTheme: any = undefined) => {
         default: data?.background_default?.main,
         default_contrastText: data?.background_default?.contrastText,
       },
+      contrast: {
+        main: data?.background_default?.contrastText || "black",
+        contrastText: data?.background_default?.main || "white",
+
+        // TODO: dark and light are missing and might be calculated based on the main
+        // using create Theme
+      },
     },
   };
 

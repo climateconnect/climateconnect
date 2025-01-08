@@ -81,10 +81,8 @@ export default function BasicInfo({ handleSubmit, errorMessage, values, texts })
         </Typography>
       </Box>
       <CardContent>
-        <Typography className={classes.contrastBackground} variant="h1">
-          {texts.sign_up}
-        </Typography>
-        <Typography className={classes.contrastBackground} variant="h3">
+        <Typography variant="h1">{texts.sign_up}</Typography>
+        <Typography variant="h3">
           {texts.here_you_can_create_your_personal_account}
           {texts.you_will_have_an_opportunity_to_create_or_add_an_organization_once_signed_up}
         </Typography>

@@ -111,9 +111,7 @@ export default function AddInfo({
         </Typography>
       </Box>
       <CardContent>
-        <Typography className={classes.contrastBackground} variant="h3">
-          {texts.signup_step_2_headline}
-        </Typography>
+        <Typography variant="h3">{texts.signup_step_2_headline}</Typography>
         <Form
           fields={fields}
           className={classes.formRootClass}
