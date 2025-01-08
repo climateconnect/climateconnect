@@ -132,7 +132,6 @@ export default function getTexts<P extends Page>({
   let text = { ...texts[page], ...general_texts };
 
   if (hubName && hubName in custom_hub_texts) {
-    console.log("selected text", custom_hub_texts[hubName]);
     // replaces/updates the general texts with the custom texts
     // if no version is given, the default version is used
     text = { ...text, ...custom_hub_texts[hubName] };

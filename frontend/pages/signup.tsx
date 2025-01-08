@@ -30,23 +30,35 @@ import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
 
 export async function getServerSideProps(ctx) {
-  const hubUrl = ctx.query.hub;
+  const hubSlug = ctx.query.hubName;
 
-  const hubThemeData = await getHubTheme(hubUrl);
+  // early return to avoid fetching /undefined/theme
+  if (!hubSlug) {
+    return {
+      props: {},
+    };
+  }
+  const hubThemeData = await getHubTheme(hubSlug);
+
+  // early return to avoid a hubSlug, that is not supported within the backend
+  if (!hubThemeData) {
+    return {
+      props: {},
+    };
+  }
 
   return {
     props: {
-      hubUrl: hubUrl || null, // undefined is not allowed in JSON, so we use null
+      hubSlug: hubSlug || null, // undefined is not allowed in JSON, so we use null
       hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
     },
   };
 }
 
-export default function Signup({ hubThemeData }) {
+export default function Signup({ hubSlug, hubThemeData }) {
   const { ReactGA } = useContext(UserContext);
 
   const queryParams = useRouter().query;
-  const hubSlug = Array.isArray(queryParams.hub) ? queryParams.hub[0] : queryParams.hub || "";
 
   const [userInfo, setUserInfo] = React.useState({
     email: "",
