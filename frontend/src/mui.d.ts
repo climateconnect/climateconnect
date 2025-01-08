@@ -22,14 +22,3 @@ declare module "@mui/material/TextField" {
     contrast: true;
   }
 }
-
-// allow contrast as a color wothin the palette
-declare module "@mui/material/styles" {
-  interface Palette {
-    contrast: Palette["primary"];
-  }
-
-  interface PaletteOptions {
-    contrast?: PaletteOptions["primary"];
-  }
-}
