@@ -11,8 +11,36 @@ import { ThemeProvider } from "@emotion/react";
 import { themeSignUp } from "../src/themes/signupTheme";
 import { Card, CardContent, Typography, Container, Theme, useMediaQuery } from "@mui/material";
 import ContentImageSplitView from "../src/components/layouts/ContentImageSplitLayout";
+import getHubTheme from "../src/themes/fetchHubTheme";
+import { transformThemeData } from "../src/themes/transformThemeData";
 
-export default function Signin() {
+export async function getServerSideProps(ctx) {
+  const hubSlug = ctx.query.hubName;
+
+  // early return to avoid fetching /undefined/theme
+  if (!hubSlug) {
+    return {
+      props: {},
+    };
+  }
+  const hubThemeData = await getHubTheme(hubSlug);
+
+  // early return to avoid a hubSlug, that is not supported within the backend
+  if (!hubThemeData) {
+    return {
+      props: {},
+    };
+  }
+
+  return {
+    props: {
+      hubSlug: hubSlug || null, // undefined is not allowed in JSON, so we use null
+      hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
+    },
+  };
+}
+
+export default function Signin({ hubSlug, hubThemeData }) {
   const { user, signIn, locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
   const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
@@ -101,6 +129,11 @@ export default function Signin() {
       });
   };
 
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+  const customThemeSignIn = hubThemeData
+    ? transformThemeData(hubThemeData, themeSignUp)
+    : themeSignUp;
+
   return (
     <WideLayout
       title={texts.log_in}
@@ -108,9 +141,12 @@ export default function Signin() {
       // messageType={errorMessage && "error"}
       messageType="error"
       isLoading={isLoading}
+      customTheme={customTheme}
+      isHubPage={hubSlug !== ""}
+      hubUrl={hubSlug}
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
-        <ThemeProvider theme={themeSignUp}>
+        <ThemeProvider theme={customThemeSignIn}>
           <ContentImageSplitView
             minHeight="75vh"
             content={

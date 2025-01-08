@@ -46,7 +46,7 @@ export default function CustomBackground({ hubUrl }: Props) {
     case "prio1": {
       if (pathname.endsWith("/hubs/prio1")) {
         return <PrioOneBackgroundBrowse />;
-      } else if (pathname.endsWith("/signup") || pathname.endsWith("/login")) {
+      } else if (pathname.endsWith("/signup") || pathname.endsWith("/signin")) {
         return <PrioOneBackgroundAuth />;
       }
     }
