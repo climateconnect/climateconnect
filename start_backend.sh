@@ -3,9 +3,7 @@
 apt-get update -qq && apt-get install binutils libproj-dev gdal-bin -yqq
 
 # Install pdm
-curl -sSL https://raw.githubusercontent.com/pdm-project/pdm/main/install-pdm.py | python3 - --version 2.22.1
-#post install for pdm
-export PATH=/root/.local/bin:$PATH
+pip install pdm
 
 # Go to backend folder
 cd backend
