@@ -1,6 +1,7 @@
 import { Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
+import Image from "next/image";
 
 const useStyles = makeStyles((theme) => ({
   background: {
@@ -18,6 +19,22 @@ const useStyles = makeStyles((theme) => ({
   },
   prioOneAccentBackground: {
     borderLeftColor: theme.palette.secondary.light,
+  },
+
+  prioOneAuthIcon: {
+    position: "absolute",
+    top: "50vh",
+    left: "70vw",
+    width: "11rem",
+    height: "11rem",
+
+    [theme.breakpoints.up("xl")]: {
+      top: "40vh",
+      left: "auto",
+      right: "4vw",
+      width: "12rem",
+      height: "12rem",
+    },
   },
 }));
 
@@ -113,6 +130,13 @@ function PrioOneBackgroundAuth() {
             transform: "rotate(0deg)",
           }}
         />
+      </div>
+      <div className={classes.prioOneAuthIcon}>
+        <Image
+          className={classes.prioOneAuthIcon}
+          src="/images/placeholder.png"
+          layout="fill"
+        ></Image>
       </div>
     </div>
   );

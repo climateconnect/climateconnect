@@ -8,7 +8,6 @@ const PRIO1_SLUG = "prio1";
 
 const useStyles = makeStyles((theme) => ({
   prio1root: {
-    marginRight: theme.spacing(5),
     fontSize: theme.typography.h5.fontSize,
     lineHeight: isNumber(theme.typography.h5.lineHeight)
       ? (theme.typography.h5.lineHeight as number) - 0.2
@@ -42,6 +41,11 @@ const useStyles = makeStyles((theme) => ({
   },
   prio1_image: {
     height: "100%",
+  },
+  prio1_text: {
+    [theme.breakpoints.up("xl")]: {
+      marginRight: "clamp(2rem,15rem - 2vw, 15rem)",
+    },
   },
 }));
 
@@ -83,7 +87,7 @@ function Prio1AuthImage({ texts }) {
         />
       </div>
 
-      <p>
+      <p className={classes.prio1_text}>
         <b>
           <i>{texts.auth_image_subtitle}</i>
         </b>
@@ -94,11 +98,13 @@ function Prio1AuthImage({ texts }) {
 
 function DefaultAuthImage() {
   return (
-    <Image
-      src="/images/sign_up/mobile-login-pana.svg"
-      alt="Sign Up"
-      layout="fill" // Image will cover the container
-      objectFit="contain" // Ensures it fills without stretching
-    />
+    <div style={{ position: "relative", width: "100%", aspectRatio: "1" }}>
+      <Image
+        src="/images/sign_up/mobile-login-pana.svg"
+        alt="Sign Up"
+        layout="fill" // Image will cover the container
+        objectFit="contain" // Ensures it fills without stretching
+      />
+    </div>
   );
 }

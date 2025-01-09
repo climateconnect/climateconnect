@@ -5,6 +5,7 @@ import makeStyles from "@mui/styles/makeStyles";
 const useStyles = makeStyles((theme) => ({
   centerItems: {
     margin: "auto 0",
+    placeItems: "center",
   },
   rightPadding: {
     paddingRight: theme.spacing(6),
@@ -66,7 +67,7 @@ const ContentImageSplitView: React.FC<ContentImageSplitViewProps> = ({
       {/* image pane */}
       {!rightPaneHidden && (
         <Grid item md={5} {...rightGridSizes} style={{ display: "flex" }}>
-          <div style={{ position: "relative", width: "100%", aspectRatio: "1" }}>{image}</div>
+          {image}
         </Grid>
       )}
     </Grid>
