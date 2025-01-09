@@ -104,8 +104,8 @@ function PrioOneBackgroundAuth() {
           style={{
             width: 0,
             height: 0,
-            borderBottom: "50vw solid transparent",
-            borderLeftWidth: `300vh`,
+            borderBottom: "85vh solid transparent",
+            borderLeftWidth: `250vw`,
             borderLeftStyle: "solid",
             position: "absolute",
             top: 0,
