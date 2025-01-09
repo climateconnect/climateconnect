@@ -13,6 +13,7 @@ import { Card, CardContent, Typography, Container, Theme, useMediaQuery } from "
 import ContentImageSplitView from "../src/components/layouts/ContentImageSplitLayout";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
+import CustomAuthImage from "../src/components/hub/CustomAuthImage";
 
 export async function getServerSideProps(ctx) {
   const hubSlug = ctx.query.hubName;
@@ -42,7 +43,7 @@ export async function getServerSideProps(ctx) {
 
 export default function Signin({ hubSlug, hubThemeData }) {
   const { user, signIn, locale } = useContext(UserContext);
-  const texts = getTexts({ page: "profile", locale: locale });
+  const texts = getTexts({ page: "profile", locale: locale, hubName: hubSlug });
   const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
 
   const fields = [
@@ -166,14 +167,7 @@ export default function Signin({ hubSlug, hubThemeData }) {
             }
             leftGridSizes={{ md: 7 }}
             rightGridSizes={{ md: 5 }}
-            image={
-              <Image
-                src="/images/sign_up/mobile-login-pana.svg"
-                alt="Sign Up"
-                layout="fill" // Image will cover the container
-                objectFit="contain" // Ensures it fills without stretching
-              />
-            }
+            image={<CustomAuthImage hubUrl={hubSlug} texts={texts} />}
           ></ContentImageSplitView>
         </ThemeProvider>
       </Container>
