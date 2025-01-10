@@ -3,6 +3,8 @@ import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import Image from "next/image";
 
+const PRIO1_SLUG = "prio1";
+
 const useStyles = makeStyles((theme) => ({
   background: {
     position: "absolute",
@@ -60,8 +62,8 @@ export default function CustomBackground({ hubUrl }: Props) {
   console.log("pathname: ", pathname);
 
   switch (hubUrl.toLowerCase()) {
-    case "prio1": {
-      if (pathname.endsWith("/hubs/prio1")) {
+    case PRIO1_SLUG: {
+      if (pathname.endsWith("/hubs/" + PRIO1_SLUG)) {
         return <PrioOneBackgroundBrowse />;
       } else if (pathname.endsWith("/signup") || pathname.endsWith("/signin")) {
         return <PrioOneBackgroundAuth />;
@@ -134,7 +136,7 @@ function PrioOneBackgroundAuth() {
       <div className={classes.prioOneAuthIcon}>
         <Image
           className={classes.prioOneAuthIcon}
-          src="/images/placeholder.png"
+          src={"/images/custom_hubs/" + PRIO1_SLUG + "_group.svg"}
           layout="fill"
         ></Image>
       </div>

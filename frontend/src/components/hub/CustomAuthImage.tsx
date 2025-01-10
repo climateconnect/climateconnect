@@ -75,7 +75,7 @@ function Prio1AuthImage({ texts }) {
     <div className={classes.prio1root}>
       <div className={classes.prio1_imageContainer}>
         <img
-          src="/images/prio1.png"
+          src={"/images/custom_hubs/" + PRIO1_SLUG + ".png"}
           alt={texts.climate_connect_logo}
           className={classes.prio1_image}
         />
