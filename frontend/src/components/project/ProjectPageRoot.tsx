@@ -1,4 +1,4 @@
-import { Container, Tab, Tabs, Typography, useTheme } from "@mui/material";
+import { backdropClasses, Container, Tab, Tabs, Typography, useTheme } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -64,6 +64,9 @@ const useStyles = makeStyles((theme) => ({
     "&.Mui-selected": {
       color: theme.palette.background.default_contrastText,
     },
+  },
+  tabsIndicator: {
+    backgroundColor: theme.palette.background.default_contrastText,
   },
   projectInteractionButtonContainer: {
     position: "relative",
@@ -445,7 +448,6 @@ export default function ProjectPageRoot({
   });
 
   const latestParentComment = [project.comments[0]];
-  const theme = useTheme();
   return (
     <div className={classes.root}>
       <ProjectOverview
@@ -479,7 +481,7 @@ export default function ProjectPageRoot({
             variant={screenSize.belowSmall ? "fullWidth" : "standard"}
             value={tabValue}
             onChange={handleTabChange}
-            indicatorColor="primary"
+            classes={{ indicator: classes.tabsIndicator }}
           >
             <Tab label={texts.project} className={classes.tab} />
             <Tab label={teamTabLabel()} className={classes.tab} />

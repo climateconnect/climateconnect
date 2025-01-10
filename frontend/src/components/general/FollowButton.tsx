@@ -15,12 +15,10 @@ const useStyles = makeStyles((theme) => ({
   },
   followerNumber: {
     fontWeight: 700,
-    color: theme.palette.secondary.main,
   },
   followersText: {
     fontWeight: 500,
     fontSize: 18,
-    color: theme.palette.secondary.light,
   },
   followingButton: (props) => ({
     marginLeft: props.hasAdminPermissions ? theme.spacing(2) : theme.spacing(0.25),
@@ -149,7 +147,7 @@ function LinkWithText({ numberOfFollowers, texts, toggleShowFollowers }) {
   const classes = useStyles();
   return (
     <Link
-      color="secondary"
+      color="text.primary"
       underline="none"
       className={classes.followersLink}
       onClick={toggleShowFollowers}

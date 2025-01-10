@@ -13,41 +13,42 @@ import HubsSubHeader from "../../src/components/indexPage/hubsSubHeader/HubsSubH
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { useMediaQuery } from "@mui/material";
 import { getImageUrl } from "../../public/lib/imageOperations";
-import { Theme, ThemeProvider } from "@mui/material/styles";
+import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import ProjectSideBar from "../../src/components/project/ProjectSideBar";
 import { transformThemeData } from "../../src/themes/transformThemeData";
-import theme from "../../src/themes/hubTheme";
 
 type StyleProps = {
   showSimilarProjects: boolean;
 };
-const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
-  contentWrapper: {
-    display: "flex",
-  },
-  mainContent: (props) => ({
-    width: props.showSimilarProjects ? "80%" : "100%",
-    [theme.breakpoints.down("lg")]: {
-      width: "100%",
+const useStyles = makeStyles<Theme, StyleProps>((theme) => {
+  return {
+    contentWrapper: {
+      display: "flex",
     },
-  }),
-  secondaryContent: (props) => ({
-    width: props.showSimilarProjects ? "20%" : "0%",
-    [theme.breakpoints.down("lg")]: {
-      width: "0%",
-      marginTop: theme.spacing(0),
-      marginRight: theme.spacing(0),
-      marginLeft: theme.spacing(0),
-    },
-    marginTop: theme.spacing(2),
-    marginRight: theme.spacing(7),
-    marginLeft: theme.spacing(1),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-end",
-  }),
-}));
+    mainContent: (props) => ({
+      width: props.showSimilarProjects ? "80%" : "100%",
+      [theme.breakpoints.down("lg")]: {
+        width: "100%",
+      },
+    }),
+    secondaryContent: (props) => ({
+      width: props.showSimilarProjects ? "20%" : "0%",
+      [theme.breakpoints.down("lg")]: {
+        width: "0%",
+        marginTop: theme.spacing(0),
+        marginRight: theme.spacing(0),
+        marginLeft: theme.spacing(0),
+      },
+      marginTop: theme.spacing(2),
+      marginRight: theme.spacing(7),
+      marginLeft: theme.spacing(1),
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "flex-end",
+    }),
+  };
+});
 import { NOTIFICATION_TYPES } from "../../src/components/communication/notifications/Notification";
 import { getProjectTypeOptions } from "../../public/lib/getOptions";
 import BrowseContext from "../../src/components/context/BrowseContext";
@@ -161,7 +162,6 @@ export default function ProjectPage({
   const handleHideContent = () => {
     setShowSimilarProjects(!showSimilarProjects);
   };
-
   const smallScreenSize = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
 
   // Handle remove bell icon notification
@@ -245,58 +245,57 @@ export default function ProjectPage({
           <></>
         )
       }
+      customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
       image={project ? getImageUrl(project.image) : undefined}
     >
       <BrowseContext.Provider value={contextValues}>
-        <ThemeProvider theme={hubThemeData ? transformThemeData(hubThemeData) : theme}>
-          {project ? (
-            <div className={classes.contentWrapper}>
-              <div className={classes.mainContent}>
-                <ProjectPageRoot
-                  project={{
-                    ...project,
-                    team: members,
-                    timeline_posts: posts,
-                    comments: curComments,
-                  }}
-                  setMessage={setMessage}
-                  isUserFollowing={isUserFollowing}
-                  setCurComments={setCurComments}
-                  followingChangePending={followingChangePending}
-                  likingChangePending={likingChangePending}
-                  projectAdmin={members?.find((m) => m.permission === ROLE_TYPES.all_type)}
-                  isUserLiking={isUserLiking}
-                  numberOfLikes={numberOfLikes}
-                  numberOfFollowers={numberOfFollowers}
-                  handleFollow={handleFollow}
-                  handleLike={handleLike}
+        {project ? (
+          <div className={classes.contentWrapper}>
+            <div className={classes.mainContent}>
+              <ProjectPageRoot
+                project={{
+                  ...project,
+                  team: members,
+                  timeline_posts: posts,
+                  comments: curComments,
+                }}
+                setMessage={setMessage}
+                isUserFollowing={isUserFollowing}
+                setCurComments={setCurComments}
+                followingChangePending={followingChangePending}
+                likingChangePending={likingChangePending}
+                projectAdmin={members?.find((m) => m.permission === ROLE_TYPES.all_type)}
+                isUserLiking={isUserLiking}
+                numberOfLikes={numberOfLikes}
+                numberOfFollowers={numberOfFollowers}
+                handleFollow={handleFollow}
+                handleLike={handleLike}
+                similarProjects={similarProjects}
+                handleHideContent={handleHideContent}
+                showSimilarProjects={showSimilarProjects}
+                requestedToJoinProject={requestedToJoinProject}
+                handleJoinRequest={handleJoinRequest}
+                hubSupporters={hubSupporters}
+                hubPage={hubPage}
+              />
+            </div>
+            <div className={classes.secondaryContent}>
+              {!smallScreenSize && (
+                <ProjectSideBar
                   similarProjects={similarProjects}
                   handleHideContent={handleHideContent}
                   showSimilarProjects={showSimilarProjects}
-                  requestedToJoinProject={requestedToJoinProject}
-                  handleJoinRequest={handleJoinRequest}
+                  locale={locale}
+                  texts={texts}
                   hubSupporters={hubSupporters}
-                  hubPage={hubPage}
+                  hubName={hubPage}
                 />
-              </div>
-              <div className={classes.secondaryContent}>
-                {!smallScreenSize && (
-                  <ProjectSideBar
-                    similarProjects={similarProjects}
-                    handleHideContent={handleHideContent}
-                    showSimilarProjects={showSimilarProjects}
-                    locale={locale}
-                    texts={texts}
-                    hubSupporters={hubSupporters}
-                    hubName={hubPage}
-                  />
-                )}
-              </div>
+              )}
             </div>
-          ) : (
-            <PageNotFound itemName={texts.project} />
-          )}
-        </ThemeProvider>
+          </div>
+        ) : (
+          <PageNotFound itemName={texts.project} />
+        )}
       </BrowseContext.Provider>
     </WideLayout>
   );

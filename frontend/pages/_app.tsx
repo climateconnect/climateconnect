@@ -157,13 +157,13 @@ export default function MyApp({ Component, pageProps = {} }) {
         getLoggedInUser(token, cookies),
         getNotifications(token, locale),
       ]);
-      if(fetchedUser?.error === "invalid token") {
+      if (fetchedUser?.error === "invalid token") {
         const cookieProps: any = {
           path: "/",
         };
         cookies.remove("auth_token", cookieProps);
-        console.log("Deleted auth_token because it was invalid")
-        fetchedUser = null
+        console.log("Deleted auth_token because it was invalid");
+        fetchedUser = null;
       }
 
       setState({
@@ -350,17 +350,14 @@ async function getLoggedInUser(token, cookies) {
       });
       return resp.data;
     } catch (err: any) {
-      const invalid_token_messages = [
-        "Invalid token.",
-        "Ungültiges Token"
-      ]
+      const invalid_token_messages = ["Invalid token.", "Ungültiges Token"];
       console.log(err);
       if (err.response && err.response.data)
         console.log("Error in getLoggedInUser: " + err.response.data.detail);
-      if (invalid_token_messages.includes(err?.response?.data?.detail)){
+      if (invalid_token_messages.includes(err?.response?.data?.detail)) {
         return {
-          error: "invalid token"
-        }
+          error: "invalid token",
+        };
       }
       return null;
     }

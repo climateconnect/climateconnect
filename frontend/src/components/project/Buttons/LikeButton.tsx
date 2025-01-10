@@ -23,7 +23,6 @@ const useStyles = makeStyles((theme) => ({
   },
   likeNumber: {
     fontWeight: 700,
-    color: theme.palette.secondary.main,
   },
   likeNumberMobile: {
     fontWeight: 600,
@@ -33,7 +32,6 @@ const useStyles = makeStyles((theme) => ({
   likesText: {
     fontWeight: 500,
     fontSize: 18,
-    color: theme.palette.secondary.light,
   },
   mediumScreenIconButton: {
     height: 40,
@@ -183,7 +181,7 @@ export default function LikeButton({
         </Button>
         {numberOfLikes > 0 && (
           <Link
-            color="secondary"
+            color="text.primary"
             className={classes.likesLink}
             underline="none"
             onClick={toggleShowLikes}

@@ -251,10 +251,7 @@ function ShortProjectInfo({ project }) {
       <div className={classes.projectInfoEl}>
         <Typography>
           <Tooltip title={texts.location}>
-            <PlaceIcon
-              sx={{ color: theme.palette.background.default_contrastText }}
-              className={classes.icon}
-            />
+            <PlaceIcon className={classes.icon} />
           </Tooltip>{" "}
           {project.location}
           {project.additional_loc_info && <> - {project.additional_loc_info}</>}
@@ -274,10 +271,7 @@ function ShortProjectInfo({ project }) {
         <div className={classes.projectInfoEl}>
           <Typography>
             <Tooltip title={texts.website}>
-              <LanguageIcon
-                sx={{ color: theme.palette.background.default_contrastText }}
-                className={classes.icon}
-              />
+              <LanguageIcon className={classes.icon} />
             </Tooltip>{" "}
             <Linkify componentDecorator={componentDecorator}>{project.website}</Linkify>
           </Typography>
@@ -286,10 +280,7 @@ function ShortProjectInfo({ project }) {
       <div className={classes.projectInfoEl}>
         <Typography>
           <Tooltip title={texts.categories}>
-            <ExploreIcon
-              sx={{ color: theme.palette.background.default_contrastText }}
-              className={classes.icon}
-            />
+            <ExploreIcon className={classes.icon} />
           </Tooltip>{" "}
           {project.tags.join(", ")}
         </Typography>

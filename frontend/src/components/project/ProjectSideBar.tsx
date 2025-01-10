@@ -76,7 +76,12 @@ export default function ProjectSideBar({
       {isSmallScreen ? (
         <>
           <Divider className={classes.divider} />
-          <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
+          <Typography
+            component="h2"
+            variant="h6"
+            color="background.default_contrastText"
+            className={classes.subHeader}
+          >
             {texts.you_may_also_like_these_projects}
           </Typography>
         </>

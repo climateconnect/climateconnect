@@ -1,9 +1,11 @@
+import { backdropClasses } from "@mui/material";
 import defaultTheme from "./hubTheme";
+import { alpha, createTheme } from "@mui/material/styles";
 
 // transform theme data received from the API into a structured theme object
 export const transformThemeData = (data) => {
   const { palette, ...restOfDefaultTheme } = defaultTheme;
-  const customTheme = {
+  const coreTheme = {
     ...restOfDefaultTheme,
     palette: {
       ...palette,
@@ -28,6 +30,30 @@ export const transformThemeData = (data) => {
       },
     },
   };
+  const customTheme = createTheme(coreTheme, {
+    components: {
+      MuiButton: {
+        variants: [
+          {
+            props: { variant: "outlined" },
+            style: {
+              color: coreTheme.palette.primary.contrastText,
+            },
+          },
+          {
+            props: { variant: "contained" },
+            style: {
+              color: coreTheme.palette.primary.contrastText,
+              backgroundColor: coreTheme.palette.primary.main,
+              "&:hover": {
+                backgroundColor: alpha(coreTheme.palette.primary.main, 0.7),
+              },
+            },
+          },
+        ],
+      },
+    },
+  });
 
   return customTheme;
 };

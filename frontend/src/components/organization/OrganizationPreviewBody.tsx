@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => {
       overflow: "hidden",
       OTextOverflow: "ellipsis",
       textOverflow: "ellipsis",
-      color: theme.palette.background.default_contrastText,
+      color: theme.palette.text.primary,
     },
     infoLink: {
       display: "flex",
@@ -31,6 +31,7 @@ const useStyles = makeStyles((theme) => {
       gridTemplateColumns: "40px min-content",
       marginBottom: theme.spacing(0.5),
       justifyContent: "center",
+      alignItems: "center",
     },
     locationNameBox: {
       maxWidth: "200px",

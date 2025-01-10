@@ -7,7 +7,7 @@ import React from "react";
 
 const useStyles = makeStyles((theme) => ({
   button: {
-    color: "white",
+    color: theme.palette.primary.contrastText,
     [theme.breakpoints.down("sm")]: {
       minWidth: 35,
       maxWidth: 35,
