@@ -298,10 +298,20 @@ class CreateOrganizationView(APIView):
         try:
             # Wrap the entire organization creation in a transaction
             with transaction.atomic():
-                organization = Organization.objects.create(
+                organization, created = Organization.objects.get_or_create(
                     name=request.data["name"].strip()
                 )
                 
+                if not created:
+                    return Response(
+                        {
+                            "message": get_existing_name_message(organization.name),
+                            "url_slug": organization.url_slug,
+                            "existing_name": organization.name,
+                        },
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
                 organization.url_slug = create_unique_slug(
                     organization.name, organization.id, Organization.objects
                 )
