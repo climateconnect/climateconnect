@@ -7,6 +7,7 @@ import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import HubsDropDown from "../indexPage/hubsSubHeader/HubsDropDown";
+import { CUSTOM_HUB_URLS } from "../../../public/data/custom_hub";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -115,7 +116,7 @@ export default function HubTabsNavigation({
   const handleToggleOpen = () => {
     setDropdownOpen(!dropdownOpen);
   };
-
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   //Don't show the HubTabsNavigation if we're logged out on mobile
   if (!user && isNarrowScreen) {
     return <></>;
@@ -172,17 +173,19 @@ export default function HubTabsNavigation({
             </Link>
           )}
         </div>
-        <HubsDropDown
-          hubs={locationHubs}
-          label={texts.all_hubs}
-          isNarrowScreen={isNarrowScreen}
-          onToggleOpen={handleToggleOpen}
-          open={dropdownOpen}
-          onOpen={handleOpen}
-          onClose={handleClose}
-          addLocationHubExplainerLink
-          height={48}
-        />
+        {!isCustomHub && (
+          <HubsDropDown
+            hubs={locationHubs}
+            label={texts.all_hubs}
+            isNarrowScreen={isNarrowScreen}
+            onToggleOpen={handleToggleOpen}
+            open={dropdownOpen}
+            onOpen={handleOpen}
+            onClose={handleClose}
+            addLocationHubExplainerLink
+            height={48}
+          />
+        )}
       </Container>
     </div>
   );

@@ -6,8 +6,9 @@ import { useRouter } from "next/router";
 import React from "react";
 
 const useStyles = makeStyles((theme) => ({
-  button: {
+  button: (props) => ({
     color: theme.palette.background.default,
+    height: props.height ? props.height : 54,
     [theme.breakpoints.down("sm")]: {
       minWidth: 35,
       maxWidth: 35,
@@ -18,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.primary.main,
       },
     },
-  },
+  }),
 }));
 
 export default function GoBackFromProjectPageButton({
@@ -26,8 +27,9 @@ export default function GoBackFromProjectPageButton({
   tinyScreen,
   locale,
   containerClassName,
+  height,
 }: any) {
-  const classes = useStyles();
+  const classes = useStyles({ height: height });
 
   const router = useRouter();
   const goBack = () => {

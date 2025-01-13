@@ -64,7 +64,7 @@ export default function HubsSubHeader({ hubs, subHeaderRef, onlyShowDropDown, is
           )}
         </div>
         <div className={classes.hubsContainer}>
-          {!isNarrowScreen && !onlyShowDropDown && (
+          {!isNarrowScreen && !onlyShowDropDown && !isCustomHub && (
             <Link
               className={classes.link}
               key={"/hubs"}
@@ -74,7 +74,7 @@ export default function HubsSubHeader({ hubs, subHeaderRef, onlyShowDropDown, is
               {texts.all_hubs}
             </Link>
           )}
-          {hubs && (
+          {hubs && !isCustomHub && (
             <HubLinks
               linkClassName={classes.link}
               hubs={hubs}
