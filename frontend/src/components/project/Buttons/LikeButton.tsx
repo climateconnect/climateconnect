@@ -3,74 +3,82 @@ import makeStyles from "@mui/styles/makeStyles";
 import React, { MouseEventHandler } from "react";
 import ButtonIcon from "../../general/ButtonIcon";
 
-const useStyles = makeStyles((theme) => ({
-  largeScreenButtonContainer: {
-    display: "inline-flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  likesLink: {
-    cursor: "pointer",
-    textAlign: "center",
-  },
-  largeLikeButton: {
-    height: 40,
-    maxWidth: 120,
-    "&:disabled": {
+const useStyles = makeStyles((theme) => {
+  return {
+    largeScreenButtonContainer: {
+      display: "inline-flex",
+      flexDirection: "column",
+      alignItems: "center",
+    },
+    likesLink: {
+      cursor: "pointer",
+      textAlign: "center",
+    },
+    largeLikeButton: {
+      height: 40,
+      maxWidth: 120,
+      "&:disabled": {
+        color: "white",
+        background: theme.palette.secondary.main,
+      },
+    },
+    likeNumber: {
+      fontWeight: 700,
+    },
+    likeNumberMobile: {
+      fontWeight: 600,
+      color: theme.palette.primary.main,
+      whiteSpace: "nowrap",
+    },
+    likesText: {
+      fontWeight: 500,
+      fontSize: 18,
+    },
+    mediumScreenIconButton: {
+      height: 40,
+    },
+    mobileButtonContainer: {
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      cursor: "pointer",
+      height: 40,
+    },
+    iconButton: {
+      padding: theme.spacing(1),
+      "&:hover": {
+        background: "none",
+      },
+    },
+    fabProgress: {
       color: "white",
-      background: theme.palette.secondary.main,
+      position: "absolute",
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0,
+      marginLeft: "auto",
+      marginRight: "auto",
+      marginTop: "auto",
+      marginBottom: "auto",
     },
-  },
-  likeNumber: {
-    fontWeight: 700,
-  },
-  likeNumberMobile: {
-    fontWeight: 600,
-    color: theme.palette.primary.main,
-    whiteSpace: "nowrap",
-  },
-  likesText: {
-    fontWeight: 500,
-    fontSize: 18,
-  },
-  mediumScreenIconButton: {
-    height: 40,
-  },
-  mobileButtonContainer: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    cursor: "pointer",
-    height: 40,
-  },
-  iconButton: {
-    padding: theme.spacing(1),
-    "&:hover": {
-      background: "none",
+    buttonLabel: {
+      position: "relative",
     },
-  },
-  fabProgress: {
-    color: "white",
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    marginLeft: "auto",
-    marginRight: "auto",
-    marginTop: "auto",
-    marginBottom: "auto",
-  },
-  buttonLabel: {
-    position: "relative",
-  },
-  buttonText: (props) => ({
-    visibility: props.likingChangePending ? "hidden" : "visible",
-  }),
-  hidden: {
-    visibility: "hidden",
-  },
-}));
+    buttonText: (props) => ({
+      visibility: props.likingChangePending ? "hidden" : "visible",
+    }),
+    hidden: {
+      visibility: "hidden",
+    },
+    buttonAfterLike: (props) => ({
+      backgroundColor: props.isUserLiking
+        ? theme.palette.secondary.main
+        : theme.palette.primary.main,
+      color: theme.palette.background.default,
+    }),
+  };
+});
 
 type Args = {
   isUserLiking: boolean;
@@ -95,9 +103,11 @@ export default function LikeButton({
   numberOfLikes,
   bindLike,
 }: Args) {
-  const classes = useStyles({ likingChangePending: likingChangePending });
+  const classes = useStyles({
+    likingChangePending: likingChangePending,
+    isUserLiking: isUserLiking,
+  });
   const theme = useTheme();
-
   if (screenSize?.belowSmall) {
     return (
       <span
@@ -106,8 +116,7 @@ export default function LikeButton({
         {...bindLike}
       >
         <IconButton
-          className={classes.iconButton}
-          color={isUserLiking ? "secondary" : "primary"}
+          className={`${classes.iconButton} ${classes.buttonAfterLike}`}
           disabled={likingChangePending}
           size="large"
         >
@@ -127,9 +136,8 @@ export default function LikeButton({
       <span className={classes.largeScreenButtonContainer}>
         <IconButton
           onClick={handleToggleLikeProject}
-          color={isUserLiking ? "secondary" : "primary"}
           disabled={likingChangePending}
-          className={classes.mediumScreenIconButton}
+          className={`${classes.mediumScreenIconButton} ${classes.buttonAfterLike}`}
           size="large"
         >
           <ButtonIcon
@@ -166,10 +174,8 @@ export default function LikeButton({
               color={isUserLiking ? "earth" : theme.palette.primary.contrastText}
             />
           }
-          // Changing the color attribute to theme.palette.secondary?.main : theme.palette.primary?.main causes error
-          color={isUserLiking ? "secondary" : "primary"}
           disabled={likingChangePending}
-          className={classes.largeLikeButton}
+          className={`${classes.largeLikeButton} ${classes.buttonAfterLike}`}
         >
           <div className={classes.buttonLabel}>
             <CircularProgress

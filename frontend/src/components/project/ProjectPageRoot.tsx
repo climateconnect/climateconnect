@@ -27,60 +27,62 @@ import ProjectSideBar from "./ProjectSideBar";
 import ProjectTeamContent from "./ProjectTeamContent";
 import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMediaShareButton";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    textAlign: "center",
-    color: theme.palette.grey[800],
-    position: "relative",
-  },
-
-  buttonText: {
-    color: theme.palette.primary.main,
-  },
-
-  tabsContainerWithoutPadding: {
-    padding: 0,
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderBottom: `1px solid ${theme.palette.grey[500]}`,
-  },
-  tabContent: {
-    padding: theme.spacing(2),
-    textAlign: "left",
-  },
-  dialogText: {
-    textAlign: "center",
-    margin: "0 auto",
-    display: "block",
-  },
-  tab: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
-    width: 145,
-    [theme.breakpoints.down("sm")]: {
-      width: 125,
+const useStyles = makeStyles((theme) => {
+  return {
+    root: {
+      textAlign: "center",
+      color: theme.palette.grey[800],
+      position: "relative",
     },
-    "&.Mui-selected": {
-      color: theme.palette.background.default_contrastText,
-    },
-  },
-  tabsIndicator: {
-    backgroundColor: theme.palette.background.default_contrastText,
-  },
-  projectInteractionButtonContainer: {
-    position: "relative",
-  },
-  shareButtonContainer: {
-    paddingRight: theme.spacing(4),
-  },
 
-  showAllProjectsButton: {
-    marginTop: theme.spacing(1),
-    fontSize: 14,
-    width: "100%",
-  },
-}));
+    buttonText: {
+      color: theme.palette.primary.main,
+    },
+
+    tabsContainerWithoutPadding: {
+      padding: 0,
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      borderBottom: `1px solid ${theme.palette.grey[500]}`,
+    },
+    tabContent: {
+      padding: theme.spacing(2),
+      textAlign: "left",
+    },
+    dialogText: {
+      textAlign: "center",
+      margin: "0 auto",
+      display: "block",
+    },
+    tab: {
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(2),
+      width: 145,
+      [theme.breakpoints.down("sm")]: {
+        width: 125,
+      },
+      "&.Mui-selected": {
+        color: theme.palette.background.default_contrastText,
+      },
+    },
+    tabsIndicator: {
+      backgroundColor: theme.palette.background.default_contrastText,
+    },
+    projectInteractionButtonContainer: {
+      position: "relative",
+    },
+    shareButtonContainer: {
+      paddingRight: theme.spacing(4),
+    },
+
+    showAllProjectsButton: {
+      marginTop: theme.spacing(1),
+      fontSize: 14,
+      width: "100%",
+    },
+  };
+});
 
 export default function ProjectPageRoot({
   project,
@@ -113,7 +115,6 @@ export default function ProjectPageRoot({
     showSimilarProjects: showSimilarProjects,
     locale: locale,
   });
-
   const texts = getTexts({
     locale: locale,
     page: "project",
@@ -473,6 +474,7 @@ export default function ProjectPageRoot({
         showLikes={showLikes}
         toggleShowFollowers={toggleShowFollowers}
         toggleShowLikes={toggleShowLikes}
+        hubUrl={hubPage}
       />
 
       <Container className={classes.tabsContainerWithoutPadding}>
@@ -494,6 +496,7 @@ export default function ProjectPageRoot({
             className={classes.shareButtonContainer}
             project={project}
             projectAdmin={projectAdmin}
+            hubUrl={hubPage}
           />
         )}
       </Container>

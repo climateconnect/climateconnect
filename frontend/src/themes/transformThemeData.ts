@@ -30,30 +30,7 @@ export const transformThemeData = (data) => {
       },
     },
   };
-  const customTheme = createTheme(coreTheme, {
-    components: {
-      MuiButton: {
-        variants: [
-          {
-            props: { variant: "outlined" },
-            style: {
-              color: coreTheme.palette.primary.contrastText,
-            },
-          },
-          {
-            props: { variant: "contained" },
-            style: {
-              color: coreTheme.palette.primary.contrastText,
-              backgroundColor: coreTheme.palette.primary.main,
-              "&:hover": {
-                backgroundColor: alpha(coreTheme.palette.primary.main, 0.7),
-              },
-            },
-          },
-        ],
-      },
-    },
-  });
+  const customTheme = createTheme(coreTheme);
 
   return customTheme;
 };

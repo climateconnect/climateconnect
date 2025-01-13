@@ -2,7 +2,7 @@ import React from "react";
 import { Tooltip, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { getDateAndTime, getDayAndMonth, getTime } from "../../../public/lib/dateOperations";
-import { CUSTOM_HUB_URLS } from "../../../public/lib/constants";
+import { CUSTOM_HUB_URLS } from "../../../public/data/custom_hub";
 const useStyles = makeStyles((theme) => ({
   eventDateIndicator: (props: any) => ({
     position: "absolute",

@@ -17,7 +17,7 @@ import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import ProjectSideBar from "../../src/components/project/ProjectSideBar";
 import { transformThemeData } from "../../src/themes/transformThemeData";
-import { CUSTOM_HUB_URLS } from "../../public/lib/constants";
+import { CUSTOM_HUB_URLS } from "../../public/data/custom_hub";
 
 type StyleProps = {
   showSimilarProjects: boolean;
