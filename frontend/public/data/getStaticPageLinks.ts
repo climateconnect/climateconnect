@@ -31,11 +31,13 @@ export function getStaticPageLinks(texts, locale, isStaticPage = false) {
       text: texts.transparency,
       parent_item: "/about",
     },
-    {
-      href: "/donorforest",
-      text: texts.donorforest,
-      parent_item: "/donate",
-    },
+    // removed donorforest for now
+    // as it is not up to date
+    // {
+    //   href: "/donorforest",
+    //   text: texts.donorforest,
+    //   parent_item: "/donate",
+    // },
     {
       href: "/blog",
       text: texts.blog,
