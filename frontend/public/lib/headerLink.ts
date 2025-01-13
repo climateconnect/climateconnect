@@ -194,11 +194,14 @@ const defaultStaticLinks = (texts) => [
     text: texts.transparency,
     parent_item: "/about",
   },
+  /*
+  remove donor forest for now as it's outdated
   {
     href: "/donorforest",
     text: texts.donorforest,
     parent_item: "/donate",
   },
+  */
   {
     href: "/blog",
     text: texts.blog,
