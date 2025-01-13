@@ -25,6 +25,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
   return {
     contentWrapper: {
       display: "flex",
+      // display: "flex",
     },
     mainContent: (props) => ({
       width: props.showSimilarProjects ? "80%" : "100%",
