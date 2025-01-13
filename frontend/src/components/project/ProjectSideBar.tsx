@@ -117,6 +117,7 @@ export default function ProjectSideBar({
             <ProjectPreviews
               displayOnePreviewInRow={shouldDisplayOneProjectInRow}
               projects={similarProjects}
+              hubUrl={hubName}
             />
             <Button
               color="primary"

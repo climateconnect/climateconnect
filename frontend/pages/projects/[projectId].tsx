@@ -17,6 +17,7 @@ import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import ProjectSideBar from "../../src/components/project/ProjectSideBar";
 import { transformThemeData } from "../../src/themes/transformThemeData";
+import { CUSTOM_HUB_URLS } from "../../public/lib/constants";
 
 type StyleProps = {
   showSimilarProjects: boolean;
@@ -25,7 +26,6 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
   return {
     contentWrapper: {
       display: "flex",
-      // display: "flex",
     },
     mainContent: (props) => ({
       width: props.showSimilarProjects ? "80%" : "100%",
@@ -232,6 +232,7 @@ export default function ProjectPage({
 
   const hubsSubHeaderRef = useRef(null);
   const tinyScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubPage);
 
   return (
     <WideLayout
@@ -241,7 +242,12 @@ export default function ProjectPage({
       title={project ? project.name : texts.project + " " + texts.not_found}
       subHeader={
         !tinyScreen ? (
-          <HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef} onlyShowDropDown={true} />
+          <HubsSubHeader
+            hubs={hubs}
+            subHeaderRef={hubsSubHeaderRef}
+            onlyShowDropDown={true}
+            isCustomHub={isCustomHub}
+          />
         ) : (
           <></>
         )

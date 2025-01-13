@@ -2,13 +2,20 @@ import React from "react";
 import { Tooltip, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { getDateAndTime, getDayAndMonth, getTime } from "../../../public/lib/dateOperations";
-
+import { CUSTOM_HUB_URLS } from "../../../public/lib/constants";
 const useStyles = makeStyles((theme) => ({
   eventDateIndicator: (props: any) => ({
     position: "absolute",
     top: 0,
     right: 20,
-    background: props.isInPast ? theme.palette.secondary.extraLight : theme.palette.yellow.main,
+    background: props.isInPast
+      ? props.isCustomHub
+        ? theme.palette.grey.light
+        : theme.palette.secondary.extraLight
+      : props.isCustomHub
+      ? theme.palette.primary.main
+      : theme.palette.yellow.main,
+    // background: props.isInPast ? theme.palette.secondary.extraLight : theme.palette.yellow.main,
     zIndex: 9,
     borderRadius: "0px 0px 8px 8px",
     padding: theme.spacing(1),
@@ -26,14 +33,20 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: 1,
   },
   text: (props: any) => ({
-    color: props.isInPast && theme.palette.secondary.main,
+    color: props.isInPast
+      ? props.isCustomHub
+        ? theme.palette.text.disabled
+        : theme.palette.secondary.main
+      : theme.palette.background.default_contrastText,
   }),
 }));
 
-export default function EventDateIndicator({ project }) {
+export default function EventDateIndicator({ project, hubUrl }) {
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
+
   const start_date = new Date(project.start_date);
   const end_date = new Date(project.end_date);
-  const classes = useStyles({ isInPast: new Date() > end_date });
+  const classes = useStyles({ isInPast: new Date() > end_date, isCustomHub });
   const ONE_DAY_IN_MILISECONDS = 1000 * 60 * 60 * 24;
   const event_duration = end_date.getTime() - start_date.getTime();
   const isMultiDayEvent =

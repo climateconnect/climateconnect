@@ -123,6 +123,7 @@ export default function ProjectPreview({ project, projectRef, hubUrl, className 
     setHovering(false);
   };
   const queryString = hubUrl ? "?hubPage=" + hubUrl : "";
+
   return (
     <Link
       href={
@@ -134,7 +135,9 @@ export default function ProjectPreview({ project, projectRef, hubUrl, className 
       underline="hover"
     >
       <div className={classes.wrapper}>
-        {projectType.type_id === "event" && <EventDateIndicator project={project} />}
+        {projectType.type_id === "event" && (
+          <EventDateIndicator project={project} hubUrl={hubUrl} />
+        )}
         <Card
           className={`${classes.root} ${className}`}
           variant="outlined"
