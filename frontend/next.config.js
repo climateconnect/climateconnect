@@ -49,7 +49,10 @@ module.exports = withBundleAnalyzer({
       },
       {
         source: "/spendenwald",
-        destination: "/de/donorforest",
+        destination: "/de/donate",
+        // disabled redirect to donorforest for now
+        // as the donorforest is not up to date
+        // destination: "/de/donorforest",
         permanent: true,
       },
       {

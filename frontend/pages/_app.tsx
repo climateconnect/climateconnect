@@ -158,9 +158,11 @@ export default function MyApp({ Component, pageProps = {} }) {
         getNotifications(token, locale),
       ]);
       if (fetchedUser?.error === "invalid token") {
+        const develop = ["develop", "development", "test"].includes(process.env.ENVIRONMENT!);
         const cookieProps: any = {
           path: "/",
         };
+        if (!develop) cookieProps.domain = "." + API_HOST;
         cookies.remove("auth_token", cookieProps);
         console.log("Deleted auth_token because it was invalid");
         fetchedUser = null;
