@@ -4,6 +4,7 @@ import Alert from "@mui/material/Alert";
 import React, { useEffect, useState } from "react";
 import { getParams } from "../../../public/lib/generalOperations";
 import { getMessageFromUrl } from "../../../public/lib/parsingOperations";
+import theme from "../../themes/theme";
 import Footer from "../footer/Footer";
 import LoadingContainer from "../general/LoadingContainer";
 import Header from "../header/Header";
@@ -62,6 +63,7 @@ type Props = {
   customFooterImage?: string;
   isLocationHub?: boolean;
   noHeader?: boolean;
+  customTheme?: any;
 };
 //Wrapper layout component for pages where the content takes the whole width of the screen
 export default function WideLayout({
@@ -92,6 +94,7 @@ export default function WideLayout({
   hideDonationCampaign,
   customFooterImage,
   noHeader,
+  customTheme,
 }: Props) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);
@@ -123,6 +126,7 @@ export default function WideLayout({
       noSpaceForFooter={noSpaceBottom}
       description={description}
       useFloodStdFont={useFloodStdFont}
+      theme={customTheme ?? theme}
       image={image}
     >
       {!noHeader && (
