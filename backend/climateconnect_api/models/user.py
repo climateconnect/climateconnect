@@ -333,7 +333,7 @@ class UserProfile(models.Model):
     # as this would create a circular import due to Hubs importing UserProfile
     # indirectly through the Project model
     related_hubs = models.ManyToManyField(
-        "hubs.Hub", related_name="related_hubs", blank=True
+        "hubs.Hub", related_name="user_related_hubs", blank=True
     )
 
     class Meta:
