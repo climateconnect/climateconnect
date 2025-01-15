@@ -296,6 +296,7 @@ export default function Form({
                   size="small"
                   onBlur={handleBlur}
                   onChange={(event) => handleValueChange(event, field.key, field.type)}
+                  color="contrast"
                 />
                 <label htmlFor={"checkbox" + field.key}>{field.label}</label>
               </div>
@@ -306,7 +307,7 @@ export default function Form({
                 <span className={classes.switchTextContainer}>
                   <Typography
                     className={`${classes.switchText} ${!values[field.key] && classes.bold}`}
-                    color={values[field.key] ? "secondary" : "primary"}
+                    color={values[field.key] ? "secondary" : "contrast"}
                   >
                     {field.falseLabel}
                   </Typography>
@@ -315,7 +316,7 @@ export default function Form({
                   id={"checkbox" + field.key}
                   checked={values[field.key]}
                   required={field.required}
-                  color="primary"
+                  color="contrast"
                   name="checkedA"
                   inputProps={{ "aria-label": "secondary checkbox" }}
                   onChange={(event) => handleValueChange(event, field.key, field.type)}
@@ -323,7 +324,7 @@ export default function Form({
                 <span className={classes.switchTextContainer}>
                   <Typography
                     className={`${classes.switchText} ${values[field.key] && classes.bold}`}
-                    color={values[field.key] ? "primary" : "secondary"}
+                    color={values[field.key] ? "constrast" : "secondary"}
                   >
                     {field.trueLabel}
                   </Typography>
@@ -380,6 +381,7 @@ export default function Form({
                   className={`${classes.blockElement} ${fieldClassName}`}
                   onBlur={handleBlur}
                   onChange={() => handleValueChange(event, field.key, field.type)}
+                  color="contrast"
                 />
                 {field.bottomLink && field.bottomLink}
               </React.Fragment>
