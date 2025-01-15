@@ -113,7 +113,9 @@ to show available databases. Once you've identified the Climate Connect database
 postgres-# \connect $DATABASE_NAME
 $DATABASE_NAME-# \dt
 $DATABASE_NAME-# DROP SCHEMA public CASCADE;
-$DATABASE_NAME-# CREATE SCHEMA public;
+$DATABASE_NAME-# CREATE SCHEMA public; # recreate schema
+CREATE EXTENSION postgis; # readd postgis
+ALTER SCHEMA public OWNER TO $YOUR_SUPER_USER; # make sure your superuser is the owner of the table
 $DATABASE_NAME-# \q
 ```
 
