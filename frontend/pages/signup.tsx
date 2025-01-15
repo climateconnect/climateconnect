@@ -24,9 +24,40 @@ import { ThemeProvider } from "@emotion/react";
 import { themeSignUp } from "../src/themes/signupTheme";
 import WideLayout from "../src/components/layouts/WideLayout";
 import { Container, Theme, useMediaQuery } from "@mui/material";
+import { useRouter } from "next/router";
+import getHubTheme from "../src/themes/fetchHubTheme";
+import { transformThemeData } from "../src/themes/transformThemeData";
 
-export default function Signup() {
+export async function getServerSideProps(ctx) {
+  const hubSlug = ctx.query.hubName;
+
+  // early return to avoid fetching /undefined/theme
+  if (!hubSlug) {
+    return {
+      props: {},
+    };
+  }
+  const hubThemeData = await getHubTheme(hubSlug);
+
+  // early return to avoid a hubSlug, that is not supported within the backend
+  if (!hubThemeData) {
+    return {
+      props: {},
+    };
+  }
+
+  return {
+    props: {
+      hubSlug: hubSlug || null, // undefined is not allowed in JSON, so we use null
+      hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
+    },
+  };
+}
+
+export default function Signup({ hubSlug, hubThemeData }) {
   const { ReactGA } = useContext(UserContext);
+
+  const queryParams = useRouter().query;
 
   const [userInfo, setUserInfo] = React.useState({
     email: "",
@@ -42,7 +73,7 @@ export default function Signup() {
 
   const cookies = new Cookies();
   const { user, locale } = useContext(UserContext);
-  const texts = getTexts({ page: "profile", locale: locale });
+  const texts = getTexts({ page: "profile", locale: locale, hubName: hubSlug });
   //Information about the completion state of the tutorial
   const tutorialCookie = cookies.get("finishedTutorialSteps");
   const isClimateActorCookie = cookies.get("tutorialVariables");
@@ -155,15 +186,23 @@ export default function Signup() {
     setCurStep(steps[0]);
   };
 
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+  const customThemeSignUp = hubThemeData
+    ? transformThemeData(hubThemeData, themeSignUp)
+    : themeSignUp;
+
   return (
     <WideLayout
       title={texts.sign_up}
       message={errorMessage}
+      isHubPage={hubSlug !== ""}
       messageType={errorMessage && "error"}
       isLoading={isLoading}
+      hubUrl={hubSlug}
+      customTheme={customTheme}
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
-        <ThemeProvider theme={themeSignUp}>
+        <ThemeProvider theme={customThemeSignUp}>
           <ContentImageSplitView
             minHeight="75vh"
             content={
@@ -172,6 +211,7 @@ export default function Signup() {
                   values={userInfo}
                   handleSubmit={handleBasicInfoSubmit}
                   errorMessage={errorMessages[steps[0]]}
+                  texts={texts}
                 />
               ) : (
                 curStep === "personalinfo" && (
