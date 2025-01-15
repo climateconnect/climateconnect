@@ -156,11 +156,10 @@ class SignUpView(APIView):
             user_profile.last_completed_tutorial_step = request.data[
                 "last_completed_tutorial_step"
             ]
-        if "hub" in request.data:
-            hub = Hub.objects.filter(url_slug=request.data["hub"])
 
-            if hub.exists():
-                user_profile.related_hubs.add(hub[0])
+        hub = Hub.objects.filter(url_slug=request.data["hub"]).first()
+        if hub:
+            user_profile.related_hubs.add(hub)
 
         if settings.AUTO_VERIFY is True:
             user_profile.is_profile_verified = True
