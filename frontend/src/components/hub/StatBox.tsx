@@ -38,9 +38,7 @@ export default function StatBox({ title, stats }) {
       <Typography component="h2" className={classes.h2}>
         {title}
       </Typography>
-      {stats.map((s) => (
-        <Stat key={s.name} statData={s} />
-      ))}
+      {stats?.length > 0 && stats.map((s) => <Stat key={s.name} statData={s} />)}
       <Typography className={classes.source}>
         {texts.source}:{" "}
         <Link
