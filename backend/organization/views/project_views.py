@@ -190,7 +190,7 @@ class ListProjectsView(ListAPIView):
                             )
                         )
                 elif hub.hub_type == Hub.CUSTOM_HUB_TYPE:
-                    projects = projects.filter(related_hubs=hub[0])
+                    projects = projects.filter(related_hubs=hub)
 
         if "collaboration" in self.request.query_params:
             collaborators_welcome = self.request.query_params.get("collaboration")
