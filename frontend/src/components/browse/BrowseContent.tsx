@@ -27,6 +27,7 @@ import LoadingSpinner from "../general/LoadingSpinner";
 import MobileBottomMenu from "./MobileBottomMenu";
 import HubTabsNavigation from "../hub/HubTabsNavigation";
 import HubSupporters from "../hub/HubSupporters";
+import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 
 const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
 const IdeasBoard = React.lazy(() => import("../ideas/IdeasBoard"));
@@ -145,6 +146,8 @@ export default function BrowseContent({
 
   const [hash, setHash] = useState<string | null>(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
+
+  const isLocationHubFlag = isLocationHubLikeHub(hubData?.hub_type);
 
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const type_names = {
@@ -525,7 +528,7 @@ export default function BrowseContent({
         spinning: isFetchingMoreData || isFiltering,
       }}
     >
-      {hubData?.hub_type === "location hub" && (
+      {isLocationHubFlag && (
         <HubTabsNavigation
           TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
           tabValue={tabValue}
@@ -552,12 +555,12 @@ export default function BrowseContent({
             filterButtonRef={filterButtonRef}
             searchValue={filters.search}
             hideFilterButton={tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas")}
-            applyBackgroundColor={hubData?.hub_type === "location hub"}
+            applyBackgroundColor={isLocationHubFlag}
           />
         </Suspense>
         {/* Desktop screens: show tabs under the search bar */}
         {/* Mobile screens: show tabs fixed to the bottom of the screen */}
-        {!isNarrowScreen && hubData?.hub_type !== "location hub" && (
+        {!isNarrowScreen && isLocationHubFlag && (
           <Tabs
             variant={isNarrowScreen ? "fullWidth" : "standard"}
             value={tabValue}
@@ -594,7 +597,7 @@ export default function BrowseContent({
           />
         )}
 
-        {hubData?.hub_type !== "location hub" && <Divider className={classes.mainContentDivider} />}
+        {isLocationHubFlag && <Divider className={classes.mainContentDivider} />}
 
         <Suspense fallback={<LoadingSpinner isLoading />}>
           <TabContentWrapper type={"projects"} {...tabContentWrapperProps}>

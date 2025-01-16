@@ -161,7 +161,8 @@ class ListProjectsView(ListAPIView):
         if "hub" in self.request.query_params:
             hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
             if hub.exists():
-                if hub[0].hub_type == Hub.SECTOR_HUB_TYPE:
+                hub = hub[0]
+                if hub.hub_type == Hub.SECTOR_HUB_TYPE:
                     project_category = Hub.objects.get(
                         url_slug=self.request.query_params.get("hub")
                     ).filter_parent_tags.all()
@@ -175,7 +176,7 @@ class ListProjectsView(ListAPIView):
                     projects = projects.filter(
                         tag_project__project_tag__in=project_tags_with_children
                     ).distinct()
-                elif hub[0].hub_type == Hub.LOCATION_HUB_TYPE:
+                elif hub.hub_type == Hub.LOCATION_HUB_TYPE:
                     location = hub[0].location.all()[0]
                     location_multipolygon = location.multi_polygon
                     projects = projects.filter(Q(loc__country=location.country))
@@ -188,6 +189,8 @@ class ListProjectsView(ListAPIView):
                                 "loc__centre_point", location_multipolygon
                             )
                         )
+                elif hub.hub_type == Hub.CUSTOM_HUB_TYPE:
+                    projects = projects.filter(related_hubs=hub[0])
 
         if "collaboration" in self.request.query_params:
             collaborators_welcome = self.request.query_params.get("collaboration")
