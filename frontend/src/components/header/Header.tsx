@@ -65,10 +65,13 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
         width: props.fixedHeader ? "100%" : "auto",
         // height: props.fixedHeader ? 97 : "auto",
         top: props.fixedHeader ? 0 : "auto",
+        //Use custom background if the header is fixed and not transparent (landing page) or if it's a custom hub
         background:
-          (!props.transparentHeader && props.fixedHeader) ||
-          (props.isCustomHub && (props.background ? props.background : "#F8F8F8")) ||
-          undefined,
+          (!props.transparentHeader && props.fixedHeader) || props.isCustomHub
+            ? props.background
+              ? props.background
+              : "#F8F8F8"
+            : "",
         transition: "all 0.25s linear", // use all instead of transform since the background color too is changing at some point. It'll be nice to have a smooth transition.
       };
     },
@@ -150,26 +153,29 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
         ? "white"
         : props.isCustomHub
         ? theme.palette.primary.contrastText
-        : theme.palette.background.default_contrastText,
+        : theme.palette.primary.main,
       textDecoration: "inherit",
     }),
-    shareProjectButton: (props) => ({
-      height: 36,
-      marginLeft: theme.spacing(1),
-      marginRight: theme.spacing(1),
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(2),
-      color: !props.isCustomHub
-        ? props.isLoggedInUser
-          ? theme.palette.primary.contrastText
-          : theme.palette.background.default_contrastText
-        : theme.palette.primary.contrastText,
-      "&:hover": {
-        backgroundColor: props.isLoggedInUser
-          ? theme.palette.primary.light
-          : theme.palette.grey.light,
-      },
-    }),
+    shareProjectButton: (props) => {
+      const css = {
+        height: 36,
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1),
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
+      };
+      if (props.isCustomHub) {
+        return {
+          ...css,
+          color: theme.palette.primary.contrastText,
+          backgroundColor: props.isLoggedInUser
+            ? theme.palette.primary.light
+            : theme.palette.grey.light,
+        };
+      } else {
+        return css;
+      }
+    },
     notificationsHeadline: {
       padding: theme.spacing(2),
       textAlign: "center",
@@ -291,7 +297,6 @@ export default function Header({
   const customHubUrls = CUSTOM_HUB_URLS || ["prio1"];
   const isCustomHub = customHubUrls.includes(hubUrl);
   const LINKS = getLinks(pathName, texts, isLocationHub, isCustomHub);
-
   const classes = useStyles({
     fixedHeader: fixedHeader,
     transparentHeader: transparentHeader,
@@ -360,6 +365,19 @@ export default function Header({
     prio1: "https://prio1-klima.net/",
   };
 
+  const getLogoLink = () => {
+    if (hubUrl) {
+      if (isCustomHub && hubUrl in CUSTOM_HOME_LINKS) {
+        return CUSTOM_HOME_LINKS[hubUrl];
+      } else {
+        return `${localePrefix}/hubs/${hubUrl}`;
+      }
+    }
+    return `${localePrefix}/`;
+  };
+  const logoLink = getLogoLink();
+  const logoTarget = hubUrl && hubUrl in CUSTOM_HOME_LINKS ? "_blank" : "_self";
+
   return (
     <Box
       component="header"
@@ -368,16 +386,7 @@ export default function Header({
       }`}
     >
       <Container className={classes.container}>
-        <Link
-          href={
-            isCustomHub && hubUrl in CUSTOM_HOME_LINKS
-              ? CUSTOM_HOME_LINKS[hubUrl]
-              : `${localePrefix}/hubs/${hubUrl}`
-          }
-          target="_blank"
-          className={classes.logoLink}
-          underline="hover"
-        >
+        <Link href={logoLink} target={logoTarget} className={classes.logoLink} underline="hover">
           <img
             src={logo}
             alt={texts.climate_connect_logo}
@@ -543,7 +552,7 @@ function NormalScreenLinks({
                     className={
                       buttonProps.className === classes.shareProjectButton
                         ? `${buttonProps.className}`
-                        : `${classes.btnColor} ${buttonProps.className}`
+                        : `${!transparentHeader && classes.btnColor} ${buttonProps.className}`
                     }
                   >
                     {link.icon && !(link.hideDesktopIconUnderSm && isSmallMediumScreen) && (
