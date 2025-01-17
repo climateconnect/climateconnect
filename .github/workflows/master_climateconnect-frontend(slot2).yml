@@ -28,6 +28,7 @@ jobs:
           yarn build
         env:
           API_HOST: ${{ secrets.API_HOST }}
+          CUSTOM_HUB_URLS: ${{ secrets.CUSTOM_HUB_URLS }}
           API_URL: ${{ secrets.API_URL }}
           BASE_URL_HOST: ${{ secrets.BASE_URL_HOST }}
           BASE_URL: ${{ secrets.BASE_URL }}

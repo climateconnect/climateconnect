@@ -281,13 +281,13 @@ export default function Header({
   hubUrl,
   isLocationHub,
 }: HeaderProps) {
-  const { user, signOut, notifications, pathName, locale } = useContext(UserContext);
+  const { user, signOut, notifications, pathName, locale, CUSTOM_HUB_URLS } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
-  const CUSTOM_HUB_URLS = ["erlangen"];
-  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
+  const customHubUrls = CUSTOM_HUB_URLS || ["prio1"];
+  const isCustomHub = customHubUrls.includes(hubUrl);
   const LINKS = getLinks(pathName, texts, isLocationHub, isCustomHub);
 
   const classes = useStyles({
@@ -363,7 +363,8 @@ export default function Header({
     >
       <Container className={classes.container}>
         <Link
-          href={localePrefix + "https://prio1-klima.net/"}
+          href="https://prio1-klima.net/"
+          target="_blank"
           className={classes.logoLink}
           underline="hover"
         >
@@ -398,6 +399,7 @@ export default function Header({
             texts={texts}
             getLoggedInLinks={getLoggedInLinks}
             isCustomHub={isCustomHub}
+            hubUrl={hubUrl}
           />
         ) : (
           <NormalScreenLinks
@@ -414,6 +416,7 @@ export default function Header({
             isStaticPage={isStaticPage}
             getLoggedInLinks={getLoggedInLinks}
             isCustomHub={isCustomHub}
+            hubUrl={hubUrl}
           />
         )}
       </Container>
@@ -436,6 +439,7 @@ function NormalScreenLinks({
   isStaticPage,
   getLoggedInLinks,
   isCustomHub,
+  hubUrl
 }) {
   const { locale } = useContext(UserContext);
   const localePrefix = getLocalePrefix(locale);
@@ -449,7 +453,7 @@ function NormalScreenLinks({
 
   const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("lg"));
-  const STATIC_PAGE_LINKS = getStaticPageLinks(texts, locale, isCustomHub);
+  const STATIC_PAGE_LINKS = getStaticPageLinks(texts, locale, isCustomHub && hubUrl);
 
   return (
     <Box className={classes.linkContainer}>
@@ -657,6 +661,7 @@ function NarrowScreenLinks({
   texts,
   getLoggedInLinks,
   isCustomHub,
+  hubUrl
 }) {
   const { locale } = useContext(UserContext);
   const localePrefix = getLocalePrefix(locale);
@@ -668,7 +673,7 @@ function NarrowScreenLinks({
     transparentHeader: transparentHeader,
     isCustomHub: isCustomHub,
   });
-  const STATIC_PAGE_LINKS = getStaticPageLinks(texts, locale, isCustomHub);
+  const STATIC_PAGE_LINKS = getStaticPageLinks(texts, locale, isCustomHub && hubUrl);
   const linksOutsideDrawer = LINKS.filter(
     (link) =>
       link.alwaysDisplayDirectly === true &&

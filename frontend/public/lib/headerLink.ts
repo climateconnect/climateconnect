@@ -234,8 +234,17 @@ const Prio1StaticLinks = (texts) => [
   },
 ];
 
-const getStaticLinks = (texts, isCustomHub) => {
-  return !isCustomHub ? defaultStaticLinks(texts) : Prio1StaticLinks(texts);
+const customHubStaticLinksFunction = {
+  prio1: Prio1StaticLinks
+}
+
+const getCustomHubStaticLinks = (url_slug, texts) => {
+  if(Object.keys(customHubStaticLinksFunction).includes(url_slug))
+    return customHubStaticLinksFunction[url_slug](texts)
+  return defaultStaticLinks(texts)
+}
+const getStaticLinks = (texts, customHubUrlSlug) => {
+  return !customHubUrlSlug ? defaultStaticLinks(texts) : getCustomHubStaticLinks(customHubUrlSlug, texts);
 };
 
 export { getLinks, getLoggedInLinks, getStaticLinks };
