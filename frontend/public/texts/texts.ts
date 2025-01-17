@@ -123,6 +123,7 @@ export default function getTexts<P extends Page>({
       url_slug: url_slug,
       locale: locale,
       creator: creator,
+      hubName: hubName,
     }),
     settings: settings_texts,
     tutorial: getTutorialTexts({ hubName: hubName, classes: classes, locale: locale }),
