@@ -3,9 +3,10 @@ import { Project } from "../../types";
 import ProjectDateSection from "./ProjectDateSection";
 import makeStyles from "@mui/styles/makeStyles";
 import ProjectLocationSearchBar from "./ProjectLocationSearchBar";
-import { Checkbox, IconButton, Theme, Tooltip, Typography } from "@mui/material";
+import { Theme } from "@mui/material";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import CustomHubSelection from "../project/CustomHubSelection";
 
 const useStyles = makeStyles<Theme>((theme) => {
   return {
@@ -45,18 +46,8 @@ export default function ProjectTimeAndPlaceSectionAndCustomHub({
 }: Args) {
   const classes = useStyles();
 
-  const { locale } = useContext(UserContext);
-  const texts = getTexts({ locale: locale, page: "project" });
-
-  const label = { inputProps: { "aria-label": "PRIO1 project checkbox" } };
-  const prio1Project = projectData.hubName == "prio1";
-
-  function handlePrio1ProjectCheckbox(event: React.ChangeEvent<HTMLInputElement>) {
-    if (event.target.checked) {
-      handleSetProjectData({ hubName: "prio1" });
-    } else {
-      handleSetProjectData({ hubName: "" });
-    }
+  function handleUpdateSelectedHub(hubName: string) {
+    handleSetProjectData({ hubName: hubName });
   }
 
   return (
@@ -74,16 +65,10 @@ export default function ProjectTimeAndPlaceSectionAndCustomHub({
           locationOptionsOpen={locationOptionsOpen}
           handleSetLocationOptionsOpen={setLocationOptionsOpen}
         />
-        {/* TODO: should I split this into a seperate component */}
-        <Typography component="h2" variant="subtitle2">
-          <Checkbox {...label} checked={prio1Project} onChange={handlePrio1ProjectCheckbox} />
-          {texts.my_project_is_part_of_the_prio1_project}
-          <Tooltip title={texts.tooltip_my_project_is_part_of_the_prio1_project}>
-            <IconButton size="large">
-              <ToolTipIcon />
-            </IconButton>
-          </Tooltip>
-        </Typography>
+        <CustomHubSelection
+          currentHubName={projectData.hubName ?? ""}
+          handleUpdateSelectedHub={handleUpdateSelectedHub}
+        />
       </div>
     </div>
   );
