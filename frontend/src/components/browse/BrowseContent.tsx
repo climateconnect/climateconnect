@@ -560,7 +560,7 @@ export default function BrowseContent({
         </Suspense>
         {/* Desktop screens: show tabs under the search bar */}
         {/* Mobile screens: show tabs fixed to the bottom of the screen */}
-        {!isNarrowScreen && isLocationHubFlag && (
+        {!isNarrowScreen && !isLocationHubFlag && (
           <Tabs
             variant={isNarrowScreen ? "fullWidth" : "standard"}
             value={tabValue}
@@ -597,7 +597,7 @@ export default function BrowseContent({
           />
         )}
 
-        {isLocationHubFlag && <Divider className={classes.mainContentDivider} />}
+        {!isLocationHubFlag && <Divider className={classes.mainContentDivider} />}
 
         <Suspense fallback={<LoadingSpinner isLoading />}>
           <TabContentWrapper type={"projects"} {...tabContentWrapperProps}>
