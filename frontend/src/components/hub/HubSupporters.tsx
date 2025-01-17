@@ -228,8 +228,13 @@ const HubSupportersSlider = ({ classes, texts, containerClass, supportersList, l
           autoPlaySpeed={10000}
         >
           {supportersList?.length > 0 &&
-            supportersList.map((data) => (
-              <CarouselItem supporter={data} classes={classes} locale={locale} />
+            supportersList.map((supporter) => (
+              <CarouselItem 
+                key={supporter?.organization_url_slug} 
+                supporter={supporter} 
+                classes={classes} 
+                locale={locale} 
+              />
             ))}
         </Carousel>
       </div>
