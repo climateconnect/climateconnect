@@ -38,7 +38,7 @@ import DropDownButton from "./DropDownButton";
 import LanguageSelect from "./LanguageSelect";
 import StaticPageLinks from "./StaticPageLinks";
 import { HeaderProps } from "./types";
-import { getLinks, getLoggedInLinks } from "../../../public/lib/headerLink";
+import { getLinks, getLoggedInLinks, getStaticLinkFromItem } from "../../../public/lib/headerLink";
 import theme from "../../themes/theme";
 
 type StyleProps = {
@@ -921,10 +921,11 @@ const NarrowScreenDropdownMenu = ({
         {STATIC_PAGE_LINKS.map((link, index) => {
           return (
             <Link
-              href={localePrefix + link.href}
+              href={getStaticLinkFromItem(locale, link)}
               key={index}
               underline="hover"
               className={classes.linkUnderline}
+              target={link.target || "_self"}
             >
               <ListItem button component="a" onClick={closeDrawer}>
                 <ListItemText primary={link.text} className={classes.drawerItem} />

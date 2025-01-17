@@ -3,6 +3,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import UserContext from "../context/UserContext";
+import { getStaticLinkFromItem } from "../../../public/lib/headerLink";
 
 const useStyles = makeStyles((theme) => ({
   climateHubOption: {
@@ -48,7 +49,7 @@ export default function DropDownList({
           {items?.map((item, index) => (
             <Link
               key={index}
-              href={`${getLocalePrefix(locale)}${item.href}`}
+              href={getStaticLinkFromItem(locale, item)} // add isExternalLink
               onClick={loadOnClick && handleClickLink}
               underline="hover"
               className={classes.hoverBorderColor}

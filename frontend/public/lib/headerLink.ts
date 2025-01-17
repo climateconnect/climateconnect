@@ -8,6 +8,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SettingsIcon from "@mui/icons-material/Settings";
+import { getLocalePrefix } from "./apiOperations";
 
 const COMMON_LINKS = {
   NOTIFICATIONS: {
@@ -221,16 +222,19 @@ const Prio1StaticLinks = (texts) => [
     href: "https://prio1-klima.net/klima-preis/",
     text: texts.PRIO1_Climate_Prize,
     target: "_blank",
+    isExternalLink: true
   },
   {
     href: "https://prio1-klima.net/junge-menschen/",
     text: texts.for_young_people,
     target: "_blank",
+    isExternalLink: true
   },
   {
     href: "https://prio1-klima.net/akteure/",
     text: texts.for_actors,
     target: "_blank",
+    isExternalLink: true
   },
 ];
 
@@ -249,4 +253,11 @@ const getStaticLinks = (texts, customHubUrlSlug) => {
     : getCustomHubStaticLinks(customHubUrlSlug, texts);
 };
 
-export { getLinks, getLoggedInLinks, getStaticLinks };
+const getStaticLinkFromItem = (locale, item) => {
+  if(item.isExternalLink) {
+    return item.href
+  }
+  return `${getLocalePrefix(locale)}${item.href}`
+}
+
+export { getLinks, getLoggedInLinks, getStaticLinks, getStaticLinkFromItem };
