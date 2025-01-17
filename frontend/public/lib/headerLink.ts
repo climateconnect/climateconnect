@@ -222,19 +222,19 @@ const Prio1StaticLinks = (texts) => [
     href: "https://prio1-klima.net/klima-preis/",
     text: texts.PRIO1_Climate_Prize,
     target: "_blank",
-    isExternalLink: true
+    isExternalLink: true,
   },
   {
     href: "https://prio1-klima.net/junge-menschen/",
     text: texts.for_young_people,
     target: "_blank",
-    isExternalLink: true
+    isExternalLink: true,
   },
   {
     href: "https://prio1-klima.net/akteure/",
     text: texts.for_actors,
     target: "_blank",
-    isExternalLink: true
+    isExternalLink: true,
   },
 ];
 
@@ -254,10 +254,10 @@ const getStaticLinks = (texts, customHubUrlSlug) => {
 };
 
 const getStaticLinkFromItem = (locale, item) => {
-  if(item.isExternalLink) {
-    return item.href
+  if (item.isExternalLink) {
+    return item.href;
   }
-  return `${getLocalePrefix(locale)}${item.href}`
-}
+  return `${getLocalePrefix(locale)}${item.href}`;
+};
 
 export { getLinks, getLoggedInLinks, getStaticLinks, getStaticLinkFromItem };
