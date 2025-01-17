@@ -6,8 +6,6 @@ export interface HeaderProps {
   transparentHeader?: boolean;
   background?: string;
   isHubPage?: boolean;
-  hubUrl: string;
+  hubUrl?: string;
   isLocationHub?: boolean;
-  getLinks: Function;
-  getLoggedInLinks: Function;
 }
