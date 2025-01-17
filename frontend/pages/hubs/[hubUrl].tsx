@@ -286,7 +286,7 @@ export default function Hub({
       )}
       <WideLayout
         title={headline}
-        headerBackground="#FFF"
+        headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
         image={getImageUrl(image)}
         isHubPage
         hubUrl={hubUrl}
