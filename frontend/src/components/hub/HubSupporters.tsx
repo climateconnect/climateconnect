@@ -229,11 +229,11 @@ const HubSupportersSlider = ({ classes, texts, containerClass, supportersList, l
         >
           {supportersList?.length > 0 &&
             supportersList.map((supporter) => (
-              <CarouselItem 
-                key={supporter?.organization_url_slug} 
-                supporter={supporter} 
-                classes={classes} 
-                locale={locale} 
+              <CarouselItem
+                key={supporter?.organization_url_slug}
+                supporter={supporter}
+                classes={classes}
+                locale={locale}
               />
             ))}
         </Carousel>

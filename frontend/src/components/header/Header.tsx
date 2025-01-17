@@ -281,7 +281,9 @@ export default function Header({
   hubUrl,
   isLocationHub,
 }: HeaderProps) {
-  const { user, signOut, notifications, pathName, locale, CUSTOM_HUB_URLS } = useContext(UserContext);
+  const { user, signOut, notifications, pathName, locale, CUSTOM_HUB_URLS } = useContext(
+    UserContext
+  );
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
@@ -354,6 +356,10 @@ export default function Header({
     };
   }, [lastScrollY]);
 
+  const CUSTOM_HOME_LINKS = {
+    prio1: "https://prio1-klima.net/",
+  };
+
   return (
     <Box
       component="header"
@@ -363,7 +369,11 @@ export default function Header({
     >
       <Container className={classes.container}>
         <Link
-          href="https://prio1-klima.net/"
+          href={
+            isCustomHub && hubUrl in CUSTOM_HOME_LINKS
+              ? CUSTOM_HOME_LINKS[hubUrl]
+              : `${localePrefix}/hubs/${hubUrl}`
+          }
           target="_blank"
           className={classes.logoLink}
           underline="hover"
@@ -439,7 +449,7 @@ function NormalScreenLinks({
   isStaticPage,
   getLoggedInLinks,
   isCustomHub,
-  hubUrl
+  hubUrl,
 }) {
   const { locale } = useContext(UserContext);
   const localePrefix = getLocalePrefix(locale);
@@ -661,7 +671,7 @@ function NarrowScreenLinks({
   texts,
   getLoggedInLinks,
   isCustomHub,
-  hubUrl
+  hubUrl,
 }) {
   const { locale } = useContext(UserContext);
   const localePrefix = getLocalePrefix(locale);

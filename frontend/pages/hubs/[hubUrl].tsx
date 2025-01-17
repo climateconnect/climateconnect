@@ -462,8 +462,8 @@ const getHubSupportersData = async (url_slug, locale) => {
     return resp.data;
   } catch (err: any) {
     //Don't log an error if there simply are no supporters for this hub
-    if(err?.response?.status === 404) {
-      return null
+    if (err?.response?.status === 404) {
+      return null;
     }
     if (err.response && err.response.data)
       console.log("Error in getHubSupportersData: " + err.response.data.detail);
