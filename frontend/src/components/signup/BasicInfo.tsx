@@ -3,14 +3,12 @@ import Close from "@mui/icons-material/Close";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
-import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import Form from "./../general/Form";
 
-const useStyles = makeStyles({
-  appealText: {
-    textAlign: "center",
-    fontWeight: "bold",
+const useStyles = makeStyles((theme) => ({
+  contrastBackground: {
+    color: theme.palette.background.default_contrastText,
   },
 
   formRootClass: {
@@ -18,12 +16,11 @@ const useStyles = makeStyles({
     maxWidth: 700,
     margin: "0 auto 0 0", // basically a left align
   },
-});
+}));
 
-export default function BasicInfo({ handleSubmit, errorMessage, values }) {
+export default function BasicInfo({ handleSubmit, errorMessage, values, texts }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "profile", locale: locale });
   const fields = [
     {
       required: true,
@@ -78,16 +75,14 @@ export default function BasicInfo({ handleSubmit, errorMessage, values }) {
         >
           <Close />
         </IconButton>
-        <Typography color="primary" variant="subtitle1" component="div">
+        <Typography className={classes.contrastBackground} variant="subtitle1" component="div">
           {/* TODO: use texts */}
           {texts.step_1_of_2_sign_up}
         </Typography>
       </Box>
       <CardContent>
-        <Typography color="primary" variant="h1">
-          {texts.sign_up}
-        </Typography>
-        <Typography color="primary" variant="h3">
+        <Typography variant="h1">{texts.sign_up}</Typography>
+        <Typography variant="h3">
           {texts.here_you_can_create_your_personal_account}
           {texts.you_will_have_an_opportunity_to_create_or_add_an_organization_once_signed_up}
         </Typography>

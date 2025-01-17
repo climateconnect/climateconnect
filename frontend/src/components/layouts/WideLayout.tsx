@@ -11,6 +11,7 @@ import Header from "../header/Header";
 import ElementSpaceToTop from "../hooks/ElementSpaceToTop";
 import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
 import LayoutWrapper from "./LayoutWrapper";
+import CustomBackground from "../hub/CustomBackground";
 
 type ThemeProps = { noSpaceBottom?: boolean; isStaticPage?: boolean };
 const useStyles = makeStyles<Theme, ThemeProps>((theme) => ({
@@ -130,6 +131,8 @@ export default function WideLayout({
       theme={customTheme ?? theme}
       image={image}
     >
+      <CustomBackground hubUrl={hubUrl} />
+
       {!noHeader && (
         <Header
           isStaticPage={isStaticPage}

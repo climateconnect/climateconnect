@@ -19,13 +19,41 @@ import UserContext from "../src/components/context/UserContext";
 import BasicInfo from "../src/components/signup/BasicInfo";
 import AddInfo from "./../src/components/signup/AddInfo";
 import ContentImageSplitView from "../src/components/layouts/ContentImageSplitLayout";
-import Image from "next/image";
 import { ThemeProvider } from "@emotion/react";
 import { themeSignUp } from "../src/themes/signupTheme";
 import WideLayout from "../src/components/layouts/WideLayout";
 import { Container, Theme, useMediaQuery } from "@mui/material";
+import getHubTheme from "../src/themes/fetchHubTheme";
+import { transformThemeData } from "../src/themes/transformThemeData";
+import CustomAuthImage from "../src/components/hub/CustomAuthImage";
 
-export default function Signup() {
+export async function getServerSideProps(ctx) {
+  const hubSlug = ctx.query.hubName;
+
+  // early return to avoid fetching /undefined/theme
+  if (!hubSlug) {
+    return {
+      props: {},
+    };
+  }
+  const hubThemeData = await getHubTheme(hubSlug);
+
+  // early return to avoid a hubSlug, that is not supported within the backend
+  if (!hubThemeData) {
+    return {
+      props: {},
+    };
+  }
+
+  return {
+    props: {
+      hubSlug: hubSlug || null, // undefined is not allowed in JSON, so we use null
+      hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
+    },
+  };
+}
+
+export default function Signup({ hubSlug, hubThemeData }) {
   const { ReactGA } = useContext(UserContext);
 
   const [userInfo, setUserInfo] = React.useState({
@@ -42,7 +70,7 @@ export default function Signup() {
 
   const cookies = new Cookies();
   const { user, locale } = useContext(UserContext);
-  const texts = getTexts({ page: "profile", locale: locale });
+  const texts = getTexts({ page: "profile", locale: locale, hubName: hubSlug });
   //Information about the completion state of the tutorial
   const tutorialCookie = cookies.get("finishedTutorialSteps");
   const isClimateActorCookie = cookies.get("tutorialVariables");
@@ -161,15 +189,23 @@ export default function Signup() {
     setCurStep(steps[0]);
   };
 
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+  const customThemeSignUp = hubThemeData
+    ? transformThemeData(hubThemeData, themeSignUp)
+    : themeSignUp;
+
   return (
     <WideLayout
       title={texts.sign_up}
       message={errorMessage}
+      isHubPage={hubSlug !== ""}
       messageType={errorMessage && "error"}
       isLoading={isLoading}
+      hubUrl={hubSlug}
+      customTheme={customTheme}
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
-        <ThemeProvider theme={themeSignUp}>
+        <ThemeProvider theme={customThemeSignUp}>
           <ContentImageSplitView
             minHeight="75vh"
             content={
@@ -178,6 +214,7 @@ export default function Signup() {
                   values={userInfo}
                   handleSubmit={handleBasicInfoSubmit}
                   errorMessage={errorMessages[steps[0]]}
+                  texts={texts}
                 />
               ) : (
                 curStep === "personalinfo" && (
@@ -195,14 +232,7 @@ export default function Signup() {
             }
             leftGridSizes={{ md: 7 }}
             rightGridSizes={{ md: 5 }}
-            image={
-              <Image
-                src="/images/sign_up/mobile-login-pana.svg"
-                alt="Sign Up"
-                layout="fill" // Image will cover the container
-                objectFit="contain" // Ensures it fills without stretching
-              />
-            }
+            image={<CustomAuthImage hubUrl={hubSlug} texts={texts} />}
           ></ContentImageSplitView>
         </ThemeProvider>
       </Container>

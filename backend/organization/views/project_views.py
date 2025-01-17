@@ -158,7 +158,7 @@ class ListProjectsView(ListAPIView):
             )
         )
 
-        if "hub" in self.request.query_params:
+        if False and "hub" in self.request.query_params:
             hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
             if hub.exists():
                 hub = hub[0]

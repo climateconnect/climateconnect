@@ -35,6 +35,7 @@ import BrowseContext from "../../src/components/context/BrowseContext";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import isLocationHubLikeHub from "../../public/lib/isLocationHubLikeHub";
+import getHubTheme from "../../src/themes/fetchHubTheme";
 
 const useStyles = makeStyles((theme) => ({
   moreInfoSoon: {
