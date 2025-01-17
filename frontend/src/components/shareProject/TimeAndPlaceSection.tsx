@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Project } from "../../types";
 import ProjectDateSection from "./ProjectDateSection";
 import makeStyles from "@mui/styles/makeStyles";
 import ProjectLocationSearchBar from "./ProjectLocationSearchBar";
-import { Theme } from "@mui/material";
+import { Checkbox, IconButton, Theme, Tooltip, Typography } from "@mui/material";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles<Theme>((theme) => {
   return {
@@ -13,8 +15,11 @@ const useStyles = makeStyles<Theme>((theme) => {
         justifyContent: "space-between",
       },
     },
-    locationSearchBar: {
+    verticalFlex: {
       flexGrow: 1,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "left",
     },
   };
 });
@@ -26,17 +31,33 @@ type Args = {
   locationOptionsOpen: boolean;
   setLocationOptionsOpen: Function;
   errors: any;
+  ToolTipIcon: any;
 };
 
-export default function ProjectTimeAndPlaceSection({
+export default function ProjectTimeAndPlaceSectionAndCustomHub({
   projectData,
   handleSetProjectData,
   locationInputRef,
   locationOptionsOpen,
   setLocationOptionsOpen,
   errors,
+  ToolTipIcon,
 }: Args) {
   const classes = useStyles();
+
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ locale: locale, page: "project" });
+
+  const label = { inputProps: { "aria-label": "PRIO1 project checkbox" } };
+  const prio1Project = projectData.hubName == "prio1";
+
+  function handlePrio1ProjectCheckbox(event: React.ChangeEvent<HTMLInputElement>) {
+    if (event.target.checked) {
+      handleSetProjectData({ hubName: "prio1" });
+    } else {
+      handleSetProjectData({ hubName: "" });
+    }
+  }
 
   return (
     <div className={classes.root}>
@@ -45,14 +66,25 @@ export default function ProjectTimeAndPlaceSection({
         handleSetProjectData={handleSetProjectData}
         errors={errors}
       />
-      <ProjectLocationSearchBar
-        projectData={projectData}
-        handleSetProjectData={handleSetProjectData}
-        locationInputRef={locationInputRef}
-        locationOptionsOpen={locationOptionsOpen}
-        handleSetLocationOptionsOpen={setLocationOptionsOpen}
-        className={classes.locationSearchBar}
-      />
+      <div className={classes.verticalFlex}>
+        <ProjectLocationSearchBar
+          projectData={projectData}
+          handleSetProjectData={handleSetProjectData}
+          locationInputRef={locationInputRef}
+          locationOptionsOpen={locationOptionsOpen}
+          handleSetLocationOptionsOpen={setLocationOptionsOpen}
+        />
+        {/* TODO: should I split this into a seperate component */}
+        <Typography component="h2" variant="subtitle2">
+          <Checkbox {...label} checked={prio1Project} onChange={handlePrio1ProjectCheckbox} />
+          {texts.my_project_is_part_of_the_prio1_project}
+          <Tooltip title={texts.tooltip_my_project_is_part_of_the_prio1_project}>
+            <IconButton size="large">
+              <ToolTipIcon />
+            </IconButton>
+          </Tooltip>
+        </Typography>
+      </div>
     </div>
   );
 }

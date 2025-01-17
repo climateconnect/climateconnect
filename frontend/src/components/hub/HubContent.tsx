@@ -179,6 +179,7 @@ export default function HubContent({
                       <Dashboard
                         allHubs={allHubs}
                         hubData={hubData}
+                        hubName={hubUrl}
                         location={location}
                         welcomeMessageLoggedIn={welcomeMessageLoggedIn}
                         welcomeMessageLoggedOut={welcomeMessageLoggedOut}

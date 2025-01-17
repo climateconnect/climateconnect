@@ -7,7 +7,7 @@ import getCollaborationTexts from "../../../public/data/collaborationTexts";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import NavigationButtons from "../general/NavigationButtons";
-import ProjectTimeAndPlaceSection from "./TimeAndPlaceSection";
+import ProjectTimeAndPlaceSectionAndCustomHub from "./TimeAndPlaceSection";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import AddPhotoSection from "./AddPhotoSection";
 import AddSummarySection from "./AddSummarySection";
@@ -179,13 +179,15 @@ export default function EnterDetails({
             projectData={projectData}
             handleSetProjectData={handleSetProjectData}
           />
-          <ProjectTimeAndPlaceSection
+          <ProjectTimeAndPlaceSectionAndCustomHub
             projectData={projectData}
             handleSetProjectData={handleSetProjectData}
             locationInputRef={locationInputRef}
             locationOptionsOpen={locationOptionsOpen}
             setLocationOptionsOpen={setLocationOptionsOpen}
             errors={errors}
+            ToolTipIcon={HelpOutlineIcon}
+
           />
           <div className={classes.block}>
             <AddPhotoSection

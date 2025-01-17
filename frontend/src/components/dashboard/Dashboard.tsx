@@ -202,6 +202,7 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
 type Props = {
   allHubs?: Array<any>;
   hubData?: Object;
+  hubName?: string;
   className?: any;
   location?: any;
   welcomeMessageLoggedIn?: string;
@@ -211,6 +212,7 @@ type Props = {
 export default function Dashboard({
   allHubs,
   hubData,
+  hubName,
   className,
   location,
   welcomeMessageLoggedIn,
@@ -308,7 +310,7 @@ export default function Dashboard({
                 items={[
                   {
                     name: texts.share_project,
-                    url_slug: "/share",
+                    url_slug: "/share" + (hubName ? "?hubName=" + hubName : ""),
                   },
                   {
                     name: texts.my_projects,

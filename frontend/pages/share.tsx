@@ -12,6 +12,8 @@ import WideLayout from "../src/components/layouts/WideLayout";
 import ShareProjectRoot from "../src/components/shareProject/ShareProjectRoot";
 
 export async function getServerSideProps(ctx) {
+  const hubName = ctx.query.hubName;
+
   const { auth_token } = NextCookies(ctx);
   if (ctx.req && !auth_token) {
     const texts = getTexts({ page: "project", locale: ctx.locale });
@@ -44,6 +46,7 @@ export async function getServerSideProps(ctx) {
       rolesOptions: rolesOptions,
       statusOptions: statusOptions,
       projectTypeOptions: projectTypeOptions,
+      hubName: hubName ?? undefined,
     }),
   };
 }
@@ -56,6 +59,7 @@ export default function Share({
   rolesOptions,
   statusOptions,
   projectTypeOptions,
+  hubName,
 }) {
   const token = new Cookies().get("auth_token");
   const { user, locale } = useContext(UserContext);
@@ -88,6 +92,7 @@ export default function Share({
           token={token}
           setMessage={handleSetErrorMessage}
           projectTypeOptions={projectTypeOptions}
+          hubName={hubName}
         />
       </WideLayout>
     );
