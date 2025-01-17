@@ -187,7 +187,6 @@ export default function EnterDetails({
             setLocationOptionsOpen={setLocationOptionsOpen}
             errors={errors}
             ToolTipIcon={HelpOutlineIcon}
-
           />
           <div className={classes.block}>
             <AddPhotoSection
