@@ -871,6 +871,12 @@ class ListProjectTags(ListAPIView):
                     return ProjectTags.objects.filter(parent_tag=parent_tag)
                 if hub.hub_type == Hub.LOCATION_HUB_TYPE:
                     return ProjectTags.objects.all()
+                if hub.hub_type == Hub.CUSTOM_HUB_TYPE:
+                    return ProjectTags.objects.all()
+
+                # TODO(Karol): is this default needed, just in case?
+                return ProjectTags.objects.all()
+
             except Hub.DoesNotExist:
                 return ProjectTags.objects.all()
         else:
