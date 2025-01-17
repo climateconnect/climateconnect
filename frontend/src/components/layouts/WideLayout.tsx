@@ -11,7 +11,6 @@ import Header from "../header/Header";
 import ElementSpaceToTop from "../hooks/ElementSpaceToTop";
 import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
 import LayoutWrapper from "./LayoutWrapper";
-
 type ThemeProps = { noSpaceBottom?: boolean; isStaticPage?: boolean };
 const useStyles = makeStyles<Theme, ThemeProps>((theme) => ({
   main: (props) => ({

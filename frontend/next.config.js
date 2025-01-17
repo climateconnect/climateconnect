@@ -13,6 +13,7 @@ module.exports = withBundleAnalyzer({
     "API_URL",
     "BASE_URL",
     "BASE_URL_HOST",
+    "CUSTOM_HUB_URLS",
     "DONATION_CAMPAIGN_RUNNING",
     "ENABLE_LEGACY_LOCATION_FORMAT",
     "ENVIRONMENT",
