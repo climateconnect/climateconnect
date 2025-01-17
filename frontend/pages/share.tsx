@@ -10,6 +10,8 @@ import UserContext from "../src/components/context/UserContext";
 import LoginNudge from "../src/components/general/LoginNudge";
 import WideLayout from "../src/components/layouts/WideLayout";
 import ShareProjectRoot from "../src/components/shareProject/ShareProjectRoot";
+import getHubTheme from "../src/themes/fetchHubTheme";
+import { transformThemeData } from "../src/themes/transformThemeData";
 
 export async function getServerSideProps(ctx) {
   const hubName = ctx.query.hubName;
@@ -28,6 +30,7 @@ export async function getServerSideProps(ctx) {
     rolesOptions,
     statusOptions,
     projectTypeOptions,
+    hubThemeData,
   ] = await Promise.all([
     getAvailabilityOptions(auth_token, ctx.locale),
     getUserOrganizations(auth_token, ctx.locale),
@@ -36,6 +39,7 @@ export async function getServerSideProps(ctx) {
     getRolesOptions(auth_token, ctx.locale),
     getStatusOptions(auth_token, ctx.locale),
     getProjectTypeOptions(ctx.locale),
+    getHubTheme(hubName),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -47,6 +51,7 @@ export async function getServerSideProps(ctx) {
       statusOptions: statusOptions,
       projectTypeOptions: projectTypeOptions,
       hubName: hubName ?? undefined,
+      hubThemeData: hubThemeData ?? undefined,
     }),
   };
 }
@@ -60,6 +65,7 @@ export default function Share({
   statusOptions,
   projectTypeOptions,
   hubName,
+  hubThemeData,
 }) {
   const token = new Cookies().get("auth_token");
   const { user, locale } = useContext(UserContext);
@@ -69,7 +75,10 @@ export default function Share({
   const handleSetErrorMessage = (newMessage) => setErrorMessage(newMessage);
   if (!user)
     return (
-      <WideLayout title={texts.please_log_in + " " + texts.to_share_a_project}>
+      <WideLayout
+        title={texts.please_log_in + " " + texts.to_share_a_project}
+        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+      >
         <LoginNudge fullPage whatToDo={texts.to_share_a_project} />
       </WideLayout>
     );
@@ -80,6 +89,7 @@ export default function Share({
         // hideHeadline={true}
         message={errorMessage}
         messageType={errorMessage && "error"}
+        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
       >
         <ShareProjectRoot
           availabilityOptions={availabilityOptions}

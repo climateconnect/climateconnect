@@ -1,6 +1,10 @@
 import { apiRequest } from "../../public/lib/apiOperations";
 
 export default async function getHubTheme(url_slug: string) {
+  if (!url_slug) {
+    return null;
+  }
+
   try {
     const resp = await apiRequest({
       method: "get",
