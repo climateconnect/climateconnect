@@ -1,6 +1,7 @@
 import { Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React from "react";
+import React, { useContext } from "react";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   background: {
@@ -57,16 +58,16 @@ export default function CustomBackground({ hubUrl }: Props) {
 }
 
 function PrioOneBackgroundBrowse() {
+  const { user } = useContext(UserContext);
+  const loggedIn = !!user;
   const classes = useStyles();
-  const height = 52.1;
-  const width = 100;
-  const triangleBottom = width * 0.5;
-  const triangleLeft = width * 3;
+  const height = loggedIn ? 330 : 500;
+  const triangleLeft = 150;
 
   return (
     <div
       className={`${classes.background} ${classes.prioOneDefaultBackground}`}
-      style={{ bottom: "auto", height: `${height}vh` }}
+      style={{ bottom: "auto", height: `${height}px` }}
     >
       {/* Container within the background */}
       <div style={{ position: "relative" }}>
@@ -75,8 +76,8 @@ function PrioOneBackgroundBrowse() {
           style={{
             width: 0,
             height: 0,
-            borderBottom: `${triangleBottom}vh` + " solid transparent",
-            borderLeftWidth: `${triangleLeft}vh`,
+            borderBottom: `${height}px` + " solid transparent",
+            borderLeftWidth: `${triangleLeft}vw`,
             borderLeftStyle: "solid",
 
             position: "absolute",
