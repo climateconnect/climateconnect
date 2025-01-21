@@ -69,6 +69,7 @@ export default function MyApp({ Component, pageProps = {} }) {
   const API_HOST = process.env.API_HOST;
   const ENVIRONMENT = process.env.ENVIRONMENT;
   const SOCKET_URL = process.env.SOCKET_URL;
+  const CUSTOM_HUB_URLS = process.env.CUSTOM_HUB_URLS;
 
   // TODO: this should probably be decomposed
   // into individual state updates for
@@ -136,7 +137,8 @@ export default function MyApp({ Component, pageProps = {} }) {
 
     cookies.set("auth_token", token, cookieProps);
     const user = await getLoggedInUser(
-      cookies.get("auth_token") ? cookies.get("auth_token") : token
+      cookies.get("auth_token") ? cookies.get("auth_token") : token,
+      cookies
     );
     setState({
       ...state,
@@ -151,11 +153,21 @@ export default function MyApp({ Component, pageProps = {} }) {
       if (jssStyles) {
         jssStyles.parentElement.removeChild(jssStyles);
       }
-      const [fetchedDonationGoal, fetchedUser, fetchedNotifications] = await Promise.all([
+      let [fetchedDonationGoal, fetchedUser, fetchedNotifications] = await Promise.all([
         getDonationGoalData(locale),
-        getLoggedInUser(token),
+        getLoggedInUser(token, cookies),
         getNotifications(token, locale),
       ]);
+      if (fetchedUser?.error === "invalid token") {
+        const develop = ["develop", "development", "test"].includes(process.env.ENVIRONMENT!);
+        const cookieProps: any = {
+          path: "/",
+        };
+        if (!develop) cookieProps.domain = "." + API_HOST;
+        cookies.remove("auth_token", cookieProps);
+        console.log("Deleted auth_token because it was invalid");
+        fetchedUser = null;
+      }
 
       setState({
         ...state,
@@ -252,6 +264,7 @@ export default function MyApp({ Component, pageProps = {} }) {
     ENVIRONMENT: ENVIRONMENT,
     SOCKET_URL: SOCKET_URL,
     API_HOST: API_HOST,
+    CUSTOM_HUB_URLS: CUSTOM_HUB_URLS,
     setNotificationsRead: setNotificationsRead,
     pathName: pathName,
     ReactGA: ReactGA,
@@ -331,7 +344,7 @@ const setNotificationsRead = async (token, notifications, locale) => {
   } else return null;
 };
 
-async function getLoggedInUser(token) {
+async function getLoggedInUser(token, cookies) {
   if (token) {
     try {
       const resp = await apiRequest({
@@ -341,11 +354,15 @@ async function getLoggedInUser(token) {
       });
       return resp.data;
     } catch (err: any) {
+      const invalid_token_messages = ["Invalid token.", "Ungültiges Token"];
       console.log(err);
       if (err.response && err.response.data)
         console.log("Error in getLoggedInUser: " + err.response.data.detail);
-      if (err.response && err.response.data.detail === "Invalid token.")
-        console.log("invalid token! token:" + token);
+      if (invalid_token_messages.includes(err?.response?.data?.detail)) {
+        return {
+          error: "invalid token",
+        };
+      }
       return null;
     }
   } else {
@@ -369,7 +386,7 @@ async function getNotifications(token, locale) {
     } catch (err: any) {
       if (err.response && err.response.data)
         console.log("Error in getNotifications: " + err.response.data.detail);
-      if (err.response && err.response.data.detail === "Invalid token.")
+      if (err.response && err.response.data.detail === "Invalid token")
         console.log("invalid token! token:" + token);
       return null;
     }
