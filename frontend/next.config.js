@@ -22,6 +22,7 @@ module.exports = withBundleAnalyzer({
     "LETS_ENCRYPT_FILE_CONTENT",
     "SOCKET_URL",
     "WEBFLOW_API_TOKEN",
+    "WEBFLOW_SITE_ID",
   ]),
   i18n: {
     locales: ["en", "de"],
