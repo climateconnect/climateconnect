@@ -106,19 +106,19 @@ export async function getServerSideProps(ctx) {
   return {
     props: {
       hubUrl: hubUrl,
-      isLocationHub: hubData.hub_type === "location hub",
+      isLocationHub: hubData?.hub_type === "location hub",
       hubData: hubData,
-      name: hubData.name,
-      headline: hubData.headline,
-      subHeadline: hubData.sub_headline,
-      welcomeMessageLoggedIn: hubData.welcome_message_logged_in,
-      welcomeMessageLoggedOut: hubData.welcome_message_logged_out,
-      image: hubData.image,
-      quickInfo: hubData.quick_info,
-      stats: hubData.stats,
-      statBoxTitle: hubData.stat_box_title,
-      image_attribution: hubData.image_attribution,
-      hubLocation: hubData.location?.length > 0 ? hubData.location[0] : null,
+      name: hubData?.name ?? null,
+      headline: hubData?.headline ?? null,
+      subHeadline: hubData?.sub_headline ?? null,
+      welcomeMessageLoggedIn: hubData?.welcome_message_logged_in ?? null,
+      welcomeMessageLoggedOut: hubData?.welcome_message_logged_out ?? null,
+      image: hubData?.image ?? null,
+      quickInfo: hubData?.quick_info ?? null,
+      stats: hubData?.stats ?? null,
+      statBoxTitle: hubData?.stat_box_title ?? null,
+      image_attribution: hubData?.image_attribution ?? null,
+      hubLocation: hubData?.location?.length > 0 ? hubData.location[0] : null,
       filterChoices: {
         project_categories: project_categories,
         organization_types: organization_types,
@@ -291,7 +291,9 @@ export default function Hub({
         isHubPage
         hubUrl={hubUrl}
         hideDonationCampaign
-        customFooterImage={hubData.custom_footer_image && getImageUrl(hubData.custom_footer_image)}
+        customFooterImage={
+          hubData?.custom_footer_image && getImageUrl(hubData?.custom_footer_image)
+        }
         isLocationHub={isLocationHub}
         customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
       >
