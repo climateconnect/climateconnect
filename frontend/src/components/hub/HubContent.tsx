@@ -14,7 +14,7 @@ import Dashboard from "../dashboard/Dashboard";
 import LocalAmbassadorInfoBox from "./LocalAmbassadorInfoBox";
 import HubHeadlineContainer from "./HubHeadlineContainer";
 import HubSupporters from "./HubSupporters";
-import { Prio1Willkommen } from "../../../devlink";
+import { DePrio1Willkommen, EnPrio1Welcome } from "../../../devlink";
 import theme from "../../themes/theme";
 
 type MakeStylesProps = {
@@ -187,7 +187,7 @@ export default function HubContent({
                     )}
                   </>
                 ) : hubUrl === "prio1" ? (
-                  <Prio1Willkommen />
+                  locale === "de" ? <DePrio1Willkommen /> : <EnPrio1Welcome />
                 ) : (
                   <LoggedOutLocationHubBox
                     headline={headline}
