@@ -13,6 +13,7 @@ module.exports = withBundleAnalyzer({
     "API_URL",
     "BASE_URL",
     "BASE_URL_HOST",
+    "CUSTOM_HUB_URLS",
     "DONATION_CAMPAIGN_RUNNING",
     "ENABLE_LEGACY_LOCATION_FORMAT",
     "ENVIRONMENT",
@@ -49,7 +50,10 @@ module.exports = withBundleAnalyzer({
       },
       {
         source: "/spendenwald",
-        destination: "/de/donorforest",
+        destination: "/de/donate",
+        // disabled redirect to donorforest for now
+        // as the donorforest is not up to date
+        // destination: "/de/donorforest",
         permanent: true,
       },
       {

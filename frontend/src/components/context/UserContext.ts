@@ -18,6 +18,7 @@ const UserContext = createContext<{
   ENVIRONMENT?: any;
   SOCKET_URL?: any;
   API_HOST?: any;
+  CUSTOM_HUB_URLS?: any;
   setNotificationsRead?: any;
   ReactGA?: any;
   updateCookies?: any;

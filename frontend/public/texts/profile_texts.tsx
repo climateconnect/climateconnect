@@ -169,12 +169,14 @@ export default function getProfileTexts({ profile, locale }) {
       de: "Glückwunsch, du hast dein Konto erfolgreich erstellt!",
     },
     just_one_more_step_to_complete_your_signup: {
-      en: "One final step to join Climate Connect!",
-      de: "Nur noch ein Schritt, um deine Anmeldung abzuschließen!",
+      en: "Congratulations! Just one more step to complete your signup!",
+      de: "Glückwunsch! Nur noch ein Schritt, um Deine Anmeldung abzuschließen!",
     },
     please_click_on_the_link_we_emailed_you_to_activate_your_account: {
-      en: "Please click on the link we just emailed you to activate your account.",
-      de: "Bitte klicke auf den Link, um dein Konto zu aktivieren.",
+      en:
+        "We have sent you an E-Mail with a link! Please click on the link to activate your account.",
+      de:
+        "Wir haben dir eine E-Mail mit einem Link geschickt! Bitte klicke auf den Link, um dein Konto zu aktivieren.",
     },
     make_sure_to_also_check_your_spam: {
       en: "Make sure to also check your spam/junk folder in case you can't find the link.",
@@ -295,8 +297,9 @@ export default function getProfileTexts({ profile, locale }) {
       ),
     },
     signup_step_2_headline: {
-      en: "Step 2: A little bit about yourself",
-      de: "Schritt 2: Ein paar Infos über dich",
+      en: "Add your Name and Location. This way People can find you and know where you are from.",
+      de:
+        "Füge deinen Namen und deinen Standort hinzu. So können dich andere finden und wissen, woher du kommst.",
     },
     repeat_password: {
       en: "Repeat Password",

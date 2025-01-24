@@ -7,7 +7,7 @@ const StyledMenuItem = withStyles((theme) => ({
     fontWeight: 600,
   },
   selected: {
-    color: "white",
+    color: theme.palette.primary.contrastText,
     backgroundColor: `${theme.palette.primary.main} !important`,
   },
 }))(MenuItem);
