@@ -70,7 +70,7 @@ export default function MyApp({ Component, pageProps = {} }) {
   const API_HOST = process.env.API_HOST;
   const ENVIRONMENT = process.env.ENVIRONMENT;
   const SOCKET_URL = process.env.SOCKET_URL;
-  const CUSTOM_HUB_URLS = process.env.CUSTOM_HUB_URLS;
+  const CUSTOM_HUB_URLS = process.env.CUSTOM_HUB_URLS.split(",");
 
   // TODO: this should probably be decomposed
   // into individual state updates for
