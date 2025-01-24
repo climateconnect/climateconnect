@@ -187,7 +187,11 @@ export default function HubContent({
                     )}
                   </>
                 ) : hubUrl === "prio1" ? (
-                  locale === "de" ? <DePrio1Willkommen /> : <EnPrio1Welcome />
+                  locale === "de" ? (
+                    <DePrio1Willkommen />
+                  ) : (
+                    <EnPrio1Welcome />
+                  )
                 ) : (
                   <LoggedOutLocationHubBox
                     headline={headline}
