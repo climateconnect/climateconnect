@@ -67,8 +67,6 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
             except Skill.DoesNotExist:
                 logger.error("Passed skill ID {} does not exists".format(skill_id))
                 continue
-    print(project.additional_loc_info)
-    print(project.website)
     project.save()
     return project
 
