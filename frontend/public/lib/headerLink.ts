@@ -33,16 +33,16 @@ const COMMON_LINKS = {
     className: "shareProjectButton",
     vanillaIfLoggedOut: true,
   },
-  AUTH_LINKS: (path_to_redirect, texts) => [
+  AUTH_LINKS: (path_to_redirect, texts, queryString) => [
     {
-      href: `/signin?redirect=${path_to_redirect}`,
+      href: `/signin?redirect=${path_to_redirect}${queryString ? `&${queryString}` : ""}`,
       text: texts.log_in,
       iconForDrawer: AccountCircleIcon,
       isOutlinedInHeader: true,
       onlyShowLoggedOut: true,
     },
     {
-      href: "/signup",
+      href: `/signup${queryString ? `?${queryString}` : ""}`,
       text: texts.sign_up,
       iconForDrawer: AccountCircleIcon,
       isOutlinedInHeader: true,
@@ -73,7 +73,7 @@ const getPrio1Links = (path_to_redirect, texts, isLocationHub) => [
     ...COMMON_LINKS.NOTIFICATIONS,
     text: texts.inbox,
   },
-  ...COMMON_LINKS.AUTH_LINKS(path_to_redirect, texts),
+  ...COMMON_LINKS.AUTH_LINKS(path_to_redirect, texts, "hub=prio1"),
 ];
 
 const getDefaultLinks = (path_to_redirect, texts, isLocationHub) => [
@@ -113,7 +113,7 @@ const getDefaultLinks = (path_to_redirect, texts, isLocationHub) => [
     ...COMMON_LINKS.NOTIFICATIONS,
     text: texts.inbox,
   },
-  ...COMMON_LINKS.AUTH_LINKS(path_to_redirect, texts),
+  ...COMMON_LINKS.AUTH_LINKS(path_to_redirect, texts, ""),
 ];
 
 const getLinks = (path_to_redirect, texts, isLocationHub, isCustomHub) => {

@@ -39,7 +39,6 @@ import LanguageSelect from "./LanguageSelect";
 import StaticPageLinks from "./StaticPageLinks";
 import { HeaderProps } from "./types";
 import { getLinks, getLoggedInLinks, getStaticLinkFromItem } from "../../../public/lib/headerLink";
-import theme from "../../themes/theme";
 
 type StyleProps = {
   transparentHeader?: boolean;
@@ -168,9 +167,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
         return {
           ...css,
           color: theme.palette.primary.contrastText,
-          backgroundColor: props.isLoggedInUser
-            ? theme.palette.primary.light
-            : theme.palette.grey.light,
+          backgroundColor: props.isLoggedInUser ? theme.palette.primary.light : "transparent",
         };
       } else {
         return css;
