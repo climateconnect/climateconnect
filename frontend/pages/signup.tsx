@@ -186,6 +186,8 @@ export default function Signup({ hubThemeData }) {
       isLoading={isLoading}
       hubUrl={hubSlug}
       customTheme={customTheme}
+      headerBackground="transparent"
+      footerTextColor="white"
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
         <ThemeProvider theme={themeSignUp}>

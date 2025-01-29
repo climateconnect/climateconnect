@@ -39,7 +39,6 @@ import LanguageSelect from "./LanguageSelect";
 import StaticPageLinks from "./StaticPageLinks";
 import { HeaderProps } from "./types";
 import { getLinks, getLoggedInLinks, getStaticLinkFromItem } from "../../../public/lib/headerLink";
-import theme from "../../themes/theme";
 
 type StyleProps = {
   transparentHeader?: boolean;
