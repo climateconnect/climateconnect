@@ -169,7 +169,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
           color: theme.palette.primary.contrastText,
           backgroundColor: props.isLoggedInUser
             ? theme.palette.primary.light
-            : theme.palette.grey.light,
+            : "transparent",
         };
       } else {
         return css;
