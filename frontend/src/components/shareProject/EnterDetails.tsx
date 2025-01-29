@@ -135,8 +135,8 @@ export default function EnterDetails({
     },
     website: {
       name: texts.website,
-      maxLength: 256
-    }
+      maxLength: 256,
+    },
   };
 
   const onTextChange = (event, descriptionType) => {

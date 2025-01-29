@@ -14,8 +14,8 @@ import SocialMediaButton from "../general/SocialMediaButton";
 import LargeFooter from "./LargeFooter";
 
 type StyleProps = {
-  textColor: "string"
-}
+  textColor: "string";
+};
 
 const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => ({
   root: (props) => ({
@@ -23,7 +23,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => ({
     borderTop: props.textColor ? 0 : `1px solid ${theme.palette.grey[100]}`,
     width: "100%",
     zIndex: "9",
-    color: props.textColor ? props.textColor : "inherit"
+    color: props.textColor ? props.textColor : "inherit",
   }),
   absolutePosition: {
     position: "absolute",
@@ -99,7 +99,7 @@ export default function Footer({
   showOnScrollUp,
   large,
   customFooterImage,
-  textColor
+  textColor,
 }: any) {
   if (!large)
     return (
@@ -123,7 +123,7 @@ const SmallFooter = ({
   customFooterImage,
   textColor,
 }) => {
-  const classes = useStyles({textColor: textColor});
+  const classes = useStyles({ textColor: textColor });
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
