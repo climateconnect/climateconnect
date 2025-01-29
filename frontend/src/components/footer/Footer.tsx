@@ -14,7 +14,7 @@ import SocialMediaButton from "../general/SocialMediaButton";
 import LargeFooter from "./LargeFooter";
 
 type StyleProps = {
-  textColor: "string";
+  textColor?: "string";
 };
 
 const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => ({
@@ -206,7 +206,7 @@ const SmallFooter = ({
 };
 
 const MadeWithLoveForEarthSign = () => {
-  const classes = useStyles();
+  const classes = useStyles({});
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   return (
