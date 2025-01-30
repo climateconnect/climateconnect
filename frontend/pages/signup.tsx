@@ -42,7 +42,7 @@ export async function getServerSideProps(ctx) {
   };
 }
 
-export default function Signup({ hubThemeData }) {
+export default function Signup({ hubUrl, hubThemeData }) {
   const { ReactGA } = useContext(UserContext);
 
   const queryParams = useRouter().query;
@@ -205,6 +205,7 @@ export default function Signup({ hubThemeData }) {
           locationInputRef={locationInputRef}
           locationOptionsOpen={locationOptionsOpen}
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+          isSmallScreen={isSmallScreen}
         />
       );
     }
@@ -222,7 +223,7 @@ export default function Signup({ hubThemeData }) {
       hubUrl={hubSlug}
       customTheme={customTheme}
       headerBackground="transparent"
-      footerTextColor="white"
+      footerTextColor={hubUrl && "white"}
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
         {isSmallScreen ? (
