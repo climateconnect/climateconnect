@@ -3461,6 +3461,13 @@
     "@webassemblyjs/wast-parser" "1.9.0"
     "@xtuc/long" "4.2.2"
 
+"@webflow/webflow-cli@^1.6.13":
+  version "1.6.13"
+  resolved "https://registry.yarnpkg.com/@webflow/webflow-cli/-/webflow-cli-1.6.13.tgz#ebf905289d794f9882b3cd9b7dd10eec52785888"
+  integrity sha512-fxs/5cftWQp6Hkoc+1kdyz6vwWxj5GM5iMOxAj/7J+wlM0n0PEhKhagLVLRfUib/A03lecZMShs1ZUzwJwwqbg==
+  dependencies:
+    commander "^10.0.0"
+
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@xtuc/ieee754/-/ieee754-1.2.0.tgz#eef014a3145ae477a1cbc00cd1e552336dceb790"
@@ -4846,6 +4853,11 @@ comma-separated-tokens@^1.0.0:
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/comma-separated-tokens/-/comma-separated-tokens-1.0.8.tgz#632b80b6117867a158f1080ad498b2fbe7e3f5ea"
   integrity sha512-GHuDRO12Sypu2cV70d1dkA2EUmXHgntrzbpvOB+Qy+49ypNfGgFQIC2fhhXbnyrJRynDCAARsT7Ou0M6hirpfw==
+
+commander@^10.0.0:
+  version "10.0.1"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-10.0.1.tgz#881ee46b4f77d1c1dccc5823433aa39b022cbe06"
+  integrity sha512-y4Mg2tXshplEbSGzx7amzPwKKOCGuoSRP/CjEdwwk0FOGlUbq6lKuoyDZTNZkmxHdJtp54hdfY/JUrdL7Xfdug==
 
 commander@^2.19.0, commander@^2.20.0:
   version "2.20.3"
