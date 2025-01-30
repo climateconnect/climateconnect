@@ -35,7 +35,7 @@ export const coreTheme = createTheme({
       main: "#484848",
       light: "#484848",
       extraLight: "#EBEBEB",
-      contrastText: "#207178",
+      contrastText: "#FFF",
     },
     yellow: {
       main: "#FFDE0A",
