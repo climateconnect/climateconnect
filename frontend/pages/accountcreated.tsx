@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
       boxShadow: "none",
       borderRadius: 0,
       textAlign: "center",
-    }
+    },
   },
   italic: {
     fontStyle: "italic",
@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
   },
   sentEmailText: {
     fontWeight: "bold",
-    marginBottom: theme.spacing(4)
+    marginBottom: theme.spacing(4),
   },
   centerContent: {
     display: "flex",
@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     fontWeight: "bold",
     paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(2)
+    paddingBottom: theme.spacing(2),
   },
 }));
 
@@ -63,29 +63,25 @@ export default function AccountCreated() {
   const texts = getTexts({ page: "profile", locale: locale });
 
   const cardContent = (
-    <div >
+    <div>
       {isSmallScreen ? (
-        <Typography
-          color="secondary"
-          variant="h1"
-          className={classes.smallScreenHeadline}
-        >
+        <Typography color="secondary" variant="h1" className={classes.smallScreenHeadline}>
           {texts.almost_done}
         </Typography>
-        ) : (
-          <Typography
-            variant="h3"
-            color="secondary"
-            className={`${classes.italic}`}
-          >
-            {texts.just_one_more_step_to_complete_your_signup}
-          </Typography>
-        )
-      }      
+      ) : (
+        <Typography variant="h3" color="secondary" className={`${classes.italic}`}>
+          {texts.just_one_more_step_to_complete_your_signup}
+        </Typography>
+      )}
       <br />
-      <Typography color="primary" variant={isSmallScreen ? "h5" : "h2"} className={isSmallScreen ? classes.sentEmailText : ""}>
-        {texts.we_sent_you_an_email_with_a_link}<br />
-        {texts.please_click_on_the_link_to_activate_your_account}    
+      <Typography
+        color="primary"
+        variant={isSmallScreen ? "h5" : "h2"}
+        className={isSmallScreen ? classes.sentEmailText : ""}
+      >
+        {texts.we_sent_you_an_email_with_a_link}
+        <br />
+        {texts.please_click_on_the_link_to_activate_your_account}
       </Typography>
       <br />
       <Typography component="p" variant="h6">

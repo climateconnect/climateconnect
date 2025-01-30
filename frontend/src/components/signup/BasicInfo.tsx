@@ -11,7 +11,7 @@ import theme from "../../themes/theme";
 const useStyles = makeStyles({
   appealText: {
     fontWeight: "bold",
-    textAlign: "center"
+    textAlign: "center",
   },
   formRootClass: {
     padding: 0,

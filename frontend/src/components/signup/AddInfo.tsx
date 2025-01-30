@@ -13,16 +13,16 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("sm")]: {
       padding: 0,
       borderRadius: 0,
-      boxShadow: "none"
-    }
+      boxShadow: "none",
+    },
   },
   checkboxLabels: {
     [theme.breakpoints.up("sm")]: {
       fontSize: 14,
     },
     [theme.breakpoints.down("sm")]: {
-      fontWeight: "normal"
-    }
+      fontWeight: "normal",
+    },
   },
   formRootClass: {
     padding: 0,
@@ -115,29 +115,25 @@ export default function AddInfo({
     <IconButton aria-label="close" onClick={() => handleGoBack(undefined, values)}>
       <ArrowBack />
     </IconButton>
-  )
+  );
 
   const StepCounter = () => (
     <Typography color="primary" variant="subtitle1" component="div">
       {isSmallScreen && <GoBackArrow />}
       {texts.step_2_of_2_sign_up}
     </Typography>
-  )
+  );
 
   return (
     <Card className={classes.root}>
       {/* TODO: maybe use card Header instead (?)
       see https://mui.com/material-ui/react-card/ for other usefull card components */}
       {isSmallScreen && (
-        <Typography
-          color="primary"
-          variant="h1"
-          className={classes.smallScreenHeadline}
-        >
+        <Typography color="primary" variant="h1" className={classes.smallScreenHeadline}>
           {texts.sign_up}
         </Typography>
       )}
-      <Box className={classes.cardHeaderBox}>        
+      <Box className={classes.cardHeaderBox}>
         {!isSmallScreen && <GoBackArrow />}
         <StepCounter />
       </Box>

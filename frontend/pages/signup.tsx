@@ -197,44 +197,44 @@ export default function Signup({ hubUrl, hubThemeData }) {
       footerTextColor={hubUrl && "white"}
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
-          <ThemeProvider theme={themeSignUp}>            
-            <ContentImageSplitView
-              minHeight="75vh"
-              content={
-                (curStep === "basicinfo") ? (
-                  <BasicInfo
+        <ThemeProvider theme={themeSignUp}>
+          <ContentImageSplitView
+            minHeight="75vh"
+            content={
+              curStep === "basicinfo" ? (
+                <BasicInfo
+                  values={userInfo}
+                  handleSubmit={handleBasicInfoSubmit}
+                  errorMessage={errorMessages[steps[0]]}
+                  isSmallScreen={isSmallScreen}
+                />
+              ) : (
+                curStep === "personalinfo" && (
+                  <AddInfo
                     values={userInfo}
-                    handleSubmit={handleBasicInfoSubmit}
-                    errorMessage={errorMessages[steps[0]]}
+                    handleSubmit={handleAddInfoSubmit}
+                    errorMessage={errorMessages[steps[1]]}
+                    handleGoBack={handleGoBackFromAddInfo}
+                    locationInputRef={locationInputRef}
+                    locationOptionsOpen={locationOptionsOpen}
+                    handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
                     isSmallScreen={isSmallScreen}
                   />
-                ) : (
-                  (curStep === "personalinfo") && (
-                    <AddInfo
-                      values={userInfo}
-                      handleSubmit={handleAddInfoSubmit}
-                      errorMessage={errorMessages[steps[1]]}
-                      handleGoBack={handleGoBackFromAddInfo}
-                      locationInputRef={locationInputRef}
-                      locationOptionsOpen={locationOptionsOpen}
-                      handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-                      isSmallScreen={isSmallScreen}
-                    />
-                  )
                 )
-              }
-              leftGridSizes={{ md: 7 }}
-              rightGridSizes={{ md: 5 }}
-              image={
-                <Image
-                  src="/images/sign_up/mobile-login-pana.svg"
-                  alt="Sign Up"
-                  layout="fill" // Image will cover the container
-                  objectFit="contain" // Ensures it fills without stretching
-                />
-              }
-            ></ContentImageSplitView>
-          </ThemeProvider>
+              )
+            }
+            leftGridSizes={{ md: 7 }}
+            rightGridSizes={{ md: 5 }}
+            image={
+              <Image
+                src="/images/sign_up/mobile-login-pana.svg"
+                alt="Sign Up"
+                layout="fill" // Image will cover the container
+                objectFit="contain" // Ensures it fills without stretching
+              />
+            }
+          ></ContentImageSplitView>
+        </ThemeProvider>
       </Container>
     </WideLayout>
   );
