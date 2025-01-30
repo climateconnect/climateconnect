@@ -273,9 +273,7 @@ class CreateOrganizationView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        texts = {
-            "name": request.data["name"].strip()
-        }
+        texts = {"name": request.data["name"].strip()}
 
         if "short_description" in request.data:
             texts["short_description"] = request.data["short_description"]
@@ -301,7 +299,7 @@ class CreateOrganizationView(APIView):
                 organization, created = Organization.objects.get_or_create(
                     name=request.data["name"].strip()
                 )
-                
+
                 if not created:
                     return Response(
                         {
@@ -315,7 +313,7 @@ class CreateOrganizationView(APIView):
                 organization.url_slug = create_unique_slug(
                     organization.name, organization.id, Organization.objects
                 )
-                
+
                 # Add primary language
                 source_language = Language.objects.get(
                     language_code=request.data["source_language"]
@@ -324,7 +322,9 @@ class CreateOrganizationView(APIView):
 
                 # Handle images
                 if "image" in request.data:
-                    organization.image = get_image_from_data_url(request.data["image"])[0]
+                    organization.image = get_image_from_data_url(request.data["image"])[
+                        0
+                    ]
                 if "thumbnail_image" in request.data:
                     organization.thumbnail_image = get_image_from_data_url(
                         request.data["thumbnail_image"]
@@ -347,16 +347,20 @@ class CreateOrganizationView(APIView):
                 # Handle location and other fields
                 if "location" in request.data:
                     organization.location = get_location(request.data["location"])
-                
+
                 # Set other fields
                 fields_to_set = [
-                    "short_description", "about", "website", 
-                    "organization_size", "get_involved"
+                    "short_description",
+                    "about",
+                    "website",
+                    "organization_size",
+                    "get_involved",
                 ]
                 for field in fields_to_set:
                     if field in request.data:
-                        if field == "organization_size" and not is_valid_organization_size(
-                            request.data[field]
+                        if (
+                            field == "organization_size"
+                            and not is_valid_organization_size(request.data[field])
                         ):
                             continue
                         setattr(organization, field, request.data[field])
@@ -393,7 +397,9 @@ class CreateOrganizationView(APIView):
                 # Create organization members
                 roles = Role.objects.all()
                 for member in request.data["team_members"]:
-                    user_role = roles.filter(id=int(member["permission_type_id"])).first()
+                    user_role = roles.filter(
+                        id=int(member["permission_type_id"])
+                    ).first()
                     try:
                         user = User.objects.get(id=int(member["user_id"]))
                     except User.DoesNotExist:
@@ -424,7 +430,8 @@ class CreateOrganizationView(APIView):
                             continue
                         if organization_tag:
                             OrganizationTagging.objects.create(
-                                organization=organization, organization_tag=organization_tag
+                                organization=organization,
+                                organization_tag=organization_tag,
                             )
                             logger.info(
                                 "Organization tagging created for organization {}".format(
@@ -447,7 +454,7 @@ class CreateOrganizationView(APIView):
             return Response(
                 {
                     "message": "Error creating organization. Please try again or contact support if the problem persists.",
-                    "error": str(e)
+                    "error": str(e),
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )

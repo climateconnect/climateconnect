@@ -156,6 +156,11 @@ class SignUpView(APIView):
             user_profile.last_completed_tutorial_step = request.data[
                 "last_completed_tutorial_step"
             ]
+
+        hub = Hub.objects.filter(url_slug=request.data["hub"]).first()
+        if hub:
+            user_profile.related_hubs.add(hub)
+
         if settings.AUTO_VERIFY is True:
             user_profile.is_profile_verified = True
             message = "Congratulations! Your account has been created"

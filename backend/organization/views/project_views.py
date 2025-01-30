@@ -338,7 +338,7 @@ class CreateProjectView(APIView):
             "short_description": 280,
             "description": 4800,
             "website": 256,
-            "additional_loc_info": 256
+            "additional_loc_info": 256,
         }
         for param in max_chars.keys():
             if param in request.data and len(request.data[param]) > max_chars[param]:

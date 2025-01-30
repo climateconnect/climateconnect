@@ -122,6 +122,10 @@ export default function Signup({ hubThemeData }) {
       location: location,
       sendNewsletter: values.sendNewsletter,
     });
+
+    const searchParams = new URLSearchParams(window.location.search);
+    const hub = searchParams.get("hub") ?? "";
+
     const payload = {
       email: userInfo.email.trim().toLowerCase(),
       password: userInfo.password,
@@ -133,7 +137,9 @@ export default function Signup({ hubThemeData }) {
       is_activist: isClimateActorCookie?.isActivist,
       last_completed_tutorial_step: lastCompletedTutorialStep,
       source_language: locale,
+      hub: hub,
     };
+
     const headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
