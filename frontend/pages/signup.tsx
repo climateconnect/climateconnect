@@ -24,9 +24,29 @@ import { ThemeProvider } from "@emotion/react";
 import { themeSignUp } from "../src/themes/signupTheme";
 import WideLayout from "../src/components/layouts/WideLayout";
 import { Container, Theme, useMediaQuery } from "@mui/material";
+import { useRouter } from "next/router";
 
-export default function Signup() {
+import getHubTheme from "../src/themes/fetchHubTheme";
+import { transformThemeData } from "../src/themes/transformThemeData";
+
+export async function getServerSideProps(ctx) {
+  const hubUrl = ctx.query.hub;
+
+  const hubThemeData = await getHubTheme(hubUrl);
+
+  return {
+    props: {
+      hubUrl: hubUrl || null, // undefined is not allowed in JSON, so we use null
+      hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
+    },
+  };
+}
+
+export default function Signup({ hubThemeData }) {
   const { ReactGA } = useContext(UserContext);
+
+  const queryParams = useRouter().query;
+  const hubSlug = Array.isArray(queryParams.hub) ? queryParams.hub[0] : queryParams.hub || "";
 
   const [userInfo, setUserInfo] = React.useState({
     email: "",
@@ -102,6 +122,10 @@ export default function Signup() {
       location: location,
       sendNewsletter: values.sendNewsletter,
     });
+
+    const searchParams = new URLSearchParams(window.location.search);
+    const hub = searchParams.get("hub") ?? "";
+
     const payload = {
       email: userInfo.email.trim().toLowerCase(),
       password: userInfo.password,
@@ -113,7 +137,9 @@ export default function Signup() {
       is_activist: isClimateActorCookie?.isActivist,
       last_completed_tutorial_step: lastCompletedTutorialStep,
       source_language: locale,
+      hub: hub,
     };
+
     const headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
@@ -155,12 +181,19 @@ export default function Signup() {
     setCurStep(steps[0]);
   };
 
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+
   return (
     <WideLayout
       title={texts.sign_up}
       message={errorMessage}
+      isHubPage={hubSlug !== ""}
       messageType={errorMessage && "error"}
       isLoading={isLoading}
+      hubUrl={hubSlug}
+      customTheme={customTheme}
+      headerBackground="transparent"
+      footerTextColor="white"
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
         <ThemeProvider theme={themeSignUp}>

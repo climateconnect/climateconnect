@@ -106,5 +106,33 @@
   "projects_worldwide": {
     "en": "Projects worldwide",
     "de": "Projekte weltweit"
+  },
+  "PRIO1_logo": {
+    "en": "PRIO1 logo",
+    "de": "PRIO1 Logo"
+  },
+  "PRIO1_klima": {
+    "en": "PRIO1-klima.net",
+    "de": "PRIO1-klima.net"
+  },
+  "PRIO1_Climate_Prize": {
+    "en": "PRIO1 Climate Prize",
+    "de": "PRIO1 Klimapreis"
+  },
+  "for_young_people": {
+    "en": "For young people",
+    "de": "Für junge Menschen"
+  },
+  "for_actors": {
+    "en": "For actors",
+    "de": "Für Akteure"
+  },
+  "PRIO1_Hub": {
+    "en": "PRIO1 Hub",
+    "de": "PRIO1 Hub"
+  },
+  "powered_by": {
+    "en": "Powered by",
+    "de": "Powered by"
   }
 }

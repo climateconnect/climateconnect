@@ -27,7 +27,6 @@ export default function DropDownButton({ buttonProps, options, children, href }:
   const handleHideOptions = () => {
     setShowOptions(false);
   };
-
   return (
     <div className={classes.root}>
       <Button
@@ -36,7 +35,7 @@ export default function DropDownButton({ buttonProps, options, children, href }:
         onMouseEnter={handleShowOptions}
         onMouseLeave={handleHideOptions}
         {...buttonProps}
-        className={classes.button}
+        className={buttonProps ? `${classes.button} ${buttonProps.className}` : `${classes.button}`}
         href={href}
       >
         {children}

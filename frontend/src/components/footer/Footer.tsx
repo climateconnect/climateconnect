@@ -13,13 +13,18 @@ import UserContext from "../context/UserContext";
 import SocialMediaButton from "../general/SocialMediaButton";
 import LargeFooter from "./LargeFooter";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
+type StyleProps = {
+  textColor?: "string";
+};
+
+const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => ({
+  root: (props) => ({
     padding: theme.spacing(2),
-    borderTop: `1px solid ${theme.palette.grey[100]}`,
+    borderTop: props.textColor ? 0 : `1px solid ${theme.palette.grey[100]}`,
     width: "100%",
     zIndex: "9",
-  },
+    color: props.textColor ? props.textColor : "inherit",
+  }),
   absolutePosition: {
     position: "absolute",
     bottom: 0,
@@ -94,6 +99,7 @@ export default function Footer({
   showOnScrollUp,
   large,
   customFooterImage,
+  textColor,
 }: any) {
   if (!large)
     return (
@@ -103,6 +109,7 @@ export default function Footer({
         noAbsolutePosition={noAbsolutePosition}
         showOnScrollUp={showOnScrollUp}
         customFooterImage={customFooterImage}
+        textColor={textColor}
       />
     );
   else return <LargeFooter className={className} />;
@@ -114,8 +121,9 @@ const SmallFooter = ({
   noAbsolutePosition,
   showOnScrollUp,
   customFooterImage,
+  textColor,
 }) => {
-  const classes = useStyles();
+  const classes = useStyles({ textColor: textColor });
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
@@ -198,7 +206,7 @@ const SmallFooter = ({
 };
 
 const MadeWithLoveForEarthSign = () => {
-  const classes = useStyles();
+  const classes = useStyles({});
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   return (
