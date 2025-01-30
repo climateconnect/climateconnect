@@ -184,35 +184,6 @@ export default function Signup({ hubUrl, hubThemeData }) {
 
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
 
-  const SignupContent = () => {
-    if (curStep === "basicinfo") {
-      return (
-        <BasicInfo
-          values={userInfo}
-          handleSubmit={handleBasicInfoSubmit}
-          errorMessage={errorMessages[steps[0]]}
-          isSmallScreen={isSmallScreen}
-        />
-      );
-    }
-    if (curStep === "personalinfo") {
-      return (
-        <AddInfo
-          values={userInfo}
-          handleSubmit={handleAddInfoSubmit}
-          errorMessage={errorMessages[steps[1]]}
-          handleGoBack={handleGoBackFromAddInfo}
-          locationInputRef={locationInputRef}
-          locationOptionsOpen={locationOptionsOpen}
-          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-          isSmallScreen={isSmallScreen}
-        />
-      );
-    }
-    //This line is just for typescript.
-    return <></>;
-  };
-
   return (
     <WideLayout
       title={texts.sign_up}
@@ -226,13 +197,32 @@ export default function Signup({ hubUrl, hubThemeData }) {
       footerTextColor={hubUrl && "white"}
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
-        {isSmallScreen ? (
-          <SignupContent />
-        ) : (
-          <ThemeProvider theme={themeSignUp}>
+          <ThemeProvider theme={themeSignUp}>            
             <ContentImageSplitView
               minHeight="75vh"
-              content={<SignupContent />}
+              content={
+                (curStep === "basicinfo") ? (
+                  <BasicInfo
+                    values={userInfo}
+                    handleSubmit={handleBasicInfoSubmit}
+                    errorMessage={errorMessages[steps[0]]}
+                    isSmallScreen={isSmallScreen}
+                  />
+                ) : (
+                  (curStep === "personalinfo") && (
+                    <AddInfo
+                      values={userInfo}
+                      handleSubmit={handleAddInfoSubmit}
+                      errorMessage={errorMessages[steps[1]]}
+                      handleGoBack={handleGoBackFromAddInfo}
+                      locationInputRef={locationInputRef}
+                      locationOptionsOpen={locationOptionsOpen}
+                      handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+                      isSmallScreen={isSmallScreen}
+                    />
+                  )
+                )
+              }
               leftGridSizes={{ md: 7 }}
               rightGridSizes={{ md: 5 }}
               image={
@@ -245,7 +235,6 @@ export default function Signup({ hubUrl, hubThemeData }) {
               }
             ></ContentImageSplitView>
           </ThemeProvider>
-        )}
       </Container>
     </WideLayout>
   );
