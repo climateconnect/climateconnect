@@ -11,6 +11,7 @@ import theme from "../../themes/theme";
 const useStyles = makeStyles({
   appealText: {
     fontWeight: "bold",
+    textAlign: "center"
   },
   formRootClass: {
     padding: 0,
@@ -72,7 +73,7 @@ export default function BasicInfo({ handleSubmit, errorMessage, values, isSmallS
       color={isSmallScreen ? "secondary" : "primary"}
       variant="subtitle1"
       component="div"
-      className={isSmallScreen && classes.stepIndicator}
+      className={isSmallScreen ? classes.stepIndicator : ""}
     >
       {/* TODO: use texts */}
       {texts.step_1_of_2_sign_up}
@@ -84,13 +85,13 @@ export default function BasicInfo({ handleSubmit, errorMessage, values, isSmallS
       <Typography
         color="primary"
         variant="h1"
-        className={isSmallScreen && classes.smallScreenHeadline}
+        className={isSmallScreen ? classes.smallScreenHeadline : ""}
       >
         {texts.sign_up}
       </Typography>
       <Typography
         color={!isSmallScreen ? "primary" : "secondary"}
-        className={isSmallScreen && classes.appealText}
+        className={isSmallScreen ? classes.appealText : ""}
       >
         {texts.here_you_can_create_your_personal_account}
         {isSmallScreen && <br />}
