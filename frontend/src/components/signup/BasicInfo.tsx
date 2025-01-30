@@ -6,21 +6,30 @@ import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import Form from "./../general/Form";
+import theme from "../../themes/theme";
 
 const useStyles = makeStyles({
   appealText: {
-    textAlign: "center",
     fontWeight: "bold",
   },
-
   formRootClass: {
     padding: 0,
     maxWidth: 700,
     margin: "0 auto 0 0", // basically a left align
   },
+  smallScreenHeadline: {
+    fontSize: 35,
+    textAlign: "center",
+    fontWeight: "bold",
+    padding: theme.spacing(4),
+  },
+  stepIndicator: {
+    marginTop: theme.spacing(1),
+    textAlign: "center",
+  },
 });
 
-export default function BasicInfo({ handleSubmit, errorMessage, values }) {
+export default function BasicInfo({ handleSubmit, errorMessage, values, isSmallScreen }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
@@ -58,6 +67,51 @@ export default function BasicInfo({ handleSubmit, errorMessage, values }) {
     href: getLocalePrefix(locale) + "/signin",
   };
 
+  const StepIndicator = () => (
+    <Typography
+      color={isSmallScreen ? "secondary" : "primary"}
+      variant="subtitle1"
+      component="div"
+      className={isSmallScreen && classes.stepIndicator}
+    >
+      {/* TODO: use texts */}
+      {texts.step_1_of_2_sign_up}
+    </Typography>
+  );
+
+  const BasicInfoContent = () => (
+    <>
+      <Typography
+        color="primary"
+        variant="h1"
+        className={isSmallScreen && classes.smallScreenHeadline}
+      >
+        {texts.sign_up}
+      </Typography>
+      <Typography
+        color={!isSmallScreen ? "primary" : "secondary"}
+        className={isSmallScreen && classes.appealText}
+      >
+        {texts.here_you_can_create_your_personal_account}
+        {isSmallScreen && <br />}
+        {texts.you_will_have_an_opportunity_to_create_or_add_an_organization_once_signed_up}
+      </Typography>
+      <StepIndicator />
+      <Form
+        className={classes.formRootClass}
+        fields={fields}
+        messages={messages}
+        bottomLink={bottomLink}
+        onSubmit={(event, values) => handleSubmit(event, values)}
+        errorMessage={errorMessage}
+      />
+    </>
+  );
+
+  if (isSmallScreen) {
+    return <BasicInfoContent />;
+  }
+
   return (
     <Card>
       {/* TODO: maybe use card Header instead (?)
@@ -78,27 +132,10 @@ export default function BasicInfo({ handleSubmit, errorMessage, values }) {
         >
           <Close />
         </IconButton>
-        <Typography color="primary" variant="subtitle1" component="div">
-          {/* TODO: use texts */}
-          {texts.step_1_of_2_sign_up}
-        </Typography>
+        <StepIndicator />
       </Box>
       <CardContent>
-        <Typography color="primary" variant="h1">
-          {texts.sign_up}
-        </Typography>
-        <Typography color="primary" variant="h3">
-          {texts.here_you_can_create_your_personal_account}
-          {texts.you_will_have_an_opportunity_to_create_or_add_an_organization_once_signed_up}
-        </Typography>
-        <Form
-          className={classes.formRootClass}
-          fields={fields}
-          messages={messages}
-          bottomLink={bottomLink}
-          onSubmit={(event, values) => handleSubmit(event, values)}
-          errorMessage={errorMessage}
-        />
+        <BasicInfoContent />
       </CardContent>
     </Card>
   );

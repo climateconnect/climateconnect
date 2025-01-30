@@ -59,6 +59,7 @@ export default function Signup({ hubThemeData }) {
     sendNewsletter: undefined,
   });
   const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
+  const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const cookies = new Cookies();
   const { user, locale } = useContext(UserContext);
@@ -183,6 +184,34 @@ export default function Signup({ hubThemeData }) {
 
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
 
+  const SignupContent = () => {
+    if (curStep === "basicinfo") {
+      return (
+        <BasicInfo
+          values={userInfo}
+          handleSubmit={handleBasicInfoSubmit}
+          errorMessage={errorMessages[steps[0]]}
+          isSmallScreen={isSmallScreen}
+        />
+      );
+    }
+    if (curStep === "personalinfo") {
+      return (
+        <AddInfo
+          values={userInfo}
+          handleSubmit={handleAddInfoSubmit}
+          errorMessage={errorMessages[steps[1]]}
+          handleGoBack={handleGoBackFromAddInfo}
+          locationInputRef={locationInputRef}
+          locationOptionsOpen={locationOptionsOpen}
+          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+        />
+      );
+    }
+    //This line is just for typescript.
+    return <></>;
+  };
+
   return (
     <WideLayout
       title={texts.sign_up}
@@ -196,42 +225,26 @@ export default function Signup({ hubThemeData }) {
       footerTextColor="white"
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
-        <ThemeProvider theme={themeSignUp}>
-          <ContentImageSplitView
-            minHeight="75vh"
-            content={
-              curStep === "basicinfo" ? (
-                <BasicInfo
-                  values={userInfo}
-                  handleSubmit={handleBasicInfoSubmit}
-                  errorMessage={errorMessages[steps[0]]}
+        {isSmallScreen ? (
+          <SignupContent />
+        ) : (
+          <ThemeProvider theme={themeSignUp}>
+            <ContentImageSplitView
+              minHeight="75vh"
+              content={<SignupContent />}
+              leftGridSizes={{ md: 7 }}
+              rightGridSizes={{ md: 5 }}
+              image={
+                <Image
+                  src="/images/sign_up/mobile-login-pana.svg"
+                  alt="Sign Up"
+                  layout="fill" // Image will cover the container
+                  objectFit="contain" // Ensures it fills without stretching
                 />
-              ) : (
-                curStep === "personalinfo" && (
-                  <AddInfo
-                    values={userInfo}
-                    handleSubmit={handleAddInfoSubmit}
-                    errorMessage={errorMessages[steps[1]]}
-                    handleGoBack={handleGoBackFromAddInfo}
-                    locationInputRef={locationInputRef}
-                    locationOptionsOpen={locationOptionsOpen}
-                    handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-                  />
-                )
-              )
-            }
-            leftGridSizes={{ md: 7 }}
-            rightGridSizes={{ md: 5 }}
-            image={
-              <Image
-                src="/images/sign_up/mobile-login-pana.svg"
-                alt="Sign Up"
-                layout="fill" // Image will cover the container
-                objectFit="contain" // Ensures it fills without stretching
-              />
-            }
-          ></ContentImageSplitView>
-        </ThemeProvider>
+              }
+            ></ContentImageSplitView>
+          </ThemeProvider>
+        )}
       </Container>
     </WideLayout>
   );
