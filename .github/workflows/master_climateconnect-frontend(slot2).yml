@@ -24,8 +24,8 @@ jobs:
       - name: npm install, build, and test
         run: |
           cd frontend
-          npx webflow devlink sync
           yarn --production
+          npx webflow devlink sync
           yarn build
         env:
           API_HOST: ${{ secrets.API_HOST }}
