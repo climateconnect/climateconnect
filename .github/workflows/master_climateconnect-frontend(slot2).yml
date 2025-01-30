@@ -24,6 +24,7 @@ jobs:
       - name: npm install, build, and test
         run: |
           cd frontend
+          npx webflow devlink sync
           yarn --production
           yarn build
         env:
