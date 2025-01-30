@@ -42,7 +42,7 @@ export async function getServerSideProps(ctx) {
   };
 }
 
-export default function Signup({ hubThemeData }) {
+export default function Signup({ hubUrl, hubThemeData }) {
   const { ReactGA } = useContext(UserContext);
 
   const queryParams = useRouter().query;
@@ -59,6 +59,7 @@ export default function Signup({ hubThemeData }) {
     sendNewsletter: undefined,
   });
   const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
+  const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const cookies = new Cookies();
   const { user, locale } = useContext(UserContext);
@@ -193,7 +194,7 @@ export default function Signup({ hubThemeData }) {
       hubUrl={hubSlug}
       customTheme={customTheme}
       headerBackground="transparent"
-      footerTextColor="white"
+      footerTextColor={hubUrl && "white"}
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
         <ThemeProvider theme={themeSignUp}>
@@ -205,6 +206,7 @@ export default function Signup({ hubThemeData }) {
                   values={userInfo}
                   handleSubmit={handleBasicInfoSubmit}
                   errorMessage={errorMessages[steps[0]]}
+                  isSmallScreen={isSmallScreen}
                 />
               ) : (
                 curStep === "personalinfo" && (
@@ -216,6 +218,7 @@ export default function Signup({ hubThemeData }) {
                     locationInputRef={locationInputRef}
                     locationOptionsOpen={locationOptionsOpen}
                     handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+                    isSmallScreen={isSmallScreen}
                   />
                 )
               )
