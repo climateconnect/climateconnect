@@ -25,7 +25,6 @@ jobs:
         run: |
           cd frontend
           yarn --production
-          npx webflow devlink sync
           yarn build
         env:
           API_HOST: ${{ secrets.API_HOST }}
