@@ -8,12 +8,13 @@ require("dotenv").config();
 
 module.exports = withBundleAnalyzer({
   // Read set variables from `.env` file
+  //For CUSTOM_HUB_URLS use a string of urls split by commas, e.g. CUSTOM_HUB_URLS="url1,url2,url3"
   env: pick(process.env, [
     "API_HOST",
     "API_URL",
     "BASE_URL",
     "BASE_URL_HOST",
-    "CUSTOM_HUB_URLS", //use a string of urls split by commas, e.g. CUSTOM_HUB_URLS="url1,url2,url3"
+    "CUSTOM_HUB_URLS",
     "DONATION_CAMPAIGN_RUNNING",
     "ENABLE_LEGACY_LOCATION_FORMAT",
     "ENVIRONMENT",
