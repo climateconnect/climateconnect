@@ -106,24 +106,25 @@ def translate_text(text, original_lang, target_lang):
         # Switch source language and target language (change original lang from german to english and target lang from english to german)
         # Since this means we just translated a text from german to german, we need to call the translate function again and translate to english
         # (We only trust the detected source language if it's more than 150 characters)
-        if (
-            len(text) > 150
-            and get_locale(translation["detected_source_language"]) == target_locale
-        ):
-            target_locale = original_locale
-            original_locale = get_locale(translation["detected_source_language"])
-            translation = translate(text, target_locale)
+        if "detected_source_language" in translation:
+            if (
+                len(text) > 150
+                and get_locale(translation["detected_source_language"]) == target_locale
+            ):
+                target_locale = original_locale
+                original_locale = get_locale(translation["detected_source_language"])
+                translation = translate(text, target_locale)
 
-        # If the detected source language is complete different from target_lang or original_lan: adapt original lang
-        # Example: If person with german locale writes spanish text the text will be translated to english and source language will be spanish
-        # (The example assumes that spanish is supported)
-        # (We only trust the detected source language if it's more than 150 characters)
-        if (
-            len(text) > 150
-            and not get_locale(translation["detected_source_language"])
-            == original_locale
-        ):
-            original_locale = get_locale(translation["detected_source_language"])
+            # If the detected source language is complete different from target_lang or original_lan: adapt original lang
+            # Example: If person with german locale writes spanish text the text will be translated to english and source language will be spanish
+            # (The example assumes that spanish is supported)
+            # (We only trust the detected source language if it's more than 150 characters)
+            if (
+                len(text) > 150
+                and not get_locale(translation["detected_source_language"])
+                == original_locale
+            ):
+                original_locale = get_locale(translation["detected_source_language"])
     return {
         "original_text": text,
         "original_lang": original_locale,

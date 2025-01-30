@@ -37,6 +37,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
     fontSize: 13,
   },
+  checkboxLabel: {
+    display: "inline",
+  },
   inlineBlockElement: {
     display: "inline-block",
   },
@@ -298,7 +301,9 @@ export default function Form({
                   onChange={(event) => handleValueChange(event, field.key, field.type)}
                   color="contrast"
                 />
-                <label htmlFor={"checkbox" + field.key}>{field.label}</label>
+                <label className={classes.checkboxLabel} htmlFor={"checkbox" + field.key}>
+                  {field.label}
+                </label>
               </div>
             );
           } else if (field.type === "switch") {
