@@ -200,11 +200,19 @@ export default function BrowseContent({
   const [nonFilterParams, setNonFilterParams] = useState({});
 
   useEffect(() => {
-    const newHash = window?.location?.hash.replace("#", "");
-    if (window.location.hash) {
+    let newHash = window?.location?.hash.replace("#", "");
+
+    if (newHash && TYPES_BY_TAB_VALUE.indexOf(newHash) != -1) {
       setHash(newHash);
       setTabValue(TYPES_BY_TAB_VALUE.indexOf(newHash));
+    } else if (newHash) {
+      console.error("malicous hash detected");
+      newHash = "";
+      window.location.hash = "";
+      setHash("");
+      setTabValue(0);
     }
+
 
     // this init is nessesary to be resilient if the component is remounted
     // see https://react.dev/learn/you-might-not-need-an-effect#initializing-the-application
@@ -293,6 +301,9 @@ export default function BrowseContent({
       );
 
       const newFilters = { ...emptyFilters, ...splitQueryObject.filters };
+
+      //TODO: this name is confusing
+      // as this component contains a global with the same name
       const tabValue = TYPES_BY_TAB_VALUE[newValue];
       // Apply new filters with the query object immediately:
       handleApplyNewFilters({
