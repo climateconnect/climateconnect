@@ -333,6 +333,23 @@ class CreateProjectView(APIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
+        max_chars = {
+            "name": 1024,
+            "short_description": 280,
+            "description": 4800,
+            "website": 256,
+            "additional_loc_info": 256,
+        }
+        for param in max_chars.keys():
+            if param in request.data and len(request.data[param]) > max_chars[param]:
+                return Response(
+                    {
+                        "message": "Your value for this field is too long: "
+                        + param
+                        + ". Please make a change or contact an administrator at contact@climateconnect.earth"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
         try:
             ProjectStatus.objects.get(id=int(request.data["status"]))
         except ProjectStatus.DoesNotExist:

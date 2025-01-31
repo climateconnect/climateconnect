@@ -29,35 +29,23 @@ import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
 
 export async function getServerSideProps(ctx) {
-  const hubSlug = ctx.query.hubName;
+  const hubUrl = ctx.query.hub;
 
-  // early return to avoid fetching /undefined/theme
-  if (!hubSlug) {
-    return {
-      props: {},
-    };
-  }
-  const hubThemeData = await getHubTheme(hubSlug);
-
-  // early return to avoid a hubSlug, that is not supported within the backend
-  if (!hubThemeData) {
-    return {
-      props: {},
-    };
-  }
+  const hubThemeData = await getHubTheme(hubUrl);
 
   return {
     props: {
-      hubSlug: hubSlug || null, // undefined is not allowed in JSON, so we use null
+      hubUrl: hubUrl || null, // undefined is not allowed in JSON, so we use null
       hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
     },
   };
 }
 
-export default function Signup({ hubSlug, hubThemeData }) {
+export default function Signup({ hubUrl, hubThemeData }) {
   const { ReactGA } = useContext(UserContext);
 
   const queryParams = useRouter().query;
+  const hubSlug = Array.isArray(queryParams.hub) ? queryParams.hub[0] : queryParams.hub || "";
 
   const [userInfo, setUserInfo] = React.useState({
     email: "",
@@ -70,6 +58,7 @@ export default function Signup({ hubSlug, hubThemeData }) {
     sendNewsletter: undefined,
   });
   const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
+  const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const cookies = new Cookies();
   const { user, locale } = useContext(UserContext);
@@ -133,6 +122,10 @@ export default function Signup({ hubSlug, hubThemeData }) {
       location: location,
       sendNewsletter: values.sendNewsletter,
     });
+
+    const searchParams = new URLSearchParams(window.location.search);
+    const hub = searchParams.get("hub") ?? "";
+
     const payload = {
       email: userInfo.email.trim().toLowerCase(),
       password: userInfo.password,
@@ -144,7 +137,9 @@ export default function Signup({ hubSlug, hubThemeData }) {
       is_activist: isClimateActorCookie?.isActivist,
       last_completed_tutorial_step: lastCompletedTutorialStep,
       source_language: locale,
+      hub: hub,
     };
+
     const headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
@@ -200,6 +195,8 @@ export default function Signup({ hubSlug, hubThemeData }) {
       isLoading={isLoading}
       hubUrl={hubSlug}
       customTheme={customTheme}
+      headerBackground="transparent"
+      footerTextColor={hubUrl && "white"}
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
         <ThemeProvider theme={customThemeSignUp}>
@@ -211,6 +208,7 @@ export default function Signup({ hubSlug, hubThemeData }) {
                   values={userInfo}
                   handleSubmit={handleBasicInfoSubmit}
                   errorMessage={errorMessages[steps[0]]}
+                  isSmallScreen={isSmallScreen}
                   texts={texts}
                 />
               ) : (
@@ -223,6 +221,7 @@ export default function Signup({ hubSlug, hubThemeData }) {
                     locationInputRef={locationInputRef}
                     locationOptionsOpen={locationOptionsOpen}
                     handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+                    isSmallScreen={isSmallScreen}
                   />
                 )
               )

@@ -103,23 +103,22 @@ export async function getServerSideProps(ctx) {
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
   ]);
-
   return {
     props: {
       hubUrl: hubUrl,
-      isLocationHub: hubData.hub_type === "location hub",
+      isLocationHub: hubData?.hub_type === "location hub",
       hubData: hubData,
-      name: hubData.name,
-      headline: hubData.headline,
-      subHeadline: hubData.sub_headline,
-      welcomeMessageLoggedIn: hubData.welcome_message_logged_in,
-      welcomeMessageLoggedOut: hubData.welcome_message_logged_out,
-      image: hubData.image,
-      quickInfo: hubData.quick_info,
-      stats: hubData.stats,
-      statBoxTitle: hubData.stat_box_title,
-      image_attribution: hubData.image_attribution,
-      hubLocation: hubData.location?.length > 0 ? hubData.location[0] : null,
+      name: hubData?.name ?? null,
+      headline: hubData?.headline ?? null,
+      subHeadline: hubData?.sub_headline ?? null,
+      welcomeMessageLoggedIn: hubData?.welcome_message_logged_in ?? null,
+      welcomeMessageLoggedOut: hubData?.welcome_message_logged_out ?? null,
+      image: hubData?.image ?? null,
+      quickInfo: hubData?.quick_info ?? null,
+      stats: hubData?.stats ?? null,
+      statBoxTitle: hubData?.stat_box_title ?? null,
+      image_attribution: hubData?.image_attribution ?? null,
+      hubLocation: hubData?.location?.length > 0 ? hubData.location[0] : null,
       filterChoices: {
         project_categories: project_categories,
         organization_types: organization_types,
@@ -278,6 +277,7 @@ export default function Hub({
   const contextValues = {
     projectTypes: projectTypes,
   };
+  const currentTheme = hubThemeData ? transformThemeData(hubThemeData) : theme;
 
   return (
     <>
@@ -286,12 +286,14 @@ export default function Hub({
       )}
       <WideLayout
         title={headline}
-        headerBackground="#FFF"
+        headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
         image={getImageUrl(image)}
         isHubPage
         hubUrl={hubUrl}
         hideDonationCampaign
-        customFooterImage={hubData.custom_footer_image && getImageUrl(hubData.custom_footer_image)}
+        customFooterImage={
+          hubData?.custom_footer_image && getImageUrl(hubData?.custom_footer_image)
+        }
         isLocationHub={isLocationHub}
         customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
       >
@@ -461,6 +463,10 @@ const getHubSupportersData = async (url_slug, locale) => {
     });
     return resp.data;
   } catch (err: any) {
+    //Don't log an error if there simply are no supporters for this hub
+    if (err?.response?.status === 404) {
+      return null;
+    }
     if (err.response && err.response.data)
       console.log("Error in getHubSupportersData: " + err.response.data.detail);
     console.log(err);

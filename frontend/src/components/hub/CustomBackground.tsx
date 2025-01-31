@@ -1,6 +1,7 @@
 import { Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React from "react";
+import React, { useContext } from "react";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   background: {
@@ -40,7 +41,6 @@ export default function CustomBackground({ hubUrl }: Props) {
     return null;
   }
   const pathname = window.location.pathname;
-  console.log("pathname: ", pathname);
 
   switch (hubUrl.toLowerCase()) {
     case "prio1": {

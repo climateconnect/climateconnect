@@ -58,7 +58,7 @@ const ContentImageSplitView: React.FC<ContentImageSplitViewProps> = ({
         xs={12}
         md={7}
         {...leftGridSizes}
-        className={`${classes.centerItems} ${classes.rightPadding}`}
+        className={`${classes.centerItems} ${!rightPaneHidden && classes.rightPadding}`}
       >
         {content}
       </Grid>

@@ -22,7 +22,6 @@ __pycache__
 *.code-workspace
 backend/.vscode
 frontend/.vscode
-
 # intellij
 *.iml
 
@@ -38,3 +37,6 @@ media/
 
 .venv
 .vscode/tasks.json
+
+# devlink
+frontend/devlink/
