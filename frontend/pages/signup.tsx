@@ -183,8 +183,6 @@ export default function Signup({ hubUrl, hubThemeData }) {
   };
 
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
-
-  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
   const customThemeSignUp = hubThemeData
     ? transformThemeData(hubThemeData, themeSignUp)
     : themeSignUp;
@@ -193,7 +191,6 @@ export default function Signup({ hubUrl, hubThemeData }) {
     <WideLayout
       title={texts.sign_up}
       message={errorMessage}
-      isHubPage={hubSlug !== ""}
       isHubPage={hubSlug !== ""}
       messageType={errorMessage && "error"}
       isLoading={isLoading}

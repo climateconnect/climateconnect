@@ -47,6 +47,9 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     display: "block",
   },
+  bottomLink: {
+    color: theme.palette.background.default_contrastText
+  },
   bottomMessageContainer: {
     marginTop: theme.spacing(2),
   },
@@ -412,7 +415,7 @@ export default function Form({
           )}
           {bottomLink ? (
             <Link href={bottomLink.href}>
-              <a className={classes.bottomMessages}>{bottomLink.text}</a>
+              <a className={`${classes.bottomMessages} ${classes.bottomLink}`}>{bottomLink.text}</a>
             </Link>
           ) : (
             <></>
