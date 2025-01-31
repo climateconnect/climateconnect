@@ -17,6 +17,9 @@ const useStyles = makeStyles((theme) => ({
   prioOneDefaultBackground: {
     backgroundColor: theme.palette.secondary.main,
   },
+  prioOneMobileBackground: {
+    backgroundColor: theme.palette.secondary.light,
+  },
   prioOneAccentBackground: {
     borderLeftColor: theme.palette.secondary.light,
   },
@@ -37,7 +40,7 @@ export default function CustomBackground({ hubUrl }: Props) {
   const mobileScreenSize = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
 
   // TODO: mobileScreenSize is not yet supported
-  if (!hubUrl || mobileScreenSize) {
+  if (!hubUrl) {
     return null;
   }
   const pathname = window.location.pathname;
@@ -45,9 +48,12 @@ export default function CustomBackground({ hubUrl }: Props) {
   switch (hubUrl.toLowerCase()) {
     case "prio1": {
       if (pathname.endsWith("/hubs/prio1")) {
+        if(mobileScreenSize) {
+          return null
+        }
         return <PrioOneBackgroundBrowse />;
       } else if (pathname.endsWith("/signup") || pathname.endsWith("/signin")) {
-        return <PrioOneBackgroundAuth />;
+        return <PrioOneBackgroundAuth mobileScreenSize={mobileScreenSize}/>;
       }
     }
     default: {
@@ -92,8 +98,14 @@ function PrioOneBackgroundBrowse() {
   );
 }
 
-function PrioOneBackgroundAuth() {
+function PrioOneBackgroundAuth({mobileScreenSize}) {
   const classes = useStyles();
+  if(mobileScreenSize) {
+    return (
+      <div className={`${classes.background} ${classes.prioOneMobileBackground}`}>
+      </div>
+    )
+  }
   return (
     <div className={`${classes.background} ${classes.prioOneDefaultBackground}`}>
       {/* Container within the background */}
