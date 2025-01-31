@@ -121,7 +121,7 @@ export default function AddInfo({
   );
 
   const StepCounter = () => (
-    <Typography color="primary" variant="subtitle1" component="div">
+    <Typography variant="subtitle1" component="div">
       {isSmallScreen && <GoBackArrow />}
       {texts.step_2_of_2_sign_up}
     </Typography>
@@ -142,7 +142,7 @@ export default function AddInfo({
       </Box>
       <CardContent>
         {!isSmallScreen && (
-          <Typography color="primary" variant="h3">
+          <Typography >
             {texts.signup_step_2_headline}
           </Typography>
         )}
