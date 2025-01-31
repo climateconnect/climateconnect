@@ -5,6 +5,17 @@ export const transformThemeData = (data, baseTheme: any = undefined) => {
   const { palette, ...restOfDefaultTheme } = baseTheme || defaultTheme;
   const customTheme = {
     ...restOfDefaultTheme,
+    components: {
+      ...restOfDefaultTheme.components,
+      MuiLink: {
+        ...restOfDefaultTheme?.components?.MuiLink,
+        styleOverrides: {
+          root: {
+            color: data?.background_default?.contrastText
+          }
+        }
+      }
+    },
     palette: {
       ...palette,
       primary: {
@@ -35,6 +46,5 @@ export const transformThemeData = (data, baseTheme: any = undefined) => {
       },
     },
   };
-
   return customTheme;
 };
