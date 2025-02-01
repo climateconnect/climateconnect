@@ -7,7 +7,6 @@ import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import HubsDropDown from "../indexPage/hubsSubHeader/HubsDropDown";
-import { CUSTOM_HUB_URLS } from "../../../public/data/custom_hub";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -101,7 +100,7 @@ export default function HubTabsNavigation({
   className,
   allHubs,
 }) {
-  const { locale, user } = useContext(UserContext);
+  const { locale, user, CUSTOM_HUB_URLS } = useContext(UserContext);
   const classes = useStyles();
   const locationHubs = allHubs.filter((h) => h.hub_type === "location hub");
   const texts = getTexts({ page: "navigation", locale: locale });

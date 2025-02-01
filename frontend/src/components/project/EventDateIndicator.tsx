@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Tooltip, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { getDateAndTime, getDayAndMonth, getTime } from "../../../public/lib/dateOperations";
-import { CUSTOM_HUB_URLS } from "../../../public/data/custom_hub";
+import UserContext from "../context/UserContext";
+
 const useStyles = makeStyles((theme) => ({
   eventDateIndicator: (props: any) => ({
     position: "absolute",
@@ -42,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function EventDateIndicator({ project, hubUrl }) {
+  const { CUSTOM_HUB_URLS } = useContext(UserContext)
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
 
   const start_date = new Date(project.start_date);

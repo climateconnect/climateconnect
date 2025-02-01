@@ -4,7 +4,6 @@ import getTexts from "../../../public/texts/texts";
 import { Project } from "../../types";
 import UserContext from "../context/UserContext";
 import SocialMediaShareButton, { SocialMediaShareButtonProps } from "./SocialMediaShareButton";
-import { CUSTOM_HUB_URLS } from "../../../public/data/custom_hub";
 
 type Props = {
   className: SocialMediaShareButtonProps["className"];
@@ -16,7 +15,7 @@ type Props = {
 //This component simply exists so all the project-specific properties don't need to be passed through
 //to `SocialMediaShareButton` from every component.
 export function ProjectSocialMediaShareButton({ className, project, projectAdmin, hubUrl }: Props) {
-  const { locale } = useContext(UserContext);
+  const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
   const texts = getTexts({
     locale: locale,
     page: "project",
