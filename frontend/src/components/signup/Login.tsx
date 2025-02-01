@@ -1,5 +1,5 @@
 import { Card, CardContent, Theme, Typography, useMediaQuery } from "@mui/material";
-import React from "react"
+import React from "react";
 import Form from "./../general/Form";
 import makeStyles from "@mui/styles/makeStyles";
 import ContentImageSplitView from "../layouts/ContentImageSplitLayout";
@@ -18,14 +18,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Login({
-  texts,
-  fields,
-  messages,
-  bottomLink,
-  handleSubmit,
-  errorMessage
-}) {
+export default function Login({ texts, fields, messages, bottomLink, handleSubmit, errorMessage }) {
   const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const classes = useStyles();
 
@@ -74,5 +67,5 @@ export default function Login({
         ></ContentImageSplitView>
       )}
     </>
-  )
+  );
 }

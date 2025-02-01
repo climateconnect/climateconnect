@@ -10,7 +10,7 @@ import { themeSignUp } from "../src/themes/signupTheme";
 import { Container, Link, Theme, useMediaQuery } from "@mui/material";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
-import Login from "../src/components/signup/Login"
+import Login from "../src/components/signup/Login";
 
 export async function getServerSideProps(ctx) {
   const hubSlug = ctx.query.hub;
@@ -63,7 +63,9 @@ export default function Signin({ hubSlug, hubThemeData }) {
     bottomMessage: (
       <span>
         {texts.new_to_climate_connect}{" "}
-        <Link style={{textDecoration: "underline"}} href={getLocalePrefix(locale) + "/signup"}>{texts.click_here_to_create_an_account}</Link>
+        <Link style={{ textDecoration: "underline" }} href={getLocalePrefix(locale) + "/signup"}>
+          {texts.click_here_to_create_an_account}
+        </Link>
       </span>
     ),
   };
@@ -147,7 +149,7 @@ export default function Signin({ hubSlug, hubThemeData }) {
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
         <ThemeProvider theme={customThemeSignIn}>
-          <Login 
+          <Login
             texts={texts}
             fields={fields}
             messages={messages}
