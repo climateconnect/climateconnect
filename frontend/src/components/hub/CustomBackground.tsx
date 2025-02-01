@@ -68,8 +68,10 @@ export default function CustomBackground({ hubUrl }: Props) {
 }
 
 function PrioOneBackgroundBrowse() {
+  const { user } = useContext(UserContext);
+  const loggedIn = !!user;
   const classes = useStyles();
-  const height = 52.1;
+  const height = loggedIn ? 30 : 52.1;
   const width = 100;
   const triangleBottom = width * 0.5;
   const triangleLeft = width * 3;
