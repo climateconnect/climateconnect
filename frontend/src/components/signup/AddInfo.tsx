@@ -9,6 +9,9 @@ import Form from "./../general/Form";
 import { Box, Card, CardContent, IconButton, Typography } from "@mui/material";
 
 const useStyles = makeStyles((theme) => ({
+  contrastBackground: {
+    color: theme.palette.background.default_contrastText,
+  },
   root: {
     [theme.breakpoints.down("sm")]: {
       padding: 0,
@@ -118,7 +121,7 @@ export default function AddInfo({
   );
 
   const StepCounter = () => (
-    <Typography color="primary" variant="subtitle1" component="div">
+    <Typography variant="subtitle1" component="div">
       {isSmallScreen && <GoBackArrow />}
       {texts.step_2_of_2_sign_up}
     </Typography>
@@ -138,11 +141,7 @@ export default function AddInfo({
         <StepCounter />
       </Box>
       <CardContent>
-        {!isSmallScreen && (
-          <Typography color="primary" variant="h3">
-            {texts.signup_step_2_headline}
-          </Typography>
-        )}
+        {!isSmallScreen && <Typography>{texts.signup_step_2_headline}</Typography>}
         <Form
           fields={fields}
           className={classes.formRootClass}

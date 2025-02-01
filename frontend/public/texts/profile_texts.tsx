@@ -278,26 +278,26 @@ export default function getProfileTexts({ profile, locale }) {
       en: (
         <>
           I agree to the{" "}
-          <a href={getLocalePrefix(locale) + "/terms"} target="_blank" rel="noreferrer">
+          <Link href={getLocalePrefix(locale) + "/terms"} target="_blank" rel="noreferrer">
             Terms of Use
-          </a>{" "}
+          </Link>{" "}
           and{" "}
-          <a href={getLocalePrefix(locale) + "/privacy"} target="_blank" rel="noreferrer">
+          <Link href={getLocalePrefix(locale) + "/privacy"} target="_blank" rel="noreferrer">
             Privacy policy
-          </a>
+          </Link>
           .
         </>
       ),
       de: (
         <>
           Ich erkläre mich mit den{" "}
-          <a href={getLocalePrefix(locale) + "/terms"} target="_blank" rel="noreferrer">
+          <Link href={getLocalePrefix(locale) + "/terms"} target="_blank" rel="noreferrer">
             Nutzungsbedingungen
-          </a>{" "}
+          </Link>{" "}
           und den{" "}
-          <a href={getLocalePrefix(locale) + "/privacy"} target="_blank" rel="noreferrer">
+          <Link href={getLocalePrefix(locale) + "/privacy"} target="_blank" rel="noreferrer">
             Datenschutzbestimmungen
-          </a>{" "}
+          </Link>{" "}
           einverstanden.
         </>
       ),

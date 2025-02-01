@@ -3,37 +3,45 @@ import Close from "@mui/icons-material/Close";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
-import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import Form from "./../general/Form";
-import theme from "../../themes/theme";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
+  contrastBackground: {
+    color: theme.palette.background.default_contrastText,
+  },
   appealText: {
-    fontWeight: "bold",
-    textAlign: "center",
+    [theme.breakpoints.down("sm")]: {
+      fontWeight: "bold",
+      textAlign: "center",
+    },
   },
   formRootClass: {
     padding: 0,
     maxWidth: 700,
     margin: "0 auto 0 0", // basically a left align
   },
-  smallScreenHeadline: {
-    fontSize: 35,
-    textAlign: "center",
-    fontWeight: "bold",
-    padding: theme.spacing(4),
+  headline: {
+    color: theme.palette.background.default_contrastText,
+    [theme.breakpoints.down("sm")]: {
+      fontSize: 35,
+      textAlign: "center",
+      fontWeight: "bold",
+      padding: theme.spacing(4),
+    },
   },
   stepIndicator: {
-    marginTop: theme.spacing(1),
-    textAlign: "center",
+    [theme.breakpoints.down("sm")]: {
+      marginTop: theme.spacing(1),
+      textAlign: "center",
+      color: "secondary",
+    },
   },
-});
+}));
 
-export default function BasicInfo({ handleSubmit, errorMessage, values, isSmallScreen }) {
+export default function BasicInfo({ handleSubmit, errorMessage, values, texts, isSmallScreen }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "profile", locale: locale });
   const fields = [
     {
       required: true,
@@ -69,12 +77,7 @@ export default function BasicInfo({ handleSubmit, errorMessage, values, isSmallS
   };
 
   const StepIndicator = () => (
-    <Typography
-      color={isSmallScreen ? "secondary" : "primary"}
-      variant="subtitle1"
-      component="div"
-      className={isSmallScreen ? classes.stepIndicator : ""}
-    >
+    <Typography component="div" className={classes.stepIndicator}>
       {/* TODO: use texts */}
       {texts.step_1_of_2_sign_up}
     </Typography>
@@ -82,22 +85,15 @@ export default function BasicInfo({ handleSubmit, errorMessage, values, isSmallS
 
   const BasicInfoContent = () => (
     <>
-      <Typography
-        color="primary"
-        variant="h1"
-        className={isSmallScreen ? classes.smallScreenHeadline : ""}
-      >
+      <Typography variant="h1" className={classes.headline}>
         {texts.sign_up}
       </Typography>
-      <Typography
-        color={!isSmallScreen ? "primary" : "secondary"}
-        className={isSmallScreen ? classes.appealText : ""}
-      >
+      <Typography className={classes.appealText}>
         {texts.here_you_can_create_your_personal_account}
         {isSmallScreen && <br />}
         {texts.you_will_have_an_opportunity_to_create_or_add_an_organization_once_signed_up}
       </Typography>
-      <StepIndicator />
+      {isSmallScreen && <StepIndicator />}
       <Form
         className={classes.formRootClass}
         fields={fields}

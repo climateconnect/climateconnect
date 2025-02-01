@@ -1,4 +1,4 @@
-import { TextField } from "@mui/material";
+import { TextField, TextFieldProps } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import makeStyles from "@mui/styles/makeStyles";
 import axios from "axios";
@@ -47,6 +47,7 @@ type Props = {
   enableAdditionalInfo?: boolean;
   hideHelperText?: boolean;
   filterMode?: boolean;
+  color?: TextFieldProps["color"];
 };
 export default function LocationSearchBar({
   label,
@@ -70,6 +71,7 @@ export default function LocationSearchBar({
   enableAdditionalInfo,
   hideHelperText,
   filterMode = false, //Are we filtering any content by this location?
+  color,
 }: Props) {
   const { locale } = useContext(UserContext);
   const classes = useStyles({ hideHelperText: hideHelperText });
@@ -319,6 +321,7 @@ export default function LocationSearchBar({
             helperText={helperText}
             size={smallInput && "small"}
             inputRef={locationInputRef}
+            color={color || "contrast"}
             InputProps={{
               ...params.InputProps,
               endAdornment: <React.Fragment>{params.InputProps.endAdornment}</React.Fragment>,
@@ -335,6 +338,7 @@ export default function LocationSearchBar({
       {enableAdditionalInfo && (
         <TextField
           label={texts.additional_infos_for_location}
+          color={color || "contrast"}
           className={classes.additionalInfos}
           value={additionalInfoText}
           onChange={handleChangeAdditionalInfoText}

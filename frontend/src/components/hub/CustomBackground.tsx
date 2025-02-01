@@ -17,6 +17,9 @@ const useStyles = makeStyles((theme) => ({
   prioOneDefaultBackground: {
     backgroundColor: theme.palette.secondary.main,
   },
+  prioOneMobileBackground: {
+    backgroundColor: theme.palette.secondary.light,
+  },
   prioOneAccentBackground: {
     borderLeftColor: theme.palette.secondary.light,
   },
@@ -37,7 +40,7 @@ export default function CustomBackground({ hubUrl }: Props) {
   const mobileScreenSize = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
 
   // TODO: mobileScreenSize is not yet supported
-  if (!hubUrl || mobileScreenSize) {
+  if (!hubUrl) {
     return null;
   }
   const pathname = window.location.pathname;
@@ -45,9 +48,16 @@ export default function CustomBackground({ hubUrl }: Props) {
   switch (hubUrl.toLowerCase()) {
     case "prio1": {
       if (pathname.endsWith("/hubs/prio1")) {
+        if (mobileScreenSize) {
+          return null;
+        }
         return <PrioOneBackgroundBrowse />;
-      } else if (pathname.endsWith("/signup") || pathname.endsWith("/login")) {
-        return <PrioOneBackgroundAuth />;
+      } else if (
+        pathname.endsWith("/signup") ||
+        pathname.endsWith("/signin") ||
+        pathname.endsWith("/accountcreated")
+      ) {
+        return <PrioOneBackgroundAuth mobileScreenSize={mobileScreenSize} />;
       }
     }
     default: {
@@ -61,13 +71,15 @@ function PrioOneBackgroundBrowse() {
   const { user } = useContext(UserContext);
   const loggedIn = !!user;
   const classes = useStyles();
-  const height = loggedIn ? 330 : 500;
-  const triangleLeft = 150;
+  const height = loggedIn ? 30 : 52.1;
+  const width = 100;
+  const triangleBottom = width * 0.5;
+  const triangleLeft = width * 3;
 
   return (
     <div
       className={`${classes.background} ${classes.prioOneDefaultBackground}`}
-      style={{ bottom: "auto", height: `${height}px` }}
+      style={{ bottom: "auto", height: `${height}vh` }}
     >
       {/* Container within the background */}
       <div style={{ position: "relative" }}>
@@ -76,8 +88,8 @@ function PrioOneBackgroundBrowse() {
           style={{
             width: 0,
             height: 0,
-            borderBottom: `${height}px` + " solid transparent",
-            borderLeftWidth: `${triangleLeft}vw`,
+            borderBottom: `${triangleBottom}vh` + " solid transparent",
+            borderLeftWidth: `${triangleLeft}vh`,
             borderLeftStyle: "solid",
 
             position: "absolute",
@@ -92,8 +104,11 @@ function PrioOneBackgroundBrowse() {
   );
 }
 
-function PrioOneBackgroundAuth() {
+function PrioOneBackgroundAuth({ mobileScreenSize }) {
   const classes = useStyles();
+  if (mobileScreenSize) {
+    return <div className={`${classes.background} ${classes.prioOneMobileBackground}`}></div>;
+  }
   return (
     <div className={`${classes.background} ${classes.prioOneDefaultBackground}`}>
       {/* Container within the background */}
