@@ -182,9 +182,9 @@ export default function Signin({ hubSlug, hubThemeData }) {
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
         <ThemeProvider theme={customThemeSignIn}>
-        {isSmallScreen ? (
-          <LoginContent />
-        ) : (
+          {isSmallScreen ? (
+            <LoginContent />
+          ) : (
             <ContentImageSplitView
               minHeight="75vh"
               content={
@@ -205,7 +205,7 @@ export default function Signin({ hubSlug, hubThemeData }) {
                 />
               }
             ></ContentImageSplitView>
-        )}
+          )}
         </ThemeProvider>
       </Container>
     </WideLayout>

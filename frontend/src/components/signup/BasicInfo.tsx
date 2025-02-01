@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("sm")]: {
       fontWeight: "bold",
       textAlign: "center",
-    }
+    },
   },
   formRootClass: {
     padding: 0,
@@ -28,16 +28,16 @@ const useStyles = makeStyles((theme) => ({
       textAlign: "center",
       fontWeight: "bold",
       padding: theme.spacing(4),
-    }
+    },
   },
   stepIndicator: {
     [theme.breakpoints.down("sm")]: {
       marginTop: theme.spacing(1),
       textAlign: "center",
-      color: "secondary"
-    }
+      color: "secondary",
+    },
   },
-}))
+}));
 
 export default function BasicInfo({ handleSubmit, errorMessage, values, texts, isSmallScreen }) {
   const classes = useStyles();
@@ -77,10 +77,7 @@ export default function BasicInfo({ handleSubmit, errorMessage, values, texts, i
   };
 
   const StepIndicator = () => (
-    <Typography
-      component="div"
-      className={classes.stepIndicator}
-    >
+    <Typography component="div" className={classes.stepIndicator}>
       {/* TODO: use texts */}
       {texts.step_1_of_2_sign_up}
     </Typography>
@@ -88,15 +85,10 @@ export default function BasicInfo({ handleSubmit, errorMessage, values, texts, i
 
   const BasicInfoContent = () => (
     <>
-      <Typography
-        variant="h1"
-        className={classes.headline}
-      >
+      <Typography variant="h1" className={classes.headline}>
         {texts.sign_up}
       </Typography>
-      <Typography
-        className={classes.appealText}
-      >
+      <Typography className={classes.appealText}>
         {texts.here_you_can_create_your_personal_account}
         {isSmallScreen && <br />}
         {texts.you_will_have_an_opportunity_to_create_or_add_an_organization_once_signed_up}

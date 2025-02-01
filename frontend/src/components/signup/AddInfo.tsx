@@ -141,11 +141,7 @@ export default function AddInfo({
         <StepCounter />
       </Box>
       <CardContent>
-        {!isSmallScreen && (
-          <Typography >
-            {texts.signup_step_2_headline}
-          </Typography>
-        )}
+        {!isSmallScreen && <Typography>{texts.signup_step_2_headline}</Typography>}
         <Form
           fields={fields}
           className={classes.formRootClass}

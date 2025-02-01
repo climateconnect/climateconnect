@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     display: "block",
   },
   bottomLink: {
-    color: theme.palette.background.default_contrastText
+    color: theme.palette.background.default_contrastText,
   },
   bottomMessageContainer: {
     marginTop: theme.spacing(2),

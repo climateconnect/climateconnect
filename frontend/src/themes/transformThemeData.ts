@@ -11,10 +11,10 @@ export const transformThemeData = (data, baseTheme: any = undefined) => {
         ...restOfDefaultTheme?.components?.MuiLink,
         styleOverrides: {
           root: {
-            color: data?.background_default?.contrastText
-          }
-        }
-      }
+            color: data?.background_default?.contrastText,
+          },
+        },
+      },
     },
     palette: {
       ...palette,
