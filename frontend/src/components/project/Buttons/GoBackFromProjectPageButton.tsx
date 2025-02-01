@@ -34,7 +34,7 @@ export default function GoBackFromProjectPageButton({
   const router = useRouter();
   const goBack = () => {
     const urlParams = new URLSearchParams(window.location.search);
-    const hubPage = urlParams.get("hubPage");
+    const hubPage = urlParams.get("hub");
     const hubsLink = "/" + locale + "/hubs/" + hubPage;
     const browseLink = "/" + locale + "/browse";
     if (hubPage) {

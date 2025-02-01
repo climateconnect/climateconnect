@@ -17,7 +17,6 @@ import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import ProjectSideBar from "../../src/components/project/ProjectSideBar";
 import { transformThemeData } from "../../src/themes/transformThemeData";
-import { CUSTOM_HUB_URLS } from "../../public/data/custom_hub";
 
 type StyleProps = {
   showSimilarProjects: boolean;
@@ -74,7 +73,7 @@ const parseComments = (comments) => {
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const projectUrl = encodeURI(ctx?.query?.projectId);
-  const hubPage = encodeURI(ctx?.query?.hubPage);
+  const hubUrl = encodeURI(ctx?.query?.hub);
   const [
     project,
     members,
@@ -93,8 +92,8 @@ export async function getServerSideProps(ctx) {
     auth_token ? getUsersInteractionWithProject(projectUrl, auth_token, ctx.locale) : false,
     getAllHubs(ctx.locale),
     getSimilarProjects(projectUrl, ctx.locale),
-    hubPage ? getHubSupporters(hubPage, ctx.locale) : null,
-    hubPage ? getHubTheme(hubPage) : null,
+    hubUrl ? getHubSupporters(hubUrl, ctx.locale) : null,
+    hubUrl ? getHubTheme(hubUrl) : null,
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -108,7 +107,7 @@ export async function getServerSideProps(ctx) {
       hubs: hubs,
       similarProjects: similarProjects,
       hubSupporters: hubSupporters,
-      hubPage,
+      hubUrl,
       hubThemeData: hubThemeData,
     }),
   };
@@ -125,12 +124,12 @@ export default function ProjectPage({
   hubs,
   similarProjects,
   hubSupporters,
-  hubPage,
+  hubUrl,
   hubThemeData,
 }) {
   const token = new Cookies().get("auth_token");
   const [curComments, setCurComments] = useState(parseComments(comments));
-  const [message, setMessage] = useState({});
+  const [message, setMessage] = useState({message: undefined, messageType: undefined});
   const [isUserFollowing, setIsUserFollowing] = useState(following);
   const [isUserLiking, setIsUserLiking] = useState(liking);
   const [requestedToJoinProject, setRequestedToJoinProject] = useState(hasRequestedToJoin);
@@ -138,7 +137,7 @@ export default function ProjectPage({
   const [likingChangePending, setLikingChangePending] = useState(false);
   const [numberOfLikes, setNumberOfLikes] = useState(project?.number_of_likes);
   const [numberOfFollowers, setNumberOfFollowers] = useState(project?.number_of_followers);
-  const { user, locale } = useContext(UserContext);
+  const { CUSTOM_HUB_URLS, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [showSimilarProjects, setShowSimilarProjects] = useState(true);
   const [projectTypes, setProjectTypes] = useState([]);
@@ -232,7 +231,7 @@ export default function ProjectPage({
 
   const hubsSubHeaderRef = useRef(null);
   const tinyScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
-  const isCustomHub = CUSTOM_HUB_URLS.includes(hubPage);
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
 
   return (
     <WideLayout
@@ -253,6 +252,9 @@ export default function ProjectPage({
         )
       }
       customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+      isHubPage={!!hubUrl}
+      hubUrl={hubUrl}
+      headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
       image={project ? getImageUrl(project.image) : undefined}
     >
       <BrowseContext.Provider value={contextValues}>
@@ -283,7 +285,7 @@ export default function ProjectPage({
                 requestedToJoinProject={requestedToJoinProject}
                 handleJoinRequest={handleJoinRequest}
                 hubSupporters={hubSupporters}
-                hubPage={hubPage}
+                hubPage={hubUrl}
               />
             </div>
             <div className={classes.secondaryContent}>
@@ -295,7 +297,7 @@ export default function ProjectPage({
                   locale={locale}
                   texts={texts}
                   hubSupporters={hubSupporters}
-                  hubName={hubPage}
+                  hubName={hubUrl}
                 />
               )}
             </div>
