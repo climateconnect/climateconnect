@@ -5,18 +5,15 @@ import { redirectOnLogin } from "../public/lib/profileOperations";
 import getTexts from "../public/texts/texts";
 import WideLayout from "../src/components/layouts/WideLayout";
 import UserContext from "./../src/components/context/UserContext";
-import Form from "./../src/components/general/Form";
-import Image from "next/image";
 import { ThemeProvider } from "@emotion/react";
 import { themeSignUp } from "../src/themes/signupTheme";
-import { Card, CardContent, Typography, Container, Theme, useMediaQuery } from "@mui/material";
-import ContentImageSplitView from "../src/components/layouts/ContentImageSplitLayout";
+import { Container, Link, Theme, useMediaQuery } from "@mui/material";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
-import makeStyles from "@mui/styles/makeStyles";
+import Login from "../src/components/signup/Login"
 
 export async function getServerSideProps(ctx) {
-  const hubSlug = ctx.query.hubName;
+  const hubSlug = ctx.query.hub;
 
   // early return to avoid fetching /undefined/theme
   if (!hubSlug) {
@@ -41,24 +38,10 @@ export async function getServerSideProps(ctx) {
   };
 }
 
-const useStyles = makeStyles((theme) => ({
-  title: {
-    [theme.breakpoints.down("sm")]: {
-      padding: theme.spacing(4),
-      paddingBottom: theme.spacing(2),
-      textAlign: "center",
-      fontSize: 35,
-      fontWeight: "bold",
-    },
-  },
-}));
-
 export default function Signin({ hubSlug, hubThemeData }) {
-  const classes = useStyles();
   const { user, signIn, locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
   const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
-  const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const fields = [
     {
@@ -80,7 +63,7 @@ export default function Signin({ hubSlug, hubThemeData }) {
     bottomMessage: (
       <span>
         {texts.new_to_climate_connect}{" "}
-        <a href={getLocalePrefix(locale) + "/signup"}>{texts.click_here_to_create_an_account}</a>
+        <Link style={{textDecoration: "underline"}} href={getLocalePrefix(locale) + "/signup"}>{texts.click_here_to_create_an_account}</Link>
       </span>
     ),
   };
@@ -149,26 +132,6 @@ export default function Signin({ hubSlug, hubThemeData }) {
     ? transformThemeData(hubThemeData, themeSignUp)
     : themeSignUp;
 
-  const LoginContent = () => {
-    return (
-      <>
-        <Typography color="primary" variant="h1" className={classes.title}>
-          {texts.log_in}
-        </Typography>
-        <Typography color="primary" variant="h3"></Typography>
-
-        <Form
-          fields={fields}
-          messages={messages}
-          bottomLink={bottomLink}
-          usePercentage={false}
-          onSubmit={handleSubmit}
-          errorMessage={errorMessage}
-        />
-      </>
-    );
-  };
-
   return (
     <WideLayout
       title={texts.log_in}
@@ -179,33 +142,19 @@ export default function Signin({ hubSlug, hubThemeData }) {
       customTheme={customTheme}
       isHubPage={hubSlug !== ""}
       hubUrl={hubSlug}
+      headerBackground="transparent"
+      footerTextColor={hubSlug && "white"}
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
         <ThemeProvider theme={customThemeSignIn}>
-          {isSmallScreen ? (
-            <LoginContent />
-          ) : (
-            <ContentImageSplitView
-              minHeight="75vh"
-              content={
-                <Card variant="outlined">
-                  <CardContent>
-                    <LoginContent />
-                  </CardContent>
-                </Card>
-              }
-              leftGridSizes={{ md: 7 }}
-              rightGridSizes={{ md: 5 }}
-              image={
-                <Image
-                  src="/images/sign_up/mobile-login-pana.svg"
-                  alt="Sign Up"
-                  layout="fill" // Image will cover the container
-                  objectFit="contain" // Ensures it fills without stretching
-                />
-              }
-            ></ContentImageSplitView>
-          )}
+          <Login 
+            texts={texts}
+            fields={fields}
+            messages={messages}
+            bottomLink={bottomLink}
+            handleSubmit={handleSubmit}
+            errorMessage={errorMessage}
+          />
         </ThemeProvider>
       </Container>
     </WideLayout>
