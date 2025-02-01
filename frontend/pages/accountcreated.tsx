@@ -1,4 +1,4 @@
-import {  Container, Theme, ThemeProvider, useMediaQuery } from "@mui/material";
+import { Container, Theme, ThemeProvider, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../public/texts/texts";
@@ -8,7 +8,6 @@ import WideLayout from "../src/components/layouts/WideLayout";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
 import AccountCreatedContent from "../src/components/signup/AccountCreatedContent";
-
 
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hub;

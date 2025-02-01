@@ -3,7 +3,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import { Typography } from "@mui/material";
 import ContentImageSplitView from "../layouts/ContentImageSplitLayout";
 import { Card } from "@mui/material";
-import AccountCreatedIcon from "../../../public/images/sign_up/success-factors-pana.svg"
+import AccountCreatedIcon from "../../../public/images/sign_up/success-factors-pana.svg";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   },
   icon: {
     color: theme.palette.background.default_contrastText,
-  }
+  },
 }));
 
 export default function AccountCreatedContent({ isSmallScreen, texts }) {
@@ -68,7 +68,7 @@ export default function AccountCreatedContent({ isSmallScreen, texts }) {
           </div>
         </Card>
       }
-      image={<AccountCreatedIcon className={classes.icon}/>}
+      image={<AccountCreatedIcon className={classes.icon} />}
     ></ContentImageSplitView>
   );
 }
