@@ -3,13 +3,45 @@ import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
 import { redirectOnLogin } from "../public/lib/profileOperations";
 import getTexts from "../public/texts/texts";
-import Layout from "../src/components/layouts/layout";
+import WideLayout from "../src/components/layouts/WideLayout";
 import UserContext from "./../src/components/context/UserContext";
-import Form from "./../src/components/general/Form";
+import { ThemeProvider } from "@emotion/react";
+import { themeSignUp } from "../src/themes/signupTheme";
+import { Container, Link, Theme, useMediaQuery } from "@mui/material";
+import getHubTheme from "../src/themes/fetchHubTheme";
+import { transformThemeData } from "../src/themes/transformThemeData";
+import Login from "../src/components/signup/Login";
 
-export default function Signin() {
+export async function getServerSideProps(ctx) {
+  const hubSlug = ctx.query.hub;
+
+  // early return to avoid fetching /undefined/theme
+  if (!hubSlug) {
+    return {
+      props: {},
+    };
+  }
+  const hubThemeData = await getHubTheme(hubSlug);
+
+  // early return to avoid a hubSlug, that is not supported within the backend
+  if (!hubThemeData) {
+    return {
+      props: {},
+    };
+  }
+
+  return {
+    props: {
+      hubSlug: hubSlug || null, // undefined is not allowed in JSON, so we use null
+      hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
+    },
+  };
+}
+
+export default function Signin({ hubSlug, hubThemeData }) {
   const { user, signIn, locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
+  const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
 
   const fields = [
     {
@@ -31,7 +63,9 @@ export default function Signin() {
     bottomMessage: (
       <span>
         {texts.new_to_climate_connect}{" "}
-        <a href={getLocalePrefix(locale) + "/signup"}>{texts.click_here_to_create_an_account}</a>
+        <Link style={{ textDecoration: "underline" }} href={getLocalePrefix(locale) + "/signup"}>
+          {texts.click_here_to_create_an_account}
+        </Link>
       </span>
     ),
   };
@@ -95,16 +129,36 @@ export default function Signin() {
       });
   };
 
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+  const customThemeSignIn = hubThemeData
+    ? transformThemeData(hubThemeData, themeSignUp)
+    : themeSignUp;
+
   return (
-    <Layout title={texts.log_in} isLoading={isLoading} messageType="error">
-      <Form
-        fields={fields}
-        messages={messages}
-        bottomLink={bottomLink}
-        usePercentage={false}
-        onSubmit={handleSubmit}
-        errorMessage={errorMessage}
-      />
-    </Layout>
+    <WideLayout
+      title={texts.log_in}
+      // message={errorMessage}
+      // messageType={errorMessage && "error"}
+      messageType="error"
+      isLoading={isLoading}
+      customTheme={customTheme}
+      isHubPage={hubSlug !== ""}
+      hubUrl={hubSlug}
+      headerBackground="transparent"
+      footerTextColor={hubSlug && "white"}
+    >
+      <Container maxWidth={hugeScreen ? "xl" : "lg"}>
+        <ThemeProvider theme={customThemeSignIn}>
+          <Login
+            texts={texts}
+            fields={fields}
+            messages={messages}
+            bottomLink={bottomLink}
+            handleSubmit={handleSubmit}
+            errorMessage={errorMessage}
+          />
+        </ThemeProvider>
+      </Container>
+    </WideLayout>
   );
 }

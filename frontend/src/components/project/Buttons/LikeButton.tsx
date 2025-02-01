@@ -123,7 +123,7 @@ export default function LikeButton({
           <ButtonIcon
             icon="like"
             size={40}
-            color={isUserLiking ? "earth" : theme.palette.primary.contrastText}
+            color={isUserLiking ? "earth" : theme.palette.background.default_contrastText}
           />
         </IconButton>
         {numberOfLikes > 0 && (
@@ -143,7 +143,7 @@ export default function LikeButton({
           <ButtonIcon
             icon="like"
             size={40}
-            color={isUserLiking ? "earth" : theme.palette.primary.contrastText}
+            color={isUserLiking ? "earth" : theme.palette.background.default_contrastText}
           />
         </IconButton>
         {numberOfLikes > 0 && (

@@ -172,11 +172,17 @@ export default function getProfileTexts({ profile, locale }) {
       en: "Congratulations! Just one more step to complete your signup!",
       de: "Glückwunsch! Nur noch ein Schritt, um Deine Anmeldung abzuschließen!",
     },
-    please_click_on_the_link_we_emailed_you_to_activate_your_account: {
-      en:
-        "We have sent you an E-Mail with a link! Please click on the link to activate your account.",
-      de:
-        "Wir haben dir eine E-Mail mit einem Link geschickt! Bitte klicke auf den Link, um dein Konto zu aktivieren.",
+    almost_done: {
+      en: "Almost there!",
+      de: "Fast geschafft!",
+    },
+    we_sent_you_an_email_with_a_link: {
+      en: "We have sent you an E-Mail with a link!",
+      de: "Wir haben dir eine E-Mail mit einem Link geschickt!",
+    },
+    please_click_on_the_link_to_activate_your_account: {
+      en: "Please click on the link to activate your account.",
+      de: "Bitte klicke auf den Link, um dein Konto zu aktivieren.",
     },
     make_sure_to_also_check_your_spam: {
       en: "Make sure to also check your spam/junk folder in case you can't find the link.",
@@ -272,26 +278,26 @@ export default function getProfileTexts({ profile, locale }) {
       en: (
         <>
           I agree to the{" "}
-          <a href={getLocalePrefix(locale) + "/terms"} target="_blank" rel="noreferrer">
+          <Link href={getLocalePrefix(locale) + "/terms"} target="_blank" rel="noreferrer">
             Terms of Use
-          </a>{" "}
+          </Link>{" "}
           and{" "}
-          <a href={getLocalePrefix(locale) + "/privacy"} target="_blank" rel="noreferrer">
+          <Link href={getLocalePrefix(locale) + "/privacy"} target="_blank" rel="noreferrer">
             Privacy policy
-          </a>
+          </Link>
           .
         </>
       ),
       de: (
         <>
           Ich erkläre mich mit den{" "}
-          <a href={getLocalePrefix(locale) + "/terms"} target="_blank" rel="noreferrer">
+          <Link href={getLocalePrefix(locale) + "/terms"} target="_blank" rel="noreferrer">
             Nutzungsbedingungen
-          </a>{" "}
+          </Link>{" "}
           und den{" "}
-          <a href={getLocalePrefix(locale) + "/privacy"} target="_blank" rel="noreferrer">
+          <Link href={getLocalePrefix(locale) + "/privacy"} target="_blank" rel="noreferrer">
             Datenschutzbestimmungen
-          </a>{" "}
+          </Link>{" "}
           einverstanden.
         </>
       ),

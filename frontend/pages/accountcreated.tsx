@@ -1,90 +1,51 @@
-import {
-  Button,
-  Card,
-  CardContent,
-  Container,
-  Link,
-  Theme,
-  ThemeProvider,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Container, Theme, ThemeProvider, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
-import { getLocalePrefix } from "../public/lib/apiOperations";
-import Image from "next/image";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import { themeSignUp } from "../src/themes/signupTheme";
-import ContentImageSplitView from "../src/components/layouts/ContentImageSplitLayout";
 import WideLayout from "../src/components/layouts/WideLayout";
+import getHubTheme from "../src/themes/fetchHubTheme";
+import { transformThemeData } from "../src/themes/transformThemeData";
+import AccountCreatedContent from "../src/components/signup/AccountCreatedContent";
 
-const useStyles = makeStyles((theme) => ({
-  italic: {
-    fontStyle: "italic",
-  },
-  centerText: {
-    textAlign: "center",
-  },
-  centerContent: {
-    display: "flex",
-    justifyContent: "center",
-  },
-  marginBottom: {
-    marginBottom: theme.spacing(5),
-  },
-}));
+export async function getServerSideProps(ctx) {
+  const hubUrl = ctx.query.hub;
 
-export default function AccountCreated() {
-  const classes = useStyles();
+  const hubThemeData = await getHubTheme(hubUrl);
+
+  return {
+    props: {
+      hubUrl: hubUrl || null, // undefined is not allowed in JSON, so we use null
+      hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
+    },
+  };
+}
+
+export default function AccountCreated({ hubUrl, hubThemeData }) {
   const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
+  const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
 
-  const cardContent = (
-    <div>
-      <Typography
-        color="primary"
-        variant="h3"
-        className={`${classes.italic} ${classes.centerText}`}
-      >
-        {texts.just_one_more_step_to_complete_your_signup}
-      </Typography>
-      <br />
-      <Typography color="primary" variant="h2">
-        {texts.please_click_on_the_link_we_emailed_you_to_activate_your_account}
-      </Typography>
-      <br />
-      <Typography color="primary" component="p" variant="h3">
-        {texts.make_sure_to_also_check_your_spam}
-        <br />
-        {texts.if_the_email_does_not_arrive_after_5_minutes}
-      </Typography>
-    </div>
-  );
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+  const customThemeSignUp = hubThemeData
+    ? transformThemeData(hubThemeData, themeSignUp)
+    : themeSignUp;
 
   return (
-    <WideLayout title={texts.account_created}>
+    <WideLayout
+      title={texts.account_created}
+      isHubPage={hubUrl !== ""}
+      customTheme={customTheme}
+      hubUrl={hubUrl}
+      headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
+      footerTextColor={hubUrl && "white"}
+    >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
-        <ThemeProvider theme={themeSignUp}>
-          <ContentImageSplitView
-            minHeight="75vh"
-            direction="row-reverse"
-            content={
-              <Card>
-                <CardContent>{cardContent}</CardContent>
-              </Card>
-            }
-            image={
-              <Image
-                src="/images/sign_up/success-factors-pana.svg"
-                alt="Sign Up"
-                layout="fill" // Image will cover the container
-                objectFit="contain" // Ensures it fills without stretching
-              />
-            }
-          ></ContentImageSplitView>
+        <ThemeProvider theme={customThemeSignUp}>
+          <AccountCreatedContent isSmallScreen={isSmallScreen} texts={texts} />
         </ThemeProvider>
       </Container>
     </WideLayout>

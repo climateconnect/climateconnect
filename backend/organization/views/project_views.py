@@ -158,7 +158,7 @@ class ListProjectsView(ListAPIView):
             )
         )
 
-        if "hub" in self.request.query_params:
+        if False and "hub" in self.request.query_params:
             hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
             if hub.exists():
                 if hub[0].hub_type == Hub.SECTOR_HUB_TYPE:
@@ -330,6 +330,23 @@ class CreateProjectView(APIView):
                         "message": "Missing required information to create project:"
                         + param
                         + " Please contact administrator"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        max_chars = {
+            "name": 1024,
+            "short_description": 280,
+            "description": 4800,
+            "website": 256,
+            "additional_loc_info": 256,
+        }
+        for param in max_chars.keys():
+            if param in request.data and len(request.data[param]) > max_chars[param]:
+                return Response(
+                    {
+                        "message": "Your value for this field is too long: "
+                        + param
+                        + ". Please make a change or contact an administrator at contact@climateconnect.earth"
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )

@@ -45,6 +45,10 @@ export const coreTheme = createTheme({
       paper: "#FFFFFF",
       default_contrastText: "#207178",
     },
+    contrast: {
+      main: "#207178",
+      contrastText: "#FFFFFF",
+    },
     action: {
       selected: "#387077",
     },
