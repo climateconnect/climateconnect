@@ -2,8 +2,15 @@ import { Button, CircularProgress, Link, Tooltip, Typography, useTheme } from "@
 import makeStyles from "@mui/styles/makeStyles";
 import React, { MouseEventHandler } from "react";
 import ButtonIcon from "./ButtonIcon";
+import { Theme } from "@mui/material/styles";
 
-const useStyles = makeStyles((theme) => ({
+type MakeStylesProps = {
+  hasAdminPermissions?: boolean;
+  followingChangePending?: boolean;
+  belowSmallScreen?: boolean;
+};
+
+const useStyles = makeStyles((theme: Theme) => ({
   followButtonContainer: {
     display: "inline-flex",
     flexDirection: "column",
@@ -20,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 500,
     fontSize: 18,
   },
-  followingButton: (props) => ({
+  followingButton: (props: MakeStylesProps) => ({
     marginLeft: props.hasAdminPermissions ? theme.spacing(2) : theme.spacing(0.25),
     marginRight: props.hasAdminPermissions ? theme.spacing(2) : theme.spacing(0.25),
     whiteSpace: "nowrap",
@@ -144,7 +151,7 @@ export default function FollowButton({
 }
 
 function LinkWithText({ numberOfFollowers, texts, toggleShowFollowers }) {
-  const classes = useStyles();
+  const classes = useStyles({});
   return (
     <Link
       color="text.primary"

@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     background: props.isCustomHub ? theme.palette.secondary.main : theme.palette.primary.main,
   }),
   link: {
-    color: theme.palette.background.default,
+    color: theme.palette.primary.contrastText,
     display: "inline-block",
     fontWeight: 600,
     marginRight: theme.spacing(2),
