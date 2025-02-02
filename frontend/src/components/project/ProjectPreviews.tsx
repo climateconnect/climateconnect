@@ -22,7 +22,6 @@ export default function ProjectPreviews({
   loadFunc,
   parentHandlesGridItems,
   projects,
-  firstProjectCardRef,
   hubUrl,
   displayOnePreviewInRow,
 }: any) {
@@ -34,8 +33,6 @@ export default function ProjectPreviews({
       <GridItem
         key={p.url_slug}
         project={p}
-        isFirstProject={projects.indexOf(p) === 0}
-        firstProjectCardRef={firstProjectCardRef}
         hubUrl={hubUrl}
         displayOnePreviewInRow={displayOnePreviewInRow}
       />
@@ -90,19 +87,10 @@ export default function ProjectPreviews({
   );
 }
 
-function GridItem({
-  project,
-  isFirstProject,
-  firstProjectCardRef,
-  hubUrl,
-  displayOnePreviewInRow,
-}) {
+function GridItem({ project, hubUrl, displayOnePreviewInRow }) {
   const projectPreviewProps = {
     project: project,
   } as any;
-  if (isFirstProject) {
-    projectPreviewProps.projectRef = firstProjectCardRef;
-  }
 
   const columnValuesFromBreakpoint = {
     xsValue: 12,

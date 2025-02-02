@@ -148,14 +148,12 @@ class SignUpView(APIView):
             send_newsletter=request.data["send_newsletter"],
             language=source_language,
         )
-        if "from_tutorial" in request.data:
-            user_profile.from_tutorial = request.data["from_tutorial"]
         if "is_activist" in request.data:
             user_profile.is_activist = request.data["is_activist"]
-        if "last_completed_tutorial_step" in request.data:
-            user_profile.last_completed_tutorial_step = request.data[
-                "last_completed_tutorial_step"
-            ]
+        # if "last_completed_tutorial_step" in request.data:
+        #     user_profile.last_completed_tutorial_step = request.data[
+        #         "last_completed_tutorial_step"
+        #     ]
 
         hub = Hub.objects.filter(url_slug=request.data["hub"]).first()
         if hub:

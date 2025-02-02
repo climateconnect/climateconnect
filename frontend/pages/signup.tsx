@@ -10,10 +10,6 @@ import {
   parseLocation,
 } from "../public/lib/locationOperations";
 import { redirectOnLogin } from "../public/lib/profileOperations";
-import {
-  getLastCompletedTutorialStep,
-  getLastStepBeforeSkip,
-} from "../public/lib/tutorialOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import BasicInfo from "../src/components/signup/BasicInfo";
@@ -127,9 +123,6 @@ export default function Signup({ hubUrl, hubThemeData }) {
       last_name: values.last_name.trim(),
       location: parseLocation(location),
       send_newsletter: values.sendNewsletter,
-      from_tutorial: params?.from_tutorial === "true",
-      is_activist: isClimateActorCookie?.isActivist,
-      last_completed_tutorial_step: lastCompletedTutorialStep,
       source_language: locale,
       hub: hubUrl,
     };

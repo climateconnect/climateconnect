@@ -139,13 +139,11 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export default function ProjectContent({
-  collaborationSectionRef,
   discussionTabLabel,
   handleTabChange,
   latestParentComment,
   leaveProject,
   project,
-  projectDescriptionRef,
   projectTabsRef,
   typesByTabValue,
   showRequesters,
@@ -287,7 +285,6 @@ export default function ProjectContent({
           component="h2"
           variant="h6"
           color={theme.palette.background.default_contrastText}
-          ref={projectDescriptionRef}
           className={classes.subHeader}
         >
           {getProjectDescriptionHeadline()}
@@ -295,7 +292,7 @@ export default function ProjectContent({
         <Typography className={classes.projectDescription} component="div">
           {project.description ? (
             showFullDescription || project.description.length <= maxDisplayedDescriptionLength ? (
-              <MessageContent content={project.description} renderYoutubeVideos={1} />
+              <MessageContent content={project.description} renderYoutubeVideos={true} />
             ) : (
               <MessageContent
                 content={project.description.substr(0, maxDisplayedDescriptionLength) + "..."}
@@ -331,7 +328,7 @@ export default function ProjectContent({
           projectTabsRef={projectTabsRef}
         />
       )}
-      <div className={classes.contentBlock} ref={collaborationSectionRef}>
+      <div className={classes.contentBlock}>
         <Typography
           component="h2"
           variant="h6"

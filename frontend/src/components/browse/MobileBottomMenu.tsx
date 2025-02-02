@@ -32,7 +32,6 @@ export default function MobileBottomMenu({
   tabValue,
   handleTabChange,
   TYPES_BY_TAB_VALUE,
-  organizationsTabRef,
   hubAmbassador,
 }) {
   const type_icons = {

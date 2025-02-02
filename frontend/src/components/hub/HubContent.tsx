@@ -129,8 +129,6 @@ export default function HubContent({
   subHeadline,
   welcomeMessageLoggedIn,
   welcomeMessageLoggedOut,
-  hubQuickInfoRef,
-  hubProjectsButtonRef,
   isLocationHub,
   hubAmbassador,
   hubSupporters,
@@ -238,7 +236,6 @@ export default function HubContent({
               hubUrl={hubUrl}
             />
             <BottomContent
-              hubQuickInfoRef={hubQuickInfoRef}
               detailledInfo={detailledInfo}
               quickInfo={quickInfo}
               expanded={expanded}
@@ -264,7 +261,6 @@ export default function HubContent({
             variant="contained"
             color="primary"
             onClick={scrollToSolutions}
-            ref={hubProjectsButtonRef}
           >
             <ExpandMoreIcon /> {texts.show_projects}
           </Button>
@@ -275,7 +271,6 @@ export default function HubContent({
 }
 
 const BottomContent = ({
-  hubQuickInfoRef,
   detailledInfo,
   quickInfo,
   expanded,
@@ -291,13 +286,13 @@ const BottomContent = ({
     <>
       <div>
         {!isLocationHub && (
-          <div className={`${classes.quickInfo} ${classes.marginTop}`} ref={hubQuickInfoRef}>
+          <div className={`${classes.quickInfo} ${classes.marginTop}`}>
             <MessageContent content={quickInfo} />
           </div>
         )}
         <Collapse in={expanded}>
           {isLocationHub && (
-            <div className={`${classes.quickInfo} ${classes.marginTop}`} ref={hubQuickInfoRef}>
+            <div className={`${classes.quickInfo} ${classes.marginTop}`}>
               <MessageContent content={quickInfo} />
             </div>
           )}

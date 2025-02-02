@@ -201,9 +201,6 @@ export default function Hub({
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
   //Refs and state for tutorial
-  const hubQuickInfoRef = useRef(null);
-  const hubProjectsButtonRef = useRef(null);
-  const [nextStepTriggeredBy, setNextStepTriggeredBy] = useState(false);
   const [requestTabNavigation, tabNavigationRequested] = useState("foo");
 
   const navRequested = (tabKey) => {
@@ -211,7 +208,6 @@ export default function Hub({
   };
 
   const scrollToSolutions = () => {
-    setNextStepTriggeredBy("showProjectsButton");
     contentRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -311,7 +307,6 @@ export default function Hub({
             />
           )}
           <HubContent
-            hubQuickInfoRef={hubQuickInfoRef}
             headline={headline}
             hubAmbassador={hubAmbassador}
             hubSupporters={hubSupporters}
@@ -330,7 +325,6 @@ export default function Hub({
             subHeadline={subHeadline}
             welcomeMessageLoggedIn={welcomeMessageLoggedIn}
             welcomeMessageLoggedOut={welcomeMessageLoggedOut}
-            hubProjectsButtonRef={hubProjectsButtonRef}
             isLocationHub={isLocationHub}
             location={hubLocation}
             allHubs={allHubs}
@@ -352,13 +346,10 @@ export default function Hub({
               handleSetErrorMessage={handleSetErrorMessage}
               hideMembers={!isLocationHub}
               hubName={name}
-              hubProjectsButtonRef={hubProjectsButtonRef}
-              hubQuickInfoRef={hubQuickInfoRef}
               initialLocationFilter={initialLocationFilter}
               // TODO: is this still needed?
               // initialOrganizations={initialOrganizations}
               // initialProjects={initialProjects}
-              nextStepTriggeredBy={nextStepTriggeredBy}
               allHubs={allHubs}
               hubLocation={hubLocation}
               hubData={hubData}
@@ -427,9 +418,10 @@ const getHubData = async (url_slug, locale) => {
     });
     return resp.data;
   } catch (err: any) {
-    if (err.response && err.response.data)
-      console.log("Error in getHubData: " + err.response.data.detail);
-    console.log(err);
+    if (err.response && err.response.data) {
+      console.log(err.response.data);
+      console.error("Error in getHubData!: " + err.response.data.detail);
+    }
     return null;
   }
 };

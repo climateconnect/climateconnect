@@ -21,7 +21,6 @@ import getOrganizationTexts from "./organization_texts";
 import getProfileTexts from "./profile_texts";
 import getProjectTexts from "./project_texts";
 import settings_texts from "./settings.json";
-import getTutorialTexts from "./tutorial_texts";
 import custom_hub_texts from "./custom_hub_texts";
 
 type Page =
@@ -45,8 +44,7 @@ type Page =
   | "organization"
   | "profile"
   | "project"
-  | "settings"
-  | "tutorial";
+  | "settings";
 type Args<P extends Page> = {
   classes?: ClassNameMap;
   filterType?: string;
@@ -127,7 +125,6 @@ export default function getTexts<P extends Page>({
       hubName: hubName,
     }),
     settings: settings_texts,
-    tutorial: getTutorialTexts({ hubName: hubName, classes: classes, locale: locale }),
   };
 
   let text = { ...texts[page], ...general_texts };
