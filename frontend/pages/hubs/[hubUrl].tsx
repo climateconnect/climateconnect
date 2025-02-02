@@ -350,7 +350,6 @@ export default function Hub({
               // TODO: is this still needed?
               // initialOrganizations={initialOrganizations}
               // initialProjects={initialProjects}
-              nextStepTriggeredBy={nextStepTriggeredBy}
               allHubs={allHubs}
               hubLocation={hubLocation}
               hubData={hubData}
@@ -419,8 +418,10 @@ const getHubData = async (url_slug, locale) => {
     });
     return resp.data;
   } catch (err: any) {
-    if (err.response && err.response.data)
-      console.error("Error in getHubData: " + err.response.data.detail);
+    if (err.response && err.response.data){
+      console.log(err.response.data)
+      console.error("Error in getHubData!: " + err.response.data.detail);
+    }
     return null;
   }
 };

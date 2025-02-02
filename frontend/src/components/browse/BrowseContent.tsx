@@ -73,17 +73,11 @@ export default function BrowseContent({
   handleSetErrorMessage,
   hideMembers,
   hubName,
-  hubProjectsButtonRef,
-  hubQuickInfoRef,
-  hubsSubHeaderRef,
-  nextStepTriggeredBy,
   allHubs,
-  hubLocation,
   hubData,
   filters,
   handleUpdateFilterValues,
   initialLocationFilter,
-  resetTabsWhereFiltersWereApplied,
   hubUrl,
   hubAmbassador,
   contentRef,
@@ -516,7 +510,6 @@ export default function BrowseContent({
                 label: type_names[t],
                 className: classes.tab,
               };
-              if (index === 1) tabProps.ref = organizationsTabRef;
               return <Tab {...tabProps} key={index} />;
             })}
           </Tabs>
