@@ -48,6 +48,7 @@ const useStyles = makeStyles<
     marginLeft: props.closeButtonRightSide ? theme.spacing(-1) : theme.spacing(1),
     marginRight: props.closeButtonRightSide ? theme.spacing(5) : theme.spacing(2),
     fontSize: 20,
+    color: theme.palette.text.primary,
   }),
   dialogTitle: {
     display: "flex",
@@ -57,6 +58,10 @@ const useStyles = makeStyles<
   saveIconButton: {
     background: theme.palette.primary.main,
     color: "white",
+  },
+  buttomBtnContainer: {
+    textAlign: "center",
+    marginBottom: theme.spacing(2),
   },
 }));
 
@@ -76,6 +81,9 @@ type Props = PropsWithChildren<{
   titleTextClassName?: string;
   dialogContentClass?: string;
   applyIcon?: any;
+  closeButtonRightStyle?: string;
+  showApplyAtBottom?: boolean;
+  buttonAsLink?: string;
 }>;
 /**
  * Simple base wrapper on top of the Material UI (MUI)
@@ -100,6 +108,9 @@ export default function GenericDialog({
   titleTextClassName,
   dialogContentClass,
   applyIcon,
+  closeButtonRightStyle,
+  showApplyAtBottom,
+  buttonAsLink,
 }: Props) {
   const classes = useStyles({
     useApplyButton,
@@ -138,7 +149,7 @@ export default function GenericDialog({
         <Typography component="h2" className={`${titleTextClassName} ${classes.titleText}`}>
           {title}
         </Typography>
-        {useApplyButton && applyText && (
+        {useApplyButton && applyText && !showApplyAtBottom && (
           <>
             {applyIcon && isSmallScreen ? (
               <IconButton className={classes.saveIconButton} size="large">
@@ -159,7 +170,7 @@ export default function GenericDialog({
         {onClose && closeButtonRightSide && (
           <IconButton
             aria-label="close"
-            className={classes.closeButtonRight}
+            className={`classes.closeButtonRight ${closeButtonRightStyle}`}
             onClick={onClose}
             size={closeButtonSmall ? "small" : undefined}
           >
@@ -173,6 +184,34 @@ export default function GenericDialog({
         } ${dialogContentClass}`}
       >
         {children}
+        {useApplyButton && applyText && showApplyAtBottom && (
+          <div className={classes.buttomBtnContainer}>
+            {applyIcon && isSmallScreen ? (
+              <IconButton className={classes.saveIconButton} size="large">
+                <applyIcon.icon />
+              </IconButton>
+            ) : buttonAsLink ? (
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.applyButton}
+                component="a"
+                href={buttonAsLink}
+              >
+                {applyText}
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.applyButton}
+                onClick={onApply}
+              >
+                {applyText}
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     </Dialog>
   );

@@ -1,4 +1,4 @@
-import { Button, Typography } from "@mui/material";
+import { Button, Typography, useTheme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -6,6 +6,7 @@ import humanizeDuration from "humanize-duration";
 import React, { useState, useContext } from "react";
 import TimeAgo from "react-timeago";
 import youtubeRegex from "youtube-regex";
+import { Theme } from "@mui/material/styles";
 
 // Relative imports
 import { germanYearAndDayFormatter, yearAndDayFormatter } from "../../utils/formatting";
@@ -21,7 +22,7 @@ import ProjectContentSideButtons from "./Buttons/ProjectContentSideButtons";
 
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   createdBy: {
     fontSize: 16,
   },
@@ -59,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
   },
   expandButton: {
     width: "100%",
+    color: theme.palette.background.default_contrastText,
   },
   icon: {
     verticalAlign: "bottom",
@@ -174,7 +176,7 @@ export default function ProjectContent({
   };
   const maxDisplayedDescriptionLength = project.description
     ? calculateMaxDisplayedDescriptionLength(project.description)
-    : null;
+    : 0;
 
   //return the right static text depending on the project type
   const getProjectDescriptionHeadline = () => {
@@ -190,7 +192,7 @@ export default function ProjectContent({
     if (type === "idea") return texts.this_idea_hasnt_added_a_description_yet;
     return texts.this_project_hasnt_added_a_description_yet;
   };
-
+  const theme = useTheme();
   return (
     <>
       <div className={classes.contentBlock}>
@@ -279,13 +281,18 @@ export default function ProjectContent({
         </div>
       </div>
       <div className={classes.contentBlock}>
-        <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
+        <Typography
+          component="h2"
+          variant="h6"
+          color={theme.palette.background.default_contrastText}
+          className={classes.subHeader}
+        >
           {getProjectDescriptionHeadline()}
         </Typography>
         <Typography className={classes.projectDescription} component="div">
           {project.description ? (
             showFullDescription || project.description.length <= maxDisplayedDescriptionLength ? (
-              <MessageContent content={project.description} renderYoutubeVideos={1} />
+              <MessageContent content={project.description} renderYoutubeVideos={true} />
             ) : (
               <MessageContent
                 content={project.description.substr(0, maxDisplayedDescriptionLength) + "..."}
@@ -322,7 +329,12 @@ export default function ProjectContent({
         />
       )}
       <div className={classes.contentBlock}>
-        <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
+        <Typography
+          component="h2"
+          variant="h6"
+          color={theme.palette.background.default_contrastText}
+          className={classes.subHeader}
+        >
           {texts.collaboration}
         </Typography>
         {project.collaborators_welcome ? (
@@ -334,7 +346,12 @@ export default function ProjectContent({
         )}
       </div>
       <div className={classes.contentBlock}>
-        <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
+        <Typography
+          component="h2"
+          variant="h6"
+          color={theme.palette.background.default_contrastText}
+          className={classes.subHeader}
+        >
           {texts.progress}
         </Typography>
         <Typography variant="body2" fontStyle="italic" fontWeight="bold">

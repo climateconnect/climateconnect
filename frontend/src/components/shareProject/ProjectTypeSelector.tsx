@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ProjectTypeBox = ({ type, value, onChange }) => {
+const ProjectTypeBox = ({ type, value, onChange, color }) => {
   const classes = useStyles();
   const handleChangeValue = (e) => {
     onChange(type.type_id);
@@ -78,13 +78,13 @@ const ProjectTypeBox = ({ type, value, onChange }) => {
         name={type.name}
         value={type.type_id}
         className={classes.radioButton}
-        color="primary"
+        color={color ? color : "primary"}
       />
     </Card>
   );
 };
 
-export default function ProjectTypeSelector({ className, value, types, onChange }) {
+export default function ProjectTypeSelector({ className, value, types, onChange, color }) {
   const classes = useStyles();
   return (
     <div className={className}>
@@ -92,7 +92,7 @@ export default function ProjectTypeSelector({ className, value, types, onChange 
         <Grid container component="ul" spacing={2} className={classes.reset}>
           {types.map((type) => (
             <Grid item xs={12} sm={6} md={6} lg={6} component="li">
-              <ProjectTypeBox type={type} value={value} onChange={onChange} />
+              <ProjectTypeBox type={type} value={value} onChange={onChange} color={color} />
             </Grid>
           ))}
         </Grid>

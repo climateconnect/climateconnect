@@ -340,6 +340,17 @@ class UserProfile(models.Model):
         default=False,
     )
 
+    # can not use:
+    #
+    # from ... import Hub
+    # models.ManyToManyField(Hub)
+    #
+    # as this would create a circular import due to Hubs importing UserProfile
+    # indirectly through the Project model
+    related_hubs = models.ManyToManyField(
+        "hubs.Hub", related_name="user_related_hubs", blank=True
+    )
+
     class Meta:
         app_label = "climateconnect_api"
         verbose_name = "User Profile"

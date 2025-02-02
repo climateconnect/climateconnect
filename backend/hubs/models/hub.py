@@ -3,6 +3,8 @@ from location.models import Location
 from organization.models.tags import ProjectTags
 from django.db import models
 from django.contrib.auth.models import User
+from organization.models.organization import Organization
+from django.db.models import Q
 
 
 def hub_image_path(instance, filename):
@@ -11,6 +13,10 @@ def hub_image_path(instance, filename):
 
 def hub_footer_image_path(instance, filename):
     return "hub_footers/{}/{}".format(instance.id, filename)
+
+
+def hub_supporter_logo_path(instance, filename):
+    return "hub_supporter_logo/{}/{}".format(instance.id, filename)
 
 
 class HubStat(models.Model):
@@ -125,7 +131,12 @@ class Hub(models.Model):
 
     SECTOR_HUB_TYPE = 0
     LOCATION_HUB_TYPE = 1  # User can read and write to project or organization.
-    HUB_TYPES = ((SECTOR_HUB_TYPE, "sector hub"), (LOCATION_HUB_TYPE, "location hub"))
+    CUSTOM_HUB_TYPE = 2
+    HUB_TYPES = (
+        (SECTOR_HUB_TYPE, "sector hub"),
+        (LOCATION_HUB_TYPE, "location hub"),
+        (CUSTOM_HUB_TYPE, "custom hub"),
+    )
 
     hub_type = models.IntegerField(
         help_text="Type of hub",
@@ -185,8 +196,8 @@ class Hub(models.Model):
     )
 
     importance = models.PositiveSmallIntegerField(
-        help_text="The larger the number, the more to the top this hub will be displayed on the hubs overview page",
-        verbose_name="Importance (1-100)",
+        help_text="The larger the number, the more to the top this hub will be displayed on the hubs overview page.(Putting importance to 0 will hide the hub)",
+        verbose_name="Importance (0-100)",
         default=100,
     )
 
@@ -300,3 +311,174 @@ class HubAmbassador(models.Model):
             self.user.first_name + " " + self.user.last_name,
             self.title,
         )
+
+
+class HubSupporter(models.Model):
+    name = models.CharField(
+        help_text="Supporter name",
+        verbose_name="Supporter name",
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    subtitle = models.CharField(
+        help_text="Supporter subtitle",
+        verbose_name="subtitle",
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    logo = models.ImageField(
+        help_text="Supporter logo",
+        verbose_name="Logo",
+        null=True,
+        blank=True,
+        upload_to=hub_supporter_logo_path,
+    )
+    hub = models.ForeignKey(
+        Hub,
+        help_text="Supported Hub by the Supporter",
+        verbose_name="Hub",
+        related_name="supporter_hub",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
+    importance = models.PositiveSmallIntegerField(
+        help_text="The larger the number, the more to the top this hub will be displayed on the hubs overview page. (Putting importance to 0 will hide the supporter)",
+        verbose_name="Importance (0-100)",
+        default=100,
+    )
+    organization = models.ForeignKey(
+        Organization,
+        help_text="Points to the supporter's organization",
+        verbose_name="Organization",
+        related_name="supporter_organization",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
+    language = models.ForeignKey(
+        Language,
+        related_name="supporter_language",
+        help_text="The original language of the supporter",
+        verbose_name="Language",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        app_label = "hubs"
+        verbose_name = "Hub Supporter"
+        verbose_name_plural = "Hub Supporter"
+        ordering = ["-importance"]
+
+    def __str__(self):
+        return "%s" % (self.name)
+
+
+class HubThemeColor(models.Model):
+    name = models.CharField(
+        help_text="Used to reference this color",
+        verbose_name="Name",
+        max_length=200,
+        null=True,
+        blank=True,
+    )
+    main = models.CharField(
+        help_text="main color (use hex code, e.g. #FFF)",
+        verbose_name="Main Color",
+        max_length=200,
+        null=True,
+        blank=True,
+    )
+    light = models.CharField(
+        help_text="the lighter variation of the main color (use hex code, e.g. #FFF)",
+        verbose_name="Light Color",
+        max_length=200,
+        null=True,
+        blank=True,
+    )
+    extraLight = models.CharField(
+        help_text="the extra light variation of the main color (use hex code, e.g. #FFF)",
+        verbose_name="Extra Light Color",
+        max_length=200,
+        null=True,
+        blank=True,
+    )
+    contrastText = models.CharField(
+        help_text="Color which has strong contrast to the main color. This color will be used for text and small elements if the main color is used for the background.",
+        verbose_name="Contrast Text Color",
+        max_length=200,
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        app_label = "hubs"
+        verbose_name = "Hub Theme Color"
+        verbose_name_plural = "Hub Theme Color"
+
+    def __str__(self):
+
+        related_themes = HubTheme.objects.filter(
+            Q(primary=self) | Q(secondary=self) | Q(background_default=self)
+        )
+        # Collect hub names
+        hub_names = [theme.hub.name for theme in related_themes if theme.hub]
+        if hub_names:
+            return f"{self.name} : {self.main} (Hub Name: {', '.join(hub_names)})"
+        else:
+            return f"{self.name} : {self.main}"
+
+
+class HubTheme(models.Model):
+    hub = models.OneToOneField(
+        Hub,
+        related_name="hub_theme",
+        help_text="The hub for which the theme should be used",
+        verbose_name="Hub",
+        on_delete=models.CASCADE,
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    primary = models.ForeignKey(
+        HubThemeColor,
+        related_name="primary",
+        help_text="Use hex code (e.g. #FFF)",
+        verbose_name="primary_color",
+        on_delete=models.CASCADE,
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    secondary = models.ForeignKey(
+        HubThemeColor,
+        related_name="secondary",
+        help_text="Use hex code (e.g. #FFF)",
+        verbose_name="secondary_color",
+        on_delete=models.CASCADE,
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    background_default = models.ForeignKey(
+        HubThemeColor,
+        related_name="background_default",
+        help_text="Use hex code (e.g. #FFF)",
+        verbose_name="default background color",
+        on_delete=models.CASCADE,
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        app_label = "hubs"
+        verbose_name = "Hub Theme"
+        verbose_name_plural = "Hub Theme"
+
+    def __str__(self):
+        return f"Theme for Hub {self.hub.name}"

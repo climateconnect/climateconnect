@@ -9,11 +9,11 @@ import GoBackFromProjectPageButton from "../../project/Buttons/GoBackFromProject
 import HubLinks from "./HubLinks";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    background: theme.palette.primary.main,
-  },
+  root: (props: any) => ({
+    background: props.isCustomHub ? theme.palette.secondary.main : theme.palette.primary.main,
+  }),
   link: {
-    color: "white",
+    color: theme.palette.primary.contrastText,
     display: "inline-block",
     fontWeight: 600,
     marginRight: theme.spacing(2),
@@ -45,8 +45,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function HubsSubHeader({ hubs, onlyShowDropDown }: any) {
-  const classes = useStyles();
+export default function HubsSubHeader({ hubs, onlyShowDropDown, isCustomHub }: any) {
+  const classes = useStyles({ isCustomHub });
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
@@ -64,7 +64,7 @@ export default function HubsSubHeader({ hubs, onlyShowDropDown }: any) {
           )}
         </div>
         <div className={classes.hubsContainer}>
-          {!isNarrowScreen && !onlyShowDropDown && (
+          {!isNarrowScreen && !onlyShowDropDown && !isCustomHub && (
             <Link
               className={classes.link}
               key={"/hubs"}
@@ -74,7 +74,7 @@ export default function HubsSubHeader({ hubs, onlyShowDropDown }: any) {
               {texts.all_hubs}
             </Link>
           )}
-          {hubs && (
+          {hubs && !isCustomHub && (
             <HubLinks
               linkClassName={classes.link}
               hubs={hubs}

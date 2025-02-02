@@ -16,36 +16,39 @@ import { getImageUrl } from "../../public/lib/imageOperations";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import ProjectSideBar from "../../src/components/project/ProjectSideBar";
+import { transformThemeData } from "../../src/themes/transformThemeData";
 
 type StyleProps = {
   showSimilarProjects: boolean;
 };
-const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
-  contentWrapper: {
-    display: "flex",
-  },
-  mainContent: (props) => ({
-    width: props.showSimilarProjects ? "80%" : "100%",
-    [theme.breakpoints.down("lg")]: {
-      width: "100%",
+const useStyles = makeStyles<Theme, StyleProps>((theme) => {
+  return {
+    contentWrapper: {
+      display: "flex",
     },
-  }),
-  secondaryContent: (props) => ({
-    width: props.showSimilarProjects ? "20%" : "0%",
-    [theme.breakpoints.down("lg")]: {
-      width: "0%",
-      marginTop: theme.spacing(0),
-      marginRight: theme.spacing(0),
-      marginLeft: theme.spacing(0),
-    },
-    marginTop: theme.spacing(2),
-    marginRight: theme.spacing(7),
-    marginLeft: theme.spacing(1),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-end",
-  }),
-}));
+    mainContent: (props) => ({
+      width: props.showSimilarProjects ? "80%" : "100%",
+      [theme.breakpoints.down("lg")]: {
+        width: "100%",
+      },
+    }),
+    secondaryContent: (props) => ({
+      width: props.showSimilarProjects ? "20%" : "0%",
+      [theme.breakpoints.down("lg")]: {
+        width: "0%",
+        marginTop: theme.spacing(0),
+        marginRight: theme.spacing(0),
+        marginLeft: theme.spacing(0),
+      },
+      marginTop: theme.spacing(2),
+      marginRight: theme.spacing(7),
+      marginLeft: theme.spacing(1),
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "flex-end",
+    }),
+  };
+});
 import { NOTIFICATION_TYPES } from "../../src/components/communication/notifications/Notification";
 import { getProjectTypeOptions } from "../../public/lib/getOptions";
 import BrowseContext from "../../src/components/context/BrowseContext";
@@ -69,7 +72,8 @@ const parseComments = (comments) => {
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
-  const projectUrl = encodeURI(ctx.query.projectId);
+  const projectUrl = encodeURI(ctx?.query?.projectId);
+  const hubUrl = encodeURI(ctx?.query?.hub);
   const [
     project,
     members,
@@ -78,6 +82,8 @@ export async function getServerSideProps(ctx) {
     userInteractions,
     hubs,
     similarProjects,
+    hubSupporters,
+    hubThemeData,
   ] = await Promise.all([
     getProjectByIdIfExists(projectUrl, auth_token, ctx.locale),
     getProjectMembersByIdIfExists(projectUrl, ctx.locale),
@@ -86,6 +92,8 @@ export async function getServerSideProps(ctx) {
     auth_token ? getUsersInteractionWithProject(projectUrl, auth_token, ctx.locale) : false,
     getAllHubs(ctx.locale),
     getSimilarProjects(projectUrl, ctx.locale),
+    hubUrl ? getHubSupporters(hubUrl, ctx.locale) : null,
+    hubUrl ? getHubTheme(hubUrl) : null,
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -98,6 +106,9 @@ export async function getServerSideProps(ctx) {
       hasRequestedToJoin: userInteractions.has_requested_to_join,
       hubs: hubs,
       similarProjects: similarProjects,
+      hubSupporters: hubSupporters,
+      hubUrl,
+      hubThemeData: hubThemeData,
     }),
   };
 }
@@ -112,10 +123,13 @@ export default function ProjectPage({
   hasRequestedToJoin,
   hubs,
   similarProjects,
+  hubSupporters,
+  hubUrl,
+  hubThemeData,
 }) {
   const token = new Cookies().get("auth_token");
   const [curComments, setCurComments] = useState(parseComments(comments));
-  const [message, setMessage] = useState({});
+  const [message, setMessage] = useState({ message: undefined, messageType: undefined });
   const [isUserFollowing, setIsUserFollowing] = useState(following);
   const [isUserLiking, setIsUserLiking] = useState(liking);
   const [requestedToJoinProject, setRequestedToJoinProject] = useState(hasRequestedToJoin);
@@ -123,7 +137,7 @@ export default function ProjectPage({
   const [likingChangePending, setLikingChangePending] = useState(false);
   const [numberOfLikes, setNumberOfLikes] = useState(project?.number_of_likes);
   const [numberOfFollowers, setNumberOfFollowers] = useState(project?.number_of_followers);
-  const { user, locale } = useContext(UserContext);
+  const { CUSTOM_HUB_URLS, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [showSimilarProjects, setShowSimilarProjects] = useState(true);
   const [projectTypes, setProjectTypes] = useState([]);
@@ -148,7 +162,6 @@ export default function ProjectPage({
   const handleHideContent = () => {
     setShowSimilarProjects(!showSimilarProjects);
   };
-
   const smallScreenSize = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
 
   // Handle remove bell icon notification
@@ -217,6 +230,7 @@ export default function ProjectPage({
   });
 
   const tinyScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
 
   return (
     <WideLayout
@@ -224,7 +238,22 @@ export default function ProjectPage({
       message={message?.message}
       messageType={message?.messageType}
       title={project ? project.name : texts.project + " " + texts.not_found}
-      subHeader={!tinyScreen ? <HubsSubHeader hubs={hubs} onlyShowDropDown={true} /> : <></>}
+      subHeader={
+        !tinyScreen ? (
+          <HubsSubHeader
+            hubs={hubs}
+            subHeaderRef={hubsSubHeaderRef}
+            onlyShowDropDown={true}
+            isCustomHub={isCustomHub}
+          />
+        ) : (
+          <></>
+        )
+      }
+      customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+      isHubPage={!!hubUrl}
+      hubUrl={hubUrl}
+      headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
       image={project ? getImageUrl(project.image) : undefined}
     >
       <BrowseContext.Provider value={contextValues}>
@@ -254,6 +283,8 @@ export default function ProjectPage({
                 showSimilarProjects={showSimilarProjects}
                 requestedToJoinProject={requestedToJoinProject}
                 handleJoinRequest={handleJoinRequest}
+                hubSupporters={hubSupporters}
+                hubPage={hubUrl}
               />
             </div>
             <div className={classes.secondaryContent}>
@@ -264,6 +295,8 @@ export default function ProjectPage({
                   showSimilarProjects={showSimilarProjects}
                   locale={locale}
                   texts={texts}
+                  hubSupporters={hubSupporters}
+                  hubName={hubUrl}
                 />
               )}
             </div>
@@ -381,7 +414,21 @@ async function getSimilarProjects(projectUrl, locale) {
     return null;
   }
 }
-
+const getHubSupporters = async (url_slug, locale) => {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: `/api/hubs/${url_slug}/supporters/`,
+      locale: locale,
+    });
+    return resp.data;
+  } catch (err: any) {
+    if (err.response && err.response.data)
+      console.log("Error in getHubSupportersData: " + err.response.data.detail);
+    console.log(err);
+    return null;
+  }
+};
 function parseProject(project) {
   return {
     name: project.name,
@@ -428,3 +475,17 @@ function parseProjectMembers(projectMembers) {
     };
   });
 }
+const getHubTheme = async (url_slug) => {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: `/api/hubs/${url_slug}/theme/`,
+    });
+    return resp.data;
+  } catch (err: any) {
+    if (err.response && err.response.data)
+      console.log("Error in getHubThemeData: " + err.response.data.detail);
+    console.log(err);
+    return null;
+  }
+};

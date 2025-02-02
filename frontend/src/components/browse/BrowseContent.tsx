@@ -1,6 +1,5 @@
 import makeStyles from "@mui/styles/makeStyles";
 import { Container, Divider, Tab, Tabs, Theme, useMediaQuery } from "@mui/material";
-import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
 import _ from "lodash";
 import React, { Suspense, useContext, useEffect, useMemo, useRef, useState } from "react";
 import Cookies from "universal-cookie";
@@ -9,7 +8,6 @@ import { splitFiltersFromQueryObject } from "../../../public/lib/filterOperation
 import { loadMoreData } from "../../../public/lib/getDataOperations";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
-import { getUserOrganizations } from "../../../public/lib/organizationOperations";
 import {
   getInfoMetadataByType,
   getReducedPossibleFilters,
@@ -26,9 +24,10 @@ import UserContext from "../context/UserContext";
 import LoadingSpinner from "../general/LoadingSpinner";
 import MobileBottomMenu from "./MobileBottomMenu";
 import HubTabsNavigation from "../hub/HubTabsNavigation";
+import HubSupporters from "../hub/HubSupporters";
+import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 
 const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
-const IdeasBoard = React.lazy(() => import("../ideas/IdeasBoard"));
 const OrganizationPreviews = React.lazy(() => import("../organization/OrganizationPreviews"));
 const ProfilePreviews = React.lazy(() => import("../profile/ProfilePreviews"));
 const ProjectPreviews = React.lazy(() => import("../project/ProjectPreviews"));
@@ -55,14 +54,6 @@ const useStyles = makeStyles((theme) => {
     mainContentDivider: {
       marginBottom: theme.spacing(3),
     },
-    ideasTabLabel: {
-      display: "flex",
-      alignItems: "center",
-    },
-    ideasIcon: {
-      marginRight: theme.spacing(1),
-      color: theme.palette.primary.main,
-    },
     hubsTabNavigation: {
       top: -45,
       left: 0,
@@ -75,7 +66,6 @@ export default function BrowseContent({
   initialMembers,
   initialOrganizations,
   initialProjects,
-  initialIdeas,
   applyNewFilters,
   customSearchBarLabels,
   errorMessage,
@@ -83,9 +73,11 @@ export default function BrowseContent({
   handleSetErrorMessage,
   hideMembers,
   hubName,
-  showIdeas,
+  hubProjectsButtonRef,
+  hubQuickInfoRef,
+  hubsSubHeaderRef,
+  nextStepTriggeredBy,
   allHubs,
-  initialIdeaUrlSlug,
   hubLocation,
   hubData,
   filters,
@@ -95,12 +87,12 @@ export default function BrowseContent({
   hubUrl,
   hubAmbassador,
   contentRef,
+  hubSupporters,
 }: any) {
   const initialState = {
     items: {
       projects: initialProjects ? [...initialProjects.projects] : [],
       organizations: initialOrganizations ? [...initialOrganizations.organizations] : [],
-      ideas: initialIdeas ? [...initialIdeas.ideas] : [],
       members:
         initialMembers && !hideMembers ? membersWithAdditionalInfo(initialMembers.members) : [],
     },
@@ -108,13 +100,11 @@ export default function BrowseContent({
       projects: initialProjects ? initialProjects.hasMore : true,
       organizations: initialOrganizations ? initialOrganizations.hasMore : true,
       members: initialMembers ? initialMembers.hasMore : true,
-      ideas: initialIdeas ? initialIdeas.hasMore : true,
     },
     nextPages: {
       projects: 2,
       members: 2,
       organizations: 2,
-      ideas: 2,
     },
     urlEnding: "",
   };
@@ -126,21 +116,19 @@ export default function BrowseContent({
   const TYPES_BY_TAB_VALUE = hideMembers
     ? ["projects", "organizations"] // TODO: add "events" here, after implementing event calendar
     : ["projects", "organizations", "members"]; // TODO: add "events" here, after implementing event calendar
-  if (showIdeas) {
-    TYPES_BY_TAB_VALUE.push("ideas");
-  }
   const { locale } = useContext(UserContext);
   const texts = useMemo(() => getTexts({ page: "general", locale: locale }), [locale]);
 
   const [hash, setHash] = useState<string | null>(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
 
+  const isLocationHubFlag = isLocationHubLikeHub(hubData?.hub_type);
+
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const type_names = {
     projects: texts.projects,
     organizations: isNarrowScreen ? texts.orgs : texts.organizations,
     members: texts.members,
-    ideas: texts.ideas,
   };
   // Always default to filters being expanded
   const [filtersExpanded, setFiltersExpanded] = useState(true);
@@ -155,21 +143,10 @@ export default function BrowseContent({
   };
 
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
-  const [userOrganizations, setUserOrganizations] = useState<any>(null);
   const handleSetLocationOptionsOpen = (bool) => {
     setLocationOptionsOpen(bool);
   };
-  //When switching to the ideas tab: catch the orgs the user is a part of.
-  //This info is required to share an idea
-  useEffect(() => {
-    (async function () {
-      if (tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas") && userOrganizations === null) {
-        setUserOrganizations("");
-        const userOrgsFromServer = await getUserOrganizations(token, locale);
-        setUserOrganizations(userOrgsFromServer || []);
-      }
-    })();
-  });
+
   // We have 2 distinct loading states: filtering, and loading more data. For
   // each state, we want to treat the loading spinner a bit differently, hence
   // why we have two separate pieces of state
@@ -194,6 +171,9 @@ export default function BrowseContent({
       setHash(newHash);
       setTabValue(TYPES_BY_TAB_VALUE.indexOf(newHash));
     }
+
+    // this init is nessesary to be resilient if the component is remounted
+    // see https://react.dev/learn/you-might-not-need-an-effect#initializing-the-application
     if (!initialized) {
       // Update the state of the visual filters, like Select, Dialog, etc
       // Then actually fetch the data. We need a way to map what's
@@ -213,7 +193,7 @@ export default function BrowseContent({
       const queryObject = getQueryObjectFromUrl(getSearchParams(window.location.search));
       const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFilters);
       const newFilters = {
-        ...queryObject.filters,
+        ...splitQueryObject.filters,
       };
       setNonFilterParams(splitQueryObject.nonFilters);
       if (splitQueryObject?.nonFilters?.message) {
@@ -464,25 +444,6 @@ export default function BrowseContent({
     }
   };
 
-  const handleUpdateIdeaRating = (idea, newRating) => {
-    const ideaInState = state.items.ideas.find((si) => si.url_slug === idea.url_slug);
-    const ideaIndex = state.items.ideas.indexOf(ideaInState);
-    setState({
-      ...state,
-      items: {
-        ...state.items,
-        ideas: [
-          ...state.items.ideas.slice(0, ideaIndex),
-          {
-            ...idea,
-            rating: newRating,
-          },
-          ...state.items.ideas.slice(ideaIndex + 1),
-        ],
-      },
-    });
-  };
-
   const tabContentWrapperProps = {
     tabValue: tabValue,
     TYPES_BY_TAB_VALUE: TYPES_BY_TAB_VALUE,
@@ -511,7 +472,7 @@ export default function BrowseContent({
         spinning: isFetchingMoreData || isFiltering,
       }}
     >
-      {hubData?.hub_type === "location hub" && (
+      {isLocationHubFlag && (
         <HubTabsNavigation
           TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
           tabValue={tabValue}
@@ -523,6 +484,9 @@ export default function BrowseContent({
         />
       )}
       <Container maxWidth="lg" className={classes.contentRefContainer}>
+        {isNarrowScreen && hubSupporters && (
+          <HubSupporters supportersList={hubSupporters} hubName={hubName} />
+        )}
         <div ref={contentRef} className={classes.contentRef} />
         <Suspense fallback={null}>
           <FilterSection
@@ -532,13 +496,13 @@ export default function BrowseContent({
             type={TYPES_BY_TAB_VALUE[tabValue]}
             customSearchBarLabels={customSearchBarLabels}
             searchValue={filters.search}
-            hideFilterButton={tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas")}
-            applyBackgroundColor={hubData?.hub_type === "location hub"}
+            hideFilterButton={false}
+            applyBackgroundColor={isLocationHubFlag}
           />
         </Suspense>
         {/* Desktop screens: show tabs under the search bar */}
         {/* Mobile screens: show tabs fixed to the bottom of the screen */}
-        {!isNarrowScreen && hubData?.hub_type !== "location hub" && (
+        {!isNarrowScreen && !isLocationHubFlag && (
           <Tabs
             variant={isNarrowScreen ? "fullWidth" : "standard"}
             value={tabValue}
@@ -552,13 +516,7 @@ export default function BrowseContent({
                 label: type_names[t],
                 className: classes.tab,
               };
-              if (index === TYPES_BY_TAB_VALUE.indexOf("ideas")) {
-                tabProps.label = (
-                  <div className={classes.ideasTabLabel}>
-                    <EmojiObjectsIcon className={classes.ideasIcon} /> {type_names[t]}
-                  </div>
-                );
-              }
+              if (index === 1) tabProps.ref = organizationsTabRef;
               return <Tab {...tabProps} key={index} />;
             })}
           </Tabs>
@@ -573,7 +531,7 @@ export default function BrowseContent({
           />
         )}
 
-        {hubData?.hub_type !== "location hub" && <Divider className={classes.mainContentDivider} />}
+        {!isLocationHubFlag && <Divider className={classes.mainContentDivider} />}
 
         <Suspense fallback={<LoadingSpinner isLoading />}>
           <TabContentWrapper type={"projects"} {...tabContentWrapperProps}>
@@ -605,22 +563,6 @@ export default function BrowseContent({
               />
             </TabContentWrapper>
           )}
-          <TabContentWrapper type={"ideas"} {...tabContentWrapperProps}>
-            <IdeasBoard
-              hasMore={state.hasMore.ideas}
-              loadFunc={() => handleLoadMoreData("ideas")}
-              ideas={state.items.ideas}
-              allHubs={allHubs}
-              userOrganizations={userOrganizations}
-              onUpdateIdeaRating={handleUpdateIdeaRating}
-              initialIdeaUrlSlug={initialIdeaUrlSlug}
-              hubLocation={hubLocation}
-              hubData={hubData}
-              filters={filters}
-              resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
-              filterChoices={filterChoices}
-            />
-          </TabContentWrapper>
         </Suspense>
       </Container>
     </LoadingContext.Provider>

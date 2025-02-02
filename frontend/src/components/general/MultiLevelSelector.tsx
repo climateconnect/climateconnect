@@ -108,12 +108,12 @@ const useStyles = makeStyles<
       fontSize: "16px",
     },
     selectedItem: {
-      background: theme.palette.primary.main,
+      background: theme.palette.background.default_contrastText,
       color: "white",
       marginBottom: theme.spacing(1),
       borderTop: "1px solid black",
       "&:hover": {
-        backgroundColor: theme.palette.primary.main,
+        backgroundColor: theme.palette.background.default_contrastText,
         color: "white",
       },
     },

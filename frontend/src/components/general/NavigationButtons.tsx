@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => {
       },
     }),
     backButton: {
-      color: theme.palette.primary.main,
+      color: theme.palette.background.default_contrastText,
     },
     nextStepButtonsContainer: {
       [theme.breakpoints.down("sm")]: {

@@ -10,8 +10,12 @@ import UserContext from "../src/components/context/UserContext";
 import LoginNudge from "../src/components/general/LoginNudge";
 import WideLayout from "../src/components/layouts/WideLayout";
 import ShareProjectRoot from "../src/components/shareProject/ShareProjectRoot";
+import getHubTheme from "../src/themes/fetchHubTheme";
+import { transformThemeData } from "../src/themes/transformThemeData";
 
 export async function getServerSideProps(ctx) {
+  const hubUrl = ctx.query.hub;
+
   const { auth_token } = NextCookies(ctx);
   if (ctx.req && !auth_token) {
     const texts = getTexts({ page: "project", locale: ctx.locale });
@@ -26,6 +30,7 @@ export async function getServerSideProps(ctx) {
     rolesOptions,
     statusOptions,
     projectTypeOptions,
+    hubThemeData,
   ] = await Promise.all([
     getAvailabilityOptions(auth_token, ctx.locale),
     getUserOrganizations(auth_token, ctx.locale),
@@ -34,6 +39,7 @@ export async function getServerSideProps(ctx) {
     getRolesOptions(auth_token, ctx.locale),
     getStatusOptions(auth_token, ctx.locale),
     getProjectTypeOptions(ctx.locale),
+    getHubTheme(hubUrl),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -44,6 +50,8 @@ export async function getServerSideProps(ctx) {
       rolesOptions: rolesOptions,
       statusOptions: statusOptions,
       projectTypeOptions: projectTypeOptions,
+      hubUrl: hubUrl ?? undefined,
+      hubThemeData: hubThemeData ?? undefined,
     }),
   };
 }
@@ -56,6 +64,8 @@ export default function Share({
   rolesOptions,
   statusOptions,
   projectTypeOptions,
+  hubUrl,
+  hubThemeData,
 }) {
   const token = new Cookies().get("auth_token");
   const { user, locale } = useContext(UserContext);
@@ -65,7 +75,10 @@ export default function Share({
   const handleSetErrorMessage = (newMessage) => setErrorMessage(newMessage);
   if (!user)
     return (
-      <WideLayout title={texts.please_log_in + " " + texts.to_share_a_project}>
+      <WideLayout
+        title={texts.please_log_in + " " + texts.to_share_a_project}
+        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+      >
         <LoginNudge fullPage whatToDo={texts.to_share_a_project} />
       </WideLayout>
     );
@@ -76,6 +89,10 @@ export default function Share({
         // hideHeadline={true}
         message={errorMessage}
         messageType={errorMessage && "error"}
+        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+        isHubPage={hubUrl !== ""}
+        hubUrl={hubUrl}
+        headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
       >
         <ShareProjectRoot
           availabilityOptions={availabilityOptions}
@@ -88,6 +105,7 @@ export default function Share({
           token={token}
           setMessage={handleSetErrorMessage}
           projectTypeOptions={projectTypeOptions}
+          hubName={hubUrl}
         />
       </WideLayout>
     );

@@ -7,6 +7,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import Switcher from "../general/Switcher";
 import SelectField from "../general/SelectField";
+import { useTheme } from "@mui/material/styles";
 
 const useStyles = makeStyles((theme) => ({
   orgBottomLink: {
@@ -64,6 +65,7 @@ export default function Share({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
+  const theme = useTheme();
 
   const onChangeSwitch = () => {
     handleSetProjectData({
@@ -87,6 +89,12 @@ export default function Share({
     goToNextStep();
   };
 
+  //This line is specifically for the prio1 hub
+  const mainColor =
+    theme.palette.background.default_contrastText === theme.palette.secondary.main
+      ? "secondary"
+      : "primary";
+
   return (
     <div className={classes.form}>
       {locale === "en" && <PleaseOnlyUseEnglishAppeal />}
@@ -97,6 +105,7 @@ export default function Share({
         required={false}
         className={classes.field}
         handleChangeValue={onChangeSwitch}
+        color={mainColor}
       />
       {project.is_organization_project && (
         <>
@@ -119,6 +128,7 @@ export default function Share({
         value={project.project_type}
         onChange={onChangeProjectType}
         types={projectTypeOptions}
+        color={mainColor}
       />
       <Button
         variant="contained"

@@ -29,7 +29,7 @@ const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
     marginRight: theme.spacing(0.5),
     marginLeft: theme.spacing(-0.25),
     fontSize: "default",
-    color: theme.palette.primary.main,
+    color: theme.palette.background.default_contrastText,
   },
   categories: (props) => ({
     display: "flex",
@@ -69,6 +69,7 @@ const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
     marginRight: theme.spacing(1),
     display: "flex",
     alignItems: "center",
+    color: theme.palette.background.default_contrastText,
   },
   additionalInfoContainer: {
     display: "flex",
@@ -255,13 +256,13 @@ const AdditionalPreviewInfo = ({ project }) => {
     <Box className={classes.additionalInfoContainer}>
       {project.number_of_comments > 0 && (
         <Box className={classes.additionalInfoIcon}>
-          <ModeCommentIcon color="primary" />
+          <ModeCommentIcon />
           <span className={classes.additionalInfoCounter}> {project.number_of_comments} </span>
         </Box>
       )}
       {project.number_of_likes > 2 && (
         <Box className={classes.additionalInfoIcon}>
-          <FavoriteIcon color="primary" />
+          <FavoriteIcon />
           <span className={classes.additionalInfoCounter}> {project.number_of_likes}</span>
         </Box>
       )}

@@ -1,22 +1,47 @@
-import { Typography } from "@mui/material";
+import { Card, Typography, IconButton, Box, CardContent } from "@mui/material";
+import Close from "@mui/icons-material/Close";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
-import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import Form from "./../general/Form";
 
-const useStyles = makeStyles({
-  appealText: {
-    textAlign: "center",
-    fontWeight: "bold",
+const useStyles = makeStyles((theme) => ({
+  contrastBackground: {
+    color: theme.palette.background.default_contrastText,
   },
-});
+  appealText: {
+    [theme.breakpoints.down("sm")]: {
+      fontWeight: "bold",
+      textAlign: "center",
+    },
+  },
+  formRootClass: {
+    padding: 0,
+    maxWidth: 700,
+    margin: "0 auto 0 0", // basically a left align
+  },
+  headline: {
+    color: theme.palette.background.default_contrastText,
+    [theme.breakpoints.down("sm")]: {
+      fontSize: 35,
+      textAlign: "center",
+      fontWeight: "bold",
+      padding: theme.spacing(4),
+    },
+  },
+  stepIndicator: {
+    [theme.breakpoints.down("sm")]: {
+      marginTop: theme.spacing(1),
+      textAlign: "center",
+      color: "secondary",
+    },
+  },
+}));
 
-export default function BasicInfo({ handleSubmit, errorMessage, values }) {
+export default function BasicInfo({ handleSubmit, errorMessage, values, texts, isSmallScreen }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "profile", locale: locale });
   const fields = [
     {
       required: true,
@@ -43,7 +68,6 @@ export default function BasicInfo({ handleSubmit, errorMessage, values }) {
 
   const messages = {
     submitMessage: texts.next_step,
-    headerMessage: texts.step_1_basic_information,
     bottomMessage: texts.already_have_an_account,
   };
 
@@ -52,15 +76,26 @@ export default function BasicInfo({ handleSubmit, errorMessage, values }) {
     href: getLocalePrefix(locale) + "/signin",
   };
 
-  return (
+  const StepIndicator = () => (
+    <Typography component="div" className={classes.stepIndicator}>
+      {/* TODO: use texts */}
+      {texts.step_1_of_2_sign_up}
+    </Typography>
+  );
+
+  const BasicInfoContent = () => (
     <>
-      <Typography color="secondary" className={classes.appealText}>
-        {texts.here_you_can_create_your_personal_account}
+      <Typography variant="h1" className={classes.headline}>
+        {texts.sign_up}
       </Typography>
-      <Typography color="secondary" className={classes.appealText}>
+      <Typography className={classes.appealText}>
+        {texts.here_you_can_create_your_personal_account}
+        {isSmallScreen && <br />}
         {texts.you_will_have_an_opportunity_to_create_or_add_an_organization_once_signed_up}
       </Typography>
+      {isSmallScreen && <StepIndicator />}
       <Form
+        className={classes.formRootClass}
         fields={fields}
         messages={messages}
         bottomLink={bottomLink}
@@ -68,5 +103,37 @@ export default function BasicInfo({ handleSubmit, errorMessage, values }) {
         errorMessage={errorMessage}
       />
     </>
+  );
+
+  if (isSmallScreen) {
+    return <BasicInfoContent />;
+  }
+
+  return (
+    <Card>
+      {/* TODO: maybe use card Header instead (?)
+      see https://mui.com/material-ui/react-card/ for other usefull card components */}
+      <Box
+        sx={{
+          display: "flex",
+          gap: "2rem",
+          alignItems: "center",
+          marginBottom: 2,
+        }}
+      >
+        <IconButton
+          aria-label="close"
+          onClick={() => {
+            window.history.back();
+          }}
+        >
+          <Close />
+        </IconButton>
+        <StepIndicator />
+      </Box>
+      <CardContent>
+        <BasicInfoContent />
+      </CardContent>
+    </Card>
   );
 }
