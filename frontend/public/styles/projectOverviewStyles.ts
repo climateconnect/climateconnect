@@ -22,6 +22,7 @@ const projectOverviewStyles = (theme: Theme): StyleRules => {
       verticalAlign: "bottom",
       marginTop: 2,
       paddingRight: theme.spacing(0.5),
+      color: theme.palette.background.default_contrastText,
     },
     //small screen styling
     blockProjectInfo: {

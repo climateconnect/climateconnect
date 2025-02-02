@@ -7,13 +7,15 @@ import React from "react";
 
 const useStyles = makeStyles((theme) => ({
   button: {
-    color: "white",
+    color: theme.palette.background.default,
+    height: 54,
     [theme.breakpoints.down("sm")]: {
       minWidth: 35,
       maxWidth: 35,
       minHeight: 35,
       maxHeight: 35,
       backgroundColor: theme.palette.primary.main,
+      color: theme.palette.primary.contrastText,
       "&:hover": {
         backgroundColor: theme.palette.primary.main,
       },
@@ -32,7 +34,7 @@ export default function GoBackFromProjectPageButton({
   const router = useRouter();
   const goBack = () => {
     const urlParams = new URLSearchParams(window.location.search);
-    const hubPage = urlParams.get("hubPage");
+    const hubPage = urlParams.get("hub");
     const hubsLink = "/" + locale + "/hubs/" + hubPage;
     const browseLink = "/" + locale + "/browse";
     if (hubPage) {

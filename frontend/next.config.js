@@ -60,7 +60,7 @@ module.exports = withBundleAnalyzer({
       },
       {
         source: "/klimakuechen-erlangen",
-        destination: "/de/projects/klimakuechen?hubPage=erlangen",
+        destination: "/de/projects/klimakuechen?hub=erlangen",
         permanent: true,
       },
       {
