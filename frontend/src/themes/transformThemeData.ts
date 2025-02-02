@@ -1,6 +1,4 @@
-import { backdropClasses } from "@mui/material";
 import defaultTheme from "./hubTheme";
-import { alpha, createTheme } from "@mui/material/styles";
 
 // transform theme data received from the API into a structured theme object
 export const transformThemeData = (data, baseTheme: any = undefined) => {
