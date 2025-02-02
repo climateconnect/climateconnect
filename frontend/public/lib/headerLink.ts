@@ -66,6 +66,7 @@ const getPrio1Links = (path_to_redirect, texts) => [
   },
   {
     ...COMMON_LINKS.SHARE,
+    href: "/share?hub=prio1",
     text: texts.share_a_project,
     hideOnMediumScreen: true,
   },
