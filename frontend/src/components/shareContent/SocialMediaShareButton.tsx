@@ -8,9 +8,9 @@ import UserContext from "../context/UserContext";
 import Cookies from "universal-cookie";
 import theme from "../../themes/theme";
 
-const useStyles = makeStyles<Theme, { switchColors?: boolean }>((theme) => ({
+const useStyles = makeStyles<Theme, { switchColors?: boolean; isCustomHub?: boolean }>((theme) => ({
   button: (props) => ({
-    color: props.switchColors ? theme.palette.primary.main : "white",
+    color: props.switchColors ? theme.palette.primary.main : theme.palette.primary.contrastText,
     width: 35,
     height: 35,
     backgroundColor: props.switchColors ? "white" : theme.palette.primary.main,
@@ -29,6 +29,7 @@ export type SocialMediaShareButtonProps = {
   texts?: any;
   dialogTitle?: any;
   switchColors?: any;
+  isCustomHub?: boolean;
 };
 
 export default function SocialMediaShareButton({
@@ -40,8 +41,9 @@ export default function SocialMediaShareButton({
   texts,
   dialogTitle,
   switchColors,
+  isCustomHub,
 }: SocialMediaShareButtonProps) {
-  const classes = useStyles({ switchColors: switchColors });
+  const classes = useStyles({ switchColors: switchColors, isCustomHub: isCustomHub });
   const { locale } = useContext(UserContext);
   const cookies = new Cookies();
   const token = cookies.get("token");

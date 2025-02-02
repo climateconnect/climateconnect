@@ -5,6 +5,7 @@ module.exports = {
     node: true,
   },
   extends: ["eslint:recommended", "plugin:react/recommended"],
+  ignorePatterns: ["devlink/"],
   globals: {
     Atomics: "readonly",
     SharedArrayBuffer: "readonly",

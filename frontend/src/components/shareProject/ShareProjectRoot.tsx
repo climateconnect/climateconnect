@@ -104,6 +104,7 @@ export default function ShareProjectRoot({
   };
 
   const [errorDialogOpen, setErrorDialogOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const targetLanguage = locales.find((l) => l !== locale);
   const [translations, setTranslations] = React.useState({});
   const [curStep, setCurStep] = React.useState(getStep(0));
@@ -168,16 +169,18 @@ export default function ShareProjectRoot({
         token: token,
         locale: locale,
       });
-      setProject({ ...project, url_slug: resp.data.url_slug });
+      setProject({ ...project, error: false, url_slug: resp.data.url_slug });
       setLoadingSubmit(false);
       setFinished(true);
     } catch (error: any) {
-      console.log(error);
+      console.log(error?.response?.data);
+      if (error?.response?.data?.message) {
+        const errorMessage = error.response.data.message;
+        setErrorMessage(`Error ${error?.response?.status}: ${errorMessage}`);
+      }
       setErrorDialogOpen(true);
       setProject({ ...project, error: true });
       setLoadingSubmit(false);
-      console.log(error?.response?.data);
-      if (error) console.log(error.response);
     }
   };
   const saveAsDraft = async (event) => {
@@ -209,6 +212,7 @@ export default function ShareProjectRoot({
   };
 
   const handleCloseErrorDialog = () => {
+    setErrorMessage("");
     setErrorDialogOpen(false);
   };
 
@@ -330,7 +334,9 @@ export default function ShareProjectRoot({
           onClose={handleCloseErrorDialog}
           title={texts.internal_server_error}
         >
-          <Typography>{texts.error_when_publishing_project}</Typography>
+          <Typography>
+            {errorMessage ? errorMessage : texts.error_when_publishing_project}
+          </Typography>
         </GenericDialog>
       )}
     </>

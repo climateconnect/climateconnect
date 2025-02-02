@@ -6,6 +6,9 @@ const useStyles = makeStyles((theme) => ({
   centerItems: {
     margin: "auto 0",
   },
+  rightPadding: {
+    paddingRight: theme.spacing(6),
+  },
 }));
 
 interface ContentImageSplitViewProps {
@@ -50,7 +53,13 @@ const ContentImageSplitView: React.FC<ContentImageSplitViewProps> = ({
       direction={direction ? direction : "row"}
     >
       {/* content pane */}
-      <Grid item xs={12} md={7} {...leftGridSizes} className={classes.centerItems}>
+      <Grid
+        item
+        xs={12}
+        md={7}
+        {...leftGridSizes}
+        className={`${classes.centerItems} ${!rightPaneHidden && classes.rightPadding}`}
+      >
         {content}
       </Grid>
 
