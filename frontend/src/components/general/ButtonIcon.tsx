@@ -35,5 +35,5 @@ export default function ButtonIcon({ icon, color, size }) {
       <PersonIcon className={`${classes.icon} ${classes.color}`} />
     );
   }
-  return <></>
+  return <></>;
 }

@@ -69,7 +69,7 @@ const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
     marginRight: theme.spacing(1),
     display: "flex",
     alignItems: "center",
-    color: theme.palette.background.default_contrastText
+    color: theme.palette.background.default_contrastText,
   },
   additionalInfoContainer: {
     display: "flex",

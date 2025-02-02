@@ -10,9 +10,7 @@ import theme from "../../themes/theme";
 
 const useStyles = makeStyles<Theme, { switchColors?: boolean; isCustomHub?: boolean }>((theme) => ({
   button: (props) => ({
-    color: props.switchColors
-      ? theme.palette.primary.main
-      : theme.palette.primary.contrastText,
+    color: props.switchColors ? theme.palette.primary.main : theme.palette.primary.contrastText,
     width: 35,
     height: 35,
     backgroundColor: props.switchColors ? "white" : theme.palette.primary.main,

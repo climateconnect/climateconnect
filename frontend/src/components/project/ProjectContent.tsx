@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   expandButton: {
     width: "100%",
-    color: theme.palette.background.default_contrastText
+    color: theme.palette.background.default_contrastText,
   },
   icon: {
     verticalAlign: "bottom",

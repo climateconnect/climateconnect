@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: props.isSmallScreen ? 14 : 12,
     width: props.isSmallScreen ? "100%" : "95%",
     color: theme.palette.background.default_contrastText,
-    borderColor: theme.palette.background.default_contrastText
+    borderColor: theme.palette.background.default_contrastText,
   }),
   supporterSliderWidth: {
     width: "95%",
@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
   },
   expandButton: {
     color: theme.palette.background.default_contrastText,
-  }
+  },
 }));
 
 export default function ProjectSideBar({
@@ -127,11 +127,7 @@ export default function ProjectSideBar({
               projects={similarProjects}
               hubUrl={hubName}
             />
-            <Button
-              variant="outlined"
-              className={classes.showAllProjectsButton}
-              href={link}
-            >
+            <Button variant="outlined" className={classes.showAllProjectsButton} href={link}>
               <SearchIcon />
               {texts.view_all_projects}
             </Button>

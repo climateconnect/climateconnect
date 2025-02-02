@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   headingDiscussionPreview: {
     fontWeight: "bold",
-    color: theme.palette.background.default_contrastText
+    color: theme.palette.background.default_contrastText,
   },
 }));
 

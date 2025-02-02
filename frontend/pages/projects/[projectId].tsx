@@ -129,7 +129,7 @@ export default function ProjectPage({
 }) {
   const token = new Cookies().get("auth_token");
   const [curComments, setCurComments] = useState(parseComments(comments));
-  const [message, setMessage] = useState({message: undefined, messageType: undefined});
+  const [message, setMessage] = useState({ message: undefined, messageType: undefined });
   const [isUserFollowing, setIsUserFollowing] = useState(following);
   const [isUserLiking, setIsUserLiking] = useState(liking);
   const [requestedToJoinProject, setRequestedToJoinProject] = useState(hasRequestedToJoin);

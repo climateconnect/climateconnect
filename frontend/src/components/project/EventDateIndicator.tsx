@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function EventDateIndicator({ project, hubUrl }) {
-  const { CUSTOM_HUB_URLS } = useContext(UserContext)
+  const { CUSTOM_HUB_URLS } = useContext(UserContext);
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
 
   const start_date = new Date(project.start_date);
