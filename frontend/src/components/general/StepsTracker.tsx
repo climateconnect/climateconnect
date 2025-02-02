@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => {
       backgroundColor: "#F7F7F7",
     },
     customIcon: {
-      backgroundColor: theme.palette.primary.main,
+      backgroundColor: theme.palette.background.default_contrastText,
       display: "flex",
       height: 20,
       width: 20,
@@ -36,6 +36,7 @@ const useStyles = makeStyles((theme) => {
     stepText: {
       fontSize: 13,
       textTransform: "uppercase",
+      color: theme.palette.background.default_contrastText
     },
     active: {
       height: 40,
@@ -90,7 +91,7 @@ const CustomConnector = withStyles((theme) => {
     line: {
       height: 3,
       border: 0,
-      backgroundColor: theme.palette.primary.main,
+      backgroundColor: theme.palette.background.default_contrastText,
       borderRadius: 1,
       margin: 0,
       zIndex: 9,
@@ -112,7 +113,7 @@ const CustomStepIcon = (props) => {
   const classes = useStyles();
   const { active, completed } = props;
   if (completed)
-    return <CheckIcon color="primary" className={`${classes.customIcon} ${classes.completed}`} />;
+    return <CheckIcon className={`${classes.customIcon} ${classes.completed}`} />;
   else if (active)
     return (
       <>
@@ -143,11 +144,9 @@ export default function StepsTracker({
           <Step /*TODO(unused) className={classes.step}*/ key={index}>
             <StepLabel
               StepIconComponent={CustomStepIcon}
-              color="primary"
               className={classes.stepText}
             >
               <Typography
-                color="primary"
                 className={`${classes.stepText} ${
                   index < activeStepIndex && classes.completedText
                 }`}

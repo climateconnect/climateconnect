@@ -5,6 +5,8 @@ import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import GenericDialog from "./GenericDialog";
+import { useTheme } from "@mui/styles";
+import { getBackgroundContrastColor } from "../../../public/lib/themeOperations";
 
 const useStyles = makeStyles({
   textField: {
@@ -37,6 +39,8 @@ export default function EnterTextDialog({
   const [element, setElement] = React.useState(null);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
+  const theme = useTheme();
+  const backgroundContrastColor = getBackgroundContrastColor(theme);
 
   const handleClose = () => {
     onClose();
@@ -68,6 +72,7 @@ export default function EnterTextDialog({
     >
       <div className={className}>
         <TextField
+          color={backgroundContrastColor}
           className={classes.textField}
           label={inputLabel}
           autoFocus={true}

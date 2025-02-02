@@ -18,6 +18,7 @@ type Props = {
   helperText?;
   freeSolo?;
   onUnselect?;
+  color?;
 };
 export default function AutoCompleteSearchBar({
   label,
@@ -31,6 +32,7 @@ export default function AutoCompleteSearchBar({
   helperText,
   freeSolo,
   onUnselect,
+  color="primary",
 }: Props) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "filter_and_search", locale: locale });
@@ -132,6 +134,7 @@ export default function AutoCompleteSearchBar({
           variant="outlined"
           onChange={handleInputChange}
           helperText={helperText}
+          color={color}
           InputProps={{
             ...params.InputProps,
             endAdornment: <React.Fragment>{params.InputProps.endAdornment}</React.Fragment>,

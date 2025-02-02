@@ -9,6 +9,8 @@ import NavigationButtons from "../general/NavigationButtons";
 import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 import AddProjectMembersContainer from "./AddProjectMembersContainer";
 import OrganizersContainer from "./OrganizersContainer";
+import { getBackgroundContrastColor } from "../../../public/lib/themeOperations";
+import { useTheme } from "@mui/styles";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -48,7 +50,7 @@ export default function AddTeam({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
-  console.log(isLastStep);
+  const theme = useTheme();
   const onClickPreviousStep = () => {
     goToPreviousStep();
   };
@@ -115,12 +117,15 @@ export default function AddTeam({
     );
   };
 
+  const backgroundContrastColor = getBackgroundContrastColor(theme);
+
   return (
     <Container maxWidth="lg" className={classes.marginTop}>
       <form onSubmit={isLastStep ? onSubmit : onClickNextStep}>
         <div className={classes.searchBarContainer}>
           <AutoCompleteSearchBar
             label={texts.search_for_your_team_members}
+            color={backgroundContrastColor}
             className={`${classes.searchBar} ${classes.block}`}
             baseUrl={process.env.API_URL + "/api/members/?search="}
             clearOnSelect

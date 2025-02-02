@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme) => {
     headline: {
       textAlign: "center",
       marginTop: theme.spacing(4),
+      color: theme.palette.background.default_contrastText
     },
   };
 });
@@ -254,7 +255,7 @@ export default function ShareProjectRoot({
             steps={steps}
             activeStep={curStep.key}
           />
-          <Typography variant="h4" color="primary" className={classes.headline}>
+          <Typography variant="h4" className={classes.headline}>
             {curStep.headline && curStep.headline}
           </Typography>
           {curStep.key === "share" && (

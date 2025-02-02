@@ -4,6 +4,8 @@ import React, { useContext } from "react";
 
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import { getBackgroundContrastColor } from "../../../public/lib/themeOperations";
+import { useTheme } from "@mui/styles";
 
 const useStyles = makeStyles((theme) => ({
   shortDescriptionWrapper: {
@@ -44,6 +46,8 @@ export default function AddSummarySection({
   const shortDescriptionRef = React.useRef(null);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
+  const theme = useTheme();
+  const backgroundContrastColor = getBackgroundContrastColor(theme)
 
   return (
     <div className={className}>
@@ -61,6 +65,7 @@ export default function AddSummarySection({
           required
           fullWidth
           multiline
+          color={backgroundContrastColor}
           helperText={
             texts.briefly_summarise_what_you_are_doing_part_one +
             (projectData.short_description ? projectData.short_description.length : 0) +

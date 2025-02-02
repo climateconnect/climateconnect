@@ -737,31 +737,31 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: (
         <>
           You can view your project{" "}
-          <a
+          <Link
             href={
               getLocalePrefix(locale) +
               "/projects/" +
               url_slug +
-              (hubName ? "?hubName=" + hubName : "")
+              (hubName ? "?hub=" + hubName : "")
             }
           >
             here
-          </a>
+          </Link>
         </>
       ),
       de: (
         <>
           Du kannst dein Projekt{" "}
-          <a
+          <Link
             href={
               getLocalePrefix(locale) +
               "/projects/" +
               url_slug +
-              (hubName ? "?hubName=" + hubName : "")
+              (hubName ? "?hub=" + hubName : "")
             }
           >
             hier
-          </a>{" "}
+          </Link>{" "}
           ansehen
         </>
       ),

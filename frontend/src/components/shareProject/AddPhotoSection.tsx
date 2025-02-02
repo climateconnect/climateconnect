@@ -111,7 +111,6 @@ export default function AddPhotoSection({
         <Typography
           component="h2"
           variant="subtitle2"
-          color="primary"
           className={subHeaderClassname}
         >
           {texts.add_photo}*

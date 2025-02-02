@@ -233,7 +233,7 @@ export default function Form({
         autoComplete={autocomplete}
       >
         {errorMessage && (
-          <Typography component="div" color="error" className={classes.centerText}>
+          <Typography component="div" color="error">
             {errorMessage}
           </Typography>
         )}

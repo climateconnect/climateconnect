@@ -32,7 +32,6 @@ type Args = {
   locationOptionsOpen: boolean;
   setLocationOptionsOpen: Function;
   errors: any;
-  ToolTipIcon: any;
 };
 
 export default function ProjectTimeAndPlaceSectionAndCustomHub({
@@ -42,7 +41,6 @@ export default function ProjectTimeAndPlaceSectionAndCustomHub({
   locationOptionsOpen,
   setLocationOptionsOpen,
   errors,
-  ToolTipIcon,
 }: Args) {
   const classes = useStyles();
 

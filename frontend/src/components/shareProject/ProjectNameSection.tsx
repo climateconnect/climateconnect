@@ -3,6 +3,8 @@ import { TextField } from "@mui/material";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import { makeStyles } from "@mui/styles";
+import { useTheme } from "@mui/material/styles";
+import { getBackgroundContrastColor } from "../../../public/lib/themeOperations";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
 export default function ProjectNameSection({ projectData, handleSetProjectData }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
+  const theme = useTheme();
   const classes = useStyles();
 
   const onChangeName = (e) => {
@@ -33,12 +36,15 @@ export default function ProjectNameSection({ projectData, handleSetProjectData }
     });
   };
 
+  const color = getBackgroundContrastColor(theme)
+
   return (
     <div className={classes.root}>
       <TextField
         label={texts.project_name}
         className={classes.textField}
         required
+        color={color}
         InputProps={{
           classes: {
             input: `${classes.resize} ${classes.input}`,

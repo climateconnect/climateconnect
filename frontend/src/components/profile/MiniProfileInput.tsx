@@ -10,6 +10,8 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
 import SelectField from "../general/SelectField";
+import { getBackgroundContrastColor } from "../../../public/lib/themeOperations";
+import { useTheme } from "@emotion/react";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -30,6 +32,7 @@ const useStyles = makeStyles((theme) => {
     fieldLabel: {
       textAlign: "left",
       marginBottom: theme.spacing(0.5),
+      color: theme.palette.background.default_contrastText
     },
     tooltip: {
       fontSize: 16,
@@ -71,6 +74,7 @@ export default function MiniProfileInput({
   const [open, setOpen] = React.useState(false);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, profile: profile });
+  const theme = useTheme();
 
   useEffect(() => {
     if (
@@ -124,6 +128,9 @@ export default function MiniProfileInput({
       });
     }
   };
+
+  const backgroundContrastColor = getBackgroundContrastColor(theme);
+
   return (
     <div className={className}>
       <Avatar
@@ -132,10 +139,10 @@ export default function MiniProfileInput({
         src={getImageUrl(profile.image)}
         className={classes.avatar}
       />
-      <Typography variant="h6" className={classes.name} color="secondary">
+      <Typography variant="h6" className={classes.name}>
         {profile.first_name + " " + profile.last_name}
       </Typography>
-      <Typography className={classes.fieldLabel} color="primary">
+      <Typography className={classes.fieldLabel}>
         {texts.permissions}
         <Tooltip title={texts.choose_what_permissions_the_user_should_have}>
           <IconButton size="large">
@@ -145,6 +152,7 @@ export default function MiniProfileInput({
       </Typography>
       <SelectField
         label={texts.pick_users_permissions}
+        color={backgroundContrastColor}
         size="small"
         className={classes.field}
         disabled={
@@ -165,7 +173,7 @@ export default function MiniProfileInput({
       )}
       {!dontPickRole && (
         <>
-          <Typography color="primary" className={classes.fieldLabel}>
+          <Typography className={classes.fieldLabel}>
             {isOrganization ? texts.role_in_organization : texts.role_in_project}
             <Tooltip
               title={
@@ -181,6 +189,7 @@ export default function MiniProfileInput({
           </Typography>
           <TextField
             size="small"
+            color={backgroundContrastColor}
             variant="outlined"
             className={classes.field}
             label={texts.pick_or_type_users_role}
@@ -192,7 +201,7 @@ export default function MiniProfileInput({
       )}
       {!hideHoursPerWeek && (
         <>
-          <Typography className={classes.fieldLabel} color="primary">
+          <Typography className={classes.fieldLabel}>
             {texts.hours_contributed_per_week}
             <Tooltip
               title={
@@ -213,6 +222,7 @@ export default function MiniProfileInput({
             options={availabilityOptions}
             onChange={handleChangeAvailability}
             defaultValue={profile.availability}
+            color={backgroundContrastColor}
           />
         </>
       )}

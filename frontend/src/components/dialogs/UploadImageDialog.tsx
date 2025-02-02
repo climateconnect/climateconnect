@@ -10,6 +10,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import LoadingSpinner from "../general/LoadingSpinner";
 import GenericDialog from "./GenericDialog";
+import { getBackgroundContrastColor } from "../../../public/lib/themeOperations";
 
 const useStyles = makeStyles((theme) => ({
   avatarEditor: {
@@ -100,6 +101,8 @@ export default function UploadImageDialog({
       ? mediumHeight * ratio + 100
       : height * ratio + 100;
 
+  const backgroundContrastColor = getBackgroundContrastColor(theme)
+
   return (
     <GenericDialog
       /*TODO(undefined) className={classes.dialog} */
@@ -130,6 +133,7 @@ export default function UploadImageDialog({
           />
           <Slider
             aria-label="Image size"
+            color={backgroundContrastColor}
             defaultValue={defaultValue}
             className={classes.slider}
             onChange={handleSliderChange}
