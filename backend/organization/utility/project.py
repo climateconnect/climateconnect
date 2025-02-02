@@ -11,6 +11,8 @@ from climateconnect_api.utility.common import create_unique_slug
 from organization.models import Project, ProjectMember
 from organization.models.tags import ProjectTags
 from organization.models.type import ProjectTypesChoices
+from hubs.models.hub import Hub
+
 
 from django.db.models import Q
 from climateconnect_api.models import Role
@@ -55,6 +57,11 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
         project.website = data["website"]
     if "additional_loc_info" in data:
         project.additional_loc_info = data["additional_loc_info"]
+
+    hub = Hub.objects.filter(url_slug=data["hubName"]).first()
+    if hub:
+        project.related_hubs.add(hub)
+
     project.language = source_language
 
     project.url_slug = create_unique_slug(project.name, project.id, Project.objects)
@@ -281,9 +288,11 @@ def get_similar_projects(url_slug: str, return_count=5):
         lambda x: 1 if x == source_proj_parent_id else 0
     )
     df["is_same_city"] = df.apply(
-        lambda x: 1
-        if x["city"] == source_proj_city and x["country"] == source_proj_country
-        else 0,
+        lambda x: (
+            1
+            if x["city"] == source_proj_city and x["country"] == source_proj_country
+            else 0
+        ),
         axis=1,
     )
     df["is_same_language"] = df.language.apply(

@@ -30,8 +30,11 @@ import DonationCampaignInformation from "../../src/components/staticpages/donate
 import { retrievePage } from "../../src/utils/webflow";
 import AddIcon from "@mui/icons-material/Add";
 import { Theme } from "@mui/material/styles";
-import theme from "../../src/themes/theme";
+import theme from "../../src/themes/hubTheme";
 import BrowseContext from "../../src/components/context/BrowseContext";
+import { transformThemeData } from "../../src/themes/transformThemeData";
+import getHubTheme from "../../src/themes/fetchHubTheme";
+import isLocationHubLikeHub from "../../public/lib/isLocationHubLikeHub";
 
 const useStyles = makeStyles((theme) => ({
   moreInfoSoon: {
@@ -45,13 +48,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type ShareProjectMakeStyleProps = {
+  isCustomHub: boolean;
+};
+
 const shareProjectFabStyle = makeStyles((theme) => ({
-  fabShareProject: {
+  fabShareProject: (props: ShareProjectMakeStyleProps) => ({
     position: "fixed",
-    background: theme.palette.primary.light,
+    background: props.isCustomHub
+      ? theme.palette.background.default_contrastText
+      : theme.palette.primary.light,
+    color: props.isCustomHub ? theme.palette.background.default : "default",
     // bottom: theme.spacing(5),
     right: theme.spacing(3),
-  },
+  }),
 }));
 
 const DESCRIPTION_WEBFLOW_LINKS = {
@@ -87,6 +97,7 @@ export async function getServerSideProps(ctx) {
     allHubs,
     hubDescription,
     projectTypes,
+    hubThemeData,
   ] = await Promise.all([
     getHubData(hubUrl, ctx.locale),
     getProjectTagsOptions(hubUrl, ctx.locale),
@@ -97,24 +108,24 @@ export async function getServerSideProps(ctx) {
     getAllHubs(ctx.locale, false),
     retrieveDescriptionFromWebflow(ctx.query, ctx.locale),
     getProjectTypeOptions(ctx.locale),
+    getHubTheme(hubUrl),
   ]);
-
   return {
     props: {
       hubUrl: hubUrl,
-      isLocationHub: hubData.hub_type === "location hub",
+      isLocationHub: isLocationHubLikeHub(hubData?.hub_type),
       hubData: hubData,
-      name: hubData.name,
-      headline: hubData.headline,
-      subHeadline: hubData.sub_headline,
-      welcomeMessageLoggedIn: hubData.welcome_message_logged_in,
-      welcomeMessageLoggedOut: hubData.welcome_message_logged_out,
-      image: hubData.image,
-      quickInfo: hubData.quick_info,
-      stats: hubData.stats,
-      statBoxTitle: hubData.stat_box_title,
-      image_attribution: hubData.image_attribution,
-      hubLocation: hubData.location?.length > 0 ? hubData.location[0] : null,
+      name: hubData?.name ?? null,
+      headline: hubData?.headline ?? null,
+      subHeadline: hubData?.sub_headline ?? null,
+      welcomeMessageLoggedIn: hubData?.welcome_message_logged_in ?? null,
+      welcomeMessageLoggedOut: hubData?.welcome_message_logged_out ?? null,
+      image: hubData?.image ?? null,
+      quickInfo: hubData?.quick_info ?? null,
+      stats: hubData?.stats ?? null,
+      statBoxTitle: hubData?.stat_box_title ?? null,
+      image_attribution: hubData?.image_attribution ?? null,
+      hubLocation: hubData?.location?.length > 0 ? hubData.location[0] : null,
       filterChoices: {
         project_categories: project_categories,
         organization_types: organization_types,
@@ -126,6 +137,7 @@ export async function getServerSideProps(ctx) {
       allHubs: allHubs,
       hubDescription: hubDescription,
       projectTypes: projectTypes,
+      hubThemeData: hubThemeData,
     },
   };
 }
@@ -145,16 +157,16 @@ export default function Hub({
   welcomeMessageLoggedOut,
   initialLocationFilter,
   filterChoices,
-  sectorHubs,
   allHubs,
   hubLocation,
   hubData,
   hubDescription,
   projectTypes,
+  hubThemeData,
 }) {
+  const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const classes = useStyles();
-  let fabClass = shareProjectFabStyle(false);
-  const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
   const token = new Cookies().get("auth_token");
   const [hubAmbassador, setHubAmbassador] = useState(null);
@@ -256,6 +268,7 @@ export default function Hub({
   const contextValues = {
     projectTypes: projectTypes,
   };
+  const currentTheme = hubThemeData ? transformThemeData(hubThemeData) : theme;
 
   return (
     <>
@@ -264,13 +277,16 @@ export default function Hub({
       )}
       <WideLayout
         title={headline}
-        headerBackground="#FFF"
+        headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
         image={getImageUrl(image)}
         isHubPage
         hubUrl={hubUrl}
         hideDonationCampaign
-        customFooterImage={hubData.custom_footer_image && getImageUrl(hubData.custom_footer_image)}
+        customFooterImage={
+          hubData?.custom_footer_image && getImageUrl(hubData?.custom_footer_image)
+        }
         isLocationHub={isLocationHub}
+        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
       >
         <div className={classes.content}>
           {<DonationCampaignInformation />}
@@ -353,21 +369,28 @@ export default function Hub({
           </BrowseContext.Provider>
         </div>
         {isSmallScreen && (
-          <Fab
-            className={fabClass.fabShareProject}
-            size="medium"
-            color="primary"
-            href={`${getLocalePrefix(locale)}/share`}
-            sx={{ bottom: (theme) => (hubAmbassador ? theme.spacing(11.5) : theme.spacing(5)) }}
-            // onClick={}
-          >
-            <AddIcon />
-          </Fab>
+          <FabShareButton locale={locale} hubAmbassador={hubAmbassador} isCustomHub={isCustomHub} />
         )}
       </WideLayout>
     </>
   );
 }
+
+const FabShareButton = ({ locale, hubAmbassador, isCustomHub }) => {
+  const fabClass = shareProjectFabStyle({ isCustomHub: isCustomHub });
+  return (
+    <Fab
+      className={fabClass.fabShareProject}
+      size="medium"
+      color="primary"
+      href={`${getLocalePrefix(locale)}/share`}
+      sx={{ bottom: (theme) => (hubAmbassador ? theme.spacing(11.5) : theme.spacing(5)) }}
+      // onClick={}
+    >
+      <AddIcon />
+    </Fab>
+  );
+};
 
 const HubDescription = ({ hub, texts }) => {
   const classes = useStyles();
@@ -435,6 +458,10 @@ const getHubSupportersData = async (url_slug, locale) => {
     });
     return resp.data;
   } catch (err: any) {
+    //Don't log an error if there simply are no supporters for this hub
+    if (err?.response?.status === 404) {
+      return null;
+    }
     if (err.response && err.response.data)
       console.log("Error in getHubSupportersData: " + err.response.data.detail);
     console.log(err);

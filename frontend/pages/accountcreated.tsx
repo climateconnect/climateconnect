@@ -1,64 +1,53 @@
-import { Paper, Typography } from "@mui/material";
+import { Container, Theme, ThemeProvider, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
-import { getLocalePrefix } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
-import Layout from "../src/components/layouts/layout";
+import { themeSignUp } from "../src/themes/signupTheme";
+import WideLayout from "../src/components/layouts/WideLayout";
+import getHubTheme from "../src/themes/fetchHubTheme";
+import { transformThemeData } from "../src/themes/transformThemeData";
+import AccountCreatedContent from "../src/components/signup/AccountCreatedContent";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    textAlign: "center",
-    padding: theme.spacing(5),
-  },
-  headline: {
-    marginBottom: theme.spacing(3),
-  },
-}));
+export async function getServerSideProps(ctx) {
+  const hubUrl = ctx.query.hub;
 
-const verified = false;
+  const hubThemeData = await getHubTheme(hubUrl);
 
-export default function AccountCreated() {
-  const classes = useStyles();
+  return {
+    props: {
+      hubUrl: hubUrl || null, // undefined is not allowed in JSON, so we use null
+      hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
+    },
+  };
+}
+
+export default function AccountCreated({ hubUrl, hubThemeData }) {
+  const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
+  const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
 
-  if (verified)
-    return (
-      <Layout title={texts.account_created} hideHeadline>
-        <Paper className={classes.root}>
-          <Typography variant="h5" className={classes.headline}>
-            {texts.congratulations_you_have_created_your_account}
-          </Typography>
-          <Typography variant="h4">
-            <a href={getLocalePrefix(locale) + "/signin"}>{texts.click_here_to_log_in}</a>
-          </Typography>
-        </Paper>
-      </Layout>
-    );
-  else
-    return (
-      <Layout title={texts.account_created} hideHeadline>
-        <Paper className={classes.root}>
-          <Typography variant="h4" className={classes.headline}>
-            {texts.just_one_more_step_to_complete_your_signup}
-          </Typography>
-          <Typography variant="h5">
-            <div />
-            <div>{texts.please_click_on_the_link_we_emailed_you_to_activate_your_account}</div>
-            <br />
-            <Typography component="p" variant="h6">
-              {texts.if_the_email_does_not_arrive_after_5_minutes}
-            </Typography>
-            <br />
-            <Typography component="p" variant="h6">
-              {texts.make_sure_to_also_check_your_spam}
-            </Typography>
-            <Typography component="p" variant="h6">
-              {texts.if_you_are_experiencing_any_problems_contact_us}.
-            </Typography>
-          </Typography>
-        </Paper>
-      </Layout>
-    );
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+  const customThemeSignUp = hubThemeData
+    ? transformThemeData(hubThemeData, themeSignUp)
+    : themeSignUp;
+
+  return (
+    <WideLayout
+      title={texts.account_created}
+      isHubPage={hubUrl !== ""}
+      customTheme={customTheme}
+      hubUrl={hubUrl}
+      headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
+      footerTextColor={hubUrl && "white"}
+    >
+      <Container maxWidth={hugeScreen ? "xl" : "lg"}>
+        <ThemeProvider theme={customThemeSignUp}>
+          <AccountCreatedContent isSmallScreen={isSmallScreen} texts={texts} />
+        </ThemeProvider>
+      </Container>
+    </WideLayout>
+  );
 }

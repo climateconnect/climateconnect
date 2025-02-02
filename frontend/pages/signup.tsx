@@ -1,7 +1,7 @@
 import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
-import { apiRequest } from "../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
 import {
   getLocationValue,
@@ -16,11 +16,31 @@ import {
 } from "../public/lib/tutorialOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
-import Layout from "../src/components/layouts/layout";
 import BasicInfo from "../src/components/signup/BasicInfo";
 import AddInfo from "./../src/components/signup/AddInfo";
+import ContentImageSplitView from "../src/components/layouts/ContentImageSplitLayout";
+import { ThemeProvider } from "@emotion/react";
+import { themeSignUp } from "../src/themes/signupTheme";
+import WideLayout from "../src/components/layouts/WideLayout";
+import { Container, Theme, useMediaQuery } from "@mui/material";
+import getHubTheme from "../src/themes/fetchHubTheme";
+import { transformThemeData } from "../src/themes/transformThemeData";
+import CustomAuthImage from "../src/components/hub/CustomAuthImage";
 
-export default function Signup() {
+export async function getServerSideProps(ctx) {
+  const hubUrl = ctx.query.hub;
+
+  const hubThemeData = await getHubTheme(hubUrl);
+
+  return {
+    props: {
+      hubUrl: hubUrl || null, // undefined is not allowed in JSON, so we use null
+      hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
+    },
+  };
+}
+
+export default function Signup({ hubUrl, hubThemeData }) {
   const { ReactGA } = useContext(UserContext);
 
   const [userInfo, setUserInfo] = React.useState({
@@ -33,9 +53,12 @@ export default function Signup() {
     newsletter: "",
     sendNewsletter: undefined,
   });
+  const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
+  const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+
   const cookies = new Cookies();
   const { user, locale } = useContext(UserContext);
-  const texts = getTexts({ page: "profile", locale: locale });
+  const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
   //Information about the completion state of the tutorial
   const tutorialCookie = cookies.get("finishedTutorialSteps");
   const isClimateActorCookie = cookies.get("tutorialVariables");
@@ -62,7 +85,8 @@ export default function Signup() {
 
   useEffect(function () {
     if (user) {
-      redirectOnLogin(user, "/", locale);
+      const redirectUrl = hubUrl ? `${getLocalePrefix(locale)}/hubs/${hubUrl}` : "/";
+      redirectOnLogin(user, redirectUrl, locale);
     }
   });
 
@@ -95,6 +119,7 @@ export default function Signup() {
       location: location,
       sendNewsletter: values.sendNewsletter,
     });
+
     const payload = {
       email: userInfo.email.trim().toLowerCase(),
       password: userInfo.password,
@@ -106,11 +131,22 @@ export default function Signup() {
       is_activist: isClimateActorCookie?.isActivist,
       last_completed_tutorial_step: lastCompletedTutorialStep,
       source_language: locale,
+      hub: hubUrl,
     };
+
     const headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
     };
+    const args = {
+      pathname: "/accountcreated/",
+      query: {},
+    };
+    if (hubUrl) {
+      args.query = {
+        hub: hubUrl,
+      };
+    }
     setIsLoading(true);
     apiRequest({
       method: "post",
@@ -124,9 +160,7 @@ export default function Signup() {
           category: "User",
           action: "Created an Account",
         });
-        Router.push({
-          pathname: "/accountcreated/",
-        });
+        Router.push(args);
       })
       .catch(function (error) {
         console.log(error);
@@ -148,32 +182,57 @@ export default function Signup() {
     setCurStep(steps[0]);
   };
 
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+  const customThemeSignUp = hubThemeData
+    ? transformThemeData(hubThemeData, themeSignUp)
+    : themeSignUp;
+
   return (
-    <Layout
+    <WideLayout
       title={texts.sign_up}
-      isLoading={isLoading}
       message={errorMessage}
+      isHubPage={hubUrl !== ""}
       messageType={errorMessage && "error"}
+      isLoading={isLoading}
+      hubUrl={hubUrl}
+      customTheme={customTheme}
+      headerBackground="transparent"
+      footerTextColor={hubUrl && "white"}
     >
-      {curStep === "basicinfo" ? (
-        <BasicInfo
-          values={userInfo}
-          handleSubmit={handleBasicInfoSubmit}
-          errorMessage={errorMessages[steps[0]]}
-        />
-      ) : (
-        curStep === "personalinfo" && (
-          <AddInfo
-            values={userInfo}
-            handleSubmit={handleAddInfoSubmit}
-            errorMessage={errorMessages[steps[1]]}
-            handleGoBack={handleGoBackFromAddInfo}
-            locationInputRef={locationInputRef}
-            locationOptionsOpen={locationOptionsOpen}
-            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-          />
-        )
-      )}
-    </Layout>
+      <Container maxWidth={hugeScreen ? "xl" : "lg"}>
+        <ThemeProvider theme={customThemeSignUp}>
+          <ContentImageSplitView
+            minHeight="75vh"
+            content={
+              curStep === "basicinfo" ? (
+                <BasicInfo
+                  values={userInfo}
+                  handleSubmit={handleBasicInfoSubmit}
+                  errorMessage={errorMessages[steps[0]]}
+                  isSmallScreen={isSmallScreen}
+                  texts={texts}
+                />
+              ) : (
+                curStep === "personalinfo" && (
+                  <AddInfo
+                    values={userInfo}
+                    handleSubmit={handleAddInfoSubmit}
+                    errorMessage={errorMessages[steps[1]]}
+                    handleGoBack={handleGoBackFromAddInfo}
+                    locationInputRef={locationInputRef}
+                    locationOptionsOpen={locationOptionsOpen}
+                    handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+                    isSmallScreen={isSmallScreen}
+                  />
+                )
+              )
+            }
+            leftGridSizes={{ md: 7 }}
+            rightGridSizes={{ md: 5 }}
+            image={<CustomAuthImage hubUrl={hubUrl} texts={texts} />}
+          ></ContentImageSplitView>
+        </ThemeProvider>
+      </Container>
+    </WideLayout>
   );
 }

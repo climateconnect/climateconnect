@@ -1,8 +1,9 @@
 import { Switch, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
+import { Theme } from "@mui/material/styles";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
   flexBlock: {
     display: "flex",
     justifyContent: "space-around",
@@ -15,8 +16,9 @@ const useStyles = makeStyles(() => ({
     textAlign: "center",
     position: "relative",
   },
-  bold: {
+  switchedActive: {
     fontWeight: "bold",
+    color: theme.palette.background.default_contrastText,
   },
 }));
 
@@ -26,8 +28,9 @@ export default function Switcher({
   value,
   required,
   handleChangeValue,
+  color,
 }: any) {
-  const classes = useStyles();
+  const classes = useStyles({ value: value });
 
   const handleValueChange = (event) => {
     handleChangeValue(event.target.value);
@@ -35,26 +38,20 @@ export default function Switcher({
   return (
     <div className={classes.flexBlock}>
       <span className={classes.switchTextContainer}>
-        <Typography
-          className={`${classes.switchText} ${!value && classes.bold}`}
-          color={value ? "secondary" : "primary"}
-        >
+        <Typography className={`${classes.switchText} ${!value && classes.switchedActive}`}>
           {falseLabel}
         </Typography>
       </span>
       <Switch
         checked={value}
         required={required}
-        color="primary"
+        color={color ? color : "primary"}
         name="checkedA"
         inputProps={{ "aria-label": "secondary checkbox" }}
         onChange={handleValueChange}
       />
       <span className={classes.switchTextContainer}>
-        <Typography
-          className={`${classes.switchText} ${value && classes.bold}`}
-          color={value ? "primary" : "secondary"}
-        >
+        <Typography className={`${classes.switchText} ${value && classes.switchedActive}`}>
           {trueLabel}
         </Typography>
       </span>

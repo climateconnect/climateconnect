@@ -201,6 +201,10 @@ class Project(models.Model):
         blank=True,
     )
 
+    related_hubs = models.ManyToManyField(
+        "hubs.Hub", related_name="projects_related_hubs", blank=True
+    )
+
     @property
     def cached_ranking(self) -> int:
         cache_key = generate_project_ranking_cache_key(project_id=self.id)
