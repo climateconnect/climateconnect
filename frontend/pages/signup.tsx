@@ -1,7 +1,7 @@
 import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
-import { apiRequest } from "../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
 import {
   getLocationValue,
@@ -85,7 +85,8 @@ export default function Signup({ hubUrl, hubThemeData }) {
 
   useEffect(function () {
     if (user) {
-      redirectOnLogin(user, "/", locale);
+      const redirectUrl = hubUrl ? `${getLocalePrefix(locale)}/hubs/${hubUrl}` : "/";
+      redirectOnLogin(user, redirectUrl, locale);
     }
   });
 
