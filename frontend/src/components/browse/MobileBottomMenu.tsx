@@ -60,7 +60,6 @@ export default function MobileBottomMenu({
             const typeIcon = {
               icon: type_icons[t],
             };
-            if (index === 1) tabProps.ref = organizationsTabRef;
             return (
               <Tab label={<typeIcon.icon className={classes.tab} />} {...tabProps} key={index} />
             );

@@ -52,17 +52,8 @@ export default function Signup({ hubUrl, hubThemeData }) {
   const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
   const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
-  const cookies = new Cookies();
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
-  //Information about the completion state of the tutorial
-  const tutorialCookie = cookies.get("finishedTutorialSteps");
-  const isClimateActorCookie = cookies.get("tutorialVariables");
-  const curTutorialStep = getLastCompletedTutorialStep(tutorialCookie);
-  const lastCompletedTutorialStep =
-    curTutorialStep === -1
-      ? getLastStepBeforeSkip(cookies.get("lastStepBeforeSkipTutorial"))
-      : curTutorialStep;
   const steps = ["basicinfo", "personalinfo"];
   const [curStep, setCurStep] = useState(steps[0]);
   const [errorMessage, setErrorMessage] = useState("");
