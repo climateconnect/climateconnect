@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 9,
     borderRadius: "0px 0px 8px 8px",
     padding: theme.spacing(1),
-    boxShadow: `2px 3px 7px -2px ${theme.palette.secondary.main}`,
+    boxShadow: `2px 3px 7px -2px ${theme.palette.text.primary}`,
   }),
   date: {
     fontWeight: 700,
@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
   text: (props: any) => ({
     color: props.isInPast
       ? props.isCustomHub
-        ? theme.palette.text.disabled
+        ? theme.palette.text.primary
         : theme.palette.secondary.main
       : theme.palette.background.default_contrastText,
   }),
