@@ -1,7 +1,7 @@
 import { Box, CardContent, Tooltip, Typography } from "@mui/material";
 import React, { useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
-import PlaceIcon from "@mui/icons-material/Place";
+import LocationDisplay from "../project/LocationDisplay";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => {
       overflow: "hidden",
       OTextOverflow: "ellipsis",
       textOverflow: "ellipsis",
-      color: theme.palette.background.default_contrastText,
+      color: theme.palette.text.primary,
     },
     infoLink: {
       display: "flex",
@@ -27,10 +27,7 @@ const useStyles = makeStyles((theme) => {
       whiteSpace: "normal",
     },
     locationBox: {
-      display: "grid",
-      gridTemplateColumns: "40px min-content",
-      marginBottom: theme.spacing(0.5),
-      justifyContent: "center",
+      margin: "0 auto",
     },
     locationNameBox: {
       maxWidth: "200px",
@@ -53,6 +50,18 @@ const useStyles = makeStyles((theme) => {
     placeIcon: {
       color: theme.palette.background.default_contrastText,
     },
+    metadataText: {
+      display: "inline",
+      fontSize: 14,
+      marginLeft: theme.spacing(0.25),
+    },
+    cardIcon: {
+      verticalAlign: "bottom",
+      marginRight: theme.spacing(0.5),
+      marginLeft: theme.spacing(-0.25),
+      fontSize: "default",
+      color: theme.palette.background.default_contrastText,
+    },
   };
 });
 
@@ -62,20 +71,13 @@ export default function OrganizationPreviewBody({ organization }) {
 
   return (
     <CardContent className={classes.contentWrapper}>
-      <Box>
+      <Box className={classes.locationBox}>
         {!!organization.info.location && (
-          <span className={classes.locationBox}>
-            <span className={classes.cardIconBox}>
-              <Tooltip title="location">
-                <PlaceIcon className={classes.placeIcon} />
-              </Tooltip>
-            </span>
-            <span className={classes.locationNameBox}>
-              <Typography variant="subtitle1" component="h3" className={classes.locationName}>
-                {organization.info.location}
-              </Typography>
-            </span>
-          </span>
+          <LocationDisplay
+            textClassName={classes.metadataText}
+            iconClassName={classes.cardIcon}
+            location={organization?.info?.location}
+          />
         )}
       </Box>
       <Box

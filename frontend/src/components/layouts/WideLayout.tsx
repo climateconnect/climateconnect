@@ -65,6 +65,7 @@ type Props = {
   customFooterImage?: string;
   isLocationHub?: boolean;
   noHeader?: boolean;
+  footerTextColor?: string;
   customTheme?: any;
 };
 //Wrapper layout component for pages where the content takes the whole width of the screen
@@ -96,6 +97,7 @@ export default function WideLayout({
   hideDonationCampaign,
   customFooterImage,
   noHeader,
+  footerTextColor,
   customTheme,
 }: Props) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
@@ -121,6 +123,7 @@ export default function WideLayout({
   useEffect(() => {
     setAlertOpen(true);
   }, [message]);
+
   return (
     <LayoutWrapper
       title={title}
@@ -194,6 +197,7 @@ export default function WideLayout({
           showOnScrollUp={showOnScrollUp}
           large={isStaticPage || largeFooter}
           customFooterImage={customFooterImage}
+          textColor={footerTextColor}
         />
       )}
     </LayoutWrapper>

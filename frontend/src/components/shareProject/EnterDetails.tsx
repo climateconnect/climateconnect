@@ -133,17 +133,15 @@ export default function EnterDetails({
       name: texts.description,
       maxLength: 4000,
     },
+    website: {
+      name: texts.website,
+      maxLength: 256,
+    },
   };
 
-  const onDescriptionChange = (event, descriptionType) => {
+  const onTextChange = (event, descriptionType) => {
     handleSetProjectData({
       [descriptionType]: event.target.value.substring(0, validation[descriptionType].maxLength),
-    });
-  };
-
-  const onWebsiteChange = (event) => {
-    handleSetProjectData({
-      website: event.target.value,
     });
   };
 
@@ -202,7 +200,7 @@ export default function EnterDetails({
             />
             <AddSummarySection
               projectData={projectData}
-              onDescriptionChange={onDescriptionChange}
+              onDescriptionChange={onTextChange}
               className={`${classes.inlineBlock} ${classes.inlineOnBigScreens} ${classes.summaryContainer}`}
               subHeaderClassname={classes.subHeader}
               toolTipClassName={classes.tooltip}
@@ -230,7 +228,7 @@ export default function EnterDetails({
               fullWidth
               multiline
               rows={9}
-              onChange={(event) => onDescriptionChange(event, "description")}
+              onChange={(event) => onTextChange(event, "description")}
               placeholder={texts.describe_your_project_in_more_detail}
               value={projectData.description}
             />
@@ -246,7 +244,7 @@ export default function EnterDetails({
             </Typography>
             <TextField
               variant="outlined"
-              onChange={(event) => onWebsiteChange(event)}
+              onChange={(event) => onTextChange(event, "website")}
               placeholder={texts.project_website}
               value={projectData.website}
               helperText={texts.if_your_project_has_a_website_you_can_enter_it_here}

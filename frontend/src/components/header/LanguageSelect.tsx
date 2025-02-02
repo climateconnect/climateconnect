@@ -10,9 +10,18 @@ import UserContext from "../context/UserContext";
 import StyledMenu from "../general/StyledMenu";
 import StyledMenuItem from "../general/StyledMenuItem";
 
-const useStyles = makeStyles<Theme, { transparentHeader: boolean }>((theme) => ({
+const useStyles = makeStyles<
+  Theme,
+  { transparentHeader: boolean; isCustomHub: boolean; isNarrowScreen: boolean }
+>((theme) => ({
   root: (props) => ({
-    color: props.transparentHeader ? "white" : theme.palette.primary.main,
+    color: props.transparentHeader
+      ? "white"
+      : props.isCustomHub
+      ? !props.isNarrowScreen
+        ? theme.palette.primary.contrastText
+        : theme.palette.background.default_contrastText
+      : theme.palette.primary.main,
     cursor: "pointer",
   }),
   languageIcon: {
@@ -34,14 +43,22 @@ const useStyles = makeStyles<Theme, { transparentHeader: boolean }>((theme) => (
  * between multiple languages on hover (currently German and
  * English).
  */
-export default function LanguageSelect({ transparentHeader }) {
-  const classes = useStyles({ transparentHeader: transparentHeader });
+type LanguageSelectProps = {
+  transparentHeader?: boolean;
+  isCustomHub: boolean;
+};
+
+export default function LanguageSelect({
+  transparentHeader = false,
+  isCustomHub,
+}: LanguageSelectProps) {
   const { locale, locales, startLoading } = useContext(UserContext);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(buttonRef.current);
   const [open, setOpen] = useState(false);
   const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const classes = useStyles({ transparentHeader, isCustomHub, isNarrowScreen });
   const router = useRouter();
   useEffect(function () {
     setAnchorEl(buttonRef.current);

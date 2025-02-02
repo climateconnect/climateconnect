@@ -1,6 +1,7 @@
 import { Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React from "react";
+import React, { useContext } from "react";
+import UserContext from "../context/UserContext";
 import Image from "next/image";
 
 const PRIO1_SLUG = "prio1";
@@ -19,10 +20,6 @@ const useStyles = makeStyles((theme) => ({
   prioOneDefaultBackground: {
     backgroundColor: theme.palette.secondary.main,
   },
-  prioOneAccentBackground: {
-    borderLeftColor: theme.palette.secondary.light,
-  },
-
   prioOneAuthIcon: {
     position: "absolute",
     top: "50vh",
@@ -37,6 +34,12 @@ const useStyles = makeStyles((theme) => ({
       width: "12rem",
       height: "12rem",
     },
+  },
+  prioOneMobileBackground: {
+    backgroundColor: theme.palette.secondary.light,
+  },
+  prioOneAccentBackground: {
+    borderLeftColor: theme.palette.secondary.light,
   },
 }));
 
@@ -55,18 +58,24 @@ export default function CustomBackground({ hubUrl }: Props) {
   const mobileScreenSize = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
 
   // TODO: mobileScreenSize is not yet supported
-  if (!hubUrl || mobileScreenSize) {
+  if (!hubUrl) {
     return null;
   }
   const pathname = window.location.pathname;
-  console.log("pathname: ", pathname);
 
   switch (hubUrl.toLowerCase()) {
-    case PRIO1_SLUG: {
-      if (pathname.endsWith("/hubs/" + PRIO1_SLUG)) {
+    case "prio1": {
+      if (pathname.endsWith("/hubs/prio1")) {
+        if (mobileScreenSize) {
+          return null;
+        }
         return <PrioOneBackgroundBrowse />;
-      } else if (pathname.endsWith("/signup") || pathname.endsWith("/signin")) {
-        return <PrioOneBackgroundAuth />;
+      } else if (
+        pathname.endsWith("/signup") ||
+        pathname.endsWith("/signin") ||
+        pathname.endsWith("/accountcreated")
+      ) {
+        return <PrioOneBackgroundAuth mobileScreenSize={mobileScreenSize} />;
       }
     }
     default: {
@@ -77,8 +86,10 @@ export default function CustomBackground({ hubUrl }: Props) {
 }
 
 function PrioOneBackgroundBrowse() {
+  const { user } = useContext(UserContext);
+  const loggedIn = !!user;
   const classes = useStyles();
-  const height = 52.1;
+  const height = loggedIn ? 30 : 52.1;
   const width = 100;
   const triangleBottom = width * 0.5;
   const triangleLeft = width * 3;
@@ -111,8 +122,11 @@ function PrioOneBackgroundBrowse() {
   );
 }
 
-function PrioOneBackgroundAuth() {
+function PrioOneBackgroundAuth({ mobileScreenSize }) {
   const classes = useStyles();
+  if (mobileScreenSize) {
+    return <div className={`${classes.background} ${classes.prioOneMobileBackground}`}></div>;
+  }
   return (
     <div className={`${classes.background} ${classes.prioOneDefaultBackground}`}>
       {/* Container within the background */}

@@ -1,7 +1,6 @@
 import Grid from "@mui/material/Unstable_Grid2";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
-import InfiniteScroll from "react-infinite-scroller";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import InfiniteScrollGrid from "../general/InfiniteScrollGrid";

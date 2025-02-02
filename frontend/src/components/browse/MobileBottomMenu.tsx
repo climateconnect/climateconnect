@@ -7,8 +7,9 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import GroupIcon from "@mui/icons-material/Group";
 import DateRangeRoundedIcon from "@mui/icons-material/DateRangeRounded";
+import { Theme } from "@mui/material/styles";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     position: "fixed",
     bottom: 0,
@@ -16,6 +17,14 @@ const useStyles = makeStyles(() => ({
     right: 0,
     zIndex: 20,
     background: "#f0f2f5",
+  },
+  tabs: {
+    "& .MuiTabs-indicator": {
+      backgroundColor: theme.palette.background.default_contrastText,
+    },
+  },
+  tab: {
+    color: theme.palette.background.default_contrastText,
   },
 }));
 
@@ -42,8 +51,7 @@ export default function MobileBottomMenu({
           variant="fullWidth"
           value={tabValue}
           onChange={handleTabChange}
-          indicatorColor="primary"
-          textColor="primary"
+          className={classes.tabs}
           centered={true}
         >
           {TYPES_BY_TAB_VALUE.map((t, index) => {
@@ -54,7 +62,9 @@ export default function MobileBottomMenu({
               icon: type_icons[t],
             };
             if (index === 1) tabProps.ref = organizationsTabRef;
-            return <Tab label={<typeIcon.icon />} {...tabProps} key={index} />;
+            return (
+              <Tab label={<typeIcon.icon className={classes.tab} />} {...tabProps} key={index} />
+            );
           })}
         </Tabs>
       </>

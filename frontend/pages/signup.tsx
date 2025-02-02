@@ -1,7 +1,7 @@
 import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
-import { apiRequest } from "../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
 import {
   getLocationValue,
@@ -28,32 +28,19 @@ import { transformThemeData } from "../src/themes/transformThemeData";
 import CustomAuthImage from "../src/components/hub/CustomAuthImage";
 
 export async function getServerSideProps(ctx) {
-  const hubSlug = ctx.query.hubName;
+  const hubUrl = ctx.query.hub;
 
-  // early return to avoid fetching /undefined/theme
-  if (!hubSlug) {
-    return {
-      props: {},
-    };
-  }
-  const hubThemeData = await getHubTheme(hubSlug);
-
-  // early return to avoid a hubSlug, that is not supported within the backend
-  if (!hubThemeData) {
-    return {
-      props: {},
-    };
-  }
+  const hubThemeData = await getHubTheme(hubUrl);
 
   return {
     props: {
-      hubSlug: hubSlug || null, // undefined is not allowed in JSON, so we use null
+      hubUrl: hubUrl || null, // undefined is not allowed in JSON, so we use null
       hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
     },
   };
 }
 
-export default function Signup({ hubSlug, hubThemeData }) {
+export default function Signup({ hubUrl, hubThemeData }) {
   const { ReactGA } = useContext(UserContext);
 
   const [userInfo, setUserInfo] = React.useState({
@@ -67,10 +54,11 @@ export default function Signup({ hubSlug, hubThemeData }) {
     sendNewsletter: undefined,
   });
   const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
+  const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const cookies = new Cookies();
   const { user, locale } = useContext(UserContext);
-  const texts = getTexts({ page: "profile", locale: locale, hubName: hubSlug });
+  const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
   //Information about the completion state of the tutorial
   const tutorialCookie = cookies.get("finishedTutorialSteps");
   const isClimateActorCookie = cookies.get("tutorialVariables");
@@ -97,7 +85,8 @@ export default function Signup({ hubSlug, hubThemeData }) {
 
   useEffect(function () {
     if (user) {
-      redirectOnLogin(user, "/", locale);
+      const redirectUrl = hubUrl ? `${getLocalePrefix(locale)}/hubs/${hubUrl}` : "/";
+      redirectOnLogin(user, redirectUrl, locale);
     }
   });
 
@@ -131,9 +120,6 @@ export default function Signup({ hubSlug, hubThemeData }) {
       sendNewsletter: values.sendNewsletter,
     });
 
-    const searchParams = new URLSearchParams(window.location.search);
-    const hub = searchParams.get("hub") ?? "";
-
     const payload = {
       email: userInfo.email.trim().toLowerCase(),
       password: userInfo.password,
@@ -145,13 +131,22 @@ export default function Signup({ hubSlug, hubThemeData }) {
       is_activist: isClimateActorCookie?.isActivist,
       last_completed_tutorial_step: lastCompletedTutorialStep,
       source_language: locale,
-      hub: hub,
+      hub: hubUrl,
     };
 
     const headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
     };
+    const args = {
+      pathname: "/accountcreated/",
+      query: {},
+    };
+    if (hubUrl) {
+      args.query = {
+        hub: hubUrl,
+      };
+    }
     setIsLoading(true);
     apiRequest({
       method: "post",
@@ -165,9 +160,7 @@ export default function Signup({ hubSlug, hubThemeData }) {
           category: "User",
           action: "Created an Account",
         });
-        Router.push({
-          pathname: "/accountcreated/",
-        });
+        Router.push(args);
       })
       .catch(function (error) {
         console.log(error);
@@ -198,11 +191,13 @@ export default function Signup({ hubSlug, hubThemeData }) {
     <WideLayout
       title={texts.sign_up}
       message={errorMessage}
-      isHubPage={hubSlug !== ""}
+      isHubPage={hubUrl !== ""}
       messageType={errorMessage && "error"}
       isLoading={isLoading}
-      hubUrl={hubSlug}
+      hubUrl={hubUrl}
       customTheme={customTheme}
+      headerBackground="transparent"
+      footerTextColor={hubUrl && "white"}
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
         <ThemeProvider theme={customThemeSignUp}>
@@ -214,6 +209,7 @@ export default function Signup({ hubSlug, hubThemeData }) {
                   values={userInfo}
                   handleSubmit={handleBasicInfoSubmit}
                   errorMessage={errorMessages[steps[0]]}
+                  isSmallScreen={isSmallScreen}
                   texts={texts}
                 />
               ) : (
@@ -226,13 +222,14 @@ export default function Signup({ hubSlug, hubThemeData }) {
                     locationInputRef={locationInputRef}
                     locationOptionsOpen={locationOptionsOpen}
                     handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+                    isSmallScreen={isSmallScreen}
                   />
                 )
               )
             }
             leftGridSizes={{ md: 7 }}
             rightGridSizes={{ md: 5 }}
-            image={<CustomAuthImage hubUrl={hubSlug} texts={texts} />}
+            image={<CustomAuthImage hubUrl={hubUrl} texts={texts} />}
           ></ContentImageSplitView>
         </ThemeProvider>
       </Container>

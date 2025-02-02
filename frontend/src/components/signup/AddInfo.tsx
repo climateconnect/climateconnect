@@ -12,17 +12,32 @@ const useStyles = makeStyles((theme) => ({
   contrastBackground: {
     color: theme.palette.background.default_contrastText,
   },
-
-  checkboxLabels: {
-    fontSize: 14,
+  root: {
+    [theme.breakpoints.down("sm")]: {
+      padding: 0,
+      borderRadius: 0,
+      boxShadow: "none",
+    },
   },
-
+  checkboxLabels: {
+    [theme.breakpoints.up("sm")]: {
+      fontSize: 14,
+    },
+    [theme.breakpoints.down("sm")]: {
+      fontWeight: "normal",
+    },
+  },
   formRootClass: {
     padding: 0,
     maxWidth: 700,
     margin: "0 auto 0 0", // basically a left align
   },
-
+  smallScreenHeadline: {
+    fontSize: 35,
+    textAlign: "center",
+    fontWeight: "bold",
+    padding: theme.spacing(4),
+  },
   cardHeaderBox: {
     display: "flex",
     gap: "2rem",
@@ -39,6 +54,7 @@ export default function AddInfo({
   locationInputRef,
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
+  isSmallScreen,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -98,20 +114,34 @@ export default function AddInfo({
     method: "GET",
   };
 
+  const GoBackArrow = () => (
+    <IconButton aria-label="close" onClick={() => handleGoBack(undefined, values)}>
+      <ArrowBack />
+    </IconButton>
+  );
+
+  const StepCounter = () => (
+    <Typography variant="subtitle1" component="div">
+      {isSmallScreen && <GoBackArrow />}
+      {texts.step_2_of_2_sign_up}
+    </Typography>
+  );
+
   return (
-    <Card>
+    <Card className={classes.root}>
       {/* TODO: maybe use card Header instead (?)
       see https://mui.com/material-ui/react-card/ for other usefull card components */}
-      <Box className={classes.cardHeaderBox}>
-        <IconButton aria-label="close" onClick={() => handleGoBack(undefined, values)}>
-          <ArrowBack />
-        </IconButton>
-        <Typography className={classes.contrastBackground} variant="subtitle1" component="div">
-          {texts.step_2_of_2_sign_up}
+      {isSmallScreen && (
+        <Typography color="primary" variant="h1" className={classes.smallScreenHeadline}>
+          {texts.sign_up}
         </Typography>
+      )}
+      <Box className={classes.cardHeaderBox}>
+        {!isSmallScreen && <GoBackArrow />}
+        <StepCounter />
       </Box>
       <CardContent>
-        <Typography variant="h3">{texts.signup_step_2_headline}</Typography>
+        {!isSmallScreen && <Typography>{texts.signup_step_2_headline}</Typography>}
         <Form
           fields={fields}
           className={classes.formRootClass}

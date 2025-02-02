@@ -9,6 +9,10 @@ import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
 import HubSupporters from "../hub/HubSupporters";
 
+type useStylesProps = {
+  isSmallScreen: boolean;
+};
+
 const useStyles = makeStyles((theme) => ({
   projectCard: {
     maxWidth: 290,
@@ -37,11 +41,13 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#f0f2f5",
     maxWidth: "100%",
   },
-  showAllProjectsButton: (props) => ({
+  showAllProjectsButton: (props: useStylesProps) => ({
     marginBottom: props.isSmallScreen ? theme.spacing(0) : theme.spacing(1),
     marginTop: props.isSmallScreen ? theme.spacing(0) : theme.spacing(1),
     fontSize: props.isSmallScreen ? 14 : 12,
     width: props.isSmallScreen ? "100%" : "95%",
+    color: theme.palette.background.default_contrastText,
+    borderColor: theme.palette.background.default_contrastText,
   }),
   supporterSliderWidth: {
     width: "95%",
@@ -50,6 +56,9 @@ const useStyles = makeStyles((theme) => ({
     [`@media (min-width: 900px) and (max-width: 1200px)`]: {
       marginLeft: 0,
     },
+  },
+  expandButton: {
+    color: theme.palette.background.default_contrastText,
   },
 }));
 
@@ -64,7 +73,6 @@ export default function ProjectSideBar({
   hubName,
 }) {
   const classes = useStyles({
-    showSimilarProjects: showSimilarProjects,
     isSmallScreen: isSmallScreen,
   });
 
@@ -76,7 +84,12 @@ export default function ProjectSideBar({
       {isSmallScreen ? (
         <>
           <Divider className={classes.divider} />
-          <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
+          <Typography
+            component="h2"
+            variant="h6"
+            color="background.default_contrastText"
+            className={classes.subHeader}
+          >
             {texts.you_may_also_like_these_projects}
           </Typography>
         </>
@@ -95,7 +108,7 @@ export default function ProjectSideBar({
         }
       >
         {isSmallScreen && (
-          <Button onClick={handleHideContent}>
+          <Button className={classes.expandButton} onClick={handleHideContent}>
             {showSimilarProjects ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </Button>
         )}
@@ -112,13 +125,9 @@ export default function ProjectSideBar({
             <ProjectPreviews
               displayOnePreviewInRow={shouldDisplayOneProjectInRow}
               projects={similarProjects}
+              hubUrl={hubName}
             />
-            <Button
-              color="primary"
-              variant="outlined"
-              className={classes.showAllProjectsButton}
-              href={link}
-            >
+            <Button variant="outlined" className={classes.showAllProjectsButton} href={link}>
               <SearchIcon />
               {texts.view_all_projects}
             </Button>
