@@ -106,7 +106,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
     },
     logo: (props) => ({
       [theme.breakpoints.down("md")]: {
-        height: (props.isLocationHub || props.isCustomHub) ? 35 : "auto",
+        height: props.isLocationHub || props.isCustomHub ? 35 : "auto",
       },
       height: 60,
       maxWidth: 180,
@@ -970,9 +970,9 @@ const getLinkButtonProps = ({
   else if (!contained && link.type !== "notificationsButton") buttonProps.color = "inherit";
   if (link.type === "notificationsButton") buttonProps.onClick = toggleShowNotifications;
   if (link.href) {
-    if(link.isExternalLink) {
+    if (link.isExternalLink) {
       buttonProps.href = link.href;
-      buttonProps.target = "_blank";      
+      buttonProps.target = "_blank";
     } else {
       buttonProps.href = localePrefix + link.href;
     }

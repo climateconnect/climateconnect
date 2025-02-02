@@ -20,11 +20,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   tabs: {
     "& .MuiTabs-indicator": {
-      backgroundColor: theme.palette.background.default_contrastText
-    },  },
+      backgroundColor: theme.palette.background.default_contrastText,
+    },
+  },
   tab: {
-    color: theme.palette.background.default_contrastText
-  }
+    color: theme.palette.background.default_contrastText,
+  },
 }));
 
 export default function MobileBottomMenu({
@@ -61,7 +62,9 @@ export default function MobileBottomMenu({
               icon: type_icons[t],
             };
             if (index === 1) tabProps.ref = organizationsTabRef;
-            return <Tab label={<typeIcon.icon className={classes.tab}/>} {...tabProps} key={index} />;
+            return (
+              <Tab label={<typeIcon.icon className={classes.tab} />} {...tabProps} key={index} />
+            );
           })}
         </Tabs>
       </>

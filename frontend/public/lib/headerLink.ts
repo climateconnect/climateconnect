@@ -35,7 +35,9 @@ const COMMON_LINKS = {
   },
   AUTH_LINKS: (path_to_redirect, texts, queryString) => [
     {
-      href: `/signin?redirect=${encodeURIComponent(path_to_redirect)}${queryString ? `&${queryString}` : ""}`,
+      href: `/signin?redirect=${encodeURIComponent(path_to_redirect)}${
+        queryString ? `&${queryString}` : ""
+      }`,
       text: texts.log_in,
       iconForDrawer: AccountCircleIcon,
       isOutlinedInHeader: true,

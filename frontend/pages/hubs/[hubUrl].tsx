@@ -54,7 +54,9 @@ type ShareProjectMakeStyleProps = {
 const shareProjectFabStyle = makeStyles((theme) => ({
   fabShareProject: (props: ShareProjectMakeStyleProps) => ({
     position: "fixed",
-    background: props.isCustomHub ? theme.palette.background.default_contrastText : theme.palette.primary.light,
+    background: props.isCustomHub
+      ? theme.palette.background.default_contrastText
+      : theme.palette.primary.light,
     color: props.isCustomHub ? theme.palette.background.default : "default",
     // bottom: theme.spacing(5),
     right: theme.spacing(3),
@@ -165,7 +167,7 @@ export default function Hub({
   hubThemeData,
 }) {
   const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
-  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl)
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const classes = useStyles();
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
   const token = new Cookies().get("auth_token");
@@ -385,19 +387,15 @@ export default function Hub({
           </BrowseContext.Provider>
         </div>
         {isSmallScreen && (
-          <FabShareButton 
-            locale={locale} 
-            hubAmbassador={hubAmbassador} 
-            isCustomHub={isCustomHub}
-          />
+          <FabShareButton locale={locale} hubAmbassador={hubAmbassador} isCustomHub={isCustomHub} />
         )}
       </WideLayout>
     </>
   );
 }
 
-const FabShareButton = ({locale, hubAmbassador, isCustomHub}) => {
-  const fabClass = shareProjectFabStyle({isCustomHub: isCustomHub});
+const FabShareButton = ({ locale, hubAmbassador, isCustomHub }) => {
+  const fabClass = shareProjectFabStyle({ isCustomHub: isCustomHub });
   return (
     <Fab
       className={fabClass.fabShareProject}
@@ -409,8 +407,8 @@ const FabShareButton = ({locale, hubAmbassador, isCustomHub}) => {
     >
       <AddIcon />
     </Fab>
-  )
-}
+  );
+};
 
 const HubDescription = ({ hub, texts }) => {
   const classes = useStyles();
