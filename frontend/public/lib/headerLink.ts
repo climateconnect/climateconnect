@@ -35,7 +35,9 @@ const COMMON_LINKS = {
   },
   AUTH_LINKS: (path_to_redirect, texts, queryString) => [
     {
-      href: `/signin?redirect=${path_to_redirect}${queryString ? `&${queryString}` : ""}`,
+      href: `/signin?redirect=${encodeURIComponent(path_to_redirect)}${
+        queryString ? `&${queryString}` : ""
+      }`,
       text: texts.log_in,
       iconForDrawer: AccountCircleIcon,
       isOutlinedInHeader: true,
@@ -52,19 +54,20 @@ const COMMON_LINKS = {
   ],
 };
 
-const getPrio1Links = (path_to_redirect, texts, isLocationHub) => [
+const getPrio1Links = (path_to_redirect, texts) => [
   {
-    href: "/prio1-klima",
+    href: "https://prio1-klima.net",
     text: texts.PRIO1_klima,
     iconForDrawer: InfoIcon,
     showStaticLinksInDropdown: true,
     hideOnStaticPages: true,
+    isExternalLink: true,
     className: "btnIconTextColor",
   },
   {
     ...COMMON_LINKS.SHARE,
     text: texts.share_a_project,
-    hideOnMediumScreen: isLocationHub,
+    hideOnMediumScreen: true,
   },
   {
     type: "languageSelect",
@@ -118,8 +121,8 @@ const getDefaultLinks = (path_to_redirect, texts, isLocationHub) => [
 
 const getLinks = (path_to_redirect, texts, isLocationHub, isCustomHub) => {
   return isCustomHub
-    ? getPrio1Links(path_to_redirect, texts, isLocationHub)
-    : getDefaultLinks(path_to_redirect, texts, isLocationHub);
+    ? getPrio1Links(path_to_redirect, texts)
+    : getDefaultLinks(path_to_redirect, texts, isLocationHub || isCustomHub);
 };
 
 const getLoggedInLinks = ({ loggedInUser, texts }) => {

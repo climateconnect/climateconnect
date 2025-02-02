@@ -106,7 +106,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
     },
     logo: (props) => ({
       [theme.breakpoints.down("md")]: {
-        height: props.isLocationHub ? 35 : "auto",
+        height: props.isLocationHub || props.isCustomHub ? 35 : "auto",
       },
       height: 60,
       maxWidth: 180,
@@ -282,7 +282,7 @@ export default function Header({
   background,
   isHubPage,
   hubUrl,
-  isLocationHub,
+  isLocationHub, //->isLocationHub || isCustomhub -> is hubUrl also used by static links?!
 }: HeaderProps) {
   const { user, signOut, notifications, pathName, locale, CUSTOM_HUB_URLS } = useContext(
     UserContext
@@ -358,22 +358,13 @@ export default function Header({
     };
   }, [lastScrollY]);
 
-  const CUSTOM_HOME_LINKS = {
-    prio1: "https://prio1-klima.net/",
-  };
-
   const getLogoLink = () => {
     if (hubUrl) {
-      if (isCustomHub && hubUrl in CUSTOM_HOME_LINKS) {
-        return CUSTOM_HOME_LINKS[hubUrl];
-      } else {
-        return `${localePrefix}/hubs/${hubUrl}`;
-      }
+      return `${localePrefix}/hubs/${hubUrl}`;
     }
     return `${localePrefix}/`;
   };
   const logoLink = getLogoLink();
-  const logoTarget = hubUrl && hubUrl in CUSTOM_HOME_LINKS ? "_blank" : "_self";
 
   return (
     <Box
@@ -383,7 +374,7 @@ export default function Header({
       }`}
     >
       <Container className={classes.container}>
-        <Link href={logoLink} target={logoTarget} className={classes.logoLink} underline="hover">
+        <Link href={logoLink} className={classes.logoLink} underline="hover">
           <img
             src={logo}
             alt={texts.climate_connect_logo}
@@ -401,7 +392,7 @@ export default function Header({
             />
           </Link>
         )}
-        {isNarrowScreen || (isLocationHub && isMediumScreen) ? (
+        {isNarrowScreen || ((isLocationHub || isCustomHub) && isMediumScreen) ? (
           <NarrowScreenLinks
             loggedInUser={user}
             handleLogout={signOut}
@@ -978,7 +969,14 @@ const getLinkButtonProps = ({
   if (!transparentHeader) buttonProps.color = "primary";
   else if (!contained && link.type !== "notificationsButton") buttonProps.color = "inherit";
   if (link.type === "notificationsButton") buttonProps.onClick = toggleShowNotifications;
-  if (link.href) buttonProps.href = localePrefix + link.href;
+  if (link.href) {
+    if (link.isExternalLink) {
+      buttonProps.href = link.href;
+      buttonProps.target = "_blank";
+    } else {
+      buttonProps.href = localePrefix + link.href;
+    }
+  }
   if (isNarrowScreen && index === linksOutsideDrawer.length - 1) {
     buttonProps.className = classes.marginRight;
   }
