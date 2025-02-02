@@ -3,8 +3,13 @@ import React from "react";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import PersonIcon from "@mui/icons-material/Person";
 
+type Props = {
+  color: string;
+  size: number;
+};
+
 const useStyles = makeStyles(() => ({
-  icon: (props) => ({
+  icon: (props: Props) => ({
     height: props.color === "earth" ? props.size : "auto",
     fontSize: props.color === "earth" ? "inherit" : `${props.size}px !important`,
   }),
@@ -30,4 +35,5 @@ export default function ButtonIcon({ icon, color, size }) {
       <PersonIcon className={`${classes.icon} ${classes.color}`} />
     );
   }
+  return <></>
 }

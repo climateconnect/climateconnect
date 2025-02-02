@@ -70,6 +70,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
       paddingBottom: theme.spacing(4),
       textAlign: "center",
       wordBreak: "break-word",
+      color: "inherit"
     },
     headerButton: {
       right: 0,
@@ -102,6 +103,9 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
     shortDescription: {
       wordBreak: "break-word",
     },
+    summaryHeadline: {
+      color: "inherit"
+    }
   };
 });
 
@@ -369,7 +373,7 @@ function LargeScreenOverview({
           alt={texts.project_image_of_project + " " + project.name}
         />
         <div className={classes.inlineProjectInfo}>
-          <Typography component="h2" variant="h5" className={classes.subHeader}>
+          <Typography component="h2" variant="h5" className={`${classes.summaryHeadline} ${classes.subHeader}`}>
             {texts.summary}
           </Typography>
           <ShortProjectInfo project={project} />

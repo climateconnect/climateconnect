@@ -1,10 +1,15 @@
 import { Button, CircularProgress, IconButton, Link, Typography, useTheme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
+import { Theme } from "@mui/material/styles";
 import React, { MouseEventHandler } from "react";
 import ButtonIcon from "../../general/ButtonIcon";
 
-const useStyles = makeStyles((theme) => {
-  return {
+type MakeStylesProps = {
+  likingChangePending: boolean;
+  isUserLiking: boolean;
+}
+
+const useStyles = makeStyles((theme: Theme) => ({
     largeScreenButtonContainer: {
       display: "inline-flex",
       flexDirection: "column",
@@ -27,7 +32,7 @@ const useStyles = makeStyles((theme) => {
     },
     likeNumberMobile: {
       fontWeight: 600,
-      color: theme.palette.primary.main,
+      color: theme.palette.text.primary,
       whiteSpace: "nowrap",
     },
     likesText: {
@@ -65,26 +70,27 @@ const useStyles = makeStyles((theme) => {
     buttonLabel: {
       position: "relative",
     },
-    buttonText: (props) => ({
+    buttonText: (props: MakeStylesProps) => ({
       visibility: props.likingChangePending ? "hidden" : "visible",
+      color: props.isUserLiking ? theme.palette.secondary.contrastText : theme.palette.primary.contrastText
     }),
     hidden: {
       visibility: "hidden",
     },
-    buttonAfterLike: (props) => ({
+    //Weird naming
+    buttonAfterLike: (props: MakeStylesProps) => ({
       backgroundColor: props.isUserLiking
         ? theme.palette.secondary.main
         : theme.palette.primary.main,
       color: theme.palette.background.default,
     }),
-  };
-});
+}));
 
 type Args = {
   isUserLiking: boolean;
   handleToggleLikeProject: MouseEventHandler<HTMLButtonElement>;
   texts: any;
-  toggleShowLikes: Function;
+  toggleShowLikes: MouseEventHandler<HTMLAnchorElement>;
   likingChangePending: boolean;
   hasAdminPermissions?: boolean;
   screenSize?: any;
@@ -108,6 +114,7 @@ export default function LikeButton({
     isUserLiking: isUserLiking,
   });
   const theme = useTheme();
+  //Small screens
   if (screenSize?.belowSmall) {
     return (
       <span
@@ -116,7 +123,7 @@ export default function LikeButton({
         {...bindLike}
       >
         <IconButton
-          className={`${classes.iconButton} ${classes.buttonAfterLike}`}
+          className={`${classes.iconButton}`}
           disabled={likingChangePending}
           size="large"
         >
@@ -131,19 +138,20 @@ export default function LikeButton({
         )}
       </span>
     );
+  //Medium screens
   } else if (screenSize?.belowMedium && !screenSize.belowSmall && !hasAdminPermissions) {
     return (
       <span className={classes.largeScreenButtonContainer}>
         <IconButton
           onClick={handleToggleLikeProject}
           disabled={likingChangePending}
-          className={`${classes.mediumScreenIconButton} ${classes.buttonAfterLike}`}
+          className={`${classes.mediumScreenIconButton}`}
           size="large"
         >
           <ButtonIcon
             icon="like"
             size={40}
-            color={isUserLiking ? "earth" : theme.palette.background.default_contrastText}
+            color={isUserLiking ? "earth" : theme.palette.primary.main}
           />
         </IconButton>
         {numberOfLikes > 0 && (
@@ -161,6 +169,7 @@ export default function LikeButton({
         )}
       </span>
     );
+  //Large screens
   } else {
     return (
       <span className={classes.largeScreenButtonContainer}>
@@ -175,7 +184,8 @@ export default function LikeButton({
             />
           }
           disabled={likingChangePending}
-          className={`${classes.largeLikeButton} ${classes.buttonAfterLike}`}
+          color={isUserLiking ? "secondary" : "primary"}
+          className={classes.largeLikeButton}
         >
           <div className={classes.buttonLabel}>
             <CircularProgress

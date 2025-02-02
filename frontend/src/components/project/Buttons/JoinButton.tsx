@@ -1,5 +1,6 @@
 import { Button, IconButton } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
+import { Theme } from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
 import React, { useContext } from "react";
 
@@ -7,7 +8,7 @@ import ButtonIcon from "../../general/ButtonIcon";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   largeScreenButtonContainer: {
     display: "inline-flex",
     flexDirection: "column",
