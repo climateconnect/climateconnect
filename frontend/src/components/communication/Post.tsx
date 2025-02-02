@@ -66,6 +66,9 @@ const useStyles = makeStyles<Theme, { preview?: boolean }>((theme) => ({
   commentBox: {
     display: "flex",
   },
+  deleteButton: {
+    color: theme.palette.background.default_contrastText
+  }
 }));
 
 export default function Post({
@@ -228,7 +231,7 @@ export default function Post({
                   </Button>
                 ))}
               {user && user.id === post.author_user.id && type !== "preview" && (
-                <Button onClick={toggleDeleteDialogOpen}>{texts.delete}</Button>
+                <Button onClick={toggleDeleteDialogOpen} className={classes.deleteButton}>{texts.delete}</Button>
               )}
             </>
             <>
