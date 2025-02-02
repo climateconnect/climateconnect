@@ -199,8 +199,6 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
 };
 
 type Props = {
-  allHubs?: Array<any>;
-  hubData?: Object;
   hubName?: string;
   className?: any;
   location?: any;
@@ -209,8 +207,6 @@ type Props = {
 };
 
 export default function Dashboard({
-  allHubs,
-  hubData,
   hubName,
   className,
   location,
@@ -238,8 +234,8 @@ export default function Dashboard({
   }, []);
 
   const parseWelcomeMessage = (m) => {
-    const message = m.replaceAll("${user.first_name}", user.first_name);
-    return m.replaceAll("${user.first_name}", user.first_name);
+    const message = m.replaceAll("${user.first_name}", user?.first_name);
+    return m.replaceAll("${user.first_name}", user?.first_name);
   };
 
   const getWelcomeMessage = () => {

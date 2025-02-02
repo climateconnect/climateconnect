@@ -178,8 +178,6 @@ export default function HubContent({
                   <>
                     {!isNarrowScreen && (
                       <Dashboard
-                        allHubs={allHubs}
-                        hubData={hubData}
                         hubName={hubUrl}
                         location={location}
                         welcomeMessageLoggedIn={welcomeMessageLoggedIn}
