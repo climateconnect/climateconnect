@@ -14,7 +14,7 @@ import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
 
 export async function getServerSideProps(ctx) {
-  const hubName = ctx.query.hubName;
+  const hubUrl = ctx.query.hub;
 
   const { auth_token } = NextCookies(ctx);
   if (ctx.req && !auth_token) {
@@ -39,7 +39,7 @@ export async function getServerSideProps(ctx) {
     getRolesOptions(auth_token, ctx.locale),
     getStatusOptions(auth_token, ctx.locale),
     getProjectTypeOptions(ctx.locale),
-    getHubTheme(hubName),
+    getHubTheme(hubUrl),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -50,7 +50,7 @@ export async function getServerSideProps(ctx) {
       rolesOptions: rolesOptions,
       statusOptions: statusOptions,
       projectTypeOptions: projectTypeOptions,
-      hubName: hubName ?? undefined,
+      hubUrl: hubUrl ?? undefined,
       hubThemeData: hubThemeData ?? undefined,
     }),
   };
@@ -64,7 +64,7 @@ export default function Share({
   rolesOptions,
   statusOptions,
   projectTypeOptions,
-  hubName,
+  hubUrl,
   hubThemeData,
 }) {
   const token = new Cookies().get("auth_token");
@@ -90,6 +90,9 @@ export default function Share({
         message={errorMessage}
         messageType={errorMessage && "error"}
         customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+        isHubPage={hubUrl !== ""}
+        hubUrl={hubUrl}
+        headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
       >
         <ShareProjectRoot
           availabilityOptions={availabilityOptions}
@@ -102,7 +105,7 @@ export default function Share({
           token={token}
           setMessage={handleSetErrorMessage}
           projectTypeOptions={projectTypeOptions}
-          hubName={hubName}
+          hubName={hubUrl}
         />
       </WideLayout>
     );
