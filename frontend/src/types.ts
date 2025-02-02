@@ -40,6 +40,7 @@ export type Project = {
   short_description?: string;
   creator?: User | Organization | any; //TODO: remove 'any' once User and Organization types are properly defined
   image?: string;
+  hubName?: string;
 };
 
 export type ProjectType = "project" | "idea" | "event";

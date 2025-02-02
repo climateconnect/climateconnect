@@ -2,6 +2,9 @@ import { Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import UserContext from "../context/UserContext";
+import Image from "next/image";
+
+const PRIO1_SLUG = "prio1";
 
 const useStyles = makeStyles((theme) => ({
   background: {
@@ -16,6 +19,21 @@ const useStyles = makeStyles((theme) => ({
 
   prioOneDefaultBackground: {
     backgroundColor: theme.palette.secondary.main,
+  },
+  prioOneAuthIcon: {
+    position: "absolute",
+    top: "50vh",
+    left: "70vw",
+    width: "11rem",
+    height: "11rem",
+
+    [theme.breakpoints.up("xl")]: {
+      top: "40vh",
+      left: "auto",
+      right: "4vw",
+      width: "12rem",
+      height: "12rem",
+    },
   },
   prioOneMobileBackground: {
     backgroundColor: theme.palette.secondary.light,
@@ -119,8 +137,8 @@ function PrioOneBackgroundAuth({ mobileScreenSize }) {
           style={{
             width: 0,
             height: 0,
-            borderBottom: "50vw solid transparent",
-            borderLeftWidth: `300vh`,
+            borderBottom: "85vh solid transparent",
+            borderLeftWidth: `250vw`,
             borderLeftStyle: "solid",
             position: "absolute",
             top: 0,
@@ -128,6 +146,13 @@ function PrioOneBackgroundAuth({ mobileScreenSize }) {
             transform: "rotate(0deg)",
           }}
         />
+      </div>
+      <div className={classes.prioOneAuthIcon}>
+        <Image
+          className={classes.prioOneAuthIcon}
+          src={"/images/custom_hubs/" + PRIO1_SLUG + "_group.svg"}
+          layout="fill"
+        ></Image>
       </div>
     </div>
   );

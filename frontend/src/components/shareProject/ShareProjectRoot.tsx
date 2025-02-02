@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme) => {
     headline: {
       textAlign: "center",
       marginTop: theme.spacing(4),
+      color: theme.palette.background.default_contrastText,
     },
   };
 });
@@ -77,6 +78,7 @@ export default function ShareProjectRoot({
   token,
   setMessage,
   projectTypeOptions,
+  hubName,
 }) {
   const classes = useStyles();
   const { locale, locales } = useContext(UserContext);
@@ -92,7 +94,8 @@ export default function ShareProjectRoot({
       statusOptions,
       projectTypeOptions,
       userOrganizations,
-      locale
+      locale,
+      hubName
     )
   );
   const [loadingSubmit, setLoadingSubmit] = useState(false);
@@ -252,7 +255,7 @@ export default function ShareProjectRoot({
             steps={steps}
             activeStep={curStep.key}
           />
-          <Typography variant="h4" color="primary" className={classes.headline}>
+          <Typography variant="h4" className={classes.headline}>
             {curStep.headline && curStep.headline}
           </Typography>
           {curStep.key === "share" && (
@@ -324,6 +327,7 @@ export default function ShareProjectRoot({
             user={user}
             isDraft={project.is_draft}
             url_slug={project.url_slug}
+            hubName={hubName}
             hasError={project.error}
           />
         </>
@@ -349,7 +353,8 @@ const getDefaultProjectValues = (
   statusOptions,
   projectTypeOptions,
   userOrganizations,
-  locale
+  locale,
+  hubName
 ): Project => {
   return {
     collaborators_welcome: true,
@@ -366,6 +371,7 @@ const getDefaultProjectValues = (
     website: "",
     language: locale,
     project_type: projectTypeOptions.find((t) => t.type_id === "project"),
+    hubName: hubName,
   };
 };
 

@@ -14,6 +14,7 @@ import Login from "../src/components/signup/Login";
 
 export async function getServerSideProps(ctx) {
   const hubSlug = ctx.query.hub;
+  const message = ctx.query.message;
 
   // early return to avoid fetching /undefined/theme
   if (!hubSlug) {
@@ -34,13 +35,14 @@ export async function getServerSideProps(ctx) {
     props: {
       hubSlug: hubSlug || null, // undefined is not allowed in JSON, so we use null
       hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
+      message: message || null,
     },
   };
 }
 
-export default function Signin({ hubSlug, hubThemeData }) {
+export default function Signin({ hubSlug, hubThemeData, message }) {
   const { user, signIn, locale } = useContext(UserContext);
-  const texts = getTexts({ page: "profile", locale: locale });
+  const texts = getTexts({ page: "profile", locale: locale, hubName: hubSlug });
   const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
 
   const fields = [
@@ -75,7 +77,7 @@ export default function Signin({ hubSlug, hubThemeData }) {
     href: getLocalePrefix(locale) + "/resetpassword",
   };
 
-  const [errorMessage, setErrorMessage] = React.useState<JSX.Element | null>(null);
+  const [errorMessage, setErrorMessage] = React.useState<JSX.Element | null>(message);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const [initialized, setInitialized] = React.useState(false);
@@ -137,8 +139,8 @@ export default function Signin({ hubSlug, hubThemeData }) {
   return (
     <WideLayout
       title={texts.log_in}
-      // message={errorMessage}
-      // messageType={errorMessage && "error"}
+      //message={errorMessage}
+      //messageType={errorMessage && "error"}
       messageType="error"
       isLoading={isLoading}
       customTheme={customTheme}
@@ -156,6 +158,7 @@ export default function Signin({ hubSlug, hubThemeData }) {
             bottomLink={bottomLink}
             handleSubmit={handleSubmit}
             errorMessage={errorMessage}
+            hubUrl={hubSlug}
           />
         </ThemeProvider>
       </Container>

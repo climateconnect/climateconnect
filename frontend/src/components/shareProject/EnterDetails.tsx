@@ -7,7 +7,7 @@ import getCollaborationTexts from "../../../public/data/collaborationTexts";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import NavigationButtons from "../general/NavigationButtons";
-import ProjectTimeAndPlaceSection from "./TimeAndPlaceSection";
+import ProjectTimeAndPlaceSectionAndCustomHub from "./TimeAndPlaceSection";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import AddPhotoSection from "./AddPhotoSection";
 import AddSummarySection from "./AddSummarySection";
@@ -15,6 +15,8 @@ import CollaborateSection from "./CollaborateSection";
 import ProjectNameSection from "./ProjectNameSection";
 import { checkProjectDatesValid } from "../../../public/lib/dateOperations";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
+import { getBackgroundContrastColor } from "../../../public/lib/themeOperations";
+import { useTheme } from "@mui/styles";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -30,6 +32,7 @@ const useStyles = makeStyles((theme) => {
     subHeader: {
       marginBottom: theme.spacing(2),
       fontSize: 20,
+      color: theme.palette.background.default_contrastText,
     },
     inlineSubHeader: {
       display: "inline-block",
@@ -100,6 +103,7 @@ export default function EnterDetails({
   const collaborationTexts = getCollaborationTexts(texts);
   const helpTexts = getHelpTexts(texts);
   const topRef = useRef<null | HTMLFormElement>(null);
+  const theme = useTheme();
 
   //scroll to top if there is an error
   useEffect(() => {
@@ -169,6 +173,8 @@ export default function EnterDetails({
     handleSetProjectData({ collaborators_welcome: event.target.checked });
   };
 
+  const backgroundContrastColor = getBackgroundContrastColor(theme);
+
   return (
     <>
       <Container maxWidth="lg">
@@ -177,7 +183,7 @@ export default function EnterDetails({
             projectData={projectData}
             handleSetProjectData={handleSetProjectData}
           />
-          <ProjectTimeAndPlaceSection
+          <ProjectTimeAndPlaceSectionAndCustomHub
             projectData={projectData}
             handleSetProjectData={handleSetProjectData}
             locationInputRef={locationInputRef}
@@ -224,6 +230,7 @@ export default function EnterDetails({
             <ProjectDescriptionHelp project_type={projectData.project_type} />
             <TextField
               variant="outlined"
+              color={backgroundContrastColor}
               fullWidth
               multiline
               rows={9}
@@ -243,6 +250,7 @@ export default function EnterDetails({
             </Typography>
             <TextField
               variant="outlined"
+              color={backgroundContrastColor}
               onChange={(event) => onTextChange(event, "website")}
               placeholder={texts.project_website}
               value={projectData.website}
@@ -268,7 +276,7 @@ export default function EnterDetails({
               onChange={onAllowCollaboratorsChange}
               name="checkedA"
               inputProps={{ "aria-label": "secondary checkbox" }}
-              color="primary"
+              color={backgroundContrastColor}
             />
           </div>
           {projectData.collaborators_welcome && (

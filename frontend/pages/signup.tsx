@@ -19,13 +19,13 @@ import UserContext from "../src/components/context/UserContext";
 import BasicInfo from "../src/components/signup/BasicInfo";
 import AddInfo from "./../src/components/signup/AddInfo";
 import ContentImageSplitView from "../src/components/layouts/ContentImageSplitLayout";
-import Image from "next/image";
 import { ThemeProvider } from "@emotion/react";
 import { themeSignUp } from "../src/themes/signupTheme";
 import WideLayout from "../src/components/layouts/WideLayout";
 import { Container, Theme, useMediaQuery } from "@mui/material";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
+import CustomAuthImage from "../src/components/hub/CustomAuthImage";
 
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hub;
@@ -229,14 +229,7 @@ export default function Signup({ hubUrl, hubThemeData }) {
             }
             leftGridSizes={{ md: 7 }}
             rightGridSizes={{ md: 5 }}
-            image={
-              <Image
-                src="/images/sign_up/mobile-login-pana.svg"
-                alt="Sign Up"
-                layout="fill" // Image will cover the container
-                objectFit="contain" // Ensures it fills without stretching
-              />
-            }
+            image={<CustomAuthImage hubUrl={hubUrl} texts={texts} />}
           ></ContentImageSplitView>
         </ThemeProvider>
       </Container>

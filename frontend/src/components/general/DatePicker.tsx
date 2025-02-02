@@ -9,6 +9,8 @@ import { Dayjs } from "dayjs";
 import { DatePicker as DatePickerComponent } from "@mui/x-date-pickers/DatePicker";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import UserContext from "../context/UserContext";
+import { ThemeProvider } from "@mui/material";
+import { useTheme } from "@mui/styles";
 
 type Props = {
   label?: string;
@@ -31,6 +33,7 @@ export default function DatePicker({
   error,
 }: Props) {
   const { locale } = useContext(UserContext);
+  const theme = useTheme();
   const handleDateChange = (value) => {
     handleChange(value);
   };
@@ -49,13 +52,28 @@ export default function DatePicker({
       },
     },
   };
+
+  const helperTheme = {
+    ...theme,
+    palette: {
+      ...theme.palette,
+      primary: {
+        ...theme.palette.primary,
+        main: theme.palette.background.default_contrastText,
+      },
+    },
+  };
+
+  //Using helper theme because date picker component always uses primary color
   return (
     <LocalizationProvider adapterLocale={locale} dateAdapter={AdapterDayjs}>
-      {enableTime ? (
-        <DateTimePicker {...args} minDateTime={minDate && minDate} />
-      ) : (
-        <DatePickerComponent {...args} />
-      )}
+      <ThemeProvider theme={helperTheme}>
+        {enableTime ? (
+          <DateTimePicker {...args} minDateTime={minDate && minDate} />
+        ) : (
+          <DatePickerComponent {...args} />
+        )}
+      </ThemeProvider>
     </LocalizationProvider>
   );
 }

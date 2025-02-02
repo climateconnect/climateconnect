@@ -8,6 +8,12 @@ const prio1_texts = {
     en: "",
     de: "",
   },
+  auth_image_subtitle: {
+    en:
+      "PRIO1 Hub is integrated into the Germany-wide Climate Connect platform. To become part of the PRIO1 Hub, simply register here and you're in!",
+    de:
+      "PRIO1 Hub ist integriert in die deutschlandweite Climate Connect Plattform. Um Teil des PRIO1 Hubs zu werden melde dich einfach hier an und schon bist du dabei!",
+  },
 };
 
 const custom_hub_texts = {
