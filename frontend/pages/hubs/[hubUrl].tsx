@@ -34,6 +34,7 @@ import theme from "../../src/themes/hubTheme";
 import BrowseContext from "../../src/components/context/BrowseContext";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 import getHubTheme from "../../src/themes/fetchHubTheme";
+import isLocationHubLikeHub from "../../public/lib/isLocationHubLikeHub";
 
 const useStyles = makeStyles((theme) => ({
   moreInfoSoon: {
@@ -113,7 +114,7 @@ export async function getServerSideProps(ctx) {
   return {
     props: {
       hubUrl: hubUrl,
-      isLocationHub: hubData?.hub_type === "location hub",
+      isLocationHub: isLocationHubLikeHub(hubData?.hub_type),
       hubData: hubData,
       name: hubData?.name ?? null,
       headline: hubData?.headline ?? null,

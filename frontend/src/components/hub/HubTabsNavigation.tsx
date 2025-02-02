@@ -7,6 +7,7 @@ import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import HubsDropDown from "../indexPage/hubsSubHeader/HubsDropDown";
+import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -102,7 +103,8 @@ export default function HubTabsNavigation({
 }) {
   const { locale, user, CUSTOM_HUB_URLS } = useContext(UserContext);
   const classes = useStyles();
-  const locationHubs = allHubs.filter((h) => h.hub_type === "location hub");
+
+  const locationHubs = allHubs.filter((h) => isLocationHubLikeHub(h.hub_type));
   const texts = getTexts({ page: "navigation", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const [dropdownOpen, setDropdownOpen] = useState(false);

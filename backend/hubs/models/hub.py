@@ -131,7 +131,12 @@ class Hub(models.Model):
 
     SECTOR_HUB_TYPE = 0
     LOCATION_HUB_TYPE = 1  # User can read and write to project or organization.
-    HUB_TYPES = ((SECTOR_HUB_TYPE, "sector hub"), (LOCATION_HUB_TYPE, "location hub"))
+    CUSTOM_HUB_TYPE = 2
+    HUB_TYPES = (
+        (SECTOR_HUB_TYPE, "sector hub"),
+        (LOCATION_HUB_TYPE, "location hub"),
+        (CUSTOM_HUB_TYPE, "custom hub"),
+    )
 
     hub_type = models.IntegerField(
         help_text="Type of hub",
