@@ -156,6 +156,7 @@ export default function Signin({ hubSlug, hubThemeData }) {
             bottomLink={bottomLink}
             handleSubmit={handleSubmit}
             errorMessage={errorMessage}
+            hubUrl={hubSlug}
           />
         </ThemeProvider>
       </Container>

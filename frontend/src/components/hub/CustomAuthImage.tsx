@@ -1,12 +1,13 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
 import Image from "next/image";
+import { Theme } from "@mui/material/styles";
 
 type Props = { hubUrl: string | undefined; texts: any };
 
 const PRIO1_SLUG = "prio1";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   prio1root: {
     fontSize: theme.typography.h5.fontSize,
     lineHeight: isNumber(theme.typography.h5.lineHeight)
@@ -31,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     gap: "1rem",
     justifyContent: "left",
     alignItems: "center",
-
+    marginTop: theme.spacing(6),
     [theme.breakpoints.down("xl")]: {
       height: "5rem",
     },
@@ -43,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
   },
   prio1_text: {
+    marginTop: theme.spacing(4),
     [theme.breakpoints.up("xl")]: {
       marginRight: "clamp(2rem,15rem - 2vw, 15rem)",
     },

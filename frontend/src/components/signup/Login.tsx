@@ -3,7 +3,7 @@ import React from "react";
 import Form from "./../general/Form";
 import makeStyles from "@mui/styles/makeStyles";
 import ContentImageSplitView from "../layouts/ContentImageSplitLayout";
-import Image from "next/image";
+import CustomAuthImage from "../hub/CustomAuthImage";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Login({ texts, fields, messages, bottomLink, handleSubmit, errorMessage }) {
+export default function Login({ texts, fields, messages, bottomLink, handleSubmit, errorMessage, hubUrl }) {
   const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const classes = useStyles();
 
@@ -57,12 +57,7 @@ export default function Login({ texts, fields, messages, bottomLink, handleSubmi
           leftGridSizes={{ md: 7 }}
           rightGridSizes={{ md: 5 }}
           image={
-            <Image
-              src="/images/sign_up/mobile-login-pana.svg"
-              alt="Sign Up"
-              layout="fill" // Image will cover the container
-              objectFit="contain" // Ensures it fills without stretching
-            />
+            <CustomAuthImage hubUrl={hubUrl} texts={texts}/>
           }
         ></ContentImageSplitView>
       )}
