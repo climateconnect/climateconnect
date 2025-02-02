@@ -6,20 +6,21 @@ import { useRouter } from "next/router";
 import React from "react";
 
 const useStyles = makeStyles((theme) => ({
-  button: (props) => ({
+  button: {
     color: theme.palette.background.default,
-    height: props.height ? props.height : 54,
+    height: 54,
     [theme.breakpoints.down("sm")]: {
       minWidth: 35,
       maxWidth: 35,
       minHeight: 35,
       maxHeight: 35,
       backgroundColor: theme.palette.primary.main,
+      color: theme.palette.primary.contrastText,
       "&:hover": {
         backgroundColor: theme.palette.primary.main,
       },
     },
-  }),
+  },
 }));
 
 export default function GoBackFromProjectPageButton({
@@ -27,9 +28,8 @@ export default function GoBackFromProjectPageButton({
   tinyScreen,
   locale,
   containerClassName,
-  height,
 }: any) {
-  const classes = useStyles({ height: height });
+  const classes = useStyles();
 
   const router = useRouter();
   const goBack = () => {
