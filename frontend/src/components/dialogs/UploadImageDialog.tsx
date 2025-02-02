@@ -101,7 +101,7 @@ export default function UploadImageDialog({
       ? mediumHeight * ratio + 100
       : height * ratio + 100;
 
-  const backgroundContrastColor = getBackgroundContrastColor(theme)
+  const backgroundContrastColor = getBackgroundContrastColor(theme);
 
   return (
     <GenericDialog

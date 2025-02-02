@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => {
     fieldLabel: {
       textAlign: "left",
       marginBottom: theme.spacing(0.5),
-      color: theme.palette.background.default_contrastText
+      color: theme.palette.background.default_contrastText,
     },
     tooltip: {
       fontSize: 16,

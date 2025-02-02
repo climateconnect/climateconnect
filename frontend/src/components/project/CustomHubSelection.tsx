@@ -8,9 +8,9 @@ import { getBackgroundContrastColor } from "../../../public/lib/themeOperations"
 
 const useStyles = makeStyles((theme: Theme) => ({
   text: {
-    color: "inherit"
-  }
-}))
+    color: "inherit",
+  },
+}));
 
 type Props = {
   currentHubName: string;
@@ -43,11 +43,16 @@ export default function CustomHubSelection({
     }
   }
 
-  const checkboxColor = getBackgroundContrastColor(theme)
+  const checkboxColor = getBackgroundContrastColor(theme);
 
   return (
     <Typography component="h2" variant="subtitle2" className={classes.text}>
-      <Checkbox color={checkboxColor} {...label} checked={prio1Project} onChange={handlePrio1ProjectCheckbox} />
+      <Checkbox
+        color={checkboxColor}
+        {...label}
+        checked={prio1Project}
+        onChange={handlePrio1ProjectCheckbox}
+      />
       {texts.my_project_is_part_of_the_prio1_project}
       <Tooltip title={texts.tooltip_my_project_is_part_of_the_prio1_project}>
         <IconButton size="large">

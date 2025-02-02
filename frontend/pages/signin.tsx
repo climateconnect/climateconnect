@@ -14,7 +14,7 @@ import Login from "../src/components/signup/Login";
 
 export async function getServerSideProps(ctx) {
   const hubSlug = ctx.query.hub;
-  const message = ctx.query.message
+  const message = ctx.query.message;
 
   // early return to avoid fetching /undefined/theme
   if (!hubSlug) {
@@ -35,7 +35,7 @@ export async function getServerSideProps(ctx) {
     props: {
       hubSlug: hubSlug || null, // undefined is not allowed in JSON, so we use null
       hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
-      message: message || null
+      message: message || null,
     },
   };
 }

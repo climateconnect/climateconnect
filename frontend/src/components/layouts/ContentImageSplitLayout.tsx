@@ -10,9 +10,6 @@ const useStyles = makeStyles((theme) => ({
   rightPadding: {
     paddingRight: theme.spacing(6),
   },
-  rightPadding: {
-    paddingRight: theme.spacing(6),
-  },
 }));
 
 interface ContentImageSplitViewProps {

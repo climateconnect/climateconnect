@@ -36,7 +36,7 @@ export default function ProjectNameSection({ projectData, handleSetProjectData }
     });
   };
 
-  const color = getBackgroundContrastColor(theme)
+  const color = getBackgroundContrastColor(theme);
 
   return (
     <div className={classes.root}>

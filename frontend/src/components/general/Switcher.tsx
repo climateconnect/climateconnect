@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   switchedActive: {
     fontWeight: "bold",
-    color: theme.palette.background.default_contrastText
+    color: theme.palette.background.default_contrastText,
   },
 }));
 
@@ -28,9 +28,9 @@ export default function Switcher({
   value,
   required,
   handleChangeValue,
-  color
+  color,
 }: any) {
-  const classes = useStyles({ value: value});
+  const classes = useStyles({ value: value });
 
   const handleValueChange = (event) => {
     handleChangeValue(event.target.value);
@@ -38,9 +38,7 @@ export default function Switcher({
   return (
     <div className={classes.flexBlock}>
       <span className={classes.switchTextContainer}>
-        <Typography
-          className={`${classes.switchText} ${!value && classes.switchedActive}`}
-        >
+        <Typography className={`${classes.switchText} ${!value && classes.switchedActive}`}>
           {falseLabel}
         </Typography>
       </span>
@@ -53,9 +51,7 @@ export default function Switcher({
         onChange={handleValueChange}
       />
       <span className={classes.switchTextContainer}>
-        <Typography
-          className={`${classes.switchText} ${value && classes.switchedActive}`}
-        >
+        <Typography className={`${classes.switchText} ${value && classes.switchedActive}`}>
           {trueLabel}
         </Typography>
       </span>

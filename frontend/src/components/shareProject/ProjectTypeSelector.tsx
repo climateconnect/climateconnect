@@ -78,7 +78,7 @@ const ProjectTypeBox = ({ type, value, onChange, color }) => {
         name={type.name}
         value={type.type_id}
         className={classes.radioButton}
-        color={ color ? color : "primary"}
+        color={color ? color : "primary"}
       />
     </Card>
   );

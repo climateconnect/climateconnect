@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => {
     header: {
       marginBottom: theme.spacing(2),
       fontSize: 20,
-      color: theme.palette.background.default_contrastText
+      color: theme.palette.background.default_contrastText,
     },
     info: {
       textAlign: "center",
@@ -56,7 +56,7 @@ export default function OrganizersContainer({
     ? [...projectData.collaborating_organizations, projectData.parent_organization]
     : [...projectData.collaborating_organizations];
 
-  const backgroundContrastColor = getBackgroundContrastColor(theme)
+  const backgroundContrastColor = getBackgroundContrastColor(theme);
 
   return (
     <div>

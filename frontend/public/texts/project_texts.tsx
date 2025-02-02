@@ -739,10 +739,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
           You can view your project{" "}
           <Link
             href={
-              getLocalePrefix(locale) +
-              "/projects/" +
-              url_slug +
-              (hubName ? "?hub=" + hubName : "")
+              getLocalePrefix(locale) + "/projects/" + url_slug + (hubName ? "?hub=" + hubName : "")
             }
           >
             here
@@ -754,10 +751,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
           Du kannst dein Projekt{" "}
           <Link
             href={
-              getLocalePrefix(locale) +
-              "/projects/" +
-              url_slug +
-              (hubName ? "?hub=" + hubName : "")
+              getLocalePrefix(locale) + "/projects/" + url_slug + (hubName ? "?hub=" + hubName : "")
             }
           >
             hier

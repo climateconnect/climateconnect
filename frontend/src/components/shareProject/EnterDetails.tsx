@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => {
     subHeader: {
       marginBottom: theme.spacing(2),
       fontSize: 20,
-      color: theme.palette.background.default_contrastText
+      color: theme.palette.background.default_contrastText,
     },
     inlineSubHeader: {
       display: "inline-block",
@@ -173,7 +173,7 @@ export default function EnterDetails({
     handleSetProjectData({ collaborators_welcome: event.target.checked });
   };
 
-  const backgroundContrastColor = getBackgroundContrastColor(theme)
+  const backgroundContrastColor = getBackgroundContrastColor(theme);
 
   return (
     <>

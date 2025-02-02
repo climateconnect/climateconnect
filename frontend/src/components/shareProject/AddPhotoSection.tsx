@@ -108,11 +108,7 @@ export default function AddPhotoSection({
   return (
     <>
       <div className={className}>
-        <Typography
-          component="h2"
-          variant="subtitle2"
-          className={subHeaderClassname}
-        >
+        <Typography component="h2" variant="subtitle2" className={subHeaderClassname}>
           {texts.add_photo}*
           <Tooltip title={helpTexts.addPhoto} className={toolTipClassName}>
             <IconButton size="large">

@@ -18,7 +18,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Login({ texts, fields, messages, bottomLink, handleSubmit, errorMessage, hubUrl }) {
+export default function Login({
+  texts,
+  fields,
+  messages,
+  bottomLink,
+  handleSubmit,
+  errorMessage,
+  hubUrl,
+}) {
   const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const classes = useStyles();
 
@@ -56,9 +64,7 @@ export default function Login({ texts, fields, messages, bottomLink, handleSubmi
           }
           leftGridSizes={{ md: 7 }}
           rightGridSizes={{ md: 5 }}
-          image={
-            <CustomAuthImage hubUrl={hubUrl} texts={texts}/>
-          }
+          image={<CustomAuthImage hubUrl={hubUrl} texts={texts} />}
         ></ContentImageSplitView>
       )}
     </>

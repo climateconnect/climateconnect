@@ -59,10 +59,10 @@ export default function DatePicker({
       ...theme.palette,
       primary: {
         ...theme.palette.primary,
-        main: theme.palette.background.default_contrastText
-      }
-    }
-  }
+        main: theme.palette.background.default_contrastText,
+      },
+    },
+  };
 
   //Using helper theme because date picker component always uses primary color
   return (

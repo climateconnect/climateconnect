@@ -32,7 +32,7 @@ export default function AutoCompleteSearchBar({
   helperText,
   freeSolo,
   onUnselect,
-  color="primary",
+  color = "primary",
 }: Props) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "filter_and_search", locale: locale });

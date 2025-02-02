@@ -47,7 +47,7 @@ export default function SelectField({
   required,
   size,
   values,
-  color="primary",
+  color = "primary",
 }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);

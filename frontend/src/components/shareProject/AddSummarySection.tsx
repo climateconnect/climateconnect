@@ -47,7 +47,7 @@ export default function AddSummarySection({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const theme = useTheme();
-  const backgroundContrastColor = getBackgroundContrastColor(theme)
+  const backgroundContrastColor = getBackgroundContrastColor(theme);
 
   return (
     <div className={className}>
