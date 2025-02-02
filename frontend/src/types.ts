@@ -58,9 +58,11 @@ declare module "@mui/material/styles/createPalette" {
   // augment theme type with climateconnect custom properties
   interface Palette {
     yellow: PaletteColor;
+    contrast: PaletteColor;
   }
   interface PaletteOptions {
     yellow: PaletteColorOptions;
+    contrast: PaletteColorOptions;
   }
   interface PaletteColor {
     extraLight?: string;

@@ -33,9 +33,9 @@ export const coreTheme = createTheme({
     },
     secondary: {
       main: "#484848",
-      light: "#484848c2",
+      light: "#484848",
       extraLight: "#EBEBEB",
-      contrastText: "#207178",
+      contrastText: "#FFFFFF",
     },
     yellow: {
       main: "#FFDE0A",
@@ -44,6 +44,10 @@ export const coreTheme = createTheme({
       default: "#FFFFFF",
       paper: "#FFFFFF",
       default_contrastText: "#207178",
+    },
+    contrast: {
+      main: "#207178",
+      contrastText: "#FFFFFF",
     },
     action: {
       selected: "#387077",

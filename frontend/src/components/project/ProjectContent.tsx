@@ -6,6 +6,7 @@ import humanizeDuration from "humanize-duration";
 import React, { useState, useContext } from "react";
 import TimeAgo from "react-timeago";
 import youtubeRegex from "youtube-regex";
+import { Theme } from "@mui/material/styles";
 
 // Relative imports
 import { germanYearAndDayFormatter, yearAndDayFormatter } from "../../utils/formatting";
@@ -21,7 +22,7 @@ import ProjectContentSideButtons from "./Buttons/ProjectContentSideButtons";
 
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   createdBy: {
     fontSize: 16,
   },
@@ -59,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
   },
   expandButton: {
     width: "100%",
+    color: theme.palette.background.default_contrastText,
   },
   icon: {
     verticalAlign: "bottom",
@@ -176,7 +178,7 @@ export default function ProjectContent({
   };
   const maxDisplayedDescriptionLength = project.description
     ? calculateMaxDisplayedDescriptionLength(project.description)
-    : null;
+    : 0;
 
   //return the right static text depending on the project type
   const getProjectDescriptionHeadline = () => {

@@ -101,7 +101,7 @@ export default function HubTabsNavigation({
   className,
   allHubs,
 }) {
-  const { locale, user } = useContext(UserContext);
+  const { locale, user, CUSTOM_HUB_URLS } = useContext(UserContext);
   const classes = useStyles();
 
   const locationHubs = allHubs.filter((h) => isLocationHubLikeHub(h.hub_type));
@@ -117,7 +117,7 @@ export default function HubTabsNavigation({
   const handleToggleOpen = () => {
     setDropdownOpen(!dropdownOpen);
   };
-
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   //Don't show the HubTabsNavigation if we're logged out on mobile
   if (!user && isNarrowScreen) {
     return <></>;
@@ -174,17 +174,19 @@ export default function HubTabsNavigation({
             </Link>
           )}
         </div>
-        <HubsDropDown
-          hubs={locationHubs}
-          label={texts.all_hubs}
-          isNarrowScreen={isNarrowScreen}
-          onToggleOpen={handleToggleOpen}
-          open={dropdownOpen}
-          onOpen={handleOpen}
-          onClose={handleClose}
-          addLocationHubExplainerLink
-          height={48}
-        />
+        {!isCustomHub && (
+          <HubsDropDown
+            hubs={locationHubs}
+            label={texts.all_hubs}
+            isNarrowScreen={isNarrowScreen}
+            onToggleOpen={handleToggleOpen}
+            open={dropdownOpen}
+            onOpen={handleOpen}
+            onClose={handleClose}
+            addLocationHubExplainerLink
+            height={48}
+          />
+        )}
       </Container>
     </div>
   );

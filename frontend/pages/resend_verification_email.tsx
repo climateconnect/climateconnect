@@ -5,19 +5,18 @@ import UserContext from "../src/components/context/UserContext";
 import Form from "../src/components/general/Form";
 import Layout from "../src/components/layouts/layout";
 
-const fields = [
-  {
-    required: true,
-    label: "Enter your login email",
-    key: "email",
-    type: "email",
-  },
-];
-
 export default function ResendVerificationEmail() {
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "settings", locale: locale });
+  const fields = [
+    {
+      required: true,
+      label: texts.enter_your_login_email,
+      key: "email",
+      type: "email",
+    },
+  ];
   const messages = {
     submitMessage: texts.send_verification_email_again,
   };

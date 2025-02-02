@@ -1,7 +1,7 @@
 import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
-import { apiRequest } from "../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
 import {
   getLocationValue,
@@ -24,8 +24,23 @@ import { ThemeProvider } from "@emotion/react";
 import { themeSignUp } from "../src/themes/signupTheme";
 import WideLayout from "../src/components/layouts/WideLayout";
 import { Container, Theme, useMediaQuery } from "@mui/material";
+import getHubTheme from "../src/themes/fetchHubTheme";
+import { transformThemeData } from "../src/themes/transformThemeData";
 
-export default function Signup() {
+export async function getServerSideProps(ctx) {
+  const hubUrl = ctx.query.hub;
+
+  const hubThemeData = await getHubTheme(hubUrl);
+
+  return {
+    props: {
+      hubUrl: hubUrl || null, // undefined is not allowed in JSON, so we use null
+      hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
+    },
+  };
+}
+
+export default function Signup({ hubUrl, hubThemeData }) {
   const { ReactGA } = useContext(UserContext);
 
   const [userInfo, setUserInfo] = React.useState({
@@ -39,10 +54,11 @@ export default function Signup() {
     sendNewsletter: undefined,
   });
   const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
+  const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const cookies = new Cookies();
   const { user, locale } = useContext(UserContext);
-  const texts = getTexts({ page: "profile", locale: locale });
+  const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
   //Information about the completion state of the tutorial
   const tutorialCookie = cookies.get("finishedTutorialSteps");
   const isClimateActorCookie = cookies.get("tutorialVariables");
@@ -69,7 +85,8 @@ export default function Signup() {
 
   useEffect(function () {
     if (user) {
-      redirectOnLogin(user, "/", locale);
+      const redirectUrl = hubUrl ? `${getLocalePrefix(locale)}/hubs/${hubUrl}` : "/";
+      redirectOnLogin(user, redirectUrl, locale);
     }
   });
 
@@ -104,7 +121,6 @@ export default function Signup() {
     });
 
     const searchParams = new URLSearchParams(window.location.search);
-    const hub = searchParams.get("hub") ?? "";
 
     const payload = {
       email: userInfo.email.trim().toLowerCase(),
@@ -117,13 +133,22 @@ export default function Signup() {
       is_activist: isClimateActorCookie?.isActivist,
       last_completed_tutorial_step: lastCompletedTutorialStep,
       source_language: locale,
-      hub: hub,
+      hub: hubUrl,
     };
 
     const headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
     };
+    const args = {
+      pathname: "/accountcreated/",
+      query: {},
+    };
+    if (hubUrl) {
+      args.query = {
+        hub: hubUrl,
+      };
+    }
     setIsLoading(true);
     apiRequest({
       method: "post",
@@ -137,9 +162,7 @@ export default function Signup() {
           category: "User",
           action: "Created an Account",
         });
-        Router.push({
-          pathname: "/accountcreated/",
-        });
+        Router.push(args);
       })
       .catch(function (error) {
         console.log(error);
@@ -161,15 +184,25 @@ export default function Signup() {
     setCurStep(steps[0]);
   };
 
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+  const customThemeSignUp = hubThemeData
+    ? transformThemeData(hubThemeData, themeSignUp)
+    : themeSignUp;
+
   return (
     <WideLayout
       title={texts.sign_up}
       message={errorMessage}
+      isHubPage={hubUrl !== ""}
       messageType={errorMessage && "error"}
       isLoading={isLoading}
+      hubUrl={hubUrl}
+      customTheme={customTheme}
+      headerBackground="transparent"
+      footerTextColor={hubUrl && "white"}
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
-        <ThemeProvider theme={themeSignUp}>
+        <ThemeProvider theme={customThemeSignUp}>
           <ContentImageSplitView
             minHeight="75vh"
             content={
@@ -178,6 +211,8 @@ export default function Signup() {
                   values={userInfo}
                   handleSubmit={handleBasicInfoSubmit}
                   errorMessage={errorMessages[steps[0]]}
+                  isSmallScreen={isSmallScreen}
+                  texts={texts}
                 />
               ) : (
                 curStep === "personalinfo" && (
@@ -189,6 +224,7 @@ export default function Signup() {
                     locationInputRef={locationInputRef}
                     locationOptionsOpen={locationOptionsOpen}
                     handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+                    isSmallScreen={isSmallScreen}
                   />
                 )
               )

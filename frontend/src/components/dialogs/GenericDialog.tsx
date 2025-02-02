@@ -48,6 +48,7 @@ const useStyles = makeStyles<
     marginLeft: props.closeButtonRightSide ? theme.spacing(-1) : theme.spacing(1),
     marginRight: props.closeButtonRightSide ? theme.spacing(5) : theme.spacing(2),
     fontSize: 20,
+    color: theme.palette.text.primary,
   }),
   dialogTitle: {
     display: "flex",
