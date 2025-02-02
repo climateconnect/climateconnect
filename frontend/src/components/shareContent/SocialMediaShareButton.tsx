@@ -12,9 +12,7 @@ const useStyles = makeStyles<Theme, { switchColors?: boolean; isCustomHub?: bool
   button: (props) => ({
     color: props.switchColors
       ? theme.palette.primary.main
-      : props.isCustomHub
-      ? theme.palette.primary.contrastText
-      : theme.palette.background.default,
+      : theme.palette.primary.contrastText,
     width: 35,
     height: 35,
     backgroundColor: props.switchColors ? "white" : theme.palette.primary.main,

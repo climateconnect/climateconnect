@@ -30,6 +30,9 @@ const useStyles = makeStyles((theme) => ({
       flexWrap: "wrap",
     },
   },
+  copyButton: {
+    color: theme.palette.background.default_contrastText,
+  }
 }));
 
 export default function SocialMediaShareDialog({
@@ -128,7 +131,7 @@ export default function SocialMediaShareDialog({
           ),
           endAdornment: (
             <InputAdornment position="end">
-              <Button onClick={() => handleClick(SHARE_OPTIONS.link)}>
+              <Button className={classes.copyButton} onClick={() => handleClick(SHARE_OPTIONS.link)}>
                 {tinyScreen ? texts.copy : texts.copy_link}
               </Button>
             </InputAdornment>
