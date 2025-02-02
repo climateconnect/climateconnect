@@ -418,8 +418,8 @@ const getHubData = async (url_slug, locale) => {
     });
     return resp.data;
   } catch (err: any) {
-    if (err.response && err.response.data){
-      console.log(err.response.data)
+    if (err.response && err.response.data) {
+      console.log(err.response.data);
       console.error("Error in getHubData!: " + err.response.data.detail);
     }
     return null;
