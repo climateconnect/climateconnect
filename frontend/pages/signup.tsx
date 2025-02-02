@@ -120,8 +120,6 @@ export default function Signup({ hubUrl, hubThemeData }) {
       sendNewsletter: values.sendNewsletter,
     });
 
-    const searchParams = new URLSearchParams(window.location.search);
-
     const payload = {
       email: userInfo.email.trim().toLowerCase(),
       password: userInfo.password,

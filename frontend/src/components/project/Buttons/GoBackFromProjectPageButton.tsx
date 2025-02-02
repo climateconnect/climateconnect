@@ -37,7 +37,7 @@ export default function GoBackFromProjectPageButton({
     const hubPage = urlParams.get("hub");
     const hubsLink = "/" + locale + "/hubs/" + hubPage;
     const browseLink = "/" + locale + "/browse";
-    if (hubName) {
+    if (hubPage) {
       router.push(hubsLink);
     } else {
       router.push(browseLink);
