@@ -47,13 +47,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type ShareProjectMakeStyleProps = {
+  isCustomHub: boolean;
+};
+
 const shareProjectFabStyle = makeStyles((theme) => ({
-  fabShareProject: {
+  fabShareProject: (props: ShareProjectMakeStyleProps) => ({
     position: "fixed",
-    background: theme.palette.primary.light,
+    background: props.isCustomHub ? theme.palette.background.default_contrastText : theme.palette.primary.light,
+    color: props.isCustomHub ? theme.palette.background.default : "default",
     // bottom: theme.spacing(5),
     right: theme.spacing(3),
-  },
+  }),
 }));
 
 const DESCRIPTION_WEBFLOW_LINKS = {
@@ -151,7 +156,6 @@ export default function Hub({
   welcomeMessageLoggedOut,
   initialLocationFilter,
   filterChoices,
-  sectorHubs,
   allHubs,
   initialIdeaUrlSlug,
   hubLocation,
@@ -160,9 +164,9 @@ export default function Hub({
   projectTypes,
   hubThemeData,
 }) {
+  const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl)
   const classes = useStyles();
-  let fabClass = shareProjectFabStyle(false);
-  const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
   const token = new Cookies().get("auth_token");
   const [hubAmbassador, setHubAmbassador] = useState(null);
@@ -381,20 +385,31 @@ export default function Hub({
           </BrowseContext.Provider>
         </div>
         {isSmallScreen && (
-          <Fab
-            className={fabClass.fabShareProject}
-            size="medium"
-            color="primary"
-            href={`${getLocalePrefix(locale)}/share`}
-            sx={{ bottom: (theme) => (hubAmbassador ? theme.spacing(11.5) : theme.spacing(5)) }}
-            // onClick={}
-          >
-            <AddIcon />
-          </Fab>
+          <FabShareButton 
+            locale={locale} 
+            hubAmbassador={hubAmbassador} 
+            isCustomHub={isCustomHub}
+          />
         )}
       </WideLayout>
     </>
   );
+}
+
+const FabShareButton = ({locale, hubAmbassador, isCustomHub}) => {
+  const fabClass = shareProjectFabStyle({isCustomHub: isCustomHub});
+  return (
+    <Fab
+      className={fabClass.fabShareProject}
+      size="medium"
+      color="primary"
+      href={`${getLocalePrefix(locale)}/share`}
+      sx={{ bottom: (theme) => (hubAmbassador ? theme.spacing(11.5) : theme.spacing(5)) }}
+      // onClick={}
+    >
+      <AddIcon />
+    </Fab>
+  )
 }
 
 const HubDescription = ({ hub, texts }) => {
