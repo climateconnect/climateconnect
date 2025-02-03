@@ -193,22 +193,11 @@ class UserQuestionAnswersView(APIView):
                 # Without this line all the answers would add up and the results wouldn't make sense anymore
                 question_answer_object.answers.clear()
                 for answer in question_answer["answers"]:
-                    if AnswerMetaData.objects.filter(
+                    answer_metadata, created = AnswerMetaData.objects.get_or_create(
                         weight=answer["weight"],
                         resource_type=resource_type,
                         reference_id=answer["id"],
-                    ).exists():
-                        answer_metadata = AnswerMetaData.objects.get(
-                            weight=answer["weight"],
-                            resource_type=resource_type,
-                            reference_id=answer["id"],
-                        )
-                    else:
-                        answer_metadata = AnswerMetaData.objects.create(
-                            weight=answer["weight"],
-                            resource_type=resource_type,
-                            reference_id=answer["id"],
-                        )
+                    )
                     question_answer_object.answers.add(answer_metadata)
                 question_answer_object.save()
             else:
