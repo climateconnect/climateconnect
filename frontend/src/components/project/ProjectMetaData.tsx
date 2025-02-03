@@ -79,6 +79,7 @@ const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
   },
   additionalInfoCounter: {
     marginLeft: theme.spacing(0.5),
+    color: theme.palette.text.primary
   },
   typeIcon: {
     width: 20,

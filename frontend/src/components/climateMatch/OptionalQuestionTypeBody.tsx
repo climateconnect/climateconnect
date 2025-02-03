@@ -12,6 +12,7 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
   headline: {
     marginTop: theme.spacing(4),
     textAlign: "center",
+    color: "white",
     ["@media (max-width: 760px)"]: {
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(1),
