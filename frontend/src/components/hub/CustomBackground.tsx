@@ -69,7 +69,9 @@ export default function CustomBackground({ hubUrl }: Props) {
         if (mobileScreenSize) {
           return null;
         }
-        return <PrioOneBackgroundBrowse />;
+        return null;
+        //temporarily disabled
+        //return <PrioOneBackgroundBrowse />;
       } else if (
         pathname.endsWith("/signup") ||
         pathname.endsWith("/signin") ||
@@ -89,7 +91,7 @@ function PrioOneBackgroundBrowse() {
   const { user } = useContext(UserContext);
   const loggedIn = !!user;
   const classes = useStyles();
-  const height = loggedIn ? 30 : 52.1;
+  const height = loggedIn ? 30 : 55.1;
   const width = 100;
   const triangleBottom = width * 0.5;
   const triangleLeft = width * 3;

@@ -76,7 +76,7 @@ const useStyles = makeStyles<Theme, { filterElementMargin: number; justifyConten
       },
       openMultiSelectButton: {
         border: `1px solid ${theme.palette.grey[500]} !important`,
-      }
+      },
     };
   }
 );
@@ -211,7 +211,9 @@ export default function Filters({
                   <Button
                     variant="outlined"
                     color="grey"
-                    className={`${classes.openMultiSelectButton} ${classes.filterElement} ${isInOverlay && classes.overlayField}`}
+                    className={`${classes.openMultiSelectButton} ${classes.filterElement} ${
+                      isInOverlay && classes.overlayField
+                    }`}
                     onClick={() => handleClickDialogOpen(filter.key)}
                   >
                     {filter.title}

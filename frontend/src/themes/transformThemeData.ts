@@ -20,7 +20,7 @@ export const transformThemeData = (data, baseTheme: any = undefined) => {
         ...restOfDefaultTheme?.components?.MuiButton,
         styleOverrides: {
           contained: {
-            '&:hover': {
+            "&:hover": {
               backgroundColor: darken(data?.primary?.main, 0.2), // Adjust the hover color calculation
             },
           },

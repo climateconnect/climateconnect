@@ -133,11 +133,9 @@ export default function HubContent({
   hubAmbassador,
   hubSupporters,
   location,
-  allHubs,
   hubData,
   hubUrl,
   image,
-  source,
 }) {
   const { locale, user } = useContext(UserContext);
   const classes = useStyles({ isLocationHub: isLocationHub, loggedOut: !user, image: image });

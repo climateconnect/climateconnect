@@ -115,7 +115,7 @@ const theme = createTheme(coreTheme, {
         {
           props: { variant: "outlined" },
           style: {
-            border: "1px solid !important"
+            border: "1px solid !important",
           },
         },
         {
