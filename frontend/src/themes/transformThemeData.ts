@@ -1,3 +1,4 @@
+import { createTheme, alpha, darken, lighten } from "@mui/material";
 import defaultTheme from "./hubTheme";
 
 // transform theme data received from the API into a structured theme object
@@ -12,6 +13,16 @@ export const transformThemeData = (data, baseTheme: any = undefined) => {
         styleOverrides: {
           root: {
             color: data?.background_default?.contrastText,
+          },
+        },
+      },
+      MuiButton: {
+        ...restOfDefaultTheme?.components?.MuiButton,
+        styleOverrides: {
+          contained: {
+            "&:hover": {
+              backgroundColor: darken(data?.primary?.main, 0.2), // Adjust the hover color calculation
+            },
           },
         },
       },
@@ -46,5 +57,5 @@ export const transformThemeData = (data, baseTheme: any = undefined) => {
       },
     },
   };
-  return customTheme;
+  return createTheme(customTheme);
 };

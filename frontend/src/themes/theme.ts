@@ -113,6 +113,12 @@ const theme = createTheme(coreTheme, {
           },
         },
         {
+          props: { variant: "outlined" },
+          style: {
+            border: "1px solid !important",
+          },
+        },
+        {
           props: { variant: "outlined", color: "grey" },
           style: {
             color: coreTheme.palette.text.primary,
