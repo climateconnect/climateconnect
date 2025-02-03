@@ -65,6 +65,9 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
     cursor: "pointer",
     fontSize: 40,
   },
+  imageBtn: {
+    padding: "8px 32px",
+  },
   locationInput: {
     marginBottom: theme.spacing(1),
     marginTop: theme.spacing(2),
@@ -502,7 +505,12 @@ const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
           <div className={classes.addPhotoWrapper}>
             <div className={classes.addPhotoContainer}>
               <AddAPhotoIcon className={classes.photoIcon} />
-              <Button variant="contained" color="primary" onClick={onUploadImageClick}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={onUploadImageClick}
+                className={classes.imageBtn}
+              >
                 {!project.image ? texts.upload_image : texts.change_image}
               </Button>
             </div>

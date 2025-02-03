@@ -26,6 +26,25 @@ export const transformThemeData = (data, baseTheme: any = undefined) => {
           },
         },
       },
+      MuiOutlinedInput: {
+        ...restOfDefaultTheme?.components?.MuiInputBase,
+        styleOverrides: {
+          root: {
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: data?.secondary?.main, // Outline color when focused
+            },
+          },
+        },
+      },
+      MuiInputLabel: {
+        styleOverrides: {
+          root: {
+            "&.Mui-focused": {
+              color: data?.secondary?.main, // Label color when focused
+            },
+          },
+        },
+      },
     },
     palette: {
       ...palette,
