@@ -542,6 +542,7 @@ export default function BrowseContent({
               hasMore={state.hasMore.organizations}
               loadFunc={() => handleLoadMoreData("organizations")}
               organizations={state.items.organizations}
+              hubUrl={hubUrl}
               parentHandlesGridItems
             />
           </TabContentWrapper>
