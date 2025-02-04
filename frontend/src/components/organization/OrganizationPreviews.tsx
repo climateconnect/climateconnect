@@ -21,12 +21,13 @@ export default function OrganizationPreviews({
   loadFunc,
   organizations,
   parentHandlesGridItems,
+  hubUrl,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
   const toOrganizationPreviews = (organizations) =>
-    organizations.map((o) => <GridItem key={o.url_slug} organization={o} />);
+    organizations.map((o) => <GridItem key={o.url_slug} organization={o} hubUrl={hubUrl} />);
 
   const [gridItems, setGridItems] = React.useState(toOrganizationPreviews(organizations));
   const [isFetchingMore, setIsFetchingMore] = React.useState(false);
@@ -74,10 +75,10 @@ export default function OrganizationPreviews({
   );
 }
 
-function GridItem({ organization }) {
+function GridItem({ organization, hubUrl }) {
   return (
     <Grid key={organization.url_slug} xs={12} sm={6} md={4} lg={3} component="li">
-      <OrganizationPreview organization={organization} />
+      <OrganizationPreview organization={organization} hubUrl={hubUrl} />
     </Grid>
   );
 }

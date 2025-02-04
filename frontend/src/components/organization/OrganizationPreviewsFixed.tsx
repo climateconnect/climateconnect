@@ -63,7 +63,7 @@ export default function OrganizationPreviewsFixed({ organizations, isLoading }) 
                   className={`${classes.organization} ${index === 0 && classes.first}`}
                   key={organization.url_slug}
                 >
-                  <OrganizationPreview organization={organization} />
+                  <OrganizationPreview organization={organization} hubUrl="" />
                 </span>
               );
             })}

@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
   formWrapper: {
     marginTop: theme.spacing(8),
-    padding: theme.spacing(2)
+    padding: theme.spacing(2),
   },
   chip: {
     height: 30,

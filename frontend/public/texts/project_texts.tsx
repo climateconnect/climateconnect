@@ -782,7 +782,12 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: (
         <>
           If your organization does not exist yet{" "}
-          <Link href={getLocalePrefix(locale) + "/createorganization"} underline="always">
+          <Link
+            href={`${getLocalePrefix(locale)}/createorganization${
+              hubName ? `?hub=${hubName}` : ""
+            }`}
+            underline="always"
+          >
             click here
           </Link>{" "}
           to create it.
@@ -791,7 +796,12 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: (
         <>
           Wenn das Profil deiner Organisation noch nicht existiert,{" "}
-          <Link href={getLocalePrefix(locale) + "/createorganization"} underline="always">
+          <Link
+            href={`${getLocalePrefix(locale)}/createorganization${
+              hubName ? `?hub=${hubName}` : ""
+            }`}
+            underline="always"
+          >
             klicke hier
           </Link>{" "}
           um sie zu erstellen.

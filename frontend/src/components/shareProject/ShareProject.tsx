@@ -45,6 +45,7 @@ type Args = {
   goToNextStep: Function;
   userOrganizations: Array<Organization>;
   projectTypeOptions: any;
+  hubName?: string;
 };
 
 export default function Share({
@@ -53,6 +54,7 @@ export default function Share({
   userOrganizations,
   projectTypeOptions,
   goToNextStep,
+  hubName,
 }: Args) {
   const organizationOptions = !userOrganizations
     ? []
@@ -64,7 +66,7 @@ export default function Share({
       });
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "project", locale: locale });
+  const texts = getTexts({ page: "project", locale: locale, hubName: hubName });
   const theme = useTheme();
 
   const onChangeSwitch = () => {
