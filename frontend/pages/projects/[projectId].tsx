@@ -74,7 +74,7 @@ export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const projectUrl = encodeURI(ctx?.query?.projectId);
   const hubUrl = encodeURI(ctx?.query?.hub);
-  
+
   const [
     project,
     members,

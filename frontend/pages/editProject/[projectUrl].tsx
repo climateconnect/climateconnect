@@ -90,7 +90,7 @@ export default function EditProjectPage({
   const [curProject, setCurProject] = React.useState({
     ...project,
     status: statusOptions.find((s) => s.name === project?.status),
-    hubUrl: hubUrl
+    hubUrl: hubUrl,
   });
   project = {
     ...project,
