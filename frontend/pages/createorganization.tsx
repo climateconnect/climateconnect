@@ -522,6 +522,7 @@ const parseOrganizationForRequest = async (
     source_language: sourceLanguage,
     parent_organization: undefined,
     school: undefined,
+    created_in_hub: undefined
   };
   if (o.parentorganization) organization.parent_organization = o.parentorganization;
   if (o.background_image)
