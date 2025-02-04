@@ -353,7 +353,9 @@ class CreateOrganizationView(APIView):
 
                 # Add hub type if organization was shared in a custom hub
                 if "created_in_hub" in request.data:
-                    hub = Hub.objects.filter(url_slug=request.data["created_in_hub"]).first()
+                    hub = Hub.objects.filter(
+                        url_slug=request.data["created_in_hub"]
+                    ).first()
                     organization.related_hubs.add(hub)
 
                 # Set other fields

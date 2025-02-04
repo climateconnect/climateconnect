@@ -53,17 +53,12 @@ export async function getServerSideProps(ctx: {
       tagOptions: tagOptions,
       rolesOptions: rolesOptions,
       allHubs: allHubs,
-      hubUrl: hubUrl
+      hubUrl: hubUrl,
     },
   };
 }
 
-export default function CreateOrganization({ 
-  tagOptions, 
-  rolesOptions, 
-  allHubs,
-  hubUrl
-}) {
+export default function CreateOrganization({ tagOptions, rolesOptions, allHubs, hubUrl }) {
   const token = new Cookies().get("auth_token");
   const classes = useStyles();
   const [errorMessages, setErrorMessages] = useState({
@@ -494,7 +489,14 @@ async function getTags(token: string | undefined, locale: any) {
   }
 }
 
-const parseOrganizationForRequest = async (o, user, rolesOptions, translations, sourceLanguage, hubUrl) => {
+const parseOrganizationForRequest = async (
+  o,
+  user,
+  rolesOptions,
+  translations,
+  sourceLanguage,
+  hubUrl
+) => {
   const organization = {
     team_members: [
       {
@@ -528,7 +530,7 @@ const parseOrganizationForRequest = async (o, user, rolesOptions, translations, 
   if (o.image) organization.image = await blobFromObjectUrl(o.image);
   if (o.info.school) organization.school = o.info.school;
   if (hubUrl) {
-    organization.created_in_hub = hubUrl
+    organization.created_in_hub = hubUrl;
   }
   return organization;
 };

@@ -253,10 +253,10 @@ export default function Dashboard({
 
   const welcomeMessage = getWelcomeMessage();
 
-  const getFullLink = (url: any, hash="") => {
-    const hubAddition = hubName ? "?hubName=" + hubName : ""
+  const getFullLink = (url: any, hash = "") => {
+    const hubAddition = hubName ? "?hubName=" + hubName : "";
     return `${getLocalePrefix(locale)}${url}${hubAddition}${hash ? "#" + hash : ""}`;
-  }
+  };
 
   return (
     <div className={`${classes.welcomeBanner} ${className}`}>
