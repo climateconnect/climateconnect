@@ -348,6 +348,11 @@ class CreateOrganizationView(APIView):
                 if "location" in request.data:
                     organization.location = get_location(request.data["location"])
 
+                # Add hub type if organization was shared in a custom hub
+                if "created_in_hub" in request.data:
+                    hub = Hub.objects.filter(url_slug=request.data["created_in_hub"]).first()
+                    organization.related_hubs.add(hub)
+
                 # Set other fields
                 fields_to_set = [
                     "short_description",
@@ -374,7 +379,7 @@ class CreateOrganizationView(APIView):
                         except Hub.DoesNotExist:
                             logger.error("Passed hub url_slug {} does not exist")
                     organization.hubs.set(hubs)
-
+                print(organization.related_hubs.all())
                 organization.save()
 
                 # Create organization translations

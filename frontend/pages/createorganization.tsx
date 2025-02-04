@@ -38,9 +38,11 @@ const useStyles = makeStyles((theme) => ({
 
 export async function getServerSideProps(ctx: {
   locale?: any;
+  query?: any;
   req?: { headers: { cookie?: string | undefined } } | undefined;
 }) {
   const { auth_token } = NextCookies(ctx);
+  const hubUrl = encodeURI(ctx?.query?.hub);
   const [tagOptions, rolesOptions, allHubs] = await Promise.all([
     await getTags(auth_token, ctx.locale),
     await getRolesOptions(auth_token, ctx.locale),
@@ -51,11 +53,17 @@ export async function getServerSideProps(ctx: {
       tagOptions: tagOptions,
       rolesOptions: rolesOptions,
       allHubs: allHubs,
+      hubUrl: hubUrl
     },
   };
 }
 
-export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }) {
+export default function CreateOrganization({ 
+  tagOptions, 
+  rolesOptions, 
+  allHubs,
+  hubUrl
+}) {
   const token = new Cookies().get("auth_token");
   const classes = useStyles();
   const [errorMessages, setErrorMessages] = useState({
@@ -242,7 +250,8 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       user,
       rolesOptions,
       translations,
-      sourceLanguage
+      sourceLanguage,
+      hubUrl
     );
 
     if (!legacyModeEnabled && !isLocationValid(organizationToSubmit.location)) {
@@ -291,7 +300,8 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
       user,
       rolesOptions,
       translations,
-      sourceLanguage
+      sourceLanguage,
+      hubUrl
     );
     await makeCreateOrganizationRequest(organizationToSubmit);
   };
@@ -484,7 +494,7 @@ async function getTags(token: string | undefined, locale: any) {
   }
 }
 
-const parseOrganizationForRequest = async (o, user, rolesOptions, translations, sourceLanguage) => {
+const parseOrganizationForRequest = async (o, user, rolesOptions, translations, sourceLanguage, hubUrl) => {
   const organization = {
     team_members: [
       {
@@ -517,5 +527,8 @@ const parseOrganizationForRequest = async (o, user, rolesOptions, translations, 
   if (o.thumbnail_image) organization.thumbnail_image = await blobFromObjectUrl(o.thumbnail_image);
   if (o.image) organization.image = await blobFromObjectUrl(o.image);
   if (o.info.school) organization.school = o.info.school;
+  if (hubUrl) {
+    organization.created_in_hub = hubUrl
+  }
   return organization;
 };
