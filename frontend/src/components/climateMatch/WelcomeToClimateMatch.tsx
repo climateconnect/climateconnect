@@ -29,7 +29,7 @@ const useStyles = makeStyles<Theme, { unfixButtonBar: boolean; isLoading: boolea
   },
   text: {
     fontSize: 20,
-    color: "white"
+    color: "white",
   },
   headline: {
     marginBottom: theme.spacing(4),
