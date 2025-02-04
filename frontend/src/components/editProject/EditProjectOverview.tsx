@@ -211,7 +211,10 @@ function LargeScreenOverview({
 }) {
   const classes = useStyles({});
   function handleUpdateSelectedHub(hubUrl: string) {
-    handleChangeProject({ related_hubs: hubUrl });
+    handleSetProject({
+      ...project,
+      hubUrl: hubUrl,
+    });
   }
 
   return (

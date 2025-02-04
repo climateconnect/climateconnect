@@ -40,7 +40,6 @@ export async function getServerSideProps(ctx) {
   }
   const projectUrl = encodeURI(ctx.query.projectUrl);
   const hubUrl = ctx.query.hub;
-
   const [
     project,
     members,
@@ -107,7 +106,6 @@ export default function EditProjectPage({
   const handleSetProject = (newProject) => {
     setCurProject({ ...newProject });
   };
-
   if (!user)
     return (
       <WideLayout
