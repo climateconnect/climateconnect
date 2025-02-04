@@ -26,6 +26,7 @@ const useStyles = makeStyles((theme) => {
       padding: theme.spacing(1),
       paddingBottom: 0,
       marginTop: theme.spacing(2),
+      textAlign: "center"
     },
     subtitle: {
       color: `${theme.palette.secondary.main}`,
