@@ -89,11 +89,12 @@ export default function EditProjectPage({
   const classes = useStyles();
   const [curProject, setCurProject] = React.useState({
     ...project,
-    status: statusOptions.find((s) => s.name === project.status),
+    status: statusOptions.find((s) => s.name === project?.status),
+    hubUrl: hubUrl
   });
   project = {
     ...project,
-    status: statusOptions.find((s) => s.name === project.status),
+    status: statusOptions.find((s) => s.name === project?.status),
   };
   const [errorMessage, setErrorMessage] = React.useState("");
   const { user, locale, CUSTOM_HUB_URLS } = useContext(UserContext);

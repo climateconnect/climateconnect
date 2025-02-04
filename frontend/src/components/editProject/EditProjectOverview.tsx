@@ -19,6 +19,8 @@ import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
 import ProjectLocationSearchBar from "../shareProject/ProjectLocationSearchBar";
 import { Project } from "../../types";
+import CustomHubSelection from "../project/CustomHubSelection";
+
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
 const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
@@ -208,6 +210,10 @@ function LargeScreenOverview({
   handleSetLocationOptionsOpen,
 }) {
   const classes = useStyles({});
+  function handleUpdateSelectedHub(hubUrl: string) {
+    handleChangeProject({ related_hubs: hubUrl });
+  }
+
   return (
     <>
       <InputName
@@ -246,6 +252,10 @@ function LargeScreenOverview({
             project={project}
             handleChangeProject={handleChangeProject}
             texts={texts}
+          />
+          <CustomHubSelection
+            currentHubName={project.hubUrl ?? ""}
+            handleUpdateSelectedHub={handleUpdateSelectedHub}
           />
         </div>
       </div>

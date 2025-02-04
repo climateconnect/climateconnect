@@ -603,6 +603,11 @@ class ProjectAPIView(APIView):
             project.thumbnail_image = get_image_from_data_url(
                 request.data["thumbnail_image"]
             )[0]
+        if "related_hubs" in request.data:
+            hub = Hub.objects.filter(url_slug=request.data["related_hubs"]).first()
+            if hub:
+                project.related_hubs.add(hub)
+
         if "status" in request.data:
             try:
                 project_status = ProjectStatus.objects.get(
@@ -639,7 +644,6 @@ class ProjectAPIView(APIView):
 
             project_parents.parent_organization = organization
             project_parents.save()
-
         project.save()
 
         items_to_translate = [
@@ -654,7 +658,6 @@ class ProjectAPIView(APIView):
                 "translation_key": "helpful_connections_translation",
             },
         ]
-
         if "translations" in request.data:
             edit_translations(items_to_translate, request.data, project, "project")
         calculate_project_rankings([project.id])
@@ -662,6 +665,7 @@ class ProjectAPIView(APIView):
             {
                 "message": "Project {} successfully updated".format(project.name),
                 "url_slug": project.url_slug,
+                "hubUrl": list(project.related_hubs.values("url_slug")),
             },
             status=status.HTTP_200_OK,
         )
