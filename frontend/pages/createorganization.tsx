@@ -59,6 +59,7 @@ export async function getServerSideProps(ctx: {
 }
 
 export default function CreateOrganization({ tagOptions, rolesOptions, allHubs, hubUrl }) {
+  console.log(hubUrl)
   const token = new Cookies().get("auth_token");
   const classes = useStyles();
   const [errorMessages, setErrorMessages] = useState({
@@ -248,6 +249,8 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs, 
       sourceLanguage,
       hubUrl
     );
+    console.log(hubUrl)
+    console.log(organizationToSubmit)
 
     if (!legacyModeEnabled && !isLocationValid(organizationToSubmit.location)) {
       indicateWrongLocation(
@@ -489,6 +492,8 @@ async function getTags(token: string | undefined, locale: any) {
   }
 }
 
+type RequestOrganization = any;
+
 const parseOrganizationForRequest = async (
   o,
   user,
@@ -497,7 +502,7 @@ const parseOrganizationForRequest = async (
   sourceLanguage,
   hubUrl
 ) => {
-  const organization = {
+  const organization: RequestOrganization = {
     team_members: [
       {
         user_id: user.id,
