@@ -233,7 +233,7 @@ class ListMemberProfilesView(ListAPIView):
                             "location__centre_point", location.multi_polygon
                         )
                     )
-            elif hub.hub_type == Hub.CUSTOM_HUB_TYPE:
+                elif hub.hub_type == Hub.CUSTOM_HUB_TYPE:
                     user_profiles = user_profiles.filter(related_hubs=hub)
 
         if "skills" in self.request.query_params:
