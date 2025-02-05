@@ -213,7 +213,7 @@ class ListMemberProfilesView(ListAPIView):
             if hubs.exists():
                 hub = hubs[0]
                 if hub.hub_type == Hub.LOCATION_HUB_TYPE:
-                    location = hub[0].location.all()[0]
+                    location = hub.location.all()[0]
                     user_profiles = user_profiles.filter(
                         Q(location__country=location.country)
                         & (

@@ -52,6 +52,9 @@ const useStyles = makeStyles((theme) => {
       color: "red",
       fontSize: 14,
     },
+    appointCreatorButton: {
+      color: theme.palette.background.default_contrastText,
+    },
   };
 });
 
@@ -167,7 +170,7 @@ export default function MiniProfileInput({
         onChange={handleChangeRolePermissions}
       />
       {allowAppointingCreator && (
-        <Button color="primary" onClick={handleOpenConfirmCreatorDialog}>
+        <Button className={classes.appointCreatorButton} onClick={handleOpenConfirmCreatorDialog}>
           {texts.make_this_user_the_creator}
         </Button>
       )}

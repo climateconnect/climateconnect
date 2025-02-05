@@ -18,13 +18,17 @@ export const transformThemeData = (data, baseTheme: any = undefined) => {
       },
       MuiButton: {
         ...restOfDefaultTheme?.components?.MuiButton,
-        styleOverrides: {
-          contained: {
-            "&:hover": {
-              backgroundColor: darken(data?.primary?.main, 0.2), // Adjust the hover color calculation
+        variants: [
+          ...restOfDefaultTheme?.components?.MuiButton?.variants,
+          {
+            props: { variant: "contained", color: "primary" },
+            style: {
+              "&:hover": {
+                backgroundColor: darken(data?.primary?.main, 0.2),
+              },
             },
           },
-        },
+        ],
       },
     },
     palette: {
