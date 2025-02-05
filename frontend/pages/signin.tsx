@@ -73,7 +73,10 @@ export default function Signin({ hubSlug, hubThemeData, message, message_type })
     bottomMessage: (
       <span>
         {texts.new_to_climate_connect}{" "}
-        <Link style={{ textDecoration: "underline" }} href={`${getLocalePrefix(locale)}/signup${hubSlug ? `?hub=${hubSlug}` : ""}`}>
+        <Link
+          style={{ textDecoration: "underline" }}
+          href={`${getLocalePrefix(locale)}/signup${hubSlug ? `?hub=${hubSlug}` : ""}`}
+        >
           {texts.click_here_to_create_an_account}
         </Link>
       </span>
@@ -85,7 +88,9 @@ export default function Signin({ hubSlug, hubThemeData, message, message_type })
     href: `${getLocalePrefix(locale)}/resetpassword${hubSlug ? `?hub=${hubSlug}` : ""}`,
   };
 
-  const [errorMessage, setErrorMessage] = React.useState<JSX.Element | null>(message_type !== "success" && message);
+  const [errorMessage, setErrorMessage] = React.useState<JSX.Element | null>(
+    message_type !== "success" && message
+  );
   const [isLoading, setIsLoading] = React.useState(false);
 
   const [initialized, setInitialized] = React.useState(false);

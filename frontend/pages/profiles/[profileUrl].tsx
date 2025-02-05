@@ -39,7 +39,15 @@ export async function getServerSideProps(ctx) {
   };
 }
 
-export default function ProfilePage({ profile, projects, organizations, ideas, projectTypes, hubUrl, hubThemeData }) {
+export default function ProfilePage({
+  profile,
+  projects,
+  organizations,
+  ideas,
+  projectTypes,
+  hubUrl,
+  hubThemeData,
+}) {
   const token = new Cookies().get("auth_token");
   const { user, locale } = useContext(UserContext);
   const infoMetadata = getProfileInfoMetadata(locale);

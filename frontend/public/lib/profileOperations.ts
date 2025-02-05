@@ -57,7 +57,7 @@ export function redirectOnLogin(user, redirectUrl, locale) {
       pathname: "/editprofile",
       query: {
         message: SIGN_UP_MESSAGE,
-        hub: hub
+        hub: hub,
       },
     });
   } else if (redirectUrl) {

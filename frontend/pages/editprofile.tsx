@@ -34,7 +34,13 @@ export async function getServerSideProps(ctx) {
   };
 }
 
-export default function EditProfilePage({ skillsOptions, availabilityOptions, user, hubUrl, hubThemeData }) {
+export default function EditProfilePage({
+  skillsOptions,
+  availabilityOptions,
+  user,
+  hubUrl,
+  hubThemeData,
+}) {
   const { locale } = useContext(UserContext);
   let infoMetadata: any = getProfileInfoMetadata(locale);
   const texts = getTexts({ page: "profile", locale: locale });

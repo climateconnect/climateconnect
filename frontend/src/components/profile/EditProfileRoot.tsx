@@ -34,7 +34,7 @@ export default function EditAccountRoot({
   handleSetLocationOptionsOpen,
   setErrorMessage,
   availabilityOptions,
-  hubUrl
+  hubUrl,
 }) {
   const { locale, locales } = useContext(UserContext);
   const cookies = new Cookies();
@@ -112,7 +112,7 @@ export default function EditAccountRoot({
           pathname: `/profiles/${response.data.url_slug}`,
           query: {
             message: texts.you_have_successfully_updated_your_profile,
-            hub: hubUrl
+            hub: hubUrl,
           },
         });
       })

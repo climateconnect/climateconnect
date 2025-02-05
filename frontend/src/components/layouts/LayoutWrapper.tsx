@@ -127,7 +127,7 @@ export default function LayoutWrapper({
       error: error,
       success: success,
       action: promptLogIn ? (
-        <LogInAction onClose={handleSnackbarClose}/>
+        <LogInAction onClose={handleSnackbarClose} />
       ) : action ? (
         action
       ) : (

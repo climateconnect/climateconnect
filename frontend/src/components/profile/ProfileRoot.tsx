@@ -96,7 +96,7 @@ export default function ProfileRoot({
   token,
   texts,
   locale,
-  hubUrl
+  hubUrl,
 }) {
   const { showFeedbackMessage } = useContext(FeedbackContext);
   const classes = useStyles();
@@ -163,7 +163,10 @@ export default function ProfileRoot({
         <div className={classes.sectionHeadlineWithButtonContainer}>
           <h2>{isOwnAccount ? texts.your_projects : texts.this_users_projects}</h2>
           {isTinyScreen ? (
-            <IconButton href={`${getLocalePrefix(locale)}/share${hubUrl ? `?hub=${hubUrl}`: ""}`} size="large">
+            <IconButton
+              href={`${getLocalePrefix(locale)}/share${hubUrl ? `?hub=${hubUrl}` : ""}`}
+              size="large"
+            >
               <ControlPointSharpIcon
                 className={classes.button}
                 variant="contained"
@@ -171,7 +174,11 @@ export default function ProfileRoot({
               />
             </IconButton>
           ) : (
-            <Button variant="contained" color="primary" href={`${getLocalePrefix(locale)}/share${hubUrl ? `?hub=${hubUrl}`: ""}`}>
+            <Button
+              variant="contained"
+              color="primary"
+              href={`${getLocalePrefix(locale)}/share${hubUrl ? `?hub=${hubUrl}` : ""}`}
+            >
               <ControlPointSharpIcon className={classes.innerIcon} />
               {texts.share_a_project}
             </Button>
@@ -207,7 +214,12 @@ export default function ProfileRoot({
         <div className={classes.sectionHeadlineWithButtonContainer}>
           <h2>{isOwnAccount ? texts.your_organizations : texts.this_users_organizations}</h2>
           {isTinyScreen ? (
-            <IconButton href={`${getLocalePrefix(locale)}/createorganization${hubUrl ? `?hub=${hubUrl}`: ""}`} size="large">
+            <IconButton
+              href={`${getLocalePrefix(locale)}/createorganization${
+                hubUrl ? `?hub=${hubUrl}` : ""
+              }`}
+              size="large"
+            >
               <ControlPointSharpIcon
                 className={classes.button}
                 variant="contained"
@@ -218,7 +230,9 @@ export default function ProfileRoot({
             <Button
               variant="contained"
               color="primary"
-              href={`${getLocalePrefix(locale)}/createorganization${hubUrl ? `?hub=${hubUrl}`: ""}`}
+              href={`${getLocalePrefix(locale)}/createorganization${
+                hubUrl ? `?hub=${hubUrl}` : ""
+              }`}
             >
               <ControlPointSharpIcon className={classes.innerIcon} />
               {texts.create_an_organization}

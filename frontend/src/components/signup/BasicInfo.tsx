@@ -39,7 +39,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function BasicInfo({ handleSubmit, errorMessage, values, texts, isSmallScreen, hub }) {
+export default function BasicInfo({
+  handleSubmit,
+  errorMessage,
+  values,
+  texts,
+  isSmallScreen,
+  hub,
+}) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const fields = [

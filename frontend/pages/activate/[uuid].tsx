@@ -10,8 +10,8 @@ export async function getServerSideProps(ctx) {
   const uuid = encodeURI(ctx.query.uuid);
   const messages = await profileVerification(uuid, ctx.locale);
   const texts = getTexts({ page: "settings", locale: ctx.locale });
-  if(messages?.successMessage){
-    const messageOnRedirect = messages.successMessage + " " + texts.you_can_now_log_in
+  if (messages?.successMessage) {
+    const messageOnRedirect = messages.successMessage + " " + texts.you_can_now_log_in;
     return sendToLogin(ctx, messageOnRedirect, "success");
   }
   return {

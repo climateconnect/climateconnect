@@ -75,7 +75,7 @@ export const redirect = (
 export const sendToLogin = async (
   { resolvedUrl, locale, res }: GetServerSidePropsContext,
   message: string,
-  message_type:string="error"
+  message_type: string = "error"
 ) => {
   const pathName = resolvedUrl.slice(1);
   const queryString = resolvedUrl.split("?")[1];
@@ -86,7 +86,7 @@ export const sendToLogin = async (
   if (queryObject.hub) {
     url += "&hub=" + queryObject.hub;
   }
-  if(message_type){
+  if (message_type) {
     url += "&message_type=" + message_type;
   }
   res.writeHead(302, { Location: url });
