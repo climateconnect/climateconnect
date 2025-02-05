@@ -167,7 +167,7 @@ export default function MiniProfileInput({
         onChange={handleChangeRolePermissions}
       />
       {allowAppointingCreator && (
-        <Button color="primary" onClick={handleOpenConfirmCreatorDialog}>
+        <Button color="contrast" onClick={handleOpenConfirmCreatorDialog}>
           {texts.make_this_user_the_creator}
         </Button>
       )}

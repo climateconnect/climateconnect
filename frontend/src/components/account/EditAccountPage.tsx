@@ -743,7 +743,7 @@ export default function EditAccountPage({
           </Button>
           <Button
             className={`${classes.cancelButton} ${classes.actionButton}`}
-            color="secondary"
+            color="grey"
             variant="contained"
             onClick={() => handleDialogClickOpen("confirmExitDialog")}
           >

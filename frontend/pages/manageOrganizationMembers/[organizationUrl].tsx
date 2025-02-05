@@ -1,6 +1,5 @@
-import { Typography } from "@mui/material";
+import { Container, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import { GetServerSidePropsContext } from "next";
 import Cookies from "next-cookies";
 import React, { useContext } from "react";
 
@@ -11,9 +10,10 @@ import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
 import LoginNudge from "../../src/components/general/LoginNudge";
-import Layout from "../../src/components/layouts/layout";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import ManageOrganizationMembers from "../../src/components/organization/ManageOrganizationMembers";
+import getHubTheme from "../../src/themes/fetchHubTheme";
+import { transformThemeData } from "../../src/themes/transformThemeData";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -26,6 +26,8 @@ const useStyles = makeStyles((theme) => {
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = Cookies(ctx);
+  const hubUrl = encodeURI(ctx?.query?.hub);
+  const hubThemeData = await getHubTheme(hubUrl);
   const texts = getTexts({ page: "organization", locale: ctx.locale });
   if (ctx.req && !auth_token) {
     const message = texts.you_have_to_log_in_to_manage_organization_members;
@@ -45,6 +47,8 @@ export async function getServerSideProps(ctx) {
       rolesOptions: rolesOptions,
       availabilityOptions: availabilityOptions,
       token: auth_token,
+      hubUrl: hubUrl,
+      hubThemeData: hubThemeData
     }),
   };
 }
@@ -55,6 +59,8 @@ export default function manageOrganizationMembers({
   availabilityOptions,
   rolesOptions,
   token,
+  hubUrl,
+  hubThemeData
 }) {
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
@@ -62,10 +68,19 @@ export default function manageOrganizationMembers({
   const [currentMembers, setCurrentMembers] = React.useState(
     members ? [...members.sort((a, b) => b.role.role_type - a.role.role_type)] : []
   );
+
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+  const layoutProps = {
+    hubUrl: hubUrl,
+    customTheme: customTheme,
+    headerBackground: hubUrl === "prio1" ? "#7883ff" : "#FFF",
+  };
+
   if (!user)
     return (
       <WideLayout
         title={texts.please_log_in + " " + texts.to_manage_org_members}
+        {...layoutProps}
         // hideHeadline={true}
       >
         <LoginNudge fullPage whatToDo={texts.to_manage_org_members} />
@@ -75,6 +90,7 @@ export default function manageOrganizationMembers({
     return (
       <WideLayout
         title={texts.please_log_in + " " + texts.to_manage_org_members}
+        {...layoutProps}
         // hideHeadline={true}
       >
         <Typography variant="h4" color="primary" className={classes.headline}>
@@ -90,6 +106,7 @@ export default function manageOrganizationMembers({
     return (
       <WideLayout
         title={texts.no_permission_to_manage_members_of_this_org}
+        {...layoutProps}
         //hideHeadline={true}
       >
         <Typography variant="h4" color="primary" className={classes.headline}>
@@ -99,18 +116,24 @@ export default function manageOrganizationMembers({
     );
   else {
     return (
-      <Layout title={texts.manage_organizations_members} hideHeadline>
-        <ManageOrganizationMembers
-          user={user}
-          members={members}
-          currentMembers={currentMembers}
-          setCurrentMembers={setCurrentMembers}
-          rolesOptions={rolesOptions}
-          organization={organization}
-          token={token}
-          availabilityOptions={availabilityOptions}
-        />
-      </Layout>
+      <WideLayout 
+        {...layoutProps}
+        title={texts.manage_organizations_members} 
+      >
+        <Container>
+          <ManageOrganizationMembers
+            user={user}
+            members={members}
+            currentMembers={currentMembers}
+            setCurrentMembers={setCurrentMembers}
+            rolesOptions={rolesOptions}
+            organization={organization}
+            token={token}
+            availabilityOptions={availabilityOptions}
+            hubUrl={hubUrl}
+          />
+        </Container>
+      </WideLayout>
     );
   }
 }

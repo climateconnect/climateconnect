@@ -8,7 +8,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: theme.spacing(1),
-    color: theme.palette.background.default_contrastText
+    color: theme.palette.background.default_contrastText,
   },
 }));
 
@@ -30,6 +30,7 @@ export default function DetailledDescriptionInput({ title, helpText, value, onCh
       </Typography>
       <TextField
         variant="outlined"
+        color="contrast"
         fullWidth
         multiline
         rows={9}

@@ -709,18 +709,18 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: (
         <>
           You can view, edit and publish your project drafts{" "}
-          <a href={getLocalePrefix(locale) + "/profiles/" + user?.url_slug + "/#projects"}>
+          <Link href={`${getLocalePrefix(locale)}/profiles/${user?.url_slug}${hubName?`?hub=${hubName}`:""}#projects`}>
             in the my projects section
-          </a>{" "}
+          </Link>{" "}
           of your profile
         </>
       ),
       de: (
         <>
           Du kannst deine Projektentwürfe{" "}
-          <a href={getLocalePrefix(locale) + "/profiles/" + user?.url_slug + "/#projects"}>
+          <Link href={`${getLocalePrefix(locale)}/profiles/${user?.url_slug}${hubName?`?hub=${hubName}`:""}#projects`}>
             im Bereich {"Meine Projekte"}
-          </a>{" "}
+          </Link>{" "}
           deines Profils ansehen, bearbeiten und veröffentlichen
         </>
       ),
