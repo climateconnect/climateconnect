@@ -28,7 +28,6 @@ export default function CustomHubSelection({
   }
   const classes = useStyles();
   const theme = useTheme();
-
   const { locale } = useContext(UserContext);
   const texts = getTexts({ locale: locale, page: "project" });
 

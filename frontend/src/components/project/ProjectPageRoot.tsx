@@ -542,6 +542,7 @@ export default function ProjectPageRoot({
             toggleShowRequests={toggleShowRequests}
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
             requestedToJoinProject={requestedToJoinProject}
+            hubUrl={hubPage}
           />
         </TabContent>
         <TabContent value={tabValue} index={1}>
