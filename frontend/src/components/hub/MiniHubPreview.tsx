@@ -110,6 +110,7 @@ export default function MiniHubPreview({
             <SelectField
               label={texts.add_a_hub_where_you_are_active}
               size="small"
+              color="contrast"
               options={hubsToSelectFrom}
               onChange={(event) => event.target.value && onSelect(event)}
             />

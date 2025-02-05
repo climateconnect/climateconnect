@@ -249,6 +249,7 @@ export default function Form({
                 <SelectField
                   controlledValue={{ name: values[field.key] }}
                   controlled
+                  color="contrast"
                   required={field.required}
                   options={options}
                   label={field.label}
