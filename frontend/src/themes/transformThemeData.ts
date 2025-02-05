@@ -13,13 +13,14 @@ export const transformThemeData = (data, baseTheme: any = undefined) => {
         styleOverrides: {
           root: {
             color: data?.background_default?.contrastText,
+            textDecorationColor: data?.background_default?.contrastText,
           },
         },
       },
       MuiButton: {
         ...restOfDefaultTheme?.components?.MuiButton,
         variants: [
-          ...restOfDefaultTheme?.components?.MuiButton?.variants,
+          ...(restOfDefaultTheme?.components?.MuiButton?.variants ?? []),
           {
             props: { variant: "contained", color: "primary" },
             style: {
