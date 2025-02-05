@@ -106,6 +106,7 @@ const useStyles = makeStyles<
     selectedItemsHeader: {
       fontWeight: "bold",
       fontSize: "16px",
+      color: theme.palette.background.default_contrastText,
     },
     selectedItem: {
       background: theme.palette.background.default_contrastText,
