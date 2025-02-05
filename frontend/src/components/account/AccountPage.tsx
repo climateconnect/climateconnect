@@ -118,7 +118,7 @@ const useStyles = makeStyles<Theme>((theme) => ({
   },
   infoIcon: (props) => ({
     marginBottom: -4,
-    color: props.isCustomHub ? theme.palette.secondary.main : theme.palette.primary.main,
+    color: theme.palette.background.default_contrastText,
   }),
   innerIcon: {
     marginRight: theme.spacing(0.5),
@@ -186,11 +186,9 @@ export default function AccountPage({
   handleFollow,
   followingChangePending,
   isUserFollowing,
-  hubUrl,
 }) {
-  const { locale, user, CUSTOM_HUB_URLS } = useContext(UserContext);
-  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
-  const classes = useStyles({ isOwnAccount: isOwnAccount, isCustomHub: isCustomHub });
+  const { locale, user } = useContext(UserContext);
+  const classes = useStyles({ isOwnAccount: isOwnAccount });
   const token = new Cookies().get("auth_token");
   const texts = getTexts({ page: "profile", locale: locale });
   const organizationTexts = isOrganization

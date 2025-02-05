@@ -266,14 +266,13 @@ function OrganizationLayout({
       isUserFollowing={isUserFollowing}
       account={organization}
       default_background={DEFAULT_BACKGROUND_IMAGE}
-      editHref={getLocalePrefix(locale) + "/editOrganization/" + organization.url_slug}
+      editHref={`${getLocalePrefix(locale)}/editOrganization/${organization.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""}`}
       /*TODO(unused) type="organization" */
       infoMetadata={infoMetadata}
       isOwnAccount={canEdit}
       isOrganization={true}
       editText={texts.edit_organization}
       isSmallScreen={isSmallScreen}
-      hubUrl={hubUrl}
     >
       {!user && (
         <LoginNudge
@@ -293,7 +292,7 @@ function OrganizationLayout({
             {texts.this_organizations_projects}
           </Typography>
           {isTinyScreen ? (
-            <IconButton href={getLocalePrefix(locale) + "/share"} size="large">
+            <IconButton href={`${getLocalePrefix(locale)}/share${hubUrl ? `?hub=${hubUrl}` : ""}`} size="large">
               <ControlPointSharpIcon
                 className={classes.button}
                 /*TODO(unused) variant="contained" */
@@ -301,7 +300,7 @@ function OrganizationLayout({
               />
             </IconButton>
           ) : (
-            <Button variant="contained" color="primary" href={getLocalePrefix(locale) + "/share"}>
+            <Button variant="contained" color="primary" href={`${getLocalePrefix(locale)}/share${hubUrl ? `?hub=${hubUrl}` : ""}`}>
               <ControlPointSharpIcon className={classes.innerIcon} />
               {texts.share_a_project}
             </Button>
@@ -325,7 +324,7 @@ function OrganizationLayout({
             (isTinyScreen ? (
               <IconButton
                 href={
-                  getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug
+                  `${getLocalePrefix(locale)}/manageOrganizationMembers/${organization.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""}`
                 }
                 size="large"
               >
@@ -336,7 +335,7 @@ function OrganizationLayout({
                 variant="contained"
                 color="primary"
                 href={
-                  getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug
+                  `${getLocalePrefix(locale)}/manageOrganizationMembers/${organization.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""}`
                 }
               >
                 <GroupAddIcon className={classes.innerIcon} />
