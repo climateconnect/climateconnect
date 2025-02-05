@@ -268,6 +268,7 @@ export default function Form({
                   multiple={field.multiple}
                   required={field.required}
                   options={options}
+                  color="contrast"
                   label={field.label}
                   className={`${classes.blockElement} ${fieldClassName}`}
                   key={String(field.label) + fields.indexOf(field)}
@@ -363,6 +364,7 @@ export default function Form({
                 /*TODO(unused) autoFocus={field === fields[0]} */
                 label={field.autoCompleteProps.label}
                 key={field.key}
+                color="contrast"
                 freeSolo={field.autoCompleteProps.freeSolo}
                 baseUrl={field.autoCompleteProps.baseUrl}
                 clearOnSelect={field.autoCompleteProps.clearOnSelect}

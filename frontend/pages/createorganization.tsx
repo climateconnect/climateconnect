@@ -18,11 +18,12 @@ import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import LoginNudge from "../src/components/general/LoginNudge";
 import TranslateTexts from "../src/components/general/TranslateTexts";
-import Layout from "./../src/components/layouts/layout";
 import WideLayout from "./../src/components/layouts/WideLayout";
 import EnterBasicOrganizationInfo from "./../src/components/organization/EnterBasicOrganizationInfo";
 import EnterDetailledOrganizationInfo from "./../src/components/organization/EnterDetailledOrganizationInfo";
 import Alert from "@mui/material/Alert";
+import getHubTheme from "../src/themes/fetchHubTheme";
+import { transformThemeData } from "../src/themes/transformThemeData";
 
 const useStyles = makeStyles((theme) => ({
   headline: {
@@ -43,6 +44,7 @@ export async function getServerSideProps(ctx: {
 }) {
   const { auth_token } = NextCookies(ctx);
   const hubUrl = encodeURI(ctx?.query?.hub);
+  const hubThemeData = await getHubTheme(hubUrl);
   const [tagOptions, rolesOptions, allHubs] = await Promise.all([
     await getTags(auth_token, ctx.locale),
     await getRolesOptions(auth_token, ctx.locale),
@@ -54,12 +56,18 @@ export async function getServerSideProps(ctx: {
       rolesOptions: rolesOptions,
       allHubs: allHubs,
       hubUrl: hubUrl,
+      hubThemeData: hubThemeData,
     },
   };
 }
 
-export default function CreateOrganization({ tagOptions, rolesOptions, allHubs, hubUrl }) {
-  console.log(hubUrl)
+export default function CreateOrganization({
+  tagOptions,
+  rolesOptions,
+  allHubs,
+  hubUrl,
+  hubThemeData,
+}) {
   const token = new Cookies().get("auth_token");
   const classes = useStyles();
   const [errorMessages, setErrorMessages] = useState({
@@ -249,8 +257,6 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs, 
       sourceLanguage,
       hubUrl
     );
-    console.log(hubUrl)
-    console.log(organizationToSubmit)
 
     if (!legacyModeEnabled && !isLocationValid(organizationToSubmit.location)) {
       indicateWrongLocation(
@@ -340,15 +346,25 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs, 
       });
   };
 
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+  const layoutProps = {
+    hubUrl: hubUrl,
+    customTheme: customTheme,
+    headerBackground: hubUrl === "prio1" ? "#7883ff" : "#FFF",
+  };
+
   if (!user)
     return (
-      <WideLayout title={texts.please_log_in + " " + texts.to_create_an_organization}>
+      <WideLayout
+        {...layoutProps}
+        title={texts.please_log_in + " " + texts.to_create_an_organization}
+      >
         <LoginNudge fullPage whatToDo={texts.to_create_an_organization} />
       </WideLayout>
     );
   else if (curStep === "basicorganizationinfo")
     return (
-      <WideLayout title={texts.create_an_organization}>
+      <WideLayout {...layoutProps} title={texts.create_an_organization}>
         <EnterBasicOrganizationInfo
           errorMessage={errorMessages.basicOrganizationInfo}
           handleSubmit={handleBasicInfoSubmit}
@@ -362,7 +378,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs, 
     );
   else if (curStep === "detailledorganizationinfo")
     return (
-      <WideLayout title={texts.create_an_organization}>
+      <WideLayout {...layoutProps} title={texts.create_an_organization}>
         <EnterDetailledOrganizationInfo
           errorMessage={errorMessages.detailledOrganizationInfo}
           existingName={existingName}
@@ -418,7 +434,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs, 
       : standardTextsToTranslate.concat(getInvolvedText);
 
     return (
-      <WideLayout title={texts.languages}>
+      <WideLayout {...layoutProps} title={texts.languages}>
         {errorMessages.detailledOrganizationInfo && (
           <Alert severity="error" className={classes.alert}>
             {errorMessages.detailledOrganizationInfo}
