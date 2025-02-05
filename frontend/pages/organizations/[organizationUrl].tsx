@@ -26,6 +26,7 @@ import UserContext from "./../../src/components/context/UserContext";
 import IconButton from "@mui/material/IconButton";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import ControlPointSharpIcon from "@mui/icons-material/ControlPointSharp";
+import getHubTheme from "../../src/themes/fetchHubTheme";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -74,6 +75,7 @@ const useStyles = makeStyles((theme) => ({
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
+  const hubUrl = ctx.query.hub;
   const [
     organization,
     projects,
@@ -81,6 +83,7 @@ export async function getServerSideProps(ctx) {
     organizationTypes,
     rolesOptions,
     following,
+    hubThemeData,
   ] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
     getProjectsByOrganization(organizationUrl, auth_token, ctx.locale),
@@ -88,6 +91,7 @@ export async function getServerSideProps(ctx) {
     getOrganizationTypes(),
     getRolesOptions(auth_token, ctx.locale),
     getIsUserFollowing(organizationUrl, auth_token, ctx.locale),
+    getHubTheme(hubUrl),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -97,6 +101,7 @@ export async function getServerSideProps(ctx) {
       organizationTypes: organizationTypes,
       rolesOptions: rolesOptions,
       following: following,
+      hubThemeData: hubThemeData,
     }),
   };
 }
@@ -105,11 +110,12 @@ export default function OrganizationPage({
   organization,
   projects,
   members,
-  organizationTypes,
   rolesOptions,
   following,
+  hubThemeData,
 }) {
-  const { user, locale } = useContext(UserContext);
+  const { user, locale, CUSTOM_HUB_URLS } = useContext(UserContext);
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization, false);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
 
@@ -152,6 +158,9 @@ export default function OrganizationPage({
       title={organization ? organization.name : texts.not_found_error}
       description={organization?.name + " | " + organization?.info.short_description}
       image={getImageUrl(organization?.image)}
+      headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
+      customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+      hubUrl={hubUrl}
     >
       {organization ? (
         <OrganizationLayout
