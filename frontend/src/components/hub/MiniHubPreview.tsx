@@ -115,7 +115,6 @@ export default function MiniHubPreview({
               onChange={(event) => event.target.value && onSelect(event)}
             />
           ) : (
-
             <Typography color="text" className={classes.hubName}>
               {hub.icon && <img src={getImageUrl(hub.icon)} className={classes.hubIcon} />}
               {hub?.name}
