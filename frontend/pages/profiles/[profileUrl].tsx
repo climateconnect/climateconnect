@@ -11,16 +11,20 @@ import ProfileRoot from "../../src/components/profile/ProfileRoot";
 import getProfileInfoMetadata from "./../../public/data/profile_info_metadata";
 import { nullifyUndefinedValues, parseProfile } from "./../../public/lib/profileOperations";
 import UserContext from "./../../src/components/context/UserContext";
+import getHubTheme from "../../src/themes/fetchHubTheme";
+import { transformThemeData } from "../../src/themes/transformThemeData";
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const profileUrl = encodeURI(ctx.query.profileUrl);
-  const [profile, organizations, projects, ideas, projectTypes] = await Promise.all([
+  const hubUrl = ctx.query.hub;
+  const [profile, organizations, projects, ideas, projectTypes, hubThemeData] = await Promise.all([
     getProfileByUrlIfExists(profileUrl, auth_token, ctx.locale),
     getOrganizationsByUser(profileUrl, auth_token, ctx.locale),
     getProjectsByUser(profileUrl, auth_token, ctx.locale),
     getIdeasByUser(profileUrl, auth_token, ctx.locale),
     getProjectTypeOptions(ctx.locale),
+    getHubTheme(hubUrl),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -29,11 +33,13 @@ export async function getServerSideProps(ctx) {
       projects: projects,
       ideas: ideas,
       projectTypes: projectTypes,
+      hubUrl: hubUrl,
+      hubThemeData: hubThemeData,
     }),
   };
 }
 
-export default function ProfilePage({ profile, projects, organizations, ideas, projectTypes }) {
+export default function ProfilePage({ profile, projects, organizations, ideas, projectTypes, hubUrl, hubThemeData }) {
   const token = new Cookies().get("auth_token");
   const { user, locale } = useContext(UserContext);
   const infoMetadata = getProfileInfoMetadata(locale);
@@ -42,6 +48,8 @@ export default function ProfilePage({ profile, projects, organizations, ideas, p
   const contextValues = {
     projectTypes: projectTypes,
   };
+
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
 
   return (
     <WideLayout
@@ -52,6 +60,9 @@ export default function ProfilePage({ profile, projects, organizations, ideas, p
         profile.info.location +
         (profile.info.bio ? " | " + profile.info.bio : "")
       }
+      hubUrl={hubUrl}
+      customTheme={customTheme}
+      headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
     >
       {profile ? (
         <BrowseContext.Provider value={contextValues}>
@@ -65,6 +76,7 @@ export default function ProfilePage({ profile, projects, organizations, ideas, p
             texts={texts}
             locale={locale}
             ideas={ideas}
+            hubUrl={hubUrl}
           />
         </BrowseContext.Provider>
       ) : (
