@@ -65,13 +65,12 @@ const useStyles = makeStyles<Theme>((theme) => ({
     wordBreak: "break-word",
   },
   subtitle: {
-    color: `${theme.palette.secondary.main}`,
     fontWeight: "bold",
     wordBreak: "break-word",
   },
   content: {
     paddingBottom: theme.spacing(2),
-    color: `${theme.palette.secondary.main}`,
+    // color: `${theme.palette.secondary.main}`,
     fontSize: 16,
     wordBreak: "break-word",
   },
@@ -105,7 +104,7 @@ const useStyles = makeStyles<Theme>((theme) => ({
   editButton: {
     position: "relative",
     cursor: "pointer",
-    color: theme.palette.primary.main,
+    color: theme.palette.background.default_contrastText,
     width: "35px",
     height: "35px",
     marginRight: theme.spacing(0.5),
@@ -117,9 +116,10 @@ const useStyles = makeStyles<Theme>((theme) => ({
     padding: "5px",
     left: "0",
   },
-  infoIcon: {
+  infoIcon: (props) => ({
     marginBottom: -4,
-  },
+    color: props.isCustomHub ? theme.palette.secondary.main : theme.palette.primary.main,
+  }),
   innerIcon: {
     marginRight: theme.spacing(0.5),
     marginLeft: -theme.spacing(1),
@@ -186,9 +186,11 @@ export default function AccountPage({
   handleFollow,
   followingChangePending,
   isUserFollowing,
+  hubUrl,
 }) {
-  const classes = useStyles({ isOwnAccount: isOwnAccount });
-  const { locale, user } = useContext(UserContext);
+  const { locale, user, CUSTOM_HUB_URLS } = useContext(UserContext);
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
+  const classes = useStyles({ isOwnAccount: isOwnAccount, isCustomHub: isCustomHub });
   const token = new Cookies().get("auth_token");
   const texts = getTexts({ page: "profile", locale: locale });
   const organizationTexts = isOrganization

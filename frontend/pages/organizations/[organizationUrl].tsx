@@ -47,6 +47,7 @@ const useStyles = makeStyles((theme) => ({
     width: "30px",
     height: "auto",
     marginBottom: theme.spacing(1),
+    color: theme.palette.background.default_contrastText,
   },
   innerIcon: {
     marginRight: theme.spacing(0.5),
@@ -60,6 +61,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     marginBottom: theme.spacing(1),
     wordBreak: "break-word",
+    color: theme?.palette?.background?.default_contrastText,
   },
   sectionHeadlineWithButtonContainer: {
     display: "flex",
@@ -181,6 +183,7 @@ export default function OrganizationPage({
           texts={texts}
           locale={locale}
           rolesOptions={rolesOptions}
+          hubUrl={hubUrl}
         />
       ) : (
         <PageNotFound itemName={texts.organization} />
@@ -202,6 +205,7 @@ function OrganizationLayout({
   texts,
   locale,
   rolesOptions,
+  hubUrl,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
@@ -269,6 +273,7 @@ function OrganizationLayout({
       isOrganization={true}
       editText={texts.edit_organization}
       isSmallScreen={isSmallScreen}
+      hubUrl={hubUrl}
     >
       {!user && (
         <LoginNudge
