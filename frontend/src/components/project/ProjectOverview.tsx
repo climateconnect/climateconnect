@@ -320,7 +320,6 @@ function SmallScreenOverview({ screenSize, project, projectAdmin, hubUrl }) {
           className={classes.shareButtonContainer}
           project={project}
           projectAdmin={projectAdmin}
-          hubUrl={hubUrl}
         />
         <img
           className={classes.fullWidthImage}
