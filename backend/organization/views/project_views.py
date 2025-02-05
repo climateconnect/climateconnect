@@ -603,11 +603,14 @@ class ProjectAPIView(APIView):
             project.thumbnail_image = get_image_from_data_url(
                 request.data["thumbnail_image"]
             )[0]
-        if "related_hubs" in request.data:
-            hub = Hub.objects.filter(url_slug=request.data["related_hubs"]).first()
-            if hub:
-                project.related_hubs.add(hub)
-
+        if "hubUrl" in request.data:
+            related_hub_slug = request.data["hubUrl"]
+            if related_hub_slug == "":  # If the slug is an empty string, clear the related_hubs
+                project.related_hubs.clear()
+            else:  # Otherwise, try to find the Hub and add it
+                hub = Hub.objects.filter(url_slug=related_hub_slug).first()
+                if hub:
+                    project.related_hubs.add(hub)
         if "status" in request.data:
             try:
                 project_status = ProjectStatus.objects.get(
