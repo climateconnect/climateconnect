@@ -118,7 +118,7 @@ export default function EditProjectPage({
         <LoginNudge
           fullPage
           whatToDo={texts.to_edit_this_project}
-          queryString={isCustomHub ? hubUrl : ""}
+          queryString={isCustomHub ? `${"hub=" + hubUrl}` : ""}
         />
       </WideLayout>
     );

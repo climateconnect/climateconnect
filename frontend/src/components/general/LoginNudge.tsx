@@ -37,7 +37,7 @@ export default function LoginNudge({ whatToDo, fullPage, className, queryString 
           color="primary"
           href={
             queryString
-              ? `${getLocalePrefix(locale) + "/signin?hub=" + queryString}`
+              ? `${getLocalePrefix(locale) + "/signin?" + queryString}`
               : `${getLocalePrefix(locale) + "/signin"}`
           }
         >
@@ -49,7 +49,7 @@ export default function LoginNudge({ whatToDo, fullPage, className, queryString 
           color="primary"
           href={
             queryString
-              ? `${getLocalePrefix(locale) + "/signup?hub=" + queryString}`
+              ? `${getLocalePrefix(locale) + "/signup?" + queryString}`
               : `${getLocalePrefix(locale) + "/signup"}`
           }
         >
