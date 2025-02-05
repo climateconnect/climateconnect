@@ -15,11 +15,15 @@ import Login from "../src/components/signup/Login";
 export async function getServerSideProps(ctx) {
   const hubSlug = ctx.query.hub;
   const message = ctx.query.message;
+  const message_type = ctx.query.message_type;
 
   // early return to avoid fetching /undefined/theme
   if (!hubSlug) {
     return {
-      props: {},
+      props: {
+        message: message || null,
+        message_type: message_type || null,
+      },
     };
   }
   const hubThemeData = await getHubTheme(hubSlug);
@@ -27,7 +31,10 @@ export async function getServerSideProps(ctx) {
   // early return to avoid a hubSlug, that is not supported within the backend
   if (!hubThemeData) {
     return {
-      props: {},
+      props: {
+        message: message || null,
+        message_type: message_type || null,
+      },
     };
   }
 
@@ -36,11 +43,12 @@ export async function getServerSideProps(ctx) {
       hubSlug: hubSlug || null, // undefined is not allowed in JSON, so we use null
       hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
       message: message || null,
+      message_type: message_type || null,
     },
   };
 }
 
-export default function Signin({ hubSlug, hubThemeData, message }) {
+export default function Signin({ hubSlug, hubThemeData, message, message_type }) {
   const { user, signIn, locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubSlug });
   const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
@@ -65,7 +73,10 @@ export default function Signin({ hubSlug, hubThemeData, message }) {
     bottomMessage: (
       <span>
         {texts.new_to_climate_connect}{" "}
-        <Link style={{ textDecoration: "underline" }} href={getLocalePrefix(locale) + "/signup"}>
+        <Link
+          style={{ textDecoration: "underline" }}
+          href={`${getLocalePrefix(locale)}/signup${hubSlug ? `?hub=${hubSlug}` : ""}`}
+        >
           {texts.click_here_to_create_an_account}
         </Link>
       </span>
@@ -74,10 +85,12 @@ export default function Signin({ hubSlug, hubThemeData, message }) {
 
   const bottomLink = {
     text: texts.forgot_your_password,
-    href: getLocalePrefix(locale) + "/resetpassword",
+    href: `${getLocalePrefix(locale)}/resetpassword${hubSlug ? `?hub=${hubSlug}` : ""}`,
   };
 
-  const [errorMessage, setErrorMessage] = React.useState<JSX.Element | null>(message);
+  const [errorMessage, setErrorMessage] = React.useState<JSX.Element | null>(
+    message_type !== "success" && message
+  );
   const [isLoading, setIsLoading] = React.useState(false);
 
   const [initialized, setInitialized] = React.useState(false);
@@ -135,13 +148,12 @@ export default function Signin({ hubSlug, hubThemeData, message }) {
   const customThemeSignIn = hubThemeData
     ? transformThemeData(hubThemeData, themeSignUp)
     : themeSignUp;
-
   return (
     <WideLayout
       title={texts.log_in}
       //message={errorMessage}
       //messageType={errorMessage && "error"}
-      messageType="error"
+      messageType={message_type ? message_type : "error"}
       isLoading={isLoading}
       customTheme={customTheme}
       isHubPage={hubSlug !== ""}

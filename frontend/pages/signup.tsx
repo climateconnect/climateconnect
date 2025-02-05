@@ -195,6 +195,7 @@ export default function Signup({ hubUrl, hubThemeData }) {
                   errorMessage={errorMessages[steps[0]]}
                   isSmallScreen={isSmallScreen}
                   texts={texts}
+                  hub={hubUrl}
                 />
               ) : (
                 curStep === "personalinfo" && (

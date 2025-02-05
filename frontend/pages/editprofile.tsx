@@ -10,13 +10,17 @@ import WideLayout from "../src/components/layouts/WideLayout";
 import getProfileInfoMetadata from "./../public/data/profile_info_metadata";
 import { nullifyUndefinedValues, parseProfile } from "./../public/lib/profileOperations";
 import EditProfileRoot from "./../src/components/profile/EditProfileRoot";
+import getHubTheme from "../src/themes/fetchHubTheme";
+import { transformThemeData } from "../src/themes/transformThemeData";
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = Cookies(ctx);
-  const [skillsOptions, availabilityOptions, userProfile] = await Promise.all([
+  const hubUrl = ctx.query.hub;
+  const [skillsOptions, availabilityOptions, userProfile, hubThemeData] = await Promise.all([
     getSkillsOptions(auth_token, ctx.locale),
     getAvailabilityOptions(auth_token, ctx.locale),
     getUserProfile(auth_token, ctx.locale),
+    getHubTheme(hubUrl),
   ]);
 
   return {
@@ -24,11 +28,19 @@ export async function getServerSideProps(ctx) {
       skillsOptions: skillsOptions,
       availabilityOptions: availabilityOptions,
       user: userProfile,
+      hubUrl: hubUrl,
+      hubThemeData: hubThemeData,
     }),
   };
 }
 
-export default function EditProfilePage({ skillsOptions, availabilityOptions, user }) {
+export default function EditProfilePage({
+  skillsOptions,
+  availabilityOptions,
+  user,
+  hubUrl,
+  hubThemeData,
+}) {
   const { locale } = useContext(UserContext);
   let infoMetadata: any = getProfileInfoMetadata(locale);
   const texts = getTexts({ page: "profile", locale: locale });
@@ -54,15 +66,24 @@ export default function EditProfilePage({ skillsOptions, availabilityOptions, us
     },
   };
   const profile = user ? parseProfile(user, true) : null;
+
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+  const layoutProps = {
+    hubUrl: hubUrl,
+    customTheme: customTheme,
+    headerBackground: hubUrl === "prio1" ? "#7883ff" : "#FFF",
+  };
+
   if (!profile)
     return (
-      <WideLayout title={texts.please_log_in + " " + texts.to_edit_your_profile}>
+      <WideLayout {...layoutProps} title={texts.please_log_in + " " + texts.to_edit_your_profile}>
         <LoginNudge fullPage whatToDo={texts.to_edit_your_profile} />
       </WideLayout>
     );
   else
     return (
       <WideLayout
+        {...layoutProps}
         title={texts.edit_profile}
         message={errorMessage}
         messageType={errorMessage && "error"}
@@ -77,6 +98,7 @@ export default function EditProfilePage({ skillsOptions, availabilityOptions, us
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           setErrorMessage={setErrorMessage}
           availabilityOptions={availabilityOptions}
+          hubUrl={hubUrl}
         />
       </WideLayout>
     );
