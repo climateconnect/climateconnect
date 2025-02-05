@@ -8,6 +8,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: theme.spacing(1),
+    color: theme.palette.background.default_contrastText,
   },
 }));
 
@@ -19,7 +20,7 @@ export default function DetailledDescriptionInput({ title, helpText, value, onCh
   };
   return (
     <div>
-      <Typography color="primary" variant="h2" className={classes.headline}>
+      <Typography color="contrast" variant="h2" className={classes.headline}>
         {title}
         <Tooltip title={helpText} /*TODO(unused) className={classes.tooltip} */>
           <IconButton size="large">
@@ -29,6 +30,7 @@ export default function DetailledDescriptionInput({ title, helpText, value, onCh
       </Typography>
       <TextField
         variant="outlined"
+        color="contrast"
         fullWidth
         multiline
         rows={9}

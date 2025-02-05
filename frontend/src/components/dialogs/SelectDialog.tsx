@@ -87,6 +87,7 @@ export default function SelectDialog({
       <form className={className} onSubmit={applyElement}>
         <SelectField
           required
+          color="contrast"
           className={classes.textField}
           onChange={handleSelectChange}
           label={label}
