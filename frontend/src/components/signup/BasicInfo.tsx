@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function BasicInfo({ handleSubmit, errorMessage, values, texts, isSmallScreen }) {
+export default function BasicInfo({ handleSubmit, errorMessage, values, texts, isSmallScreen, hub }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const fields = [
@@ -73,7 +73,7 @@ export default function BasicInfo({ handleSubmit, errorMessage, values, texts, i
 
   const bottomLink = {
     text: texts.log_in,
-    href: getLocalePrefix(locale) + "/signin",
+    href: `${getLocalePrefix(locale)}/signin${hub ? `?hub=${hub}` : ""}`,
   };
 
   const StepIndicator = () => (
