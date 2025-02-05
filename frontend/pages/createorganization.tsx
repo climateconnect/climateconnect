@@ -321,12 +321,11 @@ export default function CreateOrganization({
       .then(function (response) {
         setLoadingSubmit(false);
         Router.push({
-          pathname:
-            `/manageOrganizationMembers/${response.data.url_slug}`,
+          pathname: `/manageOrganizationMembers/${response.data.url_slug}`,
           query: {
             message: texts.you_have_successfully_created_an_organization_you_can_add_members,
             isCreationStage: true,
-            hub: hubUrl ? hubUrl : ""
+            hub: hubUrl ? hubUrl : "",
           },
         });
         return;

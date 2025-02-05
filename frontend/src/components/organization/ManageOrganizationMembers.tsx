@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => {
     headline: {
       textAlign: "center",
       marginTop: theme.spacing(4),
-      color: theme.palette.background.default_contrastText
+      color: theme.palette.background.default_contrastText,
     },
     buttons: {
       float: "right",
@@ -39,7 +39,7 @@ export default function ManageOrganizationMembers({
   organization,
   token,
   availabilityOptions,
-  hubUrl
+  hubUrl,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -60,14 +60,14 @@ export default function ManageOrganizationMembers({
       .then(() => {
         redirect("/organizations/" + organization.url_slug, {
           message: texts.successfully_updated_org_members,
-          hub: hubUrl ? hubUrl : ""
+          hub: hubUrl ? hubUrl : "",
         });
       })
       .catch((e) => {
         console.log(e);
         redirect("/organizations/" + organization.url_slug, {
           errorMessage: texts.not_all_your_updates_have_worked,
-          hub: hubUrl ? hubUrl : ""
+          hub: hubUrl ? hubUrl : "",
         });
       });
   };
@@ -162,7 +162,9 @@ export default function ManageOrganizationMembers({
         <div className={classes.buttonsContainer}>
           <div className={classes.buttons}>
             <Button
-              href={`${getLocalePrefix(locale)}/organizations/${organization.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""}`}
+              href={`${getLocalePrefix(locale)}/organizations/${organization.url_slug}${
+                hubUrl ? `?hub=${hubUrl}` : ""
+              }`}
               variant="contained"
               color="grey"
             >

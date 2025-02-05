@@ -53,8 +53,8 @@ const useStyles = makeStyles((theme) => {
       fontSize: 14,
     },
     appointCreatorButton: {
-      color: theme.palette.background.default_contrastText
-    }
+      color: theme.palette.background.default_contrastText,
+    },
   };
 });
 

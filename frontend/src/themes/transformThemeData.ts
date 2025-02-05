@@ -28,7 +28,7 @@ export const transformThemeData = (data, baseTheme: any = undefined) => {
               },
             },
           },
-        ]
+        ],
       },
     },
     palette: {

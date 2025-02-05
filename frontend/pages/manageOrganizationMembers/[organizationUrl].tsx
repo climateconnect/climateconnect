@@ -48,7 +48,7 @@ export async function getServerSideProps(ctx) {
       availabilityOptions: availabilityOptions,
       token: auth_token,
       hubUrl: hubUrl,
-      hubThemeData: hubThemeData
+      hubThemeData: hubThemeData,
     }),
   };
 }
@@ -60,7 +60,7 @@ export default function manageOrganizationMembers({
   rolesOptions,
   token,
   hubUrl,
-  hubThemeData
+  hubThemeData,
 }) {
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
@@ -116,10 +116,7 @@ export default function manageOrganizationMembers({
     );
   else {
     return (
-      <WideLayout 
-        {...layoutProps}
-        title={texts.manage_organizations_members} 
-      >
+      <WideLayout {...layoutProps} title={texts.manage_organizations_members}>
         <Container>
           <ManageOrganizationMembers
             user={user}
