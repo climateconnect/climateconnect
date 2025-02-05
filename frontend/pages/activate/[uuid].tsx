@@ -1,14 +1,19 @@
 import { Link, Typography } from "@mui/material";
 import React, { useContext, useEffect } from "react";
-import { apiRequest, getLocalePrefix } from "../../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix, sendToLogin } from "../../public/lib/apiOperations";
 import { redirectOnLogin } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
 import Layout from "../../src/components/layouts/layout";
 
-export async function getServerSideProps({ query, locale }) {
-  const uuid = encodeURI(query.uuid);
-  const messages = await profileVerification(uuid, locale);
+export async function getServerSideProps(ctx) {
+  const uuid = encodeURI(ctx.query.uuid);
+  const messages = await profileVerification(uuid, ctx.locale);
+  const texts = getTexts({ page: "settings", locale: ctx.locale });
+  if(messages?.successMessage){
+    const messageOnRedirect = messages.successMessage + " " + texts.you_can_now_log_in
+    return sendToLogin(ctx, messageOnRedirect, "success");
+  }
   return {
     props: {
       successMessage: messages["successMessage"] ? messages["successMessage"] : null,

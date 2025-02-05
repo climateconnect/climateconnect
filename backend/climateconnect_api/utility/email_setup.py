@@ -94,10 +94,12 @@ def send_email(
         logger.error("%s: Error sending email: %s" % (send_email.__name__, ex))
 
 
-def get_user_verification_url(verification_key, lang_url):
+def get_user_verification_url(verification_key, lang_url, hub=None):
     # TODO: Set expire time for user verification
     verification_key_str = str(verification_key).replace("-", "%2D")
     url = "%s%s/activate/%s" % (settings.FRONTEND_URL, lang_url, verification_key_str)
+    if hub:
+        url += f"?hub={hub}"
 
     return url
 
@@ -126,9 +128,9 @@ def get_reset_password_url(verification_key, lang_url):
     return url
 
 
-def send_user_verification_email(user, verification_key):
+def send_user_verification_email(user, verification_key, hub=None):
     lang_url = get_user_lang_url(get_user_lang_code(user))
-    url = get_user_verification_url(verification_key, lang_url)
+    url = get_user_verification_url(verification_key, lang_url, hub)
 
     subjects_by_language = {
         "en": "Welcome to Climate Connect! Verify your email address",

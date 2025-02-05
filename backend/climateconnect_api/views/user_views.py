@@ -163,7 +163,7 @@ class SignUpView(APIView):
             user_profile.is_profile_verified = True
             message = "Congratulations! Your account has been created"
         else:
-            send_user_verification_email(user, user_profile.verification_key)
+            send_user_verification_email(user, user_profile.verification_key, request.data["hub"])
             message = "You're almost done! We have sent an email with a confirmation link to {}. Finish creating your account by clicking the link.".format(
                 user.email
             )  # NOQA
