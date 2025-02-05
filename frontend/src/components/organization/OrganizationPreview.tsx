@@ -74,13 +74,14 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function OrganizationPreview({ organization }) {
+export default function OrganizationPreview({ organization, hubUrl }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
+  const queryString = hubUrl ? "?hub=" + hubUrl : "";
 
   return (
     <Link
-      href={getLocalePrefix(locale) + `/organizations/${organization.url_slug}`}
+      href={getLocalePrefix(locale) + `/organizations/${organization.url_slug}${queryString}`}
       className={classes.noUnderline}
       underline="hover"
     >

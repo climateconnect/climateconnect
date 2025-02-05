@@ -92,10 +92,6 @@ const useStyles = makeStyles((theme: Theme) => {
       alignItems: "center",
     },
 
-    hubName: {
-      color: theme.palette.yellow.main,
-    },
-
     buttonContainer: {
       display: "flex",
       justifyContent: "space-around",
@@ -199,7 +195,7 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
 };
 
 type Props = {
-  hubName?: string;
+  hubUrl?: string;
   className?: any;
   location?: any;
   welcomeMessageLoggedIn?: string;
@@ -207,7 +203,7 @@ type Props = {
 };
 
 export default function Dashboard({
-  hubName,
+  hubUrl,
   className,
   location,
   welcomeMessageLoggedIn,
@@ -253,6 +249,11 @@ export default function Dashboard({
 
   const welcomeMessage = getWelcomeMessage();
 
+  const getFullLink = (url: any, hash = "") => {
+    const hubAddition = hubUrl ? "?hub=" + hubUrl : "";
+    return `${getLocalePrefix(locale)}${url}${hubAddition}${hash ? "#" + hash : ""}`;
+  };
+
   return (
     <div className={`${classes.welcomeBanner} ${className}`}>
       <div className={`${classes.subsection}`}>
@@ -281,11 +282,11 @@ export default function Dashboard({
                 items={[
                   {
                     name: texts.share_project,
-                    url_slug: "/share" + (hubName ? "?hubName=" + hubName : ""),
+                    url_slug: getFullLink("/share"),
                   },
                   {
                     name: texts.my_projects,
-                    url_slug: `/profiles/${user.url_slug}#projects`,
+                    url_slug: getFullLink(`/profiles/${user.url_slug}`, "projects"),
                   },
                 ]}
               />
@@ -295,11 +296,11 @@ export default function Dashboard({
                 items={[
                   {
                     name: texts.create_organization,
-                    url_slug: "/createorganization",
+                    url_slug: getFullLink("/createorganization"),
                   },
                   {
                     name: texts.my_organizations,
-                    url_slug: `/profiles/${user.url_slug}#organizations`,
+                    url_slug: getFullLink(`/profiles/${user.url_slug}`, "organizations"),
                   },
                 ]}
               />
@@ -309,11 +310,11 @@ export default function Dashboard({
                 items={[
                   {
                     name: texts.my_profile,
-                    url_slug: `/profiles/${user.url_slug}`,
+                    url_slug: getFullLink(`/profiles/${user.url_slug}`),
                   },
                   {
                     name: texts.edit_profile,
-                    url_slug: "/editprofile",
+                    url_slug: getFullLink("/editprofile"),
                   },
                 ]}
               />
