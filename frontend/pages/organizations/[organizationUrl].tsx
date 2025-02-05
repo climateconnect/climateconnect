@@ -27,6 +27,7 @@ import IconButton from "@mui/material/IconButton";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import ControlPointSharpIcon from "@mui/icons-material/ControlPointSharp";
 import getHubTheme from "../../src/themes/fetchHubTheme";
+import { transformThemeData } from "../../src/themes/transformThemeData";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -102,6 +103,7 @@ export async function getServerSideProps(ctx) {
       rolesOptions: rolesOptions,
       following: following,
       hubThemeData: hubThemeData,
+      hubUrl: hubUrl,
     }),
   };
 }
@@ -113,6 +115,7 @@ export default function OrganizationPage({
   rolesOptions,
   following,
   hubThemeData,
+  hubUrl,
 }) {
   const { user, locale, CUSTOM_HUB_URLS } = useContext(UserContext);
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
@@ -153,13 +156,14 @@ export default function OrganizationPage({
     };
   });
 
+  const customHubTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
   return (
     <WideLayout
       title={organization ? organization.name : texts.not_found_error}
       description={organization?.name + " | " + organization?.info.short_description}
       image={getImageUrl(organization?.image)}
-      headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
-      customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+      headerBackground={isCustomHub ? customHubTheme?.palette?.secondary?.light : "#FFF"}
+      customTheme={customHubTheme}
       hubUrl={hubUrl}
     >
       {organization ? (

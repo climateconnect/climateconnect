@@ -59,7 +59,7 @@ export async function getServerSideProps(ctx: {
 }
 
 export default function CreateOrganization({ tagOptions, rolesOptions, allHubs, hubUrl }) {
-  console.log(hubUrl)
+  console.log(hubUrl);
   const token = new Cookies().get("auth_token");
   const classes = useStyles();
   const [errorMessages, setErrorMessages] = useState({
@@ -249,8 +249,8 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs, 
       sourceLanguage,
       hubUrl
     );
-    console.log(hubUrl)
-    console.log(organizationToSubmit)
+    console.log(hubUrl);
+    console.log(organizationToSubmit);
 
     if (!legacyModeEnabled && !isLocationValid(organizationToSubmit.location)) {
       indicateWrongLocation(
