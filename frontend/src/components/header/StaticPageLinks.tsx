@@ -59,7 +59,6 @@ export default function StaticPageLinks({ isCustomHub }) {
 
   const texts = getTexts({ page: "navigation", locale: locale });
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts, locale, isCustomHub, true);
-
   const getLinksToShow = () => {
     if (isNarrowScreen) {
       return STATIC_PAGE_LINKS.slice(0, 2);
@@ -74,7 +73,7 @@ export default function StaticPageLinks({ isCustomHub }) {
           <DirectlyDisplayedLinks links={getLinksToShow()} isNarrowScreen={isNarrowScreen} />
           {isNarrowScreen && (
             <DropDownButton
-              options={STATIC_PAGE_LINKS}
+              options={STATIC_PAGE_LINKS.slice(2)}
               buttonProps={{
                 classes: {
                   root: classes.white,
