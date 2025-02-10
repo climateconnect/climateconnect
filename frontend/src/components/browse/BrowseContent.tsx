@@ -553,6 +553,7 @@ export default function BrowseContent({
                 loadFunc={() => handleLoadMoreData("members")}
                 parentHandlesGridItems
                 profiles={state.items.members}
+                hubUrl={hubUrl}
                 showAdditionalInfo
               />
             </TabContentWrapper>

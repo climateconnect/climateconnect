@@ -23,13 +23,19 @@ export default function ProfilePreviews({
   parentHandlesGridItems,
   profiles,
   showAdditionalInfo,
+  hubUrl,
 }: any) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
   const toProfilePreviews = (profiles) =>
     profiles.map((p) => (
-      <GridItem key={p.url_slug} profile={p} showAdditionalInfo={showAdditionalInfo} />
+      <GridItem
+        key={p.url_slug}
+        profile={p}
+        showAdditionalInfo={showAdditionalInfo}
+        hubUrl={hubUrl}
+      />
     ));
 
   const [gridItems, setGridItems] = React.useState(toProfilePreviews(profiles));
@@ -78,7 +84,7 @@ export default function ProfilePreviews({
   );
 }
 
-function GridItem({ profile, showAdditionalInfo }) {
+function GridItem({ profile, showAdditionalInfo, hubUrl }) {
   const classes = makeStyles({
     gridElement: {
       display: "flex",
@@ -88,7 +94,7 @@ function GridItem({ profile, showAdditionalInfo }) {
 
   return (
     <Grid xs={12} sm={6} md={4} lg={3} component="li" className={classes.gridElement}>
-      <ProfilePreview profile={profile} showAdditionalInfo={showAdditionalInfo} />
+      <ProfilePreview profile={profile} showAdditionalInfo={showAdditionalInfo} hubUrl={hubUrl} />
     </Grid>
   );
 }

@@ -150,11 +150,11 @@ export default function ProjectContent({
   toggleShowRequests,
   handleSendProjectJoinRequest,
   requestedToJoinProject,
+  hubUrl,
 }) {
   const classes = useStyles({ isPersonalProject: project.isPersonalProject });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
-
   const [showFullDescription, setShowFullDescription] = useState(false);
   const handleToggleFullDescriptionClick = () => setShowFullDescription(!showFullDescription);
 
@@ -236,6 +236,7 @@ export default function ProjectContent({
                     organization={project.creator}
                     inline
                     size="small"
+                    hubUrl={hubUrl}
                   />
                 )}
               </Typography>
@@ -260,6 +261,7 @@ export default function ProjectContent({
                     inline
                     className={classes.collaboratingOrganization}
                     organization={o}
+                    hubUrl={hubUrl}
                   />
                 ))}
               </div>
