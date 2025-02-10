@@ -562,6 +562,7 @@ function NormalScreenLinks({
           localePrefix={localePrefix}
           getLoggedInLinks={getLoggedInLinks}
           isCustomHub={isCustomHub}
+          hubUrl={hubUrl}
         />
       )}
     </Box>
@@ -576,6 +577,7 @@ const LoggedInNormalScreen = ({
   localePrefix,
   getLoggedInLinks,
   isCustomHub,
+  hubUrl,
 }) => {
   const classes = useStyles({
     isCustomHub: isCustomHub,
@@ -597,7 +599,7 @@ const LoggedInNormalScreen = ({
     src: getImageUrl(loggedInUser.image),
     alt: loggedInUser.name,
   };
-
+  const queryString = hubUrl ? `?hub=${hubUrl}` : "";
   return (
     <ClickAwayListener onClickAway={handleCloseMenu}>
       <Box className={classes.loggedInRoot}>
@@ -625,7 +627,7 @@ const LoggedInNormalScreen = ({
         >
           <Paper>
             <MenuList>
-              {getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts })
+              {getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts, queryString })
                 .filter((link) => !link.showOnMobileOnly)
                 .map((link, index) => {
                   const menuItemProps: any = {
