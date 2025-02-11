@@ -71,6 +71,7 @@ export default function ProjectContentSideButtons({
   handleSendProjectJoinRequest,
   requestedToJoinProject,
   leaveProject,
+  hubUrl,
 }) {
   const token = new Cookies().get("auth_token");
   const classes = useStyles();
@@ -88,6 +89,8 @@ export default function ProjectContentSideButtons({
 
   const [requesters, setRequesters] = useState([]);
   const [requestersRetrieved, setRequestersRetrieved] = useState(false);
+  const queryString = hubUrl ? `?hub=${hubUrl}` : "";
+
   // Fetch and populate requesters on initial load
   useEffect(() => {
     (async () => {
@@ -146,7 +149,7 @@ export default function ProjectContentSideButtons({
         <IconButton
           size="large"
           className={classes.iconButton}
-          href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
+          href={getLocalePrefix(locale) + "/editProject/" + project.url_slug + queryString}
         >
           <EditIcon />
         </IconButton>
@@ -156,7 +159,7 @@ export default function ProjectContentSideButtons({
         <Button
           className={classes.editProjectButton}
           variant="contained"
-          href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
+          href={getLocalePrefix(locale) + "/editProject/" + project.url_slug + queryString}
         >
           {project.is_draft ? texts.edit_draft : texts.edit}
         </Button>
