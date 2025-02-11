@@ -328,6 +328,7 @@ export default function ProjectContent({
           handleTabChange={handleTabChange}
           typesByTabValue={typesByTabValue}
           projectTabsRef={projectTabsRef}
+          hubUrl={hubUrl}
         />
       )}
       <div className={classes.contentBlock}>
@@ -364,6 +365,7 @@ export default function ProjectContent({
             <Posts
               posts={project.timeline_posts.sort((a, b) => new Date(b.date) - new Date(a.date))}
               type="progresspost"
+              hubUrl={hubUrl}
             />
           </div>
         )}
