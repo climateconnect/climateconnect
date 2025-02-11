@@ -316,7 +316,7 @@ function OrganizationLayout({
           )}
         </div>
         {projects && projects.length ? (
-          <ProjectPreviews projects={projects} />
+          <ProjectPreviews projects={projects} hubUrl={hubUrl} />
         ) : (
           <Typography className={classes.no_content_yet}>
             {texts.this_organization_has_not_listed_any_projects_yet}
