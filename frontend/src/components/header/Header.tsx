@@ -702,6 +702,8 @@ function NarrowScreenLinks({
       !(loggedInUser && link.onlyShowLoggedOut) &&
       !(!loggedInUser && link.onlyShowLoggedIn)
   );
+  const queryString = hubUrl ? `?hub=${hubUrl}` : "";
+
   return (
     <>
       <Box>
@@ -847,57 +849,62 @@ function NarrowScreenLinks({
               }
             })}
             {loggedInUser &&
-              getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts }).map((link, index) => {
-                const Icon: any = link.iconForDrawer;
-                const avatarProps = {
-                  className: classes.loggedInAvatarMobile,
-                  src: getImageUrl(loggedInUser.image),
-                  alt: loggedInUser.name,
-                };
-                if (link.avatar)
-                  return (
-                    <div className={classes.mobileAvatarContainer}>
-                      <Link href={"/profiles/" + loggedInUser.url_slug} underline="hover">
-                        {loggedInUser?.badges?.length > 0 ? (
-                          <ProfileBadge
-                            badge={loggedInUser?.badges[0]}
-                            size="medium"
-                            className={classes.badge}
-                          >
+              getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts, queryString }).map(
+                (link, index) => {
+                  const Icon: any = link.iconForDrawer;
+                  const avatarProps = {
+                    className: classes.loggedInAvatarMobile,
+                    src: getImageUrl(loggedInUser.image),
+                    alt: loggedInUser.name,
+                  };
+                  if (link.avatar)
+                    return (
+                      <div className={classes.mobileAvatarContainer}>
+                        <Link
+                          href={localePrefix + "/profiles/" + loggedInUser.url_slug + queryString}
+                          underline="hover"
+                        >
+                          {loggedInUser?.badges?.length > 0 ? (
+                            <ProfileBadge
+                              badge={loggedInUser?.badges[0]}
+                              size="medium"
+                              className={classes.badge}
+                            >
+                              <Avatar {...avatarProps} />
+                            </ProfileBadge>
+                          ) : (
                             <Avatar {...avatarProps} />
-                          </ProfileBadge>
-                        ) : (
-                          <Avatar {...avatarProps} />
-                        )}
-                      </Link>
-                    </div>
-                  );
-                else if (link.isLogoutButton)
-                  return (
-                    <ListItem button component="a" key={index} onClick={handleLogout}>
-                      <ListItemIcon>
-                        <Icon className={classes.drawerItem} />
-                      </ListItemIcon>
-                      <ListItemText primary={link.text} className={classes.drawerItem} />
-                    </ListItem>
-                  );
-                else
-                  return (
-                    <Link
-                      href={localePrefix + link.href}
-                      key={index}
-                      underline="hover"
-                      className={classes.linkUnderline}
-                    >
-                      <ListItem button component="a" onClick={closeDrawer}>
+                          )}
+                        </Link>
+                      </div>
+                    );
+                  else if (link.isLogoutButton)
+                    return (
+                      <ListItem button component="a" key={index} onClick={handleLogout}>
                         <ListItemIcon>
                           <Icon className={classes.drawerItem} />
                         </ListItemIcon>
                         <ListItemText primary={link.text} className={classes.drawerItem} />
                       </ListItem>
-                    </Link>
-                  );
-              })}
+                    );
+                  else
+                    return (
+                      <Link
+                        href={localePrefix + link.href}
+                        key={index}
+                        underline="hover"
+                        className={classes.linkUnderline}
+                      >
+                        <ListItem button component="a" onClick={closeDrawer}>
+                          <ListItemIcon>
+                            <Icon className={classes.drawerItem} />
+                          </ListItemIcon>
+                          <ListItemText primary={link.text} className={classes.drawerItem} />
+                        </ListItem>
+                      </Link>
+                    );
+                }
+              )}
           </List>
         </SwipeableDrawer>
       </Box>
