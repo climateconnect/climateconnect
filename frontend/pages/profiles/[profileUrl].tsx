@@ -58,7 +58,6 @@ export default function ProfilePage({
   };
 
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
-
   return (
     <WideLayout
       title={profile ? texts.persons_profile : texts.not_found}

@@ -568,7 +568,17 @@ function NormalScreenLinks({
     </Box>
   );
 }
-
+const handleClickMenuItems = (isLogoutButton, url, handleLogout) => {
+  // If it's a logout button, handle logout logic first
+  if (isLogoutButton) {
+    handleLogout();
+  }
+  // Set the href and force a reload
+  if (!isLogoutButton) {
+    window.location.href = url;
+    window.location.reload();
+  }
+};
 const LoggedInNormalScreen = ({
   loggedInUser,
   handleLogout,
@@ -637,12 +647,15 @@ const LoggedInNormalScreen = ({
                   if (link.isLogoutButton) menuItemProps.onClick = handleLogout;
                   else menuItemProps.href = localePrefix + link.href;
                   const MenuItem_ = MenuItem as any;
+                  const newUrl = localePrefix + link.href;
                   return (
                     <MenuItem_ // todo: type issue
                       key={index}
                       component="button"
                       className={classes.loggedInLink}
-                      onClick={link.isLogoutButton && handleLogout}
+                      onClick={() =>
+                        handleClickMenuItems(link.isLogoutButton, newUrl, handleLogout)
+                      }
                       href={!link.isLogoutButton ? localePrefix + link.href : undefined}
                     >
                       {link.text}
