@@ -47,6 +47,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
       fontSize: "calc(1.6rem + 6 * ((100vw - 320px) / 680))",
       paddingBottom: theme.spacing(2),
       wordBreak: "break-word",
+      color: "inherit",
     },
     rootLinksContainer: {
       display: "flex",

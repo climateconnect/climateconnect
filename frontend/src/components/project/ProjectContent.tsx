@@ -76,6 +76,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: 600,
     marginTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
+    color: theme?.palette?.background?.default_contrastText,
   },
   contentBlock: {
     marginBottom: theme.spacing(4),
@@ -96,7 +97,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         position: "absolute",
         top: 0,
         left: 0,
-        color: theme.palette.primary.main,
+        color: theme?.palette?.background?.default_contrastText,
       },
     },
   },
@@ -204,6 +205,7 @@ export default function ProjectContent({
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
             requestedToJoinProject={requestedToJoinProject}
             leaveProject={leaveProject}
+            hubUrl={hubUrl}
           />
           {/* Note: created date is not the same as the start date, for projects */}
           <Typography>
