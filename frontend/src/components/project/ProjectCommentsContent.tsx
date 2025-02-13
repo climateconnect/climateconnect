@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function CommentsContent({ user, project, token, setCurComments }) {
+export default function CommentsContent({ user, project, token, setCurComments, hubUrl }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
@@ -108,6 +108,7 @@ export default function CommentsContent({ user, project, token, setCurComments }
           user={user}
           onSendComment={onSendComment}
           onDeletePost={onDeleteComment}
+          hubUrl={hubUrl}
         />
       )}
     </div>

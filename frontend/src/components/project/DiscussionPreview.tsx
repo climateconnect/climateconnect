@@ -39,6 +39,7 @@ export default function DiscussionPreview({
   handleTabChange,
   typesByTabValue,
   projectTabsRef,
+  hubUrl,
 }) {
   const classes = useStyles();
 
@@ -62,6 +63,7 @@ export default function DiscussionPreview({
           user={latestParentComment.author_user}
           truncate={3}
           noLink={true}
+          hubUrl={hubUrl}
         />
       </div>
     </ButtonBase>

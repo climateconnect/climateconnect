@@ -60,6 +60,7 @@ export default function Posts({
   infoTextSize,
   truncate,
   noLink,
+  hubUrl,
 }: any) {
   const classes = useStyles();
   const classNames = {
@@ -85,6 +86,7 @@ export default function Posts({
             infoTextSize={infoTextSize}
             truncate={truncate}
             noLink={noLink}
+            hubUrl={hubUrl}
           />
         ))}
     </div>

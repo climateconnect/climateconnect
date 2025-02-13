@@ -61,7 +61,7 @@ function getTeamWithAdditionalInfo(team, texts) {
   });
 }
 
-export default function TeamContent({ project, handleReadNotifications }) {
+export default function TeamContent({ project, handleReadNotifications, hubUrl }) {
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const classes = useStyles();
@@ -98,6 +98,7 @@ export default function TeamContent({ project, handleReadNotifications }) {
           profiles={getTeamWithAdditionalInfo(project.team, texts)}
           allowMessage
           showAdditionalInfo={true}
+          hubUrl={hubUrl}
         />
       </>
     );

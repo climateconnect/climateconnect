@@ -126,10 +126,10 @@ const getLinks = (path_to_redirect, texts, isLocationHub, isCustomHub) => {
     : getDefaultLinks(path_to_redirect, texts, isLocationHub || isCustomHub);
 };
 
-const getLoggedInLinks = ({ loggedInUser, texts }) => {
+const getLoggedInLinks = ({ loggedInUser, texts, queryString }) => {
   return [
     {
-      href: "/profiles/" + loggedInUser.url_slug,
+      href: "/profiles/" + loggedInUser.url_slug + queryString,
       text: texts.my_profile,
       iconForDrawer: AccountCircleIcon,
     },
@@ -139,23 +139,23 @@ const getLoggedInLinks = ({ loggedInUser, texts }) => {
       iconForDrawer: MailOutlineIcon,
     },
     {
-      href: "/profiles/" + loggedInUser.url_slug + "/#projects",
+      href: "/profiles/" + loggedInUser.url_slug + (queryString || "/") + "#projects",
       text: texts.my_projects,
       iconForDrawer: GroupWorkIcon,
     },
     {
-      href: "/profiles/" + loggedInUser.url_slug + "/#organizations",
+      href: "/profiles/" + loggedInUser.url_slug + (queryString || "/") + "#organizations",
       text: texts.my_organizations,
       iconForDrawer: GroupWorkIcon,
     },
     {
-      href: "/settings",
+      href: "/settings" + queryString,
       text: texts.settings,
       iconForDrawer: SettingsIcon,
     },
     {
       avatar: true,
-      href: "/profiles/" + loggedInUser.url_slug,
+      href: "/profiles/" + loggedInUser.url_slug + queryString,
       src: loggedInUser.image,
       alt: texts.profile_image_of + " " + loggedInUser.name,
       showOnMobileOnly: true,
