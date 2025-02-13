@@ -427,7 +427,7 @@ export default function Header({
           />
         )}
       </Container>
-      <div>{isStaticPage && <StaticPageLinks />}</div>
+      <div>{isStaticPage && <StaticPageLinks isCustomHub={isCustomHub} />}</div>
     </Box>
   );
 }
