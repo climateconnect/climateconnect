@@ -521,6 +521,7 @@ export default function BrowseContent({
             TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
             //TODO(unused) type_names={type_names}
             hubAmbassador={hubAmbassador}
+            hubUrl={hubUrl}
           />
         )}
 
