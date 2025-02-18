@@ -74,11 +74,6 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
         transition: "all 0.25s linear", // use all instead of transform since the background color too is changing at some point. It'll be nice to have a smooth transition.
       };
     },
-    hideHeader: {
-      [theme.breakpoints.down("lg")]: {
-        transform: "translateY(-97px)",
-      },
-    },
     spacingBottom: {
       marginBottom: theme.spacing(2),
     },
@@ -340,23 +335,7 @@ export default function Header({
   };
 
   const logo = getLogo();
-  const [hideHeader, setHideHeader] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setHideHeader(window.scrollY > lastScrollY); // hide when user scrolls down and show when user scrolls up
-
-      // remember last scroll position
-      setLastScrollY(window.scrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [lastScrollY]);
 
   const getLogoLink = () => {
     if (hubUrl) {
@@ -369,9 +348,7 @@ export default function Header({
   return (
     <Box
       component="header"
-      className={`${classes.root} ${className} ${!noSpacingBottom && classes.spacingBottom} ${
-        hideHeader ? classes.hideHeader : ""
-      }`}
+      className={`${classes.root} ${className} ${!noSpacingBottom && classes.spacingBottom}`}
     >
       <Container className={classes.container}>
         <Link href={logoLink} className={classes.logoLink} underline="hover">

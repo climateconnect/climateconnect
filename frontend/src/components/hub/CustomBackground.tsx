@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   prioOneMobileBackground: {
-    backgroundColor: theme.palette.secondary.light,
+    backgroundColor: theme.palette.background.main,
   },
   prioOneAccentBackground: {
     borderLeftColor: theme.palette.secondary.light,
@@ -55,7 +55,8 @@ type Props = { hubUrl: string | undefined };
  *
  */
 export default function CustomBackground({ hubUrl }: Props) {
-  const mobileScreenSize = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+  const mediumOrSmallScreenSize = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+  const mobileScreenSize = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   // TODO: mobileScreenSize is not yet supported
   if (!hubUrl) {
@@ -66,7 +67,7 @@ export default function CustomBackground({ hubUrl }: Props) {
   switch (hubUrl.toLowerCase()) {
     case "prio1": {
       if (pathname.endsWith("/hubs/prio1")) {
-        if (mobileScreenSize) {
+        if (mediumOrSmallScreenSize) {
           return null;
         }
         return null;

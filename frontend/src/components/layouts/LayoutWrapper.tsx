@@ -30,7 +30,7 @@ const useStyles = makeStyles<Theme>((theme) => ({
   leaveSpaceForFooter: {
     position: "relative",
     //height of footer + spacing(1)
-    paddingBottom: theme.spacing(9),
+    paddingBottom: theme.spacing(12),
     minHeight: "100vh",
   },
   spinnerContainer: {
