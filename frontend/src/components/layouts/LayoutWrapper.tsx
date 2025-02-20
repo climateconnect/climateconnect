@@ -1,9 +1,7 @@
 import {
-  CircularProgress,
   Snackbar,
   SnackbarContent,
   Theme,
-  Typography,
   useMediaQuery,
 } from "@mui/material";
 

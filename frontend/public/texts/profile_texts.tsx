@@ -2,7 +2,7 @@ import { Link } from "@mui/material";
 import React from "react";
 import { getLocalePrefix } from "../lib/apiOperations";
 
-export default function getProfileTexts({ profile, locale }) {
+export default function getProfileTexts({ profile, hubName, locale }) {
   return {
     no_members_found: {
       en: "No members found. Try changing or removing your filter or search query.",
@@ -197,7 +197,7 @@ export default function getProfileTexts({ profile, locale }) {
       en: (
         <>
           If the email does not arrive after 5 minutes,{" "}
-          <Link href={getLocalePrefix(locale) + "/resend_verification_email"} underline="hover">
+          <Link href={`${getLocalePrefix(locale)}/resend_verification_email${hubName ? `?hub=${hubName}` : ""}`} underline="hover">
             click here
           </Link>{" "}
           to resend it.
@@ -206,7 +206,7 @@ export default function getProfileTexts({ profile, locale }) {
       de: (
         <>
           Wenn die E-Mail nach 5 Minuten noch nicht angekommen ist,{" "}
-          <Link href={getLocalePrefix(locale) + "/resend_verification_email"} underline="hover">
+          <Link href={`${getLocalePrefix(locale)}/resend_verification_email${hubName ? `?hub=${hubName}` : ""}`} underline="hover">
             klicke hier
           </Link>
           , um sie erneut versenden zu lassen.
