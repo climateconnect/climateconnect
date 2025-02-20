@@ -32,3 +32,9 @@ def get_user_profile_biography(user_profile: UserProfile, language_code: str) ->
         ).biography_translation
 
     return user_profile.biography
+
+def get_user_profile_hub_slug(user_profile: UserProfile):
+    related_hubs = user_profile.related_hubs.all()
+    if related_hubs:
+        return related_hubs[0].url_slug
+    return None

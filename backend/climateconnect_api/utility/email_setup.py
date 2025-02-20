@@ -131,22 +131,22 @@ def get_new_email_verification_url(verification_key, lang_url):
     return url
 
 
-def get_reset_password_url(verification_key, lang_url):
+def get_reset_password_url(verification_key, lang_url, hub_url=None):
     # TODO: Set expire time for new email verification
     verification_key_str = str(verification_key).replace("-", "%2D")
-    url = "%s%s/reset_password/%s" % (
+    url = "%s%s/reset_password/%s%s" % (
         settings.FRONTEND_URL,
         lang_url,
         verification_key_str,
+        f"?hub={hub_url}" if hub_url else "",
     )
 
     return url
 
 
-def send_user_verification_email(user, verification_key, hub=None):
+def send_user_verification_email(user, verification_key, hub_url=None):
     lang_url = get_user_lang_url(get_user_lang_code(user))
     url = get_user_verification_url(verification_key, lang_url)
-    hub_url = hub.url_slug if hub else None
 
     subjects_by_language = {
         "en": "Welcome to Climate Connect! Verify your email address",
@@ -185,9 +185,9 @@ def send_new_email_verification(user, new_email, verification_key):
     )
 
 
-def send_password_link(user, password_reset_key):
+def send_password_link(user, password_reset_key, hub_url=None):
     lang_url = get_user_lang_url(get_user_lang_code(user))
-    url = get_reset_password_url(password_reset_key, lang_url)
+    url = get_reset_password_url(password_reset_key, lang_url, hub_url)
 
     subjects_by_language = {
         "en": "Reset your Climate Connect password",
@@ -202,6 +202,7 @@ def send_password_link(user, password_reset_key):
         subjects_by_language=subjects_by_language,
         should_send_email_setting="",
         notification=None,
+        hub_url=hub_url
     )
 
 

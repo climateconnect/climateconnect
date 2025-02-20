@@ -8,7 +8,6 @@ import { Container, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
-import { themeSignUp } from "../src/themes/signupTheme";
 
 const useStyles = makeStyles((theme) => ({
   headline: {
@@ -55,7 +54,6 @@ export default function ResendVerificationEmail({ hubUrl, hubThemeData }) {
   };
 
   const onSuccess = (resp) => {
-    console.log(hubUrl)
     if(hubUrl) {
       redirect(`/hubs/${hubUrl}`, {
           message: resp.data.message
@@ -72,9 +70,6 @@ export default function ResendVerificationEmail({ hubUrl, hubThemeData }) {
   };
 
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
-  const customThemeSignUp = hubThemeData
-    ? transformThemeData(hubThemeData, themeSignUp)
-    : themeSignUp;
 
   return (
     <WideLayout 
