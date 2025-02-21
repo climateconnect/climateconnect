@@ -8,16 +8,17 @@ import WideLayout from "../src/components/layouts/WideLayout";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
 import AccountCreatedContent from "../src/components/signup/AccountCreatedContent";
+import { extractHubFromRedirectUrl } from "../public/lib/hubOperations";
 
 export async function getServerSideProps(ctx) {
-  const hubUrl = ctx.query.hub;
-
-  const hubThemeData = await getHubTheme(hubUrl);
+  const { redirect } = ctx.query;
+  const hubUrl = extractHubFromRedirectUrl(redirect);
+  const hubThemeData = hubUrl ? await getHubTheme(hubUrl) : null; // undefined is not allowed in JSON, so we use null
 
   return {
     props: {
-      hubUrl: hubUrl || null, // undefined is not allowed in JSON, so we use null
-      hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
+      hubUrl: hubUrl,
+      hubThemeData: hubThemeData,
     },
   };
 }

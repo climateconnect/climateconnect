@@ -71,6 +71,9 @@ const useStyles = makeStyles((theme) => {
       alignItems: "center",
       marginTop: theme.spacing(3),
     },
+    sectionHeadline: {
+      color: theme?.palette?.background?.default_contrastText,
+    },
     innerIcon: {
       marginRight: theme.spacing(0.5),
       marginLeft: -theme.spacing(1),
@@ -161,7 +164,9 @@ export default function ProfileRoot({
       )}
       <Container className={classes.container} ref={projectsRef}>
         <div className={classes.sectionHeadlineWithButtonContainer}>
-          <h2>{isOwnAccount ? texts.your_projects : texts.this_users_projects}</h2>
+          <h2 className={classes.sectionHeadline}>
+            {isOwnAccount ? texts.your_projects : texts.this_users_projects}
+          </h2>
           {isTinyScreen ? (
             <IconButton
               href={`${getLocalePrefix(locale)}/share${hubUrl ? `?hub=${hubUrl}` : ""}`}
@@ -197,7 +202,9 @@ export default function ProfileRoot({
       {(isOwnAccount || (ideas && ideas.length > 0)) && (
         <Container className={classes.container} ref={ideasRef}>
           <div className={classes.sectionHeadlineWithButtonContainer}>
-            <h2>{isOwnAccount ? texts.your_ideas : texts.this_users_ideas}</h2>
+            <h2 className={classes.sectionHeadline}>
+              {isOwnAccount ? texts.your_ideas : texts.this_users_ideas}
+            </h2>
           </div>
           {ideas && ideas.length ? (
             <IdeaPreviews ideas={ideas} noCreateCard sendToIdeaPageOnClick />
@@ -212,7 +219,9 @@ export default function ProfileRoot({
       )}
       <Container className={classes.container} ref={organizationsRef}>
         <div className={classes.sectionHeadlineWithButtonContainer}>
-          <h2>{isOwnAccount ? texts.your_organizations : texts.this_users_organizations}</h2>
+          <h2 className={classes.sectionHeadline}>
+            {isOwnAccount ? texts.your_organizations : texts.this_users_organizations}
+          </h2>
           {isTinyScreen ? (
             <IconButton
               href={`${getLocalePrefix(locale)}/createorganization${

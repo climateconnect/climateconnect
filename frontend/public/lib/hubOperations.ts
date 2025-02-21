@@ -16,3 +16,20 @@ export async function getAllHubs(locale: any, just_sector_hubs?: boolean) {
     return null;
   }
 }
+
+export function extractHubFromRedirectUrl(redirect) {
+  if (!redirect) return null;
+
+  try {
+    const decodedRedirect = decodeURIComponent(redirect);
+    const queryString = decodedRedirect.split("?")[1];
+
+    if (!queryString) return null;
+
+    const hubUrl = new URLSearchParams(queryString).get("hub")?.split("#")[0] || null;
+    return hubUrl;
+  } catch (error) {
+    console.error("Error extracting hub URL:", error);
+    return null;
+  }
+}

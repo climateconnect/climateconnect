@@ -1,6 +1,5 @@
 import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
 import {
@@ -22,16 +21,17 @@ import { Container, Theme, useMediaQuery } from "@mui/material";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
 import CustomAuthImage from "../src/components/hub/CustomAuthImage";
+import { extractHubFromRedirectUrl } from "../public/lib/hubOperations";
 
 export async function getServerSideProps(ctx) {
-  const hubUrl = ctx.query.hub;
-
-  const hubThemeData = await getHubTheme(hubUrl);
+  const { redirect } = ctx.query;
+  const hubUrl = extractHubFromRedirectUrl(redirect);
+  const hubThemeData = hubUrl ? await getHubTheme(hubUrl) : null;
 
   return {
     props: {
-      hubUrl: hubUrl || null, // undefined is not allowed in JSON, so we use null
-      hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
+      hubUrl: hubUrl,
+      hubThemeData: hubThemeData,
     },
   };
 }
@@ -94,6 +94,7 @@ export default function Signup({ hubUrl, hubThemeData }) {
   const handleAddInfoSubmit = (event, values) => {
     event.preventDefault();
     const params = getParams(window?.location?.href);
+
     if (!isLocationValid(values.location)) {
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage, texts);
       return;
@@ -126,9 +127,10 @@ export default function Signup({ hubUrl, hubThemeData }) {
       pathname: "/accountcreated/",
       query: {},
     };
-    if (hubUrl) {
+    if (params?.redirect) {
       args.query = {
-        hub: hubUrl,
+        // hub: hubUrl,
+        redirect: decodeURIComponent(params?.redirect),
       };
     }
     setIsLoading(true);
