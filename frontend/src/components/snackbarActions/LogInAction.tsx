@@ -16,6 +16,8 @@ export default function LogInAction({ onClose }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
+  const urlParams = new URLSearchParams(window.location.search);
+  const hub = urlParams.get("hub");
 
   const onClickSignUp = () => {
     let redirectUrl = window.location.href
@@ -24,7 +26,7 @@ export default function LogInAction({ onClose }) {
     if (redirectUrl[0] === "/") {
       redirectUrl = redirectUrl.slice(1, redirectUrl.length);
     }
-    redirect("/signin", { redirect: redirectUrl });
+    redirect("/signin", { redirect: redirectUrl, hub: hub });
   };
 
   return (

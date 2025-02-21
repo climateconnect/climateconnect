@@ -34,6 +34,7 @@ export default function EditAccountRoot({
   handleSetLocationOptionsOpen,
   setErrorMessage,
   availabilityOptions,
+  hubUrl,
 }) {
   const { locale, locales } = useContext(UserContext);
   const cookies = new Cookies();
@@ -55,7 +56,7 @@ export default function EditAccountRoot({
   };
 
   const handleCancel = () => {
-    Router.push("/profiles/" + profile.url_slug);
+    Router.push(`/profiles/${profile.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""}`);
   };
 
   const handleGoToPreviousStep = () => {
@@ -108,9 +109,10 @@ export default function EditAccountRoot({
     })
       .then(function (response) {
         Router.push({
-          pathname: "/profiles/" + response.data.url_slug,
+          pathname: `/profiles/${response.data.url_slug}`,
           query: {
             message: texts.you_have_successfully_updated_your_profile,
+            hub: hubUrl,
           },
         });
       })

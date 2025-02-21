@@ -24,9 +24,9 @@ class Command(BaseCommand):
                         "language": german_language,
                         "name_translation": "Bauen & Wohnen",
                         "headline_translation": "Ökologisches Bauen als Klimalösung",
-                        "sub_headline_translation": "Wie man mit alternativen Bauweisen den Klimawandel bekämpft"
+                        "sub_headline_translation": "Wie man mit alternativen Bauweisen den Klimawandel bekämpft",
                     }
-                ]
+                ],
             },
             {
                 "name": "Policy & Governance",
@@ -41,9 +41,9 @@ class Command(BaseCommand):
                         "language": german_language,
                         "name_translation": "Politik und Verwaltung",
                         "headline_translation": "Klimapolitik, die die Welt verändert",
-                        "sub_headline_translation": "test"
+                        "sub_headline_translation": "test",
                     }
-                ]
+                ],
             },
             {
                 "name": "Mobility & Transport",
@@ -58,9 +58,9 @@ class Command(BaseCommand):
                         "language": german_language,
                         "name_translation": "Mobilität & Verkehr",
                         "headline_translation": "Mobilität der Zukunft",
-                        "sub_headline_translation": "Mobilitätslösungen zur Bekämpfung des Klimawandels"
+                        "sub_headline_translation": "Mobilitätslösungen zur Bekämpfung des Klimawandels",
                     }
-                ]
+                ],
             },
             {
                 "name": "Food & Agriculture",
@@ -75,9 +75,9 @@ class Command(BaseCommand):
                         "language": german_language,
                         "name_translation": "Ernährung & Landwirtschaft",
                         "headline_translation": "Nachhaltige Lebensmittelproduktion",
-                        "sub_headline_translation": "Nachhaltige Landwirtschaft"
+                        "sub_headline_translation": "Nachhaltige Landwirtschaft",
                     }
-                ]
+                ],
             },
             {
                 "name": "Biodiversity",
@@ -92,9 +92,9 @@ class Command(BaseCommand):
                         "language": german_language,
                         "name_translation": "Biodiversität",
                         "headline_translation": "Schutz und Wiederherstellung von Biodiversität",
-                        "sub_headline_translation": "Biodiversität und Klimawandel"
+                        "sub_headline_translation": "Biodiversität und Klimawandel",
                     }
-                ]
+                ],
             },
             {
                 "name": "Education and Social Action",
@@ -109,9 +109,9 @@ class Command(BaseCommand):
                         "language": german_language,
                         "name_translation": "Bildung und soziales Engagement",
                         "headline_translation": "Bildung für eine nachhaltige Zukunft",
-                        "sub_headline_translation": "Bildung und soziales Engagement"
+                        "sub_headline_translation": "Bildung und soziales Engagement",
                     }
-                ]
+                ],
             },
             {
                 "name": "Energy",
@@ -126,10 +126,10 @@ class Command(BaseCommand):
                         "language": german_language,
                         "name_translation": "Energie",
                         "headline_translation": "Erneuerbare Energien",
-                        "sub_headline_translation": "Erneuerbare Energien und Klimawandel"
+                        "sub_headline_translation": "Erneuerbare Energien und Klimawandel",
                     }
-                ]
-            }
+                ],
+            },
         ]
         for hub in hubs:
             hub_in_db = Hub.objects.create(
@@ -139,7 +139,7 @@ class Command(BaseCommand):
                 sub_headline=hub["sub_headline"],
                 hub_type=hub["hub_type"],
                 segway_text=hub["segway_text"],
-                language=hub["language"]
+                language=hub["language"],
             )
             for translation in hub["translations"]:
                 HubTranslation.objects.create(
@@ -147,6 +147,6 @@ class Command(BaseCommand):
                     language=translation["language"],
                     name_translation=translation["name_translation"],
                     headline_translation=translation["headline_translation"],
-                    sub_headline_translation=translation["sub_headline_translation"]
+                    sub_headline_translation=translation["sub_headline_translation"],
                 )
             print("Inserted hub {}".format(hub["name"]))

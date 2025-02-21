@@ -5,18 +5,16 @@ const useStyles = makeStyles<Theme>((theme) => ({
   subtitleWithIcon: {
     display: "flex",
     alignItems: "center",
-    color: `${theme.palette.secondary.main}`,
     fontWeight: 700,
     minWidth: 200,
     fontSize: 15,
   },
   subtitle: {
-    color: `${theme.palette.secondary.main}`,
     fontWeight: "bold",
   },
   content: {
     paddingBottom: theme.spacing(2),
-    color: `${theme.palette.secondary.main}`,
+    // color: `${theme.palette.secondary.main}`,
     fontSize: 16,
     wordBreak: "break-word",
   },

@@ -26,6 +26,8 @@ import UserContext from "./../../src/components/context/UserContext";
 import IconButton from "@mui/material/IconButton";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import ControlPointSharpIcon from "@mui/icons-material/ControlPointSharp";
+import getHubTheme from "../../src/themes/fetchHubTheme";
+import { transformThemeData } from "../../src/themes/transformThemeData";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -45,6 +47,7 @@ const useStyles = makeStyles((theme) => ({
     width: "30px",
     height: "auto",
     marginBottom: theme.spacing(1),
+    color: theme.palette.background.default_contrastText,
   },
   innerIcon: {
     marginRight: theme.spacing(0.5),
@@ -58,6 +61,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     marginBottom: theme.spacing(1),
     wordBreak: "break-word",
+    color: theme?.palette?.background?.default_contrastText,
   },
   sectionHeadlineWithButtonContainer: {
     display: "flex",
@@ -74,6 +78,7 @@ const useStyles = makeStyles((theme) => ({
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
+  const hubUrl = ctx.query.hub;
   const [
     organization,
     projects,
@@ -81,6 +86,7 @@ export async function getServerSideProps(ctx) {
     organizationTypes,
     rolesOptions,
     following,
+    hubThemeData,
   ] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
     getProjectsByOrganization(organizationUrl, auth_token, ctx.locale),
@@ -88,6 +94,7 @@ export async function getServerSideProps(ctx) {
     getOrganizationTypes(),
     getRolesOptions(auth_token, ctx.locale),
     getIsUserFollowing(organizationUrl, auth_token, ctx.locale),
+    getHubTheme(hubUrl),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -97,6 +104,8 @@ export async function getServerSideProps(ctx) {
       organizationTypes: organizationTypes,
       rolesOptions: rolesOptions,
       following: following,
+      hubThemeData: hubThemeData,
+      hubUrl: hubUrl,
     }),
   };
 }
@@ -105,11 +114,13 @@ export default function OrganizationPage({
   organization,
   projects,
   members,
-  organizationTypes,
   rolesOptions,
   following,
+  hubThemeData,
+  hubUrl,
 }) {
-  const { user, locale } = useContext(UserContext);
+  const { user, locale, CUSTOM_HUB_URLS } = useContext(UserContext);
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization, false);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
 
@@ -147,11 +158,15 @@ export default function OrganizationPage({
     };
   });
 
+  const customHubTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
   return (
     <WideLayout
       title={organization ? organization.name : texts.not_found_error}
       description={organization?.name + " | " + organization?.info.short_description}
       image={getImageUrl(organization?.image)}
+      headerBackground={isCustomHub ? customHubTheme?.palette?.secondary?.light : "#FFF"}
+      customTheme={customHubTheme}
+      hubUrl={hubUrl}
     >
       {organization ? (
         <OrganizationLayout
@@ -168,6 +183,7 @@ export default function OrganizationPage({
           texts={texts}
           locale={locale}
           rolesOptions={rolesOptions}
+          hubUrl={hubUrl}
         />
       ) : (
         <PageNotFound itemName={texts.organization} />
@@ -189,6 +205,7 @@ function OrganizationLayout({
   texts,
   locale,
   rolesOptions,
+  hubUrl,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
@@ -249,7 +266,9 @@ function OrganizationLayout({
       isUserFollowing={isUserFollowing}
       account={organization}
       default_background={DEFAULT_BACKGROUND_IMAGE}
-      editHref={getLocalePrefix(locale) + "/editOrganization/" + organization.url_slug}
+      editHref={`${getLocalePrefix(locale)}/editOrganization/${organization.url_slug}${
+        hubUrl ? `?hub=${hubUrl}` : ""
+      }`}
       /*TODO(unused) type="organization" */
       infoMetadata={infoMetadata}
       isOwnAccount={canEdit}
@@ -274,7 +293,10 @@ function OrganizationLayout({
             {texts.this_organizations_projects}
           </Typography>
           {isTinyScreen ? (
-            <IconButton href={getLocalePrefix(locale) + "/share"} size="large">
+            <IconButton
+              href={`${getLocalePrefix(locale)}/share${hubUrl ? `?hub=${hubUrl}` : ""}`}
+              size="large"
+            >
               <ControlPointSharpIcon
                 className={classes.button}
                 /*TODO(unused) variant="contained" */
@@ -282,14 +304,18 @@ function OrganizationLayout({
               />
             </IconButton>
           ) : (
-            <Button variant="contained" color="primary" href={getLocalePrefix(locale) + "/share"}>
+            <Button
+              variant="contained"
+              color="primary"
+              href={`${getLocalePrefix(locale)}/share${hubUrl ? `?hub=${hubUrl}` : ""}`}
+            >
               <ControlPointSharpIcon className={classes.innerIcon} />
               {texts.share_a_project}
             </Button>
           )}
         </div>
         {projects && projects.length ? (
-          <ProjectPreviews projects={projects} />
+          <ProjectPreviews projects={projects} hubUrl={hubUrl} />
         ) : (
           <Typography className={classes.no_content_yet}>
             {texts.this_organization_has_not_listed_any_projects_yet}
@@ -305,9 +331,9 @@ function OrganizationLayout({
           {canEdit &&
             (isTinyScreen ? (
               <IconButton
-                href={
-                  getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug
-                }
+                href={`${getLocalePrefix(locale)}/manageOrganizationMembers/${
+                  organization.url_slug
+                }${hubUrl ? `?hub=${hubUrl}` : ""}`}
                 size="large"
               >
                 <GroupAddIcon className={classes.button} color="primary" />
@@ -316,9 +342,9 @@ function OrganizationLayout({
               <Button
                 variant="contained"
                 color="primary"
-                href={
-                  getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug
-                }
+                href={`${getLocalePrefix(locale)}/manageOrganizationMembers/${
+                  organization.url_slug
+                }${hubUrl ? `?hub=${hubUrl}` : ""}`}
               >
                 <GroupAddIcon className={classes.innerIcon} />
                 {texts.manage_members}
@@ -326,7 +352,11 @@ function OrganizationLayout({
             ))}
         </div>
         {members && members.length ? (
-          <ProfilePreviews profiles={membersWithAdditionalInfo} showAdditionalInfo />
+          <ProfilePreviews
+            profiles={membersWithAdditionalInfo}
+            showAdditionalInfo
+            hubUrl={hubUrl}
+          />
         ) : (
           <Typography>
             {texts.none_of_the_members_of_this_organization_has_signed_up_yet}

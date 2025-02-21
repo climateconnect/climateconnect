@@ -211,10 +211,11 @@ class ListMemberProfilesView(ListAPIView):
         )
 
         if "hub" in self.request.query_params:
-            hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
-            if hub.exists():
-                if hub[0].hub_type == Hub.LOCATION_HUB_TYPE:
-                    location = hub[0].location.all()[0]
+            hubs = Hub.objects.filter(url_slug=self.request.query_params["hub"])
+            if hubs.exists():
+                hub = hubs[0]
+                if hub.hub_type == Hub.LOCATION_HUB_TYPE:
+                    location = hub.location.all()[0]
                     user_profiles = user_profiles.filter(
                         Q(location__country=location.country)
                         & (
@@ -234,6 +235,8 @@ class ListMemberProfilesView(ListAPIView):
                             "location__centre_point", location.multi_polygon
                         )
                     )
+                elif hub.hub_type == Hub.CUSTOM_HUB_TYPE:
+                    user_profiles = user_profiles.filter(related_hubs=hub)
 
         if "skills" in self.request.query_params:
             skill_names = self.request.query_params.get("skills").split(",")

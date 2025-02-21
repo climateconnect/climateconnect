@@ -92,10 +92,6 @@ const useStyles = makeStyles((theme: Theme) => {
       alignItems: "center",
     },
 
-    hubName: {
-      color: theme.palette.yellow.main,
-    },
-
     buttonContainer: {
       display: "flex",
       justifyContent: "space-around",
@@ -199,7 +195,7 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
 };
 
 type Props = {
-  hubName?: string;
+  hubUrl?: string;
   className?: any;
   location?: any;
   welcomeMessageLoggedIn?: string;
@@ -207,7 +203,7 @@ type Props = {
 };
 
 export default function Dashboard({
-  hubName,
+  hubUrl,
   className,
   location,
   welcomeMessageLoggedIn,
@@ -254,7 +250,7 @@ export default function Dashboard({
   const welcomeMessage = getWelcomeMessage();
 
   const getFullLink = (url: any, hash = "") => {
-    const hubAddition = hubName ? "?hubName=" + hubName : "";
+    const hubAddition = hubUrl ? "?hub=" + hubUrl : "";
     return `${getLocalePrefix(locale)}${url}${hubAddition}${hash ? "#" + hash : ""}`;
   };
 

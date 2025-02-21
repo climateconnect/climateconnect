@@ -15,7 +15,7 @@ type Props = {
 //This component simply exists so all the project-specific properties don't need to be passed through
 //to `SocialMediaShareButton` from every component.
 export function ProjectSocialMediaShareButton({ className, project, projectAdmin, hubUrl }: Props) {
-  const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
+  const { locale } = useContext(UserContext);
   const texts = getTexts({
     locale: locale,
     page: "project",
@@ -29,8 +29,6 @@ export function ProjectSocialMediaShareButton({ className, project, projectAdmin
   const messageTitleShareButton = `${texts.climate_protection_project_by}${projectAdminName}: ${project.name}`;
   const mailBodyShareButton = texts.share_project_email_body;
   const dialogTitleShareButton = texts.tell_others_about_this_project;
-  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
-
   return (
     <SocialMediaShareButton
       className={className}
@@ -40,7 +38,7 @@ export function ProjectSocialMediaShareButton({ className, project, projectAdmin
       mailBody={mailBodyShareButton}
       texts={texts}
       dialogTitle={dialogTitleShareButton}
-      isCustomHub={isCustomHub}
+      hubUrl={hubUrl}
     />
   );
 }

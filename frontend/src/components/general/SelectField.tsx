@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
     color: "white",
   },
   selectedItem: {
-    backgroundColor: `${theme.palette.primary.main} !important`,
+    backgroundColor: `${theme.palette.background.default_contrastText} !important`,
   },
 }));
 

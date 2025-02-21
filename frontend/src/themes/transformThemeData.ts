@@ -13,18 +13,23 @@ export const transformThemeData = (data, baseTheme: any = undefined) => {
         styleOverrides: {
           root: {
             color: data?.background_default?.contrastText,
+            textDecorationColor: data?.background_default?.contrastText,
           },
         },
       },
       MuiButton: {
         ...restOfDefaultTheme?.components?.MuiButton,
-        styleOverrides: {
-          contained: {
-            "&:hover": {
-              backgroundColor: darken(data?.primary?.main, 0.2), // Adjust the hover color calculation
+        variants: [
+          ...(restOfDefaultTheme?.components?.MuiButton?.variants ?? []),
+          {
+            props: { variant: "contained", color: "primary" },
+            style: {
+              "&:hover": {
+                backgroundColor: darken(data?.primary?.main, 0.2),
+              },
             },
           },
-        },
+        ],
       },
     },
     palette: {
