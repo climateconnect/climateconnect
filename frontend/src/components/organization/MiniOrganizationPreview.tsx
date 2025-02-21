@@ -55,14 +55,16 @@ export default function MiniOrganizationPreview({
   nolink,
   doNotShowName,
   inline,
+  hubUrl,
 }: any) {
   const { locale } = useContext(UserContext);
+  const queryString = hubUrl ? "?hub=" + hubUrl : "";
   if (!nolink)
     return (
       <Link
         className={className}
         color="inherit"
-        href={getLocalePrefix(locale) + "/organizations/" + organization.url_slug}
+        href={getLocalePrefix(locale) + `/organizations/${organization.url_slug}${queryString}`}
         target="_blank"
         underline="hover"
       >

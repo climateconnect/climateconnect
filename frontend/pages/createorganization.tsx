@@ -43,7 +43,7 @@ export async function getServerSideProps(ctx: {
   req?: { headers: { cookie?: string | undefined } } | undefined;
 }) {
   const { auth_token } = NextCookies(ctx);
-  const hubUrl = encodeURI(ctx?.query?.hub);
+  const hubUrl = ctx.query.hub;
   const hubThemeData = await getHubTheme(hubUrl);
   const [tagOptions, rolesOptions, allHubs] = await Promise.all([
     await getTags(auth_token, ctx.locale),
@@ -55,7 +55,7 @@ export async function getServerSideProps(ctx: {
       tagOptions: tagOptions,
       rolesOptions: rolesOptions,
       allHubs: allHubs,
-      hubUrl: hubUrl,
+      hubUrl: hubUrl ?? null,
       hubThemeData: hubThemeData,
     },
   };
@@ -519,6 +519,9 @@ const parseOrganizationForRequest = async (
   sourceLanguage,
   hubUrl
 ) => {
+  console.log(hubUrl)
+  console.log(hubUrl === undefined)
+  console.log(typeof hubUrl === "string")
   const organization: RequestOrganization = {
     team_members: [
       {

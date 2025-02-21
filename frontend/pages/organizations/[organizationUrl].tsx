@@ -280,7 +280,6 @@ function OrganizationLayout({
         <LoginNudge
           className={classes.loginNudge}
           whatToDo={texts.to_see_this_organizations_full_information}
-          // queryString={`${organization.url_slug}`}
         />
       )}
       <Container>
@@ -316,7 +315,7 @@ function OrganizationLayout({
           )}
         </div>
         {projects && projects.length ? (
-          <ProjectPreviews projects={projects} />
+          <ProjectPreviews projects={projects} hubUrl={hubUrl} />
         ) : (
           <Typography className={classes.no_content_yet}>
             {texts.this_organization_has_not_listed_any_projects_yet}
@@ -353,7 +352,11 @@ function OrganizationLayout({
             ))}
         </div>
         {members && members.length ? (
-          <ProfilePreviews profiles={membersWithAdditionalInfo} showAdditionalInfo />
+          <ProfilePreviews
+            profiles={membersWithAdditionalInfo}
+            showAdditionalInfo
+            hubUrl={hubUrl}
+          />
         ) : (
           <Typography>
             {texts.none_of_the_members_of_this_organization_has_signed_up_yet}

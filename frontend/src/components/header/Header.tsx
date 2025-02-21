@@ -74,11 +74,6 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
         transition: "all 0.25s linear", // use all instead of transform since the background color too is changing at some point. It'll be nice to have a smooth transition.
       };
     },
-    hideHeader: {
-      [theme.breakpoints.down("lg")]: {
-        transform: "translateY(-97px)",
-      },
-    },
     spacingBottom: {
       marginBottom: theme.spacing(2),
     },
@@ -340,23 +335,7 @@ export default function Header({
   };
 
   const logo = getLogo();
-  const [hideHeader, setHideHeader] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setHideHeader(window.scrollY > lastScrollY); // hide when user scrolls down and show when user scrolls up
-
-      // remember last scroll position
-      setLastScrollY(window.scrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [lastScrollY]);
 
   const getLogoLink = () => {
     if (hubUrl) {
@@ -369,9 +348,7 @@ export default function Header({
   return (
     <Box
       component="header"
-      className={`${classes.root} ${className} ${!noSpacingBottom && classes.spacingBottom} ${
-        hideHeader ? classes.hideHeader : ""
-      }`}
+      className={`${classes.root} ${className} ${!noSpacingBottom && classes.spacingBottom}`}
     >
       <Container className={classes.container}>
         <Link href={logoLink} className={classes.logoLink} underline="hover">
@@ -427,7 +404,7 @@ export default function Header({
           />
         )}
       </Container>
-      <div>{isStaticPage && <StaticPageLinks />}</div>
+      <div>{isStaticPage && <StaticPageLinks isCustomHub={isCustomHub} />}</div>
     </Box>
   );
 }
@@ -562,12 +539,23 @@ function NormalScreenLinks({
           localePrefix={localePrefix}
           getLoggedInLinks={getLoggedInLinks}
           isCustomHub={isCustomHub}
+          hubUrl={hubUrl}
         />
       )}
     </Box>
   );
 }
-
+const handleClickMenuItems = (isLogoutButton, url, handleLogout) => {
+  // If it's a logout button, handle logout logic first
+  if (isLogoutButton) {
+    handleLogout();
+  }
+  // Set the href and force a reload
+  if (!isLogoutButton) {
+    window.location.href = url;
+    window.location.reload();
+  }
+};
 const LoggedInNormalScreen = ({
   loggedInUser,
   handleLogout,
@@ -576,6 +564,7 @@ const LoggedInNormalScreen = ({
   localePrefix,
   getLoggedInLinks,
   isCustomHub,
+  hubUrl,
 }) => {
   const classes = useStyles({
     isCustomHub: isCustomHub,
@@ -597,7 +586,7 @@ const LoggedInNormalScreen = ({
     src: getImageUrl(loggedInUser.image),
     alt: loggedInUser.name,
   };
-
+  const queryString = hubUrl ? `?hub=${hubUrl}` : "";
   return (
     <ClickAwayListener onClickAway={handleCloseMenu}>
       <Box className={classes.loggedInRoot}>
@@ -625,7 +614,7 @@ const LoggedInNormalScreen = ({
         >
           <Paper>
             <MenuList>
-              {getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts })
+              {getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts, queryString })
                 .filter((link) => !link.showOnMobileOnly)
                 .map((link, index) => {
                   const menuItemProps: any = {
@@ -635,12 +624,15 @@ const LoggedInNormalScreen = ({
                   if (link.isLogoutButton) menuItemProps.onClick = handleLogout;
                   else menuItemProps.href = localePrefix + link.href;
                   const MenuItem_ = MenuItem as any;
+                  const newUrl = localePrefix + link.href;
                   return (
                     <MenuItem_ // todo: type issue
                       key={index}
                       component="button"
                       className={classes.loggedInLink}
-                      onClick={link.isLogoutButton && handleLogout}
+                      onClick={() =>
+                        handleClickMenuItems(link.isLogoutButton, newUrl, handleLogout)
+                      }
                       href={!link.isLogoutButton ? localePrefix + link.href : undefined}
                     >
                       {link.text}
@@ -687,6 +679,8 @@ function NarrowScreenLinks({
       !(loggedInUser && link.onlyShowLoggedOut) &&
       !(!loggedInUser && link.onlyShowLoggedIn)
   );
+  const queryString = hubUrl ? `?hub=${hubUrl}` : "";
+
   return (
     <>
       <Box>
@@ -832,57 +826,62 @@ function NarrowScreenLinks({
               }
             })}
             {loggedInUser &&
-              getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts }).map((link, index) => {
-                const Icon: any = link.iconForDrawer;
-                const avatarProps = {
-                  className: classes.loggedInAvatarMobile,
-                  src: getImageUrl(loggedInUser.image),
-                  alt: loggedInUser.name,
-                };
-                if (link.avatar)
-                  return (
-                    <div className={classes.mobileAvatarContainer}>
-                      <Link href={"/profiles/" + loggedInUser.url_slug} underline="hover">
-                        {loggedInUser?.badges?.length > 0 ? (
-                          <ProfileBadge
-                            badge={loggedInUser?.badges[0]}
-                            size="medium"
-                            className={classes.badge}
-                          >
+              getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts, queryString }).map(
+                (link, index) => {
+                  const Icon: any = link.iconForDrawer;
+                  const avatarProps = {
+                    className: classes.loggedInAvatarMobile,
+                    src: getImageUrl(loggedInUser.image),
+                    alt: loggedInUser.name,
+                  };
+                  if (link.avatar)
+                    return (
+                      <div className={classes.mobileAvatarContainer}>
+                        <Link
+                          href={localePrefix + "/profiles/" + loggedInUser.url_slug + queryString}
+                          underline="hover"
+                        >
+                          {loggedInUser?.badges?.length > 0 ? (
+                            <ProfileBadge
+                              badge={loggedInUser?.badges[0]}
+                              size="medium"
+                              className={classes.badge}
+                            >
+                              <Avatar {...avatarProps} />
+                            </ProfileBadge>
+                          ) : (
                             <Avatar {...avatarProps} />
-                          </ProfileBadge>
-                        ) : (
-                          <Avatar {...avatarProps} />
-                        )}
-                      </Link>
-                    </div>
-                  );
-                else if (link.isLogoutButton)
-                  return (
-                    <ListItem button component="a" key={index} onClick={handleLogout}>
-                      <ListItemIcon>
-                        <Icon className={classes.drawerItem} />
-                      </ListItemIcon>
-                      <ListItemText primary={link.text} className={classes.drawerItem} />
-                    </ListItem>
-                  );
-                else
-                  return (
-                    <Link
-                      href={localePrefix + link.href}
-                      key={index}
-                      underline="hover"
-                      className={classes.linkUnderline}
-                    >
-                      <ListItem button component="a" onClick={closeDrawer}>
+                          )}
+                        </Link>
+                      </div>
+                    );
+                  else if (link.isLogoutButton)
+                    return (
+                      <ListItem button component="a" key={index} onClick={handleLogout}>
                         <ListItemIcon>
                           <Icon className={classes.drawerItem} />
                         </ListItemIcon>
                         <ListItemText primary={link.text} className={classes.drawerItem} />
                       </ListItem>
-                    </Link>
-                  );
-              })}
+                    );
+                  else
+                    return (
+                      <Link
+                        href={localePrefix + link.href}
+                        key={index}
+                        underline="hover"
+                        className={classes.linkUnderline}
+                      >
+                        <ListItem button component="a" onClick={closeDrawer}>
+                          <ListItemIcon>
+                            <Icon className={classes.drawerItem} />
+                          </ListItemIcon>
+                          <ListItemText primary={link.text} className={classes.drawerItem} />
+                        </ListItem>
+                      </Link>
+                    );
+                }
+              )}
           </List>
         </SwipeableDrawer>
       </Box>

@@ -82,6 +82,7 @@ export default function Post({
   infoTextSize,
   truncate,
   noLink,
+  hubUrl,
 }) {
   const classes = useStyles({ preview: type === "preview" });
 
@@ -131,6 +132,7 @@ export default function Post({
       : getImageUrl(post.author_user.thumbnail_image),
     className: classes.avatar,
   };
+  const queryString = hubUrl ? "?hub=" + hubUrl : "";
 
   return (
     <div className={className}>
@@ -145,7 +147,7 @@ export default function Post({
       ) : (
         <div className={classes.commentFlexBox}>
           <Link
-            href={getLocalePrefix(locale) + "/profiles/" + post.author_user.url_slug}
+            href={getLocalePrefix(locale) + `/profiles/${post.author_user.url_slug}${queryString}`}
             target="_blank"
             onClick={handleClick}
             underline="hover"
@@ -156,7 +158,9 @@ export default function Post({
             <div className={classes.metadata}>
               <Link
                 color="inherit"
-                href={getLocalePrefix(locale) + "/profiles/" + post.author_user.url_slug}
+                href={
+                  getLocalePrefix(locale) + `/profiles/${post.author_user.url_slug}${queryString}`
+                }
                 target="_blank"
                 onClick={handleClick}
                 underline="hover"
