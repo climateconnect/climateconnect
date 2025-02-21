@@ -12,6 +12,7 @@ from organization.models import Project, ProjectMember
 from organization.models.tags import ProjectTags
 from organization.models.type import ProjectTypesChoices
 from hubs.models.hub import Hub
+from django.contrib.auth.models import User
 
 
 from django.db.models import Q
@@ -347,3 +348,13 @@ def get_similar_projects(url_slug: str, return_count=5):
         .head(return_count)
         .index.values
     )
+
+def project_and_user_common_hub(user: User, project: Project):
+    user_profile = user.user_profile
+    project_related_hubs = project.related_hubs.all()
+    user_related_hubs = user_profile.related_hubs.all()
+    intersection_of_related_hubs = project_related_hubs & user_related_hubs
+    if intersection_of_related_hubs:
+        return intersection_of_related_hubs[0].url_slug
+    else:
+        return None

@@ -291,7 +291,7 @@ def send_org_project_published_email(user, org_project_published, notification):
     )
 
 
-def send_project_like_email(user, project_like, notification):
+def send_project_like_email(user, project_like, notification, hub_url=None):
     lang_code = get_user_lang_code(user)
     liking_user_name = project_like.user.first_name + " " + project_like.user.last_name
     subjects_by_language = {
@@ -301,6 +301,8 @@ def send_project_like_email(user, project_like, notification):
 
     base_url = settings.FRONTEND_URL
     url_ending = "/projects/" + project_like.project.url_slug + "?show_likes=true"
+    if hub_url:
+        url_ending = url_ending + "&hub=" + hub_url
 
     variables = {
         "LikingUserName": liking_user_name,
@@ -315,6 +317,7 @@ def send_project_like_email(user, project_like, notification):
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_new_project_like",
         notification=notification,
+        hub_url=hub_url,
     )
 
 

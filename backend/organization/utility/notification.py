@@ -19,6 +19,7 @@ from climateconnect_api.utility.notification import (
     send_out_live_notification,
     create_follower_notification,
 )
+from organization.utility.project import project_and_user_common_hub
 from django.contrib.auth.models import User
 from organization.models import ProjectMember
 from organization.models.content import ProjectComment
@@ -169,6 +170,7 @@ def create_project_join_request_approval_notification(request_id):
     create_user_notification(request.user, notification)
 
 
+
 def create_project_like_notification(project_like):
     notification = Notification.objects.create(
         notification_type=Notification.PROJECT_LIKE, project_like=project_like
@@ -180,5 +182,6 @@ def create_project_like_notification(project_like):
     for member in project_team:
         if not member["user"] == project_like.user.id:
             user = User.objects.get(id=member["user"])
+            common_hub_url = project_and_user_common_hub(user, project_like.project)
             create_user_notification(user, notification)
-            send_project_like_email(user, project_like, notification)
+            send_project_like_email(user, project_like, notification, common_hub_url)
