@@ -271,7 +271,7 @@ def send_organization_follower_email(user, organization_follower, notification, 
     )
 
 
-def send_org_project_published_email(user, org_project_published, notification):
+def send_org_project_published_email(user, org_project_published, notification, hub_url=None):
     lang_code = get_user_lang_code(user)
 
     organization_name = get_organization_name(
@@ -286,6 +286,8 @@ def send_org_project_published_email(user, org_project_published, notification):
 
     base_url = settings.FRONTEND_URL
     url_ending = "/projects/" + org_project_published.project.url_slug
+    if hub_url:
+        url_ending = url_ending + "?hub=" + hub_url
 
     variables = {
         "FirstName": user.first_name,
@@ -301,6 +303,7 @@ def send_org_project_published_email(user, org_project_published, notification):
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_new_project_from_followed_org",
         notification=notification,
+        hub_url=hub_url
     )
 
 

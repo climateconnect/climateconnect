@@ -128,8 +128,12 @@ def create_organization_project_published_notification(
             org_project_published=org_project_published,
         )
         create_user_notification(org_project_published.user, notification)
+        common_hub_url = get_common_related_hub(follower.user, project)
         send_org_project_published_email(
-            org_project_published.user, org_project_published, notification
+            user=org_project_published.user, 
+            org_project_published=org_project_published, 
+            notification=notification, 
+            hub_url=common_hub_url
         )
 
 
