@@ -85,6 +85,7 @@ def create_comment_mention_notification(entity_type, entity, comment, sender):
             user = UserProfile.objects.filter(url_slug=url_slug)[0].user
             create_user_notification(user, notification)
             #send_out_live_notification(user.id)
+            common_hub_url = get_common_related_hub(user, entity)
             send_mention_email(
                 user=user,
                 entity_type=entity_type,
@@ -92,6 +93,7 @@ def create_comment_mention_notification(entity_type, entity, comment, sender):
                 comment=comment.content,
                 sender=sender,
                 notification=notification,
+                hub_url=common_hub_url
             )
     return notification
 

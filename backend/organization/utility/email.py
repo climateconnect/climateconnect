@@ -118,7 +118,7 @@ def send_idea_comment_email(user, idea, comment, sender, notification, hub_url=N
 
 # @entity_type: either "project" or "idea"
 # @entity: the idea or project object (depending on entity_type)
-def send_mention_email(user, entity_type, entity, comment, sender, notification):
+def send_mention_email(user, entity_type, entity, comment, sender, notification, hub_url=None):
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
         "en": "Somebody mentioned you in a comment on Climate Connect",
@@ -133,7 +133,8 @@ def send_mention_email(user, entity_type, entity, comment, sender, notification)
     }
     if entity_type == "project":
         variables["ProjectName"] = entity.name
-        url_ending = "/projects/" + entity.url_slug + "#comments"
+        hub_query = ("?hub=" + hub_url) if hub_url else ""
+        url_ending = "/projects/" + entity.url_slug + hub_query + "#comments"
         template_key = "PROJECT_MENTION_TEMPLATE_ID"
     if entity_type == "idea":
         variables["IdeaName"] = entity.name
@@ -154,6 +155,7 @@ def send_mention_email(user, entity_type, entity, comment, sender, notification)
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_mention",
         notification=notification,
+        hub_url=hub_url
     )
 
 
