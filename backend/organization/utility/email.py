@@ -337,7 +337,7 @@ def send_project_like_email(user, project_like, notification, hub_url=None):
     )
 
 
-def send_join_project_request_email(user, request, requester, notification):
+def send_join_project_request_email(user, request, requester, notification, hub_url):
     lang_code = get_user_lang_code(user)
     requester_name = requester.first_name + " " + requester.last_name
     subjects_by_language = {
@@ -353,6 +353,8 @@ def send_join_project_request_email(user, request, requester, notification):
     url_ending = (
         "/projects/" + request.target_project.url_slug + "?show_join_requests=true"
     )
+    if hub_url:
+        url_ending = url_ending + "&hub=" + hub_url
 
     variables = {
         "RequesterName": requester_name,
@@ -367,4 +369,5 @@ def send_join_project_request_email(user, request, requester, notification):
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_join_request",
         notification=notification,
+        hub_url=hub_url
     )

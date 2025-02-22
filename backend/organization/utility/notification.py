@@ -157,7 +157,14 @@ def create_project_join_request_notification(
 
     for project_admin in project_admins:
         create_user_notification(project_admin, notification)
-        send_join_project_request_email(project_admin, request, requester, notification)
+        common_hub_url = get_common_related_hub(project_admin, project)
+        send_join_project_request_email(
+            user=project_admin, 
+            request=request, 
+            requester=requester, 
+            notification=notification,
+            hub_url=common_hub_url
+        )
 
     return
 
