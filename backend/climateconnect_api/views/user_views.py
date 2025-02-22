@@ -20,6 +20,7 @@ from climateconnect_api.utility.email_setup import (
 )
 from climateconnect_api.utility.translation import edit_translations
 from climateconnect_main.utility.general import get_image_from_data_url
+from climateconnect_api.utility.user import get_user_profile_hub_slug
 from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
@@ -158,14 +159,13 @@ class SignUpView(APIView):
         hub = Hub.objects.filter(url_slug=request.data["hub"]).first()
         if hub:
             user_profile.related_hubs.add(hub)
+        hub_url = hub.url_slug if hub else None
 
         if settings.AUTO_VERIFY is True:
             user_profile.is_profile_verified = True
             message = "Congratulations! Your account has been created"
         else:
-            send_user_verification_email(
-                user, user_profile.verification_key, request.data["hub"]
-            )
+            send_user_verification_email(user, user_profile.verification_key, hub_url)
             message = "You're almost done! We have sent an email with a confirmation link to {}. Finish creating your account by clicking the link.".format(
                 user.email
             )  # NOQA
@@ -525,10 +525,11 @@ class SendResetPasswordEmail(APIView):
                 {"message": "There is no profile with this email address."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        hub_url = get_user_profile_hub_slug(user_profile)
         user_profile.password_reset_key = uuid.uuid4()
         timeout = datetime.now(timezone.utc) + timedelta(minutes=15)
         user_profile.password_reset_timeout = timeout
-        send_password_link(user_profile.user, user_profile.password_reset_key)
+        send_password_link(user_profile.user, user_profile.password_reset_key, hub_url)
         user_profile.save()
 
         return Response(
@@ -566,11 +567,14 @@ class ResendVerificationEmail(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        send_user_verification_email(user_profile.user, user_profile.verification_key)
+        hub_url = get_user_profile_hub_slug(user_profile)
+        send_user_verification_email(
+            user_profile.user, user_profile.verification_key, hub_url
+        )
 
         return Response(
             {
-                "message": "We have send you your verification email again. It may take up to 5 minutes to arrive. Make sure to also check your junk or spam folder."
+                "message": "We have sent you your verification email again. It may take up to 5 minutes to arrive. Make sure to also check your junk or spam folder."
             },
             status=status.HTTP_200_OK,
         )

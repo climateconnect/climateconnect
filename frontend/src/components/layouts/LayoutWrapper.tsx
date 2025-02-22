@@ -1,11 +1,4 @@
-import {
-  CircularProgress,
-  Snackbar,
-  SnackbarContent,
-  Theme,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Snackbar, SnackbarContent, Theme, useMediaQuery } from "@mui/material";
 
 import makeStyles from "@mui/styles/makeStyles";
 import { ThemeProvider } from "@mui/material/styles";
