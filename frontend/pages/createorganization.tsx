@@ -519,9 +519,9 @@ const parseOrganizationForRequest = async (
   sourceLanguage,
   hubUrl
 ) => {
-  console.log(hubUrl)
-  console.log(hubUrl === undefined)
-  console.log(typeof hubUrl === "string")
+  console.log(hubUrl);
+  console.log(hubUrl === undefined);
+  console.log(typeof hubUrl === "string");
   const organization: RequestOrganization = {
     team_members: [
       {

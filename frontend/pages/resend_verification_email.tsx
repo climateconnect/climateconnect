@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(8),
     marginBottom: theme.spacing(4),
     textAlign: "center",
-    color: theme.palette.text.primary
+    color: theme.palette.text.primary,
   },
 }));
 
@@ -34,7 +34,7 @@ export async function getServerSideProps(ctx) {
 export default function ResendVerificationEmail({ hubUrl, hubThemeData }) {
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const { locale } = useContext(UserContext);
-  const classes = useStyles()
+  const classes = useStyles();
   const texts = getTexts({ page: "settings", locale: locale });
   const fields = [
     {
@@ -54,9 +54,9 @@ export default function ResendVerificationEmail({ hubUrl, hubThemeData }) {
   };
 
   const onSuccess = (resp) => {
-    if(hubUrl) {
+    if (hubUrl) {
       redirect(`/hubs/${hubUrl}`, {
-          message: resp.data.message
+        message: resp.data.message,
       });
     } else {
       redirect("/browse", {
@@ -72,7 +72,7 @@ export default function ResendVerificationEmail({ hubUrl, hubThemeData }) {
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
 
   return (
-    <WideLayout 
+    <WideLayout
       title={texts.resend_verification_email}
       isHubPage={hubUrl !== ""}
       customTheme={customTheme}
@@ -80,7 +80,9 @@ export default function ResendVerificationEmail({ hubUrl, hubThemeData }) {
       headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
     >
       <Container>
-        <Typography className={classes.headline} variant="h3">{texts.resend_verification_email}</Typography>
+        <Typography className={classes.headline} variant="h3">
+          {texts.resend_verification_email}
+        </Typography>
         <Form
           fields={fields}
           messages={messages}

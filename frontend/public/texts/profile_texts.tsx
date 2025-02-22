@@ -197,7 +197,12 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       en: (
         <>
           If the email does not arrive after 5 minutes,{" "}
-          <Link href={`${getLocalePrefix(locale)}/resend_verification_email${hubName ? `?hub=${hubName}` : ""}`} underline="hover">
+          <Link
+            href={`${getLocalePrefix(locale)}/resend_verification_email${
+              hubName ? `?hub=${hubName}` : ""
+            }`}
+            underline="hover"
+          >
             click here
           </Link>{" "}
           to resend it.
@@ -206,7 +211,12 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       de: (
         <>
           Wenn die E-Mail nach 5 Minuten noch nicht angekommen ist,{" "}
-          <Link href={`${getLocalePrefix(locale)}/resend_verification_email${hubName ? `?hub=${hubName}` : ""}`} underline="hover">
+          <Link
+            href={`${getLocalePrefix(locale)}/resend_verification_email${
+              hubName ? `?hub=${hubName}` : ""
+            }`}
+            underline="hover"
+          >
             klicke hier
           </Link>
           , um sie erneut versenden zu lassen.

@@ -100,7 +100,7 @@ export default function WideLayout({
   noHeader,
   footerTextColor,
   customTheme,
-  hideAlert
+  hideAlert,
 }: Props) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(hideAlert ? false : true);

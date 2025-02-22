@@ -568,7 +568,9 @@ class ResendVerificationEmail(APIView):
             )
 
         hub_url = get_user_profile_hub_slug(user_profile)
-        send_user_verification_email(user_profile.user, user_profile.verification_key, hub_url)
+        send_user_verification_email(
+            user_profile.user, user_profile.verification_key, hub_url
+        )
 
         return Response(
             {

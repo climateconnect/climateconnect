@@ -26,7 +26,9 @@ def linkify_mentions(content):
     return content
 
 
-def send_project_comment_reply_email(user, project, comment, sender, notification, hub_url=None):
+def send_project_comment_reply_email(
+    user, project, comment, sender, notification, hub_url=None
+):
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
         "en": "Someone replied to your comment on Climate Connect",
@@ -49,11 +51,13 @@ def send_project_comment_reply_email(user, project, comment, sender, notificatio
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_reply_to_your_comment",
         notification=notification,
-        hub_url=hub_url
+        hub_url=hub_url,
     )
 
 
-def send_project_comment_email(user, project, comment, sender, notification, hub_url=None):
+def send_project_comment_email(
+    user, project, comment, sender, notification, hub_url=None
+):
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
         "en": "Somebody left a comment on your project {} on Climate Connect".format(
@@ -80,7 +84,7 @@ def send_project_comment_email(user, project, comment, sender, notification, hub
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_comment_on_your_project",
         notification=notification,
-        hub_url=hub_url
+        hub_url=hub_url,
     )
 
 
@@ -118,7 +122,9 @@ def send_idea_comment_email(user, idea, comment, sender, notification, hub_url=N
 
 # @entity_type: either "project" or "idea"
 # @entity: the idea or project object (depending on entity_type)
-def send_mention_email(user, entity_type, entity, comment, sender, notification, hub_url=None):
+def send_mention_email(
+    user, entity_type, entity, comment, sender, notification, hub_url=None
+):
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
         "en": "Somebody mentioned you in a comment on Climate Connect",
@@ -155,11 +161,13 @@ def send_mention_email(user, entity_type, entity, comment, sender, notification,
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_mention",
         notification=notification,
-        hub_url=hub_url
+        hub_url=hub_url,
     )
 
 
-def send_idea_comment_reply_email(user, idea, comment, sender, notification, hub_url=None):
+def send_idea_comment_reply_email(
+    user, idea, comment, sender, notification, hub_url=None
+):
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
         "en": "Someone replied to your comment on Climate Connect",
@@ -218,11 +226,13 @@ def send_project_follower_email(user, project_follower, notification, hub_url=No
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_new_project_follower",
         notification=notification,
-        hub_url=hub_url
+        hub_url=hub_url,
     )
 
 
-def send_organization_follower_email(user, organization_follower, notification, hub_url=None):
+def send_organization_follower_email(
+    user, organization_follower, notification, hub_url=None
+):
     lang_code = get_user_lang_code(user)
 
     organization_name = get_organization_name(
@@ -267,11 +277,13 @@ def send_organization_follower_email(user, organization_follower, notification, 
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_new_organization_follower",
         notification=notification,
-        hub_url=hub_url
+        hub_url=hub_url,
     )
 
 
-def send_org_project_published_email(user, org_project_published, notification, hub_url=None):
+def send_org_project_published_email(
+    user, org_project_published, notification, hub_url=None
+):
     lang_code = get_user_lang_code(user)
 
     organization_name = get_organization_name(
@@ -303,7 +315,7 @@ def send_org_project_published_email(user, org_project_published, notification, 
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_new_project_from_followed_org",
         notification=notification,
-        hub_url=hub_url
+        hub_url=hub_url,
     )
 
 
@@ -369,5 +381,5 @@ def send_join_project_request_email(user, request, requester, notification, hub_
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_join_request",
         notification=notification,
-        hub_url=hub_url
+        hub_url=hub_url,
     )

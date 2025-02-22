@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(8),
     marginBottom: theme.spacing(4),
     textAlign: "center",
-    color: theme.palette.text.primary
+    color: theme.palette.text.primary,
   },
 }));
 
@@ -35,7 +35,7 @@ export default function ResetPassword({ hubUrl, hubThemeData }) {
   const [errorMessage, setErrorMessage] = React.useState(null as string | null);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "settings", locale: locale });
-  const classes = useStyles()
+  const classes = useStyles();
 
   const messages = {
     submitMessage: texts.send_password_reset_email,
@@ -60,9 +60,9 @@ export default function ResetPassword({ hubUrl, hubThemeData }) {
           payload: { email: values.email },
           locale: locale,
         });
-        if(hubUrl) {
+        if (hubUrl) {
           redirect(`/hubs/${hubUrl}`, {
-              message: response.data.message
+            message: response.data.message,
           });
         } else {
           redirect("/browse", {
@@ -80,14 +80,16 @@ export default function ResetPassword({ hubUrl, hubThemeData }) {
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
 
   return (
-    <WideLayout 
+    <WideLayout
       title={texts.reset_password}
       isHubPage={hubUrl !== ""}
       customTheme={customTheme}
       hubUrl={hubUrl}
       headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
     >
-      <Typography className={classes.headline} variant="h3">{texts.reset_password}</Typography>
+      <Typography className={classes.headline} variant="h3">
+        {texts.reset_password}
+      </Typography>
       <Form
         fields={fields}
         messages={messages}

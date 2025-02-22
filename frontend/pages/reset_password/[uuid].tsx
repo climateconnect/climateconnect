@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(8),
     marginBottom: theme.spacing(4),
     textAlign: "center",
-    color: theme.palette.text.primary
+    color: theme.palette.text.primary,
   },
 }));
 
@@ -36,7 +36,7 @@ export default function ResetPassword({ uuid, hubUrl, hubThemeData }) {
   const [errorMessage, setErrorMessage] = React.useState(null);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "settings", locale: locale });
-  const classes = useStyles()
+  const classes = useStyles();
 
   const fields = [
     {
@@ -68,14 +68,16 @@ export default function ResetPassword({ uuid, hubUrl, hubThemeData }) {
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
 
   return (
-    <WideLayout 
+    <WideLayout
       title={texts.set_a_new_password}
       isHubPage={hubUrl !== ""}
       customTheme={customTheme}
       hubUrl={hubUrl}
       headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
     >
-      <Typography className={classes.headline} variant="h3">{texts.set_a_new_password}</Typography>
+      <Typography className={classes.headline} variant="h3">
+        {texts.set_a_new_password}
+      </Typography>
       <Form
         fields={fields}
         messages={messages}
@@ -103,9 +105,9 @@ async function requestSetPassword(uuid, new_password, setErrorMessage, texts, lo
       headers: headers,
       locale: locale,
     });
-    if(hubUrl) {
+    if (hubUrl) {
       redirect(`/hubs/${hubUrl}`, {
-          message: response.data.message
+        message: response.data.message,
       });
     } else {
       redirect("/browse", {
@@ -119,7 +121,9 @@ async function requestSetPassword(uuid, new_password, setErrorMessage, texts, lo
           <span>
             {error.response.data.message}{" "}
             <div>
-              <Link href={`${getLocalePrefix(locale)}/resetpassword${hubUrl ? `?hub=${hubUrl}` : ""}`}>
+              <Link
+                href={`${getLocalePrefix(locale)}/resetpassword${hubUrl ? `?hub=${hubUrl}` : ""}`}
+              >
                 {texts.click_here_to_get_another_password_reset_email}
               </Link>
             </div>

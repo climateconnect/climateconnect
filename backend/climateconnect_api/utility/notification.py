@@ -72,11 +72,13 @@ def create_follower_notification(
                 notification_values["look_up_entitiy_type_field_name"],
                 follower,
                 notification,
-                common_hub_url
+                common_hub_url,
             )
 
 
-def create_follower_email(user, obj_field_name, follower_type, notification, hub_url=None):
+def create_follower_email(
+    user, obj_field_name, follower_type, notification, hub_url=None
+):
     if obj_field_name == "organization":
         send_organization_follower_email(user, follower_type, notification, hub_url)
     elif obj_field_name == "project":
@@ -167,7 +169,7 @@ def send_comment_notification(
             ):
                 user = User.objects.filter(id=thread_comment["author_user"])[0]
                 create_user_notification(user, notification)
-                #send_out_live_notification(user.id)
+                # send_out_live_notification(user.id)
                 common_hub_url = get_common_related_hub(user, object_commented_on)
                 send_comment_email_notification(
                     user=user,
@@ -176,7 +178,7 @@ def send_comment_notification(
                     comment=comment,
                     sender=sender,
                     notification=notification,
-                    hub_url=common_hub_url
+                    hub_url=common_hub_url,
                 )
                 users_notification_sent.append(user.id)
     team = []
@@ -196,7 +198,7 @@ def send_comment_notification(
         ):
             user = User.objects.filter(id=member["user"])[0]
             create_user_notification(user, notification)
-            #send_out_live_notification(user.id)
+            # send_out_live_notification(user.id)
             common_hub_url = get_common_related_hub(user, object_commented_on)
             send_comment_email_notification(
                 user=user,
@@ -205,13 +207,19 @@ def send_comment_notification(
                 comment=comment,
                 sender=sender,
                 notification=notification,
-                hub_url=common_hub_url
+                hub_url=common_hub_url,
             )
     return notification
 
 
 def send_comment_email_notification(
-    user, notification_type_id, object_commented_on, comment, sender, notification, hub_url=None
+    user,
+    notification_type_id,
+    object_commented_on,
+    comment,
+    sender,
+    notification,
+    hub_url=None,
 ):
     properties_by_type = {
         "project_comment": {
@@ -245,7 +253,7 @@ def send_comment_email_notification(
         comment_serializer.data["content"],
         sender,
         notification,
-        hub_url=hub_url
+        hub_url=hub_url,
     )
 
 

@@ -84,7 +84,7 @@ def create_comment_mention_notification(entity_type, entity, comment, sender):
         if not url_slug == sender_url_slug:
             user = UserProfile.objects.filter(url_slug=url_slug)[0].user
             create_user_notification(user, notification)
-            #send_out_live_notification(user.id)
+            # send_out_live_notification(user.id)
             common_hub_url = get_common_related_hub(user, entity)
             send_mention_email(
                 user=user,
@@ -93,7 +93,7 @@ def create_comment_mention_notification(entity_type, entity, comment, sender):
                 comment=comment.content,
                 sender=sender,
                 notification=notification,
-                hub_url=common_hub_url
+                hub_url=common_hub_url,
             )
     return notification
 
@@ -130,10 +130,10 @@ def create_organization_project_published_notification(
         create_user_notification(org_project_published.user, notification)
         common_hub_url = get_common_related_hub(follower.user, project)
         send_org_project_published_email(
-            user=org_project_published.user, 
-            org_project_published=org_project_published, 
-            notification=notification, 
-            hub_url=common_hub_url
+            user=org_project_published.user,
+            org_project_published=org_project_published,
+            notification=notification,
+            hub_url=common_hub_url,
         )
 
 
@@ -159,11 +159,11 @@ def create_project_join_request_notification(
         create_user_notification(project_admin, notification)
         common_hub_url = get_common_related_hub(project_admin, project)
         send_join_project_request_email(
-            user=project_admin, 
-            request=request, 
-            requester=requester, 
+            user=project_admin,
+            request=request,
+            requester=requester,
             notification=notification,
-            hub_url=common_hub_url
+            hub_url=common_hub_url,
         )
 
     return
@@ -181,7 +181,6 @@ def create_project_join_request_approval_notification(request_id):
         membership_request=request,
     )
     create_user_notification(request.user, notification)
-
 
 
 def create_project_like_notification(project_like):

@@ -349,6 +349,7 @@ def get_similar_projects(url_slug: str, return_count=5):
         .index.values
     )
 
+
 def get_common_related_hub(user: User, content: Union[Project, Organization]):
     user_profile = user.user_profile
     content_related_hubs = content.related_hubs.all()

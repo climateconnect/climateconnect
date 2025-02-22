@@ -32,6 +32,7 @@ def check_send_email_notification(user):
     )
     return not recent_email_notification.exists()
 
+
 def get_email_data(hub_url):
     email_data = {
         "from_email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
@@ -48,6 +49,7 @@ def get_email_data(hub_url):
             email_data["from_name"] = hub.email_sender_name
     return email_data
 
+
 def send_email(
     user,
     variables,
@@ -57,8 +59,8 @@ def send_email(
     notification,
     hub_url=None,
 ):
-    if not check_send_email_notification(user):
-        return
+    # if not check_send_email_notification(user):
+    #    return
     if should_send_email_setting:
         try:
             user_profile = UserProfile.objects.get(user=user)
@@ -77,8 +79,12 @@ def send_email(
         "Messages": [
             {
                 "From": {
-                    "Email": email_data["from_email"],#from_email if from_email else settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
-                    "Name": email_data["from_name"]#from_name if from_name else "Climate Connect",
+                    "Email": email_data[
+                        "from_email"
+                    ],  # from_email if from_email else settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
+                    "Name": email_data[
+                        "from_name"
+                    ],  # from_name if from_name else "Climate Connect",
                 },
                 "To": [
                     {
@@ -163,7 +169,7 @@ def send_user_verification_email(user, verification_key, hub_url=None):
         subjects_by_language=subjects_by_language,
         should_send_email_setting="",
         notification=None,
-        hub_url=hub_url
+        hub_url=hub_url,
     )
 
 
@@ -204,7 +210,7 @@ def send_password_link(user, password_reset_key, hub_url=None):
         subjects_by_language=subjects_by_language,
         should_send_email_setting="",
         notification=None,
-        hub_url=hub_url
+        hub_url=hub_url,
     )
 
 
