@@ -254,7 +254,7 @@ export default function getProfileTexts({ profile, hubName, locale }) {
           >
             klicke hier
           </Link>{" "}
-          , um edie Bestätigungsemail mit dem Verifizierungslink erneut zu erhalten.
+          , um die Bestätigungsemail mit dem Verifizierungslink erneut zu erhalten.
         </>
       ),
     },

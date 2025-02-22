@@ -84,7 +84,7 @@ def create_comment_mention_notification(entity_type, entity, comment, sender):
         if not url_slug == sender_url_slug:
             user = UserProfile.objects.filter(url_slug=url_slug)[0].user
             create_user_notification(user, notification)
-            send_out_live_notification(user.id)
+            #send_out_live_notification(user.id)
             send_mention_email(
                 user=user,
                 entity_type=entity_type,

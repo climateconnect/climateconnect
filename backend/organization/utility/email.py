@@ -26,14 +26,15 @@ def linkify_mentions(content):
     return content
 
 
-def send_project_comment_reply_email(user, project, comment, sender, notification):
+def send_project_comment_reply_email(user, project, comment, sender, notification, hub_url=None):
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
         "en": "Someone replied to your comment on Climate Connect",
         "de": "Jemand hat auf deinen Kommentar auf Climate Connect geantwortet",
     }
     base_url = settings.FRONTEND_URL
-    url_ending = "/projects/" + project.url_slug + "#comments"
+    hub_query = ("?hub=" + hub_url) if hub_url else ""
+    url_ending = "/projects/" + project.url_slug + hub_query + "#comments"
     variables = {
         "FirstName": user.first_name,
         "CommenterName": sender.first_name + " " + sender.last_name,
@@ -48,10 +49,11 @@ def send_project_comment_reply_email(user, project, comment, sender, notificatio
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_reply_to_your_comment",
         notification=notification,
+        hub_url=hub_url
     )
 
 
-def send_project_comment_email(user, project, comment, sender, notification):
+def send_project_comment_email(user, project, comment, sender, notification, hub_url=None):
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
         "en": "Somebody left a comment on your project {} on Climate Connect".format(
@@ -62,7 +64,8 @@ def send_project_comment_email(user, project, comment, sender, notification):
         ),
     }
     base_url = settings.FRONTEND_URL
-    url_ending = "/projects/" + project.url_slug + "#comments"
+    hub_query = ("?hub=" + hub_url) if hub_url else ""
+    url_ending = "/projects/" + project.url_slug + hub_query + "#comments"
     variables = {
         "ProjectName": project.name,
         "CommentText": linkify_mentions(comment),
@@ -77,10 +80,11 @@ def send_project_comment_email(user, project, comment, sender, notification):
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_comment_on_your_project",
         notification=notification,
+        hub_url=hub_url
     )
 
 
-def send_idea_comment_email(user, idea, comment, sender, notification):
+def send_idea_comment_email(user, idea, comment, sender, notification, hub_url=None):
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
         "en": "Somebody left a comment on your idea '{}' on Climate Connect".format(
@@ -153,7 +157,7 @@ def send_mention_email(user, entity_type, entity, comment, sender, notification)
     )
 
 
-def send_idea_comment_reply_email(user, idea, comment, sender, notification):
+def send_idea_comment_reply_email(user, idea, comment, sender, notification, hub_url=None):
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
         "en": "Someone replied to your comment on Climate Connect",
