@@ -182,7 +182,7 @@ def send_idea_comment_reply_email(user, idea, comment, sender, notification):
     )
 
 
-def send_project_follower_email(user, project_follower, notification):
+def send_project_follower_email(user, project_follower, notification, hub_url=None):
     lang_code = get_user_lang_code(user)
     follower_name = (
         project_follower.user.first_name + " " + project_follower.user.last_name
@@ -196,6 +196,8 @@ def send_project_follower_email(user, project_follower, notification):
     url_ending = (
         "/projects/" + project_follower.project.url_slug + "?show_followers=true"
     )
+    if hub_url:
+        url_ending = url_ending + "&hub=" + hub_url
 
     variables = {
         "FollowerName": follower_name,
@@ -210,10 +212,11 @@ def send_project_follower_email(user, project_follower, notification):
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_new_project_follower",
         notification=notification,
+        hub_url=hub_url
     )
 
 
-def send_organization_follower_email(user, organization_follower, notification):
+def send_organization_follower_email(user, organization_follower, notification, hub_url=None):
     lang_code = get_user_lang_code(user)
 
     organization_name = get_organization_name(
@@ -242,6 +245,9 @@ def send_organization_follower_email(user, organization_follower, notification):
         + "?show_followers=true"
     )
 
+    if hub_url:
+        url_ending = url_ending + "&hub=" + hub_url
+
     variables = {
         "RecipientFirstName": user.first_name,
         "FollowingUserFullName": following_user_full_name,
@@ -255,6 +261,7 @@ def send_organization_follower_email(user, organization_follower, notification):
         subjects_by_language=subjects_by_language,
         should_send_email_setting="email_on_new_organization_follower",
         notification=notification,
+        hub_url=hub_url
     )
 
 

@@ -7,6 +7,7 @@ from chat_messages.utility.email import (
     send_group_chat_message_notification_email,
     send_private_chat_message_notification_email,
 )
+from organization.utility.project import get_common_related_hub
 
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from climateconnect_api.models.notification import Notification, UserNotification
@@ -64,20 +65,22 @@ def create_follower_notification(
     for member in team_members_of_entity:
         if not member["user"] == follower_user_id:
             user = User.objects.filter(id=member["user"])[0]
+            common_hub_url = get_common_related_hub(user, follower_entity)
             create_user_notification(user, notification)
             create_follower_email(
                 user,
                 notification_values["look_up_entitiy_type_field_name"],
                 follower,
                 notification,
+                common_hub_url
             )
 
 
-def create_follower_email(user, obj_field_name, follower_type, notification):
+def create_follower_email(user, obj_field_name, follower_type, notification, hub_url=None):
     if obj_field_name == "organization":
-        send_organization_follower_email(user, follower_type, notification)
+        send_organization_follower_email(user, follower_type, notification, hub_url)
     elif obj_field_name == "project":
-        send_project_follower_email(user, follower_type, notification)
+        send_project_follower_email(user, follower_type, notification, hub_url)
 
 
 def create_user_notification(user, notification):

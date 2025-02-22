@@ -1,5 +1,5 @@
 import logging
-from typing import Dict
+from typing import Dict, Union
 
 from climateconnect_api.models import Skill
 from climateconnect_api.models.language import Language
@@ -8,7 +8,7 @@ from climateconnect_main.utility.general import get_image_from_data_url
 from location.utility import get_location
 from climateconnect_api.utility.common import create_unique_slug
 
-from organization.models import Project, ProjectMember
+from organization.models import Project, ProjectMember, Organization
 from organization.models.tags import ProjectTags
 from organization.models.type import ProjectTypesChoices
 from hubs.models.hub import Hub
@@ -349,11 +349,11 @@ def get_similar_projects(url_slug: str, return_count=5):
         .index.values
     )
 
-def project_and_user_common_hub(user: User, project: Project):
+def get_common_related_hub(user: User, content: Union[Project, Organization]):
     user_profile = user.user_profile
-    project_related_hubs = project.related_hubs.all()
+    content_related_hubs = content.related_hubs.all()
     user_related_hubs = user_profile.related_hubs.all()
-    intersection_of_related_hubs = project_related_hubs & user_related_hubs
+    intersection_of_related_hubs = content_related_hubs & user_related_hubs
     if intersection_of_related_hubs:
         return intersection_of_related_hubs[0].url_slug
     else:
