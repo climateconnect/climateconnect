@@ -5,6 +5,7 @@ from typing import List
 from django.contrib.auth.models import User
 from climateconnect_api.models import UserNotification, UserProfile
 from climateconnect_api.models.notification import EmailNotification
+from hubs.models import Hub
 from climateconnect_api.utility.translation import get_user_lang_code, get_user_lang_url
 from django.conf import settings
 from mailjet_rest import Client
@@ -32,6 +33,23 @@ def check_send_email_notification(user):
     return not recent_email_notification.exists()
 
 
+def get_email_data(hub_url):
+    email_data = {
+        "from_email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
+        "from_name": "Climate Connect",
+    }
+    if hub_url:
+        try:
+            hub = Hub.objects.get(url_slug=hub_url)
+        except Hub.DoesNotExist:
+            return email_data
+        if hub.from_email:
+            email_data["from_email"] = hub.from_email
+        if hub.email_sender_name:
+            email_data["from_name"] = hub.email_sender_name
+    return email_data
+
+
 def send_email(
     user,
     variables,
@@ -39,10 +57,10 @@ def send_email(
     subjects_by_language,
     should_send_email_setting,
     notification,
+    hub_url=None,
 ):
-    if not check_send_email_notification(user):
-        return
-
+    # if not check_send_email_notification(user):
+    #    return
     if should_send_email_setting:
         try:
             user_profile = UserProfile.objects.get(user=user)
@@ -56,12 +74,17 @@ def send_email(
     subject = subjects_by_language[lang_code]
     template_id = get_template_id(template_key=template_key, lang_code=lang_code)
 
+    email_data = get_email_data(hub_url)
     data = {
         "Messages": [
             {
                 "From": {
-                    "Email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
-                    "Name": "Climate Connect",
+                    "Email": email_data[
+                        "from_email"
+                    ],  # from_email if from_email else settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
+                    "Name": email_data[
+                        "from_name"
+                    ],  # from_name if from_name else "Climate Connect",
                 },
                 "To": [
                     {
@@ -94,10 +117,12 @@ def send_email(
         logger.error("%s: Error sending email: %s" % (send_email.__name__, ex))
 
 
-def get_user_verification_url(verification_key, lang_url):
+def get_user_verification_url(verification_key, lang_url, hub=None):
     # TODO: Set expire time for user verification
     verification_key_str = str(verification_key).replace("-", "%2D")
     url = "%s%s/activate/%s" % (settings.FRONTEND_URL, lang_url, verification_key_str)
+    if hub:
+        url += f"?hub={hub}"
 
     return url
 
@@ -114,21 +139,22 @@ def get_new_email_verification_url(verification_key, lang_url):
     return url
 
 
-def get_reset_password_url(verification_key, lang_url):
+def get_reset_password_url(verification_key, lang_url, hub_url=None):
     # TODO: Set expire time for new email verification
     verification_key_str = str(verification_key).replace("-", "%2D")
-    url = "%s%s/reset_password/%s" % (
+    url = "%s%s/reset_password/%s%s" % (
         settings.FRONTEND_URL,
         lang_url,
         verification_key_str,
+        f"?hub={hub_url}" if hub_url else "",
     )
 
     return url
 
 
-def send_user_verification_email(user, verification_key):
+def send_user_verification_email(user, verification_key, hub_url=None):
     lang_url = get_user_lang_url(get_user_lang_code(user))
-    url = get_user_verification_url(verification_key, lang_url)
+    url = get_user_verification_url(verification_key, lang_url, hub_url)
 
     subjects_by_language = {
         "en": "Welcome to Climate Connect! Verify your email address",
@@ -143,6 +169,7 @@ def send_user_verification_email(user, verification_key):
         subjects_by_language=subjects_by_language,
         should_send_email_setting="",
         notification=None,
+        hub_url=hub_url,
     )
 
 
@@ -166,9 +193,9 @@ def send_new_email_verification(user, new_email, verification_key):
     )
 
 
-def send_password_link(user, password_reset_key):
+def send_password_link(user, password_reset_key, hub_url=None):
     lang_url = get_user_lang_url(get_user_lang_code(user))
-    url = get_reset_password_url(password_reset_key, lang_url)
+    url = get_reset_password_url(password_reset_key, lang_url, hub_url)
 
     subjects_by_language = {
         "en": "Reset your Climate Connect password",
@@ -183,6 +210,7 @@ def send_password_link(user, password_reset_key):
         subjects_by_language=subjects_by_language,
         should_send_email_setting="",
         notification=None,
+        hub_url=hub_url,
     )
 
 

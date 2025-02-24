@@ -28,8 +28,8 @@ export default function MiniHubPreviews({
   return (
     <Grid container component="ul" spacing={2} className={`${classes.reset} ${classes.root}`}>
       {hubs
-        .filter((hub) => isLocationHubLikeHub(hub.hub_type))
-        .map((hub, index) => (
+        .filter((hub) => !isLocationHubLikeHub(hub.hub_type))
+        .map((hub) => (
           <GridItem
             hub={hub}
             key={hub.url_slug}

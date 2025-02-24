@@ -1,5 +1,4 @@
 import { Container, Theme, ThemeProvider, useMediaQuery } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -27,7 +26,7 @@ export default function AccountCreated({ hubUrl, hubThemeData }) {
   const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "profile", locale: locale });
+  const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
 
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
   const customThemeSignUp = hubThemeData
@@ -45,7 +44,7 @@ export default function AccountCreated({ hubUrl, hubThemeData }) {
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
         <ThemeProvider theme={customThemeSignUp}>
-          <AccountCreatedContent isSmallScreen={isSmallScreen} texts={texts} />
+          <AccountCreatedContent isSmallScreen={isSmallScreen} hubUrl={hubUrl} />
         </ThemeProvider>
       </Container>
     </WideLayout>

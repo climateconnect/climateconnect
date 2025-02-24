@@ -30,6 +30,10 @@ const useStyles = makeStyles((theme) => ({
       alignItems: "center",
     },
   },
+  formWrapper: {
+    marginTop: theme.spacing(8),
+    padding: theme.spacing(2),
+  },
   chip: {
     height: 30,
     width: "100%",
@@ -158,19 +162,21 @@ export default function EnterBasicOrganizationInfo({
   };
 
   return (
-    <Form
-      fields={fields}
-      messages={messages}
-      usePercentage={false}
-      onSubmit={(event, account) =>
-        handleSubmit(event, {
-          ...account,
-          parentOrganization: parentOrganization,
-          types: convertTypeNamesToObject(selectedTypes, tagOptions),
-        })
-      }
-      errorMessage={errorMessage}
-    />
+    <div className={classes.formWrapper}>
+      <Form
+        fields={fields}
+        messages={messages}
+        usePercentage={false}
+        onSubmit={(event, account) =>
+          handleSubmit(event, {
+            ...account,
+            parentOrganization: parentOrganization,
+            types: convertTypeNamesToObject(selectedTypes, tagOptions),
+          })
+        }
+        errorMessage={errorMessage}
+      />
+    </div>
   );
 }
 

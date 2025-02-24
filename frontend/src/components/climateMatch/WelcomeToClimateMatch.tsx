@@ -29,9 +29,11 @@ const useStyles = makeStyles<Theme, { unfixButtonBar: boolean; isLoading: boolea
   },
   text: {
     fontSize: 20,
+    color: "white",
   },
   headline: {
     marginBottom: theme.spacing(4),
+    color: "white",
     [theme.breakpoints.down("sm")]: {
       marginBottom: theme.spacing(2),
     },

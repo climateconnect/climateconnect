@@ -709,18 +709,26 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: (
         <>
           You can view, edit and publish your project drafts{" "}
-          <a href={getLocalePrefix(locale) + "/profiles/" + user?.url_slug + "/#projects"}>
+          <Link
+            href={`${getLocalePrefix(locale)}/profiles/${user?.url_slug}${
+              hubName ? `?hub=${hubName}` : ""
+            }#projects`}
+          >
             in the my projects section
-          </a>{" "}
+          </Link>{" "}
           of your profile
         </>
       ),
       de: (
         <>
           Du kannst deine Projektentwürfe{" "}
-          <a href={getLocalePrefix(locale) + "/profiles/" + user?.url_slug + "/#projects"}>
+          <Link
+            href={`${getLocalePrefix(locale)}/profiles/${user?.url_slug}${
+              hubName ? `?hub=${hubName}` : ""
+            }#projects`}
+          >
             im Bereich {"Meine Projekte"}
-          </a>{" "}
+          </Link>{" "}
           deines Profils ansehen, bearbeiten und veröffentlichen
         </>
       ),
@@ -782,7 +790,12 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: (
         <>
           If your organization does not exist yet{" "}
-          <Link href={getLocalePrefix(locale) + "/createorganization"} underline="always">
+          <Link
+            href={`${getLocalePrefix(locale)}/createorganization${
+              hubName ? `?hub=${hubName}` : ""
+            }`}
+            underline="always"
+          >
             click here
           </Link>{" "}
           to create it.
@@ -791,7 +804,12 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: (
         <>
           Wenn das Profil deiner Organisation noch nicht existiert,{" "}
-          <Link href={getLocalePrefix(locale) + "/createorganization"} underline="always">
+          <Link
+            href={`${getLocalePrefix(locale)}/createorganization${
+              hubName ? `?hub=${hubName}` : ""
+            }`}
+            underline="always"
+          >
             klicke hier
           </Link>{" "}
           um sie zu erstellen.

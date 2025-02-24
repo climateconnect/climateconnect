@@ -273,6 +273,7 @@ export default function Hub({
       )}
       <WideLayout
         title={headline}
+        hideAlert
         headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
         image={getImageUrl(image)}
         isHubPage
@@ -360,21 +361,22 @@ export default function Hub({
           </BrowseContext.Provider>
         </div>
         {isSmallScreen && (
-          <FabShareButton locale={locale} hubAmbassador={hubAmbassador} isCustomHub={isCustomHub} />
+          <FabShareButton locale={locale} hubAmbassador={hubAmbassador} isCustomHub={isCustomHub} hubUrl={hubUrl} />
         )}
       </WideLayout>
     </>
   );
 }
 
-const FabShareButton = ({ locale, hubAmbassador, isCustomHub }) => {
+const FabShareButton = ({ locale, hubAmbassador, isCustomHub, hubUrl }) => {
   const fabClass = shareProjectFabStyle({ isCustomHub: isCustomHub });
+  const queryString = hubUrl ? `?hub=${hubUrl}` : "";
   return (
     <Fab
       className={fabClass.fabShareProject}
       size="medium"
       color="primary"
-      href={`${getLocalePrefix(locale)}/share`}
+      href={`${getLocalePrefix(locale)}/share${queryString}`}
       sx={{ bottom: (theme) => (hubAmbassador ? theme.spacing(11.5) : theme.spacing(5)) }}
       // onClick={}
     >

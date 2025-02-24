@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import { Typography } from "@mui/material";
 import ContentImageSplitView from "../layouts/ContentImageSplitLayout";
 import { Card } from "@mui/material";
 import AccountCreatedIcon from "../../../public/images/sign_up/success-factors-pana.svg";
+import UserContext from "../context/UserContext";
+import getTexts from "../../../public/texts/texts";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,8 +39,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function AccountCreatedContent({ isSmallScreen, texts }) {
+export default function AccountCreatedContent({ isSmallScreen, hubUrl }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
   return (
     <ContentImageSplitView
       minHeight="75vh"

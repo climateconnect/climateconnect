@@ -134,8 +134,9 @@ class ListOrganizationsAPIView(ListAPIView):
         if "hub" in self.request.query_params:
             hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
             if hub.exists():
-                if hub.first().hub_type == Hub.SECTOR_HUB_TYPE:
-                    project_category = hub.first().filter_parent_tags.all()
+                hub = hub[0]
+                if hub.hub_type == Hub.SECTOR_HUB_TYPE:
+                    project_category = hub.filter_parent_tags.all()
                     project_category_ids = list(map(lambda c: c.id, project_category))
                     project_tags = ProjectTags.objects.filter(
                         id__in=project_category_ids
@@ -151,8 +152,8 @@ class ListOrganizationsAPIView(ListAPIView):
                             field_tag_organization__field_tag__in=project_tags_with_children
                         )
                     ).distinct()
-                elif hub.first().hub_type == Hub.LOCATION_HUB_TYPE:
-                    location = hub.first().location.first()
+                elif hub.hub_type == Hub.LOCATION_HUB_TYPE:
+                    location = hub.location.first()
                     organizations = organizations.filter(
                         Q(location__country=location.country)
                         & (
@@ -172,6 +173,8 @@ class ListOrganizationsAPIView(ListAPIView):
                             "location__centre_point", location.multi_polygon
                         )
                     )
+                elif hub.hub_type == Hub.CUSTOM_HUB_TYPE:
+                    organizations = organizations.filter(related_hubs=hub)
 
         if "organization_type" in self.request.query_params:
             organization_type_names = self.request.query_params.get(
@@ -348,6 +351,13 @@ class CreateOrganizationView(APIView):
                 if "location" in request.data:
                     organization.location = get_location(request.data["location"])
 
+                # Add hub type if organization was shared in a custom hub
+                if "created_in_hub" in request.data:
+                    hub = Hub.objects.filter(
+                        url_slug=request.data["created_in_hub"]
+                    ).first()
+                    organization.related_hubs.add(hub)
+
                 # Set other fields
                 fields_to_set = [
                     "short_description",
@@ -374,7 +384,7 @@ class CreateOrganizationView(APIView):
                         except Hub.DoesNotExist:
                             logger.error("Passed hub url_slug {} does not exist")
                     organization.hubs.set(hubs)
-
+                print(organization.related_hubs.all())
                 organization.save()
 
                 # Create organization translations

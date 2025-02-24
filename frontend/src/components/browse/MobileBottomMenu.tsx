@@ -33,6 +33,7 @@ export default function MobileBottomMenu({
   handleTabChange,
   TYPES_BY_TAB_VALUE,
   hubAmbassador,
+  hubUrl
 }) {
   const type_icons = {
     projects: AssignmentIcon,
@@ -44,7 +45,7 @@ export default function MobileBottomMenu({
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <ContactAmbassadorButton mobile hubAmbassador={hubAmbassador} />
+      <ContactAmbassadorButton mobile hubAmbassador={hubAmbassador} hubUrl={hubUrl} />
       <>
         <Tabs
           variant="fullWidth"

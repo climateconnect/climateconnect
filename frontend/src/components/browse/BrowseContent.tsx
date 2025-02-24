@@ -521,6 +521,7 @@ export default function BrowseContent({
             TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
             //TODO(unused) type_names={type_names}
             hubAmbassador={hubAmbassador}
+            hubUrl={hubUrl}
           />
         )}
 
@@ -542,6 +543,7 @@ export default function BrowseContent({
               hasMore={state.hasMore.organizations}
               loadFunc={() => handleLoadMoreData("organizations")}
               organizations={state.items.organizations}
+              hubUrl={hubUrl}
               parentHandlesGridItems
             />
           </TabContentWrapper>
@@ -552,6 +554,7 @@ export default function BrowseContent({
                 loadFunc={() => handleLoadMoreData("members")}
                 parentHandlesGridItems
                 profiles={state.items.members}
+                hubUrl={hubUrl}
                 showAdditionalInfo
               />
             </TabContentWrapper>

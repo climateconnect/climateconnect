@@ -550,6 +550,7 @@ export default function ProjectPageRoot({
             project={project}
             handleReadNotifications={handleReadNotifications}
             leaveProject={requestLeaveProject}
+            hubUrl={hubPage}
           />
         </TabContent>
 
@@ -559,6 +560,7 @@ export default function ProjectPageRoot({
             user={user}
             token={token}
             setCurComments={setCurComments}
+            hubUrl={hubPage}
           />
         </TabContent>
         {screenSize.betweenTinyAndLarg && (

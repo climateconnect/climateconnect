@@ -67,6 +67,7 @@ type Props = {
   noHeader?: boolean;
   footerTextColor?: string;
   customTheme?: any;
+  hideAlert?: boolean;
 };
 //Wrapper layout component for pages where the content takes the whole width of the screen
 export default function WideLayout({
@@ -99,9 +100,10 @@ export default function WideLayout({
   noHeader,
   footerTextColor,
   customTheme,
+  hideAlert,
 }: Props) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
-  const [alertOpen, setAlertOpen] = React.useState(true);
+  const [alertOpen, setAlertOpen] = React.useState(hideAlert ? false : true);
   const [initialMessageType, setInitialMessageType] = React.useState(null as any);
   const [initialMessage, setInitialMessage] = React.useState("");
   const [alertEl, setAlertEl] = React.useState(null);
@@ -121,7 +123,7 @@ export default function WideLayout({
     }, 3000);
   }, []);
   useEffect(() => {
-    setAlertOpen(true);
+    !hideAlert && setAlertOpen(true);
   }, [message]);
 
   return (

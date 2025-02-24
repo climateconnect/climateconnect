@@ -422,6 +422,7 @@ export default function EditAccountPage({
           <div key={key} className={classes.infoElement}>
             <SelectField
               className={classes.selectOption}
+              color="contrast"
               options={i.options}
               label={i.name}
               defaultValue={{ name: i.value, key: i.value }}
@@ -569,6 +570,7 @@ export default function EditAccountPage({
                 <TextField
                   required={i.required}
                   label={i.name}
+                  color="contrast"
                   fullWidth
                   inputProps={{ maxLength: i.maxLength }}
                   value={i.value}
@@ -741,7 +743,7 @@ export default function EditAccountPage({
           </Button>
           <Button
             className={`${classes.cancelButton} ${classes.actionButton}`}
-            color="secondary"
+            color="grey"
             variant="contained"
             onClick={() => handleDialogClickOpen("confirmExitDialog")}
           >
@@ -763,6 +765,7 @@ export default function EditAccountPage({
               <>
                 <TextField
                   className={classes.name}
+                  color="contrast"
                   fullWidth
                   value={editedAccount.first_name}
                   onChange={(event) => handleTextFieldChange("first_name", event.target.value)}
@@ -772,6 +775,7 @@ export default function EditAccountPage({
                 />
                 <TextField
                   className={classes.name}
+                  color="contrast"
                   fullWidth
                   value={editedAccount.last_name}
                   onChange={(event) => handleTextFieldChange("last_name", event.target.value)}
@@ -783,6 +787,7 @@ export default function EditAccountPage({
             ) : (
               <TextField
                 className={classes.name}
+                color="contrast"
                 fullWidth
                 value={editedAccount.name}
                 onChange={(event) => handleTextFieldChange("name", event.target.value)}

@@ -8,6 +8,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 23,
     fontWeight: "bold",
     marginBottom: theme.spacing(2),
+    color: theme.palette.background.default_contrastText,
   },
 }));
 
@@ -15,7 +16,7 @@ export default function DetailledDescription({ title, value, className }) {
   const classes = useStyles();
   return (
     <div className={className}>
-      <Typography color="primary" variant="h2" className={classes.headline}>
+      <Typography variant="h2" className={classes.headline}>
         {title}
       </Typography>
       <MessageContent content={value} />

@@ -22,7 +22,7 @@ export default function ActiveHubsSelect({
   const texts = getTexts({ page: "hub", locale: locale });
   return (
     <div>
-      <Typography color="secondary" className={classes.headline}>
+      <Typography color="text" className={classes.headline}>
         {texts.add_hubs_in_which_your_organization_is_active}
       </Typography>
       <MiniHubPreviews

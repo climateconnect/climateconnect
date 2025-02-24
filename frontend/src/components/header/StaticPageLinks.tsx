@@ -52,13 +52,13 @@ const useStyles = makeStyles((theme) => ({
 
 //Component containing the bar below the header listing all the static pages
 //It's only shown if you're already on a static page (e.g. "/about")
-export default function StaticPageLinks() {
+export default function StaticPageLinks({ isCustomHub }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
   const texts = getTexts({ page: "navigation", locale: locale });
-  const STATIC_PAGE_LINKS = getStaticPageLinks(texts, locale, true);
+  const STATIC_PAGE_LINKS = getStaticPageLinks(texts, locale, isCustomHub, true);
   const getLinksToShow = () => {
     if (isNarrowScreen) {
       return STATIC_PAGE_LINKS.slice(0, 2);
@@ -73,7 +73,7 @@ export default function StaticPageLinks() {
           <DirectlyDisplayedLinks links={getLinksToShow()} isNarrowScreen={isNarrowScreen} />
           {isNarrowScreen && (
             <DropDownButton
-              options={STATIC_PAGE_LINKS}
+              options={STATIC_PAGE_LINKS.slice(2)}
               buttonProps={{
                 classes: {
                   root: classes.white,

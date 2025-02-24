@@ -35,7 +35,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function ContactAmbassadorButton({ hubAmbassador, mobile }) {
+export default function ContactAmbassadorButton({ hubAmbassador, mobile, hubUrl=null }) {
   const classes = useStyles();
   const { locale, user } = useContext(UserContext);
   const cookies = new Cookies();
@@ -44,16 +44,21 @@ export default function ContactAmbassadorButton({ hubAmbassador, mobile }) {
 
   const handleClickContact = async (e) => {
     e.preventDefault();
+    const queryString = hubUrl ? `?hub=${hubUrl}` : "";
 
     if (!user) {
-      return redirect("/signup", {
+      let queryString: any = {
         redirect: window.location.pathname + window.location.search,
         errorMessage: texts.please_create_an_account_or_log_in_to_contact_the_ambassador,
-      });
+      }
+      if(hubUrl) {
+        queryString.hub = hubUrl;
+      }
+      return redirect("/signup", queryString);
     }
 
     const chat = await startPrivateChat(hubAmbassador?.user, token, locale);
-    Router.push("/chat/" + chat.chat_uuid + "/");
+    Router.push("/chat/" + chat.chat_uuid + "/" + queryString);
   };
   if (mobile) {
     return (

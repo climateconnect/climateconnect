@@ -158,7 +158,7 @@ class ListProjectsView(ListAPIView):
             )
         )
 
-        if False and "hub" in self.request.query_params:
+        if "hub" in self.request.query_params:
             hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
             if hub.exists():
                 hub = hub[0]
@@ -177,7 +177,7 @@ class ListProjectsView(ListAPIView):
                         tag_project__project_tag__in=project_tags_with_children
                     ).distinct()
                 elif hub.hub_type == Hub.LOCATION_HUB_TYPE:
-                    location = hub[0].location.all()[0]
+                    location = hub.location.all()[0]
                     location_multipolygon = location.multi_polygon
                     projects = projects.filter(Q(loc__country=location.country))
                     if location_multipolygon:

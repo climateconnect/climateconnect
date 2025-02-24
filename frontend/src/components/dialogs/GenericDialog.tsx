@@ -53,7 +53,7 @@ const useStyles = makeStyles<
   dialogTitle: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
   },
   saveIconButton: {
     background: theme.palette.primary.main,

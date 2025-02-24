@@ -174,7 +174,7 @@ export default function HubContent({
                   <>
                     {!isNarrowScreen && (
                       <Dashboard
-                        hubName={hubUrl}
+                        hubUrl={hubUrl}
                         location={location}
                         welcomeMessageLoggedIn={welcomeMessageLoggedIn}
                         welcomeMessageLoggedOut={welcomeMessageLoggedOut}

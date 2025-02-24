@@ -73,8 +73,10 @@ const parseComments = (comments) => {
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const projectUrl = encodeURI(ctx?.query?.projectId);
-  const hubUrl = encodeURI(ctx?.query?.hub);
 
+  // Updated to ensure `hubUrl` is only encoded if `ctx.query.hub` is defined and not null.
+  // This prevents `encodeURI` from converting `undefined` or `null` into the string "undefined" or "null".
+  const hubUrl = ctx?.query?.hub ? encodeURI(ctx.query.hub) : null;
   const [
     project,
     members,

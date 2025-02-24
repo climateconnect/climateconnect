@@ -91,6 +91,8 @@ export default function ProjectContentSideButtons({
 
   const [requesters, setRequesters] = useState([]);
   const [requestersRetrieved, setRequestersRetrieved] = useState(false);
+  const queryString = hubUrl ? `?hub=${hubUrl}` : "";
+
   // Fetch and populate requesters on initial load
   useEffect(() => {
     (async () => {
@@ -149,11 +151,7 @@ export default function ProjectContentSideButtons({
         <IconButton
           size="large"
           className={classes.iconButton}
-          href={
-            isCustomHub
-              ? `${getLocalePrefix(locale) + "/editProject/" + project.url_slug + "?hub=" + hubUrl}`
-              : `${getLocalePrefix(locale) + "/editProject/" + project.url_slug}`
-          }
+          href={getLocalePrefix(locale) + "/editProject/" + project.url_slug + queryString}
         >
           <EditIcon />
         </IconButton>
@@ -163,11 +161,7 @@ export default function ProjectContentSideButtons({
         <Button
           className={classes.editProjectButton}
           variant="contained"
-          href={
-            isCustomHub
-              ? `${getLocalePrefix(locale) + "/editProject/" + project.url_slug + "?hub=" + hubUrl}`
-              : `${getLocalePrefix(locale) + "/editProject/" + project.url_slug}`
-          }
+          href={getLocalePrefix(locale) + "/editProject/" + project.url_slug + queryString}
         >
           {project.is_draft ? texts.edit_draft : texts.edit}
         </Button>

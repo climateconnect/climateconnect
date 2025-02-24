@@ -112,7 +112,7 @@ export default function UploadImageDialog({
       fullScreen={fullScreen}
       title={texts.upload_an_image}
       useApplyButton={true}
-      applyText="Apply"
+      applyText={texts.apply}
       onApply={applyImage}
     >
       {loading ? (

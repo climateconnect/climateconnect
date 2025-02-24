@@ -165,12 +165,17 @@ class ProjectRanking:
             else last_project_follower.created_at.timestamp()
         )
 
+        is_past_event = (
+            project_type == ProjectTypesChoices.event
+            and end_date.timestamp() < timezone.now().timestamp()
+        )
+
         def get_created_at_factor():
             # For events the start_date and end_date are more important than the creation time
             if project_type == ProjectTypesChoices.event:
                 # The event is in the past -> attribute a negative score
-                if end_date.timestamp() < timezone.now().timestamp():
-                    return -10
+                if is_past_event:
+                    return -99
                 # The event is currently ongoing. Increase its score the closer it its end it is (this is especially relevant for multi-week-projects)
                 elif start_date.timestamp() < timezone.now().timestamp():
                     return self._recency_score(
@@ -229,7 +234,9 @@ class ProjectRanking:
 
         # Now we want to change the order every time somebody
         # visits the page we would add some randomization.
-        project_rank = self._randomize_ranking(project_rank=project_rank)
+        # For past events we do not add any randomization because they should be downranked regardless
+        if not is_past_event:
+            project_rank = self._randomize_ranking(project_rank=project_rank)
 
         cache.set(
             cache_key, project_rank, timeout=self.DEFAULT_CACHE_TIMEOUT_IN_SECONDS
