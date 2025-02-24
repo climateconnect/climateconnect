@@ -24,7 +24,7 @@ type Props = {
   className?: string;
   queryString?: string;
 };
-export default function LoginNudge({ whatToDo, fullPage, className, queryString }: Props) {
+export default function LoginNudge({ whatToDo, fullPage, className }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
