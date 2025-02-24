@@ -186,6 +186,7 @@ export default function AccountPage({
   handleFollow,
   followingChangePending,
   isUserFollowing,
+  hubUrl,
 }) {
   const { locale, user } = useContext(UserContext);
   const classes = useStyles({ isOwnAccount: isOwnAccount });
@@ -438,6 +439,7 @@ export default function AccountPage({
               texts={texts}
               dialogTitle={organizationTexts.tell_others_about_this_organization}
               switchColors={true}
+              hubUrl={hubUrl}
             />
           )}
         </div>

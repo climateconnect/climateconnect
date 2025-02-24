@@ -275,6 +275,7 @@ function OrganizationLayout({
       isOrganization={true}
       editText={texts.edit_organization}
       isSmallScreen={isSmallScreen}
+      hubUrl={hubUrl}
     >
       {!user && (
         <LoginNudge

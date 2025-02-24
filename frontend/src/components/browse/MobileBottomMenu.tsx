@@ -33,7 +33,7 @@ export default function MobileBottomMenu({
   handleTabChange,
   TYPES_BY_TAB_VALUE,
   hubAmbassador,
-  hubUrl
+  hubUrl,
 }) {
   const type_icons = {
     projects: AssignmentIcon,

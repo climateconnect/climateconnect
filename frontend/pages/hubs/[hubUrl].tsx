@@ -133,7 +133,7 @@ export async function getServerSideProps(ctx) {
         project_statuses: project_statuses,
       },
       initialLocationFilter: location_filtered_by,
-      sectorHubs: allHubs.filter((h) => h.hub_type === "sector hub"),
+      sectorHubs: allHubs ? allHubs?.filter((h) => h?.hub_type === "sector hub") : null,
       allHubs: allHubs,
       hubDescription: hubDescription,
       projectTypes: projectTypes,
@@ -361,7 +361,12 @@ export default function Hub({
           </BrowseContext.Provider>
         </div>
         {isSmallScreen && (
-          <FabShareButton locale={locale} hubAmbassador={hubAmbassador} isCustomHub={isCustomHub} hubUrl={hubUrl} />
+          <FabShareButton
+            locale={locale}
+            hubAmbassador={hubAmbassador}
+            isCustomHub={isCustomHub}
+            hubUrl={hubUrl}
+          />
         )}
       </WideLayout>
     </>
