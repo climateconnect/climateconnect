@@ -90,20 +90,24 @@ export default function MessageContent({ content, renderYoutubeVideos = false }:
 
   return (
     <Linkify componentDecorator={componentDecorator}>
-      {content.split("\n").map((content, index) => {
-        if (!content.length) return <br key={index} />;
-        if (youtubeVideoLines && youtubeVideoLines.find((l) => l.index === index)) {
-          return <div key={index}>{youtubeVideoLines.find((l) => l.index === index).content}</div>;
-        }
-        const fragments = getFragmentsWithMentions(content, true, locale);
-        return (
-          <div key={index}>
-            <Typography display="inline" style={{ alignSelf: "flex-start" }}>
-              {fragments}
-            </Typography>
-          </div>
-        );
-      })}
+      {content
+        ? content.split("\n").map((content, index) => {
+            if (!content.length) return <br key={index} />;
+            if (youtubeVideoLines && youtubeVideoLines.find((l) => l.index === index)) {
+              return (
+                <div key={index}>{youtubeVideoLines.find((l) => l.index === index).content}</div>
+              );
+            }
+            const fragments = getFragmentsWithMentions(content, true, locale);
+            return (
+              <div key={index}>
+                <Typography display="inline" style={{ alignSelf: "flex-start" }}>
+                  {fragments}
+                </Typography>
+              </div>
+            );
+          })
+        : null}
     </Linkify>
   );
 }
