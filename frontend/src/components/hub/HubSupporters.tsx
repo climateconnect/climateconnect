@@ -62,16 +62,12 @@ const useStyles = makeStyles((theme) => ({
   supporterImg: {
     borderRadius: "50%",
   },
-  supporterName: (containerClass) => ({
+  supporterName: {
     fontSize: "17px",
     fontWeight: "600",
-    whiteSpace: "nowrap",
-    width: containerClass ? "160px" : "200px",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
     color: "black",
     margin: 0,
-  }),
+  },
   supporterSubtitle: (containerClass) => ({
     margin: 0,
     fontSize: "12px",
@@ -131,6 +127,7 @@ const HubSupporters = ({
   mobileVersion,
   hubName,
 }: HubSupporter) => {
+  
   const classes = useStyles({ containerClass: containerClass });
   const isSmallOrMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const { locale } = useContext(UserContext);
