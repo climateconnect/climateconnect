@@ -32,7 +32,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     membership_requester = serializers.SerializerMethodField()
     organization_follower = serializers.SerializerMethodField()
     organization = serializers.SerializerMethodField()
-    common_hub_url = serializers.SerializerMethodField()
+    hub_url = serializers.SerializerMethodField()
     class Meta:
         model = Notification
         fields = (
@@ -55,7 +55,7 @@ class NotificationSerializer(serializers.ModelSerializer):
             "membership_requester",
             "organization_follower",
             "organization",
-            "common_hub_url",
+            "hub_url",
         )
 
     def get_last_message(self, obj):
@@ -163,7 +163,7 @@ class NotificationSerializer(serializers.ModelSerializer):
             serializer = UserProfileStubSerializer(requester_user)
             return serializer.data
         
-    def get_common_hub_url(self, obj):
+    def get_hub_url(self, obj):
         notification_types_with_potential_related_hubs = [
             Notification.PROJECT_COMMENT,
             Notification.REPLY_TO_PROJECT_COMMENT,
