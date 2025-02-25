@@ -1,7 +1,7 @@
 from climateconnect_api.utility.notification import (
     get_following_user,
-    get_organization_info,
-    get_project_info,
+    get_organization_from_notification,
+    get_project_from_notification,
 )
 from organization.utility.email import linkify_mentions
 from ideas.serializers.comment import IdeaCommentSerializer
@@ -13,7 +13,7 @@ from climateconnect_api.serializers.user import UserProfileStubSerializer
 from climateconnect_api.models import Notification
 from chat_messages.serializers.message import MessageSerializer
 from organization.serializers.content import ProjectCommentSerializer
-
+from organization.utility.project import get_common_related_hub
 
 class NotificationSerializer(serializers.ModelSerializer):
     last_message = serializers.SerializerMethodField()
@@ -32,7 +32,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     membership_requester = serializers.SerializerMethodField()
     organization_follower = serializers.SerializerMethodField()
     organization = serializers.SerializerMethodField()
-
+    common_hub_url = serializers.SerializerMethodField()
     class Meta:
         model = Notification
         fields = (
@@ -55,6 +55,7 @@ class NotificationSerializer(serializers.ModelSerializer):
             "membership_requester",
             "organization_follower",
             "organization",
+            "common_hub_url",
         )
 
     def get_last_message(self, obj):
@@ -97,28 +98,11 @@ class NotificationSerializer(serializers.ModelSerializer):
             return comment
 
     def get_project(self, obj):
-        if obj.project_comment:
-            return get_project_info(obj.project_comment.project)
-
-        if obj.project_follower:
-            return get_project_info(obj.project_follower.project)
-
-        if obj.project_like:
-            return get_project_info(obj.project_like.project)
-
-        if obj.membership_request and obj.membership_request.target_project is not None:
-            return get_project_info(obj.membership_request.target_project)
-
-        if obj.org_project_published:
-            return get_project_info(obj.org_project_published.project)
-
+        return get_project_from_notification(obj, serialize=True)
+        
     def get_organization(self, obj):
-        if obj.org_project_published:
-            return get_organization_info(obj.org_project_published.organization)
-
-        if obj.organization_follower:
-            return get_organization_info(obj.organization_follower.organization)
-
+        return get_organization_from_notification(obj, serialize=True)
+        
     def get_project_follower(self, obj):
         if obj.project_follower:
             return get_following_user(obj.project_follower.user)
@@ -178,3 +162,29 @@ class NotificationSerializer(serializers.ModelSerializer):
             requester_user = UserProfile.objects.get(user=obj.membership_request.user)
             serializer = UserProfileStubSerializer(requester_user)
             return serializer.data
+        
+    def get_common_hub_url(self, obj):
+        notification_types_with_potential_related_hubs = [
+            Notification.PROJECT_COMMENT,
+            Notification.REPLY_TO_PROJECT_COMMENT,
+            Notification.PROJECT_FOLLOWER,
+            Notification.JOIN_PROJECT_REQUEST,
+            Notification.PROJECT_JOIN_REQUEST_APPROVED,
+            Notification.MENTION,
+            Notification.PROJECT_LIKE,
+            Notification.ORGANIZATION_FOLLOWER,
+            Notification.ORG_PROJECT_PUBLISHED
+        ]
+        if obj.notification_type not in notification_types_with_potential_related_hubs:
+            return None
+        #get organization or project related to notification
+        project = get_project_from_notification(obj)
+        organization = get_organization_from_notification(obj)
+        entity = organization or project
+
+        # Access the user from the context
+        request = self.context.get('request', None)
+        if request is None:
+            return None
+        user = request.user
+        return get_common_related_hub(user, entity)
