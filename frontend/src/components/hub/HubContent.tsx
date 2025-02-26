@@ -16,7 +16,7 @@ import HubHeadlineContainer from "./HubHeadlineContainer";
 import HubSupporters from "./HubSupporters";
 import { DePrio1Willkommen, EnPrio1Welcome } from "../../../devlink";
 import theme from "../../themes/theme";
-import { PrioOneBackgroundBrowse } from "./CustomBackground";
+import { PrioOneBackgroundBrowse, PrioOneBackgroundBrowseIcon } from "./CustomBackground";
 
 type MakeStylesProps = {
   isLocationHub: boolean;
@@ -89,6 +89,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     margin: "16px auto",
+    gap: "1rem",
     alignItems: "end",
   }),
   infoBoxContainer: {
@@ -227,6 +228,9 @@ export default function HubContent({
                       )}
                       {hubSupporters?.length > 0 && (
                         <HubSupporters supportersList={hubSupporters} hubName={hubData?.name} />
+                      )}
+                      {!hubAmbassador && !(hubSupporters?.length > 0) && (
+                        <PrioOneBackgroundBrowseIcon />
                       )}
                     </>
                   ))}

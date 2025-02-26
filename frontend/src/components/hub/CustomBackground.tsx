@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: -1,
+    zIndex: -10,
     overflow: "hidden",
   },
 
@@ -105,6 +105,25 @@ export function PrioOneBackgroundBrowse() {
         className={classes.prioOneAccentBackground}
       />
     </div>
+  );
+}
+
+export function PrioOneBackgroundBrowseIcon() {
+  const largeScreenSize = useMediaQuery((theme: Theme) => theme.breakpoints.down("lg"));
+
+  let width = 160;
+  let height = 160;
+  if (largeScreenSize) {
+    width = 130;
+    height = 130;
+  }
+
+  return (
+    <Image
+      src={"/images/custom_hubs/" + PRIO1_SLUG + "_group.svg"}
+      width={width}
+      height={height}
+    ></Image>
   );
 }
 
