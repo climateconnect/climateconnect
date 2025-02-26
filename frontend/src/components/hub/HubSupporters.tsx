@@ -67,6 +67,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "600",
     color: "black",
     margin: 0,
+    wordBreak: "break-word",
   },
   supporterSubtitle: (containerClass) => ({
     margin: 0,
