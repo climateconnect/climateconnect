@@ -62,28 +62,20 @@ const useStyles = makeStyles((theme) => ({
   supporterImg: {
     borderRadius: "50%",
   },
-  supporterName: (containerClass) => ({
+  supporterName: {
     fontSize: "17px",
     fontWeight: "600",
-    whiteSpace: "nowrap",
-    width: containerClass ? "160px" : "200px",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
     color: "black",
     margin: 0,
-  }),
+    wordBreak: "break-word",
+  },
   supporterSubtitle: (containerClass) => ({
     margin: 0,
     fontSize: "12px",
     fontWeight: "normal",
     color: "#484848",
-    whiteSpace: "nowrap",
-    width: containerClass ? "160px" : "200px",
     overflow: "hidden",
-    textOverflow: "ellipsis",
-    [`@media (min-width: 1200px) and (max-width: 1370px)`]: {
-      width: "150px",
-    },
+    wordBreak: "break-word",
   }),
   carouselEntry: {
     padding: " 8px",
