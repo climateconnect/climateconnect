@@ -250,7 +250,7 @@ const MentionNotification = ({ notification, texts, locale }) => {
   } else {
     urlEnding =
       entityType === "project"
-        ? `/projects/${notification.project.url_slug}${queryString}/#comments`
+        ? `/projects/${notification.project.url_slug}${queryString}#comments`
         : `/hubs/${notification.idea.hub_url_slug}?idea=${notification.idea.url_slug}#ideas`;
   }
 

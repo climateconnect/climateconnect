@@ -27,7 +27,7 @@ export const ProjectCommentNotification = ({ notification }) => {
   const queryString = notification?.hub_url ? `?hub=${notification?.hub_url}` : "";
   return (
     <CommentNotification
-      link={"/projects/" + notification.project.url_slug + queryString + "/#comments"}
+      link={"/projects/" + notification.project.url_slug + queryString + "#comments"}
       object_commented_on={notification.project}
       comment_text={notification.project_comment.content}
       is_reply={false}
@@ -64,7 +64,7 @@ export const ProjectCommentReplyNotification = ({ notification }) => {
   const queryString = notification?.hub_url ? `?hub=${notification?.hub_url}` : "";
   return (
     <CommentNotification
-      link={"/projects/" + notification.project.url_slug + `${queryString}/#comments`}
+      link={"/projects/" + notification.project.url_slug + `${queryString}#comments`}
       object_commented_on={notification.project}
       comment_text={notification?.project_comment?.content}
       is_reply={true}
