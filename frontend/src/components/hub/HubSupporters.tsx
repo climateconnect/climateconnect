@@ -128,7 +128,6 @@ const HubSupporters = ({
   mobileVersion,
   hubName,
 }: HubSupporter) => {
-  
   const classes = useStyles({ containerClass: containerClass });
   const isSmallOrMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const { locale } = useContext(UserContext);

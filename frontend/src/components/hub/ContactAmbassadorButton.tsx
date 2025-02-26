@@ -35,7 +35,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function ContactAmbassadorButton({ hubAmbassador, mobile, hubUrl=null }) {
+export default function ContactAmbassadorButton({ hubAmbassador, mobile, hubUrl = null }) {
   const classes = useStyles();
   const { locale, user } = useContext(UserContext);
   const cookies = new Cookies();
@@ -50,8 +50,8 @@ export default function ContactAmbassadorButton({ hubAmbassador, mobile, hubUrl=
       let queryString: any = {
         redirect: window.location.pathname + window.location.search,
         errorMessage: texts.please_create_an_account_or_log_in_to_contact_the_ambassador,
-      }
-      if(hubUrl) {
+      };
+      if (hubUrl) {
         queryString.hub = hubUrl;
       }
       return redirect("/signup", queryString);
