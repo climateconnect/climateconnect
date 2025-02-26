@@ -86,8 +86,9 @@ export function CustomBackground({ hubUrl }: Props) {
   }
 }
 
-export function PrioOneBackgroundBrowse() {
+export function PrioOneBackgroundBrowse({ isLoggedInUser }: { isLoggedInUser: boolean }) {
   const classes = useStyles();
+  const largeScreenSize = useMediaQuery("(max-width: 1550px)");
 
   return (
     <div className={`${classes.background} ${classes.prioOneDefaultBackground}`}>
@@ -104,6 +105,19 @@ export function PrioOneBackgroundBrowse() {
         }}
         className={classes.prioOneAccentBackground}
       />
+      {!isLoggedInUser && !largeScreenSize && (
+        <div
+          style={{
+            position: "absolute",
+            top: "25%",
+            right: "0.5vw",
+            width: "11rem",
+            height: "11rem",
+          }}
+        >
+          <Image src={"/images/custom_hubs/" + PRIO1_SLUG + "_group.svg"} layout="fill"></Image>
+        </div>
+      )}
     </div>
   );
 }
