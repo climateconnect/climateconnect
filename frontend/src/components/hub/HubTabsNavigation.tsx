@@ -165,8 +165,8 @@ export default function HubTabsNavigation({
             </div>
           )}
           {isNarrowScreen && (
-            <>                        
-              {(hubUrl === "prio1") && (
+            <>
+              {hubUrl === "prio1" && (
                 <Link
                   className={classes.climateMatchLink}
                   href={"https://prio1-klima.net"}
@@ -182,7 +182,7 @@ export default function HubTabsNavigation({
                 underline="hover"
               >
                 {texts.projects_worldwide}
-              </Link>  
+              </Link>
             </>
           )}
         </div>

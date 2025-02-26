@@ -180,7 +180,7 @@ export default function Signup({ hubUrl, hubThemeData }) {
       isLoading={isLoading}
       hubUrl={hubUrl}
       customTheme={customTheme}
-      headerBackground={(hubUrl === "prio1" && isSmallScreen) ? "#7883ff" : "transparent"}
+      headerBackground={hubUrl === "prio1" && isSmallScreen ? "#7883ff" : "transparent"}
       footerTextColor={hubUrl && !isSmallScreen && "white"}
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
