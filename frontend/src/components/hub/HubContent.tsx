@@ -16,6 +16,7 @@ import HubHeadlineContainer from "./HubHeadlineContainer";
 import HubSupporters from "./HubSupporters";
 import { DePrio1Willkommen, EnPrio1Welcome } from "../../../devlink";
 import theme from "../../themes/theme";
+import { PrioOneBackgroundBrowse } from "./CustomBackground";
 
 type MakeStylesProps = {
   isLocationHub: boolean;
@@ -96,7 +97,13 @@ const useStyles = makeStyles((theme) => ({
     float: "right",
   },
   topSectionWrapper: (props: MakeStylesProps) => ({
-    background: props.isLocationHub ? `url('${props.image}')` : "none",
+    // TODO: decide if "props.image" should be checked as well
+    // > pro: it prevents requests to "/undefined"
+    // > con: it might be a bug that should be fixed in the parent component
+    // > con: it will not "report" the bug
+    background: props.isLocationHub && props.image ? `url('${props.image}')` : "none",
+
+    position: "relative",
     backgroundSize: "cover",
     backgroundPosition: "bottom center",
     paddingTop: theme.spacing(2),
@@ -107,6 +114,8 @@ const useStyles = makeStyles((theme) => ({
     },
   }),
   backgroundImageContainer: (props: MakeStylesProps) => ({
+    //TODO dead code?
+    display: "none",
     background: props.isLocationHub ? `url('${props.image}')` : "none",
     backgroundSize: "cover",
     backgroundPosition: "bottom center",
@@ -168,6 +177,7 @@ export default function HubContent({
         )}
         {isLocationHub ? (
           <div className={classes.topSectionWrapper}>
+            <PrioOneBackgroundBrowse />
             <Container>
               <div className={classes.dashboardAndStatboxWrapper}>
                 {user ? (
