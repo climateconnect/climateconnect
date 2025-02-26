@@ -88,7 +88,7 @@ export function CustomBackground({ hubUrl }: Props) {
 
 export function PrioOneBackgroundBrowse({ isLoggedInUser }: { isLoggedInUser: boolean }) {
   const classes = useStyles();
-  const largeScreenSize = useMediaQuery("(max-width: 1550px)");
+  const largeScreenSize = useMediaQuery("(max-width: 1300px)");
 
   return (
     <div className={`${classes.background} ${classes.prioOneDefaultBackground}`}>
