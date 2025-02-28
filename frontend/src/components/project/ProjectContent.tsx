@@ -51,9 +51,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginBottom: -6,
     paddingRight: theme.spacing(0.5),
   },
-  statusContainer: {
-    marginTop: theme.spacing(2),
-  },
   subHeader: {
     fontWeight: "bold",
     paddingBottom: theme.spacing(1),
@@ -269,19 +266,25 @@ export default function ProjectContent({
               </div>
             )}
           </div>
-          {project.end_date && project.status.key === "finished" && (
-            <Typography>
-              {texts.finished} <TimeAgo date={new Date(project.end_date)} />. {texts.total_duration}
-              :{" "}
-              {humanizeDuration(new Date(project.end_date) - new Date(project.start_date), {
-                largest: 1,
-                language: locale,
-              })}
-            </Typography>
-          )}
-          {project.end_date && project.status.key === "cancelled" && (
-            <Typography>{texts.cancelled} :(</Typography>
-          )}
+          {
+            // TODO: update remove
+            project.end_date && project.status.key === "finished" && (
+              <Typography>
+                {texts.finished} <TimeAgo date={new Date(project.end_date)} />.{" "}
+                {texts.total_duration}:{" "}
+                {humanizeDuration(new Date(project.end_date) - new Date(project.start_date), {
+                  largest: 1,
+                  language: locale,
+                })}
+              </Typography>
+            )
+          }
+          {
+            // TODO: update remove
+            project.end_date && project.status.key === "cancelled" && (
+              <Typography>{texts.cancelled} :(</Typography>
+            )
+          }
         </div>
       </div>
       <div className={classes.contentBlock}>

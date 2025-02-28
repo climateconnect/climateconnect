@@ -11,7 +11,6 @@ import {
   getProjectTagsOptions,
   getProjectTypeOptions,
   getSkillsOptions,
-  getStatusOptions,
 } from "../../public/lib/getOptions";
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
@@ -92,7 +91,6 @@ export async function getServerSideProps(ctx) {
     project_categories,
     organization_types,
     skills,
-    project_statuses,
     location_filtered_by,
     allHubs,
     hubDescription,
@@ -103,7 +101,6 @@ export async function getServerSideProps(ctx) {
     getProjectTagsOptions(hubUrl, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
-    getStatusOptions(ctx.locale),
     getLocationFilteredBy(ctx.query),
     getAllHubs(ctx.locale, false),
     retrieveDescriptionFromWebflow(ctx.query, ctx.locale),
@@ -130,7 +127,6 @@ export async function getServerSideProps(ctx) {
         project_categories: project_categories,
         organization_types: organization_types,
         skills: skills,
-        project_statuses: project_statuses,
       },
       initialLocationFilter: location_filtered_by,
       sectorHubs: allHubs.filter((h) => h.hub_type === "sector hub"),

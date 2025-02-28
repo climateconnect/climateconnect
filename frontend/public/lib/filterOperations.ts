@@ -143,7 +143,7 @@ export function splitFiltersFromQueryObject(queryObject, possibleFilters): any {
  * as other options.
  *
  * @param {string} type one of ["projects", "organizations", "members", "ideas"]
- * @param {Object} filters the old filters: something like {"location": "", status: [], etc... }
+ * @param {Object} filters the old filters: something like {"location": "", etc... } // TODO: create type definition for filters
  * @param {Object} newFilters the new filters after a change happened
  * @param {boolean} closeFilters
  * @param {Object} filterChoices the choices for select and multiselect filters

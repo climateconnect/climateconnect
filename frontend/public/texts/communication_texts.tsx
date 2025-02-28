@@ -42,10 +42,6 @@ export default function getCommunicationTexts() {
       en: "to write a comment",
       de: ", um einen Kommentar zu schreiben",
     },
-    project_status: {
-      en: "Project status",
-      de: "Projektstatus",
-    },
     newsletter_banner_text: {
       en: (
         <>

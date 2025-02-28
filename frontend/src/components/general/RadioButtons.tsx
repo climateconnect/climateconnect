@@ -58,6 +58,7 @@ function StyledRadio(props) {
   );
 }
 
+// TODO: dead code?
 export default function RadioButtons({ values, defaultValue, value, className, onChange }: any) {
   const [checkedValue, setCheckedValue] = React.useState(value ? value : defaultValue);
 
@@ -71,7 +72,7 @@ export default function RadioButtons({ values, defaultValue, value, className, o
       className={className}
       value={checkedValue}
       onChange={handleCheckedValueChange}
-      aria-label="project status"
+      aria-label="project status" //TODO: fix
       name="customized-radios"
     >
       {values.map((value) => (

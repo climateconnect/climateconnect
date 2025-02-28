@@ -98,7 +98,7 @@ export default function EditProjectPage({
 
   if (!user)
     return (
-      <WideLayout title={texts.please_log_in_to_edit_project} hideHeadline={true}>
+      <WideLayout title={texts.please_log_in_to_edit_project}>
         <LoginNudge fullPage whatToDo={texts.to_edit_this_project} />
       </WideLayout>
     );
