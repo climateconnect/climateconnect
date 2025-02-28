@@ -431,6 +431,8 @@ const getHubSupporters = async (url_slug, locale) => {
     return null;
   }
 };
+
+// TODO duplicated code? manage project members also has this function
 function parseProject(project) {
   return {
     name: project.name,
