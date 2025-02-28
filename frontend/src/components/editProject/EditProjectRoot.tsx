@@ -47,7 +47,6 @@ type Props = {
   project: Project;
   skillsOptions: any;
   userOrganizations: any;
-  statusOptions: any;
   handleSetProject: any;
   tagsOptions: any;
   oldProject: Project;
@@ -406,7 +405,6 @@ const parseProjectForRequest = async (project, translationChanges) => {
     ret.thumbnail_image = await blobFromObjectUrl(project.thumbnail_image);
   if (project.skills) ret.skills = project.skills.map((s) => s.id);
   if (project.tags) ret.project_tags = project.tags.map((t) => t.id);
-  if (project.status) ret.status = project.status.id;
   if (project.project_parents && project.project_parents.parent_organization)
     ret.parent_organization = project.project_parents.parent_organization.id;
   return ret;

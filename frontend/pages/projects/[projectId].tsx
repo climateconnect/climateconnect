@@ -437,7 +437,6 @@ function parseProject(project) {
     id: project.id,
     url_slug: project.url_slug,
     image: project.image,
-    status: project.status,
     location: project.location,
     description: project.description,
     short_description: project.short_description,

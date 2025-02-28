@@ -15,7 +15,6 @@ export type Role = {
 
 export type Project = {
   collaborators_welcome: boolean;
-  status: string;
   skills: any[];
   helpful_connections: any[];
   collaborating_organizations: any[];

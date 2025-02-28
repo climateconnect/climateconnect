@@ -268,7 +268,7 @@ export default function ProjectContent({
           </div>
           {
             // TODO: update remove
-            project.end_date && project.status.key === "finished" && (
+            project.end_date && (
               <Typography>
                 {texts.finished} <TimeAgo date={new Date(project.end_date)} />.{" "}
                 {texts.total_duration}:{" "}
@@ -281,9 +281,7 @@ export default function ProjectContent({
           }
           {
             // TODO: update remove
-            project.end_date && project.status.key === "cancelled" && (
-              <Typography>{texts.cancelled} :(</Typography>
-            )
+            project.end_date && <Typography>{texts.cancelled} :(</Typography>
           }
         </div>
       </div>
