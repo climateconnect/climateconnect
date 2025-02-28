@@ -139,10 +139,6 @@
     "en": "Organization type",
     "de": "Organisationsart"
   },
-  "status": {
-    "en": "Status",
-    "de": "Status"
-  },
   "click_here_to_send_or_press_ctrl_enter": {
     "en": "Click here to send (or press ctrl + Enter)",
     "de": "Klicke hier, um zu senden (oder drücke ctrl + Enter)"

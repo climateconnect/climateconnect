@@ -30,10 +30,6 @@ export default function getFilterAndSearchTexts({ filterType, hubName, locale })
       en: "Search for people active against climate change",
       de: "Suche nach Menschen, die gegen den Klimawandel aktiv sind",
     },
-    status_tooltip: {
-      en: "Only show projects in the selected stage of completion",
-      de: "Zeige nur Projekte im ausgewählten Stadium an",
-    },
     organization_type_tooltip: {
       en: "Only shows projects created by organizations of the selected type",
       de: "Zeige nur Projekte an, die von Organisationen des ausgewählten Typs erstellt wurden",

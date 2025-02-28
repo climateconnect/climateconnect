@@ -9,7 +9,6 @@ import {
   getProjectTagsOptions,
   getProjectTypeOptions,
   getSkillsOptions,
-  getStatusOptions,
 } from "../public/lib/getOptions";
 import { getAllHubs } from "../public/lib/hubOperations";
 import { getLocationFilteredBy } from "../public/lib/locationOperations";
@@ -28,7 +27,6 @@ export async function getServerSideProps(ctx) {
     project_categories,
     organization_types,
     skills,
-    project_statuses,
     hubs,
     location_filtered_by,
     projectTypes,
@@ -36,7 +34,6 @@ export async function getServerSideProps(ctx) {
     getProjectTagsOptions(null, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
-    getStatusOptions(ctx.locale),
     getAllHubs(ctx.locale),
     getLocationFilteredBy(ctx.query),
     getProjectTypeOptions(ctx.locale),
@@ -47,7 +44,6 @@ export async function getServerSideProps(ctx) {
         project_categories: project_categories,
         organization_types: organization_types,
         skills: skills,
-        project_statuses: project_statuses,
       },
       hideInfo: hideInfo === "true",
       hubs: hubs,

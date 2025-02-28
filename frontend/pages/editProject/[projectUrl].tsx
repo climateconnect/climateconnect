@@ -8,7 +8,6 @@ import {
   getProjectTagsOptions,
   getProjectTypeOptions,
   getSkillsOptions,
-  getStatusOptions,
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
@@ -42,7 +41,6 @@ export async function getServerSideProps(ctx) {
     members,
     skillsOptions,
     userOrganizations,
-    statusOptions,
     tagsOptions,
     projectTypeOptions,
   ] = await Promise.all([
@@ -50,7 +48,6 @@ export async function getServerSideProps(ctx) {
     getMembersByProject(projectUrl, auth_token, ctx.locale),
     getSkillsOptions(ctx.locale),
     getUserOrganizations(auth_token, ctx.locale),
-    getStatusOptions(ctx.locale),
     getProjectTagsOptions(null, ctx.locale),
     getProjectTypeOptions(ctx.locale),
   ]);
@@ -60,7 +57,6 @@ export async function getServerSideProps(ctx) {
       members: members,
       skillsOptions: skillsOptions,
       userOrganizations: userOrganizations,
-      statusOptions: statusOptions,
       tagsOptions: tagsOptions,
       projectTypeOptions: projectTypeOptions,
     }),
@@ -72,18 +68,15 @@ export default function EditProjectPage({
   members,
   skillsOptions,
   userOrganizations,
-  statusOptions,
   tagsOptions,
   projectTypeOptions,
 }) {
   const classes = useStyles();
   const [curProject, setCurProject] = React.useState({
     ...project,
-    status: statusOptions.find((s) => s.name === project.status),
   });
   project = {
     ...project,
-    status: statusOptions.find((s) => s.name === project.status),
   };
   const [errorMessage, setErrorMessage] = React.useState("");
   const { user, locale } = useContext(UserContext);
@@ -98,7 +91,7 @@ export default function EditProjectPage({
 
   if (!user)
     return (
-      <WideLayout title={texts.please_log_in_to_edit_project} hideHeadline={true}>
+      <WideLayout title={texts.please_log_in_to_edit_project}>
         <LoginNudge fullPage whatToDo={texts.to_edit_this_project} />
       </WideLayout>
     );
@@ -153,7 +146,6 @@ export default function EditProjectPage({
           project={curProject}
           skillsOptions={skillsOptions}
           userOrganizations={userOrganizations}
-          statusOptions={statusOptions}
           handleSetProject={handleSetProject}
           tagsOptions={tagsOptions}
           user_role={user_role}
