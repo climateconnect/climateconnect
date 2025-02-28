@@ -54,7 +54,7 @@ export default function Message({ message, classes, isPrivateChat }) {
             </Typography>
           </Link>
         )}
-        <MessageContent content={message.content} />
+        <MessageContent content={message.content} received={received} />
         <div className={ownClasses.timeContainer}>
           <div className={`${ownClasses.time} ${!received && ownClasses.sentTime}`}>
             {message.unconfirmed && (
