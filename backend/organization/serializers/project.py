@@ -36,7 +36,7 @@ from organization.utility.project import (
     get_project_short_description,
 )
 from organization.models.type import PROJECT_TYPES
-
+from hubs.serializers.hub import HubStubSerializer
 
 class ProjectSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
@@ -54,7 +54,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     helpful_connections = serializers.SerializerMethodField()
     language = serializers.SerializerMethodField()
     project_type = serializers.SerializerMethodField()
-
+    hubs = serializers.SerializerMethodField()
     class Meta:
         model = Project
         fields = (
@@ -83,6 +83,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             "language",
             "project_type",
             "additional_loc_info",
+            "hubs"
         )
         read_only_fields = ["url_slug"]
 
@@ -106,11 +107,15 @@ class ProjectSerializer(serializers.ModelSerializer):
     def get_project_parents(self, obj):
         serializer = ProjectParentsSerializer(obj.project_parent, many=True)
         return serializer.data
-
+    # should be remove
     def get_tags(self, obj):
         serializer = ProjectTaggingSerializer(obj.tag_project, many=True)
         return serializer.data
-
+    # add get_hubs instead of get_tags,
+    def get_hubs(self, obj):
+        serializer = HubStubSerializer(obj.hubs, many=True)
+        return serializer.data
+    
     def get_number_of_followers(self, obj):
         return obj.project_following.count()
 
