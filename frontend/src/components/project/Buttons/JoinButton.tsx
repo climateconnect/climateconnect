@@ -1,13 +1,14 @@
 import { Button, IconButton } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
+import { Theme } from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
-import React, { useContext } from "react";
+import React, { MouseEventHandler, useContext } from "react";
 
 import ButtonIcon from "../../general/ButtonIcon";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   largeScreenButtonContainer: {
     display: "inline-flex",
     flexDirection: "column",
@@ -51,9 +52,6 @@ const useStyles = makeStyles((theme) => ({
   buttonLabel: {
     position: "relative",
   },
-  buttonText: (props) => ({
-    visibility: props.likingChangePending ? "hidden" : "visible",
-  }),
   hidden: {
     visibility: "hidden",
   },
@@ -62,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
 type Props = {
   hasAdminPermissions?: Boolean;
   screenSize?: any;
-  handleSendProjectJoinRequest: Function;
+  handleSendProjectJoinRequest: MouseEventHandler<HTMLButtonElement>;
   requestedToJoin: boolean;
   className?: string;
 };
@@ -77,7 +75,7 @@ export default function JoinButton({
   const classes = useStyles();
 
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ locale: locale });
+  const texts = getTexts({ locale: locale, page: "project" });
 
   if (screenSize?.belowSmall) {
     return (
@@ -118,7 +116,7 @@ export default function JoinButton({
         variant="contained"
       >
         <div className={classes.buttonLabel}>
-          <div className={classes.buttonText}>{requestedToJoin ? texts.requested : texts.join}</div>
+          <div>{requestedToJoin ? texts.requested : texts.join}</div>
         </div>
       </Button>
     </span>

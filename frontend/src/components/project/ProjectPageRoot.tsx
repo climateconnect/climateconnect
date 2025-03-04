@@ -1,4 +1,4 @@
-import { Container, Tab, Tabs, Typography } from "@mui/material";
+import { backdropClasses, Container, Tab, Tabs, Typography, useTheme } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -18,7 +18,6 @@ import ConfirmDialog from "../dialogs/ConfirmDialog";
 import ElementOnScreen from "../hooks/ElementOnScreen";
 import ElementSpaceToRight from "../hooks/ElementSpaceToRight";
 import VisibleFooterHeight from "../hooks/VisibleFooterHeight";
-import Tutorial from "../tutorial/Tutorial";
 import ProjectInteractionButtons from "./Buttons/ProjectInteractionButtons";
 import ProjectCommentsContent from "./ProjectCommentsContent";
 import ProjectContent from "./ProjectContent";
@@ -27,54 +26,62 @@ import ProjectSideBar from "./ProjectSideBar";
 import ProjectTeamContent from "./ProjectTeamContent";
 import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMediaShareButton";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    textAlign: "center",
-    color: theme.palette.grey[800],
-    position: "relative",
-  },
-
-  buttonText: {
-    color: theme.palette.primary.main,
-  },
-
-  tabsContainerWithoutPadding: {
-    padding: 0,
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderBottom: `1px solid ${theme.palette.grey[500]}`,
-  },
-  tabContent: {
-    padding: theme.spacing(2),
-    textAlign: "left",
-  },
-  dialogText: {
-    textAlign: "center",
-    margin: "0 auto",
-    display: "block",
-  },
-  tab: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
-    width: 145,
-    [theme.breakpoints.down("sm")]: {
-      width: 125,
+const useStyles = makeStyles((theme) => {
+  return {
+    root: {
+      textAlign: "center",
+      color: theme.palette.grey[800],
+      position: "relative",
     },
-  },
-  projectInteractionButtonContainer: {
-    position: "relative",
-  },
-  shareButtonContainer: {
-    paddingRight: theme.spacing(4),
-  },
 
-  showAllProjectsButton: {
-    marginTop: theme.spacing(1),
-    fontSize: 14,
-    width: "100%",
-  },
-}));
+    buttonText: {
+      color: theme.palette.primary.main,
+    },
+
+    tabsContainerWithoutPadding: {
+      padding: 0,
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      borderBottom: `1px solid ${theme.palette.grey[500]}`,
+    },
+    tabContent: {
+      padding: theme.spacing(2),
+      textAlign: "left",
+    },
+    dialogText: {
+      textAlign: "center",
+      margin: "0 auto",
+      display: "block",
+    },
+    tab: {
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(2),
+      width: 145,
+      [theme.breakpoints.down("sm")]: {
+        width: 125,
+      },
+      "&.Mui-selected": {
+        color: theme.palette.background.default_contrastText,
+      },
+    },
+    tabsIndicator: {
+      backgroundColor: theme.palette.background.default_contrastText,
+    },
+    projectInteractionButtonContainer: {
+      position: "relative",
+    },
+    shareButtonContainer: {
+      paddingRight: theme.spacing(4),
+    },
+
+    showAllProjectsButton: {
+      marginTop: theme.spacing(1),
+      fontSize: 14,
+      width: "100%",
+    },
+  };
+});
 
 export default function ProjectPageRoot({
   project,
@@ -107,7 +114,6 @@ export default function ProjectPageRoot({
     showSimilarProjects: showSimilarProjects,
     locale: locale,
   });
-
   const texts = getTexts({
     locale: locale,
     page: "project",
@@ -135,10 +141,12 @@ export default function ProjectPageRoot({
   });
   const typesByTabValue = ["project", "team", "comments"];
 
-  //refs for tutorial
-  const projectDescriptionRef = useRef(null);
-  const collaborationSectionRef = useRef(null);
+  // ref used within:
+  // -> ProjectInteractionBoard
+  // -> ProjectOverview -> ContactCreatorButton
   const contactProjectCreatorButtonRef = useRef(null);
+
+  // ref used within: ProjectContent > DiscussionPreview
   const projectTabsRef = useRef(null);
 
   const messageButtonIsVisible = ElementOnScreen({ el: contactProjectCreatorButtonRef.current });
@@ -442,7 +450,6 @@ export default function ProjectPageRoot({
   });
 
   const latestParentComment = [project.comments[0]];
-
   return (
     <div className={classes.root}>
       <ProjectOverview
@@ -468,6 +475,7 @@ export default function ProjectPageRoot({
         showLikes={showLikes}
         toggleShowFollowers={toggleShowFollowers}
         toggleShowLikes={toggleShowLikes}
+        hubUrl={hubPage}
       />
 
       <Container className={classes.tabsContainerWithoutPadding}>
@@ -476,7 +484,7 @@ export default function ProjectPageRoot({
             variant={screenSize.belowSmall ? "fullWidth" : "standard"}
             value={tabValue}
             onChange={handleTabChange}
-            indicatorColor="primary"
+            classes={{ indicator: classes.tabsIndicator }}
           >
             <Tab label={texts.project} className={classes.tab} />
             <Tab label={teamTabLabel()} className={classes.tab} />
@@ -489,6 +497,7 @@ export default function ProjectPageRoot({
             className={classes.shareButtonContainer}
             project={project}
             projectAdmin={projectAdmin}
+            hubUrl={hubPage}
           />
         )}
       </Container>
@@ -524,8 +533,6 @@ export default function ProjectPageRoot({
           <ProjectContent
             project={project}
             leaveProject={requestLeaveProject}
-            projectDescriptionRef={projectDescriptionRef}
-            collaborationSectionRef={collaborationSectionRef}
             discussionTabLabel={discussionTabLabel()}
             latestParentComment={latestParentComment}
             handleTabChange={handleTabChange}
@@ -535,6 +542,7 @@ export default function ProjectPageRoot({
             toggleShowRequests={toggleShowRequests}
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
             requestedToJoinProject={requestedToJoinProject}
+            hubUrl={hubPage}
           />
         </TabContent>
         <TabContent value={tabValue} index={1}>
@@ -542,6 +550,7 @@ export default function ProjectPageRoot({
             project={project}
             handleReadNotifications={handleReadNotifications}
             leaveProject={requestLeaveProject}
+            hubUrl={hubPage}
           />
         </TabContent>
 
@@ -551,6 +560,7 @@ export default function ProjectPageRoot({
             user={user}
             token={token}
             setCurComments={setCurComments}
+            hubUrl={hubPage}
           />
         </TabContent>
         {screenSize.betweenTinyAndLarg && (
@@ -611,18 +621,6 @@ export default function ProjectPageRoot({
         }
         confirmText={texts.yes}
         cancelText={texts.no}
-      />
-
-      <Tutorial
-        fixedPosition
-        pointerRefs={{
-          projectDescriptionRef: projectDescriptionRef,
-          collaborationSectionRef: collaborationSectionRef,
-          contactProjectCreatorButtonRef: contactProjectCreatorButtonRef,
-          projectTabsRef: projectTabsRef,
-        }}
-        typesByTabValue={typesByTabValue}
-        handleTabChange={handleTabChange}
       />
     </div>
   );

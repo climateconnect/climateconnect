@@ -13,7 +13,10 @@ export function PreFooter({ as: _Component = _Builtin.Section }) {
       }}
       tag="div"
     >
-      <_Builtin.Container className={_utils.cx(_styles, "pre-footer-con")} tag="div">
+      <_Builtin.Container
+        className={_utils.cx(_styles, "pre-footer-con")}
+        tag="div"
+      >
         <_Builtin.Heading className={_utils.cx(_styles, "heading-8")} tag="h2">
           <_Builtin.Span className={_utils.cx(_styles, "text-span")}>
             {"Arbeite zusammen"}

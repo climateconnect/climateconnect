@@ -1,4 +1,14 @@
-import { Box, Button, Link, MenuItem, MenuList, Paper, Popper, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Link,
+  MenuItem,
+  MenuList,
+  Paper,
+  Popper,
+  Theme,
+  Typography,
+} from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -12,10 +22,9 @@ import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import UserImage from "./UserImage";
-import CreateIdeaDialog from "../ideas/createIdea/CreateIdeaDialog";
 import { getUserOrganizations } from "../../../public/lib/organizationOperations";
 
-const useStyles = makeStyles((theme) => {
+const useStyles = makeStyles((theme: Theme) => {
   return {
     welcomeBanner: {
       backgroundColor: theme.palette.primary.main,
@@ -83,16 +92,18 @@ const useStyles = makeStyles((theme) => {
       alignItems: "center",
     },
 
-    hubName: {
-      color: theme.palette.yellow.main,
-    },
-
     buttonContainer: {
       display: "flex",
       justifyContent: "space-around",
     },
     climateHubOption: {
       width: "100%",
+    },
+    buttonLabelColor: {
+      color: theme.palette.background.default_contrastText,
+    },
+    linkText: {
+      color: theme.palette.background.default_contrastText,
     },
   };
 });
@@ -125,7 +136,7 @@ const HoverButton = ({ items, label, startIcon }) => {
     <>
       <Button
         aria-haspopup="true"
-        className={classes.HoverButtonButton}
+        className={classes.buttonLabelColor}
         color="primary"
         onClick={handleOpen}
         onMouseEnter={handleOpen}
@@ -170,6 +181,7 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
               href={item.url_slug}
               onClick={() => handleClick(item.onClick)}
               underline="hover"
+              className={classes.linkText}
             >
               <MenuItem component="button" className={classes.climateHubOption}>
                 {item.name}
@@ -183,8 +195,7 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
 };
 
 type Props = {
-  allHubs?: Array<any>;
-  hubData?: Object;
+  hubUrl?: string;
   className?: any;
   location?: any;
   welcomeMessageLoggedIn?: string;
@@ -192,8 +203,7 @@ type Props = {
 };
 
 export default function Dashboard({
-  allHubs,
-  hubData,
+  hubUrl,
   className,
   location,
   welcomeMessageLoggedIn,
@@ -201,22 +211,27 @@ export default function Dashboard({
 }: Props) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
-  const texts = getTexts({ page: "dashboard", locale: locale, user: user, location: location });
+  const texts = getTexts({
+    page: "dashboard",
+    locale: locale,
+    user: user || undefined,
+    location: location,
+  });
   const [userOrganizations, setUserOrganizations] = useState(null);
-  const [isCreateIdeaOpen, setCreateIdeaOpen] = useState(false);
   const token = new Cookies().get("auth_token");
 
-  useEffect(async function () {
+  useEffect(() => {
     if (userOrganizations === null) {
       setUserOrganizations("");
-      const userOrgsFromServer = await getUserOrganizations(token, locale);
-      setUserOrganizations(userOrgsFromServer || []);
+      getUserOrganizations(token, locale).then((userOrgsFromServer) => {
+        setUserOrganizations(userOrgsFromServer || []);
+      });
     }
   }, []);
 
   const parseWelcomeMessage = (m) => {
-    const message = m.replaceAll("${user.first_name}", user.first_name);
-    return m.replaceAll("${user.first_name}", user.first_name);
+    const message = m.replaceAll("${user.first_name}", user?.first_name);
+    return m.replaceAll("${user.first_name}", user?.first_name);
   };
 
   const getWelcomeMessage = () => {
@@ -233,6 +248,11 @@ export default function Dashboard({
   };
 
   const welcomeMessage = getWelcomeMessage();
+
+  const getFullLink = (url: any, hash = "") => {
+    const hubAddition = hubUrl ? "?hub=" + hubUrl : "";
+    return `${getLocalePrefix(locale)}${url}${hubAddition}${hash ? "#" + hash : ""}`;
+  };
 
   return (
     <div className={`${classes.welcomeBanner} ${className}`}>
@@ -257,39 +277,16 @@ export default function Dashboard({
           {user ? (
             <>
               <HoverButton
-                startIcon={<EmojiObjectsIcon />}
-                label={texts.ideas}
-                items={[
-                  // TODO: implement tab change based on link -- this might
-                  // be more involved than we thought
-                  // {
-                  //   name: "Create idea",
-                  //   // url_slug: `${getLocalePrefix(locale)}/${item.url_slug}/`,
-                  //   url_slug: `#ideas`,
-                  // },
-                  {
-                    name: texts.create_idea,
-                    // url_slug: `${getLocalePrefix(locale)}/${item.url_slug}/`,
-                    url_slug: "#",
-                    onClick: () => setCreateIdeaOpen(true),
-                  },
-                  {
-                    name: texts.my_ideas,
-                    url_slug: `/profiles/${user.url_slug}#ideas`,
-                  },
-                ]}
-              />
-              <HoverButton
                 startIcon={<AssignmentIcon />}
                 label={texts.projects}
                 items={[
                   {
                     name: texts.share_project,
-                    url_slug: "/share",
+                    url_slug: getFullLink("/share"),
                   },
                   {
                     name: texts.my_projects,
-                    url_slug: `/profiles/${user.url_slug}#projects`,
+                    url_slug: getFullLink(`/profiles/${user.url_slug}`, "projects"),
                   },
                 ]}
               />
@@ -299,11 +296,11 @@ export default function Dashboard({
                 items={[
                   {
                     name: texts.create_organization,
-                    url_slug: "/createorganization",
+                    url_slug: getFullLink("/createorganization"),
                   },
                   {
                     name: texts.my_organizations,
-                    url_slug: `/profiles/${user.url_slug}#organizations`,
+                    url_slug: getFullLink(`/profiles/${user.url_slug}`, "organizations"),
                   },
                 ]}
               />
@@ -313,11 +310,11 @@ export default function Dashboard({
                 items={[
                   {
                     name: texts.my_profile,
-                    url_slug: `/profiles/${user.url_slug}`,
+                    url_slug: getFullLink(`/profiles/${user.url_slug}`),
                   },
                   {
                     name: texts.edit_profile,
-                    url_slug: "/editprofile",
+                    url_slug: getFullLink("/editprofile"),
                   },
                 ]}
               />
@@ -337,15 +334,6 @@ export default function Dashboard({
           )}
         </div>
       </div>
-      <CreateIdeaDialog
-        open={isCreateIdeaOpen}
-        onClose={() => setCreateIdeaOpen(false)}
-        allHubs={allHubs}
-        userOrganizations={userOrganizations}
-        hubLocation={location}
-        hubData={hubData}
-        resetTabsWhereFiltersWereApplied={() => {}}
-      />
     </div>
   );
 }

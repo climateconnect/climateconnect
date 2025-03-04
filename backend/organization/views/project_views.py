@@ -161,7 +161,8 @@ class ListProjectsView(ListAPIView):
         if "hub" in self.request.query_params:
             hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
             if hub.exists():
-                if hub[0].hub_type == Hub.SECTOR_HUB_TYPE:
+                hub = hub[0]
+                if hub.hub_type == Hub.SECTOR_HUB_TYPE:
                     project_category = Hub.objects.get(
                         url_slug=self.request.query_params.get("hub")
                     ).filter_parent_tags.all()
@@ -175,8 +176,8 @@ class ListProjectsView(ListAPIView):
                     projects = projects.filter(
                         tag_project__project_tag__in=project_tags_with_children
                     ).distinct()
-                elif hub[0].hub_type == Hub.LOCATION_HUB_TYPE:
-                    location = hub[0].location.all()[0]
+                elif hub.hub_type == Hub.LOCATION_HUB_TYPE:
+                    location = hub.location.all()[0]
                     location_multipolygon = location.multi_polygon
                     projects = projects.filter(Q(loc__country=location.country))
                     if location_multipolygon:
@@ -188,6 +189,8 @@ class ListProjectsView(ListAPIView):
                                 "loc__centre_point", location_multipolygon
                             )
                         )
+                elif hub.hub_type == Hub.CUSTOM_HUB_TYPE:
+                    projects = projects.filter(related_hubs=hub)
 
         if "collaboration" in self.request.query_params:
             collaborators_welcome = self.request.query_params.get("collaboration")
@@ -330,6 +333,23 @@ class CreateProjectView(APIView):
                         "message": "Missing required information to create project:"
                         + param
                         + " Please contact administrator"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        max_chars = {
+            "name": 1024,
+            "short_description": 280,
+            "description": 4800,
+            "website": 256,
+            "additional_loc_info": 256,
+        }
+        for param in max_chars.keys():
+            if param in request.data and len(request.data[param]) > max_chars[param]:
+                return Response(
+                    {
+                        "message": "Your value for this field is too long: "
+                        + param
+                        + ". Please make a change or contact an administrator at contact@climateconnect.earth"
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
@@ -868,6 +888,12 @@ class ListProjectTags(ListAPIView):
                     return ProjectTags.objects.filter(parent_tag=parent_tag)
                 if hub.hub_type == Hub.LOCATION_HUB_TYPE:
                     return ProjectTags.objects.all()
+                if hub.hub_type == Hub.CUSTOM_HUB_TYPE:
+                    return ProjectTags.objects.all()
+
+                # TODO(Karol): is this default needed, just in case?
+                return ProjectTags.objects.all()
+
             except Hub.DoesNotExist:
                 return ProjectTags.objects.all()
         else:

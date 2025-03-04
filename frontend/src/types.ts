@@ -40,6 +40,7 @@ export type Project = {
   short_description?: string;
   creator?: User | Organization | any; //TODO: remove 'any' once User and Organization types are properly defined
   image?: string;
+  hubName?: string;
 };
 
 export type ProjectType = "project" | "idea" | "event";
@@ -57,9 +58,11 @@ declare module "@mui/material/styles/createPalette" {
   // augment theme type with climateconnect custom properties
   interface Palette {
     yellow: PaletteColor;
+    contrast: PaletteColor;
   }
   interface PaletteOptions {
     yellow: PaletteColorOptions;
+    contrast: PaletteColorOptions;
   }
   interface PaletteColor {
     extraLight?: string;

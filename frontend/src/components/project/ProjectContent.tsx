@@ -1,4 +1,4 @@
-import { Button, Typography } from "@mui/material";
+import { Button, Typography, useTheme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -6,6 +6,7 @@ import humanizeDuration from "humanize-duration";
 import React, { useState, useContext } from "react";
 import TimeAgo from "react-timeago";
 import youtubeRegex from "youtube-regex";
+import { Theme } from "@mui/material/styles";
 
 // Relative imports
 import { germanYearAndDayFormatter, yearAndDayFormatter } from "../../utils/formatting";
@@ -21,7 +22,7 @@ import ProjectContentSideButtons from "./Buttons/ProjectContentSideButtons";
 
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   createdBy: {
     fontSize: 16,
   },
@@ -59,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
   },
   expandButton: {
     width: "100%",
+    color: theme.palette.background.default_contrastText,
   },
   icon: {
     verticalAlign: "bottom",
@@ -74,6 +76,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 600,
     marginTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
+    color: theme?.palette?.background?.default_contrastText,
   },
   contentBlock: {
     marginBottom: theme.spacing(4),
@@ -94,7 +97,7 @@ const useStyles = makeStyles((theme) => ({
         position: "absolute",
         top: 0,
         left: 0,
-        color: theme.palette.primary.main,
+        color: theme?.palette?.background?.default_contrastText,
       },
     },
   },
@@ -137,24 +140,22 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ProjectContent({
-  collaborationSectionRef,
   discussionTabLabel,
   handleTabChange,
   latestParentComment,
   leaveProject,
   project,
-  projectDescriptionRef,
   projectTabsRef,
   typesByTabValue,
   showRequesters,
   toggleShowRequests,
   handleSendProjectJoinRequest,
   requestedToJoinProject,
+  hubUrl,
 }) {
   const classes = useStyles({ isPersonalProject: project.isPersonalProject });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
-
   const [showFullDescription, setShowFullDescription] = useState(false);
   const handleToggleFullDescriptionClick = () => setShowFullDescription(!showFullDescription);
 
@@ -176,7 +177,7 @@ export default function ProjectContent({
   };
   const maxDisplayedDescriptionLength = project.description
     ? calculateMaxDisplayedDescriptionLength(project.description)
-    : null;
+    : 0;
 
   //return the right static text depending on the project type
   const getProjectDescriptionHeadline = () => {
@@ -192,7 +193,7 @@ export default function ProjectContent({
     if (type === "idea") return texts.this_idea_hasnt_added_a_description_yet;
     return texts.this_project_hasnt_added_a_description_yet;
   };
-
+  const theme = useTheme();
   return (
     <>
       <div className={classes.contentBlock}>
@@ -204,6 +205,7 @@ export default function ProjectContent({
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
             requestedToJoinProject={requestedToJoinProject}
             leaveProject={leaveProject}
+            hubUrl={hubUrl}
           />
           {/* Note: created date is not the same as the start date, for projects */}
           <Typography>
@@ -236,6 +238,7 @@ export default function ProjectContent({
                     organization={project.creator}
                     inline
                     size="small"
+                    hubUrl={hubUrl}
                   />
                 )}
               </Typography>
@@ -260,6 +263,7 @@ export default function ProjectContent({
                     inline
                     className={classes.collaboratingOrganization}
                     organization={o}
+                    hubUrl={hubUrl}
                   />
                 ))}
               </div>
@@ -284,8 +288,7 @@ export default function ProjectContent({
         <Typography
           component="h2"
           variant="h6"
-          color="primary"
-          ref={projectDescriptionRef}
+          color={theme.palette.background.default_contrastText}
           className={classes.subHeader}
         >
           {getProjectDescriptionHeadline()}
@@ -293,7 +296,7 @@ export default function ProjectContent({
         <Typography className={classes.projectDescription} component="div">
           {project.description ? (
             showFullDescription || project.description.length <= maxDisplayedDescriptionLength ? (
-              <MessageContent content={project.description} renderYoutubeVideos={1} />
+              <MessageContent content={project.description} renderYoutubeVideos={true} />
             ) : (
               <MessageContent
                 content={project.description.substr(0, maxDisplayedDescriptionLength) + "..."}
@@ -327,10 +330,16 @@ export default function ProjectContent({
           handleTabChange={handleTabChange}
           typesByTabValue={typesByTabValue}
           projectTabsRef={projectTabsRef}
+          hubUrl={hubUrl}
         />
       )}
-      <div className={classes.contentBlock} ref={collaborationSectionRef}>
-        <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
+      <div className={classes.contentBlock}>
+        <Typography
+          component="h2"
+          variant="h6"
+          color={theme.palette.background.default_contrastText}
+          className={classes.subHeader}
+        >
           {texts.collaboration}
         </Typography>
         {project.collaborators_welcome ? (
@@ -342,7 +351,12 @@ export default function ProjectContent({
         )}
       </div>
       <div className={classes.contentBlock}>
-        <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
+        <Typography
+          component="h2"
+          variant="h6"
+          color={theme.palette.background.default_contrastText}
+          className={classes.subHeader}
+        >
           {texts.progress}
         </Typography>
         <Typography variant="body2" fontStyle="italic" fontWeight="bold">
@@ -353,6 +367,7 @@ export default function ProjectContent({
             <Posts
               posts={project.timeline_posts.sort((a, b) => new Date(b.date) - new Date(a.date))}
               type="progresspost"
+              hubUrl={hubUrl}
             />
           </div>
         )}

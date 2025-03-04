@@ -1,5 +1,5 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
+.pdm-python
 # misc
 .DS_Store
 .env*
@@ -22,7 +22,6 @@ __pycache__
 *.code-workspace
 backend/.vscode
 frontend/.vscode
-
 # intellij
 *.iml
 
@@ -38,3 +37,6 @@ media/
 
 .venv
 .vscode/tasks.json
+
+# devlink
+frontend/devlink/

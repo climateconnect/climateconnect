@@ -461,66 +461,6 @@
   }
 }
 
-.div-block-118-copy {
-  position: static;
-  left: 0%;
-  top: auto;
-  right: 0%;
-  bottom: 0%;
-  z-index: 1;
-
-  display: flex;
-  margin-top: 40px;
-  padding: 8px;
-  flex-direction: column;
-  align-items: center;
-}
-
-@media screen and (min-width: 1440px) {
-  .div-block-118-copy {
-    position: absolute;
-    left: 0%;
-    top: auto;
-    right: 0%;
-    bottom: 5%;
-
-    margin-top: 60px;
-  }
-}
-
-@media screen and (max-width: 991px) {
-  .div-block-118-copy {
-    position: relative;
-  }
-}
-
-@media screen and (max-width: 479px) {
-  .div-block-118-copy {
-    bottom: 2%;
-    display: none;
-    margin-top: 20px;
-    border-radius: 7px;
-    background-color: hsla(0, 0.00%, 93.33%, 0.00);
-  }
-}
-
-.text-block-19-copy {
-  padding-bottom: 9px;
-
-  font-family: 'Open Sans', sans-serif;
-  color: var(--white);
-  font-size: 18px;
-  font-weight: 600;
-  text-align: center;
-}
-
-@media screen and (max-width: 479px) {
-  .text-block-19-copy {
-    color: var(--white);
-    -webkit-text-stroke-color: var(--white);
-  }
-}
-
 .section-104 {
   display: block;
   overflow: visible;
@@ -920,6 +860,14 @@
   width: 100%;
 }
 
+.icon-12 {
+  display: none;
+}
+
+.icon-13 {
+  display: none;
+}
+
 .line-3 {
   position: absolute;
   left: 0%;
@@ -969,6 +917,7 @@
 .container-61 {
   position: relative;
   top: -120px;
+  display: block;
   object-fit: fill;
 }
 
@@ -1126,6 +1075,7 @@
 
 .text-block-34 {
   font-family: 'Open Sans', sans-serif;
+  color: var(--main);
   font-size: 16px;
   font-weight: 600;
 }
@@ -1320,7 +1270,7 @@
 
 @media screen and (max-width: 479px) {
   .bullet-points-ch.ass {
-    min-width: 80vw;
+    min-width: 60vw;
   }
 }
 
@@ -1560,6 +1510,12 @@
   }
 }
 
+@media screen and (max-width: 767px) {
+  .button-on-main-color {
+    margin-top: 25px;
+  }
+}
+
 @media screen and (max-width: 479px) {
   .button-on-main-color {
     margin-right: 0px;
@@ -1649,6 +1605,8 @@
 .dropdown-toggle-3 {
   width: 100%;
   height: 60px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 @media screen and (max-width: 479px) {
@@ -1705,6 +1663,7 @@
 .section-supporter-ch {
   margin-top: 0px;
   padding-top: 40px;
+  padding-bottom: 10px;
   background-color: var(--main-9876b83d);
 }
 
@@ -1722,6 +1681,10 @@
 }
 
 .heading-121 {
+  margin-top: 20px;
+  margin-bottom: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
   color: var(--white-fd47ad0c);
 }
 
@@ -1938,7 +1901,7 @@
 .div-org-cards {
   display: flex;
   width: 300px;
-  margin-right: 20px;
+  margin-right: 0px;
   margin-bottom: 14px;
   padding-top: 10px;
   padding-right: 10px;
@@ -1949,9 +1912,15 @@
 
   border-radius: 6px;
 
-  background-color: hsla(0, 0.00%, 96.47%, 1.00);
+  background-color: #f1f1f1;
 
   text-decoration: none;
+
+  cursor: pointer;
+}
+
+.div-org-cards:hover {
+  mix-blend-mode: normal;
 }
 
 @media screen and (max-width: 991px) {
@@ -1964,6 +1933,13 @@
 @media screen and (max-width: 767px) {
   .div-org-cards {
     min-width: 300px;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .div-org-cards {
+    width: 90vw;
+    min-width: 250px;
   }
 }
 
@@ -1995,6 +1971,10 @@
   display: flex;
   overflow: visible;
   margin-bottom: 20px;
+  justify-content: center;
+  align-items: stretch;
+  grid-column-gap: 15px;
+  grid-row-gap: 15px;
 }
 
 @media screen and (max-width: 991px) {
@@ -2194,9 +2174,63 @@
   background-color: var(--main);
 }
 
-.html-embed-7 {
-  margin-top: 20px;
-  margin-bottom: 20px;
+.container-72 {
+  display: flex;
+  justify-content: space-between;
+  grid-column-gap: 24px;
+  grid-row-gap: 24px;
+}
+
+@media screen and (max-width: 767px) {
+  .container-72 {
+    padding-right: 10px;
+    padding-left: 10px;
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+}
+
+.div-block-217 {
+  display: flex;
+  width: 50%;
+  margin-bottom: 35px;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+@media screen and (max-width: 767px) {
+  .div-block-217 {
+    width: 100%;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+}
+
+.heading-137 {
+  margin-top: 25px;
+  color: var(--white);
+}
+
+.paragraph-154 {
+  color: var(--white);
+}
+
+.div-block-216 {
+  width: 50%;
+
+  border-radius: 6px;
+
+  background-image: url("https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/655782a6b8d7cf5a47fb5a81_nmb-Klimakonferenz-2022-0823-min%20(Mittel).jpg");
+  background-position: 50% 50%;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+@media screen and (max-width: 767px) {
+  .div-block-216 {
+    width: 100%;
+    height: 150px;
+  }
 }
 
 .section-org-supporter-ch {
@@ -2379,6 +2413,7 @@
 
 .dono-page-button-wrapper {
   display: flex;
+  justify-content: space-between;
   align-items: flex-end;
 }
 
@@ -2462,6 +2497,7 @@
 
 .footer {
   display: flex;
+  overflow: hidden;
   padding-top: 60px;
   padding-bottom: 40px;
   flex-direction: column;

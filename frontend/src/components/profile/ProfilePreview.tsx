@@ -11,7 +11,9 @@ const useStyles = makeStyles((theme) => {
   return {
     avatarWithInfo: {
       textAlign: "center",
-      width: theme.spacing(40),
+      alginSelf: "center",
+      maxWidth: theme.spacing(36),
+      padding: theme.spacing(2),
     },
     avatar: {
       height: theme.spacing(20),
@@ -24,6 +26,7 @@ const useStyles = makeStyles((theme) => {
       padding: theme.spacing(1),
       paddingBottom: 0,
       marginTop: theme.spacing(2),
+      textAlign: "center",
     },
     subtitle: {
       color: `${theme.palette.secondary.main}`,
@@ -52,6 +55,7 @@ const useStyles = makeStyles((theme) => {
       color: "#000",
     },
     disableHover: {
+      color: theme.palette.background?.default_contrastText,
       "&:hover": {
         textDecoration: "none",
       },
@@ -65,7 +69,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function ProfilePreview({ profile, allowMessage, showAdditionalInfo }: any) {
+export default function ProfilePreview({ profile, allowMessage, showAdditionalInfo, hubUrl }: any) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
@@ -75,10 +79,12 @@ export default function ProfilePreview({ profile, allowMessage, showAdditionalIn
     src: getImageUrl(profile.thumbnail_image),
     className: classes.avatar,
   };
+  const queryString = hubUrl ? "?hub=" + hubUrl : "";
+
   return (
     <div className={classes.avatarWithInfo}>
       <Link
-        href={getLocalePrefix(locale) + "/profiles/" + profile.url_slug}
+        href={getLocalePrefix(locale) + `/profiles/${profile.url_slug}${queryString}`}
         className={classes.disableHover}
         underline="hover"
       >

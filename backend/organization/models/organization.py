@@ -209,8 +209,15 @@ class Organization(models.Model):
     hubs = models.ManyToManyField(
         "hubs.Hub",
         related_name="organization_hubs",
-        help_text="Hubs that the organization is active in",
+        help_text="SectorHubs that the organization is active in. These hubs will be displayed on the organization page.",
         verbose_name="Hubs",
+        blank=True,
+    )
+
+    related_hubs = models.ManyToManyField(
+        "hubs.Hub",
+        related_name="organizations_related_hubs",
+        help_text="(Custom) hubs that the organization is part of. The organization wil appear in these hubs.",
         blank=True,
     )
 

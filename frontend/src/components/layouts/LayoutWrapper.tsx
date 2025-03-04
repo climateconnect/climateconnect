@@ -1,13 +1,7 @@
-import {
-  CircularProgress,
-  Snackbar,
-  SnackbarContent,
-  Theme,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles";
+import { Snackbar, SnackbarContent, Theme, useMediaQuery } from "@mui/material";
+
 import makeStyles from "@mui/styles/makeStyles";
+import { ThemeProvider } from "@mui/material/styles";
 import Head from "next/head";
 import Router from "next/router";
 import React, { useContext, useEffect, useState } from "react";
@@ -25,11 +19,11 @@ declare module "@mui/styles/defaultTheme" {
   interface DefaultTheme extends Theme {}
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme>((theme) => ({
   leaveSpaceForFooter: {
     position: "relative",
     //height of footer + spacing(1)
-    paddingBottom: theme.spacing(9),
+    paddingBottom: theme.spacing(12),
     minHeight: "100vh",
   },
   spinnerContainer: {

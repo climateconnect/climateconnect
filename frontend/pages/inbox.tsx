@@ -61,8 +61,8 @@ export async function getServerSideProps(ctx) {
   const chatData: any = await getChatsOfLoggedInUser(auth_token, 1, ctx.locale);
   return {
     props: {
-      chatData: chatData.chats,
-      initialNextPage: chatData.nextPage,
+      chatData: chatData?.chats || null,
+      initialNextPage: chatData?.nextPage || null,
     },
   };
 }

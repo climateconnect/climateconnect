@@ -2,6 +2,7 @@ import Grid from "@mui/material/Unstable_Grid2";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import MiniHubPreview from "./MiniHubPreview";
+import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 
 const useStyles = makeStyles((theme) => ({
   reset: {
@@ -27,8 +28,8 @@ export default function MiniHubPreviews({
   return (
     <Grid container component="ul" spacing={2} className={`${classes.reset} ${classes.root}`}>
       {hubs
-        .filter((hub) => hub.hub_type !== "location hub")
-        .map((hub, index) => (
+        .filter((hub) => !isLocationHubLikeHub(hub.hub_type))
+        .map((hub) => (
           <GridItem
             hub={hub}
             key={hub.url_slug}

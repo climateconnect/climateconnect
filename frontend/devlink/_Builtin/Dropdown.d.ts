@@ -6,10 +6,10 @@ type DropdownProps = React.PropsWithChildren<{
 }>;
 export declare const DropdownWrapper: React.ForwardRefExoticComponent<
   {
-    tag?: keyof HTMLElementTagNameMap | undefined;
-    className?: string | undefined;
+    tag?: keyof HTMLElementTagNameMap;
+    className?: string;
   } & {
-    children?: React.ReactNode;
+    children?: React.ReactNode | undefined;
   } & {
     children: React.ReactElement<DropdownToggleProps | DropdownListProps>;
     delay: number;
@@ -19,43 +19,45 @@ export declare const DropdownWrapper: React.ForwardRefExoticComponent<
 type DropdownToggleProps = DropdownProps;
 export declare const DropdownToggle: React.ForwardRefExoticComponent<
   {
-    tag?: keyof HTMLElementTagNameMap | undefined;
-    className?: string | undefined;
+    tag?: keyof HTMLElementTagNameMap;
+    className?: string;
   } & {
-    children?: React.ReactNode;
+    children?: React.ReactNode | undefined;
   } & React.RefAttributes<unknown>
 >;
 type DropdownListProps = DropdownProps & {
-  children: React.ReactElement<DropdownLinkProps> | React.ReactElement<DropdownLinkProps>[];
+  children:
+    | React.ReactElement<DropdownLinkProps>
+    | React.ReactElement<DropdownLinkProps>[];
 };
 export declare const DropdownList: React.ForwardRefExoticComponent<
   {
-    tag?: keyof HTMLElementTagNameMap | undefined;
-    className?: string | undefined;
+    tag?: keyof HTMLElementTagNameMap;
+    className?: string;
   } & {
-    children?: React.ReactNode;
+    children?: React.ReactNode | undefined;
   } & {
-    children: React.ReactElement<DropdownLinkProps> | React.ReactElement<DropdownLinkProps>[];
+    children:
+      | React.ReactElement<DropdownLinkProps>
+      | React.ReactElement<DropdownLinkProps>[];
   } & React.RefAttributes<unknown>
 >;
 type DropdownLinkProps = DropdownProps & LinkProps;
 export declare const DropdownLink: React.ForwardRefExoticComponent<
   {
-    tag?: keyof HTMLElementTagNameMap | undefined;
-    className?: string | undefined;
+    tag?: keyof HTMLElementTagNameMap;
+    className?: string;
   } & {
-    children?: React.ReactNode;
+    children?: React.ReactNode | undefined;
   } & import("./Basic").ElementProps<"a"> & {
-      options?:
-        | {
-            href: string;
-            target?: "_self" | "_blank" | undefined;
-            preload?: "none" | "prerender" | "prefetch" | undefined;
-          }
-        | undefined;
-      className?: string | undefined;
-      button?: boolean | undefined;
-      block?: string | undefined;
+      options?: {
+        href: string;
+        target?: "_self" | "_blank";
+        preload?: "none" | "prefetch" | "prerender";
+      };
+      className?: string;
+      button?: boolean;
+      block?: string;
     } & React.RefAttributes<HTMLAnchorElement>
 >;
 export {};

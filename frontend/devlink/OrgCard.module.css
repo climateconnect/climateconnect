@@ -1,7 +1,7 @@
 .div-org-cards {
   display: flex;
   width: 300px;
-  margin-right: 20px;
+  margin-right: 0px;
   margin-bottom: 14px;
   padding-top: 10px;
   padding-right: 10px;
@@ -12,9 +12,15 @@
 
   border-radius: 6px;
 
-  background-color: hsla(0, 0.00%, 96.47%, 1.00);
+  background-color: #f1f1f1;
 
   text-decoration: none;
+
+  cursor: pointer;
+}
+
+.div-org-cards:hover {
+  mix-blend-mode: normal;
 }
 
 @media screen and (max-width: 991px) {
@@ -27,6 +33,13 @@
 @media screen and (max-width: 767px) {
   .div-org-cards {
     min-width: 300px;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .div-org-cards {
+    width: 90vw;
+    min-width: 250px;
   }
 }
 
@@ -89,6 +102,7 @@
 
 .text-block-34 {
   font-family: 'Open Sans', sans-serif;
+  color: var(--main);
   font-size: 16px;
   font-weight: 600;
 }

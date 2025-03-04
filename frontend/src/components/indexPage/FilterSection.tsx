@@ -49,6 +49,9 @@ const useStyles = makeStyles((theme) => {
       color: "black !important",
       borderColor: "black !important",
     },
+    icon: {
+      color: theme.palette.background.default_contrastText,
+    },
   };
 });
 
@@ -58,7 +61,6 @@ type Props = {
   setFiltersExpanded: Function;
   type?: any;
   customSearchBarLabels?: any;
-  filterButtonRef?: any;
   searchValue?: any;
   hideFilterButton?: boolean;
   applyBackgroundColor?: boolean;
@@ -70,7 +72,6 @@ export default function FilterSection({
   setFiltersExpanded,
   type,
   customSearchBarLabels,
-  filterButtonRef,
   searchValue,
   hideFilterButton,
   applyBackgroundColor,
@@ -130,9 +131,12 @@ export default function FilterSection({
             className={classes.filterButton}
             onClick={onClickExpandFilters}
             startIcon={
-              filtersExpanded ? <HighlightOffIcon color="primary" /> : <TuneIcon color="primary" />
+              filtersExpanded ? (
+                <HighlightOffIcon className={classes.icon} />
+              ) : (
+                <TuneIcon className={classes.icon} />
+              )
             }
-            ref={filterButtonRef}
           >
             Filter
           </Button>

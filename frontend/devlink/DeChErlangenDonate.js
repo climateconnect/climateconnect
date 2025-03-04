@@ -3,7 +3,7 @@ import React from "react";
 import * as _Builtin from "./_Builtin";
 import * as _interactions from "./interactions";
 import { PreFooter } from "./PreFooter";
-import { PreFooterBelvNTgthr } from "./PreFooterBelvNTgthr";
+import { PreFooterGemeinsamGKs } from "./PreFooterGemeinsamGKs";
 import * as _utils from "./utils";
 import _styles from "./DeChErlangenDonate.module.css";
 
@@ -23,7 +23,10 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
         }}
         tag="div"
       >
-        <_Builtin.Container className={_utils.cx(_styles, "container-50")} tag="div">
+        <_Builtin.Container
+          className={_utils.cx(_styles, "container-50")}
+          tag="div"
+        >
           <_Builtin.Image
             className={_utils.cx(_styles, "image-81")}
             loading="lazy"
@@ -40,8 +43,14 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
             alt="Kochen für die Zukunft: Gruppe kocht gemeinsam"
             src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/6557740a0adaaaeb47842a41_smol_DSC02906.jpg"
           />
-          <_Builtin.Block className={_utils.cx(_styles, "div-block-111")} tag="div">
-            <_Builtin.Heading className={_utils.cx(_styles, "heading-101")} tag="h1">
+          <_Builtin.Block
+            className={_utils.cx(_styles, "div-block-111")}
+            tag="div"
+          >
+            <_Builtin.Heading
+              className={_utils.cx(_styles, "heading-101")}
+              tag="h1"
+            >
               {"Den ClimateHub Erlangen unterstützen"}
             </_Builtin.Heading>
             <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-124")}>
@@ -49,16 +58,29 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
                 "Wir beim ClimateHub Erlangen machen es möglich, dass alle Erlanger:innen schnell und einfach für den Klimaschutz anpacken können. Deine Spende hilft uns dabei, unabhängig zu bleiben, unsere Arbeit fortzusetzen und den ClimateHub in ganz Erlangen bekannt zu machen. Jetzt Spenden um unsere Arbeit für das kommende zu sichern."
               }
             </_Builtin.Paragraph>
-            <_Builtin.Block className={_utils.cx(_styles, "dono-page-button-wrapper")} tag="div">
+            <_Builtin.Block
+              className={_utils.cx(_styles, "dono-page-button-wrapper")}
+              tag="div"
+            >
               <_Builtin.Block
-                className={_utils.cj(_utils.cx(_styles, "div-block-112"), "w-clearfix")}
+                className={_utils.cj(
+                  _utils.cx(_styles, "div-block-112"),
+                  "w-clearfix"
+                )}
                 tag="div"
               >
-                <_Builtin.Block className={_utils.cx(_styles, "text-block-16")} tag="div">
+                <_Builtin.Block
+                  className={_utils.cx(_styles, "text-block-16")}
+                  tag="div"
+                >
                   {"Climate Connect gUG unterstützen:"}
                 </_Builtin.Block>
                 <_Builtin.Link
-                  className={_utils.cx(_styles, "button-in-main-color", "dono-page")}
+                  className={_utils.cx(
+                    _styles,
+                    "button-in-main-color",
+                    "dono-page"
+                  )}
                   button={true}
                   block=""
                   options={{
@@ -69,7 +91,10 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
                 </_Builtin.Link>
               </_Builtin.Block>
               <_Builtin.Block tag="div">
-                <_Builtin.Block className={_utils.cx(_styles, "text-block-18")} tag="div">
+                <_Builtin.Block
+                  className={_utils.cx(_styles, "text-block-18")}
+                  tag="div"
+                >
                   {"Sicher Spenden mit:"}
                 </_Builtin.Block>
                 <_Builtin.Image
@@ -108,8 +133,14 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
             href: "#A-word-from-the-team",
           }}
         >
-          <_Builtin.Block className={_utils.cx(_styles, "div-block-118")} tag="div">
-            <_Builtin.Block className={_utils.cx(_styles, "text-block-19")} tag="div">
+          <_Builtin.Block
+            className={_utils.cx(_styles, "div-block-118")}
+            tag="div"
+          >
+            <_Builtin.Block
+              className={_utils.cx(_styles, "text-block-19")}
+              tag="div"
+            >
               {"Mehr über uns"}
             </_Builtin.Block>
             <_Builtin.Image
@@ -129,7 +160,10 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
         }}
         tag="div"
       >
-        <_Builtin.Container className={_utils.cx(_styles, "container-51")} tag="div">
+        <_Builtin.Container
+          className={_utils.cx(_styles, "container-51")}
+          tag="div"
+        >
           <_Builtin.Heading
             className={_utils.cx(_styles, "heading-100")}
             tag="h2"
@@ -154,7 +188,10 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
           alt="quote icon"
           src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/638db96c0d5f31c3b0ca3c57_Icon%20material-format-quote.svg"
         />
-        <_Builtin.Block className={_utils.cx(_styles, "quoteswrapper")} tag="div">
+        <_Builtin.Block
+          className={_utils.cx(_styles, "quoteswrapper")}
+          tag="div"
+        >
           <_Builtin.NotSupported _atom="DynamoWrapper" />
         </_Builtin.Block>
       </_Builtin.Section>
@@ -165,7 +202,10 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
         }}
         tag="div"
       >
-        <_Builtin.Container className={_utils.cx(_styles, "container-49")} tag="div">
+        <_Builtin.Container
+          className={_utils.cx(_styles, "container-49")}
+          tag="div"
+        >
           <_Builtin.Image
             className={_utils.cx(_styles, "image-85")}
             loading="lazy"
@@ -198,8 +238,14 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
             alt=""
             src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/655782a6b8d7cf5a47fb5a81_nmb-Klimakonferenz-2022-0823-min%20(Mittel).jpg"
           />
-          <_Builtin.Block className={_utils.cx(_styles, "div-block-106")} tag="div">
-            <_Builtin.Heading className={_utils.cx(_styles, "heading-99")} tag="h1">
+          <_Builtin.Block
+            className={_utils.cx(_styles, "div-block-106")}
+            tag="div"
+          >
+            <_Builtin.Heading
+              className={_utils.cx(_styles, "heading-99")}
+              tag="h1"
+            >
               {"Was macht den ClimateHub aus?"}
             </_Builtin.Heading>
             <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-122")}>
@@ -210,12 +256,18 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
             <_Builtin.Grid className={_utils.cx(_styles, "grid-9")} tag="div">
               <_Builtin.Block
                 className={_utils.cx(_styles, "vaule-icon-text")}
-                id={_utils.cx(_styles, "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f1390c-d2f138d2")}
+                id={_utils.cx(
+                  _styles,
+                  "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f1390c-d2f138d2"
+                )}
                 tag="div"
               >
                 <_Builtin.Image
                   className={_utils.cx(_styles, "icon-values")}
-                  id={_utils.cx(_styles, "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f1390d-d2f138d2")}
+                  id={_utils.cx(
+                    _styles,
+                    "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f1390d-d2f138d2"
+                  )}
                   loading="lazy"
                   width="90"
                   height="auto"
@@ -224,7 +276,10 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
                 />
                 <_Builtin.Block
                   className={_utils.cx(_styles, "text-block-14")}
-                  id={_utils.cx(_styles, "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f1390e-d2f138d2")}
+                  id={_utils.cx(
+                    _styles,
+                    "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f1390e-d2f138d2"
+                  )}
                   tag="div"
                 >
                   {"Gemeinnützig"}
@@ -232,12 +287,18 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
               </_Builtin.Block>
               <_Builtin.Block
                 className={_utils.cx(_styles, "vaule-icon-text")}
-                id={_utils.cx(_styles, "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f13910-d2f138d2")}
+                id={_utils.cx(
+                  _styles,
+                  "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f13910-d2f138d2"
+                )}
                 tag="div"
               >
                 <_Builtin.Image
                   className={_utils.cx(_styles, "icon-values")}
-                  id={_utils.cx(_styles, "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f13911-d2f138d2")}
+                  id={_utils.cx(
+                    _styles,
+                    "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f13911-d2f138d2"
+                  )}
                   loading="lazy"
                   width="90"
                   height="auto"
@@ -246,7 +307,10 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
                 />
                 <_Builtin.Block
                   className={_utils.cx(_styles, "text-block-14")}
-                  id={_utils.cx(_styles, "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f13912-d2f138d2")}
+                  id={_utils.cx(
+                    _styles,
+                    "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f13912-d2f138d2"
+                  )}
                   tag="div"
                 >
                   {"Community getrieben"}
@@ -254,12 +318,18 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
               </_Builtin.Block>
               <_Builtin.Block
                 className={_utils.cx(_styles, "vaule-icon-text")}
-                id={_utils.cx(_styles, "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f13914-d2f138d2")}
+                id={_utils.cx(
+                  _styles,
+                  "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f13914-d2f138d2"
+                )}
                 tag="div"
               >
                 <_Builtin.Image
                   className={_utils.cx(_styles, "icon-values")}
-                  id={_utils.cx(_styles, "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f13915-d2f138d2")}
+                  id={_utils.cx(
+                    _styles,
+                    "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f13915-d2f138d2"
+                  )}
                   loading="lazy"
                   width="90"
                   height="auto"
@@ -268,7 +338,10 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
                 />
                 <_Builtin.Block
                   className={_utils.cx(_styles, "text-block-14")}
-                  id={_utils.cx(_styles, "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f13916-d2f138d2")}
+                  id={_utils.cx(
+                    _styles,
+                    "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f13916-d2f138d2"
+                  )}
                   tag="div"
                 >
                   {"Unabhängig"}
@@ -276,12 +349,18 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
               </_Builtin.Block>
               <_Builtin.Block
                 className={_utils.cx(_styles, "vaule-icon-text")}
-                id={_utils.cx(_styles, "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f13918-d2f138d2")}
+                id={_utils.cx(
+                  _styles,
+                  "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f13918-d2f138d2"
+                )}
                 tag="div"
               >
                 <_Builtin.Image
                   className={_utils.cx(_styles, "icon-values")}
-                  id={_utils.cx(_styles, "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f13919-d2f138d2")}
+                  id={_utils.cx(
+                    _styles,
+                    "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f13919-d2f138d2"
+                  )}
                   loading="lazy"
                   width="90"
                   height="90"
@@ -290,7 +369,10 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
                 />
                 <_Builtin.Block
                   className={_utils.cx(_styles, "text-block-14")}
-                  id={_utils.cx(_styles, "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f1391a-d2f138d2")}
+                  id={_utils.cx(
+                    _styles,
+                    "w-node-f94b7eaf-cd19-f6e8-98ef-7eefd2f1391a-d2f138d2"
+                  )}
                   tag="div"
                 >
                   {"Open Source"}
@@ -307,9 +389,18 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
         }}
         tag="div"
       >
-        <_Builtin.Container className={_utils.cx(_styles, "container-52")} tag="div">
-          <_Builtin.Block className={_utils.cx(_styles, "div-block-105")} tag="div">
-            <_Builtin.Heading className={_utils.cx(_styles, "heading-98")} tag="h2">
+        <_Builtin.Container
+          className={_utils.cx(_styles, "container-52")}
+          tag="div"
+        >
+          <_Builtin.Block
+            className={_utils.cx(_styles, "div-block-105")}
+            tag="div"
+          >
+            <_Builtin.Heading
+              className={_utils.cx(_styles, "heading-98")}
+              tag="h2"
+            >
               {"Wissen, was deine Spende bewirkt"}
             </_Builtin.Heading>
             <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-121")}>
@@ -344,12 +435,24 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
         }}
         tag="div"
       >
-        <_Builtin.Container className={_utils.cx(_styles, "container-48")} tag="div">
-          <_Builtin.Heading className={_utils.cx(_styles, "heading-97")} tag="h3">
+        <_Builtin.Container
+          className={_utils.cx(_styles, "container-48")}
+          tag="div"
+        >
+          <_Builtin.Heading
+            className={_utils.cx(_styles, "heading-97")}
+            tag="h3"
+          >
             {"Mit deiner Spenden unterstützt du"}
           </_Builtin.Heading>
-          <_Builtin.Block className={_utils.cx(_styles, "bullet-points-wrapper")} tag="div">
-            <_Builtin.Block className={_utils.cx(_styles, "bullet-points-ch")} tag="div">
+          <_Builtin.Block
+            className={_utils.cx(_styles, "bullet-points-wrapper")}
+            tag="div"
+          >
+            <_Builtin.Block
+              className={_utils.cx(_styles, "bullet-points-ch")}
+              tag="div"
+            >
               <_Builtin.Image
                 className={_utils.cx(_styles, "image-94")}
                 loading="lazy"
@@ -358,13 +461,19 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
                 alt="Gruppen Icon auf Schild"
                 src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/6167f3a8d0d5a614271e2857_Gruppe%206699.svg"
               />
-              <_Builtin.Heading className={_utils.cx(_styles, "heading-bulletpoint")} tag="h3">
+              <_Builtin.Heading
+                className={_utils.cx(_styles, "heading-bulletpoint")}
+                tag="h3"
+              >
                 {
                   "...eine diverse und wachsende Gemeinschaft in Erlangen, die sich für das Klima einsetzt."
                 }
               </_Builtin.Heading>
             </_Builtin.Block>
-            <_Builtin.Block className={_utils.cx(_styles, "bullet-points-ch")} tag="div">
+            <_Builtin.Block
+              className={_utils.cx(_styles, "bullet-points-ch")}
+              tag="div"
+            >
               <_Builtin.Image
                 loading="lazy"
                 width="auto"
@@ -372,13 +481,19 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
                 alt="Erfolgs Icon auf Schild"
                 src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/6229bf81f06f148a758a6032_Celebrate%20icon.svg"
               />
-              <_Builtin.Heading className={_utils.cx(_styles, "heading-bulletpoint")} tag="h3">
+              <_Builtin.Heading
+                className={_utils.cx(_styles, "heading-bulletpoint")}
+                tag="h3"
+              >
                 {
                   "...Klimaprojekte dabei, neue Mitglieder zu finden und so eine größere Wirkung zu erzielen."
                 }
               </_Builtin.Heading>
             </_Builtin.Block>
-            <_Builtin.Block className={_utils.cx(_styles, "bullet-points-ch")} tag="div">
+            <_Builtin.Block
+              className={_utils.cx(_styles, "bullet-points-ch")}
+              tag="div"
+            >
               <_Builtin.Image
                 loading="lazy"
                 width="auto"
@@ -386,7 +501,10 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
                 alt=""
                 src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/6246c6b38e811a527b2d5a34_Gruppe%206700.svg"
               />
-              <_Builtin.Heading className={_utils.cx(_styles, "heading-bulletpoint")} tag="h3">
+              <_Builtin.Heading
+                className={_utils.cx(_styles, "heading-bulletpoint")}
+                tag="h3"
+              >
                 {
                   "...die Umsetzung neuer Klimaschutz-Ideen und bringst mehr Menschen ins Engagement."
                 }
@@ -403,12 +521,24 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
         tag="div"
         id="Donation-setction"
       >
-        <_Builtin.Container className={_utils.cx(_styles, "container-41")} tag="div">
-          <_Builtin.Block className={_utils.cx(_styles, "div-block-122")} tag="div">
-            <_Builtin.Heading className={_utils.cx(_styles, "heading-97")} tag="h3">
+        <_Builtin.Container
+          className={_utils.cx(_styles, "container-41")}
+          tag="div"
+        >
+          <_Builtin.Block
+            className={_utils.cx(_styles, "div-block-122")}
+            tag="div"
+          >
+            <_Builtin.Heading
+              className={_utils.cx(_styles, "heading-97")}
+              tag="h3"
+            >
               {"Hier gleich Spenden*"}
             </_Builtin.Heading>
-            <_Builtin.Block className={_utils.cx(_styles, "text-block-21")} tag="div">
+            <_Builtin.Block
+              className={_utils.cx(_styles, "text-block-21")}
+              tag="div"
+            >
               {"*oder noch näher dran sein und "}
               <_Builtin.Link
                 button={false}
@@ -427,8 +557,14 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
           </_Builtin.Block>
         </_Builtin.Container>
       </_Builtin.Section>
-      <_Builtin.Container className={_utils.cx(_styles, "container-41")} tag="div">
-        <_Builtin.Block className={_utils.cx(_styles, "icon-text-wrapper")} tag="div">
+      <_Builtin.Container
+        className={_utils.cx(_styles, "container-41")}
+        tag="div"
+      >
+        <_Builtin.Block
+          className={_utils.cx(_styles, "icon-text-wrapper")}
+          tag="div"
+        >
           <_Builtin.Image
             className={_utils.cx(_styles, "image-76")}
             loading="lazy"
@@ -437,7 +573,10 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
             alt=""
             src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/616fe72654c3e4441b4e0e25_Komponente%20117.svg"
           />
-          <_Builtin.Block className={_utils.cx(_styles, "text-donate-wraper")} tag="div">
+          <_Builtin.Block
+            className={_utils.cx(_styles, "text-donate-wraper")}
+            tag="div"
+          >
             <_Builtin.Heading
               className={_utils.cx(_styles, "heading-90")}
               tag="h2"
@@ -472,7 +611,10 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
               {"aus."}
             </_Builtin.Paragraph>
             <_Builtin.Block
-              className={_utils.cj(_utils.cx(_styles, "div-block-99"), "w-clearfix")}
+              className={_utils.cj(
+                _utils.cx(_styles, "div-block-99"),
+                "w-clearfix"
+              )}
               tag="div"
             >
               <_Builtin.Link
@@ -512,7 +654,9 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
               >
                 {"Climate Connect Deutschland e.V."}
               </_Builtin.Link>
-              {" ist ebenfalls gemeinnützig und unterstützt und fördert unsere Online Plattform "}
+              {
+                " ist ebenfalls gemeinnützig und unterstützt und fördert unsere Online Plattform "
+              }
               <_Builtin.Link
                 button={false}
                 target="_blank"
@@ -529,7 +673,10 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
             </_Builtin.Paragraph>
           </_Builtin.Block>
         </_Builtin.Block>
-        <_Builtin.Block className={_utils.cx(_styles, "icon-text-wrapper")} tag="div">
+        <_Builtin.Block
+          className={_utils.cx(_styles, "icon-text-wrapper")}
+          tag="div"
+        >
           <_Builtin.Image
             className={_utils.cx(_styles, "image-76")}
             loading="lazy"
@@ -538,8 +685,14 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
             alt=""
             src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/6246f0f4c39a0b7c437653a4_Komponente%20121.svg"
           />
-          <_Builtin.Block className={_utils.cx(_styles, "text-donate-wraper")} tag="div">
-            <_Builtin.Heading className={_utils.cx(_styles, "heading-90")} tag="h3">
+          <_Builtin.Block
+            className={_utils.cx(_styles, "text-donate-wraper")}
+            tag="div"
+          >
+            <_Builtin.Heading
+              className={_utils.cx(_styles, "heading-90")}
+              tag="h3"
+            >
               {"Direkte Spende"}
             </_Builtin.Heading>
             <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-125")}>
@@ -571,7 +724,10 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
             </_Builtin.Paragraph>
           </_Builtin.Block>
         </_Builtin.Block>
-        <_Builtin.Block className={_utils.cx(_styles, "icon-text-wrapper", "crypto")} tag="div">
+        <_Builtin.Block
+          className={_utils.cx(_styles, "icon-text-wrapper", "crypto")}
+          tag="div"
+        >
           <_Builtin.Image
             className={_utils.cx(_styles, "image-76")}
             loading="lazy"
@@ -580,8 +736,14 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
             alt=""
             src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/638a19f7a9fc070db01a763e_Floating%20Sign%20Heart.svg"
           />
-          <_Builtin.Block className={_utils.cx(_styles, "text-donate-wraper")} tag="div">
-            <_Builtin.Heading className={_utils.cx(_styles, "heading-90")} tag="h2">
+          <_Builtin.Block
+            className={_utils.cx(_styles, "text-donate-wraper")}
+            tag="div"
+          >
+            <_Builtin.Heading
+              className={_utils.cx(_styles, "heading-90")}
+              tag="h2"
+            >
               {"Mit Kryptowährung spenden"}
             </_Builtin.Heading>
             <_Builtin.Paragraph className={_utils.cx(_styles, "paragraph-126")}>
@@ -591,7 +753,10 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
             </_Builtin.Paragraph>
           </_Builtin.Block>
         </_Builtin.Block>
-        <_Builtin.Block className={_utils.cx(_styles, "icon-text-wrapper")} tag="div">
+        <_Builtin.Block
+          className={_utils.cx(_styles, "icon-text-wrapper")}
+          tag="div"
+        >
           <_Builtin.Image
             className={_utils.cx(_styles, "image-76")}
             loading="lazy"
@@ -601,10 +766,16 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
             src="https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/6246f1cac89b29b4b44c25d4_Komponente%20125.svg"
           />
           <_Builtin.Block
-            className={_utils.cj(_utils.cx(_styles, "text-donate-wraper"), "w-clearfix")}
+            className={_utils.cj(
+              _utils.cx(_styles, "text-donate-wraper"),
+              "w-clearfix"
+            )}
             tag="div"
           >
-            <_Builtin.Heading className={_utils.cx(_styles, "heading-90")} tag="h3">
+            <_Builtin.Heading
+              className={_utils.cx(_styles, "heading-90")}
+              tag="h3"
+            >
               {"Spendenbescheinigung"}
             </_Builtin.Heading>
             <_Builtin.Paragraph>
@@ -643,8 +814,7 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
               button={true}
               block=""
               options={{
-                href:
-                  "https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/638a1b5707a76fc52e720a9a_nonprofit_status_confirmation%20(1).pdf",
+                href: "https://cdn.prod.website-files.com/615d9a37fbb2467a53e09161/638a1b5707a76fc52e720a9a_nonprofit_status_confirmation%20(1).pdf",
                 target: "_blank",
               }}
             >
@@ -654,7 +824,7 @@ export function DeChErlangenDonate({ as: _Component = _Builtin.Block }) {
         </_Builtin.Block>
       </_Builtin.Container>
       <PreFooter />
-      <PreFooterBelvNTgthr />
+      <PreFooterGemeinsamGKs />
     </_Component>
   );
 }

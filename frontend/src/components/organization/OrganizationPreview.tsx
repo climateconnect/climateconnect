@@ -68,16 +68,20 @@ const useStyles = makeStyles((theme) => {
       gridTemplateColumns: "40px min-content",
       justifyContent: "center",
     },
+    iconColor: {
+      color: theme.palette.background.default_contrastText,
+    },
   };
 });
 
-export default function OrganizationPreview({ organization }) {
+export default function OrganizationPreview({ organization, hubUrl }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
+  const queryString = hubUrl ? "?hub=" + hubUrl : "";
 
   return (
     <Link
-      href={getLocalePrefix(locale) + `/organizations/${organization.url_slug}`}
+      href={getLocalePrefix(locale) + `/organizations/${organization.url_slug}${queryString}`}
       className={classes.noUnderline}
       underline="hover"
     >
@@ -88,7 +92,7 @@ export default function OrganizationPreview({ organization }) {
           <Box>
             <span className={classes.members}>
               <Tooltip title="Members in organization">
-                <GroupSharp color="primary" />
+                <GroupSharp className={classes.iconColor} />
               </Tooltip>
               <Typography>{organization.members_count}</Typography>
             </span>
@@ -96,7 +100,7 @@ export default function OrganizationPreview({ organization }) {
           <Box>
             <span className={classes.hubs}>
               <Tooltip title="Number of projects">
-                <AssignmentSharp color="primary" />
+                <AssignmentSharp className={classes.iconColor} />
               </Tooltip>
               <Typography>{organization.projects_count}</Typography>
             </span>

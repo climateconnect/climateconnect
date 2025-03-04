@@ -13,7 +13,10 @@ export function HeaderPic({ as: _Component = _Builtin.Section }) {
         type: "section",
       }}
     >
-      <_Builtin.Container className={_utils.cx(_styles, "container-4")} tag="div" />
+      <_Builtin.Container
+        className={_utils.cx(_styles, "container-4")}
+        tag="div"
+      />
     </_Component>
   );
 }

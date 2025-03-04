@@ -474,7 +474,7 @@
   }
 }
 
-.div-block-118-copy {
+.div-scroll-down-arrow {
   position: static;
   left: 0%;
   top: auto;
@@ -490,7 +490,7 @@
 }
 
 @media screen and (min-width: 1440px) {
-  .div-block-118-copy {
+  .div-scroll-down-arrow {
     position: absolute;
     left: 0%;
     top: auto;
@@ -502,13 +502,13 @@
 }
 
 @media screen and (max-width: 991px) {
-  .div-block-118-copy {
+  .div-scroll-down-arrow {
     position: relative;
   }
 }
 
 @media screen and (max-width: 479px) {
-  .div-block-118-copy {
+  .div-scroll-down-arrow {
     bottom: 2%;
     display: none;
     margin-top: 20px;
@@ -734,6 +734,7 @@
 .container-61 {
   position: relative;
   top: -120px;
+  display: block;
   object-fit: fill;
 }
 
@@ -891,6 +892,7 @@
 
 .text-block-34 {
   font-family: 'Open Sans', sans-serif;
+  color: var(--main);
   font-size: 16px;
   font-weight: 600;
 }

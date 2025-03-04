@@ -74,6 +74,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.exceptions import NotFound
+from django.db import transaction
 
 
 logger = logging.getLogger(__name__)
@@ -133,8 +134,9 @@ class ListOrganizationsAPIView(ListAPIView):
         if "hub" in self.request.query_params:
             hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
             if hub.exists():
-                if hub.first().hub_type == Hub.SECTOR_HUB_TYPE:
-                    project_category = hub.first().filter_parent_tags.all()
+                hub = hub[0]
+                if hub.hub_type == Hub.SECTOR_HUB_TYPE:
+                    project_category = hub.filter_parent_tags.all()
                     project_category_ids = list(map(lambda c: c.id, project_category))
                     project_tags = ProjectTags.objects.filter(
                         id__in=project_category_ids
@@ -150,8 +152,8 @@ class ListOrganizationsAPIView(ListAPIView):
                             field_tag_organization__field_tag__in=project_tags_with_children
                         )
                     ).distinct()
-                elif hub.first().hub_type == Hub.LOCATION_HUB_TYPE:
-                    location = hub.first().location.first()
+                elif hub.hub_type == Hub.LOCATION_HUB_TYPE:
+                    location = hub.location.first()
                     organizations = organizations.filter(
                         Q(location__country=location.country)
                         & (
@@ -171,6 +173,8 @@ class ListOrganizationsAPIView(ListAPIView):
                             "location__centre_point", location.multi_polygon
                         )
                     )
+                elif hub.hub_type == Hub.CUSTOM_HUB_TYPE:
+                    organizations = organizations.filter(related_hubs=hub)
 
         if "organization_type" in self.request.query_params:
             organization_type_names = self.request.query_params.get(
@@ -272,9 +276,7 @@ class CreateOrganizationView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        texts = {
-            "name": request.data["name"].strip()
-        }  # remove leading and trailing spaces
+        texts = {"name": request.data["name"].strip()}
 
         if "short_description" in request.data:
             texts["short_description"] = request.data["short_description"]
@@ -282,6 +284,7 @@ class CreateOrganizationView(APIView):
             texts["about"] = request.data["about"]
         if "get_involved" in request.data:
             texts["get_involved"] = request.data["get_involved"]
+
         try:
             translations = get_translations(
                 texts,
@@ -292,132 +295,178 @@ class CreateOrganizationView(APIView):
         except ValueError as ve:
             translations = None
             logger.error("TranslationFailed: Error translating texts, {}".format(ve))
-        organization, created = Organization.objects.get_or_create(
-            name=request.data["name"].strip()  ## remove leading and trailing spaces
-        )
-        if created:
-            organization.url_slug = create_unique_slug(
-                organization.name, organization.id, Organization.objects
-            )
-            # Add primary language to organization table.
-            source_language = Language.objects.get(
-                language_code=request.data["source_language"]
-            )
-            organization.language = source_language
 
-            if "image" in request.data:
-                organization.image = get_image_from_data_url(request.data["image"])[0]
-            if "thumbnail_image" in request.data:
-                organization.thumbnail_image = get_image_from_data_url(
-                    request.data["thumbnail_image"]
-                )[0]
-            if "background_image" in request.data:
-                organization.background_image = get_image_from_data_url(
-                    request.data["background_image"]
-                )[0]
+        try:
+            # Wrap the entire organization creation in a transaction
+            with transaction.atomic():
+                organization, created = Organization.objects.get_or_create(
+                    name=request.data["name"].strip()
+                )
 
-            if "parent_organization" in request.data:
-                try:
-                    parent_org = Organization.objects.get(
-                        id=int(request.data["parent_organization"])
-                    )
-                except Organization.DoesNotExist:
+                if not created:
                     return Response(
-                        {"message": "Parent organization not found."},
-                        status=status.HTTP_404_NOT_FOUND,
+                        {
+                            "message": get_existing_name_message(organization.name),
+                            "url_slug": organization.url_slug,
+                            "existing_name": organization.name,
+                        },
+                        status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                organization.parent_organization = parent_org
+                organization.url_slug = create_unique_slug(
+                    organization.name, organization.id, Organization.objects
+                )
 
-            # Get accurate location from google maps.
-            if "location" in request.data:
-                organization.location = get_location(request.data["location"])
-            if "short_description" in request.data:
-                organization.short_description = request.data["short_description"]
-            if "about" in request.data:
-                organization.about = request.data["about"]
-            if "website" in request.data:
-                organization.website = request.data["website"]
-            if "organization_size" in request.data and is_valid_organization_size(
-                request.data["organization_size"]
-            ):
-                organization.organization_size = request.data["organization_size"]
-            if "get_involved" in request.data:
-                organization.get_involved = request.data["get_involved"]
-            if "hubs" in request.data:
-                hubs = []
-                for hub_url_slug in request.data["hubs"]:
+                # Add primary language
+                source_language = Language.objects.get(
+                    language_code=request.data["source_language"]
+                )
+                organization.language = source_language
+
+                # Handle images
+                if "image" in request.data:
+                    organization.image = get_image_from_data_url(request.data["image"])[
+                        0
+                    ]
+                if "thumbnail_image" in request.data:
+                    organization.thumbnail_image = get_image_from_data_url(
+                        request.data["thumbnail_image"]
+                    )[0]
+                if "background_image" in request.data:
+                    organization.background_image = get_image_from_data_url(
+                        request.data["background_image"]
+                    )[0]
+
+                # Handle parent organization
+                if "parent_organization" in request.data:
                     try:
-                        hub = Hub.objects.get(url_slug=hub_url_slug)
-                        hubs.append(hub)
-                    except Hub.DoesNotExist:
-                        logger.error("Passed hub url_slug {} does not exists")
-                organization.hubs.set(hubs)
-            organization.save()
-            # Create organization translation
-            if translations:
-                for key in translations["translations"]:
-                    if not key == "is_manual_translation":
-                        language_code = key
-                        texts = translations["translations"][language_code]
-                        language = Language.objects.get(language_code=language_code)
-                        if language_code in request.data["translations"]:
-                            is_manual_translation = request.data["translations"][
-                                language_code
-                            ]["is_manual_translation"]
-                        else:
-                            is_manual_translation = False
-                        create_organization_translation(
-                            organization, language, texts, is_manual_translation
+                        parent_org = Organization.objects.get(
+                            id=int(request.data["parent_organization"])
                         )
-            roles = Role.objects.all()
-            for member in request.data["team_members"]:
-                user_role = roles.filter(id=int(member["permission_type_id"])).first()
-                try:
-                    user = User.objects.get(id=int(member["user_id"]))
-                except User.DoesNotExist:
-                    logger.error(
-                        "Passed user id {} does not exists".format(member["user_id"])
-                    )
-                    continue
+                        organization.parent_organization = parent_org
+                    except Organization.DoesNotExist:
+                        raise NotFound("Parent organization not found.")
 
-                if user:
-                    OrganizationMember.objects.create(
-                        user=user, organization=organization, role=user_role
-                    )
-                    logger.info("Organization member created {}".format(user.id))
+                # Handle location and other fields
+                if "location" in request.data:
+                    organization.location = get_location(request.data["location"])
 
-            if "organization_tags" in request.data:
-                for organization_tag in request.data["organization_tags"]:
-                    try:
-                        organization_tag = OrganizationTags.objects.get(
-                            id=int(organization_tag["key"])
-                        )
-                    except OrganizationTags.DoesNotExist:
-                        logger.error(
-                            "Passed organization tag ID {} does not exists".format(
-                                organization_tag
+                # Add hub type if organization was shared in a custom hub
+                if "created_in_hub" in request.data:
+                    hub = Hub.objects.filter(
+                        url_slug=request.data["created_in_hub"]
+                    ).first()
+                    organization.related_hubs.add(hub)
+
+                # Set other fields
+                fields_to_set = [
+                    "short_description",
+                    "about",
+                    "website",
+                    "organization_size",
+                    "get_involved",
+                ]
+                for field in fields_to_set:
+                    if field in request.data:
+                        if (
+                            field == "organization_size"
+                            and not is_valid_organization_size(request.data[field])
+                        ):
+                            continue
+                        setattr(organization, field, request.data[field])
+
+                if "hubs" in request.data:
+                    hubs = []
+                    for hub_url_slug in request.data["hubs"]:
+                        try:
+                            hub = Hub.objects.get(url_slug=hub_url_slug)
+                            hubs.append(hub)
+                        except Hub.DoesNotExist:
+                            logger.error("Passed hub url_slug {} does not exist")
+                    organization.hubs.set(hubs)
+                print(organization.related_hubs.all())
+                organization.save()
+
+                # Create organization translations
+                if translations:
+                    for key in translations["translations"]:
+                        if not key == "is_manual_translation":
+                            language_code = key
+                            texts = translations["translations"][language_code]
+                            language = Language.objects.get(language_code=language_code)
+                            if language_code in request.data["translations"]:
+                                is_manual_translation = request.data["translations"][
+                                    language_code
+                                ]["is_manual_translation"]
+                            else:
+                                is_manual_translation = False
+                            create_organization_translation(
+                                organization, language, texts, is_manual_translation
                             )
+
+                # Create organization members
+                roles = Role.objects.all()
+                for member in request.data["team_members"]:
+                    user_role = roles.filter(
+                        id=int(member["permission_type_id"])
+                    ).first()
+                    try:
+                        user = User.objects.get(id=int(member["user_id"]))
+                    except User.DoesNotExist:
+                        logger.error(
+                            "Passed user id {} does not exist".format(member["user_id"])
                         )
                         continue
-                    if organization_tag:
-                        OrganizationTagging.objects.create(
-                            organization=organization, organization_tag=organization_tag
-                        )
-                        logger.info(
-                            "Organization tagging created for organization {}".format(
-                                organization.id
-                            )
-                        )
 
+                    if user:
+                        OrganizationMember.objects.create(
+                            user=user, organization=organization, role=user_role
+                        )
+                        logger.info("Organization member created {}".format(user.id))
+
+                # Create organization tags
+                if "organization_tags" in request.data:
+                    for organization_tag in request.data["organization_tags"]:
+                        try:
+                            organization_tag = OrganizationTags.objects.get(
+                                id=int(organization_tag["key"])
+                            )
+                        except OrganizationTags.DoesNotExist:
+                            logger.error(
+                                "Passed organization tag ID {} does not exist".format(
+                                    organization_tag
+                                )
+                            )
+                            continue
+                        if organization_tag:
+                            OrganizationTagging.objects.create(
+                                organization=organization,
+                                organization_tag=organization_tag,
+                            )
+                            logger.info(
+                                "Organization tagging created for organization {}".format(
+                                    organization.id
+                                )
+                            )
+
+                return Response(
+                    {
+                        "message": "Organization {} successfully created".format(
+                            organization.name
+                        ),
+                        "url_slug": organization.url_slug,
+                    },
+                    status=status.HTTP_201_CREATED,
+                )
+
+        except Exception as e:
+            logger.error(f"Error creating organization: {str(e)}")
             return Response(
                 {
-                    "message": "Organization {} successfully created".format(
-                        organization.name
-                    ),
-                    "url_slug": organization.url_slug,
+                    "message": "Error creating organization. Please try again or contact support if the problem persists.",
+                    "error": str(e),
                 },
-                status=status.HTTP_201_CREATED,
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
 

@@ -53,7 +53,10 @@ export const DropdownWrapper = React.forwardRef(function DropdownWrapper(
       }));
     }
   }, [hover, isOpen, delay]);
-  const closeDropdown = React.useCallback(() => setIsOpen(INITIAL_DROPDOWN_STATE), [setIsOpen]);
+  const closeDropdown = React.useCallback(
+    () => setIsOpen(INITIAL_DROPDOWN_STATE),
+    [setIsOpen]
+  );
   useClickOut(root, closeDropdown);
   useIXEvent(root.current, isOpen);
   React.useEffect(() => {
@@ -62,22 +65,23 @@ export const DropdownWrapper = React.forwardRef(function DropdownWrapper(
       links[focusedLink ?? 0]?.focus();
     }
   }, [focusedLink]);
-  return (
-    <DropdownContext.Provider
-      value={{
+  return React.createElement(
+    DropdownContext.Provider,
+    {
+      value: {
         root,
         isOpen,
         toggleOpen,
         setFocusedLink,
         hover,
-      }}
-    >
-      <Dropdown {...props} />
-    </DropdownContext.Provider>
+      },
+    },
+    React.createElement(Dropdown, { ...props })
   );
 });
 function Dropdown({ tag = "div", className = "", ...props }) {
-  const { root, setFocusedLink, hover, toggleOpen } = React.useContext(DropdownContext);
+  const { root, setFocusedLink, hover, toggleOpen } =
+    React.useContext(DropdownContext);
   const { isOpen: isNavbarOpen } = React.useContext(NavbarContext);
   const handleFocus = (e) => {
     const linkList = root.current ? Array.from(getLinksList(root.current)) : [];
@@ -107,7 +111,9 @@ function Dropdown({ tag = "div", className = "", ...props }) {
       }
       case KEY_CODES.TAB: {
         setTimeout(() => {
-          setFocusedLink(linkList.findIndex((link) => link === document.activeElement));
+          setFocusedLink(
+            linkList.findIndex((link) => link === document.activeElement)
+          );
         }, 0);
         break;
       }
@@ -134,7 +140,11 @@ function Dropdown({ tag = "div", className = "", ...props }) {
         toggleOpen();
       }
     },
-    className: cj(className, "w-dropdown", isNavbarOpen && "w--nav-dropdown-open"),
+    className: cj(
+      className,
+      "w-dropdown",
+      isNavbarOpen && "w--nav-dropdown-open"
+    ),
   });
 }
 export const DropdownToggle = React.forwardRef(function DropdownToggle(
@@ -147,7 +157,11 @@ export const DropdownToggle = React.forwardRef(function DropdownToggle(
     ...props,
     "aria-haspopup": "menu",
     "aria-expanded": isOpen,
-    className: cj(className, "w-dropdown-toggle", isNavbarOpen && "w--nav-dropdown-toggle-open"),
+    className: cj(
+      className,
+      "w-dropdown-toggle",
+      isNavbarOpen && "w--nav-dropdown-toggle-open"
+    ),
     onClick: () => {
       if (!hover) toggleOpen();
     },
@@ -187,7 +201,11 @@ export const DropdownLink = React.forwardRef(function DropdownLink(
   const { isOpen: isNavbarOpen } = React.useContext(NavbarContext);
   return React.createElement(Link, {
     ...props,
-    className: cj(className, "w-dropdown-link", isNavbarOpen && "w--nav-link-open"),
+    className: cj(
+      className,
+      "w-dropdown-link",
+      isNavbarOpen && "w--nav-link-open"
+    ),
     tabIndex: 0,
     ref,
   });

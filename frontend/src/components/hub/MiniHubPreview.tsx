@@ -114,11 +114,12 @@ export default function MiniHubPreview({
             <SelectField
               label={texts.add_a_hub_where_you_are_active}
               size="small"
+              color="contrast"
               options={hubsToSelectFrom}
               onChange={(event) => event.target.value && onSelect(event)}
             />
           ) : (
-            <Typography color="secondary" className={classes.hubName}>
+            <Typography color="text" className={classes.hubName}>
               {hub.icon && <img src={getImageUrl(hub.icon)} className={classes.hubIcon} />}
               {hub?.name}
             </Typography>

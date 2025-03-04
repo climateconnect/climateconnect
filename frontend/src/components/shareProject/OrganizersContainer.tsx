@@ -7,12 +7,15 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
+import { getBackgroundContrastColor } from "../../../public/lib/themeOperations";
+import { useTheme } from "@mui/styles";
 
 const useStyles = makeStyles((theme) => {
   return {
     header: {
       marginBottom: theme.spacing(2),
       fontSize: 20,
+      color: theme.palette.background.default_contrastText,
     },
     info: {
       textAlign: "center",
@@ -36,6 +39,7 @@ export default function OrganizersContainer({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: projectData });
+  const theme = useTheme();
 
   const renderSearchOption = (props, option) => {
     return (
@@ -52,6 +56,8 @@ export default function OrganizersContainer({
     ? [...projectData.collaborating_organizations, projectData.parent_organization]
     : [...projectData.collaborating_organizations];
 
+  const backgroundContrastColor = getBackgroundContrastColor(theme);
+
   return (
     <div>
       <div className={blockClassName}>
@@ -60,6 +66,7 @@ export default function OrganizersContainer({
             label={texts.search_for_collaborating_organizations}
             className={`${searchBarClassName} ${blockClassName}`}
             baseUrl={process.env.API_URL + "/api/organizations/?search="}
+            color={backgroundContrastColor}
             clearOnSelect
             freeSolo
             onSelect={handleAddOrganization}

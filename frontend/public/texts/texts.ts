@@ -21,7 +21,7 @@ import getOrganizationTexts from "./organization_texts";
 import getProfileTexts from "./profile_texts";
 import getProjectTexts from "./project_texts";
 import settings_texts from "./settings.json";
-import getTutorialTexts from "./tutorial_texts";
+import custom_hub_texts from "./custom_hub_texts";
 
 type Page =
   | "about"
@@ -44,8 +44,7 @@ type Page =
   | "organization"
   | "profile"
   | "project"
-  | "settings"
-  | "tutorial";
+  | "settings";
 type Args<P extends Page> = {
   classes?: ClassNameMap;
   filterType?: string;
@@ -116,19 +115,26 @@ export default function getTexts<P extends Page>({
     navigation: navigation_texts,
     notification: getNotificationTexts({ idea: idea, project: project }),
     organization: getOrganizationTexts({ organization: organization, locale: locale }),
-    profile: getProfileTexts({ profile: profile, locale: locale }),
+    profile: getProfileTexts({ profile: profile, locale: locale, hubName: hubName }),
     project: getProjectTexts({
       project: project,
       user: user,
       url_slug: url_slug,
       locale: locale,
       creator: creator,
+      hubName: hubName,
     }),
     settings: settings_texts,
-    tutorial: getTutorialTexts({ hubName: hubName, classes: classes, locale: locale }),
   };
 
-  const text = { ...texts[page], ...general_texts };
+  let text = { ...texts[page], ...general_texts };
+
+  if (hubName && hubName in custom_hub_texts) {
+    // replaces/updates the general texts with the custom texts
+    // if no version is given, the default version is used
+    text = { ...text, ...custom_hub_texts[hubName] };
+  }
+
   const defaultLocale = "en";
 
   const result = {} as Record<string, string>;

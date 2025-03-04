@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) => {
       overflow: "hidden",
       wordBreak: "break-word",
       lineHeight: 1.3,
+      color: theme.palette.text.primary,
     },
     headerWrapper: {
       justifyContent: "center",

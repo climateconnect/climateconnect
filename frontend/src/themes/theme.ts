@@ -15,25 +15,40 @@ declare module "@mui/material/Button" {
   }
 }
 
+declare module "@mui/material/styles" {
+  interface TypeBackground {
+    default_contrastText?: string;
+    main?: string;
+  }
+}
+
 // Create core theme so we can access spacing etc. when customizing components
-const coreTheme = createTheme({
+export const coreTheme = createTheme({
   palette: {
     primary: {
       main: "#207178",
       light: "#66BCB5",
-      lightHover: "#7dd1ca",
       extraLight: "#D7F7F5",
+      contrastText: "#FFFFFF",
+      lightHover: "#7dd1ca",
     },
     secondary: {
       main: "#484848",
-      light: "#484848c2",
+      light: "#484848",
       extraLight: "#EBEBEB",
+      contrastText: "#FFFFFF",
     },
     yellow: {
       main: "#FFDE0A",
     },
     background: {
-      default: "#FFF",
+      default: "#FFFFFF",
+      paper: "#FFFFFF",
+      default_contrastText: "#207178",
+    },
+    contrast: {
+      main: "#207178",
+      contrastText: "#FFFFFF",
     },
     action: {
       selected: "#387077",
@@ -96,6 +111,12 @@ const theme = createTheme(coreTheme, {
           props: { variant: "contained", color: "grey" },
           style: {
             color: coreTheme.palette.getContrastText(coreTheme.palette.grey[300]),
+          },
+        },
+        {
+          props: { variant: "outlined" },
+          style: {
+            border: "1px solid !important",
           },
         },
         {

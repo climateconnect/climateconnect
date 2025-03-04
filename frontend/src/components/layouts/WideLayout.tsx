@@ -11,6 +11,7 @@ import Header from "../header/Header";
 import ElementSpaceToTop from "../hooks/ElementSpaceToTop";
 import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
 import LayoutWrapper from "./LayoutWrapper";
+import { CustomBackground } from "../hub/CustomBackground";
 
 type ThemeProps = { noSpaceBottom?: boolean; isStaticPage?: boolean };
 const useStyles = makeStyles<Theme, ThemeProps>((theme) => ({
@@ -41,7 +42,7 @@ type Props = {
   title?: string;
   message?: string;
   messageType?: string;
-  isLoading?: string;
+  isLoading?: boolean;
   fixedHeader?: boolean;
   transparentHeader?: boolean;
   isStaticPage?: boolean;
@@ -66,6 +67,9 @@ type Props = {
   noHeader?: boolean;
   isLandingPage?: boolean;
   showSuffix?: boolean;
+  footerTextColor?: string;
+  customTheme?: any;
+  hideAlert?: boolean;
 };
 //Wrapper layout component for pages where the content takes the whole width of the screen
 export default function WideLayout({
@@ -98,9 +102,12 @@ export default function WideLayout({
   noHeader,
   isLandingPage,
   showSuffix,
+  footerTextColor,
+  customTheme,
+  hideAlert,
 }: Props) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
-  const [alertOpen, setAlertOpen] = React.useState(true);
+  const [alertOpen, setAlertOpen] = React.useState(hideAlert ? false : true);
   const [initialMessageType, setInitialMessageType] = React.useState(null as any);
   const [initialMessage, setInitialMessage] = React.useState("");
   const [alertEl, setAlertEl] = React.useState(null);
@@ -120,8 +127,9 @@ export default function WideLayout({
     }, 3000);
   }, []);
   useEffect(() => {
-    setAlertOpen(true);
+    !hideAlert && setAlertOpen(true);
   }, [message]);
+
   return (
     <LayoutWrapper
       title={title}
@@ -129,10 +137,12 @@ export default function WideLayout({
       noSpaceForFooter={noSpaceBottom}
       description={description}
       useFloodStdFont={useFloodStdFont}
-      theme={theme}
+      theme={customTheme ?? theme}
       image={image}
       showSuffix={showSuffix}
     >
+      <CustomBackground hubUrl={hubUrl} />
+
       {!noHeader && (
         <Header
           isStaticPage={isStaticPage}
@@ -195,6 +205,7 @@ export default function WideLayout({
           showOnScrollUp={showOnScrollUp}
           large={isStaticPage || largeFooter}
           customFooterImage={customFooterImage}
+          textColor={footerTextColor}
         />
       )}
     </LayoutWrapper>

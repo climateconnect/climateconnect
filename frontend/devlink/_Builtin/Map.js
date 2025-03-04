@@ -64,11 +64,27 @@ export const MapWidget = React.forwardRef(function MapWidget(
         window.open(`https://maps.google.com/?z=${zoom}&daddr=${latlng}`);
       });
     };
-    loadScript(`https://maps.googleapis.com/maps/api/js?v=3.52.5&key=${apiKey}`, {
-      cacheRegex: /maps\.googleapis\.com\/maps\/api\/js\?v=3\.52\.5\&key=/gi,
-    }).then(loadMap);
-  }, [apiKey, mapStyle, zoom, latlng, tooltip, title, enableScroll, enableTouch, mapRef]);
-  return (
-    <div {...props} className={cj(className, "w-widget w-widget-map")} role="region" ref={mapRef} />
-  );
+    loadScript(
+      `https://maps.googleapis.com/maps/api/js?v=3.52.5&key=${apiKey}`,
+      {
+        cacheRegex: /maps\.googleapis\.com\/maps\/api\/js\?v=3\.52\.5\&key=/gi,
+      }
+    ).then(loadMap);
+  }, [
+    apiKey,
+    mapStyle,
+    zoom,
+    latlng,
+    tooltip,
+    title,
+    enableScroll,
+    enableTouch,
+    mapRef,
+  ]);
+  return React.createElement("div", {
+    ...props,
+    className: cj(className, "w-widget w-widget-map"),
+    role: "region",
+    ref: mapRef,
+  });
 });

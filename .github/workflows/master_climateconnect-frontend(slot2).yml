@@ -12,6 +12,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: 'slot2'
 
     steps:
       - uses: actions/checkout@v4
@@ -25,19 +26,12 @@ jobs:
         run: |
           cd frontend
           yarn --production
-
-      - name: Sync Webflow Devlink
-        run: |
-          cd frontend
           npx webflow devlink sync
-
-      - name: Build the project
-        run: |
-          cd frontend
           yarn build
 
         env:
           API_HOST: ${{ secrets.API_HOST }}
+          CUSTOM_HUB_URLS: ${{ secrets.CUSTOM_HUB_URLS }}
           API_URL: ${{ secrets.API_URL }}
           BASE_URL_HOST: ${{ secrets.BASE_URL_HOST }}
           BASE_URL: ${{ secrets.BASE_URL }}
@@ -47,6 +41,9 @@ jobs:
           LATEST_NEWSLETTER_LINK: ${{ secrets.LATEST_NEWSLETTER_LINK }}
           LETS_ENCRYPT_FILE_CONTENT: ${{ secrets.LETS_ENCRYPT_FILE_CONTENT }}
           SOCKET_URL: ${{ secrets.SOCKET_URL }}
+          WEBFLOW_API_TOKEN: ${{ secrets.WEBFLOW_API_TOKEN }}
+          WEBFLOW_SITE_ID: ${{ secrets.WEBFLOW_SITE_ID}}
+
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r

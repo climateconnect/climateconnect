@@ -22,20 +22,31 @@ type Props = {
   whatToDo: string;
   fullPage?: boolean;
   className?: string;
+  queryString?: string;
 };
-export default function LoginNudge({ whatToDo, fullPage, className }: Props) {
+export default function LoginNudge({ whatToDo, fullPage, className, queryString }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
+  const urlParams = new URLSearchParams(window.location.search);
+  const hub = urlParams.get("hub");
   return (
     <div className={`${fullPage && classes.loginNudge} ${className}`}>
       <Typography className={fullPage ? classes.loginNudgeText : undefined}>
         {texts.please}{" "}
-        <Link underline="always" color="primary" href={getLocalePrefix(locale) + "/signin"}>
+        <Link
+          underline="always"
+          color="primary"
+          href={`${getLocalePrefix(locale)}/signin${hub ? `?hub=${hub}` : ""}`}
+        >
           {texts.log_in}
         </Link>{" "}
         {texts.or}{" "}
-        <Link underline="always" color="primary" href={getLocalePrefix(locale) + "/signup"}>
+        <Link
+          underline="always"
+          color="primary"
+          href={`${getLocalePrefix(locale)}/signup${hub ? `?hub=${hub}` : ""}`}
+        >
           {texts.sign_up}
         </Link>{" "}
         {whatToDo}.

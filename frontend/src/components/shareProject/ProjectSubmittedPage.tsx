@@ -16,10 +16,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProjectSubmittedPage({ user, isDraft, url_slug, hasError }) {
+export default function ProjectSubmittedPage({ user, isDraft, url_slug, hasError, hubName }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "project", locale: locale, user: user, url_slug: url_slug });
+  const texts = getTexts({
+    page: "project",
+    locale: locale,
+    user: user,
+    url_slug: url_slug,
+    hubName: hubName,
+  });
   return (
     <div className={classes.root}>
       {hasError ? (

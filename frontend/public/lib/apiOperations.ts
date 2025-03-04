@@ -74,14 +74,24 @@ export const redirect = (
 
 export const sendToLogin = async (
   { resolvedUrl, locale, res }: GetServerSidePropsContext,
-  message: string
+  message: string,
+  message_type: string = "error"
 ) => {
   const pathName = resolvedUrl.slice(1);
+  const queryString = resolvedUrl.split("?")[1];
+  const queryObject = Object.fromEntries(new URLSearchParams(queryString));
   const languagePrefix = locale === "en" ? "" : `/${locale}`;
-  const url = languagePrefix + "/signin?redirect=" + pathName + "&message=" + message;
+  let url =
+    languagePrefix + "/signin?redirect=" + encodeURIComponent(pathName) + "&message=" + message;
+  if (queryObject.hub) {
+    url += "&hub=" + queryObject.hub;
+  }
+  if (message_type) {
+    url += "&message_type=" + message_type;
+  }
   res.writeHead(302, { Location: url });
   res.end();
-  return;
+  return { props: {} };
 };
 
 export function getLocalePrefix(locale: string) {

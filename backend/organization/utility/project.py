@@ -1,5 +1,5 @@
 import logging
-from typing import Dict
+from typing import Dict, Union
 
 from climateconnect_api.models import Skill
 from climateconnect_api.models.language import Language
@@ -8,9 +8,12 @@ from climateconnect_main.utility.general import get_image_from_data_url
 from location.utility import get_location
 from climateconnect_api.utility.common import create_unique_slug
 
-from organization.models import Project, ProjectMember
+from organization.models import Project, ProjectMember, Organization
 from organization.models.tags import ProjectTags
 from organization.models.type import ProjectTypesChoices
+from hubs.models.hub import Hub
+from django.contrib.auth.models import User
+
 
 from django.db.models import Q
 from climateconnect_api.models import Role
@@ -55,6 +58,11 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
         project.website = data["website"]
     if "additional_loc_info" in data:
         project.additional_loc_info = data["additional_loc_info"]
+
+    hub = Hub.objects.filter(url_slug=data["hubName"]).first()
+    if hub:
+        project.related_hubs.add(hub)
+
     project.language = source_language
 
     project.url_slug = create_unique_slug(project.name, project.id, Project.objects)
@@ -281,9 +289,11 @@ def get_similar_projects(url_slug: str, return_count=5):
         lambda x: 1 if x == source_proj_parent_id else 0
     )
     df["is_same_city"] = df.apply(
-        lambda x: 1
-        if x["city"] == source_proj_city and x["country"] == source_proj_country
-        else 0,
+        lambda x: (
+            1
+            if x["city"] == source_proj_city and x["country"] == source_proj_country
+            else 0
+        ),
         axis=1,
     )
     df["is_same_language"] = df.language.apply(
@@ -338,3 +348,14 @@ def get_similar_projects(url_slug: str, return_count=5):
         .head(return_count)
         .index.values
     )
+
+
+def get_common_related_hub(user: User, content: Union[Project, Organization]):
+    user_profile = user.user_profile
+    content_related_hubs = content.related_hubs.all()
+    user_related_hubs = user_profile.related_hubs.all()
+    intersection_of_related_hubs = content_related_hubs & user_related_hubs
+    if intersection_of_related_hubs:
+        return intersection_of_related_hubs[0].url_slug
+    else:
+        return None

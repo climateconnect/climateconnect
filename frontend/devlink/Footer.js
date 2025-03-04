@@ -14,13 +14,29 @@ export function Footer({ as: _Component = _Builtin.Section, link }) {
       tag="footer"
       id="footer"
     >
-      <_Builtin.Container className={_utils.cx(_styles, "container-2")} tag="div">
-        <_Builtin.Block className={_utils.cx(_styles, "footer-flex-container")} tag="div">
-          <_Builtin.Block className={_utils.cx(_styles, "div-block-6")} tag="div">
-            <_Builtin.Heading className={_utils.cx(_styles, "footer-heading")} tag="h2">
+      <_Builtin.Container
+        className={_utils.cx(_styles, "container-2")}
+        tag="div"
+      >
+        <_Builtin.Block
+          className={_utils.cx(_styles, "footer-flex-container")}
+          tag="div"
+        >
+          <_Builtin.Block
+            className={_utils.cx(_styles, "div-block-6")}
+            tag="div"
+          >
+            <_Builtin.Heading
+              className={_utils.cx(_styles, "footer-heading")}
+              tag="h2"
+            >
               {"Allgemein"}
             </_Builtin.Heading>
-            <_Builtin.List className={_utils.cx(_styles, "list-footer")} tag="ul" unstyled={true}>
+            <_Builtin.List
+              className={_utils.cx(_styles, "list-footer")}
+              tag="ul"
+              unstyled={true}
+            >
               <_Builtin.ListItem
                 list={{
                   type: "",
@@ -107,11 +123,21 @@ export function Footer({ as: _Component = _Builtin.Section, link }) {
               </_Builtin.ListItem>
             </_Builtin.List>
           </_Builtin.Block>
-          <_Builtin.Block className={_utils.cx(_styles, "div-block-6")} tag="div">
-            <_Builtin.Heading className={_utils.cx(_styles, "footer-heading")} tag="h2">
+          <_Builtin.Block
+            className={_utils.cx(_styles, "div-block-6")}
+            tag="div"
+          >
+            <_Builtin.Heading
+              className={_utils.cx(_styles, "footer-heading")}
+              tag="h2"
+            >
               {"Kontakt"}
             </_Builtin.Heading>
-            <_Builtin.List className={_utils.cx(_styles, "list-footer")} tag="ul" unstyled={true}>
+            <_Builtin.List
+              className={_utils.cx(_styles, "list-footer")}
+              tag="ul"
+              unstyled={true}
+            >
               <_Builtin.ListItem
                 list={{
                   type: "",
@@ -146,11 +172,21 @@ export function Footer({ as: _Component = _Builtin.Section, link }) {
               </_Builtin.ListItem>
             </_Builtin.List>
           </_Builtin.Block>
-          <_Builtin.Block className={_utils.cx(_styles, "div-block-6")} tag="div">
-            <_Builtin.Heading className={_utils.cx(_styles, "footer-heading")} tag="h2">
+          <_Builtin.Block
+            className={_utils.cx(_styles, "div-block-6")}
+            tag="div"
+          >
+            <_Builtin.Heading
+              className={_utils.cx(_styles, "footer-heading")}
+              tag="h2"
+            >
               {"Browse"}
             </_Builtin.Heading>
-            <_Builtin.List className={_utils.cx(_styles, "list-footer")} tag="ul" unstyled={true}>
+            <_Builtin.List
+              className={_utils.cx(_styles, "list-footer")}
+              tag="ul"
+              unstyled={true}
+            >
               <_Builtin.ListItem
                 list={{
                   type: "",
@@ -221,11 +257,21 @@ export function Footer({ as: _Component = _Builtin.Section, link }) {
               </_Builtin.ListItem>
             </_Builtin.List>
           </_Builtin.Block>
-          <_Builtin.Block className={_utils.cx(_styles, "div-block-6")} tag="div">
-            <_Builtin.Heading className={_utils.cx(_styles, "footer-heading")} tag="h2">
+          <_Builtin.Block
+            className={_utils.cx(_styles, "div-block-6")}
+            tag="div"
+          >
+            <_Builtin.Heading
+              className={_utils.cx(_styles, "footer-heading")}
+              tag="h2"
+            >
               {"Rechtliches"}
             </_Builtin.Heading>
-            <_Builtin.List className={_utils.cx(_styles, "list-footer")} tag="ul" unstyled={true}>
+            <_Builtin.List
+              className={_utils.cx(_styles, "list-footer")}
+              tag="ul"
+              unstyled={true}
+            >
               <_Builtin.ListItem
                 list={{
                   type: "",
@@ -279,8 +325,14 @@ export function Footer({ as: _Component = _Builtin.Section, link }) {
               </_Builtin.ListItem>
             </_Builtin.List>
           </_Builtin.Block>
-          <_Builtin.Block className={_utils.cx(_styles, "div-block-6")} tag="div">
-            <_Builtin.Heading className={_utils.cx(_styles, "footer-heading")} tag="h2">
+          <_Builtin.Block
+            className={_utils.cx(_styles, "div-block-6")}
+            tag="div"
+          >
+            <_Builtin.Heading
+              className={_utils.cx(_styles, "footer-heading")}
+              tag="h2"
+            >
               {"Sprache"}
             </_Builtin.Heading>
             <_Builtin.List tag="ul" unstyled={true}>

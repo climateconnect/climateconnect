@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
     color: "white",
   },
   selectedItem: {
-    backgroundColor: `${theme.palette.primary.main} !important`,
+    backgroundColor: `${theme.palette.background.default_contrastText} !important`,
   },
 }));
 
@@ -30,6 +30,7 @@ type Props = {
   required?;
   size?: "small" | "medium";
   values?;
+  color?;
 };
 export default function SelectField({
   className,
@@ -46,6 +47,7 @@ export default function SelectField({
   required,
   size,
   values,
+  color = "primary",
 }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -109,6 +111,7 @@ export default function SelectField({
         MenuProps: MenuProps as any,
       }}
       size={size}
+      color={color}
     >
       {!controlledValue && (!defaultValue || defaultValue === "") && !multiple && (
         <option value="" />

@@ -22,11 +22,20 @@ export function QuoteWOCms({
           alt=""
           src={pictureQuote}
         />
-        <_Builtin.Block className={_utils.cx(_styles, "div-block-108")} tag="div">
-          <_Builtin.Block className={_utils.cx(_styles, "text-block-15")} tag="div">
+        <_Builtin.Block
+          className={_utils.cx(_styles, "div-block-108")}
+          tag="div"
+        >
+          <_Builtin.Block
+            className={_utils.cx(_styles, "text-block-15")}
+            tag="div"
+          >
             {nameQuote}
           </_Builtin.Block>
-          <_Builtin.Block className={_utils.cx(_styles, "text-block-17")} tag="div">
+          <_Builtin.Block
+            className={_utils.cx(_styles, "text-block-17")}
+            tag="div"
+          >
             {bezeichnung}
           </_Builtin.Block>
         </_Builtin.Block>

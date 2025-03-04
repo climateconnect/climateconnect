@@ -202,5 +202,9 @@
   "email_on_new_org_project_text": {
     "en": "Get notified when an organization you follow posts an update",
     "de": "Ich möchte benachrichtigt werden, wenn eine Organisation, der ich folge, eine Update postet"
+  },
+  "you_can_now_log_in": {
+    "en": "You can now log in.",
+    "de": "Du kannst dich jetzt einloggen."
   }
 }

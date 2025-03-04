@@ -3,8 +3,9 @@ import makeStyles from "@mui/styles/makeStyles";
 import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 import React from "react";
 import Posts from "../communication/Posts";
+import { Theme } from "@mui/material/styles";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   buttonBase: {
     width: "100%",
     textAlign: "start",
@@ -28,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
   },
   headingDiscussionPreview: {
     fontWeight: "bold",
+    color: theme.palette.background.default_contrastText,
   },
 }));
 
@@ -37,6 +39,7 @@ export default function DiscussionPreview({
   handleTabChange,
   typesByTabValue,
   projectTabsRef,
+  hubUrl,
 }) {
   const classes = useStyles();
 
@@ -60,6 +63,7 @@ export default function DiscussionPreview({
           user={latestParentComment.author_user}
           truncate={3}
           noLink={true}
+          hubUrl={hubUrl}
         />
       </div>
     </ButtonBase>

@@ -23,7 +23,10 @@ export function NavBar({
         noScroll: false,
       }}
     >
-      <_Builtin.NavbarContainer className={_utils.cx(_styles, "container-3")} tag="div">
+      <_Builtin.NavbarContainer
+        className={_utils.cx(_styles, "container-3")}
+        tag="div"
+      >
         <_Builtin.NavbarBrand
           options={{
             href: "#",
@@ -38,14 +41,21 @@ export function NavBar({
             src={imageImage}
           />
         </_Builtin.NavbarBrand>
-        <_Builtin.NavbarMenu className={_utils.cx(_styles, "nav-menu")} tag="nav" role="navigation">
+        <_Builtin.NavbarMenu
+          className={_utils.cx(_styles, "nav-menu")}
+          tag="nav"
+          role="navigation"
+        >
           <_Builtin.DropdownWrapper
             className={_utils.cx(_styles, "dropdown-2")}
             tag="div"
             delay="0"
             hover={true}
           >
-            <_Builtin.DropdownToggle className={_utils.cx(_styles, "dropdown-toggle")} tag="div">
+            <_Builtin.DropdownToggle
+              className={_utils.cx(_styles, "dropdown-toggle")}
+              tag="div"
+            >
               <_Builtin.Icon
                 className={_utils.cx(_styles, "icon-2")}
                 widget={{
@@ -57,7 +67,10 @@ export function NavBar({
                 {"ClimateHubs"}
               </_Builtin.Block>
             </_Builtin.DropdownToggle>
-            <_Builtin.DropdownList className={_utils.cx(_styles, "dropdown-list-2")} tag="nav">
+            <_Builtin.DropdownList
+              className={_utils.cx(_styles, "dropdown-list-2")}
+              tag="nav"
+            >
               <_Builtin.DropdownLink
                 className={_utils.cx(_styles, "text")}
                 options={{
@@ -103,7 +116,10 @@ export function NavBar({
             {navButtonOutlineText}
           </_Builtin.NavbarLink>
         </_Builtin.NavbarMenu>
-        <_Builtin.NavbarButton className={_utils.cx(_styles, "menu-button")} tag="div">
+        <_Builtin.NavbarButton
+          className={_utils.cx(_styles, "menu-button")}
+          tag="div"
+        >
           <_Builtin.Icon
             widget={{
               type: "icon",

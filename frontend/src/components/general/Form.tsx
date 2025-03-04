@@ -20,7 +20,6 @@ import SelectField from "./SelectField";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: theme.spacing(4),
     maxWidth: 700,
     margin: "0 auto",
   },
@@ -37,12 +36,18 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
     fontSize: 13,
   },
+  checkboxLabel: {
+    display: "inline",
+  },
   inlineBlockElement: {
     display: "inline-block",
   },
   bottomMessages: {
     textAlign: "center",
     display: "block",
+  },
+  bottomLink: {
+    color: theme.palette.background.default_contrastText,
   },
   bottomMessageContainer: {
     marginTop: theme.spacing(2),
@@ -228,7 +233,7 @@ export default function Form({
         autoComplete={autocomplete}
       >
         {errorMessage && (
-          <Typography component="div" color="error" className={classes.centerText}>
+          <Typography component="div" color="error">
             {errorMessage}
           </Typography>
         )}
@@ -244,6 +249,7 @@ export default function Form({
                 <SelectField
                   controlledValue={{ name: values[field.key] }}
                   controlled
+                  color="contrast"
                   required={field.required}
                   options={options}
                   label={field.label}
@@ -263,6 +269,7 @@ export default function Form({
                   multiple={field.multiple}
                   required={field.required}
                   options={options}
+                  color="contrast"
                   label={field.label}
                   className={`${classes.blockElement} ${fieldClassName}`}
                   key={String(field.label) + fields.indexOf(field)}
@@ -296,8 +303,11 @@ export default function Form({
                   size="small"
                   onBlur={handleBlur}
                   onChange={(event) => handleValueChange(event, field.key, field.type)}
+                  color="contrast"
                 />
-                <label htmlFor={"checkbox" + field.key}>{field.label}</label>
+                <label className={classes.checkboxLabel} htmlFor={"checkbox" + field.key}>
+                  {field.label}
+                </label>
               </div>
             );
           } else if (field.type === "switch") {
@@ -306,7 +316,7 @@ export default function Form({
                 <span className={classes.switchTextContainer}>
                   <Typography
                     className={`${classes.switchText} ${!values[field.key] && classes.bold}`}
-                    color={values[field.key] ? "secondary" : "primary"}
+                    color={values[field.key] ? "secondary" : "contrast"}
                   >
                     {field.falseLabel}
                   </Typography>
@@ -315,7 +325,7 @@ export default function Form({
                   id={"checkbox" + field.key}
                   checked={values[field.key]}
                   required={field.required}
-                  color="primary"
+                  color="contrast"
                   name="checkedA"
                   inputProps={{ "aria-label": "secondary checkbox" }}
                   onChange={(event) => handleValueChange(event, field.key, field.type)}
@@ -323,7 +333,7 @@ export default function Form({
                 <span className={classes.switchTextContainer}>
                   <Typography
                     className={`${classes.switchText} ${values[field.key] && classes.bold}`}
-                    color={values[field.key] ? "primary" : "secondary"}
+                    color={values[field.key] ? "constrast" : "secondary"}
                   >
                     {field.trueLabel}
                   </Typography>
@@ -355,6 +365,7 @@ export default function Form({
                 /*TODO(unused) autoFocus={field === fields[0]} */
                 label={field.autoCompleteProps.label}
                 key={field.key}
+                color="contrast"
                 freeSolo={field.autoCompleteProps.freeSolo}
                 baseUrl={field.autoCompleteProps.baseUrl}
                 clearOnSelect={field.autoCompleteProps.clearOnSelect}
@@ -380,6 +391,7 @@ export default function Form({
                   className={`${classes.blockElement} ${fieldClassName}`}
                   onBlur={handleBlur}
                   onChange={() => handleValueChange(event, field.key, field.type)}
+                  color="contrast"
                 />
                 {field.bottomLink && field.bottomLink}
               </React.Fragment>
@@ -405,7 +417,7 @@ export default function Form({
           )}
           {bottomLink ? (
             <Link href={bottomLink.href}>
-              <a className={classes.bottomMessages}>{bottomLink.text}</a>
+              <a className={`${classes.bottomMessages} ${classes.bottomLink}`}>{bottomLink.text}</a>
             </Link>
           ) : (
             <></>

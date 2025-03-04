@@ -151,6 +151,7 @@ export default function ManageMembers({
           freeSolo
           filterOut={[...currentMembers]}
           onSelect={handleAddMember}
+          color="contrast"
           renderOption={renderSearchOption}
           getOptionLabel={(option) => option.first_name + " " + option.last_name}
           helperText={texts.type_name_of_next_team_member}

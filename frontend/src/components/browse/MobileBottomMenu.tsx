@@ -7,8 +7,9 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import GroupIcon from "@mui/icons-material/Group";
 import DateRangeRoundedIcon from "@mui/icons-material/DateRangeRounded";
+import { Theme } from "@mui/material/styles";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     position: "fixed",
     bottom: 0,
@@ -17,14 +18,22 @@ const useStyles = makeStyles(() => ({
     zIndex: 20,
     background: "#f0f2f5",
   },
+  tabs: {
+    "& .MuiTabs-indicator": {
+      backgroundColor: theme.palette.background.default_contrastText,
+    },
+  },
+  tab: {
+    color: theme.palette.background.default_contrastText,
+  },
 }));
 
 export default function MobileBottomMenu({
   tabValue,
   handleTabChange,
   TYPES_BY_TAB_VALUE,
-  organizationsTabRef,
   hubAmbassador,
+  hubUrl,
 }) {
   const type_icons = {
     projects: AssignmentIcon,
@@ -36,14 +45,13 @@ export default function MobileBottomMenu({
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <ContactAmbassadorButton mobile hubAmbassador={hubAmbassador} />
+      <ContactAmbassadorButton mobile hubAmbassador={hubAmbassador} hubUrl={hubUrl} />
       <>
         <Tabs
           variant="fullWidth"
           value={tabValue}
           onChange={handleTabChange}
-          indicatorColor="primary"
-          textColor="primary"
+          className={classes.tabs}
           centered={true}
         >
           {TYPES_BY_TAB_VALUE.map((t, index) => {
@@ -53,8 +61,9 @@ export default function MobileBottomMenu({
             const typeIcon = {
               icon: type_icons[t],
             };
-            if (index === 1) tabProps.ref = organizationsTabRef;
-            return <Tab label={<typeIcon.icon />} {...tabProps} key={index} />;
+            return (
+              <Tab label={<typeIcon.icon className={classes.tab} />} {...tabProps} key={index} />
+            );
           })}
         </Tabs>
       </>

@@ -4,6 +4,7 @@ from organization.models.tags import ProjectTags
 from django.db import models
 from django.contrib.auth.models import User
 from organization.models.organization import Organization
+from django.db.models import Q
 
 
 def hub_image_path(instance, filename):
@@ -12,6 +13,7 @@ def hub_image_path(instance, filename):
 
 def hub_footer_image_path(instance, filename):
     return "hub_footers/{}/{}".format(instance.id, filename)
+
 
 def hub_supporter_logo_path(instance, filename):
     return "hub_supporter_logo/{}/{}".format(instance.id, filename)
@@ -112,7 +114,7 @@ class Hub(models.Model):
     )
 
     welcome_message_logged_in = models.CharField(
-        help_text="Displayed on the dashboard on location hubs when logged in. Starts with \"Hi $user.name\"",
+        help_text='Displayed on the dashboard on location hubs when logged in. Starts with "Hi $user.name"',
         verbose_name="Welcome message (logged in)",
         max_length=2048,
         null=True,
@@ -129,7 +131,12 @@ class Hub(models.Model):
 
     SECTOR_HUB_TYPE = 0
     LOCATION_HUB_TYPE = 1  # User can read and write to project or organization.
-    HUB_TYPES = ((SECTOR_HUB_TYPE, "sector hub"), (LOCATION_HUB_TYPE, "location hub"))
+    CUSTOM_HUB_TYPE = 2
+    HUB_TYPES = (
+        (SECTOR_HUB_TYPE, "sector hub"),
+        (LOCATION_HUB_TYPE, "location hub"),
+        (CUSTOM_HUB_TYPE, "custom hub"),
+    )
 
     hub_type = models.IntegerField(
         help_text="Type of hub",
@@ -236,6 +243,22 @@ class Hub(models.Model):
         upload_to=hub_footer_image_path,
     )
 
+    from_email = models.CharField(
+        help_text="Email address from which emails relating this hub are sent",
+        verbose_name="From Email address (e.g. noreply@climateconnect.earth)",
+        max_length=128,
+        null=True,
+        blank=True,
+    )
+
+    email_sender_name = models.CharField(
+        help_text="Name in which emails related to this hub should be sent (e.g. Climate Connect)",
+        verbose_name="Email Sender Name",
+        max_length=128,
+        null=True,
+        blank=True,
+    )
+
     class Meta:
         app_label = "hubs"
         verbose_name = "Hub"
@@ -304,7 +327,8 @@ class HubAmbassador(models.Model):
             self.user.first_name + " " + self.user.last_name,
             self.title,
         )
-    
+
+
 class HubSupporter(models.Model):
     name = models.CharField(
         help_text="Supporter name",
@@ -359,6 +383,7 @@ class HubSupporter(models.Model):
         null=True,
         blank=True,
     )
+
     class Meta:
         app_label = "hubs"
         verbose_name = "Hub Supporter"
@@ -367,3 +392,109 @@ class HubSupporter(models.Model):
 
     def __str__(self):
         return "%s" % (self.name)
+
+
+class HubThemeColor(models.Model):
+    name = models.CharField(
+        help_text="Used to reference this color",
+        verbose_name="Name",
+        max_length=200,
+        null=True,
+        blank=True,
+    )
+    main = models.CharField(
+        help_text="main color (use hex code, e.g. #FFF)",
+        verbose_name="Main Color",
+        max_length=200,
+        null=True,
+        blank=True,
+    )
+    light = models.CharField(
+        help_text="the lighter variation of the main color (use hex code, e.g. #FFF)",
+        verbose_name="Light Color",
+        max_length=200,
+        null=True,
+        blank=True,
+    )
+    extraLight = models.CharField(
+        help_text="the extra light variation of the main color (use hex code, e.g. #FFF)",
+        verbose_name="Extra Light Color",
+        max_length=200,
+        null=True,
+        blank=True,
+    )
+    contrastText = models.CharField(
+        help_text="Color which has strong contrast to the main color. This color will be used for text and small elements if the main color is used for the background.",
+        verbose_name="Contrast Text Color",
+        max_length=200,
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        app_label = "hubs"
+        verbose_name = "Hub Theme Color"
+        verbose_name_plural = "Hub Theme Color"
+
+    def __str__(self):
+
+        related_themes = HubTheme.objects.filter(
+            Q(primary=self) | Q(secondary=self) | Q(background_default=self)
+        )
+        # Collect hub names
+        hub_names = [theme.hub.name for theme in related_themes if theme.hub]
+        if hub_names:
+            return f"{self.name} : {self.main} (Hub Name: {', '.join(hub_names)})"
+        else:
+            return f"{self.name} : {self.main}"
+
+
+class HubTheme(models.Model):
+    hub = models.OneToOneField(
+        Hub,
+        related_name="hub_theme",
+        help_text="The hub for which the theme should be used",
+        verbose_name="Hub",
+        on_delete=models.CASCADE,
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    primary = models.ForeignKey(
+        HubThemeColor,
+        related_name="primary",
+        help_text="Use hex code (e.g. #FFF)",
+        verbose_name="primary_color",
+        on_delete=models.CASCADE,
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    secondary = models.ForeignKey(
+        HubThemeColor,
+        related_name="secondary",
+        help_text="Use hex code (e.g. #FFF)",
+        verbose_name="secondary_color",
+        on_delete=models.CASCADE,
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    background_default = models.ForeignKey(
+        HubThemeColor,
+        related_name="background_default",
+        help_text="Use hex code (e.g. #FFF)",
+        verbose_name="default background color",
+        on_delete=models.CASCADE,
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        app_label = "hubs"
+        verbose_name = "Hub Theme"
+        verbose_name_plural = "Hub Theme"
+
+    def __str__(self):
+        return f"Theme for Hub {self.hub.name}"

@@ -2,7 +2,7 @@ import { Link } from "@mui/material";
 import React from "react";
 import { getLocalePrefix } from "../lib/apiOperations";
 
-export default function getProfileTexts({ profile, locale }) {
+export default function getProfileTexts({ profile, hubName, locale }) {
   return {
     no_members_found: {
       en: "No members found. Try changing or removing your filter or search query.",
@@ -169,11 +169,19 @@ export default function getProfileTexts({ profile, locale }) {
       de: "Glückwunsch, du hast dein Konto erfolgreich erstellt!",
     },
     just_one_more_step_to_complete_your_signup: {
-      en: "One final step to join Climate Connect!",
-      de: "Nur noch ein Schritt, um deine Anmeldung abzuschließen!",
+      en: "Congratulations! Just one more step to complete your signup!",
+      de: "Glückwunsch! Nur noch ein Schritt, um Deine Anmeldung abzuschließen!",
     },
-    please_click_on_the_link_we_emailed_you_to_activate_your_account: {
-      en: "Please click on the link we just emailed you to activate your account.",
+    almost_done: {
+      en: "Almost there!",
+      de: "Fast geschafft!",
+    },
+    we_sent_you_an_email_with_a_link: {
+      en: "We have sent you an E-Mail with a link!",
+      de: "Wir haben dir eine E-Mail mit einem Link geschickt!",
+    },
+    please_click_on_the_link_to_activate_your_account: {
+      en: "Please click on the link to activate your account.",
       de: "Bitte klicke auf den Link, um dein Konto zu aktivieren.",
     },
     make_sure_to_also_check_your_spam: {
@@ -189,7 +197,12 @@ export default function getProfileTexts({ profile, locale }) {
       en: (
         <>
           If the email does not arrive after 5 minutes,{" "}
-          <Link href={getLocalePrefix(locale) + "/resend_verification_email"} underline="hover">
+          <Link
+            href={`${getLocalePrefix(locale)}/resend_verification_email${
+              hubName ? `?hub=${hubName}` : ""
+            }`}
+            underline="hover"
+          >
             click here
           </Link>{" "}
           to resend it.
@@ -198,7 +211,12 @@ export default function getProfileTexts({ profile, locale }) {
       de: (
         <>
           Wenn die E-Mail nach 5 Minuten noch nicht angekommen ist,{" "}
-          <Link href={getLocalePrefix(locale) + "/resend_verification_email"} underline="hover">
+          <Link
+            href={`${getLocalePrefix(locale)}/resend_verification_email${
+              hubName ? `?hub=${hubName}` : ""
+            }`}
+            underline="hover"
+          >
             klicke hier
           </Link>
           , um sie erneut versenden zu lassen.
@@ -246,7 +264,7 @@ export default function getProfileTexts({ profile, locale }) {
           >
             klicke hier
           </Link>{" "}
-          , um edie Bestätigungsemail mit dem Verifizierungslink erneut zu erhalten.
+          , um die Bestätigungsemail mit dem Verifizierungslink erneut zu erhalten.
         </>
       ),
     },
@@ -270,33 +288,34 @@ export default function getProfileTexts({ profile, locale }) {
       en: (
         <>
           I agree to the{" "}
-          <a href={getLocalePrefix(locale) + "/terms"} target="_blank" rel="noreferrer">
+          <Link href={getLocalePrefix(locale) + "/terms"} target="_blank" rel="noreferrer">
             Terms of Use
-          </a>{" "}
+          </Link>{" "}
           and{" "}
-          <a href={getLocalePrefix(locale) + "/privacy"} target="_blank" rel="noreferrer">
+          <Link href={getLocalePrefix(locale) + "/privacy"} target="_blank" rel="noreferrer">
             Privacy policy
-          </a>
+          </Link>
           .
         </>
       ),
       de: (
         <>
           Ich erkläre mich mit den{" "}
-          <a href={getLocalePrefix(locale) + "/terms"} target="_blank" rel="noreferrer">
+          <Link href={getLocalePrefix(locale) + "/terms"} target="_blank" rel="noreferrer">
             Nutzungsbedingungen
-          </a>{" "}
+          </Link>{" "}
           und den{" "}
-          <a href={getLocalePrefix(locale) + "/privacy"} target="_blank" rel="noreferrer">
+          <Link href={getLocalePrefix(locale) + "/privacy"} target="_blank" rel="noreferrer">
             Datenschutzbestimmungen
-          </a>{" "}
+          </Link>{" "}
           einverstanden.
         </>
       ),
     },
     signup_step_2_headline: {
-      en: "Step 2: A little bit about yourself",
-      de: "Schritt 2: Ein paar Infos über dich",
+      en: "Add your Name and Location. This way People can find you and know where you are from.",
+      de:
+        "Füge deinen Namen und deinen Standort hinzu. So können dich andere finden und wissen, woher du kommst.",
     },
     repeat_password: {
       en: "Repeat Password",

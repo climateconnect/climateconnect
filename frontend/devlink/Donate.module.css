@@ -127,6 +127,7 @@
 
 .dono-page-button-wrapper {
   display: flex;
+  justify-content: space-between;
   align-items: flex-end;
 }
 
@@ -524,9 +525,9 @@
   display: flex;
   overflow: hidden;
   height: 750px;
-  margin-top: 70px;
-  padding-top: 40px;
-  padding-bottom: 100px;
+  margin-top: 80px;
+  padding-top: 100px;
+  padding-bottom: 130px;
   align-items: center;
 }
 
@@ -719,6 +720,8 @@
 }
 
 .heading-99 {
+  margin-right: auto;
+  margin-left: auto;
   text-align: center;
 }
 
@@ -928,14 +931,20 @@
   }
 }
 
+@media screen and (max-width: 767px) {
+  .bullet-points-wrapper {
+    overflow: scroll;
+  }
+}
+
 @media screen and (max-width: 479px) {
   .bullet-points-wrapper {
     overflow: scroll;
     margin-top: 0px;
     padding-top: 30px;
     flex-direction: row;
-    justify-content: flex-start;
-    align-items: flex-start;
+    justify-content: space-between;
+    align-items: stretch;
     grid-column-gap: 10px;
     grid-row-gap: 10px;
   }
@@ -984,7 +993,7 @@
 
 @media screen and (max-width: 479px) {
   .bullet-points-ch.ass {
-    min-width: 80vw;
+    min-width: 60vw;
   }
 }
 

@@ -1,9 +1,16 @@
-import { Button, CircularProgress, Link, Tooltip, Typography } from "@mui/material";
+import { Button, CircularProgress, Link, Tooltip, Typography, useTheme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { MouseEventHandler } from "react";
 import ButtonIcon from "./ButtonIcon";
+import { Theme } from "@mui/material/styles";
 
-const useStyles = makeStyles((theme) => ({
+type MakeStylesProps = {
+  hasAdminPermissions?: boolean;
+  followingChangePending?: boolean;
+  belowSmallScreen?: boolean;
+};
+
+const useStyles = makeStyles((theme: Theme) => ({
   followButtonContainer: {
     display: "inline-flex",
     flexDirection: "column",
@@ -15,14 +22,12 @@ const useStyles = makeStyles((theme) => ({
   },
   followerNumber: {
     fontWeight: 700,
-    color: theme.palette.secondary.main,
   },
   followersText: {
     fontWeight: 500,
     fontSize: 18,
-    color: theme.palette.secondary.light,
   },
-  followingButton: (props) => ({
+  followingButton: (props: MakeStylesProps) => ({
     marginLeft: props.hasAdminPermissions ? theme.spacing(2) : theme.spacing(0.25),
     marginRight: props.hasAdminPermissions ? theme.spacing(2) : theme.spacing(0.25),
     whiteSpace: "nowrap",
@@ -96,6 +101,7 @@ export default function FollowButton({
     followingChangePending: followingChangePending,
     belowSmallScreen: screenSize?.belowSmall,
   });
+  const theme = useTheme();
   return (
     <span className={classes.followButtonContainer}>
       {/* conditionally display the tooltip if text is defined only, since this is also used for project follow button */}
@@ -106,7 +112,11 @@ export default function FollowButton({
           variant="contained"
           startIcon={
             showStartIcon ? (
-              <ButtonIcon icon="follow" size={27} color={isUserFollowing ? "earth" : "white"} />
+              <ButtonIcon
+                icon="follow"
+                size={27}
+                color={isUserFollowing ? "earth" : theme.palette.primary.contrastText}
+              />
             ) : (
               <></>
             )
@@ -141,10 +151,10 @@ export default function FollowButton({
 }
 
 function LinkWithText({ numberOfFollowers, texts, toggleShowFollowers }) {
-  const classes = useStyles();
+  const classes = useStyles({});
   return (
     <Link
-      color="secondary"
+      color="text.primary"
       underline="none"
       className={classes.followersLink}
       onClick={toggleShowFollowers}

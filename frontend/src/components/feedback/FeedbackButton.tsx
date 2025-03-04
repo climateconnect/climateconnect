@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
     bottom: "calc(50vh - 20px)",
     transform: "rotate(-90deg)",
     right: -34.75,
-    color: theme.palette.primary.main,
+    color: theme.palette.background.default_contrastText,
     background: "#e6e6e6",
     padding: 6,
     paddingLeft: theme.spacing(2),

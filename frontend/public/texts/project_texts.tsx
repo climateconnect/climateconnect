@@ -2,7 +2,7 @@ import { Link } from "@mui/material";
 import React from "react";
 import { getLocalePrefix } from "../lib/apiOperations";
 
-export default function getProjectTexts({ project, user, url_slug, locale, creator }) {
+export default function getProjectTexts({ project, user, url_slug, locale, creator, hubName }) {
   return {
     please_log_in_to_edit_project: {
       en: "Please Log In to Edit a project.",
@@ -370,6 +370,17 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Share your Climate Solution",
       de: "Teile dein Klimaprojekt",
     },
+    my_project_is_part_of_the_prio1_project: {
+      de: "Mein Projekt ist Teil des PRIO1 Hubs",
+      en: "My project is part of the PRIO1 hub",
+    },
+    tooltip_my_project_is_part_of_the_prio1_project: {
+      de:
+        "PRIO1 ist das junge Klima-Netzwerk. erfahre mehr unter prio1-klima.net. Wenn du diese Option auswählst, wird dein Projekt auch im PRIO1 Hub angezeigt.",
+      en:
+        "PRIO1 is the young climate network. find out more at prio1-klima.net. If you select this option, your project will also be displayed in the PRIO1 Hub.",
+    },
+
     // This is for project join requests
     requesters_of: {
       en: "Requesters of",
@@ -698,18 +709,26 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: (
         <>
           You can view, edit and publish your project drafts{" "}
-          <a href={getLocalePrefix(locale) + "/profiles/" + user?.url_slug + "/#projects"}>
+          <Link
+            href={`${getLocalePrefix(locale)}/profiles/${user?.url_slug}${
+              hubName ? `?hub=${hubName}` : ""
+            }#projects`}
+          >
             in the my projects section
-          </a>{" "}
+          </Link>{" "}
           of your profile
         </>
       ),
       de: (
         <>
           Du kannst deine Projektentwürfe{" "}
-          <a href={getLocalePrefix(locale) + "/profiles/" + user?.url_slug + "/#projects"}>
+          <Link
+            href={`${getLocalePrefix(locale)}/profiles/${user?.url_slug}${
+              hubName ? `?hub=${hubName}` : ""
+            }#projects`}
+          >
             im Bereich {"Meine Projekte"}
-          </a>{" "}
+          </Link>{" "}
           deines Profils ansehen, bearbeiten und veröffentlichen
         </>
       ),
@@ -726,13 +745,26 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: (
         <>
           You can view your project{" "}
-          <a href={getLocalePrefix(locale) + "/projects/" + url_slug}>here</a>
+          <Link
+            href={
+              getLocalePrefix(locale) + "/projects/" + url_slug + (hubName ? "?hub=" + hubName : "")
+            }
+          >
+            here
+          </Link>
         </>
       ),
       de: (
         <>
           Du kannst dein Projekt{" "}
-          <a href={getLocalePrefix(locale) + "/projects/" + url_slug}>hier</a> ansehen
+          <Link
+            href={
+              getLocalePrefix(locale) + "/projects/" + url_slug + (hubName ? "?hub=" + hubName : "")
+            }
+          >
+            hier
+          </Link>{" "}
+          ansehen
         </>
       ),
     },
@@ -758,7 +790,12 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: (
         <>
           If your organization does not exist yet{" "}
-          <Link href={getLocalePrefix(locale) + "/createorganization"} underline="always">
+          <Link
+            href={`${getLocalePrefix(locale)}/createorganization${
+              hubName ? `?hub=${hubName}` : ""
+            }`}
+            underline="always"
+          >
             click here
           </Link>{" "}
           to create it.
@@ -767,7 +804,12 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: (
         <>
           Wenn das Profil deiner Organisation noch nicht existiert,{" "}
-          <Link href={getLocalePrefix(locale) + "/createorganization"} underline="always">
+          <Link
+            href={`${getLocalePrefix(locale)}/createorganization${
+              hubName ? `?hub=${hubName}` : ""
+            }`}
+            underline="always"
+          >
             klicke hier
           </Link>{" "}
           um sie zu erstellen.

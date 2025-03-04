@@ -7,6 +7,7 @@ import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import HubsDropDown from "../indexPage/hubsSubHeader/HubsDropDown";
+import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,14 +20,14 @@ const useStyles = makeStyles((theme) => ({
   },
   tab: {
     textTransform: "none",
-    color: "white",
+    color: theme.palette.primary.contrastText,
     fontSize: 16,
     "&.Mui-selected": {
       paddingLeft: theme.spacing(1),
       paddingRight: theme.spacing(1),
       "& .tabLabel": {
         color: theme.palette.primary.main,
-        background: "white",
+        background: theme.palette.primary.contrastText,
         borderRadius: 15,
         paddingTop: 3,
         paddingBottom: 3,
@@ -71,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   climateMatchLink: {
-    color: "white",
+    color: theme.palette.primary.contrastText,
     fontWeight: 600,
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
@@ -95,14 +96,14 @@ export default function HubTabsNavigation({
   tabValue,
   handleTabChange,
   type_names,
-  organizationsTabRef,
   hubUrl,
   className,
   allHubs,
 }) {
-  const { locale, user } = useContext(UserContext);
+  const { locale, user, CUSTOM_HUB_URLS } = useContext(UserContext);
   const classes = useStyles();
-  const locationHubs = allHubs.filter((h) => h.hub_type === "location hub");
+
+  const locationHubs = allHubs.filter((h) => isLocationHubLikeHub(h.hub_type));
   const texts = getTexts({ page: "navigation", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -115,7 +116,7 @@ export default function HubTabsNavigation({
   const handleToggleOpen = () => {
     setDropdownOpen(!dropdownOpen);
   };
-
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   //Don't show the HubTabsNavigation if we're logged out on mobile
   if (!user && isNarrowScreen) {
     return <></>;
@@ -141,7 +142,6 @@ export default function HubTabsNavigation({
                       indicator: classes.tabIndicator,
                     },
                   };
-                  if (index === 1) tabProps.ref = organizationsTabRef;
                   return (
                     <Tab
                       {...tabProps}
@@ -153,36 +153,52 @@ export default function HubTabsNavigation({
                 })}
             </Tabs>
           )}
-          <div className={classes.climateMatchLinkContainer}>
-            <Link
-              className={classes.climateMatchLink}
-              href={`${getLocalePrefix(locale)}/climatematch?from_hub=${hubUrl}`}
-              underline="hover"
-            >
-              ClimateMatch
-            </Link>
-          </div>
+          {!isCustomHub && (
+            <div className={classes.climateMatchLinkContainer}>
+              <Link
+                className={classes.climateMatchLink}
+                href={`${getLocalePrefix(locale)}/climatematch?from_hub=${hubUrl}`}
+                underline="hover"
+              >
+                ClimateMatch
+              </Link>
+            </div>
+          )}
           {isNarrowScreen && (
-            <Link
-              className={classes.climateMatchLink}
-              href={`${getLocalePrefix(locale)}/climatematch?from_hub=${hubUrl}`}
-              underline="hover"
-            >
-              {texts.projects_worldwide}
-            </Link>
+            <>
+              {hubUrl === "prio1" && (
+                <Link
+                  className={classes.climateMatchLink}
+                  href={"https://prio1-klima.net"}
+                  target="_blank"
+                  underline="hover"
+                >
+                  {texts.PRIO1_klima}
+                </Link>
+              )}
+              <Link
+                className={classes.climateMatchLink}
+                href={`${getLocalePrefix(locale)}/browse`}
+                underline="hover"
+              >
+                {texts.projects_worldwide}
+              </Link>
+            </>
           )}
         </div>
-        <HubsDropDown
-          hubs={locationHubs}
-          label={texts.all_hubs}
-          isNarrowScreen={isNarrowScreen}
-          onToggleOpen={handleToggleOpen}
-          open={dropdownOpen}
-          onOpen={handleOpen}
-          onClose={handleClose}
-          addLocationHubExplainerLink
-          height={48}
-        />
+        {!isCustomHub && (
+          <HubsDropDown
+            hubs={locationHubs}
+            label={texts.all_hubs}
+            isNarrowScreen={isNarrowScreen}
+            onToggleOpen={handleToggleOpen}
+            open={dropdownOpen}
+            onOpen={handleOpen}
+            onClose={handleClose}
+            addLocationHubExplainerLink
+            height={48}
+          />
+        )}
       </Container>
     </div>
   );

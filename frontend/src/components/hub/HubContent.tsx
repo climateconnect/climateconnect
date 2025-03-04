@@ -4,7 +4,6 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
-import theme from "../../themes/theme";
 import MessageContent from "../communication/MessageContent";
 import UserContext from "../context/UserContext";
 import ElementOnScreen from "../hooks/ElementOnScreen";
@@ -15,6 +14,9 @@ import Dashboard from "../dashboard/Dashboard";
 import LocalAmbassadorInfoBox from "./LocalAmbassadorInfoBox";
 import HubHeadlineContainer from "./HubHeadlineContainer";
 import HubSupporters from "./HubSupporters";
+import { DePrio1Willkommen, EnPrio1Welcome } from "../../../devlink";
+import theme from "../../themes/theme";
+import { PrioOneBackgroundBrowse, PrioOneBackgroundBrowseIcon } from "./CustomBackground";
 
 type MakeStylesProps = {
   isLocationHub: boolean;
@@ -87,6 +89,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     margin: "16px auto",
+    gap: "1rem",
     alignItems: "end",
   }),
   infoBoxContainer: {
@@ -95,7 +98,13 @@ const useStyles = makeStyles((theme) => ({
     float: "right",
   },
   topSectionWrapper: (props: MakeStylesProps) => ({
-    background: props.isLocationHub ? `url('${props.image}')` : "none",
+    // TODO: decide if "props.image" should be checked as well
+    // > pro: it prevents requests to "/undefined"
+    // > con: it might be a bug that should be fixed in the parent component
+    // > con: it will not "report" the bug
+    background: props.isLocationHub && props.image ? `url('${props.image}')` : "none",
+
+    position: "relative",
     backgroundSize: "cover",
     backgroundPosition: "bottom center",
     paddingTop: theme.spacing(2),
@@ -106,6 +115,8 @@ const useStyles = makeStyles((theme) => ({
     },
   }),
   backgroundImageContainer: (props: MakeStylesProps) => ({
+    //TODO dead code?
+    display: "none",
     background: props.isLocationHub ? `url('${props.image}')` : "none",
     backgroundSize: "cover",
     backgroundPosition: "bottom center",
@@ -128,17 +139,13 @@ export default function HubContent({
   subHeadline,
   welcomeMessageLoggedIn,
   welcomeMessageLoggedOut,
-  hubQuickInfoRef,
-  hubProjectsButtonRef,
   isLocationHub,
   hubAmbassador,
   hubSupporters,
   location,
-  allHubs,
   hubData,
   hubUrl,
   image,
-  source,
 }) {
   const { locale, user } = useContext(UserContext);
   const classes = useStyles({ isLocationHub: isLocationHub, loggedOut: !user, image: image });
@@ -171,20 +178,26 @@ export default function HubContent({
         )}
         {isLocationHub ? (
           <div className={classes.topSectionWrapper}>
+            <PrioOneBackgroundBrowse isLoggedInUser={user ? true : false} />
             <Container>
               <div className={classes.dashboardAndStatboxWrapper}>
                 {user ? (
                   <>
                     {!isNarrowScreen && (
                       <Dashboard
-                        allHubs={allHubs}
-                        hubData={hubData}
+                        hubUrl={hubUrl}
                         location={location}
                         welcomeMessageLoggedIn={welcomeMessageLoggedIn}
                         welcomeMessageLoggedOut={welcomeMessageLoggedOut}
                       />
                     )}
                   </>
+                ) : hubUrl === "prio1" ? (
+                  locale === "de" ? (
+                    <DePrio1Willkommen />
+                  ) : (
+                    <EnPrio1Welcome />
+                  )
                 ) : (
                   <LoggedOutLocationHubBox
                     headline={headline}
@@ -216,6 +229,9 @@ export default function HubContent({
                       {hubSupporters?.length > 0 && (
                         <HubSupporters supportersList={hubSupporters} hubName={hubData?.name} />
                       )}
+                      {!(hubSupporters?.length > 0) && hubUrl === "prio1" && (
+                        <PrioOneBackgroundBrowseIcon />
+                      )}
                     </>
                   ))}
               </div>
@@ -232,7 +248,6 @@ export default function HubContent({
               hubUrl={hubUrl}
             />
             <BottomContent
-              hubQuickInfoRef={hubQuickInfoRef}
               detailledInfo={detailledInfo}
               quickInfo={quickInfo}
               expanded={expanded}
@@ -258,7 +273,6 @@ export default function HubContent({
             variant="contained"
             color="primary"
             onClick={scrollToSolutions}
-            ref={hubProjectsButtonRef}
           >
             <ExpandMoreIcon /> {texts.show_projects}
           </Button>
@@ -269,7 +283,6 @@ export default function HubContent({
 }
 
 const BottomContent = ({
-  hubQuickInfoRef,
   detailledInfo,
   quickInfo,
   expanded,
@@ -285,13 +298,13 @@ const BottomContent = ({
     <>
       <div>
         {!isLocationHub && (
-          <div className={`${classes.quickInfo} ${classes.marginTop}`} ref={hubQuickInfoRef}>
+          <div className={`${classes.quickInfo} ${classes.marginTop}`}>
             <MessageContent content={quickInfo} />
           </div>
         )}
         <Collapse in={expanded}>
           {isLocationHub && (
-            <div className={`${classes.quickInfo} ${classes.marginTop}`} ref={hubQuickInfoRef}>
+            <div className={`${classes.quickInfo} ${classes.marginTop}`}>
               <MessageContent content={quickInfo} />
             </div>
           )}

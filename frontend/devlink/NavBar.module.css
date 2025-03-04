@@ -1,4 +1,5 @@
 .navbar {
+  z-index: -1;
   background-color: var(--white);
   color: var(--white-fd47ad0c);
 }

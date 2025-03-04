@@ -10,11 +10,11 @@ import HubLinks from "./HubLinks";
 import { buildHubUrl } from "../../../../public/lib/urlBuilder";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    background: theme.palette.primary.main,
-  },
+  root: (props: any) => ({
+    background: props.isCustomHub ? theme.palette.secondary.main : theme.palette.primary.main,
+  }),
   link: {
-    color: "white",
+    color: theme.palette.primary.contrastText,
     display: "inline-block",
     fontWeight: 600,
     marginRight: theme.spacing(2),
@@ -46,13 +46,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function HubsSubHeader({ hubs, subHeaderRef, onlyShowDropDown }: any) {
-  const classes = useStyles();
+export default function HubsSubHeader({ hubs, onlyShowDropDown, isCustomHub }: any) {
+  const classes = useStyles({ isCustomHub });
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   return (
-    <div className={classes.root} ref={subHeaderRef}>
+    <div className={classes.root}>
       <Container className={classes.container}>
         <div>
           {!isNarrowScreen && onlyShowDropDown && (
@@ -65,7 +65,7 @@ export default function HubsSubHeader({ hubs, subHeaderRef, onlyShowDropDown }: 
           )}
         </div>
         <div className={classes.hubsContainer}>
-          {!isNarrowScreen && !onlyShowDropDown && (
+          {!isNarrowScreen && !onlyShowDropDown && !isCustomHub && (
             <Link
               className={classes.link}
               key={"/hubs"}
@@ -76,7 +76,7 @@ export default function HubsSubHeader({ hubs, subHeaderRef, onlyShowDropDown }: 
               {texts.all_hubs}
             </Link>
           )}
-          {hubs && (
+          {hubs && !isCustomHub && (
             <HubLinks
               linkClassName={classes.link}
               hubs={hubs}

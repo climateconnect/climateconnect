@@ -14,8 +14,14 @@ export function TestSuccess({ as: _Component = _Builtin.Section }) {
       tag="div"
       id="interessierte-stadte"
     >
-      <_Builtin.Container className={_utils.cx(_styles, "container-37")} tag="div">
-        <_Builtin.Block className={_utils.cx(_styles, "text-block-6")} tag="div">
+      <_Builtin.Container
+        className={_utils.cx(_styles, "container-37")}
+        tag="div"
+      >
+        <_Builtin.Block
+          className={_utils.cx(_styles, "text-block-6")}
+          tag="div"
+        >
           {
             "Nous sommes actifs dans plusieurs villes d'Allemagne dont Erlangen, Marbourg et Potsdam. Et le mouvement est en marche car de plus en plus d'autres villes et associations viennent nous contacter pour avoir leur ClimateHub."
           }

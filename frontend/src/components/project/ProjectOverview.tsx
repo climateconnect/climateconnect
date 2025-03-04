@@ -1,4 +1,4 @@
-import { Button, Container, Link, Tooltip, Typography } from "@mui/material";
+import { Button, Container, Link, Tooltip, Typography, useTheme } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import Linkify from "react-linkify";
@@ -30,78 +30,85 @@ import ProjectTypeDisplay from "./ProjectTypeDisplay";
 
 type StyleProps = { hasAdminPermissions?: boolean };
 
-const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
-  ...projectOverviewStyles(theme),
-  infoBottomBar: (props) => ({
-    display: "flex",
-    marginTop: theme.spacing(3),
-    justifyContent: props.hasAdminPermissions ? "flex-start" : "space-between",
-  }),
-  largeScreenButtonContainer: {
-    display: "inline-flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  smallScreenHeader: {
-    fontSize: "calc(1.6rem + 6 * ((100vw - 320px) / 680))",
-    paddingBottom: theme.spacing(2),
-    wordBreak: "break-word",
-  },
-  rootLinksContainer: {
-    display: "flex",
-    justifyContent: "space-around",
-    paddingTop: theme.spacing(0.5),
-    paddingBottom: theme.spacing(1),
-  },
-  linkContainer: {
-    display: "flex",
-    marginTop: theme.spacing(3),
-    justifyContent: "flex-start",
-    cursor: "pointer",
-    marginRight: theme.spacing(1),
-  },
-  linkIcon: {
-    marginRight: theme.spacing(1),
-    color: theme.palette.primary.main,
-  },
-  largeScreenHeader: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
-    textAlign: "center",
-    wordBreak: "break-word",
-  },
-  headerButton: {
-    right: 0,
-    position: "absolute",
-  },
+const useStyles = makeStyles<Theme, StyleProps>((theme) => {
+  return {
+    ...projectOverviewStyles(theme),
+    infoBottomBar: (props) => ({
+      display: "flex",
+      marginTop: theme.spacing(3),
+      justifyContent: props.hasAdminPermissions ? "flex-start" : "space-between",
+    }),
+    largeScreenButtonContainer: {
+      display: "inline-flex",
+      flexDirection: "column",
+      alignItems: "center",
+    },
+    smallScreenHeader: {
+      fontSize: "calc(1.6rem + 6 * ((100vw - 320px) / 680))",
+      paddingBottom: theme.spacing(2),
+      wordBreak: "break-word",
+      color: "inherit",
+    },
+    rootLinksContainer: {
+      display: "flex",
+      justifyContent: "space-around",
+      paddingTop: theme.spacing(0.5),
+      paddingBottom: theme.spacing(1),
+    },
+    linkContainer: {
+      display: "flex",
+      marginTop: theme.spacing(3),
+      justifyContent: "flex-start",
+      cursor: "pointer",
+      marginRight: theme.spacing(1),
+    },
+    linkIcon: {
+      marginRight: theme.spacing(1),
+      color: theme.palette.primary.main,
+    },
+    largeScreenHeader: {
+      paddingTop: theme.spacing(4),
+      paddingBottom: theme.spacing(4),
+      textAlign: "center",
+      wordBreak: "break-word",
+      color: "inherit",
+    },
+    headerButton: {
+      right: 0,
+      position: "absolute",
+    },
 
-  headerContainer: {
-    display: "flex",
-    justifyContent: "center",
-  },
-  goBackButtonContainer: {
-    position: "absolute",
-    marginLeft: theme.spacing(1),
-    marginTop: theme.spacing(1),
-  },
-  shareButtonContainer: {
-    position: "absolute",
-    right: 0,
-    bottom: 0,
-    marginRight: theme.spacing(1),
-    marginBottom: theme.spacing(1.6),
-  },
-  imageContainer: {
-    position: "relative",
-  },
-  contactProjectButtonLarge: {
-    height: 40,
-    minWidth: 120,
-  },
-  shortDescription: {
-    wordBreak: "break-word",
-  },
-}));
+    headerContainer: {
+      display: "flex",
+      justifyContent: "center",
+    },
+    goBackButtonContainer: {
+      position: "absolute",
+      marginLeft: theme.spacing(1),
+      marginTop: theme.spacing(1),
+    },
+    shareButtonContainer: {
+      position: "absolute",
+      right: 0,
+      bottom: 0,
+      marginRight: theme.spacing(1),
+      marginBottom: theme.spacing(1.6),
+    },
+    imageContainer: {
+      position: "relative",
+    },
+    contactProjectButtonLarge: {
+      height: 40,
+      minWidth: 120,
+    },
+    shortDescription: {
+      wordBreak: "break-word",
+    },
+    summaryHeadline: {
+      color: "inherit",
+    },
+  };
+});
 
 const componentDecorator = (href, text, key) => (
   <Link
@@ -139,6 +146,7 @@ type Props = {
   showLikes: boolean; //merge like & follow?
   toggleShowFollowers: Function; //merge like & follow?
   toggleShowLikes: Function; //merge like & follow?
+  hubUrl?: string;
 };
 
 export default function ProjectOverview({
@@ -164,6 +172,7 @@ export default function ProjectOverview({
   showLikes,
   toggleShowFollowers,
   toggleShowLikes,
+  hubUrl,
 }: Props) {
   const classes = useStyles({});
   const { locale, user } = useContext(UserContext);
@@ -184,6 +193,7 @@ export default function ProjectOverview({
     projectAdmin: projectAdmin,
     project: project,
     screenSize: screenSize,
+    hubUrl: hubUrl,
   };
 
   return (
@@ -250,7 +260,7 @@ function ShortProjectInfo({ project }) {
       <div className={classes.projectInfoEl}>
         <Typography>
           <Tooltip title={texts.location}>
-            <PlaceIcon color="primary" className={classes.icon} />
+            <PlaceIcon className={classes.icon} />
           </Tooltip>{" "}
           {project.location}
           {project.additional_loc_info && <> - {project.additional_loc_info}</>}
@@ -266,11 +276,11 @@ function ShortProjectInfo({ project }) {
           </Typography>
         </div>
       )}
-      {project.website && (
+      {project?.website && (
         <div className={classes.projectInfoEl}>
           <Typography>
             <Tooltip title={texts.website}>
-              <LanguageIcon color="primary" className={classes.icon} />
+              <LanguageIcon className={classes.icon} />
             </Tooltip>{" "}
             <Linkify componentDecorator={componentDecorator}>{project.website}</Linkify>
           </Typography>
@@ -279,7 +289,7 @@ function ShortProjectInfo({ project }) {
       <div className={classes.projectInfoEl}>
         <Typography>
           <Tooltip title={texts.categories}>
-            <ExploreIcon color="primary" className={classes.icon} />
+            <ExploreIcon className={classes.icon} />
           </Tooltip>{" "}
           {project.tags.join(", ")}
         </Typography>
@@ -291,7 +301,7 @@ function ShortProjectInfo({ project }) {
   );
 }
 
-function SmallScreenOverview({ screenSize, project, projectAdmin }) {
+function SmallScreenOverview({ screenSize, project, projectAdmin, hubUrl }) {
   const classes = useStyles({});
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
@@ -363,7 +373,11 @@ function LargeScreenOverview({
           alt={texts.project_image_of_project + " " + project.name}
         />
         <div className={classes.inlineProjectInfo}>
-          <Typography component="h2" variant="h5" className={classes.subHeader}>
+          <Typography
+            component="h2"
+            variant="h5"
+            className={`${classes.summaryHeadline} ${classes.subHeader}`}
+          >
             {texts.summary}
           </Typography>
           <ShortProjectInfo project={project} />
