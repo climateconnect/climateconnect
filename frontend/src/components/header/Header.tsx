@@ -192,6 +192,9 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       display: "flex",
       justifyContent: "center",
     },
+    landingPageNavColor: {
+      backgroundColor: theme.palette.primary.main,
+    },
     // This className is used to style the DropDownButton component in the Header.
     // It is applied in the headerLink.ts file.
     btnIconTextColor: (props) => ({
@@ -277,6 +280,7 @@ export default function Header({
   background,
   isHubPage,
   hubUrl,
+  isLandingPage,
   isLocationHub, //->isLocationHub || isCustomhub -> is hubUrl also used by static links?!
 }: HeaderProps) {
   const { user, signOut, notifications, pathName, locale, CUSTOM_HUB_URLS } = useContext(
@@ -309,16 +313,19 @@ export default function Header({
 
   const getLogo = () => {
     let imageUrl = "/images";
-    if (!isCustomHub) {
-      if (isHubPage && isLocationHub) {
+    if (isCustomHub) {
+      imageUrl = `/images/hub_logos/prio1.png`;
+    } else if (isHubPage) {
+      if (hubUrl && isLandingPage) {
+        imageUrl += `/hub_logos/ch_${hubUrl.toLowerCase()}_logo_white.svg`;
+      } else if (isLocationHub) {
         imageUrl += `/hub_logos/ch_${hubUrl}_logo.svg`;
       } else {
         imageUrl = loadDefaultLogo(transparentHeader, isMediumScreen);
       }
     } else {
-      imageUrl = `/images/hub_logos/prio1.png`;
+      imageUrl = loadDefaultLogo(transparentHeader, isMediumScreen);
     }
-
     return imageUrl;
   };
 
@@ -334,23 +341,38 @@ export default function Header({
     }
   };
 
-  const logo = getLogo();
-
-  const getLogoLink = () => {
-    if (hubUrl) {
-      return `${localePrefix}/hubs/${hubUrl}`;
+  const makeLogoLink = () => {
+    let logoLink = "/";
+    if (isLandingPage || (isHubPage && hubUrl)) {
+      logoLink += `hubs/${hubUrl?.toLowerCase() || ""}`;
     }
-    return `${localePrefix}/`;
+    return logoLink;
   };
-  const logoLink = getLogoLink();
+
+  const logo = getLogo();
+  const logoLink = makeLogoLink();
+  const [hideHeader, setHideHeader] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  // const getLogoLink = () => {
+  //   if (hubUrl) {
+  //     return `${localePrefix}/hubs/${hubUrl}`;
+  //   }
+  //   return `${localePrefix}/`;
+  // };
+  // const logoLink = getLogoLink();
 
   return (
     <Box
       component="header"
-      className={`${classes.root} ${className} ${!noSpacingBottom && classes.spacingBottom}`}
+      className={`${classes.root} ${
+        isLandingPage ? classes.landingPageNavColor : ""
+      } ${className} ${!noSpacingBottom && classes.spacingBottom} ${
+        hideHeader ? classes.hideHeader : ""
+      }`}
     >
       <Container className={classes.container}>
-        <Link href={logoLink} className={classes.logoLink} underline="hover">
+        <Link href={localePrefix + logoLink} className={classes.logoLink} underline="hover">
           <img
             src={logo}
             alt={texts.climate_connect_logo}

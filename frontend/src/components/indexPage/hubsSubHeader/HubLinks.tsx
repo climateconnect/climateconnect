@@ -5,6 +5,7 @@ import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import getTexts from "../../../../public/texts/texts";
 import theme from "../../../themes/theme";
 import HubsDropDown from "./HubsDropDown";
+import { buildHubUrl } from "../../../../public/lib/urlBuilder";
 import isLocationHubLikeHub from "../../../../public/lib/isLocationHubLikeHub";
 
 const useStyles = makeStyles(() => ({
@@ -85,7 +86,12 @@ export default function HubLinks({
             <Link
               className={linkClassName}
               key={hub.url_slug}
-              href={`${getLocalePrefix(locale)}/hubs/${hub.url_slug}`}
+              // href={`${getLocalePrefix(locale)}/hubs/${hub.url_slug}`}
+              href={buildHubUrl({
+                hubUrlSlug: hub?.url_slug,
+                locale: locale,
+                pathType: "hubBrowse",
+              })}
               underline="hover"
             >
               {hub.name}

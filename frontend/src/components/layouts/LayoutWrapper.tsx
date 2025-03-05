@@ -63,6 +63,7 @@ export default function LayoutWrapper({
   description,
   image,
   useFloodStdFont,
+  showSuffix = true,
 }: any) {
   const [snackbarProps, setSnackbarProps] = useState({
     open: false,
@@ -139,7 +140,9 @@ export default function LayoutWrapper({
   return (
     <>
       <Head>
-        <title>{title ? title + " | Climate Connect" : "Climate Connect"}</title>
+        <title>
+          {title ? title + (showSuffix ? " | Climate Connect" : "") : "Climate Connect"}
+        </title>
         <link href="/fonts/openSans.css" rel="stylesheet" />
         <meta
           name="viewport"

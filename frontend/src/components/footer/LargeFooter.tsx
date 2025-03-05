@@ -12,6 +12,7 @@ import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import FeedbackButton from "../feedback/FeedbackButton";
+import { buildHubUrl } from "../../../public/lib/urlBuilder";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -266,7 +267,9 @@ const SiteLinks = ({ texts, locale }) => {
           <FooterLink href={getLocalePrefix(locale) + "/browse#members"}>
             {texts.members}
           </FooterLink>
-          <FooterLink href={getLocalePrefix(locale) + "/hubs"}>{texts.hubs}</FooterLink>
+          <FooterLink href={buildHubUrl({ locale: locale, pathType: "allHubs" })}>
+            {texts.hubs}
+          </FooterLink>
         </div>
       </div>
 

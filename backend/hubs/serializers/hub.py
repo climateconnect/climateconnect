@@ -127,6 +127,7 @@ class HubStubSerializer(serializers.ModelSerializer):
             "url_slug",
             "hub_type",
             "icon",
+            "landing_page_component",
         )
 
     def get_hub_type(self, obj):

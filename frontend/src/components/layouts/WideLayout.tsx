@@ -65,6 +65,8 @@ type Props = {
   customFooterImage?: string;
   isLocationHub?: boolean;
   noHeader?: boolean;
+  isLandingPage?: boolean;
+  showSuffix?: boolean;
   footerTextColor?: string;
   customTheme?: any;
   hideAlert?: boolean;
@@ -98,6 +100,8 @@ export default function WideLayout({
   hideDonationCampaign,
   customFooterImage,
   noHeader,
+  isLandingPage,
+  showSuffix,
   footerTextColor,
   customTheme,
   hideAlert,
@@ -135,6 +139,7 @@ export default function WideLayout({
       useFloodStdFont={useFloodStdFont}
       theme={customTheme ?? theme}
       image={image}
+      showSuffix={showSuffix}
     >
       <CustomBackground hubUrl={hubUrl} />
 
@@ -148,6 +153,7 @@ export default function WideLayout({
           isHubPage={isHubPage}
           hubUrl={hubUrl}
           isLocationHub={isLocationHub}
+          isLandingPage={isLandingPage}
         />
       )}
       {isLoading ? (

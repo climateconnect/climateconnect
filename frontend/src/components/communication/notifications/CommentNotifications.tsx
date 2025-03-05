@@ -3,6 +3,7 @@ import React, { useContext } from "react";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
 import GenericNotification from "./GenericNotification";
+import { buildHubUrl } from "../../../../public/lib/urlBuilder";
 
 function CommentNotification({ link, object_commented_on, comment_text, is_reply, notification }) {
   const { locale } = useContext(UserContext);
@@ -38,7 +39,15 @@ export const ProjectCommentNotification = ({ notification }) => {
 export const IdeaCommentNotification = ({ notification }) => {
   return (
     <CommentNotification
-      link={`/hubs/${notification.idea.hub_url_slug}?idea=${notification.idea.url_slug}&show_comments=true#ideas`}
+      link={
+        buildHubUrl({
+          hubUrlSlug: notification?.idea?.hub_url_slug,
+          queryParams: `idea=${notification?.idea?.url_slug}&show_comments=true`,
+          hash: "ideas",
+          pathType: "hubBrowse",
+        })
+        // link={`/hubs/${notification.idea.hub_url_slug}?idea=${notification.idea.url_slug}&show_comments=true#ideas`}
+      }
       object_commented_on={notification.idea}
       comment_text={notification?.idea_comment?.content}
       is_reply={false}
@@ -50,7 +59,13 @@ export const IdeaCommentNotification = ({ notification }) => {
 export const IdeaCommentReplyNotification = ({ notification }) => {
   return (
     <CommentNotification
-      link={`/hubs/${notification.idea.hub_url_slug}?idea=${notification.idea.url_slug}&show_comments=true#ideas`}
+      link={buildHubUrl({
+        hubUrlSlug: notification?.idea?.hub_url_slug,
+        queryParams: `idea=${notification?.idea?.url_slug}&show_comments=true`,
+        hash: "ideas",
+        pathType: "hubBrowse",
+      })}
+      // link={`/hubs/${notification?.idea?.hub_url_slug}/browse?idea=${notification.idea.url_slug}&show_comments=true#ideas`}
       object_commented_on={notification.idea}
       comment_text={notification?.idea_comment?.content}
       is_reply={true}

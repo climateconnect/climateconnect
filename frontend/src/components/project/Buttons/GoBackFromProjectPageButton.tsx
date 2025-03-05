@@ -4,6 +4,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { useRouter } from "next/router";
 import React from "react";
+import { buildHubUrl } from "../../../../public/lib/urlBuilder";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -34,8 +35,13 @@ export default function GoBackFromProjectPageButton({
   const router = useRouter();
   const goBack = () => {
     const urlParams = new URLSearchParams(window.location.search);
-    const hubPage = urlParams.get("hub");
-    const hubsLink = "/" + locale + "/hubs/" + hubPage;
+    const hubPage = urlParams.get("hubPage");
+    // const hubsLink = "/" + locale + "/hubs/" + hubPage;
+    const hubsLink = buildHubUrl({ hubUrlSlug: hubPage, locale: locale, pathType: "hubBrowse" });
+
+    // income from master
+    // const hubPage = urlParams.get("hub");
+    // const hubsLink = "/" + locale + "/hubs/" + hubPage;
     const browseLink = "/" + locale + "/browse";
     if (hubPage) {
       router.push(hubsLink);

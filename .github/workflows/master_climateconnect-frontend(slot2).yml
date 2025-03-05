@@ -21,13 +21,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
-
-      - name: npm install, build, and test
+          
+      - name: Install production dependencies
         run: |
           cd frontend
           yarn --production
           npx webflow devlink sync
           yarn build
+
         env:
           API_HOST: ${{ secrets.API_HOST }}
           CUSTOM_HUB_URLS: ${{ secrets.CUSTOM_HUB_URLS }}
