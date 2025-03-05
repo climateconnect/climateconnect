@@ -14,6 +14,7 @@ import WideLayout from "../../../src/components/layouts/WideLayout";
 import PageNotFound from "../../../src/components/general/PageNotFound";
 import getTexts from "../../../public/texts/texts";
 import { buildHubUrl } from "../../../public/lib/urlBuilder";
+import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 
 //Types
 type Locale = "en" | "de";
@@ -63,10 +64,11 @@ const NotFoundPage = ({ texts }: any) => {
 //for description we need the Ambassador name
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx?.params?.hubUrl;
-  const hubAmbassador = await getHubAmbassadorData(hubUrl, ctx.locale);
+    const [hubAmbassador, hubData] = await Promise.all([getHubAmbassadorData(hubUrl, ctx.locale), getHubData(hubUrl, ctx.locale)]) ;
   return {
     props: {
       hubAmbassador: hubAmbassador,
+      hubData: hubData,
       hubUrl: hubUrl,
     },
   };
@@ -88,10 +90,26 @@ const getHubAmbassadorData = async (hubUrl, locale) => {
   }
 };
 
-const LandingPage = ({ hubAmbassador, hubUrl }) => {
+const getHubData = async (url_slug, locale) => {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: `/api/hubs/${url_slug}/`,
+      locale: locale,
+    });
+    return resp.data;
+  } catch (err: any) {
+    if (err.response && err.response.data) {
+      console.log(err.response.data);
+      console.error("Error in getHubData!: " + err.response.data.detail);
+    }
+    return null;
+  }
+};
+
+const LandingPage = ({ hubAmbassador, hubData, hubUrl }) => {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "landing_page", locale: locale });
-
   // Early return if hubUrl is not a string or undefined
   if (!hubUrl || typeof hubUrl !== "string") {
     return <NotFoundPage texts={texts} />;
@@ -126,6 +144,7 @@ const LandingPage = ({ hubAmbassador, hubUrl }) => {
       hubUrl={hubUrl}
       isLandingPage={true}
       showSuffix={false}
+      isLocationHub= {isLocationHubLikeHub(hubData?.hub_type)}
     >
       <PageComponent />
     </WebflowPage>

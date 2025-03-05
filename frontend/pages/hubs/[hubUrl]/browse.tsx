@@ -163,6 +163,7 @@ export default function Hub({
   projectTypes,
   hubThemeData,
 }) {
+  
   const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const classes = useStyles();
@@ -170,7 +171,7 @@ export default function Hub({
   const token = new Cookies().get("auth_token");
   const [hubAmbassador, setHubAmbassador] = useState(null);
   const [hubSupporters, setHubSupporters] = useState(null);
-
+  const targetHub = allHubs.find((item=> item?.url_slug === hubUrl))
   // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
   const [filters, setFilters] = useState(
     getInitialFilters({
@@ -283,6 +284,7 @@ export default function Hub({
         }
         isLocationHub={isLocationHub}
         customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+        hasHubLandingPage = {targetHub && targetHub["landing_page_component"] ? true : false}
       >
         <div className={classes.content}>
           {<DonationCampaignInformation />}

@@ -15,12 +15,12 @@ const useStyles = makeStyles<
   { transparentHeader: boolean; isCustomHub: boolean; isNarrowScreen: boolean }
 >((theme) => ({
   root: (props) => ({
-    color: props.transparentHeader
+    color: props.transparentHeader && !props.isNarrowScreen
       ? "white"
       : props.isCustomHub
-      ? !props.isNarrowScreen
-        ? theme.palette.primary.contrastText
-        : theme.palette.background.default_contrastText
+      ? (props.isNarrowScreen
+        ? theme.palette.background.default_contrastText
+        : theme.palette.primary.contrastText)
       : theme.palette.primary.main,
     cursor: "pointer",
   }),

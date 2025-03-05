@@ -15,6 +15,7 @@ export default function WebflowPage({
   hubUrl,
   isLandingPage,
   showSuffix,
+  isLocationHub,
 }: any) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
@@ -31,6 +32,7 @@ export default function WebflowPage({
         //TODO(unused) hideHeadline
         noSpaceBottom
         showSuffix={showSuffix}
+        isLocationHub={isLocationHub}
       >
         <DevLinkProvider>{children}</DevLinkProvider>
       </WideLayout>
