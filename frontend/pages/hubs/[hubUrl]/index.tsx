@@ -64,7 +64,10 @@ const NotFoundPage = ({ texts }: any) => {
 //for description we need the Ambassador name
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx?.params?.hubUrl;
-    const [hubAmbassador, hubData] = await Promise.all([getHubAmbassadorData(hubUrl, ctx.locale), getHubData(hubUrl, ctx.locale)]) ;
+  const [hubAmbassador, hubData] = await Promise.all([
+    getHubAmbassadorData(hubUrl, ctx.locale),
+    getHubData(hubUrl, ctx.locale),
+  ]);
   return {
     props: {
       hubAmbassador: hubAmbassador,
@@ -144,7 +147,7 @@ const LandingPage = ({ hubAmbassador, hubData, hubUrl }) => {
       hubUrl={hubUrl}
       isLandingPage={true}
       showSuffix={false}
-      isLocationHub= {isLocationHubLikeHub(hubData?.hub_type)}
+      isLocationHub={isLocationHubLikeHub(hubData?.hub_type)}
     >
       <PageComponent />
     </WebflowPage>

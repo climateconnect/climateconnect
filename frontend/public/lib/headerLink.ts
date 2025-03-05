@@ -97,16 +97,33 @@ const getDefaultLinks = (path_to_redirect, texts, isLocationHub, hasHubLandingPa
     return [
       {
         href: "/browse",
-        text: isLocationHub ? isOnLandingPage || hasHubLandingPage ? texts.climate_connect : texts.projects_worldwide : texts.browse,
+        text: isLocationHub
+          ? isOnLandingPage || hasHubLandingPage
+            ? texts.climate_connect
+            : texts.projects_worldwide
+          : texts.browse,
         iconForDrawer: HomeIcon,
         showJustIconUnderSm: HomeIcon,
-        showStaticLinksInDropdown: isLocationHub && (hasHubLandingPage || isOnLandingPage) ? true : false,
+        showStaticLinksInDropdown:
+          isLocationHub && (hasHubLandingPage || isOnLandingPage) ? true : false,
       },
       {
-        href: isOnLandingPage ? `/hubs/${hubUrl}/browse` : hasHubLandingPage ? `/hubs/${hubUrl}/` : "/about",
-        text: isOnLandingPage ? texts.return_to_climatehub_projects : isLocationHub && hasHubLandingPage ? texts.about_climatehub : texts.about,
+        href: isOnLandingPage
+          ? `/hubs/${hubUrl}/browse`
+          : hasHubLandingPage
+          ? `/hubs/${hubUrl}/`
+          : "/about",
+        text: isOnLandingPage
+          ? texts.return_to_climatehub_projects
+          : isLocationHub && hasHubLandingPage
+          ? texts.about_climatehub
+          : texts.about,
         iconForDrawer: InfoIcon,
-        showStaticLinksInDropdown: isOnLandingPage ? false : isLocationHub && hasHubLandingPage ? false : true,
+        showStaticLinksInDropdown: isOnLandingPage
+          ? false
+          : isLocationHub && hasHubLandingPage
+          ? false
+          : true,
         hideOnStaticPages: true,
       },
       {
@@ -136,10 +153,23 @@ const getDefaultLinks = (path_to_redirect, texts, isLocationHub, hasHubLandingPa
     ];
   }
 };
-const getLinks = (path_to_redirect, texts, isLocationHub, isCustomHub, hasHubLandingPage, hubUrl) => {
+const getLinks = (
+  path_to_redirect,
+  texts,
+  isLocationHub,
+  isCustomHub,
+  hasHubLandingPage,
+  hubUrl
+) => {
   return isCustomHub
     ? getPrio1Links(path_to_redirect, texts)
-    : getDefaultLinks(path_to_redirect, texts, isLocationHub || isCustomHub, hasHubLandingPage, hubUrl);
+    : getDefaultLinks(
+        path_to_redirect,
+        texts,
+        isLocationHub || isCustomHub,
+        hasHubLandingPage,
+        hubUrl
+      );
 };
 
 const getLoggedInLinks = ({ loggedInUser, texts, queryString }) => {

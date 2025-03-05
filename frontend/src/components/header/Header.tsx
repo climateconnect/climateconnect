@@ -198,9 +198,10 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
     // This className is used to style the DropDownButton component in the Header.
     // It is applied in the headerLink.ts file.
     btnIconTextColor: (props) => ({
-      color: props.isCustomHub || props.transparentHeader
-        ? theme.palette.primary.contrastText
-        : theme.palette.background.default_contrastText,
+      color:
+        props.isCustomHub || props.transparentHeader
+          ? theme.palette.primary.contrastText
+          : theme.palette.background.default_contrastText,
     }),
     btnColor: (props) => ({
       color: props.isCustomHub
@@ -293,7 +294,7 @@ export default function Header({
   const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const customHubUrls = CUSTOM_HUB_URLS || ["prio1"];
   const isCustomHub = customHubUrls.includes(hubUrl);
-  const LINKS = getLinks(pathName, texts, isLocationHub, isCustomHub, hasHubLandingPage , hubUrl);
+  const LINKS = getLinks(pathName, texts, isLocationHub, isCustomHub, hasHubLandingPage, hubUrl);
   const classes = useStyles({
     fixedHeader: fixedHeader,
     transparentHeader: transparentHeader,
