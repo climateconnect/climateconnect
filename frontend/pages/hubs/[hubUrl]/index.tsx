@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
-
 import {
   EnChErlangenLandingpage,
   DeChErlangenLandingpage,
@@ -15,6 +14,7 @@ import WideLayout from "../../../src/components/layouts/WideLayout";
 import PageNotFound from "../../../src/components/general/PageNotFound";
 import getTexts from "../../../public/texts/texts";
 import { buildHubUrl } from "../../../public/lib/urlBuilder";
+
 //Types
 type Locale = "en" | "de";
 type HubUrl = "erlangen" | "marburg" | "potsdam";
@@ -63,7 +63,7 @@ const NotFoundPage = ({ texts }: any) => {
 //for description we need the Ambassador name
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx?.params?.hubUrl;
-  const [hubAmbassador] = await Promise.all([getHubAmbassadorData(hubUrl, ctx.locale)]);
+  const hubAmbassador = await getHubAmbassadorData(hubUrl, ctx.locale);
   return {
     props: {
       hubAmbassador: hubAmbassador,

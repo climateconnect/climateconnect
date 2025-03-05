@@ -1,12 +1,14 @@
 import { getLocalePrefix } from "./apiOperations";
 
-interface HubUrlOptions {
+export type PathType = "allHubs" | "hubHomePage" | "hubBrowse";
+
+export interface HubUrlOptions {
   hubUrlSlug?: string;
   locale?: string;
   queryParams?: string;
   hash?: string;
   includeBaseUrl?: boolean;
-  pathType?: "allHubs" | "hubHomePage" | "hubBrowse";
+  pathType?: PathType;
 }
 
 export function buildHubUrl({
@@ -16,27 +18,28 @@ export function buildHubUrl({
   hash = "",
   includeBaseUrl = false,
   pathType = "allHubs",
-}: HubUrlOptions = {}) {
-  let basePath;
-  switch (pathType) {
-    case "allHubs":
-      // All hubs page
-      basePath = `${locale ? `${getLocalePrefix(locale)}` : ""}/hubs`;
-      break;
-    case "hubHomePage":
-      // Hub home page
-      basePath = `${locale ? `${getLocalePrefix(locale)}` : ""}/hubs/${hubUrlSlug}`;
-      break;
-    case "hubBrowse":
-      // Hub browse page
-      basePath = `${locale ? `${getLocalePrefix(locale)}` : ""}/hubs/${hubUrlSlug}/browse`;
-      break;
-    default:
-      basePath = `${locale ? `${getLocalePrefix(locale)}` : ""}/hubs`;
-  }
+}: HubUrlOptions = {}): string {
+  // Ensure query params start with ? if not empty
+  const formattedQueryParams = queryParams
+    ? queryParams.startsWith("?")
+      ? queryParams
+      : `?${queryParams}`
+    : "";
 
-  // Add base URL if specified
+  const localePrefix = locale ? `${getLocalePrefix(locale)}` : "";
+
+  const basePaths: Record<PathType, string> = {
+    allHubs: `${localePrefix}/hubs`,
+    hubHomePage: `${localePrefix}/hubs/${hubUrlSlug}`,
+    hubBrowse: `${localePrefix}/hubs/${hubUrlSlug}/browse`,
+  };
+
+  // Use the base path, defaulting to all hubs if an invalid path type is provided
+  const basePath = basePaths[pathType] || basePaths.allHubs;
+
+  // Conditionally add base URL
   const baseUrl = includeBaseUrl && process.env.BASE_URL ? process.env.BASE_URL : "";
 
-  return `${baseUrl}${basePath}${queryParams}${hash ? `#${hash}` : ""}`;
+  // Construct the final URL
+  return `${baseUrl}${basePath}${formattedQueryParams}${hash ? `#${hash}` : ""}`;
 }

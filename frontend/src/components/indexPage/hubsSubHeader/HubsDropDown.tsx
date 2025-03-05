@@ -37,7 +37,7 @@ export default function HubsDropDown({
   const classes = useStyles({ height: height });
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const popperRef = useRef<HTMLAnchorElement | null>(null);
-  const { locale } = useContext(UserContext);
+  const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
 
   const toggleButtonProps: ButtonProps = {};
@@ -54,7 +54,10 @@ export default function HubsDropDown({
 
   const dropDownHubItems = hubs.map((h) => ({
     // href: `/hubs/${h.url_slug}/`,
-    href: buildHubUrl({ hubUrlSlug: h?.url_slug, pathType: "hubBrowse" }),
+    href: buildHubUrl({
+      hubUrlSlug: h?.url_slug,
+      pathType: !user && h.landing_page_component ? "hubHomePage" : "hubBrowse",
+    }),
     text: h.name,
   }));
 

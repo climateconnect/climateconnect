@@ -32,7 +32,7 @@ backend/dump.rdb
 yarn.lock
 /backend/celerybeat-schedule*
 frontend/.eslintcache
-
+frontend/devlink
 media/
 
 .venv

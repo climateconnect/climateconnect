@@ -38,7 +38,7 @@ export default function GoBackFromProjectPageButton({
     const hubPage = urlParams.get("hubPage");
     // const hubsLink = "/" + locale + "/hubs/" + hubPage;
     const hubsLink = buildHubUrl({ hubUrlSlug: hubPage, locale: locale, pathType: "hubBrowse" });
-    
+
     // income from master
     // const hubPage = urlParams.get("hub");
     // const hubsLink = "/" + locale + "/hubs/" + hubPage;

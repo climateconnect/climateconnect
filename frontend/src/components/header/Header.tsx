@@ -327,7 +327,7 @@ export default function Header({
       imageUrl = loadDefaultLogo(transparentHeader, isMediumScreen);
     }
     return imageUrl;
-  }
+  };
 
   const loadFallbackLogo = (
     ev // TODO: implementing better with re-rendering after screen size change

@@ -267,7 +267,7 @@ export default function HeaderForPRIO1({ background, isLocationHub }: HeaderProp
             />
           </Link>
         </div>
-        <div style={{ display: "flex", alignItems: "center", flexDirection: "column"}}>
+        <div style={{ display: "flex", alignItems: "center", flexDirection: "column" }}>
           <p>Powerd by</p>
           <img
             src="/images/logo_white.png"
