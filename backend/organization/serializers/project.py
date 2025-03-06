@@ -42,7 +42,6 @@ class ProjectSerializer(serializers.ModelSerializer):
     skills = serializers.SerializerMethodField()
     project_parents = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
-    status = serializers.SerializerMethodField()
     collaborating_organizations = serializers.SerializerMethodField()
     number_of_followers = serializers.SerializerMethodField()
     number_of_likes = serializers.SerializerMethodField()
@@ -59,7 +58,6 @@ class ProjectSerializer(serializers.ModelSerializer):
             "name",
             "url_slug",
             "image",
-            "status",
             "start_date",
             "end_date",
             "short_description",
@@ -206,7 +204,6 @@ class ProjectParentsSerializer(serializers.ModelSerializer):
 class ProjectMinimalSerializer(serializers.ModelSerializer):
     skills = SkillSerializer(many=True)
     project_parents = serializers.SerializerMethodField()
-    status = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
 
@@ -217,7 +214,6 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
             "url_slug",
             "skills",
             "image",
-            "status",
             "location",
             "project_parents",
             "is_draft",
