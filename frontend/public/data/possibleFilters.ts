@@ -140,31 +140,6 @@ const getProjectsFilters = (filterChoices, texts, english_texts) => [
     tooltipText: texts.categories_tooltip,
   },
   {
-    icon: GroupAddIcon,
-    iconName: "GroupAddIcon",
-    title: texts.collaboration,
-    type: "select",
-    key: "collaboration",
-    options: [
-      {
-        key: "",
-        name: "",
-        original_name: "",
-      },
-      {
-        key: "yes",
-        name: texts.yes,
-        original_name: english_texts?.yes,
-      },
-      {
-        key: "no",
-        name: texts.no,
-        original_name: english_texts?.no,
-      },
-    ],
-    tooltipText: texts.collaboration_tooltip,
-  },
-  {
     icon: CreateIcon,
     iconName: "CreateIcon",
     title: texts.skills,
