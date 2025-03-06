@@ -51,7 +51,7 @@ from organization.models import (
 )
 
 from organization.models.type import PROJECT_TYPES
-from organization.serializers.status import ProjectTypesSerializer
+from organization.serializers.project_types import ProjectTypesSerializer
 
 from organization.models.members import MembershipRequests
 from organization.models.translations import ProjectTranslation

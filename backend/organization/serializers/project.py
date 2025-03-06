@@ -23,10 +23,7 @@ from organization.models import (
 from organization.models.content import ProjectComment
 from organization.models.translations import ProjectTranslation
 from organization.serializers.organization import OrganizationStubSerializer
-from organization.serializers.status import (
-    ProjectTypesSerializer,
-    ProjectStatusSerializer,
-)
+from organization.serializers.project_types import ProjectTypesSerializer
 from organization.serializers.tags import ProjectTaggingSerializer
 from organization.serializers.translation import ProjectTranslationSerializer
 from organization.utility.project import (
@@ -129,10 +126,6 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def get_helpful_connections(self, obj):
         return get_project_helpful_connections(obj, get_language())
-
-    def get_status(self, obj):
-        serializer = ProjectStatusSerializer(obj.status, many=False)
-        return serializer.data["name"]
 
     def get_language(self, obj):
         return obj.language.language_code
@@ -242,10 +235,6 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
         if obj.loc is None:
             return None
         return obj.loc.name
-
-    def get_status(self, obj):
-        serializer = ProjectStatusSerializer(obj.status, many=False)
-        return serializer.data["name"]
 
 
 class ProjectStubSerializer(serializers.ModelSerializer):
