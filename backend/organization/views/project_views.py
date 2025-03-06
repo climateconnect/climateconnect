@@ -608,14 +608,6 @@ class ProjectAPIView(APIView):
             project.thumbnail_image = get_image_from_data_url(
                 request.data["thumbnail_image"]
             )[0]
-        if "status" in request.data:
-            try:
-                project_status = ProjectStatus.objects.get(
-                    id=int(request.data["status"])
-                )
-            except ProjectStatus.DoesNotExist:
-                raise NotFound("Project status not found.")
-            project.status = project_status
         if "start_date" in request.data:
             project.start_date = parse(request.data["start_date"])
         if "end_date" in request.data:
