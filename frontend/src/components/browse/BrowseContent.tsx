@@ -230,7 +230,7 @@ export default function BrowseContent({
         locale: locale,
       })
     );
-    delete emptyFilters.location;
+    delete emptyFilters.location; // TODO: refactor this?
     const queryObject = getQueryObjectFromUrl(getSearchParams(window.location.search));
     //location is always set to "" here
 
