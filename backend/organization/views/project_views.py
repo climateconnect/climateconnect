@@ -44,7 +44,6 @@ from organization.models import (
     ProjectFollower,
     ProjectMember,
     ProjectParents,
-    ProjectStatus,
     ProjectTagging,
     ProjectTags,
     ProjectLike,
@@ -81,7 +80,6 @@ from organization.serializers.project import (
     ProjectStubSerializer,
     ProjectLikeSerializer,
 )
-from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.tags import ProjectTagsSerializer
 from organization.utility.notification import (
     create_comment_mention_notification,
@@ -148,7 +146,7 @@ class ListProjectsView(ListAPIView):
         # Get project ranking
         projects = (
             Project.objects.filter(is_draft=False, is_active=True)
-            .select_related("loc", "language", "status")
+            .select_related("loc", "language")
             .prefetch_related(
                 "skills",
                 "tag_project",
@@ -208,10 +206,6 @@ class ListProjectsView(ListAPIView):
             projects = projects.filter(
                 tag_project__project_tag__in=project_tags, is_active=True
             ).distinct()
-
-        if "status" in self.request.query_params:
-            statuses = self.request.query_params.get("status").split(",")
-            projects = projects.filter(status__name__in=statuses)
 
         if "skills" in self.request.query_params:
             skill_names = self.request.query_params.get("skills").split(",")
@@ -306,11 +300,6 @@ class CreateProjectView(APIView):
 
     @transaction.atomic()
     def post(self, request):
-        # Temporary fix: there is no project status anymore within the frontend
-        # therefore we "overwrite" the status to published until project status
-        # is fully removed from the backend, too.
-        request.data["status"] = 2  # ProjectStatus.DEFAULT_TYPE
-
         if "parent_organization" in request.data:
             organization = check_organization(int(request.data["parent_organization"]))
         else:
@@ -318,7 +307,6 @@ class CreateProjectView(APIView):
 
         required_params = [
             "name",
-            "status",
             "short_description",
             "collaborators_welcome",
             "team_members",
@@ -358,16 +346,6 @@ class CreateProjectView(APIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-        try:
-            ProjectStatus.objects.get(id=int(request.data["status"]))
-        except ProjectStatus.DoesNotExist:
-            return Response(
-                {
-                    "message": "Passed status {} does not exist".format(
-                        request.data["status"]
-                    )
-                }
-            )
         translations_failed = False
 
         translations_object = None
@@ -895,14 +873,6 @@ class ListProjectTags(ListAPIView):
                 return ProjectTags.objects.all()
         else:
             return ProjectTags.objects.all()
-
-
-class ListProjectStatus(ListAPIView):
-    permission_classes = [AllowAny]
-    serializer_class = ProjectStatusSerializer
-
-    def get_queryset(self):
-        return ProjectStatus.objects.all()
 
 
 class ListProjectTypeOptions(APIView):

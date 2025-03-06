@@ -72,7 +72,6 @@ class ProjectAdmin(admin.ModelAdmin):
         "loc__state",
         "loc__country",
     )
-    list_filter = ("status",)
 
 
 admin.site.register(Project, ProjectAdmin)

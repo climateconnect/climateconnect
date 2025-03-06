@@ -175,11 +175,6 @@ urlpatterns = [
         name="list-project-tags",
     ),
     path(
-        "projectstatus/",  # TODO: check if still in use, otherwise remove
-        project_views.ListProjectStatus.as_view(),
-        name="list-project-status",
-    ),
-    path(
         "project_type_options/",
         project_views.ListProjectTypeOptions.as_view(),
         name="list-project-types",
