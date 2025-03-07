@@ -44,7 +44,6 @@ from organization.models import (
     ProjectFollower,
     ProjectMember,
     ProjectParents,
-    ProjectStatus,
     ProjectTagging,
     ProjectTags,
     ProjectLike,
@@ -52,7 +51,7 @@ from organization.models import (
 )
 
 from organization.models.type import PROJECT_TYPES
-from organization.serializers.status import ProjectTypesSerializer
+from organization.serializers.project_types import ProjectTypesSerializer
 
 from organization.models.members import MembershipRequests
 from organization.models.translations import ProjectTranslation
@@ -81,7 +80,6 @@ from organization.serializers.project import (
     ProjectStubSerializer,
     ProjectLikeSerializer,
 )
-from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.tags import ProjectTagsSerializer
 from organization.utility.notification import (
     create_comment_mention_notification,
@@ -148,7 +146,7 @@ class ListProjectsView(ListAPIView):
         # Get project ranking
         projects = (
             Project.objects.filter(is_draft=False, is_active=True)
-            .select_related("loc", "language", "status")
+            .select_related("loc", "language")
             .prefetch_related(
                 "skills",
                 "tag_project",
@@ -208,10 +206,6 @@ class ListProjectsView(ListAPIView):
             projects = projects.filter(
                 tag_project__project_tag__in=project_tags, is_active=True
             ).distinct()
-
-        if "status" in self.request.query_params:
-            statuses = self.request.query_params.get("status").split(",")
-            projects = projects.filter(status__name__in=statuses)
 
         if "skills" in self.request.query_params:
             skill_names = self.request.query_params.get("skills").split(",")
@@ -313,7 +307,6 @@ class CreateProjectView(APIView):
 
         required_params = [
             "name",
-            "status",
             "short_description",
             "collaborators_welcome",
             "team_members",
@@ -353,16 +346,6 @@ class CreateProjectView(APIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-        try:
-            ProjectStatus.objects.get(id=int(request.data["status"]))
-        except ProjectStatus.DoesNotExist:
-            return Response(
-                {
-                    "message": "Passed status {} does not exist".format(
-                        request.data["status"]
-                    )
-                }
-            )
         translations_failed = False
 
         translations_object = None
@@ -603,14 +586,6 @@ class ProjectAPIView(APIView):
             project.thumbnail_image = get_image_from_data_url(
                 request.data["thumbnail_image"]
             )[0]
-        if "status" in request.data:
-            try:
-                project_status = ProjectStatus.objects.get(
-                    id=int(request.data["status"])
-                )
-            except ProjectStatus.DoesNotExist:
-                raise NotFound("Project status not found.")
-            project.status = project_status
         if "start_date" in request.data:
             project.start_date = parse(request.data["start_date"])
         if "end_date" in request.data:
@@ -898,14 +873,6 @@ class ListProjectTags(ListAPIView):
                 return ProjectTags.objects.all()
         else:
             return ProjectTags.objects.all()
-
-
-class ListProjectStatus(ListAPIView):
-    permission_classes = [AllowAny]
-    serializer_class = ProjectStatusSerializer
-
-    def get_queryset(self):
-        return ProjectStatus.objects.all()
 
 
 class ListProjectTypeOptions(APIView):

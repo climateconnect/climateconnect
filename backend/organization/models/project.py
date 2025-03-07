@@ -51,14 +51,6 @@ class Project(models.Model):
         upload_to=project_image_path,
     )
 
-    status = models.ForeignKey(
-        "ProjectStatus",
-        help_text="Points to project's status",
-        verbose_name="Project Status",
-        related_name="project_status",
-        on_delete=models.PROTECT,
-    )
-
     project_type = models.CharField(
         max_length=2,
         choices=ProjectTypesChoices.choices,
