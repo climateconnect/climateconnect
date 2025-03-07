@@ -178,7 +178,7 @@ export default function HubContent({
         )}
         {isLocationHub ? (
           <div className={classes.topSectionWrapper}>
-            <PrioOneBackgroundBrowse isLoggedInUser={user ? true : false} />
+            {hubUrl === "prio1" && <PrioOneBackgroundBrowse isLoggedInUser={user ? true : false} />}
             <Container>
               <div className={classes.dashboardAndStatboxWrapper}>
                 {user ? (
