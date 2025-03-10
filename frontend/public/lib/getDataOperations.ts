@@ -3,17 +3,22 @@ import { membersWithAdditionalInfo } from "./getOptions";
 import { parseData } from "./parsingOperations";
 
 export async function getDataFromServer({ type, page, token, urlEnding, hubUrl, locale, idea }) {
+  if (type) type = encodeURIComponent(type);
+  if (page) page = encodeURIComponent(page);
+
   let url = `/api/${type}/?page=${page}`;
   if (hubUrl) {
+    hubUrl = encodeURIComponent(hubUrl);
     url += `&hub=${hubUrl}`;
   }
   if (idea) {
+    idea = encodeURIComponent(idea);
     url += `&idea=${idea}`;
   }
 
   // Handle query params as well
   if (urlEnding) {
-    // &category=Lowering%20food%20waste&
+    urlEnding = encodeURI(urlEnding);
     url += urlEnding;
   }
 
