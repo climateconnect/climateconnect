@@ -8,6 +8,7 @@ export async function getAllHubs(locale: any, just_sector_hubs?: boolean) {
       url: url,
       locale: locale,
     });
+
     return resp.data.results;
   } catch (err: any) {
     if (err.response && err.response.data)
