@@ -61,7 +61,7 @@ const NotFoundPage = ({ texts }: any) => {
   );
 };
 
-//for description we need the Ambassador name
+//for description we need the Ambassador name.
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx?.params?.hubUrl;
     const [hubAmbassador, hubData] = await Promise.all([getHubAmbassadorData(hubUrl, ctx.locale), getHubData(hubUrl, ctx.locale)]) ;
