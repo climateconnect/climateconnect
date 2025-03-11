@@ -1,13 +1,5 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
-import {
-  EnChErlangenLandingpage,
-  DeChErlangenLandingpage,
-  DeChMarburgLandingpage,
-  EnChMarburgLandingpage,
-  EnChPotsdamLandingpage,
-  DeChPotsdamLandingpage,
-} from "../../../devlink";
 import UserContext from "../../../src/components/context/UserContext";
 import WebflowPage from "../../../src/components/webflow/WebflowPage";
 import WideLayout from "../../../src/components/layouts/WideLayout";
@@ -15,119 +7,176 @@ import PageNotFound from "../../../src/components/general/PageNotFound";
 import getTexts from "../../../public/texts/texts";
 import { buildHubUrl } from "../../../public/lib/urlBuilder";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
+import LoadingSpinner from "../../../src/components/general/LoadingSpinner";
 
 //Types
-type Locale = "en" | "de";
-type HubUrl = "erlangen" | "marburg" | "potsdam";
-type LandingPageComponent = React.ComponentType<{}>;
+type DevlinkComponentType = React.ComponentType<any> | null;
+type LocaleType = "en" | "de" | undefined;
 
-// Type for mapping Locale to LandingPageComponent
-type LocaleLandingPageMap = {
-  [key in Locale]: LandingPageComponent;
-};
+interface HubAmbassador {
+  title?: string;
+  [key: string]: any;
+}
 
-type LandingPageMap = {
-  [key in HubUrl]: LocaleLandingPageMap;
-};
+interface HubData {
+  landing_page_component: string;
+  hub_type: string;
+  [key: string]: any;
+}
 
-const LANDING_PAGES: LandingPageMap = {
-  erlangen: {
-    de: DeChErlangenLandingpage,
-    en: EnChErlangenLandingpage,
-  },
-  marburg: {
-    de: DeChMarburgLandingpage,
-    en: EnChMarburgLandingpage,
-  },
-  potsdam: {
-    de: DeChPotsdamLandingpage,
-    en: EnChPotsdamLandingpage,
-  },
-};
+interface TextsType {
+  return_to_hubs: string;
+  climateHub: string;
+  find_suitable_climate_protection_commitment: string;
+  find_fellow_campaigners_for_climate_protection_idea: string;
+  coordinates_the_climateHub: string;
+  is_there_for_you: string;
+  [key: string]: string;
+}
 
-const isValidHubUrl = (hubUrl: string) => {
-  return Object.keys(LANDING_PAGES).includes(hubUrl);
-};
+interface NotFoundPageProps {
+  texts: TextsType;
+  link: string;
+  showHeader?: boolean;
+}
 
-const NotFoundPage = ({ texts }: any) => {
+interface LandingPageProps {
+  hubAmbassador: HubAmbassador | null;
+  hubData: HubData | null;
+  hubUrl?: string;
+}
+
+const NotFoundPage: React.FC<NotFoundPageProps> = ({ texts, link, showHeader }) => {
   return (
-    <WideLayout>
-      <PageNotFound
-        itemName="landing page"
-        returnText={texts.return_to_hubs}
-        returnLink={buildHubUrl()}
-      />
-    </WideLayout>
+    <>
+      {showHeader ? (
+        <WideLayout>
+          <PageNotFound
+            itemName="landing page"
+            returnText={texts.return_to_hubs}
+            returnLink={link}
+          />
+        </WideLayout>
+      ) : (
+        <PageNotFound itemName="landing page" returnText={texts.return_to_hubs} returnLink={link} />
+      )}
+    </>
   );
 };
 
 //for description we need the Ambassador name
-export async function getServerSideProps(ctx) {
-  const hubUrl = ctx?.params?.hubUrl;
+export async function getServerSideProps(ctx: any) {
+  const hubUrl = ctx?.params?.hubUrl as string | undefined;
+
+  if (!hubUrl) {
+    return {
+      props: {
+        hubAmbassador: null,
+        hubData: null,
+        hubUrl: null,
+      },
+    };
+  }
+
   const [hubAmbassador, hubData] = await Promise.all([
     getHubAmbassadorData(hubUrl, ctx.locale),
     getHubData(hubUrl, ctx.locale),
   ]);
+
   return {
     props: {
-      hubAmbassador: hubAmbassador,
-      hubData: hubData,
-      hubUrl: hubUrl,
+      hubAmbassador,
+      hubData,
+      hubUrl,
     },
   };
 }
 
-const getHubAmbassadorData = async (hubUrl, locale) => {
+const getHubAmbassadorData = async (
+  hubUrl: string,
+  locale: LocaleType
+): Promise<HubAmbassador | null> => {
   try {
     const resp = await apiRequest({
       method: "get",
       url: `/api/hubs/${hubUrl}/ambassador/`,
-      locale: locale,
+      locale,
     });
     return resp.data;
   } catch (err: any) {
-    if (err.response && err.response.data)
-      console.log("Error in getHubAmbassadorData: " + err.response.data.detail);
-    console.log(err);
+    console.error(
+      "Error fetching hub ambassador data:",
+      err.response?.data?.detail || err.message || err
+    );
     return null;
   }
 };
 
-const getHubData = async (url_slug, locale) => {
+const getHubData = async (url_slug: string, locale: LocaleType): Promise<HubData | null> => {
   try {
     const resp = await apiRequest({
       method: "get",
       url: `/api/hubs/${url_slug}/`,
-      locale: locale,
+      locale,
     });
     return resp.data;
   } catch (err: any) {
-    if (err.response && err.response.data) {
-      console.log(err.response.data);
-      console.error("Error in getHubData!: " + err.response.data.detail);
-    }
+    console.error("Error fetching hub data:", err.response?.data?.detail || err.message || err);
     return null;
   }
 };
 
-const LandingPage = ({ hubAmbassador, hubData, hubUrl }) => {
+const LandingPage: React.FC<LandingPageProps> = ({ hubAmbassador, hubData, hubUrl }) => {
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "landing_page", locale: locale });
-  // Early return if hubUrl is not a string or undefined
-  if (!hubUrl || typeof hubUrl !== "string") {
-    return <NotFoundPage texts={texts} />;
+  const texts = getTexts({ page: "landing_page", locale: locale }) as TextsType;
+  const [DevlinkComponent, setDevlinkComponent] = useState<DevlinkComponentType>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const loadComponent = async () => {
+      if (!hubData?.landing_page_component) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        // Identify the correct component name based on locale
+        let componentName = hubData.landing_page_component;
+        const currentPrefix = componentName.startsWith("En") ? "En" : "De";
+        const desiredPrefix = locale === "en" ? "En" : "De";
+
+        if (currentPrefix !== desiredPrefix) {
+          componentName = componentName.replace(new RegExp(`^${currentPrefix}`), desiredPrefix);
+        }
+
+        // Dynamically import the component
+        const mod = await import("../../../devlink");
+
+        if (mod[componentName]) {
+          setDevlinkComponent(() => mod[componentName]);
+        } else {
+          console.warn(`Component ${componentName} not found in devlink.`);
+          setDevlinkComponent(null);
+        }
+      } catch (error) {
+        console.error("Error loading devlink component:", error);
+        setDevlinkComponent(null);
+      }
+
+      // Set loading to false whether the try block succeeds or fails
+      setIsLoading(false);
+    };
+
+    loadComponent();
+  }, [locale, hubData]);
+
+  // Handle loading state
+  if (isLoading) {
+    return <LoadingSpinner isLoading color="#fff" noMarginTop />;
   }
-
-  // Check if hubUrl is valid
-  if (!isValidHubUrl(hubUrl)) {
-    return <NotFoundPage texts={texts} />;
-  }
-
-  const PageComponent = LANDING_PAGES[hubUrl][locale];
-
-  // If no component found for the current locale
-  if (!PageComponent) {
-    return <NotFoundPage texts={texts} />;
+  // Handle missing data
+  if (!hubUrl || !hubData) {
+    return <NotFoundPage texts={texts} link={buildHubUrl()} showHeader />;
   }
 
   const title = `${texts.climateHub} ${hubUrl} | ${texts.find_suitable_climate_protection_commitment} ${hubUrl}`;
@@ -149,7 +198,14 @@ const LandingPage = ({ hubAmbassador, hubData, hubUrl }) => {
       showSuffix={false}
       isLocationHub={isLocationHubLikeHub(hubData?.hub_type)}
     >
-      <PageComponent />
+      {DevlinkComponent ? (
+        <DevlinkComponent />
+      ) : (
+        <NotFoundPage
+          texts={texts}
+          link={buildHubUrl({ hubUrlSlug: hubUrl, pathType: "hubBrowse" })}
+        />
+      )}
     </WebflowPage>
   );
 };
