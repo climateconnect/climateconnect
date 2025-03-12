@@ -21,9 +21,8 @@ const COMMON_LINKS = {
     icon: NotificationsIcon,
     alwaysDisplayDirectly: true,
     onlyShowLoggedIn: true,
-    // TODO: On mobile view, missing an href causes the inbox to redirect to undefined.
-    // TODO: On desktop view, adding an href causes an issue where clicking the icon to open the notification box redirects to the inbox instead of opening the box.
-    // href: "/inbox",
+    // Fixed issue where missing href caused redirection issues on mobile. 
+    onlyShowOnNormalScreen: true,
   },
   SHARE: {
     href: "/share",
