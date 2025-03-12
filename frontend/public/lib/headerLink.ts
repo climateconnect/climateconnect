@@ -21,7 +21,7 @@ const COMMON_LINKS = {
     icon: NotificationsIcon,
     alwaysDisplayDirectly: true,
     onlyShowLoggedIn: true,
-    // Fixed issue where missing href caused redirection issues on mobile. 
+    // Fixed issue where missing href caused redirection issues on mobile.
     onlyShowOnNormalScreen: true,
   },
   SHARE: {
