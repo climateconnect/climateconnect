@@ -790,7 +790,8 @@ function NarrowScreenLinks({
                 (!link.alwaysDisplayDirectly ||
                   !(loggedInUser && link.alwaysDisplayDirectly === "loggedIn")) &&
                 !(loggedInUser && link.onlyShowLoggedOut) &&
-                !(!loggedInUser && link.onlyShowLoggedIn)
+                !(!loggedInUser && link.onlyShowLoggedIn) &&
+                !link.onlyShowOnNormalScreen
             ).map((link, index) => {
               const Icon = link.iconForDrawer;
               if (link.type !== "languageSelect") {
