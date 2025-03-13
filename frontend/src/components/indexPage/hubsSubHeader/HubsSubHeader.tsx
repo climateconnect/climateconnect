@@ -68,7 +68,7 @@ export default function HubsSubHeader({ hubs, onlyShowDropDown, isCustomHub }: a
             <Link
               className={classes.link}
               key={"/hubs"}
-              href={`${getLocalePrefix(locale)}/hubs/`}
+              href={`${getLocalePrefix(locale)}/hubs/browse/`}
               underline="hover"
             >
               {texts.all_hubs}

@@ -338,7 +338,7 @@ export default function Header({
 
   const getLogoLink = () => {
     if (hubUrl) {
-      return `${localePrefix}/hubs/${hubUrl}`;
+      return `${localePrefix}/hubs/${hubUrl}/browse`;
     }
     return `${localePrefix}/`;
   };
