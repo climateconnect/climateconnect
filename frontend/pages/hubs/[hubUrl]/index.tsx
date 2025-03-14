@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import UserContext from "../../../src/components/context/UserContext";
-import WebflowPage from "../../../src/components/webflow/WebflowPage";
+import DevlinkPage from "../../../src/components/devlink/DevlinkPage";
 import WideLayout from "../../../src/components/layouts/WideLayout";
 import PageNotFound from "../../../src/components/general/PageNotFound";
 import getTexts from "../../../public/texts/texts";
@@ -24,12 +24,6 @@ interface HubData {
 }
 
 interface TextsType {
-  return_to_hubs: string;
-  climateHub: string;
-  find_suitable_climate_protection_commitment: string;
-  find_fellow_campaigners_for_climate_protection_idea: string;
-  coordinates_the_climateHub: string;
-  is_there_for_you: string;
   [key: string]: string;
 }
 
@@ -130,7 +124,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ hubAmbassador, hubData, hubUr
   const texts = getTexts({ page: "landing_page", locale: locale }) as TextsType;
   const [DevlinkComponent, setDevlinkComponent] = useState<DevlinkComponentType>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
+  console.log("hubData",hubData);
+  console.log("DevlinkComponent",DevlinkComponent);
+  
   useEffect(() => {
     const loadComponent = async () => {
       if (!hubData?.landing_page_component) {
@@ -186,11 +182,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ hubAmbassador, hubData, hubUr
   } `;
 
   return (
-    <WebflowPage
+    <DevlinkPage
       title={title}
       description={description}
       transparentHeader={true}
-      isStaticPage={false}
+      // isStaticPage={false}
       isHubPage={true}
       hubUrl={hubUrl}
       isLandingPage={true}
@@ -205,7 +201,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ hubAmbassador, hubData, hubUr
           link={`${hubUrl}/browse`}
         />
       )}
-    </WebflowPage>
+    </DevlinkPage>
   );
 };
 

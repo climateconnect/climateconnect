@@ -67,6 +67,7 @@ export default function NavigationSubHeader({ hubName, allHubs, isLocationHub }:
               >
                 {texts.hubs}
               </Link>
+              
               {hubName && (
                 <>
                   {" / "}
