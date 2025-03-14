@@ -52,7 +52,7 @@ export default function HubsDropDown({
   };
 
   const dropDownHubItems = hubs.map((h) => ({
-    href: `/hubs/${h.url_slug}/`,
+    href: `/hubs/${h.url_slug}/browse/`,
     text: h.name,
   }));
 

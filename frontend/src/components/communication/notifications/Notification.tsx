@@ -246,7 +246,7 @@ const MentionNotification = ({ notification, texts, locale }) => {
     urlEnding =
       entityType === "project"
         ? `/projects/${notification.project.url_slug}/#comments`
-        : `/hubs/${notification.idea.hub_url_slug}?idea=${notification.idea.url_slug}#ideas`;
+        : `/hubs/${notification.idea.hub_url_slug}/browse?idea=${notification.idea.url_slug}#ideas`;
   }
 
   const previewText = getFragmentsWithMentions(notification[commentProp]?.content, false, locale);

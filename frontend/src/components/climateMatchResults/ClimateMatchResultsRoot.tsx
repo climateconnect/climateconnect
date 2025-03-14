@@ -162,7 +162,7 @@ export default function ClimateMatchResultsRoot({}) {
             <div className={classes.backButtonsContainer}>
               <Button
                 className={classes.backButton}
-                href={`${getLocalePrefix(locale)}/hubs/${fromHub?.url_slug}`}
+                href={`${getLocalePrefix(locale)}/hubs/${fromHub?.url_slug}/browse`}
               >
                 <ArrowBackIosIcon className={classes.backIcon} />
                 {texts.climatehub} {fromHub?.name}

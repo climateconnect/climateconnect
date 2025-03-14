@@ -61,7 +61,7 @@ export default function ResetPassword({ hubUrl, hubThemeData }) {
           locale: locale,
         });
         if (hubUrl) {
-          redirect(`/hubs/${hubUrl}`, {
+          redirect(`/hubs/${hubUrl}/browse`, {
             message: response.data.message,
           });
         } else {

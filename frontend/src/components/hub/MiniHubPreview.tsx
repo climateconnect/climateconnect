@@ -84,7 +84,7 @@ export default function MiniHubPreview({
   };
   return (
     <Link
-      href={hub && getLocalePrefix(locale) + `/hubs/${hub.url_slug}`}
+      href={hub && getLocalePrefix(locale) + `/hubs/${hub.url_slug}/browse`}
       target="_blank"
       className={classes.link}
       underline="hover"

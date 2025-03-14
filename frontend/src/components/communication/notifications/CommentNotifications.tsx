@@ -38,7 +38,7 @@ export const ProjectCommentNotification = ({ notification }) => {
 export const IdeaCommentNotification = ({ notification }) => {
   return (
     <CommentNotification
-      link={`/hubs/${notification.idea.hub_url_slug}?idea=${notification.idea.url_slug}&show_comments=true#ideas`}
+      link={`/hubs/${notification.idea.hub_url_slug}/browse?idea=${notification.idea.url_slug}&show_comments=true#ideas`}
       object_commented_on={notification.idea}
       comment_text={notification?.idea_comment?.content}
       is_reply={false}
@@ -50,7 +50,7 @@ export const IdeaCommentNotification = ({ notification }) => {
 export const IdeaCommentReplyNotification = ({ notification }) => {
   return (
     <CommentNotification
-      link={`/hubs/${notification.idea.hub_url_slug}?idea=${notification.idea.url_slug}&show_comments=true#ideas`}
+      link={`/hubs/${notification.idea.hub_url_slug}/browse?idea=${notification.idea.url_slug}&show_comments=true#ideas`}
       object_commented_on={notification.idea}
       comment_text={notification?.idea_comment?.content}
       is_reply={true}

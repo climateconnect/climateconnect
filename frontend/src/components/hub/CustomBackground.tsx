@@ -67,7 +67,7 @@ export function CustomBackground({ hubUrl }: Props) {
 
   switch (hubUrl.toLowerCase()) {
     case "prio1": {
-      if (pathname.endsWith("/hubs/prio1")) {
+      if (pathname.endsWith("/hubs/prio1/browse")) {
         // HubContent itself includes the background in the correct place.
         // There is no background for the whole page needed. Therefore, return null in this case.
         return null;
