@@ -111,15 +111,6 @@ const getProjectsFilters = (filterChoices, texts, english_texts) => [
   ...getLocationFilters(texts),
   getSearchFilter(),
   {
-    icon: DoneAllOutlinedIcon,
-    iconName: "DoneAllOutlinedIcon",
-    title: texts.status,
-    type: "multiselect",
-    options: filterChoices?.project_statuses?.map((s) => ({ ...s, key: s.id })),
-    key: "status",
-    tooltipText: texts.status_tooltip,
-  },
-  {
     icon: GroupIcon,
     iconName: "GroupIcon",
     // A hack: need an extra space character to create some horizontal space between the icon and text
