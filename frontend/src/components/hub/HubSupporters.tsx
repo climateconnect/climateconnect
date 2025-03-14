@@ -21,7 +21,6 @@ const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: theme.palette.primary.main,
     borderRadius: 4,
-    paddingBottom: "15px",
     paddingRight: "5px",
     paddingLeft: "5px",
     width: 320,
@@ -40,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.default,
     borderRadius: "4px",
     position: "relative",
+    marginBottom: "20px",
   },
   customDot: {
     bottom: "-16px",
@@ -84,6 +84,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("md")]: {
       padding: 0,
     },
+    height: "100%",
   },
   containerInSmallDevices: {
     display: "flex",
