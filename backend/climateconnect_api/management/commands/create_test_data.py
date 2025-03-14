@@ -14,7 +14,7 @@ from climateconnect_api.models import (
     UserProfile,
     Skill,
 )
-from organization.models import ProjectStatus, Project, Organization
+from organization.models import Project, Organization
 
 
 def create_language_test_data():
@@ -94,26 +94,6 @@ def create_roles_test_data():
         print("Administrator role successfully created.")
     else:
         print("Administrator role already exists.")
-
-
-def create_project_status_test_data():
-    # Creating 2 project status
-    print("Creating project status...")
-    if not ProjectStatus.objects.filter(name="In Progress").exists():
-        ProjectStatus.objects.create(
-            name="In Progress", status_type=1, has_end_date=True, has_start_date=True
-        )
-        print("In Progress status created.")
-    else:
-        print("In Progress project status already exists.")
-
-    if not ProjectStatus.objects.filter(name="Recurring").exists():
-        ProjectStatus.objects.create(
-            name="Recurring", status_type=4, has_end_date=False, has_start_date=True
-        )
-        print("Recurring project status created.")
-    else:
-        print("Recurring project status already exists.")
 
 
 def create_organization_test_data(number_of_rows: int):
@@ -202,7 +182,6 @@ def create_project_test_data(number_of_rows: int):
                 country="Germany",
                 short_description="This is a test project.",
                 start_date=one_year_and_one_day_ago,
-                status=ProjectStatus.objects.get(name="In Progress"),
                 url_slug=url_slug,
                 language=english_language,
             )
@@ -417,7 +396,6 @@ class Command(BaseCommand):
         create_test_user_data(number_of_rows=number_of_rows)
         create_availability_test_data(number_of_rows=number_of_rows)
         create_roles_test_data()
-        create_project_status_test_data()
         create_organization_test_data(number_of_rows=number_of_rows)
         create_project_tags_test_data()
         create_organization_tags_test_data()

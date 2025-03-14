@@ -29,7 +29,6 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
         name=data["name"],
         short_description=data["short_description"],
         collaborators_welcome=data["collaborators_welcome"],
-        status_id=data["status"],
         project_type=project_type,
     )
     # Add all non required parameters if they exists in the request.
