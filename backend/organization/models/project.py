@@ -59,6 +59,7 @@ class Project(models.Model):
         on_delete=models.PROTECT,
         blank=True,
         null=True,
+        default=1,  # Default, for backwards compatibility during development
     )
 
     project_type = models.CharField(
