@@ -451,7 +451,6 @@ export default function BrowseContent({
     TYPES_BY_TAB_VALUE: TYPES_BY_TAB_VALUE,
     filtersExpanded: isNarrowScreen ? filtersExandedOnMobile : filtersExpanded,
     handleApplyNewFilters: handleApplyNewFilters,
-    filters: filters,
     handleUpdateFilterValues: handleUpdateFilterValues,
     errorMessage: errorMessage,
     isMobileScreen: isNarrowScreen,
