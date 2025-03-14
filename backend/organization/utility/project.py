@@ -258,7 +258,7 @@ def get_similar_projects(url_slug: str, return_count=5):
     # calcaulte skills match %
     # since skills are 1 to Many to projects, we need to group the skills in a list
     skills_df = df.groupby(["url_slug"]).agg({"skills": set})
-    source_skills = skills_df.loc[url_slug][0]
+    source_skills = skills_df.loc[url_slug].iloc[0]
     skills_df["source_skills"] = [source_skills for i in range(0, len(skills_df))]
     skills_df["skills_match"] = skills_df.apply(
         lambda x: sets_match(x["source_skills"], x["skills"]), axis=1
@@ -267,16 +267,8 @@ def get_similar_projects(url_slug: str, return_count=5):
     # calcualte tags match %
     # since tags are 1 to Many to projects, we need to group the tags in a list
     tags_df = df.groupby(["url_slug"]).agg({"tag_project": set})
-    other = (
-        df.groupby(["url_slug"])["tag_project"]
-        .apply(set)
-        .reset_index(name="tag_project")
-    )
+    source_tags = tags_df.loc[url_slug].iloc[0]
 
-    print(tags_df)
-    print(other)
-
-    source_tags = tags_df.loc[url_slug][0]
     tags_df["source_tag_project"] = [source_tags for i in range(0, len(tags_df))]
     tags_df["tags_match"] = tags_df.apply(
         lambda x: sets_match(x["source_tag_project"], x["tag_project"]), axis=1
