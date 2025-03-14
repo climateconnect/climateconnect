@@ -267,6 +267,15 @@ def get_similar_projects(url_slug: str, return_count=5):
     # calcualte tags match %
     # since tags are 1 to Many to projects, we need to group the tags in a list
     tags_df = df.groupby(["url_slug"]).agg({"tag_project": set})
+    other = (
+        df.groupby(["url_slug"])["tag_project"]
+        .apply(set)
+        .reset_index(name="tag_project")
+    )
+
+    print(tags_df)
+    print(other)
+
     source_tags = tags_df.loc[url_slug][0]
     tags_df["source_tag_project"] = [source_tags for i in range(0, len(tags_df))]
     tags_df["tags_match"] = tags_df.apply(
