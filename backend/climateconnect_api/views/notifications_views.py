@@ -24,7 +24,11 @@ class ListNotificationsView(ListAPIView):
             return notifications
         else:
             return []
-
+    #wanted to send User data to the Notification serializer 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
 
 class SetUserNotificationsRead(APIView):
     permission_classes = [IsAuthenticated]
