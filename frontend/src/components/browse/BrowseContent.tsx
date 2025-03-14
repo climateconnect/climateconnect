@@ -26,6 +26,7 @@ import MobileBottomMenu from "./MobileBottomMenu";
 import HubTabsNavigation from "../hub/HubTabsNavigation";
 import HubSupporters from "../hub/HubSupporters";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
+import { useFilters } from "../hooks/FilterContext";
 
 const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
 const OrganizationPreviews = React.lazy(() => import("../organization/OrganizationPreviews"));
@@ -66,17 +67,13 @@ export default function BrowseContent({
   initialMembers,
   initialOrganizations,
   initialProjects,
-  applyNewFilters,
   customSearchBarLabels,
   errorMessage,
   filterChoices,
-  handleSetErrorMessage,
   hideMembers,
   hubName,
   allHubs,
   hubData,
-  filters,
-  handleUpdateFilterValues,
   initialLocationFilter,
   hubUrl,
   hubAmbassador,
@@ -104,6 +101,13 @@ export default function BrowseContent({
   };
 
   const token = new Cookies().get("auth_token");
+
+  const {
+    filters,
+    handleUpdateFilterValues,
+    handleSetErrorMessage,
+    handleApplyNewFilters: applyNewFilters,
+  } = useFilters();
 
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles();
@@ -384,7 +388,6 @@ export default function BrowseContent({
       type: type,
       newFilters: newFilters,
       closeFilters: closeFilters,
-      nonFilterParams: nonFilterParams,
     });
     if (res?.closeFilters) {
       if (isNarrowScreen) setFiltersExpandedOnMobile(false);
