@@ -75,7 +75,9 @@ export default function ProjectContentSideButtons({
 }) {
   const token = new Cookies().get("auth_token");
   const classes = useStyles();
-  const { user, locale } = useContext(UserContext);
+  const { user, locale, CUSTOM_HUB_URLS } = useContext(UserContext);
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
+
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -143,7 +145,7 @@ export default function ProjectContentSideButtons({
     }
   };
 
-  const EditProjectButton = () => {
+  const EditProjectButton = ({ isCustomHub }) => {
     if (isNarrowScreen) {
       return (
         <IconButton
@@ -195,7 +197,7 @@ export default function ProjectContentSideButtons({
             <>
               {/* Badge is dynamic based on the number of membership requesters */}
               <ShowRequestsButton />
-              <EditProjectButton />
+              <EditProjectButton isCustomHub={isCustomHub} />
             </>
           )}
           {/* Otherwise if not a project admin, just show the Leave Project button */}
