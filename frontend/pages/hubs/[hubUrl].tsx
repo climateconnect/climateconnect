@@ -361,7 +361,12 @@ export default function Hub({
           </BrowseContext.Provider>
         </div>
         {isSmallScreen && (
-          <FabShareButton locale={locale} hubAmbassador={hubAmbassador} isCustomHub={isCustomHub} hubUrl={hubUrl} />
+          <FabShareButton
+            locale={locale}
+            hubAmbassador={hubAmbassador}
+            isCustomHub={isCustomHub}
+            hubUrl={hubUrl}
+          />
         )}
       </WideLayout>
     </>
