@@ -27,6 +27,7 @@ import HubTabsNavigation from "../hub/HubTabsNavigation";
 import HubSupporters from "../hub/HubSupporters";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 import { useFilters } from "../hooks/FilterContext";
+import { BrowseTab } from "../../types";
 
 const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
 const OrganizationPreviews = React.lazy(() => import("../organization/OrganizationPreviews"));
@@ -111,13 +112,13 @@ export default function BrowseContent({
 
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles();
-  const TYPES_BY_TAB_VALUE = hideMembers
+  const TYPES_BY_TAB_VALUE: BrowseTab[] = hideMembers
     ? ["projects", "organizations"] // TODO: add "events" here, after implementing event calendar
     : ["projects", "organizations", "members"]; // TODO: add "events" here, after implementing event calendar
   const { locale } = useContext(UserContext);
   const texts = useMemo(() => getTexts({ page: "general", locale: locale }), [locale]);
 
-  const [hash, setHash] = useState<string | null>(null);
+  const [hash, setHash] = useState<BrowseTab | null>(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
 
   const isLocationHubFlag = isLocationHubLikeHub(hubData?.hub_type);
@@ -164,10 +165,14 @@ export default function BrowseContent({
   const [nonFilterParams, setNonFilterParams] = useState({});
 
   useEffect(() => {
-    const newHash = window?.location?.hash.replace("#", "");
-    if (window.location.hash) {
+    const newHash = window?.location?.hash.replace("#", "") as BrowseTab;
+
+    if (window.location.hash && TYPES_BY_TAB_VALUE.includes(newHash)) {
       setHash(newHash);
       setTabValue(TYPES_BY_TAB_VALUE.indexOf(newHash));
+    } else {
+      setHash(TYPES_BY_TAB_VALUE[0]);
+      setTabValue(0);
     }
 
     // this init is nessesary to be resilient if the component is remounted
@@ -492,7 +497,6 @@ export default function BrowseContent({
             setFiltersExpanded={isNarrowScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
             type={TYPES_BY_TAB_VALUE[tabValue]}
             customSearchBarLabels={customSearchBarLabels}
-            searchValue={filters.search}
             hideFilterButton={false}
             applyBackgroundColor={isLocationHubFlag}
           />

@@ -6,6 +6,8 @@ import React, { useContext, useEffect, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import FilterSearchBar from "../filter/FilterSearchBar";
+import { useFilters } from "../hooks/FilterContext";
+import { BrowseTab } from "../../types";
 
 type MakeStylesProps = {
   applyBackgroundColor?: boolean;
@@ -18,9 +20,6 @@ const useStyles = makeStyles((theme) => {
       height: 40,
       background: props.applyBackgroundColor ? "rgba(255, 255, 255, 0.9)" : "default",
     }),
-    rightSidePlaceholder: {
-      width: 100,
-    },
     filterSectionFirstLine: {
       display: "flex",
       marginBottom: theme.spacing(2),
@@ -42,9 +41,6 @@ const useStyles = makeStyles((theme) => {
       borderColor: "#000",
       background: props.applyBackgroundColor ? "rgba(255, 255, 255, 0.9)" : "default",
     }),
-    filterSectionTabsWithContent: {
-      marginBottom: theme.spacing(3),
-    },
     inputLabel: {
       color: "black !important",
       borderColor: "black !important",
@@ -59,11 +55,10 @@ type Props = {
   filtersExpanded: boolean;
   onSubmit: Function;
   setFiltersExpanded: Function;
-  type?: any;
-  customSearchBarLabels?: any;
-  searchValue?: any;
-  hideFilterButton?: boolean;
-  applyBackgroundColor?: boolean;
+  type: BrowseTab;
+  customSearchBarLabels: any;
+  hideFilterButton: boolean;
+  applyBackgroundColor: boolean;
 };
 
 export default function FilterSection({
@@ -72,7 +67,6 @@ export default function FilterSection({
   setFiltersExpanded,
   type,
   customSearchBarLabels,
-  searchValue,
   hideFilterButton,
   applyBackgroundColor,
 }: Props) {
@@ -80,13 +74,9 @@ export default function FilterSection({
     applyBackgroundColor: applyBackgroundColor,
   });
   const { locale } = useContext(UserContext);
-  const [value, setValue] = useState(searchValue);
-  useEffect(
-    function () {
-      setValue(searchValue);
-    },
-    [searchValue]
-  );
+  const { filters } = useFilters();
+  const [value, setValue] = useState(filters.search || "");
+
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const searchBarLabels = {
     projects: texts.search_projects,
@@ -109,7 +99,7 @@ export default function FilterSection({
   };
 
   return (
-    <div /*TODO(undefined) className={classes.filterSection} */>
+    <>
       <div className={classes.filterSectionFirstLine}>
         <div className={classes.searchBarContainer}>
           <FilterSearchBar
@@ -142,6 +132,6 @@ export default function FilterSection({
           </Button>
         )}
       </div>
-    </div>
+    </>
   );
 }
