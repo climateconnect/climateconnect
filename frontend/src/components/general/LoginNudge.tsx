@@ -22,7 +22,6 @@ type Props = {
   whatToDo: string;
   fullPage?: boolean;
   className?: string;
-  queryString?: string;
 };
 export default function LoginNudge({ whatToDo, fullPage, className }: Props) {
   const classes = useStyles();
