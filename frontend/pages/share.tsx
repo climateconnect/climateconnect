@@ -28,7 +28,6 @@ export async function getServerSideProps(ctx) {
     categoryOptions,
     skillsOptions,
     rolesOptions,
-    statusOptions,
     projectTypeOptions,
     hubThemeData,
   ] = await Promise.all([
@@ -37,7 +36,6 @@ export async function getServerSideProps(ctx) {
     getCategoryOptions(auth_token, ctx.locale),
     getSkillsOptions(auth_token, ctx.locale),
     getRolesOptions(auth_token, ctx.locale),
-    getStatusOptions(auth_token, ctx.locale),
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
   ]);
@@ -48,7 +46,6 @@ export async function getServerSideProps(ctx) {
       categoryOptions: categoryOptions,
       skillsOptions: skillsOptions,
       rolesOptions: rolesOptions,
-      statusOptions: statusOptions,
       projectTypeOptions: projectTypeOptions,
       hubUrl: hubUrl ?? undefined,
       hubThemeData: hubThemeData ?? undefined,
@@ -62,7 +59,6 @@ export default function Share({
   categoryOptions,
   skillsOptions,
   rolesOptions,
-  statusOptions,
   projectTypeOptions,
   hubUrl,
   hubThemeData,
@@ -101,7 +97,6 @@ export default function Share({
           skillsOptions={skillsOptions}
           rolesOptions={rolesOptions}
           user={user}
-          statusOptions={statusOptions}
           token={token}
           setMessage={handleSetErrorMessage}
           projectTypeOptions={projectTypeOptions}
@@ -174,25 +169,6 @@ const getRolesOptions = async (token, locale) => {
     const resp = await apiRequest({
       method: "get",
       url: "/roles/",
-      token: token,
-      locale: locale,
-    });
-    if (resp.data.results.length === 0) return null;
-    else {
-      return resp.data.results;
-    }
-  } catch (err: any) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-};
-
-const getStatusOptions = async (token, locale) => {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: "/api/projectstatus/",
       token: token,
       locale: locale,
     });
