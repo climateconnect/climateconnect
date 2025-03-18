@@ -280,7 +280,7 @@ export default function Hub({
         isLocationHub={isLocationHub}
         customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
         hasHubLandingPage={hubData?.landing_page_component ? true : false}
-     >
+      >
         <div className={classes.content}>
           {<DonationCampaignInformation />}
           {!isLocationHub && (

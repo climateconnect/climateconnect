@@ -124,7 +124,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ hubAmbassador, hubData, hubUr
   const texts = getTexts({ page: "landing_page", locale: locale }) as TextsType;
   const [DevlinkComponent, setDevlinkComponent] = useState<DevlinkComponentType>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  
+
   useEffect(() => {
     const loadComponent = async () => {
       if (!hubData?.landing_page_component) {
@@ -169,7 +169,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ hubAmbassador, hubData, hubUr
   }
   // Handle missing data
   if (!hubUrl || !hubData) {
-    return <NotFoundPage texts={texts} link={'/hubs/'} showHeader />;
+    return <NotFoundPage texts={texts} link={"/hubs/"} showHeader />;
   }
 
   const title = `${texts.climateHub} ${hubUrl} | ${texts.find_suitable_climate_protection_commitment} ${hubUrl}`;
@@ -192,10 +192,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ hubAmbassador, hubData, hubUr
       {DevlinkComponent ? (
         <DevlinkComponent />
       ) : (
-        <NotFoundPage
-          texts={texts}
-          link={`${hubUrl}/browse`}
-        />
+        <NotFoundPage texts={texts} link={`${hubUrl}/browse`} />
       )}
     </DevlinkPage>
   );

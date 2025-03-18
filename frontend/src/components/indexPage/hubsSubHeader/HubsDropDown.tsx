@@ -53,7 +53,7 @@ export default function HubsDropDown({
 
   const dropDownHubItems = hubs.map((h) => ({
     href: !user && h.landing_page_component ? `/hubs/${h.url_slug}` : `/hubs/${h.url_slug}/browse`,
-    text:  h.name,
+    text: h.name,
   }));
 
   const dropDownItems = addLocationHubExplainerLink

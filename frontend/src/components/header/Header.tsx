@@ -196,9 +196,10 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
     // This className is used to style the DropDownButton component in the Header.
     // It is applied in the headerLink.ts file.
     btnIconTextColor: (props) => ({
-      color: props.isCustomHub || props.transparentHeader
-        ? theme.palette.primary.contrastText
-        : theme.palette.background.default_contrastText,
+      color:
+        props.isCustomHub || props.transparentHeader
+          ? theme.palette.primary.contrastText
+          : theme.palette.background.default_contrastText,
     }),
     btnColor: (props) => ({
       color: props.isCustomHub
@@ -285,7 +286,7 @@ export default function Header({
   const { user, signOut, notifications, pathName, locale, CUSTOM_HUB_URLS } = useContext(
     UserContext
   );
-  
+
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
@@ -314,15 +315,15 @@ export default function Header({
 
   const getLogo = () => {
     let imageUrl = "/images";
-      if (isHubPage && isLocationHub) {
-        if(transparentHeader){
-          imageUrl += `/hub_logos/ch_${hubUrl?.toLowerCase()}_logo_white.svg`;
-        }else{
-          imageUrl += `/hub_logos/ch_${hubUrl}_logo.svg`;
-        }
+    if (isHubPage && isLocationHub) {
+      if (transparentHeader) {
+        imageUrl += `/hub_logos/ch_${hubUrl?.toLowerCase()}_logo_white.svg`;
       } else {
-        imageUrl = loadDefaultLogo(transparentHeader, isMediumScreen);
+        imageUrl += `/hub_logos/ch_${hubUrl}_logo.svg`;
       }
+    } else {
+      imageUrl = loadDefaultLogo(transparentHeader, isMediumScreen);
+    }
     return imageUrl;
   };
 
