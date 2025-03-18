@@ -134,6 +134,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ hubAmbassador, hubData, hubUr
 
       try {
         // Identify the correct component name based on locale
+
+        // The landing page name follows a specific structure.
+        // For example, for Erlangen, we have:
+        // - `EnChErlangenLandingpage` (English)
+        // - `DeChErlangenLandingpage` (German)
+        // Since the database stores only one landing page component name,
+        // We need to determine the component name for other languages.
         let componentName = hubData.landing_page_component;
         const currentPrefix = componentName.startsWith("En") ? "En" : "De";
         const desiredPrefix = locale === "en" ? "En" : "De";
