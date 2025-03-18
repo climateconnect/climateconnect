@@ -167,7 +167,6 @@ export default function Hub({
   const token = new Cookies().get("auth_token");
   const [hubAmbassador, setHubAmbassador] = useState(null);
   const [hubSupporters, setHubSupporters] = useState(null);
-
   // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
   const [filters, setFilters] = useState(
     getInitialFilters({
@@ -280,7 +279,8 @@ export default function Hub({
         }
         isLocationHub={isLocationHub}
         customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
-      >
+        hasHubLandingPage={hubData?.landing_page_component ? true : false}
+     >
         <div className={classes.content}>
           {<DonationCampaignInformation />}
           {!isLocationHub && (

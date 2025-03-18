@@ -7,7 +7,7 @@ import PageNotFound from "../../../src/components/general/PageNotFound";
 import getTexts from "../../../public/texts/texts";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 import LoadingSpinner from "../../../src/components/general/LoadingSpinner";
-
+import theme from "../../../src/themes/theme";
 //Types
 type DevlinkComponentType = React.ComponentType<any> | null;
 type LocaleType = "en" | "de" | undefined;
@@ -124,8 +124,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ hubAmbassador, hubData, hubUr
   const texts = getTexts({ page: "landing_page", locale: locale }) as TextsType;
   const [DevlinkComponent, setDevlinkComponent] = useState<DevlinkComponentType>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  console.log("hubData",hubData);
-  console.log("DevlinkComponent",DevlinkComponent);
   
   useEffect(() => {
     const loadComponent = async () => {
@@ -144,7 +142,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ hubAmbassador, hubData, hubUr
           componentName = componentName.replace(new RegExp(`^${currentPrefix}`), desiredPrefix);
         }
 
-        // Dynamically import the component
+        // Javascript Dynamic import Devlink component
         const mod = await import("../../../devlink");
 
         if (mod[componentName]) {
@@ -185,12 +183,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ hubAmbassador, hubData, hubUr
     <DevlinkPage
       title={title}
       description={description}
-      transparentHeader={true}
-      // isStaticPage={false}
       isHubPage={true}
       hubUrl={hubUrl}
-      isLandingPage={true}
-      showSuffix={false}
+      transparentBackgroundColor={theme.palette.primary.main}
+      transparentHeader={true}
       isLocationHub={isLocationHubLikeHub(hubData?.hub_type)}
     >
       {DevlinkComponent ? (

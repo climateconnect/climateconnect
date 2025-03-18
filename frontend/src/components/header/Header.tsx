@@ -49,6 +49,7 @@ type StyleProps = {
   isLocationHub?: boolean;
   isCustomHub?: boolean;
   isLoggedInUser?: boolean;
+  transparentBackgroundColor?: string;
 };
 
 const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
@@ -70,7 +71,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
             ? props.background
               ? props.background
               : "#F8F8F8"
-            : "",
+            : props.transparentBackgroundColor,
         transition: "all 0.25s linear", // use all instead of transform since the background color too is changing at some point. It'll be nice to have a smooth transition.
       };
     },
@@ -195,7 +196,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
     // This className is used to style the DropDownButton component in the Header.
     // It is applied in the headerLink.ts file.
     btnIconTextColor: (props) => ({
-      color: props.isCustomHub
+      color: props.isCustomHub || props.transparentHeader
         ? theme.palette.primary.contrastText
         : theme.palette.background.default_contrastText,
     }),
@@ -278,17 +279,20 @@ export default function Header({
   isHubPage,
   hubUrl,
   isLocationHub, //->isLocationHub || isCustomhub -> is hubUrl also used by static links?!
+  transparentBackgroundColor,
+  hasHubLandingPage,
 }: HeaderProps) {
   const { user, signOut, notifications, pathName, locale, CUSTOM_HUB_URLS } = useContext(
     UserContext
   );
+  
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const customHubUrls = CUSTOM_HUB_URLS || ["prio1"];
   const isCustomHub = customHubUrls.includes(hubUrl);
-  const LINKS = getLinks(pathName, texts, isLocationHub, isCustomHub);
+  const LINKS = getLinks(pathName, texts, isLocationHub, isCustomHub, hasHubLandingPage, hubUrl);
   const classes = useStyles({
     fixedHeader: fixedHeader,
     transparentHeader: transparentHeader,
@@ -298,6 +302,7 @@ export default function Header({
     isLocationHub: isLocationHub,
     isCustomHub: isCustomHub,
     isLoggedInUser: user ? true : false,
+    transparentBackgroundColor: transparentBackgroundColor,
   });
   const toggleShowNotifications = (event) => {
     if (!anchorEl) setAnchorEl(event.currentTarget);
@@ -309,16 +314,15 @@ export default function Header({
 
   const getLogo = () => {
     let imageUrl = "/images";
-    if (!isCustomHub) {
       if (isHubPage && isLocationHub) {
-        imageUrl += `/hub_logos/ch_${hubUrl}_logo.svg`;
+        if(transparentHeader){
+          imageUrl += `/hub_logos/ch_${hubUrl?.toLowerCase()}_logo_white.svg`;
+        }else{
+          imageUrl += `/hub_logos/ch_${hubUrl}_logo.svg`;
+        }
       } else {
         imageUrl = loadDefaultLogo(transparentHeader, isMediumScreen);
       }
-    } else {
-      imageUrl = `/images/hub_logos/prio1.png`;
-    }
-
     return imageUrl;
   };
 

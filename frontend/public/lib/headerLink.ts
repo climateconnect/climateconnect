@@ -79,50 +79,73 @@ const getPrio1Links = (path_to_redirect, texts) => [
   ...COMMON_LINKS.AUTH_LINKS(path_to_redirect, texts, "hub=prio1"),
 ];
 
-const getDefaultLinks = (path_to_redirect, texts, isLocationHub) => [
+const getDefaultLinks = (path_to_redirect, texts, isLocationHub, hasHubLandingPage, hubUrl) => {
+  const isOnLandingPage = path_to_redirect == `/hubs/${hubUrl}`; // Detect if we are on the landing page
   {
-    href: "/browse",
-    text: isLocationHub ? texts.projects_worldwide : texts.browse,
-    iconForDrawer: HomeIcon,
-    showJustIconUnderSm: HomeIcon,
-  },
-  {
-    href: "/about",
-    text: texts.about,
-    iconForDrawer: InfoIcon,
-    showStaticLinksInDropdown: true,
-    hideOnStaticPages: true,
-  },
-  {
-    href: "/donate",
-    text: texts.donate,
-    iconForDrawer: FavoriteBorderIcon,
-    isOutlinedInHeader: true,
-    icon: FavoriteBorderIcon,
-    hideDesktopIconUnderSm: true,
-    vanillaIfLoggedOut: true,
-    hideOnStaticPages: true,
-    alwaysDisplayDirectly: "loggedIn",
-  },
-  {
-    ...COMMON_LINKS.SHARE,
-    text: texts.share_a_project,
-    hideOnMediumScreen: isLocationHub,
-  },
-  {
-    type: "languageSelect",
-  },
-  {
-    ...COMMON_LINKS.NOTIFICATIONS,
-    text: texts.inbox,
-  },
-  ...COMMON_LINKS.AUTH_LINKS(path_to_redirect, texts, ""),
-];
+    return[
+      {
+        href: "/browse",
+        text: isLocationHub
+          ? isOnLandingPage || hasHubLandingPage
+            ? texts.climate_connect
+            : texts.projects_worldwide
+          : texts.browse,
+        iconForDrawer: HomeIcon,
+        showJustIconUnderSm: HomeIcon,
+        showStaticLinksInDropdown:
+          isLocationHub && (hasHubLandingPage || isOnLandingPage) ? true : false,
+      },
+    {
+      href: isOnLandingPage
+        ? `/hubs/${hubUrl}/browse`
+        : hasHubLandingPage
+        ? `/hubs/${hubUrl}/`
+        : "/about",
+      text: isOnLandingPage
+        ? texts.return_to_climatehub_projects
+        : isLocationHub && hasHubLandingPage
+        ? texts.about_climatehub
+        : texts.about,
+      iconForDrawer: InfoIcon,
+      showStaticLinksInDropdown: isOnLandingPage
+        ? false
+        : isLocationHub && hasHubLandingPage
+        ? false
+        : true,
+      hideOnStaticPages: true,
+    },
+    {
+      href: "/donate",
+      text: texts.donate,
+      iconForDrawer: FavoriteBorderIcon,
+      isOutlinedInHeader: true,
+      icon: FavoriteBorderIcon,
+      hideDesktopIconUnderSm: true,
+      vanillaIfLoggedOut: true,
+      hideOnStaticPages: true,
+      alwaysDisplayDirectly: "loggedIn",
+    },
+    {
+      ...COMMON_LINKS.SHARE,
+      text: texts.share_a_project,
+      hideOnMediumScreen: isLocationHub,
+    },
+    {
+      type: "languageSelect",
+    },
+    {
+      ...COMMON_LINKS.NOTIFICATIONS,
+      text: texts.inbox,
+    },
+    ...COMMON_LINKS.AUTH_LINKS(path_to_redirect, texts, ""),
+  ];
+  }
+}
 
-const getLinks = (path_to_redirect, texts, isLocationHub, isCustomHub) => {
+const getLinks = (path_to_redirect, texts, isLocationHub, isCustomHub, hasHubLandingPage, hubUrl) => {
   return isCustomHub
     ? getPrio1Links(path_to_redirect, texts)
-    : getDefaultLinks(path_to_redirect, texts, isLocationHub || isCustomHub);
+    : getDefaultLinks(path_to_redirect, texts, isLocationHub || isCustomHub, hasHubLandingPage, hubUrl);
 };
 
 const getLoggedInLinks = ({ loggedInUser, texts, queryString }) => {
