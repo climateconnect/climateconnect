@@ -286,16 +286,11 @@ def get_location_with_range(query_params):
             logger.error("Error while fetching location:")
             logger.error("-" * 40)
             logger.error("locations:")
-
-            for loc in Location.objects.all():
-                logger.error(
-                    "name:\t"
-                    + str(loc.name)
-                    + "\t|place:\t"
-                    + str(loc.place_id)
-                    + "\t|osm:\t"
-                    + str(loc.osm_id)
+            logger.error(
+                "{}".format(
+                    list(map(lambda x: str(x.place_id), Location.objects.all()))
                 )
+            )
 
             logger.error("-" * 40)
             logger.error("place:\t" + filter_place_id)
