@@ -76,7 +76,7 @@ class ProjectMember(models.Model):
         unique_together = ("user", "project")
 
     def __str__(self):
-        return "User %d member for Project %s" % (self.user.id, self.project.name)
+        return "User %s %s member for Project %s" % (self.user.first_name, self.user.last_name, self.project.name)
 
 
 class OrganizationMember(models.Model):
@@ -142,8 +142,9 @@ class OrganizationMember(models.Model):
         unique_together = ("user", "organization")
 
     def __str__(self):
-        return "User %d member for organization %s" % (
-            self.user.id,
+        return "User %s %s member for organization %s" % (
+            self.user.first_name, 
+            self.user.last_name,
             self.organization.name,
         )
 
