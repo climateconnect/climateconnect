@@ -6,7 +6,6 @@ import Filters from "./Filters";
 import SelectedFilters from "./SelectedFilters";
 
 export default function FilterOverlay({
-  currentFilters,
   errorMessage,
   filtersExpanded,
   handleApplyFilters,
@@ -41,7 +40,6 @@ export default function FilterOverlay({
       useApplyButton
     >
       <Filters
-        currentFilters={currentFilters}
         errorMessage={errorMessage}
         handleApplyFilters={handleApplyFilters}
         handleClickDialogClose={handleClickDialogClose}
@@ -60,12 +58,6 @@ export default function FilterOverlay({
       {/* We pass currentFilters like this because if location is not an array, 
       a change in it doesn't cause a rerender and therefore the location chip is not shown */}
       <SelectedFilters
-        currentFilters={Object.keys(currentFilters).reduce(function (obj, curKey) {
-          obj[curKey] = currentFilters[curKey];
-          if (curKey === "location" && typeof currentFilters[curKey] === "object")
-            obj[curKey] = [currentFilters[curKey]];
-          return obj;
-        }, {})}
         handleUnselectFilter={handleUnselectFilter}
         possibleFilters={possibleFilters}
       />

@@ -86,7 +86,7 @@ const getFilterName = (filter, key, filterChoices) => {
  */
 const encodeQueryParamsFromFilters = ({ filters, infoMetadata, filterChoices, locale }) => {
   if (!filters || Object.entries(filters).length === 0) {
-    return;
+    return "";
   }
   // TODO: should make this more robust, and if the filters
   // object includes properties that are empty, shouldn't add the &

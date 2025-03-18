@@ -8,6 +8,7 @@ import theme from "../../themes/theme";
 import FilterOverlay from "./FilterOverlay";
 import Filters from "./Filters";
 import SelectedFilters from "./SelectedFilters";
+import { useFilters } from "../hooks/FilterContext";
 
 /**
  * Util to return an array of all potential items associated with
@@ -95,7 +96,6 @@ export default function FilterContent({
   type,
   unexpandFilters,
   initialLocationFilter,
-  filters,
   handleUpdateFilters,
   nonFilterParams,
 }) {
@@ -134,6 +134,8 @@ export default function FilterContent({
 
   const [open, setOpen] = useState<{ prop?: any }>({});
   const [initialized, setInitialized] = useState(false);
+
+  const { filters } = useFilters();
   const reduced = reduceFilters(filters, possibleFilters);
 
   const [selectedItems, setSelectedItems] = useState(reduced);
@@ -265,7 +267,6 @@ export default function FilterContent({
         <>
           <FilterOverlay
             handleApplyFilters={handleApplyFilters}
-            currentFilters={filters}
             errorMessage={errorMessage}
             filtersExpanded={filtersExpanded}
             handleClickDialogSave={handleClickDialogSave}
@@ -286,7 +287,6 @@ export default function FilterContent({
       ) : isMediumScreen && possibleFilters.length > 3 ? (
         <>
           <Filters
-            currentFilters={filters}
             errorMessage={errorMessage}
             handleClickDialogSave={handleClickDialogSave}
             handleClickDialogClose={handleClickDialogClose}
@@ -301,7 +301,6 @@ export default function FilterContent({
             setSelectedItems={setSelectedItems}
           />
           <Filters
-            currentFilters={filters}
             handleClickDialogSave={handleClickDialogSave}
             handleClickDialogClose={handleClickDialogClose}
             handleClickDialogOpen={handleClickDialogOpen}
@@ -317,7 +316,6 @@ export default function FilterContent({
         </>
       ) : (
         <Filters
-          currentFilters={filters}
           errorMessage={errorMessage}
           handleClickDialogSave={handleClickDialogSave}
           handleClickDialogClose={handleClickDialogClose}
@@ -336,12 +334,6 @@ export default function FilterContent({
       {/* We pass currentFilters like this because if location is not an array, 
       a change in it doesn't cause a rerender and therefore the location chip is not shown */}
       <SelectedFilters
-        currentFilters={Object.keys(filters).reduce(function (obj, curKey) {
-          obj[curKey] = filters[curKey];
-          if (curKey === "location" && typeof filters[curKey] === "object")
-            obj[curKey] = [filters[curKey]];
-          return obj;
-        }, {})}
         handleUnselectFilter={handleUnselectFilter}
         possibleFilters={possibleFilters}
       />
