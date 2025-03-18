@@ -34,7 +34,6 @@ interface NotFoundPageProps {
 }
 
 interface LandingPageProps {
-  hubAmbassador: HubAmbassador | null;
   hubData: HubData | null;
   hubUrl?: string;
 }
@@ -57,53 +56,26 @@ const NotFoundPage: React.FC<NotFoundPageProps> = ({ texts, link, showHeader }) 
   );
 };
 
-//for description we need the Ambassador name
 export async function getServerSideProps(ctx: any) {
   const hubUrl = ctx?.params?.hubUrl as string | undefined;
 
   if (!hubUrl) {
     return {
       props: {
-        hubAmbassador: null,
         hubData: null,
         hubUrl: null,
       },
     };
   }
 
-  const [hubAmbassador, hubData] = await Promise.all([
-    getHubAmbassadorData(hubUrl, ctx.locale),
-    getHubData(hubUrl, ctx.locale),
-  ]);
-
+  const hubData = await getHubData(hubUrl, ctx.locale);
   return {
     props: {
-      hubAmbassador,
       hubData,
       hubUrl,
     },
   };
 }
-
-const getHubAmbassadorData = async (
-  hubUrl: string,
-  locale: LocaleType
-): Promise<HubAmbassador | null> => {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: `/api/hubs/${hubUrl}/ambassador/`,
-      locale,
-    });
-    return resp.data;
-  } catch (err: any) {
-    console.error(
-      "Error fetching hub ambassador data:",
-      err.response?.data?.detail || err.message || err
-    );
-    return null;
-  }
-};
 
 const getHubData = async (url_slug: string, locale: LocaleType): Promise<HubData | null> => {
   try {
@@ -119,7 +91,7 @@ const getHubData = async (url_slug: string, locale: LocaleType): Promise<HubData
   }
 };
 
-const LandingPage: React.FC<LandingPageProps> = ({ hubAmbassador, hubData, hubUrl }) => {
+const LandingPage: React.FC<LandingPageProps> = ({ hubData, hubUrl }) => {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "landing_page", locale: locale }) as TextsType;
   const [DevlinkComponent, setDevlinkComponent] = useState<DevlinkComponentType>(null);
@@ -180,11 +152,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ hubAmbassador, hubData, hubUr
   }
 
   const title = `${texts.climateHub} ${hubUrl} | ${texts.find_suitable_climate_protection_commitment} ${hubUrl}`;
-  const description = `${texts.find_fellow_campaigners_for_climate_protection_idea} ${
-    hubAmbassador?.title
-      ? `${hubAmbassador.title} ${texts.coordinates_the_climateHub}  ${hubUrl}  ${texts.is_there_for_you}`
-      : ""
-  } `;
+  const description = `${texts.find_fellow_campaigners_for_climate_protection_idea}`;
 
   return (
     <DevlinkPage
