@@ -13,6 +13,9 @@ from django.contrib.gis.measure import D
 from rest_framework.exceptions import ValidationError
 
 from location.models import Location
+import logging
+
+logger = logging.getLogger("django")
 
 
 def get_legacy_location(location_object):
@@ -276,7 +279,39 @@ def get_location_with_range(query_params):
         params = "&format=json&addressdetails=1&polygon_geojson=1&accept-language=en-US,en;q=0.9&polygon_threshold=0.001"
         url = url_root + osm_id_param + params
         response = requests.get(url)
-        location_object = json.loads(response.text)[0]
+        try:
+            location_object = json.loads(response.text)[0]
+        except ValueError as e:
+            logger.error("#" * 40)
+            logger.error("Error while fetching location:")
+            logger.error("-" * 40)
+            logger.error("locations:")
+
+            for loc in Location.objects.all():
+                logger.error(
+                    "name:\t"
+                    + str(loc.name)
+                    + "\t|place:\t"
+                    + str(loc.place_id)
+                    + "\t|osm:\t"
+                    + str(loc.osm_id)
+                )
+
+            logger.error("-" * 40)
+            logger.error("place:\t" + filter_place_id)
+            logger.error("location_type:\t" + location_type)
+            logger.error("osm:\t" + query_params.get("osm"))
+            logger.error("URL:\t" + url)
+            logger.error("=" * 40)
+            logger.error("Response:\t" + response.text)
+            logger.error("-" * 40)
+            logger.error("Response Status:\t" + str(response.status_code))
+            logger.error("=" * 40)
+            logger.error("Trace:\n", exc_info=True)
+            logger.error("#" * 40)
+
+            raise ValidationError("Error while fetching location: " + str(e))
+
         location = get_location(format_location(location_object, False))
         location_in_db = (
             location.multi_polygon.buffer(buffer_width)
