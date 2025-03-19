@@ -71,7 +71,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
             ? props.background
               ? props.background
               : "#F8F8F8"
-            : props.transparentBackgroundColor,
+            : "",
         transition: "all 0.25s linear", // use all instead of transform since the background color too is changing at some point. It'll be nice to have a smooth transition.
       };
     },
