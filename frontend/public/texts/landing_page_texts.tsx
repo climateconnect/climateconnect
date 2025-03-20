@@ -145,5 +145,27 @@ export default function getLandingPageTexts({ classes, isNarrowScreen }) {
       en: "Learn from",
       de: "Lerne von",
     },
+    citizen_climate_action: {
+      en: "Citizen Climate Action in",
+      de: "Dein Startpunkt für Klimaschutz-Engagement in",
+    },
+    climateHub: {
+      en: "ClimateHub",
+      de: "ClimateHub",
+    },
+    find_fellow_campaigners_for_climate_protection_idea: {
+      en:
+        "Find projects and initiatives from Erlangen to get involved and make a difference. The ClimateHub is your starting point to find your group to make an impact.",
+      de:
+        "Finde Mitstreiter:innen, um in Erlangen gemeinsam für den Klimaschutz anzupacken und etwas für eine nachhaltige Zukunft zu bewirken.",
+    },
+    coordinates_the_climateHub: {
+      en: "coordinates the ClimateHub",
+      de: "koordiniert den ClimateHub",
+    },
+    is_there_for_you: {
+      en: "and is there for you",
+      de: "und ist für dich da.",
+    },
   };
 }

@@ -85,7 +85,7 @@ export default function HubLinks({
             <Link
               className={linkClassName}
               key={hub.url_slug}
-              href={`${getLocalePrefix(locale)}/hubs/${hub.url_slug}`}
+              href={`${getLocalePrefix(locale)}/hubs/${hub.url_slug}/browse`}
               underline="hover"
             >
               {hub.name}

@@ -51,6 +51,7 @@ class HubSerializer(serializers.ModelSerializer):
             "location",
             "url_slug",
             "custom_footer_image",
+            "landing_page_component",
         )
 
     def get_stats(self, obj):
@@ -127,6 +128,7 @@ class HubStubSerializer(serializers.ModelSerializer):
             "url_slug",
             "hub_type",
             "icon",
+            "landing_page_component",
         )
 
     def get_hub_type(self, obj):
