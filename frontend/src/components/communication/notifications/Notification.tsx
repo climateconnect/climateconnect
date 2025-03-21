@@ -123,9 +123,11 @@ const JoinProjectRequestNotification = ({ notification }) => {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", project: notification.project, locale: locale });
   const requesterName = requester?.first_name + " " + requester?.last_name;
+  const queryString = notification?.hub_url ? `&hub=${notification?.hub_url}` : "";
+
   return (
     <GenericNotification
-      link={`/projects/${notification?.project?.url_slug}?show_join_requests=true`}
+      link={`/projects/${notification?.project?.url_slug}?show_join_requests=true${queryString}`}
       avatar={{
         alt: requesterName,
         image: requester?.thumbnail_image,
@@ -139,9 +141,11 @@ const JoinProjectRequestNotification = ({ notification }) => {
 const JoinProjectRequestApprovedNotification = ({ notification }) => {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", project: notification.project, locale: locale });
+  const queryString = notification?.hub_url ? `?hub=${notification?.hub_url}` : "";
+
   return (
     <GenericNotification
-      link={`/projects/${notification.project.url_slug}#team`}
+      link={`/projects/${notification.project.url_slug}${queryString}#team`}
       notificationIcon={{
         icon: GroupIcon,
       }}
@@ -238,6 +242,7 @@ const MentionNotification = ({ notification, texts, locale }) => {
   // notifications when a user has requested to join a project. See
   // https://github.com/climateconnect/climateconnect/issues/898
   const sender = notification[commentProp] ? notification[commentProp].author_user : "Anonymous";
+  const queryString = notification?.hub_url ? `?hub=${notification?.hub_url}` : "";
 
   let urlEnding;
   if (!notification.idea && !notification.project) {
@@ -245,12 +250,11 @@ const MentionNotification = ({ notification, texts, locale }) => {
   } else {
     urlEnding =
       entityType === "project"
-        ? `/projects/${notification.project.url_slug}/#comments`
+        ? `/projects/${notification.project.url_slug}${queryString}#comments`
         : `/hubs/${notification.idea.hub_url_slug}?idea=${notification.idea.url_slug}#ideas`;
   }
 
   const previewText = getFragmentsWithMentions(notification[commentProp]?.content, false, locale);
-
   return (
     <GenericNotification
       link={urlEnding && getLocalePrefix(locale) + urlEnding}
@@ -273,9 +277,11 @@ const ProjectFollowerNotification = ({ notification }) => {
   const texts = getTexts({ page: "notification", locale: locale });
   const followerName =
     notification.project_follower.first_name + " " + notification.project_follower.last_name;
+  const queryString = notification?.hub_url ? `&hub=${notification?.hub_url}` : "";
+
   return (
     <GenericNotification
-      link={`/projects/${notification.project.url_slug}?show_followers=true`}
+      link={`/projects/${notification.project.url_slug}?show_followers=true${queryString}`}
       avatar={{
         alt: followerName,
         image: notification.project_follower.thumbnail_image,
@@ -292,9 +298,11 @@ const ProjectLikeNotification = ({ notification }) => {
   const texts = getTexts({ page: "notification", locale: locale, project: notification.project });
   const likingUserName =
     notification.project_like.first_name + " " + notification.project_like.last_name;
+  const queryString = notification?.hub_url ? `&hub=${notification?.hub_url}` : "";
+
   return (
     <GenericNotification
-      link={`/projects/${notification.project.url_slug}?show_likes=true`}
+      link={`/projects/${notification.project.url_slug}?show_likes=true${queryString}`}
       avatar={{
         alt: likingUserName,
         image: notification.project_like.thumbnail_image,
@@ -312,9 +320,11 @@ const OrganizationFollowerNotification = ({ notification }) => {
     notification.organization_follower.first_name +
     " " +
     notification.organization_follower.last_name;
+  const queryString = notification?.hub_url ? `&hub=${notification?.hub_url}` : "";
+
   return (
     <GenericNotification
-      link={`/organizations/${notification.organization.url_slug}?show_followers=true`}
+      link={`/organizations/${notification.organization.url_slug}?show_followers=true${queryString}`}
       avatar={{
         alt: followerName,
         image: notification.organization_follower.thumbnail_image,
@@ -330,10 +340,11 @@ const OrgProjectSharedNotification = ({ notification }) => {
   const texts = getTexts({ page: "notification", locale: locale });
 
   const projectName = notification.project.name;
+  const queryString = notification?.hub_url ? `&hub=${notification?.hub_url}` : "";
 
   return (
     <GenericNotification
-      link={`/projects/${notification.project.url_slug}`}
+      link={`/projects/${notification.project.url_slug}${queryString}`}
       avatar={{
         alt: projectName,
         image: notification.project.image,
