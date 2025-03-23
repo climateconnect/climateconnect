@@ -15,7 +15,6 @@ import HeaderImage from "../src/components/staticpages/HeaderImage";
 
 const useStyles = makeStyles((theme) => {
   return {
-
     headerTextContainer: {
       position: "absolute",
       top: "45%",
