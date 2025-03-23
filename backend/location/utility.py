@@ -1,5 +1,3 @@
-import base64, json
-
 import requests
 from django.conf import settings
 from django.contrib.gis.geos import (
@@ -14,6 +12,9 @@ from rest_framework.exceptions import ValidationError
 
 from location.models import Location
 import logging
+import json
+
+# import base64
 
 logger = logging.getLogger("django")
 
