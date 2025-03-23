@@ -2,7 +2,7 @@ import { Container, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import Cookies from "next-cookies";
 import React, { useContext } from "react";
-import WebflowPage from "../src/components/webflow/WebflowPage";
+
 
 import { apiRequest } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
@@ -15,38 +15,53 @@ import HeaderImage from "../src/components/staticpages/HeaderImage";
 
 const useStyles = makeStyles((theme) => {
   return {
-
+    headerImageContainer: {
+      marginBottom: theme.spacing(3),
+      [theme.breakpoints.down("lg")]: {
+        marginBottom: theme.spacing(2),
+      },
+    },
     headerTextContainer: {
       position: "absolute",
-      top: "45%",
-      left: "10%",
-      maxWidth: "400px",
-      minWidth: "250px",
-      borderRadius: "5px",
-      backgroundColor: "#207178",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      background: "rgba(255, 255, 255, 0.6)",
+      width: "100%",
+      height: "100%",
+      [theme.breakpoints.down("lg")]: {
+        background: "rgba(255, 255, 255, 0.8)",
+      },
     },
     headerTextInnerContainer: {
       height: "100%",
       display: "flex",
-      alignItems: "start",
-      justifyContent: "left",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: theme.spacing(4),
     },
     headerTextBig: {
-      color: "white",
-      fontWeight: 700,
-      fontSize: 40,
-      textAlign: "left",
-      padding: "16px 0 0px 10px",
-      backgroundImage: "linear-gradient(58deg, #66bcb5, #f3d516)",
-      backgroundClip: "text",
-      WebkitTextFillColor: "transparent",
+      fontWeight: "bold",
+      fontSize: 80,
+      [theme.breakpoints.down("lg")]: {
+        fontSize: 60,
+      },
+      [theme.breakpoints.down("sm")]: {
+        fontSize: 40,
+      },
+      textAlign: "center",
     },
     headerTextSmall: {
       color: "white",
-      fontSize: 18,
-      fontWeight: 600,
+      fontWeight: "bold",
       textAlign: "left",
-      padding: "7px 0 16px 10px",
+      [theme.breakpoints.down("lg")]: {
+        fontSize: 40,
+      },
+      [theme.breakpoints.down("sm")]: {
+        fontSize: 25,
+      },
+      textShadow: "3px 3px 3px #484848C2",
     },
     topText: {
       fontWeight: "bold",
@@ -56,7 +71,6 @@ const useStyles = makeStyles((theme) => {
         fontSize: 14,
         fontWeight: "normal",
       },
-      paddingTop: "70px",
     },
     searchBarContainer: {
       flexGrow: 100,
@@ -100,7 +114,7 @@ export default function Faq({ questionsBySection, questions }) {
   return (
     <div>
       <WideLayout title={texts.faq} isStaticPage>
-        <HeaderImage>
+        <HeaderImage src="/images/supportusheader.jpg" className={classes.headerImageContainer}>
           <div className={classes.headerTextContainer}>
             <div className={classes.headerTextInnerContainer}>
               <div>
