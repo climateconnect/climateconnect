@@ -140,6 +140,27 @@ class ListProjectsView(ListAPIView):
     pagination_class = ProjectsPagination
     serializer_class = ProjectStubSerializer
 
+    def post(self, request, *args, **kwargs):
+        """
+        Handle POST requests for search functionality.
+        """
+        # Extract location from the POST data
+        location = request.data
+
+        # Add location to the query params
+        query_params = request.query_params.copy()
+
+        if "place_id" in location and "geojson" in location:
+            query_params["location"] = location
+
+        # query_params["radius"] = 15
+
+        # Replace request.query_params with our updated version
+        request._request.GET = query_params
+
+        # Call the standard list method which handles filtering and pagination
+        return self.list(request, *args, **kwargs)
+
     def get_queryset(self):
         user = self.request.user
         user_profile = None
@@ -238,6 +259,7 @@ class ListProjectsView(ListAPIView):
 
         if "place" in self.request.query_params and "osm" in self.request.query_params:
             location_data = get_location_with_range(self.request.query_params)
+            print("radius", location_data["radius"])
             projects = (
                 projects.filter(
                     Q(loc__country=location_data["country"])

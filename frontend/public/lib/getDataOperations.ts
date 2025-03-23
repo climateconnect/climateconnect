@@ -2,7 +2,16 @@ import { apiRequest } from "./apiOperations";
 import { membersWithAdditionalInfo } from "./getOptions";
 import { parseData } from "./parsingOperations";
 
-export async function getDataFromServer({ type, page, token, urlEnding, hubUrl, locale, idea }) {
+export async function getDataFromServer({
+  type,
+  page,
+  token,
+  urlEnding,
+  hubUrl,
+  locale,
+  idea,
+  location,
+}) {
   let url = `/api/${type}/?page=${page}`;
   if (hubUrl) {
     url += `&hub=${hubUrl}`;
@@ -16,10 +25,24 @@ export async function getDataFromServer({ type, page, token, urlEnding, hubUrl, 
     // &category=Lowering%20food%20waste&
     url += urlEnding;
   }
+  // if (location instanceof Object && !(location instanceof String)) {
+  //   // use base64 encoding to pass the location object
+
+  //   console.log("help me please, this is a mess");
+  //   const encodedLocation = btoa(JSON.stringify(location));
+  //   const encodedLocation2 = encodeURIComponent(JSON.stringify(location));
+  //   console.log(encodedLocation.length, encodedLocation2.length);
+
+  //   url += `&location=${encodeURIComponent(encodedLocation)}`;
+  // }
 
   try {
     console.log(`Getting data for ${type} at ${url}`);
-    const resp = await apiRequest({ method: "get", url, token, locale });
+
+    const resp = location
+      ? await apiRequest({ method: "post", url, payload: location, token, locale })
+      : await apiRequest({ method: "get", url, token, locale });
+
     if (resp.data.length === 0) {
       console.log(`No data of type ${type} found...`);
       return null;

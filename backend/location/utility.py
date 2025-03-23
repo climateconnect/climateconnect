@@ -1,4 +1,4 @@
-import json
+import base64, json
 
 import requests
 from django.conf import settings
@@ -282,30 +282,25 @@ def get_location_with_range(query_params):
         try:
             location_object = json.loads(response.text)[0]
         except ValueError as e:
-            logger.error("#" * 40)
-            logger.error("Error while fetching location:")
-            logger.error("-" * 40)
-            logger.error("locations:")
             logger.error(
-                "{}".format(
-                    list(map(lambda x: str(x.place_id), Location.objects.all()))
-                )
+                "Error while fetching location: "
+                + str(e)
+                + "\nresponse:"
+                + response.text
             )
+            if "location" not in query_params:
+                raise ValidationError(
+                    "Error while fetching location and no backup: " + str(e)
+                )
 
-            logger.error("-" * 40)
-            logger.error("place:\t" + filter_place_id)
-            logger.error("location_type:\t" + location_type)
-            logger.error("osm:\t" + query_params.get("osm"))
-            logger.error("URL:\t" + url)
-            logger.error("=" * 40)
-            logger.error("Response:\t" + response.text)
-            logger.error("-" * 40)
-            logger.error("Response Status:\t" + str(response.status_code))
-            logger.error("=" * 40)
-            logger.error("Trace:\n", exc_info=True)
-            logger.error("#" * 40)
-
-            raise ValidationError("Error while fetching location: " + str(e))
+            # encoded_param = query_params.get("location")
+            # location_data = json.loads(base64.b64decode(encoded_param))
+            # backup_location = json.loads(location_data)
+            location_object = query_params.get("location")
+            print(
+                location_object["boundingbox"],
+                location_object["display_name"],
+            )
 
         location = get_location(format_location(location_object, False))
         location_in_db = (

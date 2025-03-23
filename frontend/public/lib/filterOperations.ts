@@ -223,6 +223,7 @@ export async function applyNewFilters({
       page: 1,
       token: token,
       urlEnding: newUrlEnding,
+      location: newFilters.location ?? undefined,
       locale: locale,
     };
     if (idea) {
