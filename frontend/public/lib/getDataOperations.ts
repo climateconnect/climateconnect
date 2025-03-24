@@ -25,16 +25,6 @@ export async function getDataFromServer({
     // &category=Lowering%20food%20waste&
     url += urlEnding;
   }
-  // if (location instanceof Object && !(location instanceof String)) {
-  //   // use base64 encoding to pass the location object
-
-  //   console.log("help me please, this is a mess");
-  //   const encodedLocation = btoa(JSON.stringify(location));
-  //   const encodedLocation2 = encodeURIComponent(JSON.stringify(location));
-  //   console.log(encodedLocation.length, encodedLocation2.length);
-
-  //   url += `&location=${encodeURIComponent(encodedLocation)}`;
-  // }
 
   try {
     console.log(`Getting data for ${type} at ${url}`);
