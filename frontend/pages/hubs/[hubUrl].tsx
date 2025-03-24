@@ -178,7 +178,7 @@ export default function Hub({
         setHubSupporters(retrivedHubSupporters);
       }
     })();
-  }, []);
+  }, [locale]);
 
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
