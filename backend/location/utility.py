@@ -14,8 +14,6 @@ from location.models import Location
 import logging
 import json
 
-# import base64
-
 logger = logging.getLogger("django")
 
 
@@ -289,19 +287,15 @@ def get_location_with_range(query_params):
                 + "\nresponse:"
                 + response.text
             )
+
+            # try to use the location within the query params (provided by the client via the post request)
+            # as a backup if the location could not be fetched from the api
             if "location" not in query_params:
                 raise ValidationError(
                     "Error while fetching location and no backup: " + str(e)
                 )
 
-            # encoded_param = query_params.get("location")
-            # location_data = json.loads(base64.b64decode(encoded_param))
-            # backup_location = json.loads(location_data)
             location_object = query_params.get("location")
-            print(
-                location_object["boundingbox"],
-                location_object["display_name"],
-            )
 
         location = get_location(format_location(location_object, False))
         location_in_db = (

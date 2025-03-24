@@ -153,8 +153,6 @@ class ListProjectsView(ListAPIView):
         if "place_id" in location and "geojson" in location:
             query_params["location"] = location
 
-        # query_params["radius"] = 15
-
         # Replace request.query_params with our updated version
         request._request.GET = query_params
 
@@ -259,7 +257,6 @@ class ListProjectsView(ListAPIView):
 
         if "place" in self.request.query_params and "osm" in self.request.query_params:
             location_data = get_location_with_range(self.request.query_params)
-            print("radius", location_data["radius"])
             projects = (
                 projects.filter(
                     Q(loc__country=location_data["country"])
