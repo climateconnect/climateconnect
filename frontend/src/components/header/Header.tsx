@@ -49,7 +49,7 @@ type StyleProps = {
   isLocationHub?: boolean;
   isCustomHub?: boolean;
   isLoggedInUser?: boolean;
-  transparentBackgroundColor?: string;
+  isLandingPage?: boolean;
 };
 
 const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
@@ -71,7 +71,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
             ? props.background
               ? props.background
               : "#F8F8F8"
-            : "",
+            : props.isLandingPage ? theme.palette.primary.main : "",
         transition: "all 0.25s linear", // use all instead of transform since the background color too is changing at some point. It'll be nice to have a smooth transition.
       };
     },
@@ -144,7 +144,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       justifyContent: "space-around",
     },
     menuLink: (props) => ({
-      color: props.transparentHeader
+      color: props.transparentHeader 
         ? "white"
         : props.isCustomHub
         ? theme.palette.primary.contrastText
@@ -197,7 +197,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
     // It is applied in the headerLink.ts file.
     btnIconTextColor: (props) => ({
       color:
-        props.isCustomHub || props.transparentHeader
+        props.isCustomHub || props.transparentHeader 
           ? theme.palette.primary.contrastText
           : theme.palette.background.default_contrastText,
     }),
@@ -280,7 +280,7 @@ export default function Header({
   isHubPage,
   hubUrl,
   isLocationHub, //->isLocationHub || isCustomhub -> is hubUrl also used by static links?!
-  transparentBackgroundColor,
+  isLandingPage,
   hasHubLandingPage,
 }: HeaderProps) {
   const { user, signOut, notifications, pathName, locale, CUSTOM_HUB_URLS } = useContext(
@@ -303,7 +303,7 @@ export default function Header({
     isLocationHub: isLocationHub,
     isCustomHub: isCustomHub,
     isLoggedInUser: user ? true : false,
-    transparentBackgroundColor: transparentBackgroundColor,
+    isLandingPage: isLandingPage,
   });
   const toggleShowNotifications = (event) => {
     if (!anchorEl) setAnchorEl(event.currentTarget);

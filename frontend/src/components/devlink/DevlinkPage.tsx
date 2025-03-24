@@ -17,7 +17,7 @@ export default function DevlinkPage({
   isLocationHub,
   hubUrl,
   fixedHeader,
-  transparentBackgroundColor,
+  isLandingPage
 }: any) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
@@ -34,7 +34,7 @@ export default function DevlinkPage({
         isLocationHub={isLocationHub}
         hubUrl={hubUrl}
         fixedHeader={fixedHeader}
-        transparentBackgroundColor={transparentBackgroundColor}
+        isLandingPage={isLandingPage}
         noSpaceBottom
       >
         <DevLinkProvider>{children}</DevLinkProvider>

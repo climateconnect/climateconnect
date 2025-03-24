@@ -160,9 +160,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ hubData, hubUrl }) => {
       description={description}
       isHubPage={true}
       hubUrl={hubUrl}
-      transparentBackgroundColor={theme.palette.primary.main}
+      // Since the text color of items in the Header is determined by `transparentHeader`,  
+      // use `transparentHeader` if you want the items to have white text color.
       transparentHeader={true}
       isLocationHub={isLocationHubLikeHub(hubData?.hub_type)}
+      isLandingPage={true}
     >
       {DevlinkComponent ? (
         <DevlinkComponent />

@@ -103,7 +103,7 @@ export default function WideLayout({
   footerTextColor,
   customTheme,
   hideAlert,
-  transparentBackgroundColor,
+  isLandingPage,
   hasHubLandingPage,
 }: Props) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
@@ -152,8 +152,8 @@ export default function WideLayout({
           isHubPage={isHubPage}
           hubUrl={hubUrl}
           isLocationHub={isLocationHub}
-          transparentBackgroundColor={transparentBackgroundColor}
           hasHubLandingPage={hasHubLandingPage}
+          isLandingPage={isLandingPage}
         />
       )}
       {isLoading ? (
