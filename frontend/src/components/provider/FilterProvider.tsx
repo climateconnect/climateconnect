@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FilterContext } from "../context/FilterContext";
-import { applyNewFilters } from "../../../public/lib/filterOperations";
+import { applyNewFilters, getInitialFilters } from "../../../public/lib/filterOperations";
 
 // For the initial construction, filters use information provided in the pages/browse.tsx and the pages/[hubUrl].tsx
 // But the filters it self are used in a multiple deeply nested components (e.g. FilterSearchBar, FilterTabs and BrowseContent)
@@ -92,11 +92,4 @@ export function FilterProvider({
       {children}
     </FilterContext.Provider>
   );
-}
-function getInitialFilters(arg0: {
-  filterChoices: any;
-  locale: any;
-  initialLocationFilter: any;
-}): any {
-  throw new Error("Function not implemented.");
 }
