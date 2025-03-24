@@ -17,7 +17,7 @@ export default function DevlinkPage({
   isLocationHub,
   hubUrl,
   fixedHeader,
-  isLandingPage
+  isLandingPage,
 }: any) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });

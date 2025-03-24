@@ -71,7 +71,9 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
             ? props.background
               ? props.background
               : "#F8F8F8"
-            : props.isLandingPage ? theme.palette.primary.main : "",
+            : props.isLandingPage
+            ? theme.palette.primary.main
+            : "",
         transition: "all 0.25s linear", // use all instead of transform since the background color too is changing at some point. It'll be nice to have a smooth transition.
       };
     },
@@ -144,7 +146,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       justifyContent: "space-around",
     },
     menuLink: (props) => ({
-      color: props.transparentHeader 
+      color: props.transparentHeader
         ? "white"
         : props.isCustomHub
         ? theme.palette.primary.contrastText
@@ -197,7 +199,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
     // It is applied in the headerLink.ts file.
     btnIconTextColor: (props) => ({
       color:
-        props.isCustomHub || props.transparentHeader 
+        props.isCustomHub || props.transparentHeader
           ? theme.palette.primary.contrastText
           : theme.palette.background.default_contrastText,
     }),
