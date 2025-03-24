@@ -8,7 +8,7 @@ import theme from "../../themes/theme";
 import FilterOverlay from "./FilterOverlay";
 import Filters from "./Filters";
 import SelectedFilters from "./SelectedFilters";
-import { useFilters } from "../hooks/FilterContext";
+import { useFilters } from "../hooks/UseFilters";
 
 /**
  * Util to return an array of all potential items associated with

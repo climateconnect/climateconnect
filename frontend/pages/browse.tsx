@@ -19,7 +19,7 @@ import HubsSubHeader from "../src/components/indexPage/hubsSubHeader/HubsSubHead
 import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingContainerMobile";
 import WideLayout from "../src/components/layouts/WideLayout";
 import BrowseContext from "../src/components/context/BrowseContext";
-import { FilterProvider } from "../src/components/hooks/FilterContext";
+import { FilterProvider } from "../src/components/provider/FilterProvider";
 
 export async function getServerSideProps(ctx) {
   const { hideInfo } = NextCookies(ctx);

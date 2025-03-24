@@ -26,7 +26,7 @@ import MobileBottomMenu from "./MobileBottomMenu";
 import HubTabsNavigation from "../hub/HubTabsNavigation";
 import HubSupporters from "../hub/HubSupporters";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
-import { useFilters } from "../hooks/FilterContext";
+import { useFilters } from "../hooks/UseFilters";
 import { BrowseTab } from "../../types";
 
 const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));

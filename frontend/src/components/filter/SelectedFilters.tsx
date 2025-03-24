@@ -1,6 +1,6 @@
 import React from "react";
 import SelectedFilter from "./SelectedFilter";
-import { useFilters } from "../hooks/FilterContext";
+import { useFilters } from "../hooks/UseFilters";
 
 export default function SelectedFilters({ possibleFilters, handleUnselectFilter }) {
   const { filters } = useFilters();

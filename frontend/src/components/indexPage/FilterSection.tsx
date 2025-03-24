@@ -6,7 +6,7 @@ import React, { useContext, useEffect, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import FilterSearchBar from "../filter/FilterSearchBar";
-import { useFilters } from "../hooks/FilterContext";
+import { useFilters } from "../hooks/UseFilters";
 import { BrowseTab } from "../../types";
 
 type MakeStylesProps = {

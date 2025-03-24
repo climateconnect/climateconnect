@@ -7,7 +7,7 @@ import UserContext from "../context/UserContext";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import SelectField from "../general/SelectField";
 import LocationSearchBar from "../search/LocationSearchBar";
-import { useFilters } from "../hooks/FilterContext";
+import { useFilters } from "../hooks/UseFilters";
 
 const useStyles = makeStyles<Theme, { filterElementMargin: number; justifyContent: any }>(
   (theme) => {

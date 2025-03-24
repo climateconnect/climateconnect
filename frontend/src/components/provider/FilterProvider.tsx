@@ -1,6 +1,6 @@
-// FilterContext.js
-import React, { createContext, useState, useContext } from "react";
-import { applyNewFilters, getInitialFilters } from "../../../public/lib/filterOperations";
+import React, { useState } from "react";
+import { FilterContext } from "../context/FilterContext";
+import { applyNewFilters } from "../../../public/lib/filterOperations";
 
 // For the initial construction, filters use information provided in the pages/browse.tsx and the pages/[hubUrl].tsx
 // But the filters it self are used in a multiple deeply nested components (e.g. FilterSearchBar, FilterTabs and BrowseContent)
@@ -13,31 +13,6 @@ import { applyNewFilters, getInitialFilters } from "../../../public/lib/filterOp
 // the filters use a Reducer pattern in combination with.
 // This way handleAddFilters, handleChangeFilter etc. can be dispatched to the reducer and the content will be updated automatically
 // Additionally, all the logic will be placed inside this file, making the other components more readable
-
-interface FilterContextType {
-  filters: any;
-  tabsWhereFiltersWereApplied: any[];
-  errorMessage: string;
-  handleSetErrorMessage: (newMessage: any) => void;
-  handleAddFilters: (newFilters: any) => void;
-  handleSetTabsWhereFiltersWereApplied: (tabs: any) => void;
-  handleApplyNewFilters: ({
-    type,
-    newFilters,
-    closeFilters,
-  }: {
-    type: any;
-    newFilters: any;
-    closeFilters: any;
-  }) => Promise<{
-    closeFilters: any;
-    filteredItemsObject: any;
-    newUrlEnding: string;
-  } | null>;
-  handleUpdateFilterValues: (valuesToUpdate: any) => void;
-}
-
-const FilterContext = createContext<FilterContextType>(undefined!); // it will break directly if not provided
 
 export function FilterProvider({
   children,
@@ -118,12 +93,10 @@ export function FilterProvider({
     </FilterContext.Provider>
   );
 }
-
-// Custom hook for using the filter context
-export function useFilters() {
-  const context = useContext(FilterContext);
-  if (context === undefined) {
-    throw new Error("useFilters must be used within a FilterProvider");
-  }
-  return context;
+function getInitialFilters(arg0: {
+  filterChoices: any;
+  locale: any;
+  initialLocationFilter: any;
+}): any {
+  throw new Error("Function not implemented.");
 }
