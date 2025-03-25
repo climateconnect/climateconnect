@@ -94,7 +94,6 @@ export default function ProjectContentSideButtons({
   const [requestersRetrieved, setRequestersRetrieved] = useState(false);
   const queryString = hubUrl ? `?hub=${hubUrl}` : "";
 
-
   // Fetch and populate requesters on initial load
   const getRequestersList = async () => {
     // //short circuit if the user doesn't have the necessary permissions to see join requests

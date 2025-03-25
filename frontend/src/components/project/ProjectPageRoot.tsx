@@ -25,7 +25,7 @@ import ProjectOverview from "./ProjectOverview";
 import ProjectSideBar from "./ProjectSideBar";
 import ProjectTeamContent from "./ProjectTeamContent";
 import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMediaShareButton";
-import ProjectJoinDialog  from "../dialogs/ProjectJoinDialog";
+import ProjectJoinDialog from "../dialogs/ProjectJoinDialog";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -463,7 +463,7 @@ export default function ProjectPageRoot({
   });
 
   const latestParentComment = [project.comments[0]];
-  
+
   return (
     <div className={classes.root}>
       <ProjectOverview
@@ -637,7 +637,7 @@ export default function ProjectPageRoot({
         confirmText={texts.yes}
         cancelText={texts.no}
       />
-       <ProjectJoinDialog
+      <ProjectJoinDialog
         open={showJoinDialog}
         onClose={handleCloseJoinDialog}
         user={user}

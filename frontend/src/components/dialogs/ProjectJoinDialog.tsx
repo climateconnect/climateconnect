@@ -45,7 +45,7 @@ export default function ProjectJoinDialog({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const [description, setDescription] = useState("");
-console.log("url",url);
+  console.log("url", url);
 
   const [selectedChip, setSelectedChip] = useState(null);
   const [showTextbox, setShowTextbox] = useState(false);

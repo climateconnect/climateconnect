@@ -2,7 +2,15 @@ import { Link } from "@mui/material";
 import React from "react";
 import { getLocalePrefix } from "../lib/apiOperations";
 
-export default function getProjectTexts({ project, user, url_slug, locale, creator, hubName, count }) {
+export default function getProjectTexts({
+  project,
+  user,
+  url_slug,
+  locale,
+  creator,
+  hubName,
+  count,
+}) {
   return {
     please_log_in_to_edit_project: {
       en: "Please Log In to Edit a project.",
