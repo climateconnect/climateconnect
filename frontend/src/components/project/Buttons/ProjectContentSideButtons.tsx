@@ -15,6 +15,7 @@ import ProjectRequestersDialog from "../../dialogs/ProjectRequestersDialog";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import JoinButton from "./JoinButton";
 import theme from "../../../themes/theme";
+import ProjectReviewJoinRequestsDialog from "../../dialogs/ProjectReviewJoinRequestsDialog";
 
 const useStyles = makeStyles((theme) => ({
   memberButtons: {
@@ -72,51 +73,64 @@ export default function ProjectContentSideButtons({
   requestedToJoinProject,
   leaveProject,
   hubUrl,
+  handleOpenJoinDialog,
 }) {
   const token = new Cookies().get("auth_token");
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const [userPermission, setUserPermission] = useState("");
 
-  const user_permission =
-    user && project.team && project.team.find((m) => m.id === user.id)
-      ? project.team.find((m) => m.id === user.id).permission
-      : null;
+  // const user_permission =
+  //   user && project.team && project.team.find((m) => m.id === user.id)
+  //     ? project.team.find((m) => m.id === user.id).permission
+  //     : null;
   const hasAdminPermissions = [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(
-    user_permission
+    userPermission
   );
 
   const [requesters, setRequesters] = useState([]);
   const [requestersRetrieved, setRequestersRetrieved] = useState(false);
   const queryString = hubUrl ? `?hub=${hubUrl}` : "";
 
+
   // Fetch and populate requesters on initial load
+  const getRequestersList = async () => {
+    // //short circuit if the user doesn't have the necessary permissions to see join requests
+    // if (!(userPermission && hasAdminPermissions)) {
+    //   return;
+    // }
+    try {
+      const membershipRequests = await getMembershipRequests(project.url_slug, locale, token);
+      // Now transform to a shape of objects where a specific request ID is
+      // alongside a user profile.
+      const userRequests = membershipRequests.map((r) => {
+        const user = {
+          requestId: r.id,
+          user: r.user_profile,
+          message: r.message,
+          chat_uuid: r.chat_uuid,
+        };
+        return user;
+      });
+
+      setRequesters(userRequests);
+    } catch (e) {
+      console.log(e.response.data);
+    }
+
+    const userPermission =
+      user && project?.team?.find((m) => m.id === user.id)
+        ? project.team.find((m) => m.id === user.id).permission
+        : "";
+    setUserPermission(userPermission);
+    setRequestersRetrieved(true);
+  };
+
+  //Executed once when the page loads
   useEffect(() => {
-    (async () => {
-      //short circuit if the user doesn't have the necessary permissions to see join requests
-      if (!(user_permission && hasAdminPermissions)) {
-        return;
-      }
-      // Returns an array of objects with an ID (request ID) and
-      // associated user profile.
-      try {
-        const membershipRequests = await getMembershipRequests(project.url_slug, locale, token);
-        // Now transform to a shape of objects where a specific request ID is
-        // alongside a user profile.
-        const userRequests = membershipRequests.map((r) => {
-          const user = {
-            requestId: r.id,
-            user: r.user_profile,
-          };
-          return user;
-        });
-        setRequesters(userRequests);
-        setRequestersRetrieved(true);
-      } catch (e) {
-        console.log(e.response.data);
-      }
-    })();
+    getRequestersList();
   }, []);
 
   const ShowRequestsButton = () => {
@@ -191,7 +205,7 @@ export default function ProjectContentSideButtons({
     <div>
       {user && project.team && project.team.find((m) => m.id === user.id) && (
         <div className={classes.memberButtons}>
-          {user_permission && hasAdminPermissions && (
+          {userPermission && hasAdminPermissions && (
             <>
               {/* Badge is dynamic based on the number of membership requesters */}
               <ShowRequestsButton />
@@ -207,24 +221,27 @@ export default function ProjectContentSideButtons({
         of the project (has read only permissions), then we don't want to show the membership request button. */}
       {!hasAdminPermissions &&
         project.project_type.type_id !== "event" &&
-        !(user_permission && [ROLE_TYPES.read_only_type].includes(user_permission)) && (
+        !(userPermission && [ROLE_TYPES.read_only_type].includes(userPermission)) && (
           <JoinButton
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
             requestedToJoin={requestedToJoinProject}
             className={classes.joinButton}
             hasAdminPermissions={hasAdminPermissions}
+            handleOpenJoinDialog={handleOpenJoinDialog}
           />
         )}
 
       {/* Only present dialog if button has been clicked! */}
-      <ProjectRequestersDialog
+      <ProjectReviewJoinRequestsDialog
         open={showRequesters}
         project={project}
         requesters={requesters}
         onClose={toggleShowRequests}
         user={user}
+        url={"projects/" + project.url_slug}
         loading={!requestersRetrieved}
-        user_permission={user_permission}
+        user_permission={userPermission}
+        getRequestersList={getRequestersList}
       />
     </div>
   );

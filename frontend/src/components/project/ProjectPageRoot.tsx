@@ -25,6 +25,7 @@ import ProjectOverview from "./ProjectOverview";
 import ProjectSideBar from "./ProjectSideBar";
 import ProjectTeamContent from "./ProjectTeamContent";
 import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMediaShareButton";
+import ProjectJoinDialog  from "../dialogs/ProjectJoinDialog";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -183,7 +184,7 @@ export default function ProjectPageRoot({
    * Calls backend, sending a request to join this project based
    * on user token stored in cookies.
    */
-  const handleSendProjectJoinRequest = async () => {
+  const handleSendProjectJoinRequest = async (message) => {
     // Get the actual project name from the URL, removing any query params
     // and projects/ prefix. For example,
     // "/projects/Anotherproject6?projectId=Anotherproject6" -> "Anotherproject6"
@@ -198,7 +199,7 @@ export default function ProjectPageRoot({
         method: "post",
         url: `/api/projects/${strippedProjectName}/request_membership/${user.url_slug}/`,
         payload: {
-          message: "Would like to join the project!",
+          message: message,
           // TODO: currently, we default user's availability to 4. In
           // the future, we could consider customizing this option
           user_availability: "4",
@@ -208,12 +209,15 @@ export default function ProjectPageRoot({
           Authorization: `Token ${token}`,
         },
       });
+
+      handleCloseJoinDialog();
       showFeedbackMessage({
         message: texts.your_request_has_been_sent,
         success: true,
       });
       handleJoinRequest(true);
     } catch (error) {
+      handleCloseJoinDialog();
       showFeedbackMessage({
         message: error?.response?.data?.message,
         error: true,
@@ -398,6 +402,15 @@ export default function ProjectPageRoot({
   const [initiallyCaughtFollowers, setInitiallyCaughtFollowers] = useState(false);
   const [followers, setFollowers] = useState([]);
   const [showFollowers, setShowFollowers] = useState(false);
+  const [showJoinDialog, setShowJoinDialog] = useState(false);
+
+  const handleOpenJoinDialog = () => {
+    setShowJoinDialog(!showJoinDialog);
+  };
+
+  const handleCloseJoinDialog = () => {
+    setShowJoinDialog(false);
+  };
   const toggleShowFollowers = async () => {
     setShowFollowers(!showFollowers);
     if (!initiallyCaughtFollowers) {
@@ -450,6 +463,7 @@ export default function ProjectPageRoot({
   });
 
   const latestParentComment = [project.comments[0]];
+  
   return (
     <div className={classes.root}>
       <ProjectOverview
@@ -543,6 +557,7 @@ export default function ProjectPageRoot({
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
             requestedToJoinProject={requestedToJoinProject}
             hubUrl={hubPage}
+            handleOpenJoinDialog={handleOpenJoinDialog}
           />
         </TabContent>
         <TabContent value={tabValue} index={1}>
@@ -621,6 +636,14 @@ export default function ProjectPageRoot({
         }
         confirmText={texts.yes}
         cancelText={texts.no}
+      />
+       <ProjectJoinDialog
+        open={showJoinDialog}
+        onClose={handleCloseJoinDialog}
+        user={user}
+        projectAdmin={projectAdmin}
+        handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+        url={"projects/" + project.url_slug}
       />
     </div>
   );

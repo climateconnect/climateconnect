@@ -445,20 +445,31 @@ class ProjectRequesterSerializer(serializers.ModelSerializer):
     """
 
     user_profile = serializers.SerializerMethodField()
+    message = serializers.SerializerMethodField()
+    chat_uuid = serializers.SerializerMethodField()
 
     class Meta:
         model = MembershipRequests
 
         # Locally defined variables take precedence
         # over what's defined on the model
-        fields = ("user_profile", "id")
+        fields = ("user_profile", "id", "message", "chat_uuid")
 
     def get_user_profile(self, obj):
         user_profile = UserProfile.objects.get(user=obj.user)
         serializer = UserProfileStubSerializer(user_profile)
         return serializer.data
 
-
+    def get_message(self, obj):
+        if obj.message:
+            return obj.message.content
+        return None
+            
+    def get_chat_uuid(self, obj):
+        if obj.message and obj.message.message_participant:
+            return obj.message.message_participant.chat_uuid
+        return None
+    
 class ProjectLikeSerializer(serializers.ModelSerializer):
     user_profile = serializers.SerializerMethodField()
 

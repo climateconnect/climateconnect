@@ -798,5 +798,9 @@
   "step_2_of_2_sign_up": {
     "en": "Step 2 of 2: Basic Info",
     "de": "Schritt 2 von 2: Grundlegende Informationen"
+  },
+  "send_request": {
+    "en": "SEND REQUEST",
+    "de": "ANFRAGE SENDEN"
   }
 }
