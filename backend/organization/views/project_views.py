@@ -1,6 +1,6 @@
 import logging
 import traceback
-from django.db.models import Case, When
+from django.db.models import Case, When, Prefetch
 from organization.utility.follow import (
     get_list_of_project_followers,
     set_user_following_project,
@@ -152,11 +152,23 @@ class ListProjectsView(ListAPIView):
             .prefetch_related(
                 "skills",
                 "tag_project",
-                "project_comment",
+                Prefetch(
+                    "project_comment",
+                    queryset=ProjectComment.objects.select_related("comment_ptr"),
+                ),
                 "project_liked",
                 "project_following",
+                "project_collaborator",
+                Prefetch(
+                    "project_parent",
+                    queryset=ProjectParents.objects.select_related(
+                        "parent_organization",
+                        "parent_user__user_profile",
+                    ),
+                ),
             )
         )
+        # maybe use .annotate() to calculate ranking/counts of coments etc.
 
         if "hub" in self.request.query_params:
             hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
