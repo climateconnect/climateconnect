@@ -89,7 +89,7 @@ export default function EditProjectPage({
   const [curProject, setCurProject] = React.useState({
     ...project,
     status: statusOptions.find((s) => s.name === project?.status),
-    hubUrl: hubUrl,
+    hubUrl: project.related_hubs?.length > 0 ? project.related_hubs[0] : null,
   });
   project = {
     ...project,
@@ -110,7 +110,6 @@ export default function EditProjectPage({
     return (
       <WideLayout
         title={texts.please_log_in_to_edit_project}
-        hideHeadline={true}
         headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
         customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
         hubUrl={hubUrl}
@@ -118,7 +117,6 @@ export default function EditProjectPage({
         <LoginNudge
           fullPage
           whatToDo={texts.to_edit_this_project}
-          queryString={isCustomHub ? `${"hub=" + hubUrl}` : ""}
         />
       </WideLayout>
     );
