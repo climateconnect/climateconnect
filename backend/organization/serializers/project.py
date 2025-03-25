@@ -156,6 +156,7 @@ class EditProjectSerializer(ProjectSerializer):
     short_description = serializers.SerializerMethodField()
     helpful_connections = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
+    related_hubs = serializers.SerializerMethodField()
 
     def get_loc(self, obj):
         if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
@@ -184,9 +185,13 @@ class EditProjectSerializer(ProjectSerializer):
 
     def get_helpful_connections(self, obj):
         return obj.helpful_connections
+    
+    def get_related_hubs(self, obj):
+        return [hub.url_slug for hub in obj.related_hubs.all()]
+
 
     class Meta(ProjectSerializer.Meta):
-        fields = ProjectSerializer.Meta.fields + ("loc", "translations")
+        fields = ProjectSerializer.Meta.fields + ("loc", "translations", "related_hubs")
 
 
 class ProjectParentsSerializer(serializers.ModelSerializer):
