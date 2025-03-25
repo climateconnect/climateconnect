@@ -2,7 +2,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useEffect } from "react";
 import { CcLandingpage, EnLandingpageClimateConnect } from "../devlink";
 import UserContext from "../src/components/context/UserContext";
-import Layout from "../src/components/layouts/layout";
+import WideLayout from "../src/components/layouts/WideLayout";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -27,10 +27,10 @@ export default function Index() {
   }, []);
 
   return (
-    <Layout>
+    <WideLayout>
       <div className={classes.container}>
         {locale === "de" ? <CcLandingpage /> : <EnLandingpageClimateConnect />}
       </div>
-    </Layout>
+    </WideLayout>
   );
 }

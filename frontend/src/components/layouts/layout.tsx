@@ -49,7 +49,6 @@ export default function Layout({
     }
   }, []);
   return (
-    <DevLinkProvider>
       <LayoutWrapper theme={theme} title={title}>
         <Header noSpacingBottom isStaticPage={isStaticPage} />
         {<DonationCampaignInformation />}
@@ -84,6 +83,5 @@ export default function Layout({
         )}
         <Footer />
       </LayoutWrapper>
-    </DevLinkProvider>
   );
 }

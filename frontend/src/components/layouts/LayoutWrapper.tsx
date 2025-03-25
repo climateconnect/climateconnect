@@ -13,6 +13,7 @@ import CookieBanner from "../general/CookieBanner";
 import LoadingContainer from "../general/LoadingContainer";
 import CloseSnackbarAction from "../snackbarActions/CloseSnackbarAction";
 import LogInAction from "../snackbarActions/LogInAction";
+import { DevLinkProvider } from "../../../devlink/DevLinkProvider";
 
 declare module "@mui/styles/defaultTheme" {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -156,6 +157,7 @@ export default function LayoutWrapper({
       </Head>
       {/* If theme is falsy, slience the MUI console.warning for having an undefined theme */}
       <ThemeProvider theme={theme}>
+        <DevLinkProvider>
         {loading || isLoading ? (
           <div className={classes.spinnerContainer}>
             <LoadingContainer headerHeight={0} footerHeight={0} />
@@ -192,6 +194,7 @@ export default function LayoutWrapper({
             </div>
           </FeedbackContext.Provider>
         )}
+        </DevLinkProvider>
       </ThemeProvider>
     </>
   );
