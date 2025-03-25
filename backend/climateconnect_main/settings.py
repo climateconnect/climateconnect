@@ -21,6 +21,7 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 from sentry_sdk.integrations.celery import CeleryIntegration
+import django.conf
 
 
 load_dotenv(find_dotenv(".backend_env"))
@@ -56,6 +57,7 @@ INTERNAL_IPS = [
     # ...
 ] + DEBUG_INTERNAL_IPS
 print("INTERNAL IPS:", INTERNAL_IPS)
+print("django.conf.settings.DEBUG", django.conf.settings.DEBUG)
 
 
 AUTO_VERIFY = True if env("AUTO_VERIFY") in ["True", "true", "TRUE"] else False
@@ -89,6 +91,11 @@ LIBRARY_APPS = [
 ]
 
 DEBUG_APPS = ["debug_toolbar"]
+
+DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK": lambda request: django.conf.settings.DEBUG,
+    "SHOW_COLLAPSED": False,  # Default is False
+}
 
 SECURITY_MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
