@@ -7,7 +7,7 @@ import UserContext from "../context/UserContext";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import SelectField from "../general/SelectField";
 import LocationSearchBar from "../search/LocationSearchBar";
-import { useFilters } from "../hooks/UseFilters";
+import { FilterContext } from "../context/FilterContext";
 
 const useStyles = makeStyles<Theme, { filterElementMargin: number; justifyContent: any }>(
   (theme) => {
@@ -99,7 +99,7 @@ export default function Filters({
   setSelectedItems,
 }: any) {
   const { locale } = useContext(UserContext);
-  const { filters: currentFilters } = useFilters();
+  const { filters: currentFilters } = useContext(FilterContext);
 
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const classes = useStyles({

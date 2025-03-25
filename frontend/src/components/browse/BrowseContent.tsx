@@ -26,8 +26,8 @@ import MobileBottomMenu from "./MobileBottomMenu";
 import HubTabsNavigation from "../hub/HubTabsNavigation";
 import HubSupporters from "../hub/HubSupporters";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
-import { useFilters } from "../hooks/UseFilters";
 import { BrowseTab } from "../../types";
+import { FilterContext } from "../context/FilterContext";
 
 const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
 const OrganizationPreviews = React.lazy(() => import("../organization/OrganizationPreviews"));
@@ -108,7 +108,7 @@ export default function BrowseContent({
     handleUpdateFilterValues,
     handleSetErrorMessage,
     handleApplyNewFilters: applyNewFilters,
-  } = useFilters();
+  } = useContext(FilterContext);
 
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles();

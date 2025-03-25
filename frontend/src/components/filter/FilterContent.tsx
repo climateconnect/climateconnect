@@ -1,14 +1,14 @@
 import { Theme } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { getLocationFilterKeys } from "../../../public/data/locationFilters";
 import { getReducedPossibleFilters } from "../../../public/lib/parsingOperations";
 import theme from "../../themes/theme";
 import FilterOverlay from "./FilterOverlay";
 import Filters from "./Filters";
 import SelectedFilters from "./SelectedFilters";
-import { useFilters } from "../hooks/UseFilters";
+import { FilterContext } from "../context/FilterContext";
 
 /**
  * Util to return an array of all potential items associated with
@@ -135,7 +135,7 @@ export default function FilterContent({
   const [open, setOpen] = useState<{ prop?: any }>({});
   const [initialized, setInitialized] = useState(false);
 
-  const { filters } = useFilters();
+  const { filters } = useContext(FilterContext);
   const reduced = reduceFilters(filters, possibleFilters);
 
   const [selectedItems, setSelectedItems] = useState(reduced);

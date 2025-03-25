@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import SelectedFilter from "./SelectedFilter";
-import { useFilters } from "../hooks/UseFilters";
+import { FilterContext } from "../context/FilterContext";
 
 export default function SelectedFilters({ possibleFilters, handleUnselectFilter }) {
-  const { filters } = useFilters();
+  const { filters } = useContext(FilterContext);
 
   const currentFilters = Object.keys(filters).reduce(function (obj, curKey) {
     obj[curKey] = filters[curKey];

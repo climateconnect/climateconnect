@@ -1,13 +1,13 @@
-import { Button, Theme } from "@mui/material";
+import { Button } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import TuneIcon from "@mui/icons-material/Tune";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import FilterSearchBar from "../filter/FilterSearchBar";
-import { useFilters } from "../hooks/UseFilters";
 import { BrowseTab } from "../../types";
+import { FilterContext } from "../context/FilterContext";
 
 type MakeStylesProps = {
   applyBackgroundColor?: boolean;
@@ -74,7 +74,7 @@ export default function FilterSection({
     applyBackgroundColor: applyBackgroundColor,
   });
   const { locale } = useContext(UserContext);
-  const { filters } = useFilters();
+  const { filters } = useContext(FilterContext);
   const [value, setValue] = useState(filters.search || "");
 
   const texts = getTexts({ page: "filter_and_search", locale: locale });
