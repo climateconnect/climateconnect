@@ -20,7 +20,6 @@ from organization.models import (
     ProjectMember,
     ProjectParents,
 )
-from organization.models.content import ProjectComment
 from organization.models.translations import ProjectTranslation
 from organization.serializers.organization import OrganizationStubSerializer
 from organization.serializers.status import (
