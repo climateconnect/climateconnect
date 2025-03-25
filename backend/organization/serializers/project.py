@@ -287,9 +287,15 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         return get_project_short_description(obj, get_language())
 
     def get_project_parents(self, obj):
-        parent = obj.project_parent.first()
-        if parent is None:
+        # Query the first element but use .all()
+        # as it is aware of prefetched Data
+        # .first() triggers a new query with ... LIMIT 1
+        parents = list(obj.project_parent.all())
+        if not parents:
             return []
+
+        parent = parents[0]  # Get the first parent from prefetched data
+
         if parent.parent_organization:
             return [
                 {
@@ -310,7 +316,8 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             ]
 
     def get_tags(self, obj):
-        serializer = ProjectTaggingSerializer(obj.tag_project, many=True)
+        # .all() so that it can use the prefetched data
+        serializer = ProjectTaggingSerializer(obj.tag_project.all(), many=True)
         return serializer.data
 
     def get_image(self, obj):
@@ -339,10 +346,10 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         return serializer.data["type_id"]
 
     def get_number_of_comments(self, obj):
-        return ProjectComment.objects.filter(project=obj).count()
+        return obj.project_comment.count()
 
     def get_number_of_likes(self, obj):
-        return ProjectLike.objects.filter(project=obj).count()
+        return obj.project_liked.count()
 
     def get_collaborating_organizations(self, obj):
         serializer = ProjectCollaboratorsSerializer(obj.project_collaborator, many=True)
