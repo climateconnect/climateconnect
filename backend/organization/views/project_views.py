@@ -617,7 +617,9 @@ class ProjectAPIView(APIView):
             )[0]
         if "hubUrl" in request.data:
             related_hub_slug = request.data["hubUrl"]
-            if related_hub_slug == "":  # If the slug is an empty string, clear the related_hubs
+            if (
+                related_hub_slug == ""
+            ):  # If the slug is an empty string, clear the related_hubs
                 project.related_hubs.clear()
             else:  # Otherwise, try to find the Hub and add it
                 hub = Hub.objects.filter(url_slug=related_hub_slug).first()
