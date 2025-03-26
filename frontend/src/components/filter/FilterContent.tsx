@@ -1,4 +1,4 @@
-import { Theme } from "@mui/material";
+import { Theme, Typography } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
@@ -9,6 +9,8 @@ import FilterOverlay from "./FilterOverlay";
 import Filters from "./Filters";
 import SelectedFilters from "./SelectedFilters";
 import { FilterContext } from "../context/FilterContext";
+import { BrowseTab } from "../../types";
+import makeStyles from "@mui/styles/makeStyles";
 
 /**
  * Util to return an array of all potential items associated with
@@ -84,10 +86,32 @@ export const reduceFilters = (currentFilters, possibleFilters) => {
   return reduced;
 };
 
+const useStyles = makeStyles<Theme>((theme) => {
+  return {
+    errorMessageWrapper: {
+      textAlign: "center",
+      marginBottom: theme.spacing(1),
+    },
+  };
+});
+
+interface FilterContentProps {
+  applyFilters: (params: any) => void;
+  className: string;
+  filtersExpanded: boolean;
+  handleSetLocationOptionsOpen: (open: boolean) => void;
+  locationInputRef: React.RefObject<HTMLInputElement>;
+  locationOptionsOpen: boolean;
+  possibleFilters: any;
+  type: BrowseTab;
+  unexpandFilters: () => void;
+  initialLocationFilter: any;
+  nonFilterParams: any;
+}
+
 export default function FilterContent({
   applyFilters,
   className,
-  errorMessage,
   filtersExpanded,
   handleSetLocationOptionsOpen,
   locationInputRef,
@@ -96,11 +120,11 @@ export default function FilterContent({
   type,
   unexpandFilters,
   initialLocationFilter,
-  handleUpdateFilters,
   nonFilterParams,
-}) {
+}: FilterContentProps) {
   const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.between("xs", "lg"));
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
+  const classes = useStyles(theme);
 
   const possibleFiltersFirstHalf = possibleFilters.slice(0, Math.ceil(possibleFilters.length / 2));
   const possibleFiltersSecondHalf = possibleFilters.slice(
@@ -135,7 +159,7 @@ export default function FilterContent({
   const [open, setOpen] = useState<{ prop?: any }>({});
   const [initialized, setInitialized] = useState(false);
 
-  const { filters } = useContext(FilterContext);
+  const { filters, handleUpdateFilterValues, errorMessage } = useContext(FilterContext);
   const reduced = reduceFilters(filters, possibleFilters);
 
   const [selectedItems, setSelectedItems] = useState(reduced);
@@ -169,7 +193,7 @@ export default function FilterContent({
   const handleClickDialogSave = (prop, results) => {
     if (results) {
       const updatedFilters = { ...filters, [prop]: results.map((x) => x.name) };
-      handleUpdateFilters(updatedFilters);
+      handleUpdateFilterValues(updatedFilters);
       applyFilters({
         type: type,
         newFilters: updatedFilters,
@@ -197,7 +221,7 @@ export default function FilterContent({
       closeFilters: isSmallScreen,
       nonFilterParams: nonFilterParams,
     });
-    handleUpdateFilters(updatedFilters);
+    handleUpdateFilterValues(updatedFilters);
   };
 
   const handleApplyFilters = () => {
@@ -250,7 +274,7 @@ export default function FilterContent({
       closeFilters: isSmallScreen,
       nonFilterParams: nonFilterParams,
     });
-    handleUpdateFilters(updatedFilters);
+    handleUpdateFilterValues(updatedFilters);
 
     // Also re-select items
     if (selectedItems[filterKey]) {
@@ -267,7 +291,6 @@ export default function FilterContent({
         <>
           <FilterOverlay
             handleApplyFilters={handleApplyFilters}
-            errorMessage={errorMessage}
             filtersExpanded={filtersExpanded}
             handleClickDialogSave={handleClickDialogSave}
             handleClickDialogClose={handleClickDialogClose}
@@ -286,8 +309,12 @@ export default function FilterContent({
         </>
       ) : isMediumScreen && possibleFilters.length > 3 ? (
         <>
+          {errorMessage && (
+            <div className={classes.errorMessageWrapper}>
+              <Typography color="error">{errorMessage}</Typography>
+            </div>
+          )}
           <Filters
-            errorMessage={errorMessage}
             handleClickDialogSave={handleClickDialogSave}
             handleClickDialogClose={handleClickDialogClose}
             handleClickDialogOpen={handleClickDialogOpen}
@@ -315,21 +342,27 @@ export default function FilterContent({
           />
         </>
       ) : (
-        <Filters
-          errorMessage={errorMessage}
-          handleClickDialogSave={handleClickDialogSave}
-          handleClickDialogClose={handleClickDialogClose}
-          handleClickDialogOpen={handleClickDialogOpen}
-          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-          handleValueChange={handleValueChange}
-          justifyContent={type === "projects" ? "space-around" : "flex-start"}
-          locationInputRef={locationInputRef}
-          locationOptionsOpen={locationOptionsOpen}
-          open={open}
-          possibleFilters={possibleFilters}
-          selectedItems={selectedItems}
-          setSelectedItems={setSelectedItems}
-        />
+        <>
+          {errorMessage && (
+            <div className={classes.errorMessageWrapper}>
+              <Typography color="error">{errorMessage}</Typography>
+            </div>
+          )}
+          <Filters
+            handleClickDialogSave={handleClickDialogSave}
+            handleClickDialogClose={handleClickDialogClose}
+            handleClickDialogOpen={handleClickDialogOpen}
+            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+            handleValueChange={handleValueChange}
+            justifyContent={type === "projects" ? "space-around" : "flex-start"}
+            locationInputRef={locationInputRef}
+            locationOptionsOpen={locationOptionsOpen}
+            open={open}
+            possibleFilters={possibleFilters}
+            selectedItems={selectedItems}
+            setSelectedItems={setSelectedItems}
+          />
+        </>
       )}
       {/* We pass currentFilters like this because if location is not an array, 
       a change in it doesn't cause a rerender and therefore the location chip is not shown */}
