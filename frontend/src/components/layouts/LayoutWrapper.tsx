@@ -53,6 +53,15 @@ const useStyles = makeStyles<Theme>((theme) => ({
   },
 }));
 
+interface SnackbarPropsInterface {
+  open: boolean;
+  message: string;
+  action: React.ReactNode;
+  hash: string;
+  error: boolean;
+  success: boolean;
+}
+
 export default function LayoutWrapper({
   title,
   children,
@@ -64,7 +73,7 @@ export default function LayoutWrapper({
   image,
   useFloodStdFont,
 }: any) {
-  const [snackbarProps, setSnackbarProps] = useState({
+  const [snackbarProps, setSnackbarProps] = useState<SnackbarPropsInterface>({
     open: false,
     message: "",
     action: <></>,
@@ -112,13 +121,27 @@ export default function LayoutWrapper({
 
   //if promptLogIn is true, the user will be shown a button to log in.
   //Otherwise the caller of the function can also set a custom action that should be shown to the user
-  const showFeedbackMessage = ({ message, promptLogIn, action, newHash, error, success }) => {
+  const showFeedbackMessage = ({
+    message,
+    promptLogIn,
+    action,
+    newHash,
+    error,
+    success,
+  }: {
+    message: string;
+    promptLogIn?: boolean;
+    action?: React.ReactNode;
+    newHash?: string;
+    error?: boolean;
+    success?: boolean;
+  }) => {
     const newStateValue = {
       ...snackbarProps,
       open: true,
       message: message,
-      error: error,
-      success: success,
+      error: error ?? false,
+      success: success || false,
       action: promptLogIn ? (
         <LogInAction onClose={handleSnackbarClose} />
       ) : action ? (

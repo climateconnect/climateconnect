@@ -5,6 +5,7 @@ import { getDataFromServer } from "./getDataOperations";
 import { membersWithAdditionalInfo } from "./getOptions";
 import { getInfoMetadataByType, getReducedPossibleFilters } from "./parsingOperations";
 import { encodeQueryParamsFromFilters } from "./urlOperations";
+import getTexts from "../texts/texts";
 
 const getLocationFilterUrl = (location) => {
   /*Pass place id. If the place id is found in our db we can use it's polygon,
@@ -241,10 +242,9 @@ export async function applyNewFilters({
     };
   } catch (e) {
     console.log(e);
-    // TODO: in the future, throw the error
-    // but make sure that the calling component catches
-    /// the error and gives feedback to the user
-    // throw e;
+    const texts = getTexts({ page: "general", locale: locale });
+
+    handleSetErrorMessage(texts.error_during_search);
+    throw new Error(texts.error_during_search_short);
   }
-  return null;
 }
