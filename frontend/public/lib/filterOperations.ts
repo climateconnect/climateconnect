@@ -246,4 +246,5 @@ export async function applyNewFilters({
     /// the error and gives feedback to the user
     // throw e;
   }
+  return null;
 }
