@@ -71,10 +71,6 @@ const useStyles = makeStyles<Theme, { filterElementMargin: number; justifyConten
         borderColor: theme.palette.primary.main,
         borderWidth: 2,
       },
-      errorMessageWrapper: {
-        textAlign: "center",
-        marginBottom: theme.spacing(1),
-      },
       openMultiSelectButton: {
         border: `1px solid ${theme.palette.grey[500]} !important`,
       },
@@ -98,7 +94,7 @@ export default function Filters({
   setSelectedItems,
 }: any) {
   const { locale } = useContext(UserContext);
-  const { filters: currentFilters, errorMessage } = useContext(FilterContext);
+  const { filters: currentFilters } = useContext(FilterContext);
 
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const classes = useStyles({
@@ -108,12 +104,6 @@ export default function Filters({
   const radiusFilterOptions = getRadiusFilterOptions();
   return (
     <>
-      {errorMessage && (
-        <div className={classes.errorMessageWrapper}>
-          <Typography color="error">{errorMessage}</Typography>
-        </div>
-      )}
-
       <div className={`${classes.flexContainer} ${isInOverlay && classes.verticalFlexContainer}`}>
         {/* Map over the potential filters for each specific tab. For example, on the Members tab,
          the possible filters might be the location filter object, and the skills filter object. */}
