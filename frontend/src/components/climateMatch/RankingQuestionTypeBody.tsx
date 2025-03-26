@@ -189,7 +189,7 @@ export default function RankingQuestionTypeBody({
 
   const onForwardClick = () => {
     if (userAnswer.length < question.minimum_choices_required) {
-      showFeedbackMessage({
+      showFeedbackMessage?.({
         message: texts.please_choose_at_least_one_answer_to_progress,
         error: true,
       });
