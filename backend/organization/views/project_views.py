@@ -1,6 +1,7 @@
 import logging
 import traceback
 from django.db.models import Case, When, Prefetch
+from organization.utility.cache import generate_project_ranking_cache_key
 from organization.utility.follow import (
     get_list_of_project_followers,
     set_user_following_project,
@@ -21,6 +22,8 @@ from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_main.utility.general import get_image_from_data_url
 
 from dateutil.parser import parse
+
+from django.core.cache import cache
 
 from django.contrib.auth.models import User
 from django.contrib.gis.db.models.functions import Distance
@@ -299,15 +302,36 @@ class ListProjectsView(ListAPIView):
             )
             projects = projects.filter(loc__in=location_ids)
 
-        # Sort projects by its ranking
-        project_ids = [
-            project.id
-            for project in sorted(projects, key=lambda project: -project.cached_ranking)
+        ### retrieve all cached rankings for all projects
+        ### and recalculate the rankings for projects that are missing cached rankings
+
+        # generate all cache keys cached rankings of all projects
+        project_ids = [project.id for project in projects]
+        cache_keys = [
+            generate_project_ranking_cache_key(project_id=pid) for pid in project_ids
         ]
+
+        # prefetch the cached rankings all at once
+        cached_rankings = cache.get_many(cache_keys)
+
+        # save the cached values to the view
+        _cached_rankings = {
+            key: cached_rankings[key] if key in cached_rankings else project.ranking
+            for key, project in zip(cache_keys, projects)
+        }
+
+        # sort by _cached_rankings and then drop the cache_keys
+        project_ids_sorted = map(
+            lambda x: x[0],
+            sorted(
+                zip(project_ids, cache_keys),
+                key=lambda x: _cached_rankings[x[1]] * (-1),
+            ),
+        )
         preferred_order = Case(
             *(
                 When(id=id, then=position)
-                for position, id in enumerate(project_ids, start=1)
+                for position, id in enumerate(project_ids_sorted, start=1)
             )
         )
         return projects.order_by(preferred_order)
@@ -617,7 +641,9 @@ class ProjectAPIView(APIView):
             )[0]
         if "hubUrl" in request.data:
             related_hub_slug = request.data["hubUrl"]
-            if related_hub_slug == "":  # If the slug is an empty string, clear the related_hubs
+            if (
+                related_hub_slug == ""
+            ):  # If the slug is an empty string, clear the related_hubs
                 project.related_hubs.clear()
             else:  # Otherwise, try to find the Hub and add it
                 hub = Hub.objects.filter(url_slug=related_hub_slug).first()
