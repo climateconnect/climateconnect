@@ -70,6 +70,7 @@ type Props = {
   hideAlert?: boolean;
   transparentBackgroundColor?: string;
   hasHubLandingPage?: boolean;
+  isLandingPage?: boolean;
 };
 //Wrapper layout component for pages where the content takes the whole width of the screen
 export default function WideLayout({
