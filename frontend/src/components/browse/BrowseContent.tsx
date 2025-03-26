@@ -69,7 +69,6 @@ export default function BrowseContent({
   initialOrganizations,
   initialProjects,
   customSearchBarLabels,
-  errorMessage,
   filterChoices,
   hideMembers,
   hubName,
@@ -103,12 +102,9 @@ export default function BrowseContent({
 
   const token = new Cookies().get("auth_token");
 
-  const {
-    filters,
-    handleUpdateFilterValues,
-    handleSetErrorMessage,
-    handleApplyNewFilters: applyNewFilters,
-  } = useContext(FilterContext);
+  const { filters, handleSetErrorMessage, handleApplyNewFilters: applyNewFilters } = useContext(
+    FilterContext
+  );
 
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles();
@@ -451,8 +447,6 @@ export default function BrowseContent({
     TYPES_BY_TAB_VALUE: TYPES_BY_TAB_VALUE,
     filtersExpanded: isNarrowScreen ? filtersExandedOnMobile : filtersExpanded,
     handleApplyNewFilters: handleApplyNewFilters,
-    handleUpdateFilterValues: handleUpdateFilterValues,
-    errorMessage: errorMessage,
     isMobileScreen: isNarrowScreen,
     filtersExandedOnMobile: filtersExandedOnMobile,
     handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,

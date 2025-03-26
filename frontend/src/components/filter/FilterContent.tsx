@@ -9,6 +9,7 @@ import FilterOverlay from "./FilterOverlay";
 import Filters from "./Filters";
 import SelectedFilters from "./SelectedFilters";
 import { FilterContext } from "../context/FilterContext";
+import { BrowseTab } from "../../types";
 
 /**
  * Util to return an array of all potential items associated with
@@ -84,10 +85,23 @@ export const reduceFilters = (currentFilters, possibleFilters) => {
   return reduced;
 };
 
+interface FilterContentProps {
+  applyFilters: (params: any) => void;
+  className: string;
+  filtersExpanded: boolean;
+  handleSetLocationOptionsOpen: (open: boolean) => void;
+  locationInputRef: React.RefObject<HTMLInputElement>;
+  locationOptionsOpen: boolean;
+  possibleFilters: any;
+  type: BrowseTab;
+  unexpandFilters: () => void;
+  initialLocationFilter: any;
+  nonFilterParams: any;
+}
+
 export default function FilterContent({
   applyFilters,
   className,
-  errorMessage,
   filtersExpanded,
   handleSetLocationOptionsOpen,
   locationInputRef,
@@ -96,9 +110,8 @@ export default function FilterContent({
   type,
   unexpandFilters,
   initialLocationFilter,
-  handleUpdateFilters,
   nonFilterParams,
-}) {
+}: FilterContentProps) {
   const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.between("xs", "lg"));
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
 
@@ -135,7 +148,7 @@ export default function FilterContent({
   const [open, setOpen] = useState<{ prop?: any }>({});
   const [initialized, setInitialized] = useState(false);
 
-  const { filters } = useContext(FilterContext);
+  const { filters, handleUpdateFilterValues } = useContext(FilterContext);
   const reduced = reduceFilters(filters, possibleFilters);
 
   const [selectedItems, setSelectedItems] = useState(reduced);
@@ -169,7 +182,7 @@ export default function FilterContent({
   const handleClickDialogSave = (prop, results) => {
     if (results) {
       const updatedFilters = { ...filters, [prop]: results.map((x) => x.name) };
-      handleUpdateFilters(updatedFilters);
+      handleUpdateFilterValues(updatedFilters);
       applyFilters({
         type: type,
         newFilters: updatedFilters,
@@ -197,7 +210,7 @@ export default function FilterContent({
       closeFilters: isSmallScreen,
       nonFilterParams: nonFilterParams,
     });
-    handleUpdateFilters(updatedFilters);
+    handleUpdateFilterValues(updatedFilters);
   };
 
   const handleApplyFilters = () => {
@@ -250,7 +263,7 @@ export default function FilterContent({
       closeFilters: isSmallScreen,
       nonFilterParams: nonFilterParams,
     });
-    handleUpdateFilters(updatedFilters);
+    handleUpdateFilterValues(updatedFilters);
 
     // Also re-select items
     if (selectedItems[filterKey]) {
@@ -267,7 +280,6 @@ export default function FilterContent({
         <>
           <FilterOverlay
             handleApplyFilters={handleApplyFilters}
-            errorMessage={errorMessage}
             filtersExpanded={filtersExpanded}
             handleClickDialogSave={handleClickDialogSave}
             handleClickDialogClose={handleClickDialogClose}
@@ -287,7 +299,6 @@ export default function FilterContent({
       ) : isMediumScreen && possibleFilters.length > 3 ? (
         <>
           <Filters
-            errorMessage={errorMessage}
             handleClickDialogSave={handleClickDialogSave}
             handleClickDialogClose={handleClickDialogClose}
             handleClickDialogOpen={handleClickDialogOpen}
@@ -316,7 +327,6 @@ export default function FilterContent({
         </>
       ) : (
         <Filters
-          errorMessage={errorMessage}
           handleClickDialogSave={handleClickDialogSave}
           handleClickDialogClose={handleClickDialogClose}
           handleClickDialogOpen={handleClickDialogOpen}

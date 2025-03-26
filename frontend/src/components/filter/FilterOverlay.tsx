@@ -6,7 +6,6 @@ import Filters from "./Filters";
 import SelectedFilters from "./SelectedFilters";
 
 export default function FilterOverlay({
-  errorMessage,
   filtersExpanded,
   handleApplyFilters,
   handleClickDialogClose,
@@ -40,7 +39,6 @@ export default function FilterOverlay({
       useApplyButton
     >
       <Filters
-        errorMessage={errorMessage}
         handleApplyFilters={handleApplyFilters}
         handleClickDialogClose={handleClickDialogClose}
         handleClickDialogOpen={handleClickDialogOpen}

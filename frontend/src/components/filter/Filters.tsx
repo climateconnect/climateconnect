@@ -83,7 +83,6 @@ const useStyles = makeStyles<Theme, { filterElementMargin: number; justifyConten
 );
 
 export default function Filters({
-  errorMessage,
   handleClickDialogClose,
   handleClickDialogOpen,
   handleClickDialogSave,
@@ -99,7 +98,7 @@ export default function Filters({
   setSelectedItems,
 }: any) {
   const { locale } = useContext(UserContext);
-  const { filters: currentFilters } = useContext(FilterContext);
+  const { filters: currentFilters, errorMessage } = useContext(FilterContext);
 
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const classes = useStyles({
