@@ -18,6 +18,7 @@ declare module "@mui/material/Button" {
 declare module "@mui/material/styles" {
   interface TypeBackground {
     default_contrastText?: string;
+    main?: string;
   }
 }
 

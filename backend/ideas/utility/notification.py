@@ -5,7 +5,7 @@ from climateconnect_api.models.notification import Notification
 from climateconnect_api.utility.notification import (
     create_user_notification,
     send_comment_notification,
-    send_out_live_notification,
+    # send_out_live_notification,
 )
 
 
@@ -57,7 +57,7 @@ def create_idea_join_notification(idea, idea_supporter, chat_uuid):
                 users_to_be_notified.append(supporter.user)
         for user in users_to_be_notified:
             create_user_notification(user, notification)
-            send_out_live_notification(user.id)
+            # send_out_live_notification(user.id)
             send_idea_join_email(
                 user=user,
                 joining_user=idea_supporter.user,

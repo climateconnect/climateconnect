@@ -153,23 +153,37 @@ export default function HubTabsNavigation({
                 })}
             </Tabs>
           )}
-          <div className={classes.climateMatchLinkContainer}>
-            <Link
-              className={classes.climateMatchLink}
-              href={`${getLocalePrefix(locale)}/climatematch?from_hub=${hubUrl}`}
-              underline="hover"
-            >
-              ClimateMatch
-            </Link>
-          </div>
+          {!isCustomHub && (
+            <div className={classes.climateMatchLinkContainer}>
+              <Link
+                className={classes.climateMatchLink}
+                href={`${getLocalePrefix(locale)}/climatematch?from_hub=${hubUrl}`}
+                underline="hover"
+              >
+                ClimateMatch
+              </Link>
+            </div>
+          )}
           {isNarrowScreen && (
-            <Link
-              className={classes.climateMatchLink}
-              href={`${getLocalePrefix(locale)}/climatematch?from_hub=${hubUrl}`}
-              underline="hover"
-            >
-              {texts.projects_worldwide}
-            </Link>
+            <>
+              {hubUrl === "prio1" && (
+                <Link
+                  className={classes.climateMatchLink}
+                  href={"https://prio1-klima.net"}
+                  target="_blank"
+                  underline="hover"
+                >
+                  {texts.PRIO1_klima}
+                </Link>
+              )}
+              <Link
+                className={classes.climateMatchLink}
+                href={`${getLocalePrefix(locale)}/browse`}
+                underline="hover"
+              >
+                {texts.projects_worldwide}
+              </Link>
+            </>
           )}
         </div>
         {!isCustomHub && (

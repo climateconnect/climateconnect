@@ -165,7 +165,10 @@ class ProjectRanking:
             else last_project_follower.created_at.timestamp()
         )
 
-        is_past_event = project_type == ProjectTypesChoices.event and end_date.timestamp() < timezone.now().timestamp()
+        is_past_event = (
+            project_type == ProjectTypesChoices.event
+            and end_date.timestamp() < timezone.now().timestamp()
+        )
 
         def get_created_at_factor():
             # For events the start_date and end_date are more important than the creation time

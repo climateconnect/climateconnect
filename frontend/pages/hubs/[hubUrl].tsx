@@ -5,13 +5,11 @@ import Head from "next/head";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix } from "../../public/lib/apiOperations";
-import { applyNewFilters, getInitialFilters } from "../../public/lib/filterOperations";
 import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
   getProjectTypeOptions,
   getSkillsOptions,
-  getStatusOptions,
 } from "../../public/lib/getOptions";
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
@@ -35,6 +33,7 @@ import BrowseContext from "../../src/components/context/BrowseContext";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import isLocationHubLikeHub from "../../public/lib/isLocationHubLikeHub";
+import { FilterProvider } from "../../src/components/provider/FilterProvider";
 
 const useStyles = makeStyles((theme) => ({
   moreInfoSoon: {
@@ -92,7 +91,6 @@ export async function getServerSideProps(ctx) {
     project_categories,
     organization_types,
     skills,
-    project_statuses,
     location_filtered_by,
     allHubs,
     hubDescription,
@@ -103,7 +101,6 @@ export async function getServerSideProps(ctx) {
     getProjectTagsOptions(hubUrl, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
-    getStatusOptions(ctx.locale),
     getLocationFilteredBy(ctx.query),
     getAllHubs(ctx.locale, false),
     retrieveDescriptionFromWebflow(ctx.query, ctx.locale),
@@ -130,7 +127,6 @@ export async function getServerSideProps(ctx) {
         project_categories: project_categories,
         organization_types: organization_types,
         skills: skills,
-        project_statuses: project_statuses,
       },
       initialLocationFilter: location_filtered_by,
       sectorHubs: allHubs.filter((h) => h.hub_type === "sector hub"),
@@ -171,20 +167,6 @@ export default function Hub({
   const token = new Cookies().get("auth_token");
   const [hubAmbassador, setHubAmbassador] = useState(null);
   const [hubSupporters, setHubSupporters] = useState(null);
-
-  // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
-  const [filters, setFilters] = useState(
-    getInitialFilters({
-      filterChoices: filterChoices,
-      locale: locale,
-      initialLocationFilter: initialLocationFilter,
-    })
-  );
-  const [tabsWhereFiltersWereApplied, setTabsWhereFiltersWereApplied] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
-  const handleSetErrorMessage = (newMessage) => {
-    setErrorMessage(newMessage);
-  };
   const contentRef = useRef(null);
 
   useEffect(() => {
@@ -196,7 +178,7 @@ export default function Hub({
         setHubSupporters(retrivedHubSupporters);
       }
     })();
-  }, []);
+  }, [locale]);
 
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
@@ -224,41 +206,9 @@ export default function Hub({
     profiles: texts.search_profiles_in_location,
   };
 
-  const handleAddFilters = (newFilters) => {
-    setFilters({ ...filters, ...newFilters });
-  };
-
-  const handleSetTabsWhereFiltersWereApplied = (tabs) => {
-    setTabsWhereFiltersWereApplied(tabs);
-  };
-
-  const handleApplyNewFilters = async ({ type, newFilters, closeFilters, nonFilterParams }) => {
-    return await applyNewFilters({
-      type: type,
-      filters: filters,
-      newFilters: newFilters,
-      closeFilters: closeFilters,
-      filterChoices: filterChoices,
-      locale: locale,
-      token: token,
-      handleAddFilters: handleAddFilters,
-      handleSetErrorMessage: handleSetErrorMessage,
-      tabsWhereFiltersWereApplied: tabsWhereFiltersWereApplied,
-      handleSetTabsWhereFiltersWereApplied: handleSetTabsWhereFiltersWereApplied,
-      hubUrl: hubUrl,
-    });
-  };
-
   const closeHubHeaderImage = (e) => {
     e.preventDefault();
     console.log("closing hub header image");
-  };
-
-  const handleUpdateFilterValues = (valuesToUpdate) => {
-    setFilters({
-      ...filters,
-      ...valuesToUpdate,
-    });
   };
 
   const contextValues = {
@@ -273,6 +223,7 @@ export default function Hub({
       )}
       <WideLayout
         title={headline}
+        hideAlert
         headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
         image={getImageUrl(image)}
         isHubPage
@@ -334,33 +285,40 @@ export default function Hub({
           />
           {!isLocationHub && <BrowseExplainer />}
           <BrowseContext.Provider value={contextValues}>
-            <BrowseContent
-              applyNewFilters={handleApplyNewFilters}
-              contentRef={contentRef}
-              customSearchBarLabels={customSearchBarLabels}
-              errorMessage={errorMessage}
-              hubAmbassador={hubAmbassador}
-              filters={filters}
-              handleUpdateFilterValues={handleUpdateFilterValues}
+            <FilterProvider
               filterChoices={filterChoices}
-              handleSetErrorMessage={handleSetErrorMessage}
-              hideMembers={!isLocationHub}
-              hubName={name}
               initialLocationFilter={initialLocationFilter}
-              // TODO: is this still needed?
-              // initialOrganizations={initialOrganizations}
-              // initialProjects={initialProjects}
-              allHubs={allHubs}
-              hubLocation={hubLocation}
-              hubData={hubData}
-              hubUrl={hubUrl}
-              tabNavigationRequested={requestTabNavigation}
-              hubSupporters={hubSupporters}
-            />
+              locale={locale}
+              token={token}
+            >
+              <BrowseContent
+                contentRef={contentRef}
+                customSearchBarLabels={customSearchBarLabels}
+                hubAmbassador={hubAmbassador}
+                filterChoices={filterChoices}
+                hideMembers={!isLocationHub}
+                hubName={name}
+                initialLocationFilter={initialLocationFilter}
+                // TODO: is this still needed?
+                // initialOrganizations={initialOrganizations}
+                // initialProjects={initialProjects}
+                allHubs={allHubs}
+                hubLocation={hubLocation}
+                hubData={hubData}
+                hubUrl={hubUrl}
+                tabNavigationRequested={requestTabNavigation}
+                hubSupporters={hubSupporters}
+              />
+            </FilterProvider>
           </BrowseContext.Provider>
         </div>
         {isSmallScreen && (
-          <FabShareButton locale={locale} hubAmbassador={hubAmbassador} isCustomHub={isCustomHub} hubUrl={hubUrl} />
+          <FabShareButton
+            locale={locale}
+            hubAmbassador={hubAmbassador}
+            isCustomHub={isCustomHub}
+            hubUrl={hubUrl}
+          />
         )}
       </WideLayout>
     </>

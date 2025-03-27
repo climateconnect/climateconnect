@@ -55,7 +55,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
   return {
     root: (props) => {
       return {
-        zIndex: props.fixedHeader ? 20 : "auto",
+        zIndex: props.fixedHeader ? 1000 : "auto",
         borderBottom:
           props.transparentHeader || props.isStaticPage || props.isHubPage
             ? 0
@@ -335,7 +335,6 @@ export default function Header({
   };
 
   const logo = getLogo();
-
 
   const getLogoLink = () => {
     if (hubUrl) {
@@ -791,7 +790,8 @@ function NarrowScreenLinks({
                 (!link.alwaysDisplayDirectly ||
                   !(loggedInUser && link.alwaysDisplayDirectly === "loggedIn")) &&
                 !(loggedInUser && link.onlyShowLoggedOut) &&
-                !(!loggedInUser && link.onlyShowLoggedIn)
+                !(!loggedInUser && link.onlyShowLoggedIn) &&
+                !link.onlyShowOnNormalScreen
             ).map((link, index) => {
               const Icon = link.iconForDrawer;
               if (link.type !== "languageSelect") {
