@@ -15,6 +15,7 @@ from chat_messages.serializers.message import MessageSerializer
 from organization.serializers.content import ProjectCommentSerializer
 from organization.utility.project import get_common_related_hub
 
+
 class NotificationSerializer(serializers.ModelSerializer):
     last_message = serializers.SerializerMethodField()
     chat_uuid = serializers.SerializerMethodField()
@@ -33,6 +34,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     organization_follower = serializers.SerializerMethodField()
     organization = serializers.SerializerMethodField()
     hub_url = serializers.SerializerMethodField()
+
     class Meta:
         model = Notification
         fields = (
@@ -99,10 +101,10 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     def get_project(self, obj):
         return get_project_from_notification(obj, serialize=True)
-        
+
     def get_organization(self, obj):
         return get_organization_from_notification(obj, serialize=True)
-        
+
     def get_project_follower(self, obj):
         if obj.project_follower:
             return get_following_user(obj.project_follower.user)
@@ -162,7 +164,7 @@ class NotificationSerializer(serializers.ModelSerializer):
             requester_user = UserProfile.objects.get(user=obj.membership_request.user)
             serializer = UserProfileStubSerializer(requester_user)
             return serializer.data
-        
+
     def get_hub_url(self, obj):
         notification_types_with_potential_related_hubs = [
             Notification.PROJECT_COMMENT,
@@ -173,17 +175,17 @@ class NotificationSerializer(serializers.ModelSerializer):
             Notification.MENTION,
             Notification.PROJECT_LIKE,
             Notification.ORGANIZATION_FOLLOWER,
-            Notification.ORG_PROJECT_PUBLISHED
+            Notification.ORG_PROJECT_PUBLISHED,
         ]
         if obj.notification_type not in notification_types_with_potential_related_hubs:
             return None
-        #get organization or project related to notification
+        # get organization or project related to notification
         project = get_project_from_notification(obj)
         organization = get_organization_from_notification(obj)
         entity = organization or project
 
         # Access the user from the context
-        request = self.context.get('request', None)
+        request = self.context.get("request", None)
         if request is None:
             return None
         user = request.user
