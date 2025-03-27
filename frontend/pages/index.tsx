@@ -13,6 +13,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Index() {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
+  const [previousLocale, setPreviousLocale] = React.useState(locale);
   //This is a workaround for a bug with tabs in webflow's devlink
   //Without this code the page will always scroll down to the selected tab
   useEffect(() => {
@@ -21,10 +22,16 @@ export default function Index() {
       document.removeEventListener("scroll", onFirstScroll);
     };
     document.addEventListener("scroll", onFirstScroll);
+
+    // Only reload if the locale has actually changed
+    if (locale !== previousLocale) {
+      window.location.reload();
+      setPreviousLocale(locale);
+    }
     return () => {
       document.removeEventListener("scroll", onFirstScroll);
     };
-  }, []);
+  }, [locale]);
 
   return (
     <WideLayout>
