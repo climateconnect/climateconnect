@@ -185,10 +185,9 @@ class EditProjectSerializer(ProjectSerializer):
 
     def get_helpful_connections(self, obj):
         return obj.helpful_connections
-    
+
     def get_related_hubs(self, obj):
         return [hub.url_slug for hub in obj.related_hubs.all()]
-
 
     class Meta(ProjectSerializer.Meta):
         fields = ProjectSerializer.Meta.fields + ("loc", "translations", "related_hubs")
