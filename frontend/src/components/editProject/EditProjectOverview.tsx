@@ -19,6 +19,8 @@ import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
 import ProjectLocationSearchBar from "../shareProject/ProjectLocationSearchBar";
 import { Project } from "../../types";
+import CustomHubSelection from "../project/CustomHubSelection";
+
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
 const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
@@ -64,6 +66,9 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
     margin: "0 auto",
     cursor: "pointer",
     fontSize: 40,
+  },
+  imageBtn: {
+    padding: "8px 32px",
   },
   locationInput: {
     marginBottom: theme.spacing(1),
@@ -205,6 +210,13 @@ function LargeScreenOverview({
   handleSetLocationOptionsOpen,
 }) {
   const classes = useStyles({});
+  function handleUpdateSelectedHub(hubUrl: string) {
+    handleSetProject({
+      ...project,
+      hubUrl: hubUrl,
+    });
+  }
+
   return (
     <>
       <InputName
@@ -243,6 +255,10 @@ function LargeScreenOverview({
             project={project}
             handleChangeProject={handleChangeProject}
             texts={texts}
+          />
+          <CustomHubSelection
+            currentHubName={project.hubUrl ?? ""}
+            handleUpdateSelectedHub={handleUpdateSelectedHub}
           />
         </div>
       </div>
@@ -502,7 +518,12 @@ const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
           <div className={classes.addPhotoWrapper}>
             <div className={classes.addPhotoContainer}>
               <AddAPhotoIcon className={classes.photoIcon} />
-              <Button variant="contained" color="primary" onClick={onUploadImageClick}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={onUploadImageClick}
+                className={classes.imageBtn}
+              >
                 {!project.image ? texts.upload_image : texts.change_image}
               </Button>
             </div>

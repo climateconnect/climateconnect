@@ -1,6 +1,6 @@
 import logging
 import traceback
-from django.db.models import Case, When
+from django.db.models import Case, When, Prefetch
 from organization.utility.follow import (
     get_list_of_project_followers,
     set_user_following_project,
@@ -152,11 +152,23 @@ class ListProjectsView(ListAPIView):
             .prefetch_related(
                 "skills",
                 "tag_project",
-                "project_comment",
+                Prefetch(
+                    "project_comment",
+                    queryset=ProjectComment.objects.select_related("comment_ptr"),
+                ),
                 "project_liked",
                 "project_following",
+                "project_collaborator",
+                Prefetch(
+                    "project_parent",
+                    queryset=ProjectParents.objects.select_related(
+                        "parent_organization",
+                        "parent_user__user_profile",
+                    ),
+                ),
             )
         )
+        # maybe use .annotate() to calculate ranking/counts of coments etc.
 
         if "hub" in self.request.query_params:
             hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
@@ -603,6 +615,14 @@ class ProjectAPIView(APIView):
             project.thumbnail_image = get_image_from_data_url(
                 request.data["thumbnail_image"]
             )[0]
+        if "hubUrl" in request.data:
+            related_hub_slug = request.data["hubUrl"]
+            if related_hub_slug == "":  # If the slug is an empty string, clear the related_hubs
+                project.related_hubs.clear()
+            else:  # Otherwise, try to find the Hub and add it
+                hub = Hub.objects.filter(url_slug=related_hub_slug).first()
+                if hub:
+                    project.related_hubs.add(hub)
         if "status" in request.data:
             try:
                 project_status = ProjectStatus.objects.get(
@@ -639,7 +659,6 @@ class ProjectAPIView(APIView):
 
             project_parents.parent_organization = organization
             project_parents.save()
-
         project.save()
 
         items_to_translate = [
@@ -654,7 +673,6 @@ class ProjectAPIView(APIView):
                 "translation_key": "helpful_connections_translation",
             },
         ]
-
         if "translations" in request.data:
             edit_translations(items_to_translate, request.data, project, "project")
         calculate_project_rankings([project.id])
@@ -662,6 +680,7 @@ class ProjectAPIView(APIView):
             {
                 "message": "Project {} successfully updated".format(project.name),
                 "url_slug": project.url_slug,
+                "hubUrl": list(project.related_hubs.values("url_slug")),
             },
             status=status.HTTP_200_OK,
         )

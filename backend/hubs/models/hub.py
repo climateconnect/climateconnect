@@ -437,7 +437,6 @@ class HubThemeColor(models.Model):
         verbose_name_plural = "Hub Theme Color"
 
     def __str__(self):
-
         related_themes = HubTheme.objects.filter(
             Q(primary=self) | Q(secondary=self) | Q(background_default=self)
         )

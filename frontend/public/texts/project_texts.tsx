@@ -439,10 +439,6 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Created by",
       de: "Erstellt von",
     },
-    project_status: {
-      en: "Project status",
-      de: "Projektstatus",
-    },
     describe_your_project_in_detail_please_only_use_language: {
       en: "Describe your project in detail. Please only use English!",
       de: "Beschreibe dein Projekt im Detail.",
