@@ -114,10 +114,7 @@ export default function EditProjectPage({
         customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
         hubUrl={hubUrl}
       >
-        <LoginNudge
-          fullPage
-          whatToDo={texts.to_edit_this_project}
-        />
+        <LoginNudge fullPage whatToDo={texts.to_edit_this_project} />
       </WideLayout>
     );
   else if (!project)
