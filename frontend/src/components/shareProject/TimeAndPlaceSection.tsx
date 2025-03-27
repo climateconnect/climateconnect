@@ -1,11 +1,9 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Project } from "../../types";
 import ProjectDateSection from "./ProjectDateSection";
 import makeStyles from "@mui/styles/makeStyles";
 import ProjectLocationSearchBar from "./ProjectLocationSearchBar";
 import { Theme } from "@mui/material";
-import getTexts from "../../../public/texts/texts";
-import UserContext from "../context/UserContext";
 import CustomHubSelection from "../project/CustomHubSelection";
 
 const useStyles = makeStyles<Theme>((theme) => {

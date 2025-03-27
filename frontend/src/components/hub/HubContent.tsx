@@ -16,6 +16,7 @@ import HubHeadlineContainer from "./HubHeadlineContainer";
 import HubSupporters from "./HubSupporters";
 import { DePrio1Willkommen, EnPrio1Welcome } from "../../../devlink";
 import theme from "../../themes/theme";
+import { PrioOneBackgroundBrowse, PrioOneBackgroundBrowseIcon } from "./CustomBackground";
 
 type MakeStylesProps = {
   isLocationHub: boolean;
@@ -88,6 +89,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     margin: "16px auto",
+    gap: "1rem",
     alignItems: "end",
   }),
   infoBoxContainer: {
@@ -96,7 +98,13 @@ const useStyles = makeStyles((theme) => ({
     float: "right",
   },
   topSectionWrapper: (props: MakeStylesProps) => ({
-    background: props.isLocationHub ? `url('${props.image}')` : "none",
+    // TODO: decide if "props.image" should be checked as well
+    // > pro: it prevents requests to "/undefined"
+    // > con: it might be a bug that should be fixed in the parent component
+    // > con: it will not "report" the bug
+    background: props.isLocationHub && props.image ? `url('${props.image}')` : "none",
+
+    position: "relative",
     backgroundSize: "cover",
     backgroundPosition: "bottom center",
     paddingTop: theme.spacing(2),
@@ -107,6 +115,8 @@ const useStyles = makeStyles((theme) => ({
     },
   }),
   backgroundImageContainer: (props: MakeStylesProps) => ({
+    //TODO dead code?
+    display: "none",
     background: props.isLocationHub ? `url('${props.image}')` : "none",
     backgroundSize: "cover",
     backgroundPosition: "bottom center",
@@ -168,6 +178,7 @@ export default function HubContent({
         )}
         {isLocationHub ? (
           <div className={classes.topSectionWrapper}>
+            {hubUrl === "prio1" && <PrioOneBackgroundBrowse isLoggedInUser={user ? true : false} />}
             <Container>
               <div className={classes.dashboardAndStatboxWrapper}>
                 {user ? (
@@ -217,6 +228,9 @@ export default function HubContent({
                       )}
                       {hubSupporters?.length > 0 && (
                         <HubSupporters supportersList={hubSupporters} hubName={hubData?.name} />
+                      )}
+                      {!(hubSupporters?.length > 0) && hubUrl === "prio1" && (
+                        <PrioOneBackgroundBrowseIcon />
                       )}
                     </>
                   ))}

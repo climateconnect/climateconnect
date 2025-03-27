@@ -68,7 +68,6 @@ const getFilterName = (filter, key, filterChoices) => {
   const keyToFilterChoicesKeyMap = {
     organization_type: "organization_types",
     skills: "skills",
-    status: "project_statuses",
     category: "project_categories",
   };
   //get the filter choice we were looking for (either on top level or one level down)
@@ -87,7 +86,7 @@ const getFilterName = (filter, key, filterChoices) => {
  */
 const encodeQueryParamsFromFilters = ({ filters, infoMetadata, filterChoices, locale }) => {
   if (!filters || Object.entries(filters).length === 0) {
-    return;
+    return "";
   }
   // TODO: should make this more robust, and if the filters
   // object includes properties that are empty, shouldn't add the &
