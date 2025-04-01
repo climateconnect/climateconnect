@@ -40,24 +40,16 @@ SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG", "false") == "true"  # needs to gravitate towards False!
+print("django.conf.settings.DEBUG", django.conf.settings.DEBUG)
+
 ALLOWED_HOSTS = get_allowed_hosts(env("ALLOWED_HOSTS"))
 
-
-DEBUG_INTERNAL_IPS = []
-if env("DEBUG_INTERNAL_IPS"):
-    debug_internal_ips = env("DEBUG_INTERNAL_IPS")
-    if "," in debug_internal_ips:
-        DEBUG_INTERNAL_IPS.extend(list(map(str.strip, debug_internal_ips.split(","))))
-    else:
-        DEBUG_INTERNAL_IPS.append(debug_internal_ips)
 
 INTERNAL_IPS = [
     # ...
     "127.0.0.1",
     # ...
-] + DEBUG_INTERNAL_IPS
-print("INTERNAL IPS:", INTERNAL_IPS)
-print("django.conf.settings.DEBUG", django.conf.settings.DEBUG)
+]
 
 
 AUTO_VERIFY = True if env("AUTO_VERIFY") in ["True", "true", "TRUE"] else False
@@ -314,7 +306,7 @@ LOCALE_PATHS = [
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "fromatters": {"Simple_Format": "{levelname} {message}", "style": "{"},
+    "formatters": {"simple": {"format": "{levelname} {message}", "style": "{"}},
     "handlers": {"console": {"level": "INFO", "class": "logging.StreamHandler"}},
     "loggers": {"django": {"handlers": ["console"], "level": "INFO"}},
 }
@@ -331,6 +323,10 @@ CACHES = {
 DEFAULT_CACHE_TIMEOUT = 2 * 24 * 3600
 
 USER_CHUNK_SIZE = env("USER_CHUNK_SIZE", 100)
+
+CACHE_BACHED_RANK_REQUEST = env("CACHE_BACHED_RANK_REQUEST", "False") == "true"
+print("django.conf.settings.CACHE_BACHED_RANK_REQUEST", CACHE_BACHED_RANK_REQUEST)
+
 
 # SENTRY setup
 SENTRY_DSN = env("SENTRY_DSN")
