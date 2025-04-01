@@ -2,7 +2,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useEffect } from "react";
 import { CcLandingpage, EnLandingpageClimateConnect } from "../devlink";
 import UserContext from "../src/components/context/UserContext";
-import Layout from "../src/components/layouts/layout";
+import WideLayout from "../src/components/layouts/WideLayout";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -13,6 +13,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Index() {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
+  const [previousLocale, setPreviousLocale] = React.useState(locale);
   //This is a workaround for a bug with tabs in webflow's devlink
   //Without this code the page will always scroll down to the selected tab
   useEffect(() => {
@@ -21,16 +22,22 @@ export default function Index() {
       document.removeEventListener("scroll", onFirstScroll);
     };
     document.addEventListener("scroll", onFirstScroll);
+
+    // Only reload if the locale has actually changed
+    if (locale !== previousLocale) {
+      window.location.reload();
+      setPreviousLocale(locale);
+    }
     return () => {
       document.removeEventListener("scroll", onFirstScroll);
     };
-  }, []);
+  }, [locale]);
 
   return (
-    <Layout>
+    <WideLayout>
       <div className={classes.container}>
         {locale === "de" ? <CcLandingpage /> : <EnLandingpageClimateConnect />}
       </div>
-    </Layout>
+    </WideLayout>
   );
 }

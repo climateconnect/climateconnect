@@ -13,6 +13,7 @@ import CookieBanner from "../general/CookieBanner";
 import LoadingContainer from "../general/LoadingContainer";
 import CloseSnackbarAction from "../snackbarActions/CloseSnackbarAction";
 import LogInAction from "../snackbarActions/LogInAction";
+import { DevLinkProvider } from "../../../devlink/DevLinkProvider";
 
 declare module "@mui/styles/defaultTheme" {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -156,42 +157,46 @@ export default function LayoutWrapper({
       </Head>
       {/* If theme is falsy, slience the MUI console.warning for having an undefined theme */}
       <ThemeProvider theme={theme}>
-        {loading || isLoading ? (
-          <div className={classes.spinnerContainer}>
-            <LoadingContainer headerHeight={0} footerHeight={0} />
-          </div>
-        ) : (
-          <FeedbackContext.Provider value={contextValues}>
-            <div className={`${!fixedHeight && !noSpaceForFooter && classes.leaveSpaceForFooter}`}>
-              {children}
-              {!acceptedNecessary && bannerOpen && initialized && (
-                <CookieBanner closeBanner={closeBanner} />
-              )}
-              {!noFeedbackButton && !isSmallerThanMediumScreen && <FeedbackButton />}
-              <Snackbar
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "left",
-                }}
-                color="primary"
-                open={snackbarProps.open}
-                autoHideDuration={10000}
-                onClose={handleSnackbarClose}
-              >
-                <SnackbarContent
-                  message={snackbarProps.message}
-                  action={snackbarProps.action}
-                  classes={{
-                    root: `${classes.snackBar} ${snackbarProps.error && classes.errorSnackBar} ${
-                      snackbarProps.success && classes.successSnackBar
-                    }`,
-                    message: classes.snackBarMessage,
-                  }}
-                />
-              </Snackbar>
+        <DevLinkProvider>
+          {loading || isLoading ? (
+            <div className={classes.spinnerContainer}>
+              <LoadingContainer headerHeight={0} footerHeight={0} />
             </div>
-          </FeedbackContext.Provider>
-        )}
+          ) : (
+            <FeedbackContext.Provider value={contextValues}>
+              <div
+                className={`${!fixedHeight && !noSpaceForFooter && classes.leaveSpaceForFooter}`}
+              >
+                {children}
+                {!acceptedNecessary && bannerOpen && initialized && (
+                  <CookieBanner closeBanner={closeBanner} />
+                )}
+                {!noFeedbackButton && !isSmallerThanMediumScreen && <FeedbackButton />}
+                <Snackbar
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left",
+                  }}
+                  color="primary"
+                  open={snackbarProps.open}
+                  autoHideDuration={10000}
+                  onClose={handleSnackbarClose}
+                >
+                  <SnackbarContent
+                    message={snackbarProps.message}
+                    action={snackbarProps.action}
+                    classes={{
+                      root: `${classes.snackBar} ${snackbarProps.error && classes.errorSnackBar} ${
+                        snackbarProps.success && classes.successSnackBar
+                      }`,
+                      message: classes.snackBarMessage,
+                    }}
+                  />
+                </Snackbar>
+              </div>
+            </FeedbackContext.Provider>
+          )}
+        </DevLinkProvider>
       </ThemeProvider>
     </>
   );
