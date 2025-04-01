@@ -14,7 +14,7 @@ import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Alert from "@mui/material/Alert";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useRef, useState, useEffect } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import {
   getCompressedJPG,
@@ -37,6 +37,7 @@ import DetailledDescriptionInput from "./DetailledDescriptionInput";
 import SelectField from "../general/SelectField";
 import { AvatarImage, UserAvatar } from "./UserAvatar";
 import CloseIcon from "@mui/icons-material/Close";
+import FeedbackContext from "../context/FeedbackContext";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
@@ -213,6 +214,7 @@ export default function EditAccountPage({
 
   const imageInputFileRef = useRef<HTMLInputElement | null>(null);
   const closeIconRef = useRef<SVGSVGElement | null>(null);
+  const checkTranslationsButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const [editedAccount, setEditedAccount] = React.useState({ ...account });
   const isOrganization = type === "organization";
@@ -677,6 +679,21 @@ export default function EditAccountPage({
     }
   };
 
+  const { showFeedbackMessage } = useContext(FeedbackContext);
+  useEffect(() => {
+    if (account.language !== locale) {
+      showFeedbackMessage({
+        message: ` ${texts.organization_language} ${account.language.toUpperCase()} ${
+          texts.edit_in_another_language
+        } ${locale.toUpperCase()}. ${texts.please_use_the_button}.`,
+        error: true,
+      });
+      if (checkTranslationsButtonRef.current) {
+        checkTranslationsButtonRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, []);
+  
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <form onSubmit={handleFormSubmit}>
@@ -836,6 +853,7 @@ export default function EditAccountPage({
                   variant="contained"
                   color="primary"
                   onClick={() => onClickCheckTranslations(editedAccount)}
+                  ref={checkTranslationsButtonRef}
                 >
                   {texts.check_translations}
                 </Button>

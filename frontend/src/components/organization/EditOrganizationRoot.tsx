@@ -54,7 +54,6 @@ export default function EditOrganizationRoot({
   const { locale, locales } = useContext(UserContext);
   const STEPS = ["edit_organization", "edit_translations"];
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
-
   const [editedOrganization, setEditedOrganization] = useState({ ...organization });
 
   const texts = getTexts({
@@ -215,7 +214,7 @@ export default function EditOrganizationRoot({
   return (
     <>
       {organization ? (
-        step === "edit_organization" ? (
+        step === "edit_organization" ? ( 
           <EditAccountPage
             account={organization}
             possibleAccountTypes={tagOptions}

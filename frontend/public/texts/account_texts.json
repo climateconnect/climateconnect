@@ -70,5 +70,17 @@
   "do_you_really_want_to_remove_background_image": {
     "en": "Do you really want to remove your background image?",
     "de": "Möchtest du wirklich dein Hintergrundbild entfernen?"
+  },
+  "organization_language": {
+    "en": "Your organization's language is set to",
+    "de": "Die Sprache Ihrer Organisation ist"
+  },
+  "edit_in_another_language": {
+    "en": "but you're trying to edit it in",
+    "de": "aber Sie versuchen, es zu bearbeiten in"
+  },
+  "please_use_the_button": {
+    "en": "Please use the 'Check Translations' button",
+    "de": "Bitte verwenden Sie die Schaltfläche 'Übersetzungen überprüfen'"
   }
 }

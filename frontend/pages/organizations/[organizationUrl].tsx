@@ -123,7 +123,6 @@ export default function OrganizationPage({
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization, false);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
-
   // l. 105-137 handles following Organizations
   const [numberOfFollowers, setNumberOfFollowers] = React.useState(
     organization?.number_of_followers
