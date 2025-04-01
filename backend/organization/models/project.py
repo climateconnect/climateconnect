@@ -183,6 +183,16 @@ class Project(models.Model):
         null=False,
     )
 
+    hubs = models.ManyToManyField(
+        "hubs.Hub",
+        related_name="project_hubs",
+        help_text="Hubs that the project is active in",
+        verbose_name="Hubs",
+        # hub_type: 0 reffers to SECTOR_HUB_TYPE 
+        limit_choices_to={'hub_type': 0},
+        blank=True,
+    )
+
     language = models.ForeignKey(
         Language,
         related_name="project_language",
