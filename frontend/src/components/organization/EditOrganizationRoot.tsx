@@ -214,7 +214,7 @@ export default function EditOrganizationRoot({
   return (
     <>
       {organization ? (
-        step === "edit_organization" ? ( 
+        step === "edit_organization" ? (
           <EditAccountPage
             account={organization}
             possibleAccountTypes={tagOptions}

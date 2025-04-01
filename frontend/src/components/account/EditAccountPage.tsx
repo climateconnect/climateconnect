@@ -693,7 +693,7 @@ export default function EditAccountPage({
       }
     }
   }, []);
-  
+
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <form onSubmit={handleFormSubmit}>
