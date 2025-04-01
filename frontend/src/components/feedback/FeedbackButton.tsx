@@ -56,7 +56,8 @@ export default function FeedbackButton({ justLink, children }: any) {
         token: token,
         locale: locale,
       });
-      showFeedbackMessage({
+      // ? is needed due to the context type {showFeedbackMessage?: (..) => void;}
+      showFeedbackMessage?.({
         message: response.data,
       });
     } catch (e: any) {
