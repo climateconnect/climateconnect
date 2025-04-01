@@ -97,8 +97,17 @@ const encodeQueryParamsFromFilters = ({ filters, infoMetadata, filterChoices, lo
     locale: locale,
   });
   //iterate through all possible filter keys and encode them. Don't encode unrelated query params
+
+  // this allowence of "radius" aint pretty but it works (, at least, has worked).
+  // at the time of writing, possibleFilters was used to define all used Filters, but the location filter
+  // would implement
+  const usedFilterKeys = allPossibleFilters.map((f) => f.key);
+  if (usedFilterKeys.includes("location")) {
+    usedFilterKeys.push("radius");
+  }
+
   Object.keys(filters)
-    .filter((filterKey) => allPossibleFilters.filter((f) => f.key === filterKey).length > 0)
+    .filter((filterKey) => usedFilterKeys.includes(filterKey))
     .map((filterKey) => {
       const type = infoMetadata && infoMetadata[filterKey]?.type;
       const locationFilterkeys = getLocationFilterKeys();
