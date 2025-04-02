@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import Router from "next/router";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 import { arraysEqual } from "../../../public/lib/generalOperations";
@@ -20,6 +20,7 @@ import TranslateTexts from "../general/TranslateTexts";
 import Alert from "@mui/material/Alert";
 
 import { parseOrganization } from "../../../public/lib/organizationOperations";
+import FeedbackContext from "../context/FeedbackContext";
 
 const useStyles = makeStyles((theme) => ({
   headline: {
@@ -201,6 +202,7 @@ export default function EditOrganizationRoot({
       showCharacterCounter: true,
     },
   ];
+  const checkTranslationsButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const hideGetInvolvedField =
     editedOrganization.types.map((type) => type.hide_get_involved).includes(true) ||
@@ -210,6 +212,20 @@ export default function EditOrganizationRoot({
     ? standardTextsToTranslate
     : standardTextsToTranslate.concat(getInvolvedText);
 
+  const { showFeedbackMessage } = useContext(FeedbackContext);
+    useEffect(() => {
+      if (organization.language && organization.language !== locale) {
+        showFeedbackMessage({
+          message: ` ${texts.organization_language} ${organization.language.toUpperCase()} ${
+            texts.edit_in_another_language
+          } ${locale.toUpperCase()}. ${texts.please_use_the_button}.`,
+        });
+        if (checkTranslationsButtonRef.current) {
+          checkTranslationsButtonRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    }, []);
+  
   return (
     <>
       {organization ? (
@@ -228,6 +244,7 @@ export default function EditOrganizationRoot({
             onClickCheckTranslations={onClickCheckTranslations}
             allHubs={allHubs}
             type="organization"
+            checkTranslationsRef={checkTranslationsButtonRef}
           />
         ) : (
           <>

@@ -374,5 +374,17 @@ export default function getOrganizationTexts({ organization, locale }) {
       de:
         ". Bitte trete der Organisation bei oder verwende einen anderen Namen. Falls du Probleme hast, wende dich bitte an ",
     },
+    organization_language: {
+      en: "Your organization's language is set to",
+      de: "Die Sprache Ihrer Organisation ist",
+    },
+    edit_in_another_language: {
+      en: "but you're trying to edit it in",
+      de: "aber Sie versuchen, es zu bearbeiten in",
+    },
+    please_use_the_button: {
+      en: "Please use the 'Check Translations' button",
+      de: "Bitte verwenden Sie die Schaltfläche 'Übersetzungen überprüfen'",
+    },
   };
 }

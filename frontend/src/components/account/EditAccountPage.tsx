@@ -37,8 +37,6 @@ import DetailledDescriptionInput from "./DetailledDescriptionInput";
 import SelectField from "../general/SelectField";
 import { AvatarImage, UserAvatar } from "./UserAvatar";
 import CloseIcon from "@mui/icons-material/Close";
-import FeedbackContext from "../context/FeedbackContext";
-
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
 const useStyles = makeStyles<Theme, { background_image?: string }>((theme) => ({
@@ -207,13 +205,13 @@ export default function EditAccountPage({
   onClickCheckTranslations,
   allHubs,
   type,
+  checkTranslationsRef,
 }: any) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
   const organizationTexts = getTexts({ page: "organization", locale: locale });
   const imageInputFileRef = useRef<HTMLInputElement | null>(null);
   const closeIconRef = useRef<SVGSVGElement | null>(null);
-  const checkTranslationsButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const [editedAccount, setEditedAccount] = React.useState({ ...account });
   const isOrganization = type === "organization";
@@ -678,20 +676,6 @@ export default function EditAccountPage({
     }
   };
 
-  const { showFeedbackMessage } = useContext(FeedbackContext);
-  useEffect(() => {
-    if (account.language && account.language !== locale) {
-      showFeedbackMessage({
-        message: ` ${texts.organization_language} ${account.language.toUpperCase()} ${
-          texts.edit_in_another_language
-        } ${locale.toUpperCase()}. ${texts.please_use_the_button}.`,
-      });
-      if (checkTranslationsButtonRef.current) {
-        checkTranslationsButtonRef.current.scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  }, []);
-
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <form onSubmit={handleFormSubmit}>
@@ -851,7 +835,7 @@ export default function EditAccountPage({
                   variant="contained"
                   color="primary"
                   onClick={() => onClickCheckTranslations(editedAccount)}
-                  ref={checkTranslationsButtonRef}
+                  ref={checkTranslationsRef}
                 >
                   {texts.check_translations}
                 </Button>
