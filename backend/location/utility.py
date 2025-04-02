@@ -278,21 +278,19 @@ def get_location_with_range(query_params):
         params = "&format=json&addressdetails=1&polygon_geojson=1&accept-language=en-US,en;q=0.9&polygon_threshold=0.001"
         url = url_root + osm_id_param + params
         response = requests.get(url)
-        try:
+        if response.status_code == 200:
             location_object = json.loads(response.text)[0]
-        except ValueError as e:
+        else:
             logger.error(
-                "Error while fetching location: "
-                + str(e)
-                + "\nresponse:"
-                + response.text
+                "Error while fetching location: " + "\nresponse:" + response.text
             )
 
             # try to use the location within the query params (provided by the client via the post request)
             # as a backup if the location could not be fetched from the api
             if "location" not in query_params:
                 raise ValidationError(
-                    "Error while fetching location and no backup: " + str(e)
+                    f"Error while fetching location and no backup option: {response.status_code} | "
+                    + response.text
                 )
 
             location_object = query_params.get("location")
