@@ -680,12 +680,11 @@ export default function EditAccountPage({
 
   const { showFeedbackMessage } = useContext(FeedbackContext);
   useEffect(() => {
-    if (account.language !== locale) {
+    if (account.language && account.language !== locale) {
       showFeedbackMessage({
         message: ` ${texts.organization_language} ${account.language.toUpperCase()} ${
           texts.edit_in_another_language
         } ${locale.toUpperCase()}. ${texts.please_use_the_button}.`,
-        error: true,
       });
       if (checkTranslationsButtonRef.current) {
         checkTranslationsButtonRef.current.scrollIntoView({ behavior: "smooth" });
