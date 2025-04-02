@@ -4,7 +4,7 @@ import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-
+import { useRouter } from "next/router";
 const useStyles = makeStyles((theme) => {
   return {
     loginNudge: {
@@ -23,12 +23,17 @@ type Props = {
   fullPage?: boolean;
   className?: string;
 };
+
 export default function LoginNudge({ whatToDo, fullPage, className }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
   const urlParams = new URLSearchParams(window.location.search);
   const hub = urlParams.get("hub");
+  const router = useRouter();
+  const currentPath = router.asPath;
+  const encodedRedirectUrl = encodeURIComponent(currentPath);
+
   return (
     <div className={`${fullPage && classes.loginNudge} ${className}`}>
       <Typography className={fullPage ? classes.loginNudgeText : undefined}>
@@ -36,7 +41,7 @@ export default function LoginNudge({ whatToDo, fullPage, className }: Props) {
         <Link
           underline="always"
           color="primary"
-          href={`${getLocalePrefix(locale)}/signin${hub ? `?hub=${hub}` : ""}`}
+          href={`${getLocalePrefix(locale)}/signin?redirect=${encodedRedirectUrl}`}
         >
           {texts.log_in}
         </Link>{" "}
@@ -44,7 +49,7 @@ export default function LoginNudge({ whatToDo, fullPage, className }: Props) {
         <Link
           underline="always"
           color="primary"
-          href={`${getLocalePrefix(locale)}/signup${hub ? `?hub=${hub}` : ""}`}
+          href={`${getLocalePrefix(locale)}/signup?redirect=${encodedRedirectUrl}`}
         >
           {texts.sign_up}
         </Link>{" "}
