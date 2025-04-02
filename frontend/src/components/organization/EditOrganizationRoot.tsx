@@ -213,19 +213,19 @@ export default function EditOrganizationRoot({
     : standardTextsToTranslate.concat(getInvolvedText);
 
   const { showFeedbackMessage } = useContext(FeedbackContext);
-    useEffect(() => {
-      if (organization.language && organization.language !== locale) {
-        showFeedbackMessage({
-          message: ` ${texts.organization_language} ${organization.language.toUpperCase()} ${
-            texts.edit_in_another_language
-          } ${locale.toUpperCase()}. ${texts.please_use_the_button}.`,
-        });
-        if (checkTranslationsButtonRef.current) {
-          checkTranslationsButtonRef.current.scrollIntoView({ behavior: "smooth" });
-        }
+  useEffect(() => {
+    if (organization.language && organization.language !== locale) {
+      showFeedbackMessage({
+        message: ` ${texts.organization_language} ${organization.language.toUpperCase()} ${
+          texts.edit_in_another_language
+        } ${locale.toUpperCase()}. ${texts.please_use_the_button}.`,
+      });
+      if (checkTranslationsButtonRef.current) {
+        checkTranslationsButtonRef.current.scrollIntoView({ behavior: "smooth" });
       }
-    }, []);
-  
+    }
+  }, []);
+
   return (
     <>
       {organization ? (
