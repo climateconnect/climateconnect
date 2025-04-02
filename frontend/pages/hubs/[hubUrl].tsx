@@ -290,6 +290,7 @@ export default function Hub({
               initialLocationFilter={initialLocationFilter}
               locale={locale}
               token={token}
+              hubUrl={hubUrl}
             >
               <BrowseContent
                 contentRef={contentRef}
