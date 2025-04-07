@@ -35,7 +35,7 @@ export default function LoginNudge({ whatToDo, fullPage, className }: Props) {
   const currentPath = router.asPath;
   const encodedRedirectUrl = encodeURIComponent(currentPath);
   const hubUrl = extractHubFromUrl(currentPath);
-  
+
   return (
     <div className={`${fullPage && classes.loginNudge} ${className}`}>
       <Typography className={fullPage ? classes.loginNudgeText : undefined}>

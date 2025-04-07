@@ -67,8 +67,7 @@ const ContentImageSplitView: React.FC<ContentImageSplitViewProps> = ({
 
       {/* image pane */}
       {!rightPaneHidden && (
-
-      // TODO: using classes instead of inline-style
+        // TODO: using classes instead of inline-style
         <Grid item md={5} {...rightGridSizes} style={{ display: "flex" }}>
           {image}
         </Grid>

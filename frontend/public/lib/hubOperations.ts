@@ -31,4 +31,4 @@ export function extractHubFromUrl(redirectUrl) {
     return hubQueryMatch[1];
   }
   return null;
- }
+}
