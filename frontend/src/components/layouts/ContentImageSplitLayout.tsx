@@ -46,6 +46,7 @@ const ContentImageSplitView: React.FC<ContentImageSplitViewProps> = ({
     <Grid
       container
       spacing={2}
+      // TODO: using classes instead of inline-style
       style={{
         alignContent: "center",
         justifyContent: "center",
@@ -66,6 +67,8 @@ const ContentImageSplitView: React.FC<ContentImageSplitViewProps> = ({
 
       {/* image pane */}
       {!rightPaneHidden && (
+
+      // TODO: using classes instead of inline-style
         <Grid item md={5} {...rightGridSizes} style={{ display: "flex" }}>
           {image}
         </Grid>

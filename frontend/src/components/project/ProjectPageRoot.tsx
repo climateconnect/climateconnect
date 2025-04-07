@@ -2,7 +2,7 @@ import { backdropClasses, Container, Tab, Tabs, Typography, useTheme } from "@mu
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { useLongPress } from "use-long-press";
@@ -257,9 +257,16 @@ export default function ProjectPageRoot({
     return discussionLabel;
   };
 
+  const router = useRouter();
   const handleTabChange = (event, newValue) => {
     if (newValue === 0) window.location.hash = "";
-    else window.location.hash = typesByTabValue[newValue];
+    else {
+      router.push(`#${typesByTabValue[newValue]}`, undefined, {
+        //as: undefined --> we’re not changing the as value
+        // shallow: true --> Update the path of the current page without rerunning getStaticProps, getServerSideProps or getInitialProps.
+        shallow: true,
+      });
+    }
     setTabValue(newValue);
   };
 

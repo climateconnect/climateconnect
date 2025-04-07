@@ -8,16 +8,14 @@ import WideLayout from "../src/components/layouts/WideLayout";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
 import AccountCreatedContent from "../src/components/signup/AccountCreatedContent";
-import { extractHubFromRedirectUrl } from "../public/lib/hubOperations";
 
 export async function getServerSideProps(ctx) {
-  const { redirect } = ctx.query;
-  const hubUrl = extractHubFromRedirectUrl(redirect);
-  const hubThemeData = hubUrl ? await getHubTheme(hubUrl) : null; // undefined is not allowed in JSON, so we use null
+  const { hub } = ctx.query;
+  const hubThemeData = hub ? await getHubTheme(hub) : null; // undefined is not allowed in JSON, so we use null
 
   return {
     props: {
-      hubUrl: hubUrl,
+      hubUrl: hub || null,
       hubThemeData: hubThemeData,
     },
   };

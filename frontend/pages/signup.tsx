@@ -21,16 +21,14 @@ import { Container, Theme, useMediaQuery } from "@mui/material";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
 import CustomAuthImage from "../src/components/hub/CustomAuthImage";
-import { extractHubFromRedirectUrl } from "../public/lib/hubOperations";
 
 export async function getServerSideProps(ctx) {
-  const { redirect } = ctx.query;
-  const hubUrl = extractHubFromRedirectUrl(redirect);
-  const hubThemeData = hubUrl ? await getHubTheme(hubUrl) : null;
+  const { hub } = ctx.query;
+  const hubThemeData = hub ? await getHubTheme(hub) : null;
 
   return {
     props: {
-      hubUrl: hubUrl,
+      hubUrl: hub || null, // undefined is not allowed in JSON, so we use null
       hubThemeData: hubThemeData,
     },
   };
@@ -127,10 +125,9 @@ export default function Signup({ hubUrl, hubThemeData }) {
       pathname: "/accountcreated/",
       query: {},
     };
-    if (params?.redirect) {
+    if (hubUrl) {
       args.query = {
-        // hub: hubUrl,
-        redirect: decodeURIComponent(params?.redirect),
+        hub: hubUrl,
       };
     }
     setIsLoading(true);
