@@ -45,7 +45,6 @@ const useStyles = makeStyles((theme) => ({
 export default function EventDateIndicator({ project, hubUrl }) {
   const { CUSTOM_HUB_URLS } = useContext(UserContext);
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
-
   const start_date = new Date(project.start_date);
   const end_date = new Date(project.end_date);
   const classes = useStyles({ isInPast: new Date() > end_date, isCustomHub });

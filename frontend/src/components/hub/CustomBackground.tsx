@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: -1,
+    zIndex: -10,
     overflow: "hidden",
   },
 
@@ -36,9 +36,12 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   prioOneMobileBackground: {
-    backgroundColor: theme.palette.secondary.light,
+    backgroundColor: theme.palette.background.main,
   },
   prioOneAccentBackground: {
+    backgroundColor: theme.palette.secondary.light,
+  },
+  prioOneAccentBackgroundBorderLeft: {
     borderLeftColor: theme.palette.secondary.light,
   },
 }));
@@ -54,10 +57,9 @@ type Props = { hubUrl: string | undefined };
  * @param hubUrl The URL of the hub.
  *
  */
-export default function CustomBackground({ hubUrl }: Props) {
-  const mobileScreenSize = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+export function CustomBackground({ hubUrl }: Props) {
+  const mobileScreenSize = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
-  // TODO: mobileScreenSize is not yet supported
   if (!hubUrl) {
     return null;
   }
@@ -66,12 +68,9 @@ export default function CustomBackground({ hubUrl }: Props) {
   switch (hubUrl.toLowerCase()) {
     case "prio1": {
       if (pathname.endsWith("/hubs/prio1")) {
-        if (mobileScreenSize) {
-          return null;
-        }
+        // HubContent itself includes the background in the correct place.
+        // There is no background for the whole page needed. Therefore, return null in this case.
         return null;
-        //temporarily disabled
-        //return <PrioOneBackgroundBrowse />;
       } else if (
         pathname.endsWith("/signup") ||
         pathname.endsWith("/signin") ||
@@ -87,40 +86,58 @@ export default function CustomBackground({ hubUrl }: Props) {
   }
 }
 
-function PrioOneBackgroundBrowse() {
-  const { user } = useContext(UserContext);
-  const loggedIn = !!user;
+export function PrioOneBackgroundBrowse({ isLoggedInUser }: { isLoggedInUser: boolean }) {
   const classes = useStyles();
-  const height = loggedIn ? 30 : 55.1;
-  const width = 100;
-  const triangleBottom = width * 0.5;
-  const triangleLeft = width * 3;
+  const largeScreenSize = useMediaQuery("(max-width: 1300px)");
 
   return (
-    <div
-      className={`${classes.background} ${classes.prioOneDefaultBackground}`}
-      style={{ bottom: "auto", height: `${height}vh` }}
-    >
-      {/* Container within the background */}
-      <div style={{ position: "relative" }}>
-        {/* Upper triangle */}
+    <div className={`${classes.background} ${classes.prioOneDefaultBackground}`}>
+      {/* upper triangle (top left corner) - actually it is a trapezoid */}
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+
+          // Note: clipPath is needed with the traditional way the percentages
+          // are not supported:
+          // boorderBottom: "100% solid blue"
+          clipPath: "polygon(0% 100%, 100% 55%, 100% 0%, 0% 0%)",
+        }}
+        className={classes.prioOneAccentBackground}
+      />
+      {!isLoggedInUser && !largeScreenSize && (
         <div
           style={{
-            width: 0,
-            height: 0,
-            borderBottom: `${triangleBottom}vh` + " solid transparent",
-            borderLeftWidth: `${triangleLeft}vh`,
-            borderLeftStyle: "solid",
-
             position: "absolute",
-            top: 0,
-            left: 0,
-            transform: "rotate(0deg)",
+            top: "25%",
+            right: "0.5vw",
+            width: "11rem",
+            height: "11rem",
           }}
-          className={classes.prioOneAccentBackground}
-        />
-      </div>
+        >
+          <Image src={"/images/custom_hubs/" + PRIO1_SLUG + "_group.svg"} layout="fill"></Image>
+        </div>
+      )}
     </div>
+  );
+}
+
+export function PrioOneBackgroundBrowseIcon() {
+  const largeScreenSize = useMediaQuery((theme: Theme) => theme.breakpoints.down("lg"));
+
+  let width = 160;
+  let height = 160;
+  if (largeScreenSize) {
+    width = 130;
+    height = 130;
+  }
+
+  return (
+    <Image
+      src={"/images/custom_hubs/" + PRIO1_SLUG + "_group.svg"}
+      width={width}
+      height={height}
+    ></Image>
   );
 }
 
@@ -135,7 +152,7 @@ function PrioOneBackgroundAuth({ mobileScreenSize }) {
       <div style={{ position: "relative" }}>
         {/* Upper triangle */}
         <div
-          className={classes.prioOneAccentBackground}
+          className={classes.prioOneAccentBackgroundBorderLeft}
           style={{
             width: 0,
             height: 0,

@@ -86,6 +86,9 @@ const useStyles = makeStyles((theme) => {
         marginTop: theme.spacing(2),
       },
     },
+    title: {
+      color: theme.palette.background.default_contrastText,
+    },
   };
 });
 
@@ -140,12 +143,12 @@ export default function ProfileRoot({
       scrollDownSmooth(ideasRef);
     }
   }, []);
-
+  const queryString = hubUrl ? `?hub=${hubUrl}` : "";
   return (
     <AccountPage
       account={profile}
       default_background={DEFAULT_BACKGROUND_IMAGE}
-      editHref={`${getLocalePrefix(locale)}/editprofile${hubUrl ? `?hub=${hubUrl}` : ""}`}
+      editHref={`${getLocalePrefix(locale)}/editprofile${queryString}`}
       isOwnAccount={isOwnAccount}
       isOrganization={false}
       infoMetadata={infoMetadata}
@@ -164,14 +167,11 @@ export default function ProfileRoot({
       )}
       <Container className={classes.container} ref={projectsRef}>
         <div className={classes.sectionHeadlineWithButtonContainer}>
-          <h2 className={classes.sectionHeadline}>
+          <h2 className={classes.title}>
             {isOwnAccount ? texts.your_projects : texts.this_users_projects}
           </h2>
           {isTinyScreen ? (
-            <IconButton
-              href={`${getLocalePrefix(locale)}/share${hubUrl ? `?hub=${hubUrl}` : ""}`}
-              size="large"
-            >
+            <IconButton href={`${getLocalePrefix(locale)}/share${queryString}`} size="large">
               <ControlPointSharpIcon
                 className={classes.button}
                 variant="contained"
@@ -182,7 +182,7 @@ export default function ProfileRoot({
             <Button
               variant="contained"
               color="primary"
-              href={`${getLocalePrefix(locale)}/share${hubUrl ? `?hub=${hubUrl}` : ""}`}
+              href={`${getLocalePrefix(locale)}/share${queryString}`}
             >
               <ControlPointSharpIcon className={classes.innerIcon} />
               {texts.share_a_project}
@@ -190,7 +190,7 @@ export default function ProfileRoot({
           )}
         </div>
         {projects && projects.length ? (
-          <ProjectPreviews projects={projects} />
+          <ProjectPreviews projects={projects} hubUrl={hubUrl} />
         ) : (
           <Typography>
             {(isOwnAccount ? texts.you_are : texts.user_name_is) +
@@ -202,7 +202,7 @@ export default function ProfileRoot({
       {(isOwnAccount || (ideas && ideas.length > 0)) && (
         <Container className={classes.container} ref={ideasRef}>
           <div className={classes.sectionHeadlineWithButtonContainer}>
-            <h2 className={classes.sectionHeadline}>
+            <h2 className={classes.title}>
               {isOwnAccount ? texts.your_ideas : texts.this_users_ideas}
             </h2>
           </div>
@@ -219,14 +219,12 @@ export default function ProfileRoot({
       )}
       <Container className={classes.container} ref={organizationsRef}>
         <div className={classes.sectionHeadlineWithButtonContainer}>
-          <h2 className={classes.sectionHeadline}>
+          <h2 className={classes.title}>
             {isOwnAccount ? texts.your_organizations : texts.this_users_organizations}
           </h2>
           {isTinyScreen ? (
             <IconButton
-              href={`${getLocalePrefix(locale)}/createorganization${
-                hubUrl ? `?hub=${hubUrl}` : ""
-              }`}
+              href={`${getLocalePrefix(locale)}/createorganization${queryString}`}
               size="large"
             >
               <ControlPointSharpIcon
@@ -239,9 +237,7 @@ export default function ProfileRoot({
             <Button
               variant="contained"
               color="primary"
-              href={`${getLocalePrefix(locale)}/createorganization${
-                hubUrl ? `?hub=${hubUrl}` : ""
-              }`}
+              href={`${getLocalePrefix(locale)}/createorganization${queryString}`}
             >
               <ControlPointSharpIcon className={classes.innerIcon} />
               {texts.create_an_organization}
@@ -249,7 +245,7 @@ export default function ProfileRoot({
           )}
         </div>
         {organizations && organizations.length > 0 ? (
-          <OrganizationPreviews organizations={organizations} />
+          <OrganizationPreviews organizations={organizations} hubUrl={hubUrl} />
         ) : (
           <Typography>
             {(isOwnAccount ? texts.you_are : texts.user_name_is) +

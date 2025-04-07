@@ -243,6 +243,22 @@ class Hub(models.Model):
         upload_to=hub_footer_image_path,
     )
 
+    from_email = models.CharField(
+        help_text="Email address from which emails relating this hub are sent",
+        verbose_name="From Email address (e.g. noreply@climateconnect.earth)",
+        max_length=128,
+        null=True,
+        blank=True,
+    )
+
+    email_sender_name = models.CharField(
+        help_text="Name in which emails related to this hub should be sent (e.g. Climate Connect)",
+        verbose_name="Email Sender Name",
+        max_length=128,
+        null=True,
+        blank=True,
+    )
+
     class Meta:
         app_label = "hubs"
         verbose_name = "Hub"
@@ -421,7 +437,6 @@ class HubThemeColor(models.Model):
         verbose_name_plural = "Hub Theme Color"
 
     def __str__(self):
-
         related_themes = HubTheme.objects.filter(
             Q(primary=self) | Q(secondary=self) | Q(background_default=self)
         )

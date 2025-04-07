@@ -16,9 +16,10 @@ from climateconnect_api.models.notification import (
 from climateconnect_api.utility.notification import (
     create_user_notification,
     send_comment_notification,
-    send_out_live_notification,
+    # send_out_live_notification,
     create_follower_notification,
 )
+from organization.utility.project import get_common_related_hub
 from django.contrib.auth.models import User
 from organization.models import ProjectMember
 from organization.models.content import ProjectComment
@@ -83,7 +84,8 @@ def create_comment_mention_notification(entity_type, entity, comment, sender):
         if not url_slug == sender_url_slug:
             user = UserProfile.objects.filter(url_slug=url_slug)[0].user
             create_user_notification(user, notification)
-            send_out_live_notification(user.id)
+            # send_out_live_notification(user.id)
+            common_hub_url = get_common_related_hub(user, entity)
             send_mention_email(
                 user=user,
                 entity_type=entity_type,
@@ -91,6 +93,7 @@ def create_comment_mention_notification(entity_type, entity, comment, sender):
                 comment=comment.content,
                 sender=sender,
                 notification=notification,
+                hub_url=common_hub_url,
             )
     return notification
 
@@ -125,8 +128,12 @@ def create_organization_project_published_notification(
             org_project_published=org_project_published,
         )
         create_user_notification(org_project_published.user, notification)
+        common_hub_url = get_common_related_hub(follower.user, project)
         send_org_project_published_email(
-            org_project_published.user, org_project_published, notification
+            user=org_project_published.user,
+            org_project_published=org_project_published,
+            notification=notification,
+            hub_url=common_hub_url,
         )
 
 
@@ -150,7 +157,14 @@ def create_project_join_request_notification(
 
     for project_admin in project_admins:
         create_user_notification(project_admin, notification)
-        send_join_project_request_email(project_admin, request, requester, notification)
+        common_hub_url = get_common_related_hub(project_admin, project)
+        send_join_project_request_email(
+            user=project_admin,
+            request=request,
+            requester=requester,
+            notification=notification,
+            hub_url=common_hub_url,
+        )
 
     return
 
@@ -180,5 +194,6 @@ def create_project_like_notification(project_like):
     for member in project_team:
         if not member["user"] == project_like.user.id:
             user = User.objects.get(id=member["user"])
+            common_hub_url = get_common_related_hub(user, project_like.project)
             create_user_notification(user, notification)
-            send_project_like_email(user, project_like, notification)
+            send_project_like_email(user, project_like, notification, common_hub_url)

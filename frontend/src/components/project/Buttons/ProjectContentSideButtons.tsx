@@ -71,10 +71,13 @@ export default function ProjectContentSideButtons({
   handleSendProjectJoinRequest,
   requestedToJoinProject,
   leaveProject,
+  hubUrl,
 }) {
   const token = new Cookies().get("auth_token");
   const classes = useStyles();
-  const { user, locale } = useContext(UserContext);
+  const { user, locale, CUSTOM_HUB_URLS } = useContext(UserContext);
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
+
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -88,6 +91,8 @@ export default function ProjectContentSideButtons({
 
   const [requesters, setRequesters] = useState([]);
   const [requestersRetrieved, setRequestersRetrieved] = useState(false);
+  const queryString = hubUrl ? `?hub=${hubUrl}` : "";
+
   // Fetch and populate requesters on initial load
   useEffect(() => {
     (async () => {
@@ -140,13 +145,13 @@ export default function ProjectContentSideButtons({
     }
   };
 
-  const EditProjectButton = () => {
+  const EditProjectButton = ({ isCustomHub }) => {
     if (isNarrowScreen) {
       return (
         <IconButton
           size="large"
           className={classes.iconButton}
-          href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
+          href={getLocalePrefix(locale) + "/editProject/" + project.url_slug + queryString}
         >
           <EditIcon />
         </IconButton>
@@ -156,7 +161,7 @@ export default function ProjectContentSideButtons({
         <Button
           className={classes.editProjectButton}
           variant="contained"
-          href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
+          href={getLocalePrefix(locale) + "/editProject/" + project.url_slug + queryString}
         >
           {project.is_draft ? texts.edit_draft : texts.edit}
         </Button>
@@ -192,7 +197,7 @@ export default function ProjectContentSideButtons({
             <>
               {/* Badge is dynamic based on the number of membership requesters */}
               <ShowRequestsButton />
-              <EditProjectButton />
+              <EditProjectButton isCustomHub={isCustomHub} />
             </>
           )}
           {/* Otherwise if not a project admin, just show the Leave Project button */}

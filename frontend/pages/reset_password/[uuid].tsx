@@ -3,21 +3,40 @@ import { apiRequest, getLocalePrefix, redirect } from "../../public/lib/apiOpera
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
 import Form from "../../src/components/general/Form";
-import Layout from "../../src/components/layouts/layout";
+import makeStyles from "@mui/styles/makeStyles";
+import getHubTheme from "../../src/themes/fetchHubTheme";
+import WideLayout from "../../src/components/layouts/WideLayout";
+import { Link, Typography } from "@mui/material";
+import { transformThemeData } from "../../src/themes/transformThemeData";
+
+const useStyles = makeStyles((theme) => ({
+  headline: {
+    marginTop: theme.spacing(8),
+    marginBottom: theme.spacing(4),
+    textAlign: "center",
+    color: theme.palette.text.primary,
+  },
+}));
 
 export async function getServerSideProps(ctx) {
   const uuid = encodeURI(ctx.query.uuid);
+  const hubUrl = ctx.query.hub;
+  const hubThemeData = await getHubTheme(hubUrl);
+
   return {
     props: {
       uuid: uuid,
+      hubUrl: hubUrl || null, // undefined is not allowed in JSON, so we use null
+      hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
     },
   };
 }
 
-export default function ResetPassword({ uuid }) {
+export default function ResetPassword({ uuid, hubUrl, hubThemeData }) {
   const [errorMessage, setErrorMessage] = React.useState(null);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "settings", locale: locale });
+  const classes = useStyles();
 
   const fields = [
     {
@@ -42,23 +61,34 @@ export default function ResetPassword({ uuid }) {
     event.preventDefault();
     if (values.password !== values.repeatpassword) setErrorMessage(texts.passwords_dont_match);
     else {
-      requestSetPassword(uuid, values.password, setErrorMessage, texts, locale);
+      requestSetPassword(uuid, values.password, setErrorMessage, texts, locale, hubUrl);
     }
   };
 
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+
   return (
-    <Layout title={texts.set_a_new_password}>
+    <WideLayout
+      title={texts.set_a_new_password}
+      isHubPage={hubUrl !== ""}
+      customTheme={customTheme}
+      hubUrl={hubUrl}
+      headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
+    >
+      <Typography className={classes.headline} variant="h3">
+        {texts.set_a_new_password}
+      </Typography>
       <Form
         fields={fields}
         messages={messages}
         onSubmit={handleSubmit}
         errorMessage={errorMessage}
       />
-    </Layout>
+    </WideLayout>
   );
 }
 
-async function requestSetPassword(uuid, new_password, setErrorMessage, texts, locale) {
+async function requestSetPassword(uuid, new_password, setErrorMessage, texts, locale, hubUrl) {
   const payload = {
     password_reset_key: uuid,
     new_password: new_password,
@@ -75,9 +105,15 @@ async function requestSetPassword(uuid, new_password, setErrorMessage, texts, lo
       headers: headers,
       locale: locale,
     });
-    redirect("/browse", {
-      message: response.data.message,
-    });
+    if (hubUrl) {
+      redirect(`/hubs/${hubUrl}`, {
+        message: response.data.message,
+      });
+    } else {
+      redirect("/browse", {
+        message: response.data.message,
+      });
+    }
   } catch (error) {
     if (error.response && error.response.data) {
       if (error.response.data.type)
@@ -85,9 +121,11 @@ async function requestSetPassword(uuid, new_password, setErrorMessage, texts, lo
           <span>
             {error.response.data.message}{" "}
             <div>
-              <a href={getLocalePrefix(locale) + "/resetpassword"}>
+              <Link
+                href={`${getLocalePrefix(locale)}/resetpassword${hubUrl ? `?hub=${hubUrl}` : ""}`}
+              >
                 {texts.click_here_to_get_another_password_reset_email}
-              </a>
+              </Link>
             </div>
           </span>
         );

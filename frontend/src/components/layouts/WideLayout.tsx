@@ -11,7 +11,7 @@ import Header from "../header/Header";
 import ElementSpaceToTop from "../hooks/ElementSpaceToTop";
 import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
 import LayoutWrapper from "./LayoutWrapper";
-import CustomBackground from "../hub/CustomBackground";
+import { CustomBackground } from "../hub/CustomBackground";
 
 type ThemeProps = { noSpaceBottom?: boolean; isStaticPage?: boolean };
 const useStyles = makeStyles<Theme, ThemeProps>((theme) => ({
@@ -67,6 +67,7 @@ type Props = {
   noHeader?: boolean;
   footerTextColor?: string;
   customTheme?: any;
+  hideAlert?: boolean;
 };
 //Wrapper layout component for pages where the content takes the whole width of the screen
 export default function WideLayout({
@@ -99,9 +100,10 @@ export default function WideLayout({
   noHeader,
   footerTextColor,
   customTheme,
+  hideAlert,
 }: Props) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
-  const [alertOpen, setAlertOpen] = React.useState(true);
+  const [alertOpen, setAlertOpen] = React.useState(hideAlert ? false : true);
   const [initialMessageType, setInitialMessageType] = React.useState(null as any);
   const [initialMessage, setInitialMessage] = React.useState("");
   const [alertEl, setAlertEl] = React.useState(null);
@@ -121,7 +123,7 @@ export default function WideLayout({
     }, 3000);
   }, []);
   useEffect(() => {
-    setAlertOpen(true);
+    !hideAlert && setAlertOpen(true);
   }, [message]);
 
   return (

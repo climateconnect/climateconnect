@@ -549,6 +549,7 @@ export default function ProjectPageRoot({
             toggleShowRequests={toggleShowRequests}
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
             requestedToJoinProject={requestedToJoinProject}
+            hubUrl={hubPage}
           />
         </TabContent>
         <TabContent value={tabValue} index={1}>
@@ -556,6 +557,7 @@ export default function ProjectPageRoot({
             project={project}
             handleReadNotifications={handleReadNotifications}
             leaveProject={requestLeaveProject}
+            hubUrl={hubPage}
           />
         </TabContent>
 
@@ -565,6 +567,7 @@ export default function ProjectPageRoot({
             user={user}
             token={token}
             setCurComments={setCurComments}
+            hubUrl={hubPage}
           />
         </TabContent>
         {screenSize.betweenTinyAndLarg && (

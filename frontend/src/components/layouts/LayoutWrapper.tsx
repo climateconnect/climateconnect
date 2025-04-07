@@ -1,11 +1,4 @@
-import {
-  CircularProgress,
-  Snackbar,
-  SnackbarContent,
-  Theme,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Snackbar, SnackbarContent, Theme, useMediaQuery } from "@mui/material";
 
 import makeStyles from "@mui/styles/makeStyles";
 import { ThemeProvider } from "@mui/material/styles";
@@ -30,7 +23,7 @@ const useStyles = makeStyles<Theme>((theme) => ({
   leaveSpaceForFooter: {
     position: "relative",
     //height of footer + spacing(1)
-    paddingBottom: theme.spacing(9),
+    paddingBottom: theme.spacing(12),
     minHeight: "100vh",
   },
   spinnerContainer: {

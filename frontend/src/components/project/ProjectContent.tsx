@@ -51,9 +51,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginBottom: -6,
     paddingRight: theme.spacing(0.5),
   },
-  statusContainer: {
-    marginTop: theme.spacing(2),
-  },
   subHeader: {
     fontWeight: "bold",
     paddingBottom: theme.spacing(1),
@@ -76,6 +73,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: 600,
     marginTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
+    color: theme?.palette?.background?.default_contrastText,
   },
   contentBlock: {
     marginBottom: theme.spacing(4),
@@ -96,7 +94,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         position: "absolute",
         top: 0,
         left: 0,
-        color: theme.palette.primary.main,
+        color: theme?.palette?.background?.default_contrastText,
       },
     },
   },
@@ -150,11 +148,11 @@ export default function ProjectContent({
   toggleShowRequests,
   handleSendProjectJoinRequest,
   requestedToJoinProject,
+  hubUrl,
 }) {
   const classes = useStyles({ isPersonalProject: project.isPersonalProject });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
-
   const [showFullDescription, setShowFullDescription] = useState(false);
   const handleToggleFullDescriptionClick = () => setShowFullDescription(!showFullDescription);
 
@@ -204,6 +202,7 @@ export default function ProjectContent({
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
             requestedToJoinProject={requestedToJoinProject}
             leaveProject={leaveProject}
+            hubUrl={hubUrl}
           />
           {/* Note: created date is not the same as the start date, for projects */}
           <Typography>
@@ -236,6 +235,7 @@ export default function ProjectContent({
                     organization={project.creator}
                     inline
                     size="small"
+                    hubUrl={hubUrl}
                   />
                 )}
               </Typography>
@@ -260,24 +260,31 @@ export default function ProjectContent({
                     inline
                     className={classes.collaboratingOrganization}
                     organization={o}
+                    hubUrl={hubUrl}
                   />
                 ))}
               </div>
             )}
           </div>
-          {project.end_date && project.status.key === "finished" && (
-            <Typography>
-              {texts.finished} <TimeAgo date={new Date(project.end_date)} />. {texts.total_duration}
-              :{" "}
-              {humanizeDuration(new Date(project.end_date) - new Date(project.start_date), {
-                largest: 1,
-                language: locale,
-              })}
-            </Typography>
-          )}
-          {project.end_date && project.status.key === "cancelled" && (
-            <Typography>{texts.cancelled} :(</Typography>
-          )}
+          {
+            // TODO: update remove
+            project.end_date && project.status.key === "finished" && (
+              <Typography>
+                {texts.finished} <TimeAgo date={new Date(project.end_date)} />.{" "}
+                {texts.total_duration}:{" "}
+                {humanizeDuration(new Date(project.end_date) - new Date(project.start_date), {
+                  largest: 1,
+                  language: locale,
+                })}
+              </Typography>
+            )
+          }
+          {
+            // TODO: update remove
+            project.end_date && project.status.key === "cancelled" && (
+              <Typography>{texts.cancelled} :(</Typography>
+            )
+          }
         </div>
       </div>
       <div className={classes.contentBlock}>
@@ -326,6 +333,7 @@ export default function ProjectContent({
           handleTabChange={handleTabChange}
           typesByTabValue={typesByTabValue}
           projectTabsRef={projectTabsRef}
+          hubUrl={hubUrl}
         />
       )}
       <div className={classes.contentBlock}>
@@ -362,6 +370,7 @@ export default function ProjectContent({
             <Posts
               posts={project.timeline_posts.sort((a, b) => new Date(b.date) - new Date(a.date))}
               type="progresspost"
+              hubUrl={hubUrl}
             />
           </div>
         )}

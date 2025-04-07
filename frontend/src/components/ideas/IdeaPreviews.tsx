@@ -56,6 +56,7 @@ export default function IdeaPreviews({
   noCreateCard,
   sendToIdeaPageOnClick,
   resetTabsWhereFiltersWereApplied,
+  hubUrl,
 }: any) {
   const classes = useStyles();
   const [gridItems, setGridItems] = React.useState(
@@ -115,6 +116,7 @@ export default function IdeaPreviews({
             hubLocation={hubLocation}
             hubData={hubData}
             resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
+            hubUrl={hubUrl}
           />
         )}
         {parentHandlesGridItems

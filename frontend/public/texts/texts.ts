@@ -115,7 +115,7 @@ export default function getTexts<P extends Page>({
     navigation: navigation_texts,
     notification: getNotificationTexts({ idea: idea, project: project }),
     organization: getOrganizationTexts({ organization: organization, locale: locale }),
-    profile: getProfileTexts({ profile: profile, locale: locale }),
+    profile: getProfileTexts({ profile: profile, locale: locale, hubName: hubName }),
     project: getProjectTexts({
       project: project,
       user: user,

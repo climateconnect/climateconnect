@@ -54,6 +54,7 @@ export default function Signin({ hubSlug, hubThemeData, message, message_type })
   const { user, signIn, locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubSlug });
   const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
+  const mobileScreenSize = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const fields = [
     {
@@ -110,6 +111,8 @@ export default function Signin({ hubSlug, hubThemeData, message, message_type })
 
         redirectUrl += decodedRedirect;
         setRedirectUrl(redirectUrl);
+      } else if (params.hub) {
+        setRedirectUrl(getLocalePrefix(locale) + "/hubs/" + params.hub);
       }
       setInitialized(true);
       //TODO: remove router
@@ -153,15 +156,15 @@ export default function Signin({ hubSlug, hubThemeData, message, message_type })
   return (
     <WideLayout
       title={texts.log_in}
-      //message={errorMessage}
+      //message={errorMessage}z
       //messageType={errorMessage && "error"}
       messageType={message_type ? message_type : "error"}
       isLoading={isLoading}
       customTheme={customTheme}
       isHubPage={hubSlug !== ""}
       hubUrl={hubSlug}
-      headerBackground="transparent"
-      footerTextColor={hubSlug && "white"}
+      headerBackground={hubSlug === "prio1" && mobileScreenSize ? "#7883ff" : "transparent"}
+      footerTextColor={hubSlug && !mobileScreenSize && "white"}
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>
         <ThemeProvider theme={customThemeSignIn}>

@@ -42,6 +42,7 @@ export default function SocialMediaShareButton({
   texts,
   dialogTitle,
   switchColors,
+  hubUrl,
 }: SocialMediaShareButtonProps) {
   const classes = useStyles({ switchColors: switchColors });
   const { locale } = useContext(UserContext);
@@ -49,7 +50,6 @@ export default function SocialMediaShareButton({
   const token = cookies.get("token");
   const isTinyScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
-
   const [showSocials, setShowSocials] = React.useState(false);
   const toggleShowSocials = (value) => {
     setShowSocials(value);
@@ -90,8 +90,9 @@ export default function SocialMediaShareButton({
     native_share_dialog_of_device: 9,
   };
 
-  const BASE_URL = process.env.BASE_URL ? process.env.BASE_URL : "https://climateconnect.earth";
-  const contentLink = BASE_URL + contentLinkPath;
+  const queryString = hubUrl ? `?hub=${hubUrl}` : "";
+  const BASE_URL = process.env.BASE_URL ? process.env.BASE_URL : `https://climateconnect.earth`;
+  const contentLink = BASE_URL + contentLinkPath + queryString;
 
   const handleClick = () => {
     //navigator.share (Web Share API) is only available with https

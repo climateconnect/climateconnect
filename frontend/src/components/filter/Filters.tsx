@@ -7,6 +7,7 @@ import UserContext from "../context/UserContext";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import SelectField from "../general/SelectField";
 import LocationSearchBar from "../search/LocationSearchBar";
+import { FilterContext } from "../context/FilterContext";
 
 const useStyles = makeStyles<Theme, { filterElementMargin: number; justifyContent: any }>(
   (theme) => {
@@ -82,7 +83,6 @@ const useStyles = makeStyles<Theme, { filterElementMargin: number; justifyConten
 );
 
 export default function Filters({
-  currentFilters,
   errorMessage,
   handleClickDialogClose,
   handleClickDialogOpen,
@@ -99,6 +99,8 @@ export default function Filters({
   setSelectedItems,
 }: any) {
   const { locale } = useContext(UserContext);
+  const { filters: currentFilters } = useContext(FilterContext);
+
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const classes = useStyles({
     justifyContent: justifyContent ? justifyContent : "space-around",
