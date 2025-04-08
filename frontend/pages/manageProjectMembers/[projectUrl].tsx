@@ -23,17 +23,21 @@ const useStyles = makeStyles((theme) => {
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = Cookies(ctx);
+  console.log("ctx.query",ctx.query);
+  
   const texts = getTexts({ page: "project", locale: ctx.locale });
   if (ctx.req && !auth_token) {
     const message = texts.you_have_to_log_in_to_manage_a_projects_members;
     return sendToLogin(ctx, message);
   }
   const projectUrl = encodeURI(ctx.query.projectUrl);
+  const hubUrl = ctx?.query?.hub ? ctx.query.hub : null;
   const [project, members, rolesOptions, availabilityOptions] = await Promise.all([
     getProjectByUrlIfExists(projectUrl, auth_token, ctx.locale),
     getMembersByProject(projectUrl, auth_token, ctx.locale),
     getRolesOptions(auth_token, ctx.locale),
     getAvailabilityOptions(auth_token, ctx.locale),
+    hubUrl ? getHubTheme(hubUrl) : null,
   ]);
 
   return {
@@ -43,6 +47,7 @@ export async function getServerSideProps(ctx) {
       rolesOptions: rolesOptions,
       availabilityOptions: availabilityOptions,
       token: auth_token,
+      hubUrl: ctx.query.hubUrl,
     },
   };
 }
@@ -53,6 +58,7 @@ export default function manageProjectMembers({
   availabilityOptions,
   rolesOptions,
   token,
+  hubUrl, 
 }) {
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
