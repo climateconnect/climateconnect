@@ -133,7 +133,6 @@ export default function EditProjectPage({
     return (
       <WideLayout
         title={texts.not_a_member}
-        hideHeadline={true}
         headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
         customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
         hubUrl={hubUrl}
@@ -168,9 +167,7 @@ export default function EditProjectPage({
     const user_role = members.find((m) => m.user && m.user.id === user.id).role;
     return (
       <WideLayout
-        className={classes.root}
         title={texts.edit_project + " " + project.name}
-        hideHeadline
         message={errorMessage}
         messageType={errorMessage && "error"}
         headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}

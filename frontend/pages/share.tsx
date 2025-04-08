@@ -86,7 +86,6 @@ export default function Share({
     return (
       <WideLayout
         title={texts.share_your_climate_solution}
-        // hideHeadline={true}
         message={errorMessage}
         messageType={errorMessage && "error"}
         customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
