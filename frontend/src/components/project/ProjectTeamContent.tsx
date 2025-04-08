@@ -87,9 +87,9 @@ export default function TeamContent({ project, handleReadNotifications, hubUrl }
               <Button
                 className={classes.editButton}
                 variant="contained"
-                href={`${
-                  getLocalePrefix(locale) + "/manageProjectMembers/" + project.url_slug
-                }${hubUrl ? "?hub=" + hubUrl : ""}`}
+                href={`${getLocalePrefix(locale) + "/manageProjectMembers/" + project.url_slug}${
+                  hubUrl ? "?hub=" + hubUrl : ""
+                }`}
               >
                 {texts.manage_members}
               </Button>

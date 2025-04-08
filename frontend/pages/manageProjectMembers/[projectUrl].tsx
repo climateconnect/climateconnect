@@ -89,7 +89,7 @@ export default function manageProjectMembers({
         title={texts.please_log_in + " " + texts.to_manage_the_members_of_this_project}
         hideHeadline
         {...layoutProps}
-        >
+      >
         <Typography variant="h4" color="primary" className={classes.headline}>
           {texts.you_are_not_a_member_of_this_project}{" "}
         </Typography>
@@ -101,10 +101,10 @@ export default function manageProjectMembers({
   )
     return (
       <WideLayout
-      title={texts.no_permission_to_manage_members_of_this_project}
-      // TODO remove hideHeadline props, we are not using it in the WideLayout component
-      hideHeadline
-      {...layoutProps}
+        title={texts.no_permission_to_manage_members_of_this_project}
+        // TODO remove hideHeadline props, we are not using it in the WideLayout component
+        hideHeadline
+        {...layoutProps}
       >
         <Typography variant="h4" color="primary" className={classes.headline}>
           {texts.you_need_to_be_an_administrator_of_the_project_to_manage_project_members}
@@ -113,11 +113,7 @@ export default function manageProjectMembers({
     );
   else {
     return (
-      <Layout
-        title={texts.manage_projects_members}
-        hideHeadline
-        {...layoutProps}
-      >
+      <Layout title={texts.manage_projects_members} hideHeadline {...layoutProps}>
         <ManageProjectMembers
           user={user}
           members={members}
