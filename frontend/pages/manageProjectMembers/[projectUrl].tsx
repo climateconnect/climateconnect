@@ -63,17 +63,13 @@ export default function manageProjectMembers({
 
   if (!user)
     return (
-      <WideLayout
-        title={texts.please_log_in + " " + texts.to_manage_the_members_of_this_project}
-      >
+      <WideLayout title={texts.please_log_in + " " + texts.to_manage_the_members_of_this_project}>
         <LoginNudge fullPage whatToDo={texts.to_manage_the_members_of_this_project} />
       </WideLayout>
     );
   else if (!members.find((m) => m.id === user.id))
     return (
-      <WideLayout
-        title={texts.please_log_in + " " + texts.to_manage_the_members_of_this_project}
-      >
+      <WideLayout title={texts.please_log_in + " " + texts.to_manage_the_members_of_this_project}>
         <Typography variant="h4" color="primary" className={classes.headline}>
           {texts.you_are_not_a_member_of_this_project}{" "}
         </Typography>

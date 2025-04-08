@@ -71,10 +71,7 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter, pro
 
   return (
     <>
-      <WideLayout
-        showOnScrollUp={showOnScrollUp}
-        subHeader={<HubsSubHeader hubs={hubs} />}
-      >
+      <WideLayout showOnScrollUp={showOnScrollUp} subHeader={<HubsSubHeader hubs={hubs} />}>
         <BrowseContext.Provider value={contextValues}>
           <MainHeadingContainerMobile />
           <FilterProvider
