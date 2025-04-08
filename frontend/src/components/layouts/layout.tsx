@@ -35,6 +35,9 @@ export default function Layout({
   messageType,
   isLoading,
   isStaticPage,
+  headerBackground,
+  customTheme,
+  hubUrl,
 }: any) {
   const classes = useStyles({ donationCampaignRunning: process.env.DONATION_CAMPAIGN_RUNNING });
   const [hideAlertMessage, setHideAlertMessage] = React.useState(false);
@@ -50,8 +53,13 @@ export default function Layout({
   }, []);
   return (
     <DevLinkProvider>
-      <LayoutWrapper theme={theme} title={title}>
-        <Header noSpacingBottom isStaticPage={isStaticPage} />
+      <LayoutWrapper theme={customTheme ?? theme} title={title}>
+        <Header
+          noSpacingBottom
+          isStaticPage={isStaticPage}
+          background={headerBackground}
+          hubUrl={hubUrl}
+        />
         {<DonationCampaignInformation />}
         {isLoading ? (
           <LoadingContainer headerHeight={113} footerHeight={80} />

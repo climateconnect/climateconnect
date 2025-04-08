@@ -11,6 +11,8 @@ import LoginNudge from "../../src/components/general/LoginNudge";
 import Layout from "../../src/components/layouts/layout";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import ManageProjectMembers from "../../src/components/project/ManageProjectMembers";
+import getHubTheme from "../../src/themes/fetchHubTheme";
+import { transformThemeData } from "../../src/themes/transformThemeData";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -23,8 +25,6 @@ const useStyles = makeStyles((theme) => {
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = Cookies(ctx);
-  console.log("ctx.query",ctx.query);
-  
   const texts = getTexts({ page: "project", locale: ctx.locale });
   if (ctx.req && !auth_token) {
     const message = texts.you_have_to_log_in_to_manage_a_projects_members;
@@ -32,7 +32,7 @@ export async function getServerSideProps(ctx) {
   }
   const projectUrl = encodeURI(ctx.query.projectUrl);
   const hubUrl = ctx?.query?.hub ? ctx.query.hub : null;
-  const [project, members, rolesOptions, availabilityOptions] = await Promise.all([
+  const [project, members, rolesOptions, availabilityOptions, hubThemeData] = await Promise.all([
     getProjectByUrlIfExists(projectUrl, auth_token, ctx.locale),
     getMembersByProject(projectUrl, auth_token, ctx.locale),
     getRolesOptions(auth_token, ctx.locale),
@@ -47,7 +47,8 @@ export async function getServerSideProps(ctx) {
       rolesOptions: rolesOptions,
       availabilityOptions: availabilityOptions,
       token: auth_token,
-      hubUrl: ctx.query.hubUrl,
+      hubUrl: hubUrl || null,
+      hubThemeData: hubThemeData,
     },
   };
 }
@@ -58,7 +59,8 @@ export default function manageProjectMembers({
   availabilityOptions,
   rolesOptions,
   token,
-  hubUrl, 
+  hubUrl,
+  hubThemeData,
 }) {
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
@@ -66,12 +68,17 @@ export default function manageProjectMembers({
   const [currentMembers, setCurrentMembers] = React.useState(
     members ? [...members.sort((a, b) => b.role.role_type - a.role.role_type)] : []
   );
-
+  const layoutProps = {
+    hubUrl: hubUrl,
+    customTheme: hubThemeData ? transformThemeData(hubThemeData) : undefined,
+    headerBackground: hubUrl === "prio1" ? "#7883ff" : "#FFF",
+  };
   if (!user)
     return (
       <WideLayout
         title={texts.please_log_in + " " + texts.to_manage_the_members_of_this_project}
-        hideHeadline={true}
+        hideHeadline
+        {...layoutProps}
       >
         <LoginNudge fullPage whatToDo={texts.to_manage_the_members_of_this_project} />
       </WideLayout>
@@ -80,8 +87,9 @@ export default function manageProjectMembers({
     return (
       <WideLayout
         title={texts.please_log_in + " " + texts.to_manage_the_members_of_this_project}
-        hideHeadline={true}
-      >
+        hideHeadline
+        {...layoutProps}
+        >
         <Typography variant="h4" color="primary" className={classes.headline}>
           {texts.you_are_not_a_member_of_this_project}{" "}
         </Typography>
@@ -92,7 +100,12 @@ export default function manageProjectMembers({
     members.find((m) => m.id === user.id).role.role_type != ROLE_TYPES.read_write_type
   )
     return (
-      <WideLayout title={texts.no_permission_to_manage_members_of_this_project} hideHeadline={true}>
+      <WideLayout
+      title={texts.no_permission_to_manage_members_of_this_project}
+      // TODO remove hideHeadline props, we are not using it in the WideLayout component
+      hideHeadline
+      {...layoutProps}
+      >
         <Typography variant="h4" color="primary" className={classes.headline}>
           {texts.you_need_to_be_an_administrator_of_the_project_to_manage_project_members}
         </Typography>
@@ -100,7 +113,11 @@ export default function manageProjectMembers({
     );
   else {
     return (
-      <Layout title={texts.manage_projects_members} hideHeadline>
+      <Layout
+        title={texts.manage_projects_members}
+        hideHeadline
+        {...layoutProps}
+      >
         <ManageProjectMembers
           user={user}
           members={members}
@@ -110,6 +127,7 @@ export default function manageProjectMembers({
           project={project}
           token={token}
           availabilityOptions={availabilityOptions}
+          hubUrl={hubUrl}
         />
       </Layout>
     );
