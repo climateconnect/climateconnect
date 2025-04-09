@@ -85,7 +85,6 @@ export default function EditProjectPage({
   hubThemeData,
   hubUrl,
 }) {
-  
   const classes = useStyles();
   const [curProject, setCurProject] = React.useState({
     ...project,
