@@ -197,7 +197,7 @@ export default function EditProjectRoot({
   }
 
   const handleCancel = () => {
-    Router.push("/projects/" + project.url_slug + "/");
+    Router.push(`/projects/${project.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""}`);
   };
 
   const handleSubmit = async (event) => {
