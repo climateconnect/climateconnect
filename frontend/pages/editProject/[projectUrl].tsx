@@ -85,19 +85,19 @@ export default function EditProjectPage({
   hubThemeData,
   hubUrl,
 }) {
+  
   const classes = useStyles();
   const [curProject, setCurProject] = React.useState({
     ...project,
     status: statusOptions.find((s) => s.name === project?.status),
-    hubUrl: project.related_hubs?.length > 0 ? project.related_hubs[0] : null,
+    hubUrl: hubUrl || null,
   });
   project = {
     ...project,
     status: statusOptions.find((s) => s.name === project?.status),
   };
   const [errorMessage, setErrorMessage] = React.useState("");
-  const { user, locale, CUSTOM_HUB_URLS } = useContext(UserContext);
-  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
+  const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
 
   const handleSetErrorMessage = (newErrorMessage) => {
@@ -129,7 +129,7 @@ export default function EditProjectPage({
         </Typography>
       </Layout>
     );
-  else if (!members.find((m) => m.user && m.user.id === user.id))
+  else if (!members?.find((m) => m.user && m.user.id === user.id))
     return (
       <WideLayout
         title={texts.not_a_member}
@@ -189,6 +189,7 @@ export default function EditProjectPage({
           handleSetErrorMessage={handleSetErrorMessage}
           initialTranslations={project.translations}
           projectTypeOptions={projectTypeOptions}
+          hubUrl={hubUrl}
         />
       </WideLayout>
     );

@@ -55,6 +55,7 @@ type Props = {
   handleSetErrorMessage: any;
   initialTranslations: any;
   projectTypeOptions: any;
+  hubUrl: string;
 };
 
 export default function EditProjectRoot({
@@ -68,6 +69,7 @@ export default function EditProjectRoot({
   handleSetErrorMessage,
   initialTranslations,
   projectTypeOptions,
+  hubUrl,
 }: Props) {
   const classes = useStyles();
   const token = new Cookies().get("auth_token");
@@ -257,11 +259,15 @@ export default function EditProjectRoot({
       locale: locale,
     })
       .then(function () {
+        const query: any = {
+          message: texts.you_have_successfully_deleted_your_project,
+        };
+        if (hubUrl) {
+          query.hub = hubUrl;
+        }
         Router.push({
           pathname: "/profiles/" + user.url_slug,
-          query: {
-            message: texts.you_have_successfully_deleted_your_project,
-          },
+          query,
         });
       })
       .catch(function (error) {
