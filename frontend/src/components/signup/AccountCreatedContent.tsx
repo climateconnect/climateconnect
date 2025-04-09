@@ -72,7 +72,8 @@ export default function AccountCreatedContent({ isSmallScreen, hubUrl }) {
           </div>
         </Card>
       }
-      image={<AccountCreatedIcon className={classes.icon} />}
+      // if there is no AccountCreatedIcon then the image will not be shown
+      image={AccountCreatedIcon ? <AccountCreatedIcon className={classes.icon} /> : undefined}
     ></ContentImageSplitView>
   );
 }

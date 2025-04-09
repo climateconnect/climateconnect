@@ -9,14 +9,13 @@ import { transformThemeData } from "../src/themes/transformThemeData";
 import AccountCreatedContent from "../src/components/signup/AccountCreatedContent";
 
 export async function getServerSideProps(ctx) {
-  const hubUrl = ctx.query.hub;
-
-  const hubThemeData = await getHubTheme(hubUrl);
+  const { hub } = ctx.query;
+  const hubThemeData = hub ? await getHubTheme(hub) : null; // undefined is not allowed in JSON, so we use null
 
   return {
     props: {
-      hubUrl: hubUrl || null, // undefined is not allowed in JSON, so we use null
-      hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
+      hubUrl: hub || null,
+      hubThemeData: hubThemeData,
     },
   };
 }
