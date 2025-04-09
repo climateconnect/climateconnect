@@ -152,7 +152,7 @@ export default function TranslateTexts({
 }: Props) {
   const visibleFooterHeight = VisibleFooterHeight({});
   const classes = useStyles({ visibleFooterHeight: visibleFooterHeight });
-
+  
   const { locale } = useContext(UserContext);
   //For the organization page, we need to retrieve the organization name to get the german text.
   //Therefore we pass organization even it this might not make sense in most cases.
@@ -430,7 +430,6 @@ function TranslationBlockElement({
   characterText,
 }) {
   const classes = useStyles({});
-
   return (
     <div className={classes.translationBlockElement}>
       {!noHeadline && (
@@ -441,11 +440,10 @@ function TranslationBlockElement({
 
       <TextField
         rows={rows}
-        maxRows={50}
         variant="outlined"
         fullWidth
         multiline
-        inputProps={{ maxLength: maxCharacters }}
+        {...(maxCharacters ? {inputProps: { maxLength: maxCharacters }} : {})}
         helperText={
           showCharacterCounter &&
           "( " + content?.length + " / " + maxCharacters + " " + characterText + " ) "

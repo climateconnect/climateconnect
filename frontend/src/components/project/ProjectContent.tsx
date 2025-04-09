@@ -155,7 +155,6 @@ export default function ProjectContent({
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [showFullDescription, setShowFullDescription] = useState(false);
   const handleToggleFullDescriptionClick = () => setShowFullDescription(!showFullDescription);
-
   const calculateMaxDisplayedDescriptionLength = (description) => {
     const words = description.split(" ");
     const youtubeLink = words.find((el) => youtubeRegex().test(el));
@@ -191,6 +190,7 @@ export default function ProjectContent({
     return texts.this_project_hasnt_added_a_description_yet;
   };
   const theme = useTheme();
+  
   return (
     <>
       <div className={classes.contentBlock}>
