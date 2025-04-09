@@ -36,7 +36,7 @@ const useStyles = makeStyles<Theme, { visibleFooterHeight?: number }>((theme) =>
     fontWeight: "bold",
     marginTop: theme.spacing(1.5),
     overflowWrap: "break-word",
-    color : theme.palette.background.default_contrastText,
+    color: theme.palette.background.default_contrastText,
   },
   divider: {
     marginTop: theme.spacing(1),
