@@ -17,9 +17,6 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     marginTop: props.hideHelperText ? 0 : theme.spacing(2),
   }),
-  input: {
-    marginBottom: theme.spacing(2),
-  },
   formHelperText: {
     marginTop: theme.spacing(-2),
   },
@@ -325,7 +322,7 @@ export default function LocationSearchBar({
             InputProps={{
               ...params.InputProps,
               endAdornment: <React.Fragment>{params.InputProps.endAdornment}</React.Fragment>,
-              className: `${textFieldClassName} ${classes.input}`,
+              className: `${textFieldClassName}`,
             }}
             FormHelperTextProps={{
               classes: {
