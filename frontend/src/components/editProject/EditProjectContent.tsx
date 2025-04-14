@@ -76,7 +76,7 @@ const useStyles = makeStyles<Theme>((theme) => ({
   addButton: {
     marginTop: theme.spacing(2),
   },
-  deleteBtnContainer:{
+  deleteBtnContainer: {
     marginTop: theme.spacing(2),
   },
   buttonsContainer: {
@@ -349,10 +349,10 @@ export default function EditProjectContent({
                   </Button>
                   {isNarrowScreen && user_role.role_type === ROLE_TYPES.all_type && (
                     <div className={classes.deleteBtnContainer}>
-                    <DeleteProjectButton
-                      project={project}
-                      handleClickDeleteProjectPopup={handleClickDeleteProjectPopup}
-                    />
+                      <DeleteProjectButton
+                        project={project}
+                        handleClickDeleteProjectPopup={handleClickDeleteProjectPopup}
+                      />
                     </div>
                   )}
                 </div>
