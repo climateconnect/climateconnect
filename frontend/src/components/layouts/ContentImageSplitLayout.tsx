@@ -2,7 +2,15 @@ import React from "react";
 import { Grid, Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
+  container: (props: ContentImageSplitViewProps) => ({
+    alignContent: "center",
+    justifyContent: "center",
+    ...(props.minHeight ? { minHeight: props.minHeight } : {}),
+  }),
+  flex: {
+    display: "flex",
+  },
   centerItems: {
     margin: "auto 0",
     placeItems: "center",
@@ -29,29 +37,18 @@ interface ContentImageSplitViewProps {
   direction?: "row" | "row-reverse" | "column" | "column-reverse";
 }
 
-const ContentImageSplitView: React.FC<ContentImageSplitViewProps> = ({
-  content,
-  image,
-  leftGridSizes,
-  rightGridSizes,
-  minHeight,
-  direction,
-}) => {
+const ContentImageSplitView: React.FC<ContentImageSplitViewProps> = (props) => {
+  const { content, image, leftGridSizes, rightGridSizes, minHeight, direction } = props;
   // check the breakpoint for the right pane
   // if the breakpoint is not satisfied, the right pane will be hidden
   const rightPaneHidden = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
-  const classes = useStyles();
+  const classes = useStyles(props);
 
   return (
     <Grid
       container
       spacing={2}
-      // TODO: using classes instead of inline-style
-      style={{
-        alignContent: "center",
-        justifyContent: "center",
-        minHeight: minHeight ? minHeight : "",
-      }}
+      className={classes.container}
       direction={direction ? direction : "row"}
     >
       {/* content pane */}
@@ -67,8 +64,7 @@ const ContentImageSplitView: React.FC<ContentImageSplitViewProps> = ({
 
       {/* image pane */}
       {!rightPaneHidden && (
-        // TODO: using classes instead of inline-style
-        <Grid item md={5} {...rightGridSizes} style={{ display: "flex" }}>
+        <Grid item md={5} {...rightGridSizes} className={classes.flex}>
           {image}
         </Grid>
       )}

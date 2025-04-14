@@ -11,13 +11,11 @@ import { Container, Link, Theme, useMediaQuery } from "@mui/material";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
 import Login from "../src/components/signup/Login";
-import { extractHubFromUrl } from "../public/lib/hubOperations";
 
 export async function getServerSideProps(ctx) {
   const message = ctx.query.message;
   const message_type = ctx.query.message_type;
-  const { redirect } = ctx.query;
-  const hubSlug = extractHubFromUrl(redirect);
+  const hubSlug = ctx.query.hub || null;
 
   // early return to avoid fetching /undefined/theme
   if (!hubSlug) {

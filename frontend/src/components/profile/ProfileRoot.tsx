@@ -71,9 +71,6 @@ const useStyles = makeStyles((theme) => {
       alignItems: "center",
       marginTop: theme.spacing(3),
     },
-    sectionHeadline: {
-      color: theme?.palette?.background?.default_contrastText,
-    },
     innerIcon: {
       marginRight: theme.spacing(0.5),
       marginLeft: -theme.spacing(1),
