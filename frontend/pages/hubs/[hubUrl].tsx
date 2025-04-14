@@ -129,7 +129,7 @@ export async function getServerSideProps(ctx) {
         skills: skills,
       },
       initialLocationFilter: location_filtered_by,
-      sectorHubs: allHubs.filter((h) => h.hub_type === "sector hub"),
+      sectorHubs: allHubs ? allHubs.filter((h) => h?.hub_type === "sector hub") : null,
       allHubs: allHubs,
       hubDescription: hubDescription,
       projectTypes: projectTypes,
