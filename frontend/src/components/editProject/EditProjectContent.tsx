@@ -76,6 +76,14 @@ const useStyles = makeStyles<Theme>((theme) => ({
   addButton: {
     marginTop: theme.spacing(2),
   },
+  deleteBtnContainer:{
+    marginTop: theme.spacing(2),
+  },
+  buttonsContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
 }));
 
 type Args = {
@@ -330,14 +338,24 @@ export default function EditProjectContent({
                     ))}
                   </List>
                 )}
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={onClickSkillsDialogOpen}
-                  className={classes.addButton}
-                >
-                  {project.skills && project.skills.length ? texts.edit_skills : texts.add_skills}
-                </Button>
+                <div className={classes.buttonsContainer}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={onClickSkillsDialogOpen}
+                    className={classes.addButton}
+                  >
+                    {project.skills && project.skills.length ? texts.edit_skills : texts.add_skills}
+                  </Button>
+                  {isNarrowScreen && user_role.role_type === ROLE_TYPES.all_type && (
+                    <div className={classes.deleteBtnContainer}>
+                    <DeleteProjectButton
+                      project={project}
+                      handleClickDeleteProjectPopup={handleClickDeleteProjectPopup}
+                    />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
             <div className={classes.block}>
