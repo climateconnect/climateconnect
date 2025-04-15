@@ -59,6 +59,9 @@ const useStyles = makeStyles((theme) => ({
   spaceStrings: {
     width: 4,
   },
+  textAlignCenter: {
+    textAlign: "center",
+  },
 }));
 
 export default function SettingsPage({ settings, setSettings, token, setMessage }) {
@@ -356,6 +359,13 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
 
   return (
     <Container className={classes.wrapperElement}>
+      <Typography
+        className={[classes.primaryColor, classes.textAlignCenter].join(" ")}
+        variant="h3"
+        component="h2"
+      >
+        {texts.settings}
+      </Typography>
       <Typography className={classes.primaryColor} variant="h5" component="h2">
         {texts.change_password}
       </Typography>

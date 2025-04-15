@@ -6,7 +6,6 @@ import getTexts from "../public/texts/texts";
 import SettingsPage from "../src/components/account/SettingsPage";
 import UserContext from "../src/components/context/UserContext";
 import LoginNudge from "../src/components/general/LoginNudge";
-import Layout from "../src/components/layouts/layout";
 import WideLayout from "../src/components/layouts/WideLayout";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
@@ -16,7 +15,6 @@ export async function getServerSideProps(ctx) {
   const { hub } = ctx.query;
 
   const hubThemeData = await getHubTheme(hub);
-  console.log("hubThemeData", hubThemeData);
 
   return {
     props: {
@@ -52,9 +50,14 @@ export default function Settings({ settings, hubUrl, hubThemeData }) {
     );
   else
     return (
-      <Layout title={texts.please_log_in} hideHeadline>
+      <WideLayout
+        title={texts.please_log_in}
+        message={message}
+        hubUrl={hubUrl}
+        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+      >
         <LoginNudge whatToDo={texts.to_edit_your_settings} fullPage />
-      </Layout>
+      </WideLayout>
     );
 }
 
