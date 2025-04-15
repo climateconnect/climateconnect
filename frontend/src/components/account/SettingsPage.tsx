@@ -2,6 +2,7 @@ import {
   Button,
   Checkbox,
   CircularProgress,
+  Container,
   Divider,
   FormControlLabel,
   TextField,
@@ -18,6 +19,12 @@ import UserContext from "../context/UserContext";
 import { removeUnnecesaryCookies } from "./../../../public/lib/cookieOperations";
 
 const useStyles = makeStyles((theme) => ({
+  wrapperElement: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    maxWidth: theme.breakpoints.values.lg,
+  },
   blockElement: {
     display: "block",
     marginTop: theme.spacing(2),
@@ -36,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
   primaryColor: {
-    color: theme.palette.primary.main,
+    color: theme.palette.background.default_contrastText,
   },
   editProfilePageButton: {
     marginTop: theme.spacing(2),
@@ -348,8 +355,8 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
   };*/
 
   return (
-    <>
-      <Typography color="primary" variant="h5" component="h2">
+    <Container className={classes.wrapperElement}>
+      <Typography className={classes.primaryColor} variant="h5" component="h2">
         {texts.change_password}
       </Typography>
       <Divider />
@@ -401,7 +408,11 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         </div>
       </form>
 
-      <Typography className={classes.lowerHeaders} color="primary" variant="h5" component="h2">
+      <Typography
+        className={[classes.lowerHeaders, classes.primaryColor].join(" ")}
+        variant="h5"
+        component="h2"
+      >
         {texts.change_linked_email}
       </Typography>
       <Divider />
@@ -431,8 +442,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         </Typography>
       </form>
       <Typography
-        className={classes.lowerHeaders}
-        color="primary"
+        className={[classes.lowerHeaders, classes.primaryColor].join(" ")}
         variant="h5"
         component="h2"
         id="emailPreferences"
@@ -451,6 +461,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
             control={
               <Checkbox
                 checked={emailPreferences[key]}
+                color="contrast"
                 onChange={() => handlePreferenceChange(event, key)}
                 name={key}
               />
@@ -462,9 +473,8 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         ))}
       </div>
       <Button
-        className={`${classes.editProfilePageButton}`}
+        className={[classes.editProfilePageButton].join(" ")}
         variant="contained"
-        color="primary"
         onClick={changeEmailPreferences}
         disabled={emailPreferencesLoading}
       >
@@ -472,8 +482,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         {texts.change_preferences}
       </Button>
       <Typography
-        className={classes.lowerHeaders}
-        color="primary"
+        className={[classes.lowerHeaders, classes.primaryColor].join(" ")}
         variant="h5"
         component="h2"
         id="cookiesettings"
@@ -492,6 +501,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
             control={
               <Checkbox
                 checked={cookiePreferences[key]}
+                color="contrast"
                 onChange={(event) => handleCookiePreferenceChange(event, key)}
                 name={key}
               />
@@ -503,7 +513,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         ))}
       </div>
       <Button
-        className={`${classes.editProfilePageButton}`}
+        className={classes.editProfilePageButton}
         variant="contained"
         color="primary"
         onClick={changeCookiePreferences}
@@ -539,7 +549,11 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           Change profile url
         </Button>
       </form>*/}
-      <Typography className={classes.lowerHeaders} color="primary" variant="h5" component="h2">
+      <Typography
+        className={[classes.lowerHeaders, classes.primaryColor].join(" ")}
+        variant="h5"
+        component="h2"
+      >
         {texts.edit_your_profile_page}
       </Typography>
       <Divider />
@@ -559,6 +573,6 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           <a className={classes.primaryColor}>{emailLink}</a>
         </Link>
       </Typography>
-    </>
+    </Container>
   );
 }

@@ -7,17 +7,27 @@ import SettingsPage from "../src/components/account/SettingsPage";
 import UserContext from "../src/components/context/UserContext";
 import LoginNudge from "../src/components/general/LoginNudge";
 import Layout from "../src/components/layouts/layout";
+import WideLayout from "../src/components/layouts/WideLayout";
+import getHubTheme from "../src/themes/fetchHubTheme";
+import { transformThemeData } from "../src/themes/transformThemeData";
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
+  const { hub } = ctx.query;
+
+  const hubThemeData = await getHubTheme(hub);
+  console.log("hubThemeData", hubThemeData);
+
   return {
     props: {
+      hubUrl: hub || null,
+      hubThemeData: hubThemeData || null,
       settings: await getSettings(auth_token, ctx.locale),
     },
   };
 }
 
-export default function Settings({ settings }) {
+export default function Settings({ settings, hubUrl, hubThemeData }) {
   const token = new Cookies().get("auth_token");
   const { user } = useContext(UserContext);
   const [message, setMessage] = React.useState("");
@@ -26,14 +36,19 @@ export default function Settings({ settings }) {
   const texts = getTexts({ page: "settings", locale: locale });
   if (user)
     return (
-      <Layout title={texts.settings} message={message} noSpacingBottom>
+      <WideLayout
+        title={texts.settings}
+        message={message}
+        hubUrl={hubUrl}
+        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+      >
         <SettingsPage
           settings={currentSettings}
           setSettings={setCurrentSettings}
           token={token}
           setMessage={setMessage}
         />
-      </Layout>
+      </WideLayout>
     );
   else
     return (
