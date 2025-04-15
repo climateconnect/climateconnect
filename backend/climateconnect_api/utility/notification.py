@@ -286,3 +286,40 @@ def get_notification_values(notif_type_number):
             "look_up_entitiy_type_field_name": "organization",
             "member_type_model": OrganizationMember,
         }
+
+
+def get_project_from_notification(notif_type, serialize=False):
+    if notif_type.project_comment:
+        project = notif_type.project_comment.project
+    elif notif_type.project_follower:
+        project = notif_type.project_follower.project
+    elif notif_type.project_like:
+        project = notif_type.project_like.project
+    elif (
+        notif_type.membership_request
+        and notif_type.membership_request.target_project is not None
+    ):
+        project = notif_type.membership_request.target_project
+    elif notif_type.org_project_published:
+        project = notif_type.org_project_published.project
+    else:
+        return None
+
+    if serialize:
+        return get_project_info(project)
+    else:
+        return project
+
+
+def get_organization_from_notification(notif_type, serialize=False):
+    if notif_type.org_project_published:
+        organization = notif_type.org_project_published.organization
+    elif notif_type.organization_follower:
+        organization = notif_type.organization_follower.organization
+    else:
+        return None
+
+    if serialize:
+        return get_organization_info(organization)
+    else:
+        return organization
