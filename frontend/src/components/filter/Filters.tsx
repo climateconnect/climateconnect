@@ -7,82 +7,83 @@ import UserContext from "../context/UserContext";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import SelectField from "../general/SelectField";
 import LocationSearchBar from "../search/LocationSearchBar";
+import { FilterContext } from "../context/FilterContext";
 
-const useStyles = makeStyles<Theme, { filterElementMargin: number; justifyContent: any }>(
-  (theme) => {
-    return {
-      flexContainer: (props) => ({
-        display: "flex",
-        justifyContent: props.justifyContent,
-        marginBottom: theme.spacing(1),
-      }),
-      verticalFlexContainer: {
-        flexDirection: "column",
-        marginTop: theme.spacing(2),
-      },
-      iconLabel: {
-        display: "flex",
-        alignItems: "center",
-      },
-      field: {
-        display: "flex",
-        width: 190,
-      },
-      locationFieldWrapper: {
-        width: 290,
-        display: "flex",
-        borderRadius: 0,
-        marginRight: theme.spacing(1),
-      },
-      locationField: {
-        borderTopRightRadius: 0,
-        borderBottomRightRadius: 0,
-        borderRight: 0,
-      },
-      overlayLocationField: {
-        flexGrow: 1,
-      },
-      radiusField: {
-        width: 110,
-      },
-      radiusInput: {
-        borderTopLeftRadius: 0,
-        borderBottomLeftRadius: 0,
-        borderLeft: 0,
-      },
-      filterElement: (props) => ({
-        marginRight: theme.spacing(props.filterElementMargin),
-        minHeight: 40,
-      }),
-      overlayField: {
-        marginBottom: theme.spacing(2),
-        width: "100%",
-      },
-      applyButton: {
-        height: 40,
-        display: "flex",
-      },
-      applyButtonContainer: {
-        display: "flex",
-        justifyContent: "flex-end",
-      },
-      outlinedField: {
-        borderColor: theme.palette.primary.main,
-        borderWidth: 2,
-      },
-      errorMessageWrapper: {
-        textAlign: "center",
-        marginBottom: theme.spacing(1),
-      },
-      openMultiSelectButton: {
-        border: `1px solid ${theme.palette.grey[500]} !important`,
-      },
-    };
-  }
-);
+const useStyles = makeStyles<Theme, { justifyContent: any }>((theme) => {
+  return {
+    flexContainer: (props) => ({
+      display: "flex",
+      flexWrap: "wrap",
+      columnGap: theme.spacing(2),
+      rowGap: theme.spacing(1),
+      paddingInline: theme.spacing(2),
+      justifyContent: props.justifyContent,
+      marginBottom: theme.spacing(1),
+    }),
+    verticalFlexContainer: {
+      flexDirection: "column",
+      marginTop: theme.spacing(2),
+    },
+    iconLabel: {
+      display: "flex",
+      alignItems: "center",
+    },
+    field: {
+      display: "flex",
+      width: 190,
+    },
+    locationFieldWrapper: {
+      // width: 290,
+      display: "flex",
+      borderRadius: 0,
+      marginRight: theme.spacing(1),
+    },
+    locationField: {
+      borderTopRightRadius: 0,
+      borderBottomRightRadius: 0,
+      borderRight: 0,
+    },
+    overlayLocationField: {
+      flexGrow: 1,
+    },
+    radiusField: {
+      width: 125,
+    },
+    radiusInput: {
+      borderTopLeftRadius: 0,
+      borderBottomLeftRadius: 0,
+      borderLeft: 0,
+    },
+    filterElement: {
+      minHeight: 40,
+    },
+    overlayField: {
+      marginBottom: theme.spacing(2),
+      width: "100%",
+    },
+    applyButton: {
+      height: 40,
+      display: "flex",
+    },
+    applyButtonContainer: {
+      display: "flex",
+      justifyContent: "flex-end",
+    },
+    outlinedField: {
+      borderColor: theme.palette.primary.main,
+      borderWidth: 2,
+    },
+    errorMessageWrapper: {
+      textAlign: "center",
+      marginBottom: theme.spacing(1),
+    },
+    openMultiSelectButton: {
+      border: `1px solid ${theme.palette.grey[500]} !important`,
+    },
+  };
+});
 
 export default function Filters({
-  currentFilters,
   errorMessage,
   handleClickDialogClose,
   handleClickDialogOpen,
@@ -99,10 +100,11 @@ export default function Filters({
   setSelectedItems,
 }: any) {
   const { locale } = useContext(UserContext);
+  const { filters: currentFilters } = useContext(FilterContext);
+
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const classes = useStyles({
     justifyContent: justifyContent ? justifyContent : "space-around",
-    filterElementMargin: justifyContent && justifyContent != "space-around" ? 1 : 0,
   });
   const radiusFilterOptions = getRadiusFilterOptions();
   return (

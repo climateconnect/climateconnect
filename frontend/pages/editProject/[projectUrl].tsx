@@ -17,6 +17,8 @@ import EditProjectRoot from "../../src/components/editProject/EditProjectRoot";
 import LoginNudge from "../../src/components/general/LoginNudge";
 import Layout from "../../src/components/layouts/layout";
 import WideLayout from "../../src/components/layouts/WideLayout";
+import getHubTheme from "../../src/themes/fetchHubTheme";
+import { transformThemeData } from "../../src/themes/transformThemeData";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,6 +38,7 @@ export async function getServerSideProps(ctx) {
     return sendToLogin(ctx, message);
   }
   const projectUrl = encodeURI(ctx.query.projectUrl);
+  const hubUrl = ctx.query.hub;
   const [
     project,
     members,
@@ -43,6 +46,7 @@ export async function getServerSideProps(ctx) {
     userOrganizations,
     tagsOptions,
     projectTypeOptions,
+    hubThemeData,
   ] = await Promise.all([
     getProjectByIdIfExists(projectUrl, auth_token, ctx.locale),
     getMembersByProject(projectUrl, auth_token, ctx.locale),
@@ -50,6 +54,7 @@ export async function getServerSideProps(ctx) {
     getUserOrganizations(auth_token, ctx.locale),
     getProjectTagsOptions(null, ctx.locale),
     getProjectTypeOptions(ctx.locale),
+    getHubTheme(hubUrl),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -59,6 +64,8 @@ export async function getServerSideProps(ctx) {
       userOrganizations: userOrganizations,
       tagsOptions: tagsOptions,
       projectTypeOptions: projectTypeOptions,
+      hubThemeData: hubThemeData,
+      hubUrl: hubUrl,
     }),
   };
 }
@@ -70,16 +77,20 @@ export default function EditProjectPage({
   userOrganizations,
   tagsOptions,
   projectTypeOptions,
+  hubThemeData,
+  hubUrl,
 }) {
   const classes = useStyles();
   const [curProject, setCurProject] = React.useState({
     ...project,
+    hubUrl: project.related_hubs?.length > 0 ? project.related_hubs[0] : null,
   });
   project = {
     ...project,
   };
   const [errorMessage, setErrorMessage] = React.useState("");
-  const { user, locale } = useContext(UserContext);
+  const { user, locale, CUSTOM_HUB_URLS } = useContext(UserContext);
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const texts = getTexts({ page: "project", locale: locale });
 
   const handleSetErrorMessage = (newErrorMessage) => {
@@ -88,10 +99,14 @@ export default function EditProjectPage({
   const handleSetProject = (newProject) => {
     setCurProject({ ...newProject });
   };
-
   if (!user)
     return (
-      <WideLayout title={texts.please_log_in_to_edit_project}>
+      <WideLayout
+        title={texts.please_log_in_to_edit_project}
+        headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
+        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+        hubUrl={hubUrl}
+      >
         <LoginNudge fullPage whatToDo={texts.to_edit_this_project} />
       </WideLayout>
     );
@@ -109,7 +124,13 @@ export default function EditProjectPage({
     );
   else if (!members.find((m) => m.user && m.user.id === user.id))
     return (
-      <WideLayout title={texts.not_a_member} hideHeadline={true}>
+      <WideLayout
+        title={texts.not_a_member}
+        hideHeadline={true}
+        headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
+        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+        hubUrl={hubUrl}
+      >
         <Typography variant="h4" color="primary" className={classes.errorTitle}>
           {texts.not_a_member}. {texts.go_to_the}{" "}
           <a href={getLocalePrefix(locale) + "/projects/" + project.url_slug}>
@@ -125,7 +146,12 @@ export default function EditProjectPage({
       ROLE_TYPES.read_write_type
   )
     return (
-      <WideLayout title={texts.no_permissions_to_edit_project} /*hideHeadline={true}*/>
+      <WideLayout
+        title={texts.no_permissions_to_edit_project}
+        headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
+        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+        hubUrl={hubUrl}
+      >
         <Typography variant="h4" color="primary" className={classes.errorTitle}>
           {texts.need_to_be_admin_to_manage_project_team}
         </Typography>
@@ -140,6 +166,9 @@ export default function EditProjectPage({
         hideHeadline
         message={errorMessage}
         messageType={errorMessage && "error"}
+        headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
+        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+        hubUrl={hubUrl}
       >
         <EditProjectRoot
           oldProject={project}

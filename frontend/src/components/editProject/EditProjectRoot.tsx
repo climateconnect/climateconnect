@@ -225,13 +225,21 @@ export default function EditProjectRoot({
       locale: locale,
     })
       .then(function (response) {
+        const query = {
+          message: was_draft
+            ? texts.your_project_has_been_published_great_work
+            : texts.you_have_successfully_edited_your_project,
+        };
+        const matchedItem = response?.data?.hubUrl.find(
+          (item) => item.url_slug === project?.hubUrl
+        );
+        if (matchedItem) {
+          query.hub = matchedItem.url_slug;
+        }
+
         Router.push({
           pathname: "/projects/" + response.data.url_slug,
-          query: {
-            message: was_draft
-              ? texts.your_project_has_been_published_great_work
-              : texts.you_have_successfully_edited_your_project,
-          },
+          query,
         });
       })
       .catch(function (error) {

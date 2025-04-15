@@ -42,6 +42,7 @@ export type Project = {
   hubName?: string;
 };
 
+export type BrowseTab = "projects" | "organizations" | "members" | "events";
 export type ProjectType = "project" | "idea" | "event";
 
 export type Organization = {
