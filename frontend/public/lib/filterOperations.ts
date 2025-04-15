@@ -143,7 +143,7 @@ export function splitFiltersFromQueryObject(queryObject, possibleFilters): any {
  * as other options.
  *
  * @param {string} type one of ["projects", "organizations", "members", "ideas"]
- * @param {Object} filters the old filters: something like {"location": "", status: [], etc... }
+ * @param {Object} filters the old filters: something like {"location": "", etc... } // TODO: create type definition for filters
  * @param {Object} newFilters the new filters after a change happened
  * @param {boolean} closeFilters
  * @param {Object} filterChoices the choices for select and multiselect filters
@@ -168,7 +168,6 @@ export async function applyNewFilters({
   tabsWhereFiltersWereApplied,
   handleSetTabsWhereFiltersWereApplied,
   hubUrl,
-  idea,
 }: any) {
   // Don't fetch data again if the exact same filters were already applied in this tab
   if (
@@ -181,7 +180,7 @@ export async function applyNewFilters({
     }) &&
     tabsWhereFiltersWereApplied.includes(type)
   ) {
-    return;
+    return null;
   }
   //Record the tabs in which the filters were applied already
   if (
@@ -223,11 +222,10 @@ export async function applyNewFilters({
       page: 1,
       token: token,
       urlEnding: newUrlEnding,
+      location: newFilters.location ?? undefined,
       locale: locale,
     };
-    if (idea) {
-      payload.idea = idea;
-    }
+
     if (hubUrl) {
       payload.hubUrl = hubUrl;
     }
@@ -244,5 +242,10 @@ export async function applyNewFilters({
     };
   } catch (e) {
     console.log(e);
+    // TODO: in the future, throw the error
+    // but make sure that the calling component catches
+    /// the error and gives feedback to the user
+    // throw e;
   }
+  return null;
 }

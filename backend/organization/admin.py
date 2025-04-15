@@ -80,7 +80,7 @@ admin.site.register(Project, ProjectAdmin)
 
 class ProjectMemberAdmin(admin.ModelAdmin):
     search_fields = (
-        "user__name",
+        "user__user_profile__name",
         "user__id",
         "project__name",
     )
@@ -92,7 +92,7 @@ admin.site.register(ProjectMember, ProjectMemberAdmin)
 
 class OrganizationMemberAdmin(admin.ModelAdmin):
     search_fields = (
-        "user__name",
+        "user__user_profile__name",
         "user__id",
         "organization__name",
     )

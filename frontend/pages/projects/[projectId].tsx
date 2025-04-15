@@ -17,6 +17,7 @@ import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import ProjectSideBar from "../../src/components/project/ProjectSideBar";
 import { transformThemeData } from "../../src/themes/transformThemeData";
+import getHubTheme from "../../src/themes/fetchHubTheme";
 
 type StyleProps = {
   showSimilarProjects: boolean;
@@ -477,17 +478,3 @@ function parseProjectMembers(projectMembers) {
     };
   });
 }
-const getHubTheme = async (url_slug) => {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: `/api/hubs/${url_slug}/theme/`,
-    });
-    return resp.data;
-  } catch (err: any) {
-    if (err.response && err.response.data)
-      console.log("Error in getHubThemeData: " + err.response.data.detail);
-    console.log(err);
-    return null;
-  }
-};

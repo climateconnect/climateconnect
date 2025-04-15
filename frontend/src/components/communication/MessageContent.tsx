@@ -8,7 +8,7 @@ import youtubeRegex from "youtube-regex";
 import { getFragmentsWithMentions } from "../../utils/mentions_markdown";
 import UserContext from "../context/UserContext";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   link: {
     color: "inherit",
     "&:visited": {
@@ -18,15 +18,20 @@ const useStyles = makeStyles({
   youtubeWrapper: {
     maxWidth: "640px",
   },
-});
+  messageContext: (received) => ({
+    alignSelf: "flex-start",
+    color: received ? "default" : theme?.palette?.primary?.contrastText,
+  }),
+}));
 
 type Props = {
   content?: any;
   renderYoutubeVideos?: boolean;
+  received?: boolean;
 };
 
-export default function MessageContent({ content, renderYoutubeVideos = false }: Props) {
-  const classes = useStyles();
+export default function MessageContent({ content, renderYoutubeVideos = false, received }: Props) {
+  const classes = useStyles(received);
   const { locale } = useContext(UserContext);
   //workaround to get target="_blank" because setting 'properties' on the Linkify component doesn't work
   const componentDecorator = (href, text, key) => (
@@ -90,20 +95,24 @@ export default function MessageContent({ content, renderYoutubeVideos = false }:
 
   return (
     <Linkify componentDecorator={componentDecorator}>
-      {content.split("\n").map((content, index) => {
-        if (!content.length) return <br key={index} />;
-        if (youtubeVideoLines && youtubeVideoLines.find((l) => l.index === index)) {
-          return <div key={index}>{youtubeVideoLines.find((l) => l.index === index).content}</div>;
-        }
-        const fragments = getFragmentsWithMentions(content, true, locale);
-        return (
-          <div key={index}>
-            <Typography display="inline" style={{ alignSelf: "flex-start" }}>
-              {fragments}
-            </Typography>
-          </div>
-        );
-      })}
+      {content
+        ? content.split("\n").map((content, index) => {
+            if (!content.length) return <br key={index} />;
+            if (youtubeVideoLines && youtubeVideoLines.find((l) => l.index === index)) {
+              return (
+                <div key={index}>{youtubeVideoLines.find((l) => l.index === index).content}</div>
+              );
+            }
+            const fragments = getFragmentsWithMentions(content, true, locale);
+            return (
+              <div key={index}>
+                <Typography display="inline" className={classes.messageContext}>
+                  {fragments}
+                </Typography>
+              </div>
+            );
+          })
+        : null}
     </Linkify>
   );
 }

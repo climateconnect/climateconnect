@@ -52,12 +52,12 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "50%",
   },
   supporterName: () => ({
-    fontSize: "17px",
+    fontSize: "16px",
     fontWeight: "600",
     overflow: "hidden",
-    textOverflow: "ellipsis",
     color: "black",
     margin: 0,
+    wordBreak: "break-word",
   }),
   supporterSubtitle: () => ({
     margin: 0,
