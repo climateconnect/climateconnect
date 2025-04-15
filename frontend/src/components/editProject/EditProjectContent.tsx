@@ -49,6 +49,7 @@ const useStyles = makeStyles<Theme>((theme) => ({
   },
   subHeader: {
     fontWeight: "bold",
+    color: theme.palette.background.default_contrastText,
   },
   skill: {
     display: "flex",

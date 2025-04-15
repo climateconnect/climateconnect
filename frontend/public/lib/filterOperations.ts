@@ -168,7 +168,6 @@ export async function applyNewFilters({
   tabsWhereFiltersWereApplied,
   handleSetTabsWhereFiltersWereApplied,
   hubUrl,
-  idea,
 }: any) {
   // Don't fetch data again if the exact same filters were already applied in this tab
   if (
@@ -181,7 +180,7 @@ export async function applyNewFilters({
     }) &&
     tabsWhereFiltersWereApplied.includes(type)
   ) {
-    return;
+    return null;
   }
   //Record the tabs in which the filters were applied already
   if (
@@ -226,9 +225,7 @@ export async function applyNewFilters({
       location: newFilters.location ?? undefined,
       locale: locale,
     };
-    if (idea) {
-      payload.idea = idea;
-    }
+
     if (hubUrl) {
       payload.hubUrl = hubUrl;
     }
@@ -245,5 +242,10 @@ export async function applyNewFilters({
     };
   } catch (e) {
     console.log(e);
+    // TODO: in the future, throw the error
+    // but make sure that the calling component catches
+    /// the error and gives feedback to the user
+    // throw e;
   }
+  return null;
 }

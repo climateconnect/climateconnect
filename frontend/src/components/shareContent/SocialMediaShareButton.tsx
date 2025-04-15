@@ -31,6 +31,7 @@ export type SocialMediaShareButtonProps = {
   texts?: any;
   dialogTitle?: any;
   switchColors?: any;
+  hubUrl?: string;
 };
 
 export default function SocialMediaShareButton({
