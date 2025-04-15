@@ -222,6 +222,7 @@ export async function applyNewFilters({
       page: 1,
       token: token,
       urlEnding: newUrlEnding,
+      location: newFilters.location ?? undefined,
       locale: locale,
     };
 
@@ -241,6 +242,10 @@ export async function applyNewFilters({
     };
   } catch (e) {
     console.log(e);
-    throw e;
+    // TODO: in the future, throw the error
+    // but make sure that the calling component catches
+    /// the error and gives feedback to the user
+    // throw e;
   }
+  return null;
 }
