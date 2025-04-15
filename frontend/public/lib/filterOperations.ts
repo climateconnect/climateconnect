@@ -223,6 +223,7 @@ export async function applyNewFilters({
       page: 1,
       token: token,
       urlEnding: newUrlEnding,
+      location: newFilters.location ?? undefined,
       locale: locale,
     };
 
@@ -247,4 +248,5 @@ export async function applyNewFilters({
     handleSetErrorMessage(texts.error_during_search);
     throw new Error(texts.error_during_search_short);
   }
+  return null;
 }

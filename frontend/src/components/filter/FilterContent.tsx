@@ -342,27 +342,21 @@ export default function FilterContent({
           />
         </>
       ) : (
-        <>
-          {errorMessage && (
-            <div className={classes.errorMessageWrapper}>
-              <Typography color="error">{errorMessage}</Typography>
-            </div>
-          )}
-          <Filters
-            handleClickDialogSave={handleClickDialogSave}
-            handleClickDialogClose={handleClickDialogClose}
-            handleClickDialogOpen={handleClickDialogOpen}
-            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-            handleValueChange={handleValueChange}
-            justifyContent={type === "projects" ? "space-around" : "flex-start"}
-            locationInputRef={locationInputRef}
-            locationOptionsOpen={locationOptionsOpen}
-            open={open}
-            possibleFilters={possibleFilters}
-            selectedItems={selectedItems}
-            setSelectedItems={setSelectedItems}
-          />
-        </>
+        <Filters
+          errorMessage={errorMessage}
+          handleClickDialogSave={handleClickDialogSave}
+          handleClickDialogClose={handleClickDialogClose}
+          handleClickDialogOpen={handleClickDialogOpen}
+          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+          handleValueChange={handleValueChange}
+          justifyContent={type === "projects" ? "space-around" : "flexrt"}
+          locationInputRef={locationInputRef}
+          locationOptionsOpen={locationOptionsOpen}
+          open={open}
+          possibleFilters={possibleFilters}
+          selectedItems={selectedItems}
+          setSelectedItems={setSelectedItems}
+        />
       )}
       {/* We pass currentFilters like this because if location is not an array, 
       a change in it doesn't cause a rerender and therefore the location chip is not shown */}

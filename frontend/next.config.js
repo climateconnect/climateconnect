@@ -68,6 +68,11 @@ module.exports = withBundleAnalyzer({
         destination: "/post/es-ist-weihnachtszeit-auf-climate-connect",
         permanent: true,
       },
+      {
+        source: "/klimapuzzle",
+        destination: "/de/projects/workshop-klimapuzzle?hub=marburg",
+        permanent: true,
+      },
     ];
   },
   webpack(config) {
