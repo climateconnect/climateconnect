@@ -392,11 +392,11 @@ export default function EditProjectContent({
                 >
                   {texts.do_you_want_to_delete_your_project}
                 </Typography>
-                  <DeleteProjectButton
-                    project={project}
-                    handleClickDeleteProjectPopup={handleClickDeleteProjectPopup}
-                    className={classes.deleteBtn}
-                  />
+                <DeleteProjectButton
+                  project={project}
+                  handleClickDeleteProjectPopup={handleClickDeleteProjectPopup}
+                  className={classes.deleteBtn}
+                />
               </div>
             )}
           </>

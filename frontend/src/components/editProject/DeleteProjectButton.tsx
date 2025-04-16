@@ -19,7 +19,9 @@ export default function DeleteProjectButton({ project, handleClickDeleteProjectP
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
-  const finalClassName = className ? `${classes.deleteProjectButton} ${className}` : classes.deleteProjectButton;
+  const finalClassName = className
+    ? `${classes.deleteProjectButton} ${className}`
+    : classes.deleteProjectButton;
   return (
     <Button
       classes={{
