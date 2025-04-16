@@ -993,5 +993,9 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "End date must be after start date",
       de: "Das Enddatum muss nach dem Startdatum sein",
     },
+    do_you_want_to_delete_your_project: {
+      en: "Do you want to delete this project?",
+      de: "Möchtest Du dieses Projekt löschen?",
+    },
   };
 }
