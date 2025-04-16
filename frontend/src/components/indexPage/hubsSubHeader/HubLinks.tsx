@@ -31,8 +31,8 @@ export default function HubLinks({
   const classes = useStyles();
   const [open, setOpen] = useState({ sectorHubs: false, climateHubs: false });
   const texts = getTexts({ page: "navigation", locale: locale });
-  const sectorHubs = hubs.filter((h) => h.hub_type === "sector hub");
-  const locationHubs = hubs.filter((h) => isLocationHubLikeHub(h.hub_type));
+  const sectorHubs = hubs?.filter((h) => h.hub_type === "sector hub");
+  const locationHubs = hubs?.filter((h) => isLocationHubLikeHub(h.hub_type));
   const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
   const handleOpen = (e, type) => {

@@ -99,14 +99,7 @@ export default function FilterContent({
   handleUpdateFilters,
   nonFilterParams,
 }) {
-  const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.between("xs", "lg"));
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
-
-  const possibleFiltersFirstHalf = possibleFilters.slice(0, Math.ceil(possibleFilters.length / 2));
-  const possibleFiltersSecondHalf = possibleFilters.slice(
-    Math.ceil(possibleFilters.length / 2),
-    possibleFilters.length
-  );
 
   const reducedPossibleFilters = getReducedPossibleFilters(possibleFilters);
 
@@ -284,36 +277,6 @@ export default function FilterContent({
             unexpandFilters={unexpandFilters}
           />
         </>
-      ) : isMediumScreen && possibleFilters.length > 3 ? (
-        <>
-          <Filters
-            errorMessage={errorMessage}
-            handleClickDialogSave={handleClickDialogSave}
-            handleClickDialogClose={handleClickDialogClose}
-            handleClickDialogOpen={handleClickDialogOpen}
-            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-            handleValueChange={handleValueChange}
-            locationInputRef={locationInputRef}
-            locationOptionsOpen={locationOptionsOpen}
-            open={open}
-            possibleFilters={possibleFiltersFirstHalf}
-            selectedItems={selectedItems}
-            setSelectedItems={setSelectedItems}
-          />
-          <Filters
-            handleClickDialogSave={handleClickDialogSave}
-            handleClickDialogClose={handleClickDialogClose}
-            handleClickDialogOpen={handleClickDialogOpen}
-            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-            handleValueChange={handleValueChange}
-            locationInputRef={locationInputRef}
-            locationOptionsOpen={locationOptionsOpen}
-            open={open}
-            possibleFilters={possibleFiltersSecondHalf}
-            selectedItems={selectedItems}
-            setSelectedItems={setSelectedItems}
-          />
-        </>
       ) : (
         <Filters
           errorMessage={errorMessage}
@@ -322,7 +285,7 @@ export default function FilterContent({
           handleClickDialogOpen={handleClickDialogOpen}
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           handleValueChange={handleValueChange}
-          justifyContent={type === "projects" ? "space-around" : "flex-start"}
+          justifyContent={"center"}
           locationInputRef={locationInputRef}
           locationOptionsOpen={locationOptionsOpen}
           open={open}

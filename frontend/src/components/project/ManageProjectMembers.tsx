@@ -207,9 +207,12 @@ export default function ManageProjectMembers({
           <div className={classes.buttons}>
             <Button
               className={`${classes.button} ${classes.cancelleButton}`}
-              href={`${getLocalePrefix(locale) + "/projects/" + project.url_slug}${
-                hubUrl ? "?hub=" + hubUrl : ""
-              }`}
+              href={
+                getLocalePrefix(locale) +
+                "/projects/" +
+                project.url_slug +
+                (hubUrl ? "?hub=" + hubUrl : "")
+              }
               variant="contained"
             >
               {texts.cancel}
