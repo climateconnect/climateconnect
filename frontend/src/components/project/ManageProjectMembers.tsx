@@ -188,7 +188,7 @@ export default function ManageProjectMembers({
   };
   return (
     <>
-      <Typography variant="h4" color="primary" className={classes.headline}>
+      <Typography variant="h4" className={classes.headline}>
         {texts.manage_members_of_project}
       </Typography>
       <form onSubmit={handleSubmit}>
