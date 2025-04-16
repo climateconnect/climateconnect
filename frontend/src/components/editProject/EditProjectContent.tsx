@@ -86,6 +86,9 @@ const useStyles = makeStyles<Theme>((theme) => ({
     justifyContent: "space-between",
     alignItems: "center",
   },
+  warning: {
+    color: theme.palette.error.main,
+  }
 }));
 
 type Args = {
@@ -388,7 +391,7 @@ export default function EditProjectContent({
                   component="h2"
                   variant="subtitle2"
                   color="primary"
-                  className={classes.subHeader}
+                  className={`${classes.warning} ${classes.subHeader}`}
                 >
                   {texts.do_you_want_to_delete_your_project}
                 </Typography>

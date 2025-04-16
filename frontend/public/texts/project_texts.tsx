@@ -995,7 +995,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     do_you_want_to_delete_your_project: {
       en: "Do you want to delete this project?",
-      de: "Möchten Sie dieses Projekt löschen?",
+      de: "Möchtest Du dieses Projekt löschen?",
     },
   };
 }
