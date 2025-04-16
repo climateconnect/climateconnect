@@ -11,6 +11,7 @@ import {
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useState } from "react";
 import getCollaborationTexts from "../../../public/data/collaborationTexts";
+import ROLE_TYPES from "../../../public/data/role_types";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
@@ -75,8 +76,10 @@ const useStyles = makeStyles<Theme>((theme) => ({
   addButton: {
     marginTop: theme.spacing(2),
   },
-  deleteBtnContainer: {
-    marginTop: theme.spacing(2),
+  deleteBtn: {
+    display: "block",
+    float: "none",
+    marginTop: theme.spacing(1),
   },
   buttonsContainer: {
     display: "flex",
@@ -89,8 +92,8 @@ type Args = {
   project: Project;
   handleSetProject: Function;
   userOrganizations: any;
+  user_role: Role;
   skillsOptions: any;
-  canDeleteProject: boolean;
   deleteProject: Function;
   errors: any;
   contentRef?: React.RefObject<any>;
@@ -102,7 +105,7 @@ export default function EditProjectContent({
   handleSetProject,
   userOrganizations,
   skillsOptions,
-  canDeleteProject,
+  user_role,
   deleteProject,
   errors,
   contentRef,
@@ -228,7 +231,7 @@ export default function EditProjectContent({
           />
           <Typography component="span">{texts.organizations_project}</Typography>
         </div>
-        {!isNarrowScreen && canDeleteProject && (
+        {!isNarrowScreen && user_role.role_type === ROLE_TYPES.all_type && (
           <DeleteProjectButton
             project={project}
             handleClickDeleteProjectPopup={handleClickDeleteProjectPopup}
@@ -346,14 +349,6 @@ export default function EditProjectContent({
                   >
                     {project.skills && project.skills.length ? texts.edit_skills : texts.add_skills}
                   </Button>
-                  {isNarrowScreen && canDeleteProject && (
-                    <div className={classes.deleteBtnContainer}>
-                      <DeleteProjectButton
-                        project={project}
-                        handleClickDeleteProjectPopup={handleClickDeleteProjectPopup}
-                      />
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
@@ -387,6 +382,23 @@ export default function EditProjectContent({
                 {texts.add_connections}
               </Button>
             </div>
+            {isNarrowScreen && user_role.role_type === ROLE_TYPES.all_type && (
+              <div className={classes.block}>
+                <Typography
+                  component="h2"
+                  variant="subtitle2"
+                  color="primary"
+                  className={classes.subHeader}
+                >
+                  {texts.do_you_want_to_delete_your_project}
+                </Typography>
+                  <DeleteProjectButton
+                    project={project}
+                    handleClickDeleteProjectPopup={handleClickDeleteProjectPopup}
+                    className={classes.deleteBtn}
+                  />
+              </div>
+            )}
           </>
         )}
       </div>

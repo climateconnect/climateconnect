@@ -353,7 +353,7 @@ export default function EditProjectRoot({
             handleSetProject={handleSetProject}
             userOrganizations={userOrganizations}
             skillsOptions={skillsOptions}
-            canDeleteProject={user_role.role_type === ROLE_TYPES.all_type}
+            user_role={user_role}
             deleteProject={deleteProject}
             errors={errors}
             contentRef={contentRef}
