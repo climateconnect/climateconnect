@@ -11,7 +11,6 @@ import {
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useState } from "react";
 import getCollaborationTexts from "../../../public/data/collaborationTexts";
-import ROLE_TYPES from "../../../public/data/role_types";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
@@ -91,7 +90,7 @@ type Args = {
   handleSetProject: Function;
   userOrganizations: any;
   skillsOptions: any;
-  user_role: Role;
+  canDeleteProject: boolean;
   deleteProject: Function;
   errors: any;
   contentRef?: React.RefObject<any>;
@@ -103,7 +102,7 @@ export default function EditProjectContent({
   handleSetProject,
   userOrganizations,
   skillsOptions,
-  user_role,
+  canDeleteProject,
   deleteProject,
   errors,
   contentRef,
@@ -229,7 +228,7 @@ export default function EditProjectContent({
           />
           <Typography component="span">{texts.organizations_project}</Typography>
         </div>
-        {!isNarrowScreen && user_role.role_type === ROLE_TYPES.all_type && (
+        {!isNarrowScreen && canDeleteProject && (
           <DeleteProjectButton
             project={project}
             handleClickDeleteProjectPopup={handleClickDeleteProjectPopup}
@@ -347,7 +346,7 @@ export default function EditProjectContent({
                   >
                     {project.skills && project.skills.length ? texts.edit_skills : texts.add_skills}
                   </Button>
-                  {isNarrowScreen && user_role.role_type === ROLE_TYPES.all_type && (
+                  {isNarrowScreen && canDeleteProject && (
                     <div className={classes.deleteBtnContainer}>
                       <DeleteProjectButton
                         project={project}

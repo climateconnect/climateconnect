@@ -5,6 +5,7 @@ import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 
+import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import { checkProjectDatesValid } from "../../../public/lib/dateOperations";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
@@ -352,7 +353,7 @@ export default function EditProjectRoot({
             handleSetProject={handleSetProject}
             userOrganizations={userOrganizations}
             skillsOptions={skillsOptions}
-            user_role={user_role}
+            canDeleteProject={user_role.role_type === ROLE_TYPES.all_type}
             deleteProject={deleteProject}
             errors={errors}
             contentRef={contentRef}
