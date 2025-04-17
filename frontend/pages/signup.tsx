@@ -1,6 +1,5 @@
 import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
 import {
@@ -24,14 +23,13 @@ import { transformThemeData } from "../src/themes/transformThemeData";
 import CustomAuthImage from "../src/components/hub/CustomAuthImage";
 
 export async function getServerSideProps(ctx) {
-  const hubUrl = ctx.query.hub;
-
-  const hubThemeData = await getHubTheme(hubUrl);
+  const { hub } = ctx.query;
+  const hubThemeData = hub ? await getHubTheme(hub) : null;
 
   return {
     props: {
-      hubUrl: hubUrl || null, // undefined is not allowed in JSON, so we use null
-      hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
+      hubUrl: hub || null, // undefined is not allowed in JSON, so we use null
+      hubThemeData: hubThemeData,
     },
   };
 }
@@ -94,6 +92,7 @@ export default function Signup({ hubUrl, hubThemeData }) {
   const handleAddInfoSubmit = (event, values) => {
     event.preventDefault();
     const params = getParams(window?.location?.href);
+
     if (!isLocationValid(values.location)) {
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage, texts);
       return;
