@@ -8,7 +8,6 @@ import {
   getProjectTagsOptions,
   getProjectTypeOptions,
   getSkillsOptions,
-  getStatusOptions,
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
@@ -45,7 +44,6 @@ export async function getServerSideProps(ctx) {
     members,
     skillsOptions,
     userOrganizations,
-    statusOptions,
     tagsOptions,
     projectTypeOptions,
     hubThemeData,
@@ -54,7 +52,6 @@ export async function getServerSideProps(ctx) {
     getMembersByProject(projectUrl, auth_token, ctx.locale),
     getSkillsOptions(ctx.locale),
     getUserOrganizations(auth_token, ctx.locale),
-    getStatusOptions(ctx.locale),
     getProjectTagsOptions(null, ctx.locale),
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
@@ -65,7 +62,6 @@ export async function getServerSideProps(ctx) {
       members: members,
       skillsOptions: skillsOptions,
       userOrganizations: userOrganizations,
-      statusOptions: statusOptions,
       tagsOptions: tagsOptions,
       projectTypeOptions: projectTypeOptions,
       hubThemeData: hubThemeData,
@@ -79,7 +75,6 @@ export default function EditProjectPage({
   members,
   skillsOptions,
   userOrganizations,
-  statusOptions,
   tagsOptions,
   projectTypeOptions,
   hubThemeData,
@@ -88,12 +83,10 @@ export default function EditProjectPage({
   const classes = useStyles();
   const [curProject, setCurProject] = React.useState({
     ...project,
-    status: statusOptions.find((s) => s.name === project?.status),
     hubUrl: project.related_hubs?.length > 0 ? project.related_hubs[0] : null,
   });
   project = {
     ...project,
-    status: statusOptions.find((s) => s.name === project?.status),
   };
   const [errorMessage, setErrorMessage] = React.useState("");
   const { user, locale, CUSTOM_HUB_URLS } = useContext(UserContext);
@@ -179,7 +172,6 @@ export default function EditProjectPage({
           project={curProject}
           skillsOptions={skillsOptions}
           userOrganizations={userOrganizations}
-          statusOptions={statusOptions}
           handleSetProject={handleSetProject}
           tagsOptions={tagsOptions}
           user_role={user_role}
