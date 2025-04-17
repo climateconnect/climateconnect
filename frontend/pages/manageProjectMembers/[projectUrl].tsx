@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme) => {
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = Cookies(ctx);
+  const hubUrl = encodeURI(ctx?.query?.hub);
   const texts = getTexts({ page: "project", locale: ctx.locale });
   if (ctx.req && !auth_token) {
     const message = texts.you_have_to_log_in_to_manage_a_projects_members;
@@ -42,6 +43,7 @@ export async function getServerSideProps(ctx) {
       members: members,
       rolesOptions: rolesOptions,
       availabilityOptions: availabilityOptions,
+      hubUrl: hubUrl,
       token: auth_token,
     },
   };
@@ -53,6 +55,7 @@ export default function manageProjectMembers({
   availabilityOptions,
   rolesOptions,
   token,
+  hubUrl,
 }) {
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
@@ -67,7 +70,11 @@ export default function manageProjectMembers({
         title={texts.please_log_in + " " + texts.to_manage_the_members_of_this_project}
         hideHeadline={true}
       >
-        <LoginNudge fullPage whatToDo={texts.to_manage_the_members_of_this_project} />
+        <LoginNudge
+          fullPage
+          whatToDo={texts.to_manage_the_members_of_this_project}
+          hubUrl={hubUrl}
+        />
       </WideLayout>
     );
   else if (!members.find((m) => m.id === user.id))

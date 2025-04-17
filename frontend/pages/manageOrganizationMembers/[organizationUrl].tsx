@@ -83,7 +83,7 @@ export default function manageOrganizationMembers({
         {...layoutProps}
         // hideHeadline={true}
       >
-        <LoginNudge fullPage whatToDo={texts.to_manage_org_members} />
+        <LoginNudge fullPage whatToDo={texts.to_manage_org_members} hubUrl={hubUrl} />
       </WideLayout>
     );
   else if (!members.find((m) => m.id === user.id))

@@ -79,7 +79,7 @@ export default function Share({
         title={texts.please_log_in + " " + texts.to_share_a_project}
         customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
       >
-        <LoginNudge fullPage whatToDo={texts.to_share_a_project} />
+        <LoginNudge fullPage whatToDo={texts.to_share_a_project} hubUrl={hubUrl} />
       </WideLayout>
     );
   else {
