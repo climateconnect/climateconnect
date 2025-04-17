@@ -8,7 +8,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
@@ -68,6 +68,12 @@ function CommentInput({
   const texts = getTexts({ page: "communication", locale: locale });
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const [showSendHelper, setShowSendHelper] = useState(false);
+
+  let hubUrl = "";
+
+  useEffect(() => {
+    hubUrl = new URLSearchParams(window.location.search).get("hub") ?? "";
+  }, [window.location.search]);
 
   const onCurCommentChange = (e) => {
     setCurComment(e.target.value);
@@ -184,7 +190,7 @@ function CommentInput({
         </form>
       </div>
     );
-  else return <LoginNudge whatToDo={texts.to_write_a_comment} />;
+  else return <LoginNudge whatToDo={texts.to_write_a_comment} hubUrl={hubUrl} />;
 }
 
 export { CommentInput as default, INFO_TEXT_SIZES };

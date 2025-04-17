@@ -155,6 +155,7 @@ export default function ProfileRoot({
         <LoginNudge
           className={classes.loginNudge}
           whatToDo={texts.to_see_this_users_full_information}
+          hubUrl={hubUrl}
         />
       )}
       {user && user.url_slug !== profile.url_slug && (
