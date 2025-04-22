@@ -82,6 +82,9 @@ export default function MiniHubPreview({
     event.preventDefault();
     onClickRemoveHub(hub);
   };
+  //Link to filtered projects instead to hub
+  //Case 1: Location hub (?hub=erlangen) -> link to hub page filtered by this sector
+  //Case 2: General platform -> link to browse page filtered by this sector
   return (
     <Link
       href={hub && getLocalePrefix(locale) + `/hubs/${hub.url_slug}`}
