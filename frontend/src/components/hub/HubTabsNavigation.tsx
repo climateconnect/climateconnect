@@ -102,7 +102,7 @@ export default function HubTabsNavigation({
 }) {
   const { locale, user, CUSTOM_HUB_URLS } = useContext(UserContext);
   const classes = useStyles();
-
+  
   const locationHubs = allHubs.filter((h) => isLocationHubLikeHub(h.hub_type));
   const texts = getTexts({ page: "navigation", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));

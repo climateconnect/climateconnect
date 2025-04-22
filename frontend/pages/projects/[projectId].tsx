@@ -18,6 +18,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import ProjectSideBar from "../../src/components/project/ProjectSideBar";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 import getHubTheme from "../../src/themes/fetchHubTheme";
+import isLocationHubLikeHub from "../../public/lib/isLocationHubLikeHub";
 
 type StyleProps = {
   showSimilarProjects: boolean;
@@ -150,7 +151,7 @@ export default function ProjectPage({
     const projectTypeOptions = await getProjectTypeOptions(locale);
     setProjectTypes(projectTypeOptions);
   };
-
+  
   useEffect(function () {
     retrieveAndSetProjectTypes();
   }, []);
@@ -235,6 +236,8 @@ export default function ProjectPage({
 
   const tinyScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
+  const match = project?.related_hubs_info.find((h) => Object.keys(h).includes(hubUrl));
+  const isLocationHub = isLocationHubLikeHub(match[hubUrl]);
 
   return (
     <WideLayout
@@ -254,6 +257,7 @@ export default function ProjectPage({
       hubUrl={hubUrl}
       headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
       image={project ? getImageUrl(project.image) : undefined}
+      isLocationHub={isLocationHub}
     >
       <BrowseContext.Provider value={contextValues}>
         {project ? (
@@ -462,6 +466,7 @@ function parseProject(project) {
     number_of_likes: project.number_of_likes,
     project_type: project.project_type,
     additional_loc_info: project.additional_loc_info,
+    related_hubs_info: project.related_hubs_info,
   };
 }
 

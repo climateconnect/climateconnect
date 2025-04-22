@@ -13,6 +13,7 @@ import { getOrganizationTagsOptions } from "./../../public/lib/getOptions";
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
+
   if (ctx.req && !auth_token) {
     const texts = getTexts({ page: "organization", locale: ctx.locale });
     const message = texts.log_in_to_edit_organization;
@@ -70,7 +71,7 @@ export default function EditOrganizationPage({ organization, tagOptions, allHubs
   const handleSetExistingName = (name) => {
     setExistingName(name);
   };
-
+  
   return (
     <WideLayout title={organization ? organization.name : texts.not_found_error}>
       <EditOrganizationRoot
