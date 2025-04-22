@@ -4,6 +4,7 @@ from organization.models import Organization
 from organization.models.project import Project
 
 
+# Add Icon and image (copy from sector hub)
 class Sector(models.Model):
     name = models.CharField(
         help_text="Name of the sector",
@@ -39,6 +40,17 @@ class Sector(models.Model):
         verbose_name="Updated at",
         auto_now=True,
     )
+
+    # Option 1: Parent Hubs
+    # - Scottland hub
+    #   - Climate Caffe
+    # this solution is too complicated for now
+
+    # Option 2: Sector
+    # - do not show specific sectors everywhere (e.g. importance -> don't show if importance == 0)
+    # n to m: hub to sectors: which sectors can I select while being on the hub
+
+    # For this PR: Add importance field, sort by importance and filter out importance == 0 in serializer
 
     class Meta:
         app_label = "organization"

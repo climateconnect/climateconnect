@@ -20,7 +20,7 @@ SECTOR_DEFINITIONS = {
     for x in [
         Sector_Definition(
             "Food",
-            "Nahrung",
+            "Ernährung",
             "food",
         ),
         Sector_Definition(
@@ -30,12 +30,12 @@ SECTOR_DEFINITIONS = {
         ),
         Sector_Definition(
             "Buildings",
-            "Gebäude",
+            "Bauen und Wohnen",
             "buldings",
         ),
         Sector_Definition(
             "Energy",
-            "Energie",
+            "Energiewende",
             "energy",
         ),
         Sector_Definition(
@@ -203,6 +203,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        ####################################################
+        # auto generateed migration
         migrations.CreateModel(
             name="Sector",
             fields=[
@@ -376,10 +378,14 @@ class Migration(migrations.Migration):
                 "ordering": ["id"],
             },
         ),
+        ####################################################
+        # manual addition
         migrations.RunPython(
             create_sectors,
             reverse_code=migrations.RunPython.noop,
         ),
+        # Link sectors to existing sector hubs (use key and url_slug)
+        # migration for organizations: link to hub changes to link to hub.sector
         migrations.RunPython(
             generate_sector_mappings_from_project_taggings,
             reverse_code=migrations.RunPython.noop,
