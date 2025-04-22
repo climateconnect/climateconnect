@@ -310,7 +310,7 @@ export default function Header({
   const getLogo = () => {
     let imageUrl = "/images";
     if (!isCustomHub) {
-      if (isHubPage && isLocationHub) {
+      if (isLocationHub) {
         imageUrl += `/hub_logos/ch_${hubUrl}_logo.svg`;
       } else {
         imageUrl = loadDefaultLogo(transparentHeader, isMediumScreen);
