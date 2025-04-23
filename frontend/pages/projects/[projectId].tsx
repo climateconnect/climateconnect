@@ -150,7 +150,7 @@ export default function ProjectPage({
     const projectTypeOptions = await getProjectTypeOptions(locale);
     setProjectTypes(projectTypeOptions);
   };
-  
+
   useEffect(function () {
     retrieveAndSetProjectTypes();
   }, []);

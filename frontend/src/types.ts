@@ -90,4 +90,4 @@ export type AllHubsType = {
   quick_info: string;
   thumbnail_image: string | null;
   url_slug: string;
-}
+};

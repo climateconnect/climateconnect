@@ -13,7 +13,7 @@ import DonationCampaignInformation from "../staticpages/donate/DonationCampaignI
 import LayoutWrapper from "./LayoutWrapper";
 import { CustomBackground } from "../hub/CustomBackground";
 import UserContext from "../context/UserContext";
-import LocationHubFromAllHubs from "../hooks/LocationHubFromAllHubs"
+import LocationHubFromAllHubs from "../hooks/LocationHubFromAllHubs";
 
 type ThemeProps = { noSpaceBottom?: boolean; isStaticPage?: boolean };
 const useStyles = makeStyles<Theme, ThemeProps>((theme) => ({
@@ -129,7 +129,7 @@ export default function WideLayout({
 
   // Check hub type to decide if a hub logo should be shown in the Header
   const isLocationHub = LocationHubFromAllHubs({ locale: locale, hubUrl: hubUrl });
-    
+
   return (
     <LayoutWrapper
       title={title}

@@ -168,7 +168,7 @@ export default function Hub({
   const [hubAmbassador, setHubAmbassador] = useState(null);
   const [hubSupporters, setHubSupporters] = useState(null);
   const contentRef = useRef(null);
-  
+
   useEffect(() => {
     (async () => {
       const retrievedHubAmbassador = await getHubAmbassadorData(hubUrl, locale);

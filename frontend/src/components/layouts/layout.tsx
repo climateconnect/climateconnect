@@ -56,7 +56,7 @@ export default function Layout({
 
   // Check hub type to decide if a hub logo should be shown in the Header
   const isLocationHub = LocationHubFromAllHubs({ locale: locale, hubUrl: hubUrl });
-  
+
   return (
     <DevLinkProvider>
       <LayoutWrapper theme={theme} title={title}>
