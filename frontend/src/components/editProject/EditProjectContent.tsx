@@ -76,14 +76,27 @@ const useStyles = makeStyles<Theme>((theme) => ({
   addButton: {
     marginTop: theme.spacing(2),
   },
+  deleteBtn: {
+    display: "block",
+    float: "none",
+    marginTop: theme.spacing(1),
+  },
+  buttonsContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  warning: {
+    color: theme.palette.error.main,
+  }
 }));
 
 type Args = {
   project: Project;
   handleSetProject: Function;
   userOrganizations: any;
-  skillsOptions: any;
   user_role: Role;
+  skillsOptions: any;
   deleteProject: Function;
   errors: any;
   contentRef?: React.RefObject<any>;
@@ -330,14 +343,16 @@ export default function EditProjectContent({
                     ))}
                   </List>
                 )}
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={onClickSkillsDialogOpen}
-                  className={classes.addButton}
-                >
-                  {project.skills && project.skills.length ? texts.edit_skills : texts.add_skills}
-                </Button>
+                <div className={classes.buttonsContainer}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={onClickSkillsDialogOpen}
+                    className={classes.addButton}
+                  >
+                    {project.skills && project.skills.length ? texts.edit_skills : texts.add_skills}
+                  </Button>
+                </div>
               </div>
             </div>
             <div className={classes.block}>
@@ -370,6 +385,23 @@ export default function EditProjectContent({
                 {texts.add_connections}
               </Button>
             </div>
+            {isNarrowScreen && user_role.role_type === ROLE_TYPES.all_type && (
+              <div className={classes.block}>
+                <Typography
+                  component="h2"
+                  variant="subtitle2"
+                  color="primary"
+                  className={`${classes.warning} ${classes.subHeader}`}
+                >
+                  {texts.do_you_want_to_delete_your_project}
+                </Typography>
+                <DeleteProjectButton
+                  project={project}
+                  handleClickDeleteProjectPopup={handleClickDeleteProjectPopup}
+                  className={classes.deleteBtn}
+                />
+              </div>
+            )}
           </>
         )}
       </div>

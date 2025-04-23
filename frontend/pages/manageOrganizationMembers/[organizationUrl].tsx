@@ -96,11 +96,7 @@ export default function manageOrganizationMembers({
     members.find((m) => m.id === user.id).role.role_type !== ROLE_TYPES.read_write_type
   )
     return (
-      <WideLayout
-        title={texts.no_permission_to_manage_members_of_this_org}
-        {...layoutProps}
-        //hideHeadline={true}
-      >
+      <WideLayout title={texts.no_permission_to_manage_members_of_this_org} {...layoutProps}>
         <Typography variant="h4" color="primary" className={classes.headline}>
           {texts.need_to_be_admin_to_manage_org_members}
         </Typography>

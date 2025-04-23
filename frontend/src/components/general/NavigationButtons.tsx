@@ -25,6 +25,8 @@ const useStyles = makeStyles((theme) => {
         paddingBottom: props.fixedOnMobile && theme.spacing(1),
         background: props.fixedOnMobile && theme.palette.grey.light,
         zIndex: props.fixedOnMobile && 10,
+        display: "flex",
+        justifyContent: "center",
       },
     }),
     backButton: {
