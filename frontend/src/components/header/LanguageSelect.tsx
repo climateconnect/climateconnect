@@ -63,6 +63,7 @@ export default function LanguageSelect({
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const classes = useStyles({ transparentHeader, isCustomHub, isNarrowScreen });
   const router = useRouter();
+
   useEffect(function () {
     setAnchorEl(buttonRef.current);
   }, []);
@@ -106,6 +107,23 @@ export default function LanguageSelect({
 
   // TODO: this could be generalized into a HoverButton component,
   // and used in the Welcome Blurb feature on /hubs
+
+  const MenuItems = () => (
+    <>
+      {locales?.map((l) => (
+        <StyledMenuItem
+          key={l}
+          className={classes.centerText}
+          selected={l === locale}
+          dense={!isMediumScreen}
+          onClick={(e) => handleLanguageClick(e, l)}
+        >
+          {l.toUpperCase()}
+        </StyledMenuItem>
+      ))}
+    </>
+  );
+  
   return (
     <>
       <Button
@@ -137,17 +155,7 @@ export default function LanguageSelect({
           container={anchorEl?.parentNode}
           PaperProps={{ onMouseEnter: handleOpen, onMouseLeave: handleClose }}
         >
-          {locales?.map((l, index) => (
-            <StyledMenuItem
-              key={index}
-              className={classes.centerText}
-              selected={l === locale}
-              dense={!isMediumScreen}
-              onClick={(e) => handleLanguageClick(e, l)}
-            >
-              {l.toUpperCase()}
-            </StyledMenuItem>
-          ))}
+          <MenuItems />
         </StyledMenu>
       ) : (
         // For some reason, the StyledMenu component doesn't work as expected on Desktop
@@ -156,17 +164,7 @@ export default function LanguageSelect({
         <Popper open={open} anchorEl={buttonRef.current} className={classes.popper}>
           <Paper {...hoverButtonProps} className={classes.paper}>
             <MenuList>
-              {locales?.map((l, index) => (
-                <StyledMenuItem
-                  key={index}
-                  className={classes.centerText}
-                  selected={l === locale}
-                  dense={!isMediumScreen}
-                  onClick={(e) => handleLanguageClick(e, l)}
-                >
-                  {l.toUpperCase()}
-                </StyledMenuItem>
-              ))}
+              <MenuItems />
             </MenuList>
           </Paper>
         </Popper>
