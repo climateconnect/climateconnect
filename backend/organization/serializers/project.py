@@ -35,7 +35,6 @@ from organization.utility.project import (
     get_project_short_description,
 )
 from organization.models.type import PROJECT_TYPES
-from hubs.serializers.hub import HubStubSerializer
 
 class ProjectSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
@@ -53,7 +52,6 @@ class ProjectSerializer(serializers.ModelSerializer):
     helpful_connections = serializers.SerializerMethodField()
     language = serializers.SerializerMethodField()
     project_type = serializers.SerializerMethodField()
-    related_hubs_info = serializers.SerializerMethodField()
     class Meta:
         model = Project
         fields = (
@@ -82,7 +80,6 @@ class ProjectSerializer(serializers.ModelSerializer):
             "language",
             "project_type",
             "additional_loc_info",
-            "related_hubs_info",
         )
         read_only_fields = ["url_slug"]
 
@@ -148,14 +145,6 @@ class ProjectSerializer(serializers.ModelSerializer):
         )
         serializer = ProjectTypesSerializer(project_type, many=False)
         return serializer.data
-    
-    def get_related_hubs_info(self, obj):
-        hubs = obj.related_hubs.all()
-        return [
-            {hub.url_slug: HubStubSerializer(hub).data.get("hub_type")}
-            for hub in hubs
-        ]
-
 
 class EditProjectSerializer(ProjectSerializer):
     loc = serializers.SerializerMethodField()

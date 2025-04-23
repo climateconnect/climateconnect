@@ -232,7 +232,6 @@ export default function Hub({
         customFooterImage={
           hubData?.custom_footer_image && getImageUrl(hubData?.custom_footer_image)
         }
-        isLocationHub={isLocationHub}
         customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
       >
         <div className={classes.content}>

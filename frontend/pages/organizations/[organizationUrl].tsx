@@ -28,7 +28,6 @@ import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import ControlPointSharpIcon from "@mui/icons-material/ControlPointSharp";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
-import isLocationHubLikeHub from "../../public/lib/isLocationHubLikeHub";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -160,8 +159,6 @@ export default function OrganizationPage({
   });
 
   const customHubTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
-  const match = organization?.hubs.find((h) => h.url_slug === hubUrl);
-  const isLocationHub = isLocationHubLikeHub(match?.hub_type);
   return (
     <WideLayout
       title={organization ? organization.name : texts.not_found_error}
@@ -170,7 +167,6 @@ export default function OrganizationPage({
       headerBackground={isCustomHub ? customHubTheme?.palette?.secondary?.light : "#FFF"}
       customTheme={customHubTheme}
       hubUrl={hubUrl}
-      isLocationHub={isLocationHub}
     >
       {organization ? (
         <OrganizationLayout

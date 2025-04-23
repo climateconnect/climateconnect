@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme) => {
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = Cookies(ctx);
+  const {hub} = ctx.query;
   const texts = getTexts({ page: "project", locale: ctx.locale });
   if (ctx.req && !auth_token) {
     const message = texts.you_have_to_log_in_to_manage_a_projects_members;
@@ -43,6 +44,7 @@ export async function getServerSideProps(ctx) {
       rolesOptions: rolesOptions,
       availabilityOptions: availabilityOptions,
       token: auth_token,
+      hubUrl: hub || null,
     },
   };
 }
@@ -53,6 +55,7 @@ export default function manageProjectMembers({
   availabilityOptions,
   rolesOptions,
   token,
+  hubUrl,
 }) {
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
@@ -88,7 +91,7 @@ export default function manageProjectMembers({
     );
   else {
     return (
-      <Layout title={texts.manage_projects_members} hideHeadline>
+      <Layout title={texts.manage_projects_members} hubUrl={hubUrl} hideHeadline>
         <ManageProjectMembers
           user={user}
           members={members}

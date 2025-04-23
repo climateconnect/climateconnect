@@ -82,3 +82,12 @@ export type Supporter = {
   importance: number;
   organization_url_slug: string;
 };
+
+export type AllHubsType = {
+  hub_type: string;
+  icon: string | null;
+  name: string;
+  quick_info: string;
+  thumbnail_image: string | null;
+  url_slug: string;
+}

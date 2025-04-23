@@ -1,7 +1,7 @@
 import { Collapse, Container, Theme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import Alert from "@mui/material/Alert";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { getParams } from "../../../public/lib/generalOperations";
 import { getMessageFromUrl } from "../../../public/lib/parsingOperations";
 import theme from "../../themes/theme";
@@ -12,6 +12,8 @@ import ElementSpaceToTop from "../hooks/ElementSpaceToTop";
 import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
 import LayoutWrapper from "./LayoutWrapper";
 import { CustomBackground } from "../hub/CustomBackground";
+import UserContext from "../context/UserContext";
+import LocationHubFromAllHubs from "../hooks/LocationHubFromAllHubs"
 
 type ThemeProps = { noSpaceBottom?: boolean; isStaticPage?: boolean };
 const useStyles = makeStyles<Theme, ThemeProps>((theme) => ({
@@ -94,7 +96,6 @@ export default function WideLayout({
   resetAlertMessage,
   isHubPage,
   hubUrl,
-  isLocationHub,
   hideDonationCampaign,
   customFooterImage,
   noHeader,
@@ -110,7 +111,7 @@ export default function WideLayout({
   //Atm this is simply used to slide in the donation campaign banner after a certain timeout
   const [showDonationBanner, setShowDonationBanner] = useState(false);
   const spaceToTop = ElementSpaceToTop({ el: alertEl });
-
+  const { locale } = useContext(UserContext);
   useEffect(() => {
     const params = getParams(window.location.href);
     if (params.message) setInitialMessage(decodeURI(params.message));
@@ -126,6 +127,9 @@ export default function WideLayout({
     !hideAlert && setAlertOpen(true);
   }, [message]);
 
+  // Check hub type to decide if a hub logo should be shown in the Header
+  const isLocationHub = LocationHubFromAllHubs({ locale: locale, hubUrl: hubUrl });
+    
   return (
     <LayoutWrapper
       title={title}

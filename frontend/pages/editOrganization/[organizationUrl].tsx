@@ -30,12 +30,13 @@ export async function getServerSideProps(ctx) {
       organization: organization,
       tagOptions: tagOptions,
       allHubs: allHubs,
+      hubUrl: ctx?.query?.hub || "",
     }),
   };
 }
 
 //This route should only be accessible to admins of the organization
-export default function EditOrganizationPage({ organization, tagOptions, allHubs }) {
+export default function EditOrganizationPage({ organization, tagOptions, allHubs, hubUrl }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
   const organization_info_metadata = getOrganizationInfoMetadata(locale, organization, true);
@@ -71,9 +72,9 @@ export default function EditOrganizationPage({ organization, tagOptions, allHubs
   const handleSetExistingName = (name) => {
     setExistingName(name);
   };
-  
+
   return (
-    <WideLayout title={organization ? organization.name : texts.not_found_error}>
+    <WideLayout title={organization ? organization.name : texts.not_found_error} hubUrl={hubUrl}>
       <EditOrganizationRoot
         allHubs={allHubs}
         errorMessage={errorMessage}

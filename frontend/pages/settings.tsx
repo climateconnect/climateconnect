@@ -10,23 +10,26 @@ import Layout from "../src/components/layouts/layout";
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
+  const { hub } = ctx.query;
   return {
     props: {
       settings: await getSettings(auth_token, ctx.locale),
+      hubUrl: hub || null,
     },
   };
 }
 
-export default function Settings({ settings }) {
+export default function Settings({ settings, hubUrl }) {
   const token = new Cookies().get("auth_token");
   const { user } = useContext(UserContext);
   const [message, setMessage] = React.useState("");
   const [currentSettings, setCurrentSettings] = React.useState(settings);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "settings", locale: locale });
+
   if (user)
     return (
-      <Layout title={texts.settings} message={message} noSpacingBottom>
+      <Layout title={texts.settings} message={message} hubUrl={hubUrl} noSpacingBottom>
         <SettingsPage
           settings={currentSettings}
           setSettings={setCurrentSettings}

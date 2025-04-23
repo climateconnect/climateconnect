@@ -1,7 +1,7 @@
 import { Container, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import Alert from "@mui/material/Alert";
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { getParams } from "../../../public/lib/generalOperations";
 import { getMessageFromUrl } from "../../../public/lib/parsingOperations";
 import theme from "../../themes/theme";
@@ -15,6 +15,8 @@ import LayoutWrapper from "./LayoutWrapper";
 //If you do not have access to an API key you can line out.
 // @ts-ignore
 import { DevLinkProvider } from "../../../devlink/DevLinkProvider";
+import UserContext from "../context/UserContext";
+import LocationHubFromAllHubs from "../hooks/LocationHubFromAllHubs";
 
 const useStyles = makeStyles((theme) => ({
   mainHeading: {
@@ -35,11 +37,14 @@ export default function Layout({
   messageType,
   isLoading,
   isStaticPage,
+  hubUrl,
 }: any) {
   const classes = useStyles({ donationCampaignRunning: process.env.DONATION_CAMPAIGN_RUNNING });
-  const [hideAlertMessage, setHideAlertMessage] = React.useState(false);
-  const [initialMessageType, setInitialMessageType] = React.useState(null as string | null);
-  const [initialMessage, setInitialMessage] = React.useState("");
+  const [hideAlertMessage, setHideAlertMessage] = useState(false);
+  const [initialMessageType, setInitialMessageType] = useState(null as string | null);
+  const [initialMessage, setInitialMessage] = useState("");
+  const { locale } = useContext(UserContext);
+
   useEffect(() => {
     const params = getParams(window.location.href);
     if (params.message) setInitialMessage(decodeURI(params.message));
@@ -48,10 +53,19 @@ export default function Layout({
       setInitialMessageType("error");
     }
   }, []);
+
+  // Check hub type to decide if a hub logo should be shown in the Header
+  const isLocationHub = LocationHubFromAllHubs({ locale: locale, hubUrl: hubUrl });
+  
   return (
     <DevLinkProvider>
       <LayoutWrapper theme={theme} title={title}>
-        <Header noSpacingBottom isStaticPage={isStaticPage} />
+        <Header
+          noSpacingBottom
+          isStaticPage={isStaticPage}
+          hubUrl={hubUrl}
+          isLocationHub={isLocationHub}
+        />
         {<DonationCampaignInformation />}
         {isLoading ? (
           <LoadingContainer headerHeight={113} footerHeight={80} />

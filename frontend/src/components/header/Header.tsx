@@ -282,6 +282,7 @@ export default function Header({
   const { user, signOut, notifications, pathName, locale, CUSTOM_HUB_URLS } = useContext(
     UserContext
   );
+
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
@@ -289,6 +290,7 @@ export default function Header({
   const customHubUrls = CUSTOM_HUB_URLS || ["prio1"];
   const isCustomHub = customHubUrls.includes(hubUrl);
   const LINKS = getLinks(pathName, texts, isLocationHub, isCustomHub);
+  
   const classes = useStyles({
     fixedHeader: fixedHeader,
     transparentHeader: transparentHeader,
@@ -310,7 +312,7 @@ export default function Header({
   const getLogo = () => {
     let imageUrl = "/images";
     if (!isCustomHub) {
-      if (isLocationHub) {
+        if(isLocationHub) {
         imageUrl += `/hub_logos/ch_${hubUrl}_logo.svg`;
       } else {
         imageUrl = loadDefaultLogo(transparentHeader, isMediumScreen);
@@ -343,7 +345,7 @@ export default function Header({
     return `${localePrefix}/`;
   };
   const logoLink = getLogoLink();
-
+ 
   return (
     <Box
       component="header"
