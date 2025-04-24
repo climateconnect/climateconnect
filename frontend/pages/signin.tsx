@@ -34,7 +34,7 @@ export async function getServerSideProps(ctx) {
       props: {
         message: message || null,
         message_type: message_type || null,
-        hubSlug: hubSlug || null, 
+        hubSlug: hubSlug || null,
       },
     };
   }

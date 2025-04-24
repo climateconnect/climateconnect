@@ -278,9 +278,15 @@ export default function Header({
   isHubPage,
   hubUrl,
 }: HeaderProps) {
-  const { user, signOut, notifications, pathName, locale, CUSTOM_HUB_URLS, LOCATION_HUBS } = useContext(
-    UserContext
-  );
+  const {
+    user,
+    signOut,
+    notifications,
+    pathName,
+    locale,
+    CUSTOM_HUB_URLS,
+    LOCATION_HUBS,
+  } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
@@ -288,7 +294,7 @@ export default function Header({
   const customHubUrls = CUSTOM_HUB_URLS || ["prio1"];
   const isCustomHub = customHubUrls.includes(hubUrl);
   const isLocationHub = LOCATION_HUBS.includes(hubUrl);
-  
+
   const LINKS = getLinks(pathName, texts, isLocationHub, isCustomHub);
   const classes = useStyles({
     fixedHeader: fixedHeader,
