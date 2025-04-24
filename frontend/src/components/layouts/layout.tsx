@@ -37,6 +37,8 @@ export default function Layout({
   messageType,
   isLoading,
   isStaticPage,
+  headerBackground,
+  customTheme,
   hubUrl,
 }: any) {
   const classes = useStyles({ donationCampaignRunning: process.env.DONATION_CAMPAIGN_RUNNING });
@@ -59,10 +61,11 @@ export default function Layout({
 
   return (
     <DevLinkProvider>
-      <LayoutWrapper theme={theme} title={title}>
+      <LayoutWrapper theme={customTheme ?? theme} title={title}>
         <Header
           noSpacingBottom
           isStaticPage={isStaticPage}
+          background={headerBackground}
           hubUrl={hubUrl}
           isLocationHub={isLocationHub}
         />
