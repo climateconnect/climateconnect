@@ -31,7 +31,7 @@ export async function getServerSideProps(ctx) {
     return sendToLogin(ctx, message);
   }
   const projectUrl = encodeURI(ctx.query.projectUrl);
-  const hubUrl = ctx?.query?.hub ? ctx.query.hub : null;
+  const hubUrl = ctx.query.hub || null;
   const [project, members, rolesOptions, availabilityOptions, hubThemeData] = await Promise.all([
     getProjectByUrlIfExists(projectUrl, auth_token, ctx.locale),
     getMembersByProject(projectUrl, auth_token, ctx.locale),
@@ -47,7 +47,7 @@ export async function getServerSideProps(ctx) {
       rolesOptions: rolesOptions,
       availabilityOptions: availabilityOptions,
       token: auth_token,
-      hubUrl: hubUrl || null,
+      hubUrl: hubUrl,
       hubThemeData: hubThemeData,
     },
   };

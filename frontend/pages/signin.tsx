@@ -16,7 +16,7 @@ export async function getServerSideProps(ctx) {
   const hubSlug = ctx.query.hub;
   const message = ctx.query.message;
   const message_type = ctx.query.message_type;
-
+  
   // early return to avoid fetching /undefined/theme
   if (!hubSlug) {
     return {
@@ -27,13 +27,14 @@ export async function getServerSideProps(ctx) {
     };
   }
   const hubThemeData = await getHubTheme(hubSlug);
-
+  
   // early return to avoid a hubSlug, that is not supported within the backend
   if (!hubThemeData) {
     return {
       props: {
         message: message || null,
         message_type: message_type || null,
+        hubSlug: hubSlug || null, //needed hubSlug to change logo on climateHub
       },
     };
   }
@@ -68,7 +69,6 @@ export default function Signin({ hubSlug, hubThemeData, message, message_type })
       type: "password",
     },
   ];
-
   const messages = {
     submitMessage: texts.log_in,
     bottomMessage: (
@@ -151,6 +151,7 @@ export default function Signin({ hubSlug, hubThemeData, message, message_type })
   const customThemeSignIn = hubThemeData
     ? transformThemeData(hubThemeData, themeSignUp)
     : themeSignUp;
+    
   return (
     <WideLayout
       title={texts.log_in}
