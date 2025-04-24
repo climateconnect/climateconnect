@@ -13,6 +13,7 @@ import { getOrganizationTagsOptions } from "./../../public/lib/getOptions";
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
+  const { hub } = ctx.query;
   if (ctx.req && !auth_token) {
     const texts = getTexts({ page: "organization", locale: ctx.locale });
     const message = texts.log_in_to_edit_organization;
@@ -29,12 +30,13 @@ export async function getServerSideProps(ctx) {
       organization: organization,
       tagOptions: tagOptions,
       allHubs: allHubs,
+      hubUrl: hub || null,
     }),
   };
 }
 
 //This route should only be accessible to admins of the organization
-export default function EditOrganizationPage({ organization, tagOptions, allHubs }) {
+export default function EditOrganizationPage({ organization, tagOptions, allHubs, hubUrl }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
   const organization_info_metadata = getOrganizationInfoMetadata(locale, organization, true);
@@ -72,7 +74,7 @@ export default function EditOrganizationPage({ organization, tagOptions, allHubs
   };
 
   return (
-    <WideLayout title={organization ? organization.name : texts.not_found_error}>
+    <WideLayout title={organization ? organization.name : texts.not_found_error} hubUrl={hubUrl}>
       <EditOrganizationRoot
         allHubs={allHubs}
         errorMessage={errorMessage}
