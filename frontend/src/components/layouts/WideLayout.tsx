@@ -63,7 +63,6 @@ type Props = {
   hubUrl?: string;
   hideDonationCampaign?: boolean;
   customFooterImage?: string;
-  isLocationHub?: boolean;
   noHeader?: boolean;
   footerTextColor?: string;
   customTheme?: any;
@@ -94,7 +93,6 @@ export default function WideLayout({
   resetAlertMessage,
   isHubPage,
   hubUrl,
-  isLocationHub,
   hideDonationCampaign,
   customFooterImage,
   noHeader,
@@ -147,7 +145,6 @@ export default function WideLayout({
           background={headerBackground}
           isHubPage={isHubPage}
           hubUrl={hubUrl}
-          isLocationHub={isLocationHub}
         />
       )}
       {isLoading ? (

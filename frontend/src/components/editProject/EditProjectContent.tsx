@@ -88,7 +88,7 @@ const useStyles = makeStyles<Theme>((theme) => ({
   },
   warning: {
     color: theme.palette.error.main,
-  }
+  },
 }));
 
 type Args = {

@@ -24,6 +24,7 @@ module.exports = withBundleAnalyzer({
     "SOCKET_URL",
     "WEBFLOW_API_TOKEN",
     "WEBFLOW_SITE_ID",
+    "LOCATION_HUBS",
   ]),
   i18n: {
     locales: ["en", "de"],

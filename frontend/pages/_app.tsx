@@ -71,7 +71,7 @@ export default function MyApp({ Component, pageProps = {} }) {
   const ENVIRONMENT = process.env.ENVIRONMENT;
   const SOCKET_URL = process.env.SOCKET_URL;
   const CUSTOM_HUB_URLS = process.env.CUSTOM_HUB_URLS ? process.env.CUSTOM_HUB_URLS.split(",") : [];
-
+  const LOCATION_HUBS = process.env.LOCATION_HUBS ? process.env.LOCATION_HUBS.split(",") : [];
   // TODO: this should probably be decomposed
   // into individual state updates for
   // user, and notifications
@@ -279,6 +279,7 @@ export default function MyApp({ Component, pageProps = {} }) {
     startLoading: startLoading,
     stopLoading: stopLoading,
     hideNotification: hideNotification,
+    LOCATION_HUBS: LOCATION_HUBS,
   };
 
   return (
