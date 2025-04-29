@@ -41,7 +41,7 @@ export default function LoginNudge({ whatToDo, fullPage, className, hubUrl }: Pr
 
   if (hubUrl && hubUrl !== "") {
     path_to_signin += `&hub=${hubUrl}`;
-    path_to_signup += `&hub=${hubUrl}`;
+    path_to_signup += `hub=${hubUrl}`;
   }
 
   return (
