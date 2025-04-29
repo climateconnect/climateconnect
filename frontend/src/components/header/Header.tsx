@@ -56,7 +56,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
   return {
     root: (props) => {
       return {
-        zIndex: props.fixedHeader ? 20 : "auto",
+        zIndex: props.fixedHeader ? 1000 : "auto",
         borderBottom:
           props.transparentHeader || props.isStaticPage || props.isHubPage
             ? 0

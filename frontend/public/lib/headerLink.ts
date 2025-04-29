@@ -264,8 +264,8 @@ const Prio1StaticLinks = (texts) => [
     isExternalLink: true,
   },
   {
-    href: "https://prio1-klima.net/junge-menschen/",
-    text: texts.for_young_people,
+    href: "https://prio1-klima.net/prio1-community/",
+    text: texts.PRIO1_community,
     target: "_blank",
     isExternalLink: true,
   },

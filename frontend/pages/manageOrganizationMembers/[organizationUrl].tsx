@@ -78,21 +78,13 @@ export default function manageOrganizationMembers({
 
   if (!user)
     return (
-      <WideLayout
-        title={texts.please_log_in + " " + texts.to_manage_org_members}
-        {...layoutProps}
-        // hideHeadline={true}
-      >
+      <WideLayout title={texts.please_log_in + " " + texts.to_manage_org_members} {...layoutProps}>
         <LoginNudge fullPage whatToDo={texts.to_manage_org_members} />
       </WideLayout>
     );
   else if (!members.find((m) => m.id === user.id))
     return (
-      <WideLayout
-        title={texts.please_log_in + " " + texts.to_manage_org_members}
-        {...layoutProps}
-        // hideHeadline={true}
-      >
+      <WideLayout title={texts.please_log_in + " " + texts.to_manage_org_members} {...layoutProps}>
         <Typography variant="h4" color="primary" className={classes.headline}>
           {texts.you_are_not_a_member_of_this_organization}{" "}
           {texts.go_to_org_page_and_click_join_to_join_it}
@@ -104,11 +96,7 @@ export default function manageOrganizationMembers({
     members.find((m) => m.id === user.id).role.role_type !== ROLE_TYPES.read_write_type
   )
     return (
-      <WideLayout
-        title={texts.no_permission_to_manage_members_of_this_org}
-        {...layoutProps}
-        //hideHeadline={true}
-      >
+      <WideLayout title={texts.no_permission_to_manage_members_of_this_org} {...layoutProps}>
         <Typography variant="h4" color="primary" className={classes.headline}>
           {texts.need_to_be_admin_to_manage_org_members}
         </Typography>

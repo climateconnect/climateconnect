@@ -1,5 +1,3 @@
-import json
-
 import requests
 from django.conf import settings
 from django.contrib.gis.geos import (
@@ -13,6 +11,10 @@ from django.contrib.gis.measure import D
 from rest_framework.exceptions import ValidationError
 
 from location.models import Location
+import logging
+import json
+
+logger = logging.getLogger("django")
 
 
 def get_legacy_location(location_object):
@@ -276,7 +278,23 @@ def get_location_with_range(query_params):
         params = "&format=json&addressdetails=1&polygon_geojson=1&accept-language=en-US,en;q=0.9&polygon_threshold=0.001"
         url = url_root + osm_id_param + params
         response = requests.get(url)
-        location_object = json.loads(response.text)[0]
+        if response.status_code == 200:
+            location_object = json.loads(response.text)[0]
+        else:
+            logger.error(
+                "Error while fetching location: " + "\nresponse:" + response.text
+            )
+
+            # try to use the location within the query params (provided by the client via the post request)
+            # as a backup if the location could not be fetched from the api
+            if "location" not in query_params:
+                raise ValidationError(
+                    f"Error while fetching location and no backup option: {response.status_code} | "
+                    + response.text
+                )
+
+            location_object = query_params.get("location")
+
         location = get_location(format_location(location_object, False))
         location_in_db = (
             location.multi_polygon.buffer(buffer_width)
