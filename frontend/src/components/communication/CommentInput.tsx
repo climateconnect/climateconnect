@@ -61,6 +61,7 @@ function CommentInput({
   hasComments,
   infoTextSize,
   useIconButton,
+  hubUrl,
 }: any) {
   const classes = useStyles();
   const [curComment, setCurComment] = React.useState("");
@@ -68,12 +69,6 @@ function CommentInput({
   const texts = getTexts({ page: "communication", locale: locale });
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const [showSendHelper, setShowSendHelper] = useState(false);
-
-  let hubUrl = "";
-
-  useEffect(() => {
-    hubUrl = new URLSearchParams(window.location.search).get("hub") ?? "";
-  }, [window.location.search]);
 
   const onCurCommentChange = (e) => {
     setCurComment(e.target.value);
