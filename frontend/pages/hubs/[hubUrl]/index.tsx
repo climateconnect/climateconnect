@@ -7,15 +7,10 @@ import PageNotFound from "../../../src/components/general/PageNotFound";
 import getTexts from "../../../public/texts/texts";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 import LoadingSpinner from "../../../src/components/general/LoadingSpinner";
-import theme from "../../../src/themes/theme";
+
 //Types
 type DevlinkComponentType = React.ComponentType<any> | null;
 type LocaleType = "en" | "de" | undefined;
-
-interface HubAmbassador {
-  title?: string;
-  [key: string]: any;
-}
 
 interface HubData {
   landing_page_component: string;
