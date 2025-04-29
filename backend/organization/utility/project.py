@@ -27,15 +27,16 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
     project_type = ProjectTypesChoices[data["project_type"]["type_id"]]
     project = Project.objects.create(
         name=data["name"],
-        short_description=data["short_description"],
         collaborators_welcome=data["collaborators_welcome"],
         status_id=data["status"],
         project_type=project_type,
     )
     # Add all non required parameters if they exists in the request.
+    if "short_description"  in data:
+        project.short_description = data["short_description"]
     if "start_date" in data:
         project.start_date = data["start_date"]
-    if "loc" in data:
+    if "loc" in data and data["loc"]:
         location = get_location(data["loc"])
         project.loc = location
     if "country" in data:
@@ -148,7 +149,9 @@ def get_projecttag_name(tag: ProjectTags, language_code: str) -> str:
 
 
 def get_project_translations(data: Dict):
-    texts = {"name": data["name"], "short_description": data["short_description"]}
+    texts = {"name": data["name"]}
+    if "short_description" in data:
+        texts["short_description"] = data["short_description"]
     if "description" in data:
         texts["description"] = data["description"]
     if "helpful_connections" in data:

@@ -85,6 +85,9 @@ export default function EnterDetails({
   goToPreviousStep,
   skillsOptions,
   setMessage,
+  saveAsDraft,
+  loadingSubmit,
+  loadingSubmitDraft,
 }) {
   const [open, setOpen] = useState({
     avatarDialog: false,
@@ -174,7 +177,6 @@ export default function EnterDetails({
   };
 
   const backgroundContrastColor = getBackgroundContrastColor(theme);
-
   return (
     <>
       <Container maxWidth="lg">
@@ -294,12 +296,25 @@ export default function EnterDetails({
               collaborationTexts={collaborationTexts}
             />
           )}
-          <NavigationButtons
-            className={classes.block}
-            onClickPreviousStep={onClickPreviousStep}
-            nextStepButtonType="submit"
-            position="bottom"
-          />
+          {/* The Draft button appears after the project name is filled out */}
+          {projectData.name ? (
+            <NavigationButtons
+              className={classes.block}
+              onClickPreviousStep={onClickPreviousStep}
+              nextStepButtonType="submit"
+              saveAsDraft={saveAsDraft}
+              loadingSubmit={loadingSubmit}
+              loadingSubmitDraft={loadingSubmitDraft}
+              position="bottom"
+            />
+          ) : (
+            <NavigationButtons
+              className={classes.block}
+              onClickPreviousStep={onClickPreviousStep}
+              nextStepButtonType="submit"
+              position="bottom"
+            />
+          )}
         </form>
       </Container>
     </>
