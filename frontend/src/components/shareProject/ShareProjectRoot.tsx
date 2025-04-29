@@ -402,10 +402,10 @@ const formatProjectForRequest = async (project, translations) => {
   if (project.loc && Object.keys(project.loc).length > 0) {
     formattedProject.loc = parseLocation(project.loc, true);
   }
-  if(project.image){
+  if (project.image) {
     formattedProject.image = await blobFromObjectUrl(project.image);
   }
-  if(project.thumbnail_image){
+  if (project.thumbnail_image) {
     formattedProject.thumbnail_image = await blobFromObjectUrl(project.thumbnail_image);
   }
   return formattedProject;
