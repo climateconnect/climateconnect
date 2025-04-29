@@ -98,7 +98,7 @@ export default function ShareProjectRoot({
       hubName
     )
   );
-  
+
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [loadingSubmitDraft, setLoadingSubmitDraft] = useState(false);
 
@@ -174,7 +174,7 @@ export default function ShareProjectRoot({
         locale: locale,
       });
       setProject({ ...project, error: false, url_slug: resp.data.url_slug });
-      
+
       setLoadingSubmit(false);
       setFinished(true);
     } catch (error: any) {
@@ -191,7 +191,7 @@ export default function ShareProjectRoot({
   const saveAsDraft = async (event) => {
     event.preventDefault();
     setLoadingSubmitDraft(true);
-    const payload =await formatProjectForRequest({ ...project, is_draft: true }, translations);
+    const payload = await formatProjectForRequest({ ...project, is_draft: true }, translations);
     apiRequest({
       method: "post",
       url: "/api/create_project/",
@@ -382,7 +382,7 @@ const getDefaultProjectValues = (
 };
 
 const formatProjectForRequest = async (project, translations) => {
-  const formattedProject ={
+  const formattedProject = {
     ...project,
     status: project.status.id,
     skills: project.skills.map((s) => s.key),
@@ -401,9 +401,9 @@ const formatProjectForRequest = async (project, translations) => {
     source_language: project.language,
     translations: translations ? translations : {},
   };
-  if(project.loc && Object.keys(project.loc).length > 0){
+  if (project.loc && Object.keys(project.loc).length > 0) {
     formattedProject.loc = parseLocation(project.loc, true);
   }
-  
+
   return formattedProject;
 };
