@@ -72,7 +72,7 @@ export default function TeamContent({ project, handleReadNotifications, hubUrl }
 
   // Not logged in
   if (!user) {
-    return <LoginNudge whatToDo={texts.to_see_this_projects_team_members} />;
+    return <LoginNudge whatToDo={texts.to_see_this_projects_team_members} hubUrl={hubUrl} />;
   }
 
   // TODO: admin access, review members

@@ -71,9 +71,6 @@ const useStyles = makeStyles((theme) => {
       alignItems: "center",
       marginTop: theme.spacing(3),
     },
-    sectionHeadline: {
-      color: theme?.palette?.background?.default_contrastText,
-    },
     innerIcon: {
       marginRight: theme.spacing(0.5),
       marginLeft: -theme.spacing(1),
@@ -158,6 +155,7 @@ export default function ProfileRoot({
         <LoginNudge
           className={classes.loginNudge}
           whatToDo={texts.to_see_this_users_full_information}
+          hubUrl={hubUrl}
         />
       )}
       {user && user.url_slug !== profile.url_slug && (

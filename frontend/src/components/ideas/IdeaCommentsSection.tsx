@@ -112,6 +112,7 @@ export default function IdeaCommentsSection({
           hasComments={idea.comments?.length > 0}
           infoTextSize={INFO_TEXT_SIZES.SHORT}
           useIconButton
+          // hubUrl={hubUrl} is missing, but this component and its parents are not used anymore
           /*TODO(unused) className={classes.defaultProjectCommentInput} */
         />
         <Divider /*TODO(unused) className={classes.divider} */ />

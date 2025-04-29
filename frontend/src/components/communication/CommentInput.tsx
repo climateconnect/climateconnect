@@ -8,7 +8,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
@@ -61,6 +61,7 @@ function CommentInput({
   hasComments,
   infoTextSize,
   useIconButton,
+  hubUrl,
 }: any) {
   const classes = useStyles();
   const [curComment, setCurComment] = React.useState("");
@@ -184,7 +185,7 @@ function CommentInput({
         </form>
       </div>
     );
-  else return <LoginNudge whatToDo={texts.to_write_a_comment} />;
+  else return <LoginNudge whatToDo={texts.to_write_a_comment} hubUrl={hubUrl} />;
 }
 
 export { CommentInput as default, INFO_TEXT_SIZES };

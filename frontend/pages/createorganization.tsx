@@ -360,7 +360,7 @@ export default function CreateOrganization({
         {...layoutProps}
         title={texts.please_log_in + " " + texts.to_create_an_organization}
       >
-        <LoginNudge fullPage whatToDo={texts.to_create_an_organization} />
+        <LoginNudge fullPage whatToDo={texts.to_create_an_organization} hubUrl={hubUrl} />
       </WideLayout>
     );
   else if (curStep === "basicorganizationinfo")

@@ -228,6 +228,7 @@ export default function Post({
                     parent_comment={post.id}
                     onCancel={unexpandReplyInterface}
                     infoTextSize={infoTextSize}
+                    hubUrl={hubUrl}
                   />
                 ) : (
                   <Button onClick={expandReplyInterface} className={classes.replyButton}>

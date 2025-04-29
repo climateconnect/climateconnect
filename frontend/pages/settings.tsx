@@ -10,14 +10,16 @@ import Layout from "../src/components/layouts/layout";
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
+  const { hub } = ctx.query;
   return {
     props: {
+      hubUrl: hub || null,
       settings: await getSettings(auth_token, ctx.locale),
     },
   };
 }
 
-export default function Settings({ settings }) {
+export default function Settings({ settings, hubUrl }) {
   const token = new Cookies().get("auth_token");
   const { user } = useContext(UserContext);
   const [message, setMessage] = React.useState("");
@@ -38,7 +40,7 @@ export default function Settings({ settings }) {
   else
     return (
       <Layout title={texts.please_log_in} hideHeadline>
-        <LoginNudge whatToDo={texts.to_edit_your_settings} fullPage />
+        <LoginNudge whatToDo={texts.to_edit_your_settings} fullPage hubUrl={hubUrl} />
       </Layout>
     );
 }
