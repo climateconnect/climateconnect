@@ -396,14 +396,17 @@ const formatProjectForRequest = async (project, translations) => {
     project_tags: project?.project_tags?.map((s) => s.key),
     parent_organization: project?.parent_organization?.id,
     collaborating_organizations: project.collaborating_organizations.map((o) => o.id),
-    image: await blobFromObjectUrl(project.image),
-    thumbnail_image: await blobFromObjectUrl(project.thumbnail_image),
     source_language: project.language,
     translations: translations ? translations : {},
   };
   if (project.loc && Object.keys(project.loc).length > 0) {
     formattedProject.loc = parseLocation(project.loc, true);
   }
-
+  if(project.image){
+    formattedProject.image = await blobFromObjectUrl(project.image);
+  }
+  if(project.thumbnail_image){
+    formattedProject.thumbnail_image = await blobFromObjectUrl(project.thumbnail_image);
+  }
   return formattedProject;
 };
