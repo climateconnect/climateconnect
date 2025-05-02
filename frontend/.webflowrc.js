@@ -5,4 +5,3 @@ module.exports = {
   authToken: process.env.WEBFLOW_API_TOKEN, // An environment variable is recommended for this field.
   cssModules: true,
 };
-
