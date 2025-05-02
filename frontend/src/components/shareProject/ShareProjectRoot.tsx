@@ -99,11 +99,10 @@ export default function ShareProjectRoot({
     )
   );
 
-  
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [loadingSubmitDraft, setLoadingSubmitDraft] = useState(false);
   const [formSaved, setFormSaved] = useState(false);
-  
+
   //show error message if the user tries to leave the page without saving
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
