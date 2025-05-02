@@ -99,8 +99,23 @@ export default function ShareProjectRoot({
     )
   );
 
+  
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [loadingSubmitDraft, setLoadingSubmitDraft] = useState(false);
+  const [formSaved, setFormSaved] = useState(false);
+  
+  //show error message if the user tries to leave the page without saving
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (!formSaved) {
+        event.preventDefault();
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [formSaved]);
 
   const getStep = (stepNumber) => {
     if (stepNumber >= steps.length) return steps[steps.length - 1];
@@ -176,6 +191,7 @@ export default function ShareProjectRoot({
       setProject({ ...project, error: false, url_slug: resp.data.url_slug });
 
       setLoadingSubmit(false);
+      setFormSaved(true);
       setFinished(true);
     } catch (error: any) {
       console.log(error?.response?.data);
@@ -202,6 +218,7 @@ export default function ShareProjectRoot({
       .then(function (response) {
         setProject({ ...project, url_slug: response.data.url_slug, is_draft: true });
         setLoadingSubmitDraft(false);
+        setFormSaved(true);
         setFinished(true);
       })
       .catch(function (error) {
