@@ -33,7 +33,7 @@ import BrowseContext from "../../../src/components/context/BrowseContext";
 import { transformThemeData } from "../../../src/themes/transformThemeData";
 import getHubTheme from "../../../src/themes/fetchHubTheme";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
-import { FilterProvider } from "../../src/components/provider/FilterProvider";
+import { FilterProvider } from "../../../src/components/provider/FilterProvider";
 
 const useStyles = makeStyles((theme) => ({
   moreInfoSoon: {
