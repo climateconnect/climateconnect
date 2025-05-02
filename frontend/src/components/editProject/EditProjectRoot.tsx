@@ -77,7 +77,6 @@ export default function EditProjectRoot({
   const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
   const draftReqiredProperties = {
     name: texts.project_name,
-    loc: texts.location,
   };
   const overviewInputsRef = useRef(null as HTMLInputElement | null);
   const locationInputRef = useRef(null as HTMLInputElement | null);
