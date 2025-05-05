@@ -91,8 +91,8 @@ const useStyles = makeStyles<Theme, { visibleFooterHeight?: number }>((theme) =>
     display: "flex",
     flexDirection: "column",
   },
-  saveAsDraftButton: {
-    marginTop: theme.spacing(1),
+  saveButton: {
+    marginLeft: theme.spacing(1),
   },
   actionBar: (props) => ({
     backgroundColor: "#ECECEC",
@@ -108,6 +108,9 @@ const useStyles = makeStyles<Theme, { visibleFooterHeight?: number }>((theme) =>
   backButton: {
     border: `1px solid #000000`,
   },
+  draftButton:{
+    color: theme.palette.background.default_contrastText,
+  }
 }));
 
 type Props = {
@@ -483,15 +486,14 @@ function TranslationActionButtonBar({
             waitingForTranslation={waitingForTranslation}
             label={localeTexts.automatically_translate}
           />
-          <div className={classes.submitOptions}>
-            <SaveButtons
-              loadingSubmit={loadingSubmit}
-              loadingSubmitDraft={loadingSubmitDraft}
-              localeTexts={localeTexts}
-              label={{ label: submitButtonText }}
-              saveAsDraft={saveAsDraft}
-            />
-          </div>
+          <SaveButtons
+            loadingSubmit={loadingSubmit}
+            loadingSubmitDraft={loadingSubmitDraft}
+            localeTexts={localeTexts}
+            label={{ label: submitButtonText }}
+            saveAsDraft={saveAsDraft}
+            belowSmall={belowSmall}
+          />
         </div>
       ) : (
         <AppBar className={classes.actionBar} position="fixed" elevation={0}>
@@ -508,15 +510,14 @@ function TranslationActionButtonBar({
                 waitingForTranslation={waitingForTranslation}
                 label={localeTexts.translate}
               />
-              <div className={classes.submitOptions}>
-                <SaveButtons
-                  loadingSubmit={loadingSubmit}
-                  loadingSubmitDraft={loadingSubmitDraft}
-                  localeTexts={localeTexts}
-                  label={{ icon: SaveIcon }}
-                  saveAsDraft={saveAsDraft}
-                />
-              </div>
+              <SaveButtons
+                loadingSubmit={loadingSubmit}
+                loadingSubmitDraft={loadingSubmitDraft}
+                localeTexts={localeTexts}
+                label={{ icon: SaveIcon }}
+                saveAsDraft={saveAsDraft}
+                belowSmall={belowSmall}
+              />
             </div>
           </Toolbar>
         </AppBar>
@@ -559,15 +560,40 @@ function TranslateButton({ automaticallyTranslateTexts, waitingForTranslation, l
   );
 }
 
-function SaveButtons({ loadingSubmit, loadingSubmitDraft, localeTexts, label, saveAsDraft }) {
+function SaveButtons({
+  loadingSubmit,
+  loadingSubmitDraft,
+  localeTexts,
+  label,
+  saveAsDraft,
+  belowSmall,
+}) {
   const classes = useStyles({});
+
   return (
     <>
+      {saveAsDraft && (
+        <Button
+          variant="contained"
+          disabled={loadingSubmit || loadingSubmitDraft}
+          onClick={saveAsDraft}
+          color="grey"
+          className={classes.draftButton}>
+          {loadingSubmitDraft ? (
+            <CircularProgress className={classes.translationLoader} size={23} />
+          ) : !belowSmall ? (
+            localeTexts.save_as_draft
+          ) : (
+            localeTexts.draft
+          )}
+        </Button>
+      )}
       <Button
         variant="contained"
         color="primary"
         type="submit"
         disabled={loadingSubmit || loadingSubmitDraft}
+        className={classes.saveButton}
       >
         {loadingSubmit ? (
           <CircularProgress className={classes.translationLoader} size={23} />
@@ -583,20 +609,6 @@ function SaveButtons({ loadingSubmit, loadingSubmitDraft, localeTexts, label, sa
           localeTexts.skip_and_publish
         )}
       </Button>
-      {saveAsDraft && (
-        <Button
-          variant="contained"
-          disabled={loadingSubmit || loadingSubmitDraft}
-          onClick={saveAsDraft}
-          className={classes.saveAsDraftButton}
-        >
-          {loadingSubmitDraft ? (
-            <CircularProgress className={classes.translationLoader} size={23} />
-          ) : (
-            localeTexts.save_as_draft
-          )}
-        </Button>
-      )}
     </>
   );
 }
