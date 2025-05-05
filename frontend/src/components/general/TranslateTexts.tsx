@@ -108,9 +108,9 @@ const useStyles = makeStyles<Theme, { visibleFooterHeight?: number }>((theme) =>
   backButton: {
     border: `1px solid #000000`,
   },
-  draftButton:{
+  draftButton: {
     color: theme.palette.background.default_contrastText,
-  }
+  },
 }));
 
 type Props = {
@@ -578,7 +578,8 @@ function SaveButtons({
           disabled={loadingSubmit || loadingSubmitDraft}
           onClick={saveAsDraft}
           color="grey"
-          className={classes.draftButton}>
+          className={classes.draftButton}
+        >
           {loadingSubmitDraft ? (
             <CircularProgress className={classes.translationLoader} size={23} />
           ) : !belowSmall ? (

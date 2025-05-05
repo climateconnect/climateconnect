@@ -159,7 +159,7 @@ export default function EditProjectRoot({
       locale: locale,
     })
       .then(function () {
-        const query:{ message: string; hub?: string } = {
+        const query: { message: string; hub?: string } = {
           message: texts.you_have_successfully_edited_your_project,
         };
         if (hubUrl) {
@@ -167,7 +167,7 @@ export default function EditProjectRoot({
         }
         Router.push({
           pathname: "/profiles/" + user.url_slug,
-          query
+          query,
         });
       })
       .catch(function (error) {
@@ -231,7 +231,7 @@ export default function EditProjectRoot({
       locale: locale,
     })
       .then(function (response) {
-        const query:{ message: string; hub?: string } = {
+        const query: { message: string; hub?: string } = {
           message: was_draft
             ? texts.your_project_has_been_published_great_work
             : texts.you_have_successfully_edited_your_project,
