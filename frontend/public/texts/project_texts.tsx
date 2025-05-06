@@ -1056,5 +1056,9 @@ export default function getProjectTexts({
       de:
         "Bitte erläutern Sie, warum Sie an diesem Projekt teilnehmen möchten und wie Sie helfen möchten.",
     },
+        do_you_want_to_delete_your_project: {
+      en: "Do you want to delete this project?",
+      de: "Möchtest Du dieses Projekt löschen?",
+    },
   };
 }
