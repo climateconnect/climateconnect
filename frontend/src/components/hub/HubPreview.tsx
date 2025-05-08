@@ -41,7 +41,7 @@ export default function HubPreview({ hub, disableBoxShadow = false }) {
 
   return (
     <Link
-      href={getLocalePrefix(locale) + `/hubs/${hub.url_slug}`}
+      href={getLocalePrefix(locale) + `/hubs/${hub.url_slug}/browse`}
       className={classes.noUnderline}
       underline="hover"
     >

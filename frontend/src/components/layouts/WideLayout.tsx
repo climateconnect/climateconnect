@@ -68,6 +68,9 @@ type Props = {
   footerTextColor?: string;
   customTheme?: any;
   hideAlert?: boolean;
+  transparentBackgroundColor?: string;
+  hasHubLandingPage?: boolean;
+  isLandingPage?: boolean;
 };
 //Wrapper layout component for pages where the content takes the whole width of the screen
 export default function WideLayout({
@@ -101,6 +104,8 @@ export default function WideLayout({
   footerTextColor,
   customTheme,
   hideAlert,
+  isLandingPage,
+  hasHubLandingPage,
 }: Props) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(hideAlert ? false : true);
@@ -148,6 +153,8 @@ export default function WideLayout({
           isHubPage={isHubPage}
           hubUrl={hubUrl}
           isLocationHub={isLocationHub}
+          hasHubLandingPage={hasHubLandingPage}
+          isLandingPage={isLandingPage}
         />
       )}
       {isLoading ? (
