@@ -3,8 +3,6 @@
 from django.db import migrations, models
 import django.db.models.deletion
 
-from organization.models import ProjectTagging, Project, ProjectSectorMapping, Sector
-
 DEBUG_PREFIX = "T-SECTOR"
 
 
@@ -85,6 +83,7 @@ SECTOR_DEFINITIONS = {
         ),
     ]
 }
+
 DELETION_TOKEN = "DELETION_TOKEN"
 
 MAPPING = {
@@ -127,9 +126,9 @@ def create_sectors(apps, schema_editor):
 
 
 def generate_sector_mappings_from_project_taggings(apps, schema_editor):
-    # ProjectTagging = apps.get_model("organization", "ProjectTagging")
-    # ProjectSectorMapping = apps.get_model("organization", "ProjectSectorMapping")
-    # Sector = apps.get_model("organization", "Sector")
+    ProjectTagging = apps.get_model("organization", "ProjectTagging")
+    ProjectSectorMapping = apps.get_model("organization", "ProjectSectorMapping")
+    Sector = apps.get_model("organization", "Sector")
 
     added_mappings = 0
     deleted_mappings = 0
@@ -177,9 +176,9 @@ def generate_sector_mappings_from_project_taggings(apps, schema_editor):
         added_mappings += 1
 
     print("" + "-" * 80)
-    print(f"[MIGRATION] >> {added_mappings}\tadded mappings)")
-    print(f"[MIGRATION] >> {deleted_mappings}\tdeleted mappings)")
-    print(f"[MIGRATION] >> {missing_mappings}\tmissing mappings)")
+    print(f"[MIGRATION] >> {added_mappings}\tadded mappings")
+    print(f"[MIGRATION] >> {deleted_mappings}\tdeleted mappings")
+    print(f"[MIGRATION] >> {missing_mappings}\tmissing mappings")
     print()
     # Organization = apps.get_model("organization", "Organization")
     # OrganizationSectorMapping = apps.get_model(
@@ -196,6 +195,8 @@ def generate_sector_mappings_from_project_taggings(apps, schema_editor):
     #                 )
 
 
+####################################################
+# auto generateed migration
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -203,8 +204,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        ####################################################
-        # auto generateed migration
         migrations.CreateModel(
             name="Sector",
             fields=[
