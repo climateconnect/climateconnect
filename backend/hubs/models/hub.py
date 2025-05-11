@@ -1,6 +1,7 @@
 from climateconnect_api.models.language import Language
 from location.models import Location
 from organization.models.tags import ProjectTags
+from organization.models import Sector
 from django.db import models
 from django.contrib.auth.models import User
 from organization.models.organization import Organization
@@ -206,6 +207,14 @@ class Hub(models.Model):
         related_name="hub_parent_tags",
         help_text="Only project with these parent tags will be shown in the hub",
         verbose_name="Hub categories",
+        blank=True,
+    )
+
+    sectors = models.ManyToManyField(
+        Sector,
+        related_name="hub_sectors",
+        help_text="Only projects with these sectors will be shown in the hub",
+        verbose_name="Hub sectors",
         blank=True,
     )
 

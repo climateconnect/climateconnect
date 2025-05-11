@@ -11,8 +11,11 @@ from organization.models.members import ProjectMember
 from organization.models.project import Project, ProjectParents
 from organization.models.status import ProjectStatus
 from organization.models.tags import ProjectTagging, ProjectTags
+from hubs.models.hub import Hub
+
 
 TEST_PREFIX = "T-SECTOR"
+TESTING = True
 
 
 class ProjectTagDef:
@@ -204,8 +207,22 @@ DEFINITIONS = [
     ProjectTagDef("Water recycling", "waterrecycling", "water"),
 ]
 
-# TODO: remove this line after testing
-DEFINITIONS = DEFINITIONS[:10]
+SECTORS = {
+    "food": "food",
+    "landuse": "landuse",
+    "construction": "construction",
+    "energy": "energy",
+    "education": "education",
+    "mobility": "mobility",
+}
+
+if TESTING:
+    SECTORS = {
+        "food": "food",
+        "construction": "construction",
+        "fashion": "fashion",
+    }
+    DEFINITIONS = DEFINITIONS[:10]
 
 
 def create_project_tag(tagdef: ProjectTagDef):
@@ -336,10 +353,97 @@ def create_projects_related_to_tags():
     print("finished creating project tags test data!")
 
 
+def create_sector_hubs(name: str, slug: str, project_tags: list):
+    if Hub.objects.filter(url_slug=slug).exists():
+        print(
+            "[x]\tHub with slug {} already exists. Skipping hub {}".format(slug, name)
+        )
+        return
+
+    hub = Hub.objects.create(
+        name=TEST_PREFIX + "-" + name,
+        url_slug=slug,
+        headline="headline",
+        sub_headline="sub_headline",
+        hub_type=Hub.SECTOR_HUB_TYPE,
+        segway_text="lorem ipsum - segway text",
+        language=Language.objects.filter(language_code="en")[0],
+    )
+    print("[✓]\t{} hub created\t\t(/{})".format(name, slug))
+
+    for tag_name in project_tags:
+        tag = ProjectTags.objects.filter(key=tag_name).first()
+        if tag is None:
+            continue
+        hub.filter_parent_tags.add(tag)
+
+
+def create_all_sector_hubs():
+    for name, tags in SECTORS.items():
+        create_sector_hubs(name, name, [tags])
+        pass
+
+
+###############################################
+# delete all tags whose name starts with "T-SECTOR"
+# delete all projects whose name starts with "T-SECTOR"
+# delete all hubs whose name starts with "T-SECTOR"
+###############################################
+def delete_t_sector_tags():
+    ok = input(
+        "This will delete all tags whose name starts with 'T-SECTOR'. Are you sure? (y/n)"
+    )
+    if ok.lower().strip() != "y":
+        print("Aborting...")
+        return
+
+    for tag in ProjectTags.objects.filter(name__startswith=TEST_PREFIX):
+        tag.delete()
+        print(f"[✓]\tTag {tag.name} deleted")
+
+
+def delete_t_sector_projects():
+    ok = input(
+        "This will delete all projects whose name starts with 'T-SECTOR'. Are you sure? (y/n)"
+    )
+    if ok.lower().strip() != "y":
+        print("Aborting...")
+        return
+
+    for project in Project.objects.filter(name__startswith=TEST_PREFIX):
+        project.delete()
+        print(f"[✓]\tProject {project.name} deleted")
+
+
+def delete_t_sector_hubs():
+    ok = input(
+        "This will delete all hubs whose name starts with 'T-SECTOR'. Are you sure? (y/n)"
+    )
+    if ok.lower().strip() != "y":
+        print("Aborting...")
+        return
+
+    for hub in Hub.objects.filter(name__startswith=TEST_PREFIX):
+        hub.delete()
+        print(f"[✓]\tHub {hub.name} deleted")
+
+
 class Command(BaseCommand):
     help = "Create badges data for users"
 
-    def handle(self, *args, **options) -> str:
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--delete",
+            action="store_true",
+            help="Delete all hubs whose name starts with 'T-SECTOR'",
+        )
 
-        create_all_project_tags()
-        create_projects_related_to_tags()
+    def handle(self, *args, **options) -> str:
+        if options.get("delete"):
+            # delete_t_sector_tags()
+            # delete_t_sector_projects()
+            delete_t_sector_hubs()
+        else:
+            # create_all_project_tags()
+            # create_projects_related_to_tags()
+            create_all_sector_hubs()

@@ -214,6 +214,14 @@ class Organization(models.Model):
         blank=True,
     )
 
+    sectors = models.ManyToManyField(
+        "organization.Sector",
+        related_name="organization_sectors",
+        help_text="Sectors that the organization is active in. These sectors will be displayed on the organization page.",
+        verbose_name="Sectors",
+        blank=True,
+    )
+
     related_hubs = models.ManyToManyField(
         "hubs.Hub",
         related_name="organizations_related_hubs",
