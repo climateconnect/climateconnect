@@ -1,4 +1,6 @@
 import random
+import os
+
 from django.utils import timezone
 
 from django.core.management.base import BaseCommand
@@ -12,7 +14,6 @@ from organization.models.project import Project, ProjectParents
 from organization.models.status import ProjectStatus
 from organization.models.tags import ProjectTagging, ProjectTags
 from hubs.models.hub import Hub
-
 
 TEST_PREFIX = "T-SECTOR"
 TESTING = True
@@ -353,6 +354,14 @@ def create_projects_related_to_tags():
     print("finished creating project tags test data!")
 
 
+def __safe_file_read(path):
+    try:
+        return open(path, "rb")
+    except OSError as e:
+        print(f"Failed to open {path}: {e}")
+        return None
+
+
 def create_sector_hubs(name: str, slug: str, project_tags: list):
     if Hub.objects.filter(url_slug=slug).exists():
         print(
@@ -360,6 +369,31 @@ def create_sector_hubs(name: str, slug: str, project_tags: list):
         )
         return
 
+    # prepare the background image
+    bg_path = "climateconnect_api/management/commands/res/" + slug + ".jpg"
+
+    if not os.path.exists(bg_path):
+        print(f"[!] Background image file {bg_path} not found. Skipping {slug}.")
+        return
+
+    background_file = __safe_file_read(bg_path)
+    if background_file is None:
+        print(f"[!] Background image file {bg_path} not found. Skipping {slug}.")
+        return
+
+    # prepare the icon image
+    icon_path = "climateconnect_api/management/commands/res/" + slug + ".svg"
+
+    if not os.path.exists(icon_path):
+        print(f"[!] Icon image file {icon_path} not found. Skipping {slug}.")
+        return
+
+    icon_file = __safe_file_read(icon_path)
+    if icon_file is None:
+        print(f"[!] Icon image file {icon_path} not found. Skipping {slug}.")
+        return
+
+    # Create the hub
     hub = Hub.objects.create(
         name=TEST_PREFIX + "-" + name,
         url_slug=slug,
@@ -369,13 +403,28 @@ def create_sector_hubs(name: str, slug: str, project_tags: list):
         segway_text="lorem ipsum - segway text",
         language=Language.objects.filter(language_code="en")[0],
     )
-    print("[✓]\t{} hub created\t\t(/{})".format(name, slug))
+
+    hub.image.save(
+        slug + ".jpg",
+        content=background_file,
+        save=True,
+    )
+    hub.icon.save(
+        slug + ".svg",
+        content=icon_file,
+        save=True,
+    )
 
     for tag_name in project_tags:
         tag = ProjectTags.objects.filter(key=tag_name).first()
         if tag is None:
             continue
         hub.filter_parent_tags.add(tag)
+
+    hub.save()
+
+    print("[+]\t{} hub created\t\t(/{})".format(name, slug))
+    pass
 
 
 def create_all_sector_hubs():
@@ -399,7 +448,7 @@ def delete_t_sector_tags():
 
     for tag in ProjectTags.objects.filter(name__startswith=TEST_PREFIX):
         tag.delete()
-        print(f"[✓]\tTag {tag.name} deleted")
+        print(f"[-]\tTag {tag.name} deleted")
 
 
 def delete_t_sector_projects():
@@ -412,7 +461,7 @@ def delete_t_sector_projects():
 
     for project in Project.objects.filter(name__startswith=TEST_PREFIX):
         project.delete()
-        print(f"[✓]\tProject {project.name} deleted")
+        print(f"[-]\tProject {project.name} deleted")
 
 
 def delete_t_sector_hubs():
@@ -425,7 +474,7 @@ def delete_t_sector_hubs():
 
     for hub in Hub.objects.filter(name__startswith=TEST_PREFIX):
         hub.delete()
-        print(f"[✓]\tHub {hub.name} deleted")
+        print(f"[-]\tHub {hub.name} deleted")
 
 
 class Command(BaseCommand):
