@@ -17,6 +17,7 @@ from organization.models.tags import ProjectTagging, ProjectTags
 from hubs.models.hub import Hub
 
 TEST_PREFIX = "T-SECTOR"
+TESTING_LIMIT = 20
 TESTING = True
 
 
@@ -220,13 +221,7 @@ SECTORS = {
     "mobility": "mobility",
 }
 
-if TESTING:
-    SECTORS = {
-        "food": "food",
-        "construction": "construction",
-        "fashion": "fashion",
-    }
-    DEFINITIONS = DEFINITIONS[:10]
+DEFINITIONS = DEFINITIONS[:TESTING_LIMIT]
 
 
 def create_project_tag(tagdef: ProjectTagDef):
@@ -308,8 +303,10 @@ def create_project_for(key, tags):
                 project_tag=tag,
             )
         print("[✓]\t{} project created.".format(name))
+        return True
     else:
         print("[x]\t{} project already exists.".format(name))
+        return False
 
 
 def create_all_project_tags():
@@ -322,6 +319,9 @@ def create_all_project_tags():
 def create_projects_related_to_tags():
     print("-" * 40)
     print("Creating test data: projects with one tag ...")
+    successes = []
+    fails = []
+
     for tagdef in DEFINITIONS:
         tag = ProjectTags.objects.filter(key=tagdef.key).first()
         if not tag:
@@ -333,7 +333,13 @@ def create_projects_related_to_tags():
             continue
 
         key = tagdef.key + "-project"
-        create_project_for(key, [tag])
+        ret = create_project_for(key, [tag])
+
+        # reporting
+        if ret:
+            successes.append([key, [tag]])
+        else:
+            fails.append([key, [tag]])
 
     print("-" * 40)
     print("Creating test data: projects with two tag ...")
@@ -355,8 +361,25 @@ def create_projects_related_to_tags():
                 continue
 
             key = tagdef1.key + "&" + tagdef2.key + "-project"
-            create_project_for(key, [tag1, tag2])
+            ret = create_project_for(key, [tag1, tag2])
+
+            # reporting
+            if ret:
+                successes.append([key, [tag1, tag2]])
+            else:
+                fails.append([key, [tag1, tag2]])
+
+    # reporting:
+    print()
     print("finished creating project tags test data!")
+    print("successes:", len(successes))
+    print()
+    print("fails")
+    for key, taggings in fails:
+        print("[!] >>" + key + "\t\t" + taggings)
+    print()
+    print("fails:", len(fails))
+    print("-" * 50)
 
 
 def __safe_file_read(path):
