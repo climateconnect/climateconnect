@@ -12,6 +12,7 @@ import { nullifyUndefinedValues, parseProfile } from "./../public/lib/profileOpe
 import EditProfileRoot from "./../src/components/profile/EditProfileRoot";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
+import theme from "../src/themes/theme";
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = Cookies(ctx);
@@ -71,7 +72,9 @@ export default function EditProfilePage({
   const layoutProps = {
     hubUrl: hubUrl,
     customTheme: customTheme,
-    headerBackground: hubUrl === "prio1" ? "#7883ff" : "#FFF",
+    headerBackground: customTheme
+          ? customTheme.palette.secondary.light
+          : theme.palette.background.default,
   };
 
   if (!profile)

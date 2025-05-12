@@ -8,6 +8,7 @@ import getHubTheme from "../src/themes/fetchHubTheme";
 import WideLayout from "../src/components/layouts/WideLayout";
 import { transformThemeData } from "../src/themes/transformThemeData";
 import { Typography } from "@mui/material";
+import theme from "../src/themes/theme";
 
 const useStyles = makeStyles((theme) => ({
   headline: {
@@ -85,7 +86,9 @@ export default function ResetPassword({ hubUrl, hubThemeData }) {
       isHubPage={hubUrl !== ""}
       customTheme={customTheme}
       hubUrl={hubUrl}
-      headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
+      headerBackground={
+        customTheme ? customTheme.palette.secondary.light : theme.palette.background.default
+      }
     >
       <Typography className={classes.headline} variant="h3">
         {texts.reset_password}

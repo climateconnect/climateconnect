@@ -18,6 +18,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import ProjectSideBar from "../../src/components/project/ProjectSideBar";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 import getHubTheme from "../../src/themes/fetchHubTheme";
+import theme from "../../src/themes/theme";
 
 type StyleProps = {
   showSimilarProjects: boolean;
@@ -235,6 +236,7 @@ export default function ProjectPage({
 
   const tinyScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
 
   return (
     <WideLayout
@@ -249,10 +251,12 @@ export default function ProjectPage({
           <></>
         )
       }
-      customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+      customTheme={customTheme}
       isHubPage={!!hubUrl}
       hubUrl={hubUrl}
-      headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
+      headerBackground={
+        customTheme ? customTheme.palette.secondary.light : theme.palette.background.default
+      }
       image={project ? getImageUrl(project.image) : undefined}
     >
       <BrowseContext.Provider value={contextValues}>

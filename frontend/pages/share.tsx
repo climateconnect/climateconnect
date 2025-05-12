@@ -12,6 +12,7 @@ import WideLayout from "../src/components/layouts/WideLayout";
 import ShareProjectRoot from "../src/components/shareProject/ShareProjectRoot";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
+import theme from "../src/themes/theme";
 
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hub;
@@ -73,6 +74,8 @@ export default function Share({
   const [errorMessage, setErrorMessage] = React.useState("");
 
   const handleSetErrorMessage = (newMessage) => setErrorMessage(newMessage);
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+
   if (!user)
     return (
       <WideLayout
@@ -88,10 +91,12 @@ export default function Share({
         title={texts.share_your_climate_solution}
         message={errorMessage}
         messageType={errorMessage && "error"}
-        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+        customTheme={customTheme}
         isHubPage={hubUrl !== ""}
         hubUrl={hubUrl}
-        headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
+        headerBackground={
+          customTheme ? customTheme.palette.secondary.light : theme.palette.background.default
+        }
       >
         <ShareProjectRoot
           availabilityOptions={availabilityOptions}

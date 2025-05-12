@@ -14,6 +14,7 @@ import WideLayout from "../../src/components/layouts/WideLayout";
 import ManageOrganizationMembers from "../../src/components/organization/ManageOrganizationMembers";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
+import theme from "../../src/themes/theme";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -73,7 +74,9 @@ export default function manageOrganizationMembers({
   const layoutProps = {
     hubUrl: hubUrl,
     customTheme: customTheme,
-    headerBackground: hubUrl === "prio1" ? "#7883ff" : "#FFF",
+    headerBackground:
+              customTheme ? customTheme.palette.secondary.light : theme.palette.background.default
+            
   };
 
   if (!user)

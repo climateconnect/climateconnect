@@ -13,6 +13,7 @@ import { nullifyUndefinedValues, parseProfile } from "./../../public/lib/profile
 import UserContext from "./../../src/components/context/UserContext";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
+import theme from "../../src/themes/theme";
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
@@ -69,7 +70,9 @@ export default function ProfilePage({
       }
       hubUrl={hubUrl}
       customTheme={customTheme}
-      headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
+      headerBackground={
+        customTheme ? customTheme.palette.secondary.light : theme.palette.background.default
+      }
     >
       {profile ? (
         <BrowseContext.Provider value={contextValues}>
