@@ -1225,7 +1225,6 @@ class ListProjectRequestersView(ListAPIView):
         print(
             f"Total number of OPEN membership requests for this project: {len(open_membership_requests)}"
         )
-
         return open_membership_requests
 
 

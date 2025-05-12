@@ -802,5 +802,29 @@
   "send_request": {
     "en": "SEND REQUEST",
     "de": "ANFRAGE SENDEN"
+  },
+  "ignore": {
+    "en": "IGNORE",
+    "de": "IGNORIEREN"
+  },
+  "message_back": {
+    "en": "MESSAGE BACK",
+    "de": "MESSAGE ZURÜCK"
+  },
+  "accept": {
+    "en": "ACCEPT",
+    "de": "AKZEPT"
+  },
+  "request_accepted": {
+    "en": "REQUEST ACCEPTED",
+    "de": "ANTRAG AKZEPTIERT"
+  },
+  "request_declined": {
+    "en": "REQUEST DECLINED",
+    "de": "ANTRAG ABGELEHNT"
+  },
+  "answer_pending": {
+    "en": "ANSWER PENDING",
+    "de": "ANTWORT AUSSTEHEND"
   }
 }

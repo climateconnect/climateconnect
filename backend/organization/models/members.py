@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from organization.models import Project, Organization
 from climateconnect_api.models import Role, Availability
 from organization.utility import MembershipTarget, RequestStatus
+from chat_messages.models import Message
 
 
 class ProjectMember(models.Model):
@@ -216,7 +217,7 @@ class MembershipRequests(models.Model):
         null=True,
     )
 
-    message = models.TextField(
+    message_old= models.TextField(
         help_text="Message associated with the request",
         verbose_name="Request Message",
         max_length=4096,
@@ -224,6 +225,15 @@ class MembershipRequests(models.Model):
         blank=True,
     )
 
+    message = models.ForeignKey(
+        Message,
+        help_text="Message associated with the request",
+        verbose_name="Request Message",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+    
     request_status = models.SmallIntegerField(
         choices=[(x.value, x.name) for x in RequestStatus],
         default=RequestStatus.PENDING.value,
