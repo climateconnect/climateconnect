@@ -149,6 +149,7 @@ export default function ProjectContent({
   handleSendProjectJoinRequest,
   requestedToJoinProject,
   hubUrl,
+  handleOpenJoinDialog,
 }) {
   const classes = useStyles({ isPersonalProject: project.isPersonalProject });
   const { locale } = useContext(UserContext);
@@ -203,6 +204,7 @@ export default function ProjectContent({
             requestedToJoinProject={requestedToJoinProject}
             leaveProject={leaveProject}
             hubUrl={hubUrl}
+            handleOpenJoinDialog={handleOpenJoinDialog}
           />
           {/* Note: created date is not the same as the start date, for projects */}
           <Typography>
