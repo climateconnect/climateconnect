@@ -115,7 +115,7 @@ export default function ProjectContentSideButtons({
         };
         return user;
       });
-      
+
       setRequesters(userRequests);
     } catch (e) {
       console.log(e.response.data);
