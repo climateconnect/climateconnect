@@ -140,14 +140,17 @@ def generate_sector_mappings_from_project_taggings(apps, schema_editor):
             continue
 
         tag = tagging.project_tag
+        name = tag.name.replace(DEBUG_PREFIX + "-", "")
 
-        sector_def = MAPPING.get(tag.name, None)
+        sector_def = MAPPING.get(name, None)
 
         # propagate sector mapping to the parent tag
         # if specification for current tag is not found
         if sector_def is None and tag.parent_tag is not None:
             parent_tag = tag.parent_tag
-            sector_def = MAPPING.get(parent_tag.name, None)
+            parent_name = parent_tag.name.replace(DEBUG_PREFIX + "-", "")
+
+            sector_def = MAPPING.get(parent_name, None)
 
         if sector_def is DELETION_TOKEN:
             print(
@@ -159,7 +162,7 @@ def generate_sector_mappings_from_project_taggings(apps, schema_editor):
 
         if sector_def is None:
             print(
-                f"[MIGRATION] [!]\tNo mapping found for tag '{tag.name}', will skip the mapping "
+                f"[MIGRATION] [!]\tNo mapping found for tag '{tag.name}' ({name}), will skip the mapping "
                 + f"for [project]'{project.name}'--'{tag.name}[tag]'"
             )
             missing_mappings += 1
