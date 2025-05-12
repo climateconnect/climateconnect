@@ -4,6 +4,7 @@ import os
 from django.utils import timezone
 
 from django.core.management.base import BaseCommand
+from django.db.models.deletion import ProtectedError
 
 from climateconnect_api.models.common import Availability
 from climateconnect_api.models.language import Language
@@ -24,6 +25,8 @@ class ProjectTagDef:
         self.name = name
         self.key = key
         self.parent_tag = parent_tag
+        if TESTING:
+            self.name = f"{TEST_PREFIX}-{name}"
 
 
 DEFINITIONS = [
@@ -247,11 +250,13 @@ def create_project_tag(tagdef: ProjectTagDef):
         ProjectTags.objects.create(
             name=tagdef.name,
             parent_tag=parent_tag,
+            key=tagdef.key,
         )
         print(f"[✓]\t{tagdef.name} created")
     else:
         ProjectTags.objects.create(
             name=tagdef.name,
+            key=tagdef.key,
         )
         print(f"[✓]\t{tagdef.name} created")
 
@@ -404,11 +409,20 @@ def create_sector_hubs(name: str, slug: str, project_tags: list):
         language=Language.objects.filter(language_code="en")[0],
     )
 
+    hub.image_attribution = f"{slug} - image attribution"
+
     hub.image.save(
         slug + ".jpg",
         content=background_file,
         save=True,
     )
+
+    hub.thumbnail_image.save(
+        slug + ".jpg",
+        content=background_file,
+        save=True,
+    )
+
     hub.icon.save(
         slug + ".svg",
         content=icon_file,
@@ -446,9 +460,18 @@ def delete_t_sector_tags():
         print("Aborting...")
         return
 
-    for tag in ProjectTags.objects.filter(name__startswith=TEST_PREFIX):
-        tag.delete()
-        print(f"[-]\tTag {tag.name} deleted")
+    changed = True
+    # iterativly try too delete all testdata, to walk back the tree ...
+    # cascade on delete is missing ._.
+    while changed:
+        changed = False
+        for tag in ProjectTags.objects.filter(name__startswith=TEST_PREFIX):
+            try:
+                tag.delete()
+                print(f"[-]\tTag {tag.name} deleted")
+                changed = True
+            except ProtectedError:
+                print(f"[!]\tTag {tag.name} skipped, currently protected")
 
 
 def delete_t_sector_projects():
@@ -489,10 +512,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options) -> str:
         if options.get("delete"):
-            # delete_t_sector_tags()
-            # delete_t_sector_projects()
             delete_t_sector_hubs()
+            delete_t_sector_projects()
+            delete_t_sector_tags()
         else:
-            # create_all_project_tags()
-            # create_projects_related_to_tags()
+            create_all_project_tags()
+            create_projects_related_to_tags()
             create_all_sector_hubs()

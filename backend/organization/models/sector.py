@@ -4,6 +4,10 @@ from organization.models import Organization
 from organization.models.project import Project
 
 
+def sector_image_path(instance, filename):
+    return "sector/{}/{}".format(instance.id, filename)
+
+
 # Add Icon and image (copy from sector hub)
 class Sector(models.Model):
     name = models.CharField(
@@ -39,6 +43,38 @@ class Sector(models.Model):
         help_text="Time when sector was updated",
         verbose_name="Updated at",
         auto_now=True,
+    )
+
+    image_attribution = models.CharField(
+        help_text="This is incase we have to attribute somebody or a website for using their image",
+        verbose_name="Image attribution",
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+
+    image = models.ImageField(
+        help_text="Sector image",
+        verbose_name="Image",
+        null=True,
+        blank=True,
+        upload_to=sector_image_path,
+    )
+
+    icon = models.FileField(
+        help_text="The icon representing the hub in the small sector preview cards",
+        verbose_name="Icon",
+        null=True,
+        blank=True,
+        upload_to=sector_image_path,
+    )
+
+    thumbnail_image = models.ImageField(
+        help_text="Image to show on sector card",
+        verbose_name="Thumbnail image",
+        null=True,
+        blank=True,
+        upload_to=sector_image_path,
     )
 
     # Option 1: Parent Hubs
