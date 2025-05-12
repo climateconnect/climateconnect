@@ -69,12 +69,13 @@ export default function manageProjectMembers({
   const [currentMembers, setCurrentMembers] = React.useState(
     members ? [...members.sort((a, b) => b.role.role_type - a.role.role_type)] : []
   );
-  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined,
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
   const layoutProps = {
     hubUrl: hubUrl,
     customTheme: customTheme,
-    headerBackground:
-              customTheme ? customTheme.palette.secondary.light : theme.palette.background.default,
+    headerBackground: customTheme
+      ? customTheme.palette.secondary.light
+      : theme.palette.background.default,
   };
   if (!user)
     return (

@@ -73,8 +73,8 @@ export default function EditProfilePage({
     hubUrl: hubUrl,
     customTheme: customTheme,
     headerBackground: customTheme
-          ? customTheme.palette.secondary.light
-          : theme.palette.background.default,
+      ? customTheme.palette.secondary.light
+      : theme.palette.background.default,
   };
 
   if (!profile)

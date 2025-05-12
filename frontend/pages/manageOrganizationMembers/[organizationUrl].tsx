@@ -74,9 +74,9 @@ export default function manageOrganizationMembers({
   const layoutProps = {
     hubUrl: hubUrl,
     customTheme: customTheme,
-    headerBackground:
-              customTheme ? customTheme.palette.secondary.light : theme.palette.background.default
-            
+    headerBackground: customTheme
+      ? customTheme.palette.secondary.light
+      : theme.palette.background.default,
   };
 
   if (!user)

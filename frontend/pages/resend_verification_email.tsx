@@ -78,9 +78,9 @@ export default function ResendVerificationEmail({ hubUrl, hubThemeData }) {
       isHubPage={hubUrl !== ""}
       customTheme={customTheme}
       hubUrl={hubUrl}
-      headerBackground={ customTheme
-          ? customTheme.palette.secondary.light
-          : theme.palette.background.default}
+      headerBackground={
+        customTheme ? customTheme.palette.secondary.light : theme.palette.background.default
+      }
     >
       <Container>
         <Typography className={classes.headline} variant="h3">
