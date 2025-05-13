@@ -1,6 +1,6 @@
 from django.urls import path
 
-from organization.views import organization_views, project_views
+from organization.views import organization_views, project_views, sector_views
 
 app_name = "organization"
 urlpatterns = [
@@ -169,6 +169,12 @@ urlpatterns = [
         project_views.ListProjectLikesView.as_view(),
         name="list-likes-view",
     ),
+    path(
+        "sectors/",
+        sector_views.ListSectors.as_view(),
+        name="list-sectors",
+    ),
+    # TODO: delete this endpoint
     path(
         "projecttags/",
         project_views.ListProjectTags.as_view(),

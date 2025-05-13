@@ -194,6 +194,7 @@ class ListProjectsView(ListAPIView):
         )
         # maybe use .annotate() to calculate ranking/counts of coments etc.
 
+        # TODO (Karol): replace tags with sectors
         if "hub" in self.request.query_params:
             hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
             if hub.exists():
@@ -508,7 +509,7 @@ class CreateProjectView(APIView):
         roles = Role.objects.all()
         team_members = request.data["team_members"]
 
-        # Change this to sectors
+        # TODO (Karol): Change this to sectors
         if "project_tags" in request.data:
             order = len(request.data["project_tags"])
             for project_tag_id in request.data["project_tags"]:
@@ -600,7 +601,7 @@ class ProjectAPIView(APIView):
             serializer = ProjectSerializer(project, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # Adapt to sectors instead of tags
+    # TODO (Karol): Adapt to sectors instead of tags
     def patch(self, request, url_slug, format=None):
         try:
             project = Project.objects.get(url_slug=url_slug)
@@ -954,6 +955,7 @@ class ListProjectMembersView(ListAPIView):
         return project.project_member_project.filter(is_active=True)
 
 
+# TODO (Karol): remove this view, as project tags are being replaced by sectors
 class ListProjectTags(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ProjectTagsSerializer
