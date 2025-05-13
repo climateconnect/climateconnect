@@ -384,6 +384,7 @@ class CreateProjectView(APIView):
             "short_description",
             "collaborators_welcome",
             "team_members",
+            # Change to project_sectors
             "project_tags",
             "loc",
             "image",
@@ -507,6 +508,7 @@ class CreateProjectView(APIView):
         roles = Role.objects.all()
         team_members = request.data["team_members"]
 
+        # Change this to sectors
         if "project_tags" in request.data:
             order = len(request.data["project_tags"])
             for project_tag_id in request.data["project_tags"]:
@@ -598,6 +600,7 @@ class ProjectAPIView(APIView):
             serializer = ProjectSerializer(project, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    # Adapt to sectors instead of tags
     def patch(self, request, url_slug, format=None):
         try:
             project = Project.objects.get(url_slug=url_slug)

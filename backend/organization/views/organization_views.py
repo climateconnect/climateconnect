@@ -375,6 +375,7 @@ class CreateOrganizationView(APIView):
                             continue
                         setattr(organization, field, request.data[field])
 
+                # change to sectors
                 if "hubs" in request.data:
                     hubs = []
                     for hub_url_slug in request.data["hubs"]:
@@ -523,6 +524,7 @@ class OrganizationAPIView(APIView):
             )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    # Adapt to Sectors
     def patch(self, request, url_slug, format=None):
         try:
             organization = Organization.objects.get(url_slug=str(url_slug))
