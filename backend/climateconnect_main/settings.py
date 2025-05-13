@@ -40,7 +40,6 @@ SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG", "false") == "true"  # needs to gravitate towards False!
-print("django.conf.settings.DEBUG", django.conf.settings.DEBUG)
 
 ALLOWED_HOSTS = get_allowed_hosts(env("ALLOWED_HOSTS"))
 
@@ -325,7 +324,6 @@ DEFAULT_CACHE_TIMEOUT = 2 * 24 * 3600
 USER_CHUNK_SIZE = env("USER_CHUNK_SIZE", 100)
 
 CACHE_BACHED_RANK_REQUEST = env("CACHE_BACHED_RANK_REQUEST", "False") == "true"
-print("django.conf.settings.CACHE_BACHED_RANK_REQUEST", CACHE_BACHED_RANK_REQUEST)
 
 
 # SENTRY setup

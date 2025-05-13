@@ -95,7 +95,7 @@ MAPPING = {
     "Education & Social action": SECTOR_DEFINITIONS["education"],
     "Energy": SECTOR_DEFINITIONS["energy"],
     "Food": SECTOR_DEFINITIONS["food"],
-    "funing": DELETION_TOKEN,
+    "Funding": DELETION_TOKEN,
     "Geoengineering": SECTOR_DEFINITIONS["engineered"],
     "Land use": SECTOR_DEFINITIONS["agri"],
     "Policy & Governance": SECTOR_DEFINITIONS["policy"],
@@ -130,9 +130,9 @@ def generate_sector_mappings_from_project_taggings(apps, schema_editor):
     ProjectSectorMapping = apps.get_model("organization", "ProjectSectorMapping")
     Sector = apps.get_model("organization", "Sector")
 
-    added_mappings = 0
-    deleted_mappings = 0
-    missing_mappings = 0
+    added_mappings = []
+    deleted_mappings = []
+    missing_mappings = []
 
     for tagging in ProjectTagging.objects.all():
         project = tagging.project
@@ -146,6 +146,7 @@ def generate_sector_mappings_from_project_taggings(apps, schema_editor):
 
         # propagate sector mapping to the parent tag
         # if specification for current tag is not found
+        parent_name = None
         if sector_def is None and tag.parent_tag is not None:
             parent_tag = tag.parent_tag
             parent_name = parent_tag.name.replace(DEBUG_PREFIX + "-", "")
@@ -157,7 +158,13 @@ def generate_sector_mappings_from_project_taggings(apps, schema_editor):
                 f"[MIGRATION] [-]\tDELETION TOKEN found: '{tag.name}', will skip the mapping "
                 + f"for [project]'{project.name}'--'{tag.name}[tag]'"
             )
-            deleted_mappings += 1
+            deleted_mappings.append(
+                {
+                    "project": project,
+                    "tag": tag,
+                    "parent_name": parent_name,
+                }
+            )
             continue
 
         if sector_def is None:
@@ -165,7 +172,14 @@ def generate_sector_mappings_from_project_taggings(apps, schema_editor):
                 f"[MIGRATION] [!]\tNo mapping found for tag '{tag.name}' ({name}), will skip the mapping "
                 + f"for [project]'{project.name}'--'{tag.name}[tag]'"
             )
-            missing_mappings += 1
+            missing_mappings.append(
+                {
+                    "project": project,
+                    "tag": tag,
+                    "parent_name": parent_name,
+                }
+            )
+
             continue
 
         sector = Sector.objects.get(key=sector_def.key)
@@ -176,12 +190,32 @@ def generate_sector_mappings_from_project_taggings(apps, schema_editor):
         print(
             f"[MIGRATION] [+]\tCreated mapping for [project]'{project.name}' -- '{tag.name}'[tag] ==> '{sector_def.key}'[sector] "
         )
-        added_mappings += 1
+        added_mappings.append(
+            {"project": project, "tag": tag, "sector_def": sector_def, "sector": sector}
+        )
 
     print("" + "-" * 80)
-    print(f"[MIGRATION] >> {added_mappings}\tadded mappings")
-    print(f"[MIGRATION] >> {deleted_mappings}\tdeleted mappings")
-    print(f"[MIGRATION] >> {missing_mappings}\tmissing mappings")
+    print("[MIGRATION] >> Deletions:")
+    for ele in deleted_mappings:
+        print(
+            "\t\t\t\t",
+            ele["project"].name,
+            ele["tag"].name,
+            ele["parent_name"],
+        )
+
+    print("[MIGRATION] >> Missing Mappings:")
+    for ele in missing_mappings:
+        print(
+            "\t\t\t\t",
+            ele["project"].name,
+            ele["tag"].name,
+            ele["parent_name"],
+        )
+
+    print(f"[MIGRATION] >> {len(added_mappings)}\tadded mappings")
+    print(f"[MIGRATION] >> {len(deleted_mappings)}\tdeleted mappings")
+    print(f"[MIGRATION] >> {len(missing_mappings)}\tmissing mappings")
     print()
     # Organization = apps.get_model("organization", "Organization")
     # OrganizationSectorMapping = apps.get_model(
