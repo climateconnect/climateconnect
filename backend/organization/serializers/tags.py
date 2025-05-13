@@ -11,6 +11,7 @@ from organization.models import (
 )
 
 
+# TODO (Karol): remove ProjectTags
 class ProjectTaggingSerializer(serializers.ModelSerializer):
     project_tag = serializers.SerializerMethodField()
 
@@ -23,6 +24,7 @@ class ProjectTaggingSerializer(serializers.ModelSerializer):
         return serializer.data
 
 
+# TODO (Karol): remove ProjectTags
 class ProjectTagsSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     original_name = serializers.SerializerMethodField()
