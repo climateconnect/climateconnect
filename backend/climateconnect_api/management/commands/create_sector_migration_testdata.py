@@ -17,7 +17,7 @@ from organization.models.tags import ProjectTagging, ProjectTags
 from hubs.models.hub import Hub
 
 TEST_PREFIX = "T-SECTOR"
-TESTING_LIMIT = 20
+TESTING_LIMIT = 50
 TESTING = True
 
 
@@ -220,8 +220,6 @@ SECTORS = {
     "education": "education",
     "mobility": "mobility",
 }
-
-DEFINITIONS = DEFINITIONS[:TESTING_LIMIT]
 
 
 def create_project_tag(tagdef: ProjectTagDef):
@@ -532,13 +530,34 @@ class Command(BaseCommand):
             action="store_true",
             help="Delete all hubs whose name starts with 'T-SECTOR'",
         )
+        parser.add_argument(
+            "-n",
+            "--number",
+            type=int,
+            help="Limit the number of generated ProjectTags",
+        )
 
     def handle(self, *args, **options) -> str:
+        # dynamicly set the testing limit
+        if options.get("number"):
+            global TESTING_LIMIT
+            global DEFINITIONS
+
+            TESTING_LIMIT = options.get("number")
+            if TESTING_LIMIT <= 0 and TESTING_LIMIT != -1:
+                print("[Usage]: Number must be greater than 0 or -1")
+                return
+
+            print(f"Limiting number of generated ProjectTags to {TESTING_LIMIT}")
+            DEFINITIONS = DEFINITIONS[:TESTING_LIMIT]
+
+        # delete all test data
         if options.get("delete"):
             delete_t_sector_hubs()
             delete_t_sector_projects()
             delete_t_sector_tags()
-        else:
-            create_all_project_tags()
-            create_projects_related_to_tags()
-            create_all_sector_hubs()
+            return
+
+        create_all_project_tags()
+        create_projects_related_to_tags()
+        create_all_sector_hubs()
