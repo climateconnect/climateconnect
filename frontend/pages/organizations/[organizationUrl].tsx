@@ -164,7 +164,9 @@ export default function OrganizationPage({
       description={organization?.name + " | " + organization?.info.short_description}
       image={getImageUrl(organization?.image)}
       customTheme={customTheme}
-      headerBackground={customTheme ? customTheme?.palette?.header.background : theme.palette.background.default}
+      headerBackground={
+        customTheme ? customTheme?.palette?.header.background : theme.palette.background.default
+      }
       hubUrl={hubUrl}
     >
       {organization ? (
