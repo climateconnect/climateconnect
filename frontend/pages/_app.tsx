@@ -71,7 +71,9 @@ export default function MyApp({ Component, pageProps = {} }) {
   const ENVIRONMENT = process.env.ENVIRONMENT;
   const SOCKET_URL = process.env.SOCKET_URL;
   const CUSTOM_HUB_URLS = process.env.CUSTOM_HUB_URLS ? process.env.CUSTOM_HUB_URLS.split(",") : [];
-  const LOCATION_HUBS = process.env.NEXT_PUBLIC_LOCATION_HUBS ? process.env.NEXT_PUBLIC_LOCATION_HUBS.split(",") : [];
+  const LOCATION_HUBS = process.env.NEXT_PUBLIC_LOCATION_HUBS
+    ? process.env.NEXT_PUBLIC_LOCATION_HUBS.split(",")
+    : [];
   // TODO: this should probably be decomposed
   // into individual state updates for
   // user, and notifications
