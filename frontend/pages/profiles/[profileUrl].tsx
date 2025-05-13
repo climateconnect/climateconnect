@@ -71,7 +71,7 @@ export default function ProfilePage({
       hubUrl={hubUrl}
       customTheme={customTheme}
       headerBackground={
-        customTheme ? customTheme.palette.secondary.light : theme.palette.background.default
+        customTheme ? customTheme.palette.header.background : theme.palette.background.default
       }
     >
       {profile ? (

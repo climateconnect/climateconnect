@@ -95,7 +95,7 @@ export default function Share({
         isHubPage={hubUrl !== ""}
         hubUrl={hubUrl}
         headerBackground={
-          customTheme ? customTheme.palette.secondary.light : theme.palette.background.default
+          customTheme ? customTheme.palette.header.background : theme.palette.background.default
         }
       >
         <ShareProjectRoot

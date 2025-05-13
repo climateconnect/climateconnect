@@ -115,7 +115,7 @@ export default function WideLayout({
   //Atm this is simply used to slide in the donation campaign banner after a certain timeout
   const [showDonationBanner, setShowDonationBanner] = useState(false);
   const spaceToTop = ElementSpaceToTop({ el: alertEl });
-
+  
   useEffect(() => {
     const params = getParams(window.location.href);
     if (params.message) setInitialMessage(decodeURI(params.message));

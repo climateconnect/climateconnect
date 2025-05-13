@@ -225,7 +225,7 @@ export default function Hub({
         title={headline}
         hideAlert
         headerBackground={
-          customTheme ? customTheme.palette.secondary.light : theme.palette.background.default
+          customTheme ? customTheme.palette.header.background : theme.palette.background.default
         }
         image={getImageUrl(image)}
         isHubPage

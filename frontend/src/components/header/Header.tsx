@@ -288,13 +288,11 @@ export default function Header({
   const { user, signOut, notifications, pathName, locale, CUSTOM_HUB_URLS } = useContext(
     UserContext
   );
-
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
-  const customHubUrls = CUSTOM_HUB_URLS || ["prio1"];
-  const isCustomHub = customHubUrls.includes(hubUrl);
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const LINKS = getLinks(pathName, texts, isLocationHub, isCustomHub, hasHubLandingPage, hubUrl);
   const classes = useStyles({
     fixedHeader: fixedHeader,

@@ -119,8 +119,7 @@ export default function OrganizationPage({
   hubThemeData,
   hubUrl,
 }) {
-  const { user, locale, CUSTOM_HUB_URLS } = useContext(UserContext);
-  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
+  const { user, locale } = useContext(UserContext);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization, false);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
 
@@ -158,14 +157,14 @@ export default function OrganizationPage({
     };
   });
 
-  const customHubTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
   return (
     <WideLayout
       title={organization ? organization.name : texts.not_found_error}
       description={organization?.name + " | " + organization?.info.short_description}
       image={getImageUrl(organization?.image)}
-      headerBackground={isCustomHub ? customHubTheme?.palette?.secondary?.light : "#FFF"}
-      customTheme={customHubTheme}
+      customTheme={customTheme}
+      headerBackground={customTheme ? customTheme?.palette?.header.background : theme.palette.background.default}
       hubUrl={hubUrl}
     >
       {organization ? (

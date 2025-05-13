@@ -87,7 +87,7 @@ export default function ResetPassword({ hubUrl, hubThemeData }) {
       customTheme={customTheme}
       hubUrl={hubUrl}
       headerBackground={
-        customTheme ? customTheme.palette.secondary.light : theme.palette.background.default
+        customTheme ? customTheme.palette.header.background : theme.palette.background.default
       }
     >
       <Typography className={classes.headline} variant="h3">

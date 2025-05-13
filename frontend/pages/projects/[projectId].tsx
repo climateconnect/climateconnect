@@ -255,7 +255,7 @@ export default function ProjectPage({
       isHubPage={!!hubUrl}
       hubUrl={hubUrl}
       headerBackground={
-        customTheme ? customTheme.palette.secondary.light : theme.palette.background.default
+        customTheme ? customTheme.palette.header.background : theme.palette.background.default
       }
       image={project ? getImageUrl(project.image) : undefined}
     >

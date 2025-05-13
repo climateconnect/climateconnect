@@ -223,7 +223,8 @@ class HubThemeSerializer(serializers.ModelSerializer):
     primary = HubThemeColorSerializer()
     secondary = HubThemeColorSerializer()
     background_default = HubThemeColorSerializer()
+    header_background = HubThemeColorSerializer()
 
     class Meta:
         model = HubTheme
-        fields = ["primary", "secondary", "background_default"]
+        fields = ["primary", "secondary", "background_default", "header_background"]

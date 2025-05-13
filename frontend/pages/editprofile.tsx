@@ -73,7 +73,7 @@ export default function EditProfilePage({
     hubUrl: hubUrl,
     customTheme: customTheme,
     headerBackground: customTheme
-      ? customTheme.palette.secondary.light
+      ? customTheme.palette.header.background
       : theme.palette.background.default,
   };
 

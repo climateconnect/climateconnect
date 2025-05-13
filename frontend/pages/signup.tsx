@@ -181,7 +181,7 @@ export default function Signup({ hubUrl, hubThemeData }) {
       hubUrl={hubUrl}
       customTheme={customTheme}
       headerBackground={
-        customTheme && isSmallScreen ? customTheme.palette.secondary.light : "transparent"
+        customTheme && isSmallScreen ? customTheme.palette.header.background : "transparent"
       }
       footerTextColor={hubUrl && !isSmallScreen && "white"}
     >

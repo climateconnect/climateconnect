@@ -79,7 +79,7 @@ export default function ResendVerificationEmail({ hubUrl, hubThemeData }) {
       customTheme={customTheme}
       hubUrl={hubUrl}
       headerBackground={
-        customTheme ? customTheme.palette.secondary.light : theme.palette.background.default
+        customTheme ? customTheme.palette.header.background : theme.palette.background.default
       }
     >
       <Container>

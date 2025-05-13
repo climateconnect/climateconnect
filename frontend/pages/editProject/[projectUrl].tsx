@@ -115,7 +115,7 @@ export default function EditProjectPage({
         title={texts.please_log_in_to_edit_project}
         customTheme={customTheme}
         headerBackground={
-          customTheme ? customTheme.palette.secondary.light : theme.palette.background.default
+          customTheme ? customTheme.palette.header.background : theme.palette.background.default
         }
         hubUrl={hubUrl}
       >
@@ -140,7 +140,7 @@ export default function EditProjectPage({
         title={texts.not_a_member}
         customTheme={customTheme}
         headerBackground={
-          customTheme ? customTheme.palette.secondary.light : theme.palette.background.default
+          customTheme ? customTheme.palette.header.background : theme.palette.background.default
         }
         hubUrl={hubUrl}
       >
@@ -163,7 +163,7 @@ export default function EditProjectPage({
         title={texts.no_permissions_to_edit_project}
         customTheme={customTheme}
         headerBackground={
-          customTheme ? customTheme.palette.secondary.light : theme.palette.background.default
+          customTheme ? customTheme.palette.header.background : theme.palette.background.default
         }
         hubUrl={hubUrl}
       >
@@ -181,7 +181,7 @@ export default function EditProjectPage({
         messageType={errorMessage && "error"}
         customTheme={customTheme}
         headerBackground={
-          customTheme ? customTheme.palette.secondary.light : theme.palette.background.default
+          customTheme ? customTheme.palette.header.background : theme.palette.background.default
         }
         hubUrl={hubUrl}
       >

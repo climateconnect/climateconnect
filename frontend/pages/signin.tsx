@@ -162,7 +162,7 @@ export default function Signin({ hubSlug, hubThemeData, message, message_type })
       isHubPage={hubSlug !== ""}
       hubUrl={hubSlug}
       headerBackground={
-        customTheme && mobileScreenSize ? customTheme.palette.secondary.light : "transparent"
+        customTheme && mobileScreenSize ? customTheme.palette.header.background : "transparent"
       }
       footerTextColor={hubSlug && !mobileScreenSize && "white"}
     >
