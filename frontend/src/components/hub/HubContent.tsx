@@ -17,7 +17,7 @@ import HubSupporters from "./HubSupporters";
 import { DePrio1Willkommen, EnPrio1Welcome } from "../../../devlink";
 import theme from "../../themes/theme";
 import { PrioOneBackgroundBrowse, PrioOneBackgroundBrowseIcon } from "./CustomBackground";
-import CustomHubsContent from "./CustomHubsContent";
+import HubConditionalRenderer from "./HubConditionalRenderer";
 
 type MakeStylesProps = {
   isLocationHub: boolean;
@@ -179,7 +179,7 @@ export default function HubContent({
         )}
         {isLocationHub ? (
           <div className={classes.topSectionWrapper}>
-            <CustomHubsContent
+            <HubConditionalRenderer
               hubUrl={hubUrl}
               Component={PrioOneBackgroundBrowse}
               componentProps={{ isLoggedInUser: !!user }}
@@ -198,7 +198,7 @@ export default function HubContent({
                     )}
                   </>
                 ) : locale === "de" ? (
-                  <CustomHubsContent
+                  <HubConditionalRenderer
                     hubUrl={hubUrl}
                     Component={DePrio1Willkommen}
                     DefaultComponent={LoggedOutLocationHubBox}
@@ -209,7 +209,7 @@ export default function HubContent({
                     }}
                   />
                 ) : (
-                  <CustomHubsContent
+                  <HubConditionalRenderer
                     hubUrl={hubUrl}
                     Component={EnPrio1Welcome}
                     DefaultComponent={LoggedOutLocationHubBox}
@@ -245,7 +245,7 @@ export default function HubContent({
                         <HubSupporters supportersList={hubSupporters} hubName={hubData?.name} />
                       )}
                       {!(hubSupporters?.length > 0) && (
-                        <CustomHubsContent
+                        <HubConditionalRenderer
                           hubUrl={hubUrl}
                           Component={PrioOneBackgroundBrowseIcon}
                         />

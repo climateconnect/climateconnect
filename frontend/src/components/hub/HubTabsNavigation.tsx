@@ -8,7 +8,7 @@ import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import HubsDropDown from "../indexPage/hubsSubHeader/HubsDropDown";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
-import CustomHubsContent from "./CustomHubsContent";
+import HubConditionalRenderer from "./HubConditionalRenderer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -168,7 +168,7 @@ export default function HubTabsNavigation({
           )}
           {isNarrowScreen && (
             <>
-              <CustomHubsContent
+              <HubConditionalRenderer
                 hubUrl={hubUrl}
                 Component={Link}
                 componentProps={{
