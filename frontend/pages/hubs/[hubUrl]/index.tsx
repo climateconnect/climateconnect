@@ -64,6 +64,15 @@ export async function getServerSideProps(ctx: any) {
   }
 
   const hubData = await getHubData(hubUrl, ctx.locale);
+  if (!hubData?.landing_page_component) {
+    return {
+      redirect: {
+        destination: `/hubs/${hubUrl}/browse`,
+        // redirect is based on current hub data, and that might change in the future so permanent: false,
+        permanent: false,
+      },
+    };
+  }
   return {
     props: {
       hubData,
@@ -91,7 +100,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ hubData, hubUrl }) => {
   const texts = getTexts({ page: "landing_page", locale: locale }) as TextsType;
   const [DevlinkComponent, setDevlinkComponent] = useState<DevlinkComponentType>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
+  
   useEffect(() => {
     const loadComponent = async () => {
       if (!hubData?.landing_page_component) {
