@@ -7,6 +7,7 @@ import WideLayout from "../src/components/layouts/WideLayout";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
 import AccountCreatedContent from "../src/components/signup/AccountCreatedContent";
+import theme from "../src/themes/theme";
 
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hub;
@@ -39,7 +40,9 @@ export default function AccountCreated({ hubUrl, hubThemeData }) {
       isHubPage={hubUrl !== ""}
       customTheme={customTheme}
       hubUrl={hubUrl}
-      headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
+      headerBackground={
+        customTheme ? customTheme.palette.header.background : theme.palette.background.default
+      }
       footerTextColor={hubUrl && "white"}
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>

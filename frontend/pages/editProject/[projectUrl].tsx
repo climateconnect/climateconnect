@@ -20,6 +20,7 @@ import Layout from "../../src/components/layouts/layout";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
+import theme from "../../src/themes/theme";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -96,8 +97,7 @@ export default function EditProjectPage({
     status: statusOptions.find((s) => s.name === project?.status),
   };
   const [errorMessage, setErrorMessage] = React.useState("");
-  const { user, locale, CUSTOM_HUB_URLS } = useContext(UserContext);
-  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
+  const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
 
   const handleSetErrorMessage = (newErrorMessage) => {
@@ -106,12 +106,16 @@ export default function EditProjectPage({
   const handleSetProject = (newProject) => {
     setCurProject({ ...newProject });
   };
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+
   if (!user)
     return (
       <WideLayout
         title={texts.please_log_in_to_edit_project}
-        headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
-        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+        customTheme={customTheme}
+        headerBackground={
+          customTheme ? customTheme.palette.header.background : theme.palette.background.default
+        }
         hubUrl={hubUrl}
       >
         <LoginNudge fullPage whatToDo={texts.to_edit_this_project} />
@@ -133,8 +137,10 @@ export default function EditProjectPage({
     return (
       <WideLayout
         title={texts.not_a_member}
-        headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
-        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+        customTheme={customTheme}
+        headerBackground={
+          customTheme ? customTheme.palette.header.background : theme.palette.background.default
+        }
         hubUrl={hubUrl}
       >
         <Typography variant="h4" color="primary" className={classes.errorTitle}>
@@ -154,8 +160,10 @@ export default function EditProjectPage({
     return (
       <WideLayout
         title={texts.no_permissions_to_edit_project}
-        headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
-        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+        customTheme={customTheme}
+        headerBackground={
+          customTheme ? customTheme.palette.header.background : theme.palette.background.default
+        }
         hubUrl={hubUrl}
       >
         <Typography variant="h4" color="primary" className={classes.errorTitle}>
@@ -170,8 +178,10 @@ export default function EditProjectPage({
         title={texts.edit_project + " " + project.name}
         message={errorMessage}
         messageType={errorMessage && "error"}
-        headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
-        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+        customTheme={customTheme}
+        headerBackground={
+          customTheme ? customTheme.palette.header.background : theme.palette.background.default
+        }
         hubUrl={hubUrl}
       >
         <EditProjectRoot
