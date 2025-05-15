@@ -21,7 +21,8 @@
     />
  */
 
-import React from "react";
+import React, {useContext} from "react";
+import UserContext from "../context/UserContext";
 
 interface HubConditionalRendererProps {
   hubUrl?: string;
@@ -40,7 +41,9 @@ const HubConditionalRenderer: React.FC<HubConditionalRendererProps> = ({
   componentProps = {},
   defaultComponentProps = {},
 }) => {
-  return hubUrl && HUBS_NAME.includes(hubUrl) ? (
+  const { CUSTOM_HUB_URLS } = useContext(UserContext);
+  
+  return hubUrl && CUSTOM_HUB_URLS.includes(hubUrl) ? (
     <Component {...componentProps} />
   ) : DefaultComponent ? (
     <DefaultComponent {...defaultComponentProps} />
