@@ -1,6 +1,6 @@
 import React from "react";
 
-interface HubConditionalRendererProps {
+interface CustomHubsContentProps {
   hubUrl?: string;
   Component: React.ComponentType<any>;
   DefaultComponent?: React.ComponentType<any> | null;
@@ -8,19 +8,17 @@ interface HubConditionalRendererProps {
   defaultComponentProps?: Record<string, any>;
 }
 
-const HUBS_NAME = ["prio1"]
-
-const HubConditionalRenderer: React.FC<HubConditionalRendererProps> = ({
+const CustomHubsContent: React.FC<CustomHubsContentProps> = ({
   hubUrl,
   Component,
   DefaultComponent = null,
   componentProps = {},
   defaultComponentProps = {},
 }) => {
-  return hubUrl && HUBS_NAME.includes(hubUrl) ? (
+  return hubUrl === "prio1" ? (
     <Component {...componentProps} />
   ) : DefaultComponent ? (
     <DefaultComponent {...defaultComponentProps} />
   ) : null;
 };
-export default HubConditionalRenderer;
+export default CustomHubsContent;

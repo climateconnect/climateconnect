@@ -2,7 +2,7 @@ import React from "react";
 import { makeStyles } from "@mui/styles";
 import Image from "next/image";
 import { Theme } from "@mui/material/styles";
-import HubConditionalRenderer from "./HubConditionalRenderer";
+import CustomHubsContent from "./CustomHubsContent";
 
 type Props = { hubUrl: string | undefined; texts: any };
 const PRIO1_SLUG = "prio1";
@@ -57,7 +57,7 @@ function isNumber(value: any): boolean {
 
 export default function CustomAuthImage({ hubUrl, texts }: Props): JSX.Element | null {
   return (
-    <HubConditionalRenderer
+    <CustomHubsContent
       hubUrl={hubUrl}
       Component={Prio1AuthImage}
       componentProps={{ texts: texts }}
