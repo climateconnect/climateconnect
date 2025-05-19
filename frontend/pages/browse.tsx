@@ -64,7 +64,7 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter, pro
   });
   const atTopOfPage = TopOfPage({ initTopOfPage: true });
   const showOnScrollUp = isScrollingUp && !atTopOfPage;
-
+  
   const contextValues = {
     projectTypes: projectTypes,
   };
