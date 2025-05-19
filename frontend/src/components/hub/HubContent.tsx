@@ -17,6 +17,7 @@ import HubSupporters from "./HubSupporters";
 import { DePrio1Willkommen, EnPrio1Welcome } from "../../../devlink";
 import theme from "../../themes/theme";
 import { PrioOneBackgroundBrowse, PrioOneBackgroundBrowseIcon } from "./CustomBackground";
+import customHubData from "../../../public/data/customHubData";
 
 type MakeStylesProps = {
   isLocationHub: boolean;
@@ -168,6 +169,8 @@ export default function HubContent({
   if (fixed && showMoreVisible) {
     setFixed(false);
   }
+  const WelcomeComponent = customHubData()?.[hubUrl]?.welcome?.[locale];
+
   return (
     <div>
       <div>
@@ -192,12 +195,8 @@ export default function HubContent({
                       />
                     )}
                   </>
-                ) : hubUrl === "prio1" ? (
-                  locale === "de" ? (
-                    <DePrio1Willkommen />
-                  ) : (
-                    <EnPrio1Welcome />
-                  )
+                ) : WelcomeComponent ? (
+                  <WelcomeComponent />
                 ) : (
                   <LoggedOutLocationHubBox
                     headline={headline}
