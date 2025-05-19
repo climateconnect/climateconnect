@@ -1,6 +1,7 @@
 import logging
 import traceback
 from django.db.models import Case, When, Prefetch
+
 from organization.utility.cache import generate_project_ranking_cache_key
 from organization.utility.follow import (
     get_list_of_project_followers,
@@ -54,6 +55,8 @@ from organization.models import (
     ProjectTags,
     ProjectLike,
     OrganizationFollower,
+    Sector,
+    ProjectSectorMapping,
 )
 
 from organization.models.type import PROJECT_TYPES
@@ -190,10 +193,22 @@ class ListProjectsView(ListAPIView):
                         "parent_user__user_profile",
                     ),
                 ),
+                Prefetch(
+                    "project_sector_mapping",
+                    queryset=ProjectSectorMapping.objects.select_related("sector"),
+                ),
             )
         )
         # maybe use .annotate() to calculate ranking/counts of coments etc.
 
+        if "sector" in self.request.query_params:
+            sectors_keys = self.request.query_params.get("sector").split(",")
+
+            projects = projects.filter(
+                project_sector_mapping__sector__key__in=sectors_keys
+            )
+
+        # TODO (Karol): replace tags with sectors
         if "hub" in self.request.query_params:
             hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
             if hub.exists():
@@ -384,11 +399,13 @@ class CreateProjectView(APIView):
             "short_description",
             "collaborators_welcome",
             "team_members",
+            # TODO (Karol): remove / change to project_sectors
             "project_tags",
             "loc",
             "image",
             "source_language",
             "translations",
+            "hubName",  # TODO: fix this behavior: 'hubName' has to be set, but can be None
         ]
         for param in required_params:
             if param not in request.data:
@@ -507,6 +524,45 @@ class CreateProjectView(APIView):
         roles = Role.objects.all()
         team_members = request.data["team_members"]
 
+        if "sectors" in request.data:
+            sector_keys = request.data["sectors"]
+
+            if isinstance(sector_keys, str):
+                if "," not in sector_keys:
+                    # in case of a single sector, it is passed as a string
+                    sector_keys = [sector_keys]
+                else:
+                    sector_keys = sector_keys.split(",")
+
+            if not isinstance(sector_keys, list):
+                logger.error(
+                    "Passed sectors are not in list format. Please contact administrator"
+                )
+
+            # remove duplicates
+            sector_keys = list(set(sector_keys))
+
+            sectors = []
+
+            for sector_key in sector_keys:
+                try:
+                    sector = Sector.objects.get(key=sector_key)
+                    sectors.append(sector)
+                except Sector.DoesNotExist:
+                    logger.error(
+                        "During project creation of project {}: Passed sector {} does not exists".format(
+                            project.url_slug,
+                            sector_key,
+                        )
+                    )
+            ProjectSectorMapping.objects.bulk_create(
+                [
+                    ProjectSectorMapping(project=project, sector=sector)
+                    for sector in sectors
+                ]
+            )
+
+        # TODO (Karol): Change this to sectors
         if "project_tags" in request.data:
             order = len(request.data["project_tags"])
             for project_tag_id in request.data["project_tags"]:
@@ -598,6 +654,7 @@ class ProjectAPIView(APIView):
             serializer = ProjectSerializer(project, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    # TODO (Karol): Adapt to sectors instead of tags
     def patch(self, request, url_slug, format=None):
         try:
             project = Project.objects.get(url_slug=url_slug)
@@ -951,6 +1008,7 @@ class ListProjectMembersView(ListAPIView):
         return project.project_member_project.filter(is_active=True)
 
 
+# TODO (Karol): remove this view, as project tags are being replaced by sectors
 class ListProjectTags(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ProjectTagsSerializer
