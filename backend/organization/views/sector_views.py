@@ -15,10 +15,8 @@ class ListSectors(ListAPIView):
     """
 
     permission_classes = [AllowAny]
-
-    queryset = Sector.objects.all()
     serializer_class = SectorSerializer
-    permission_classes = [IsAuthenticated]
+    queryset = Sector.objects.all()
 
     def get(self, request, *args, **kwargs):
         """
