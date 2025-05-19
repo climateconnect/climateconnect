@@ -14,7 +14,7 @@ import UserContext from "../src/components/context/UserContext";
 import theme from "../src/themes/theme";
 import { CcLocale } from "../src/types";
 import * as Sentry from "@sentry/react";
-import "../devlink/global.css";
+import "devlink/global.css";
 
 // initialize sentry
 
