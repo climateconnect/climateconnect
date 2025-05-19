@@ -100,7 +100,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ hubData, hubUrl }) => {
   const texts = getTexts({ page: "landing_page", locale: locale }) as TextsType;
   const [DevlinkComponent, setDevlinkComponent] = useState<DevlinkComponentType>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  
+
   useEffect(() => {
     const loadComponent = async () => {
       if (!hubData?.landing_page_component) {
