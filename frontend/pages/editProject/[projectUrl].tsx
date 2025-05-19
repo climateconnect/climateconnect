@@ -92,6 +92,7 @@ export default function EditProjectPage({
     status: statusOptions.find((s) => s.name === project?.status),
     hubUrl: project.related_hubs?.length > 0 ? project.related_hubs[0] : null,
   });
+
   project = {
     ...project,
     status: statusOptions.find((s) => s.name === project?.status),

@@ -215,8 +215,8 @@ function LargeScreenOverview({
       ...project,
       hubUrl: hubUrl,
     });
-    
   }
+
   return (
     <>
       <InputName

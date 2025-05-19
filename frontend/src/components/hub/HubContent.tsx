@@ -17,7 +17,6 @@ import HubSupporters from "./HubSupporters";
 import { DePrio1Willkommen, EnPrio1Welcome } from "../../../devlink";
 import theme from "../../themes/theme";
 import { PrioOneBackgroundBrowse, PrioOneBackgroundBrowseIcon } from "./CustomBackground";
-import CustomHubsContent from "./CustomHubsContent";
 
 type MakeStylesProps = {
   isLocationHub: boolean;
@@ -179,11 +178,7 @@ export default function HubContent({
         )}
         {isLocationHub ? (
           <div className={classes.topSectionWrapper}>
-            <CustomHubsContent
-              hubUrl={hubUrl}
-              Component={PrioOneBackgroundBrowse}
-              componentProps={{ isLoggedInUser: !!user }}
-            />
+            {hubUrl === "prio1" && <PrioOneBackgroundBrowse isLoggedInUser={user ? true : false} />}
             <Container>
               <div className={classes.dashboardAndStatboxWrapper}>
                 {user ? (
@@ -197,27 +192,17 @@ export default function HubContent({
                       />
                     )}
                   </>
-                ) : locale === "de" ? (
-                  <CustomHubsContent
-                    hubUrl={hubUrl}
-                    Component={DePrio1Willkommen}
-                    DefaultComponent={LoggedOutLocationHubBox}
-                    defaultComponentProps={{
-                      headline: headline,
-                      isLocationHub: isLocationHub,
-                      location: hubData.name,
-                    }}
-                  />
+                ) : hubUrl === "prio1" ? (
+                  locale === "de" ? (
+                    <DePrio1Willkommen />
+                  ) : (
+                    <EnPrio1Welcome />
+                  )
                 ) : (
-                  <CustomHubsContent
-                    hubUrl={hubUrl}
-                    Component={EnPrio1Welcome}
-                    DefaultComponent={LoggedOutLocationHubBox}
-                    defaultComponentProps={{
-                      headline: headline,
-                      isLocationHub: isLocationHub,
-                      location: hubData.name,
-                    }}
+                  <LoggedOutLocationHubBox
+                    headline={headline}
+                    isLocationHub={isLocationHub}
+                    location={hubData.name}
                   />
                 )}
                 {!isNarrowScreen &&
@@ -244,11 +229,8 @@ export default function HubContent({
                       {hubSupporters?.length > 0 && (
                         <HubSupporters supportersList={hubSupporters} hubName={hubData?.name} />
                       )}
-                      {!(hubSupporters?.length > 0) && (
-                        <CustomHubsContent
-                          hubUrl={hubUrl}
-                          Component={PrioOneBackgroundBrowseIcon}
-                        />
+                      {!(hubSupporters?.length > 0) && hubUrl === "prio1" && (
+                        <PrioOneBackgroundBrowseIcon />
                       )}
                     </>
                   ))}

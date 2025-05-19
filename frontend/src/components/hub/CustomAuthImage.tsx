@@ -2,9 +2,9 @@ import React from "react";
 import { makeStyles } from "@mui/styles";
 import Image from "next/image";
 import { Theme } from "@mui/material/styles";
-import CustomHubsContent from "./CustomHubsContent";
 
 type Props = { hubUrl: string | undefined; texts: any };
+
 const PRIO1_SLUG = "prio1";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -56,14 +56,18 @@ function isNumber(value: any): boolean {
 }
 
 export default function CustomAuthImage({ hubUrl, texts }: Props): JSX.Element | null {
-  return (
-    <CustomHubsContent
-      hubUrl={hubUrl}
-      Component={Prio1AuthImage}
-      componentProps={{ texts: texts }}
-      DefaultComponent={DefaultAuthImage}
-    />
-  );
+  if (!hubUrl) {
+    console.log("undefined");
+    return <DefaultAuthImage />;
+  }
+
+  switch (hubUrl.toLowerCase()) {
+    case PRIO1_SLUG: {
+      return <Prio1AuthImage texts={texts} />;
+    }
+  }
+
+  return <DefaultAuthImage />;
 }
 
 function Prio1AuthImage({ texts }) {
