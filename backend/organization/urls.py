@@ -172,7 +172,7 @@ urlpatterns = [
     path(
         "sectors/",
         sector_views.ListSectors.as_view(),
-        name="list-sectors",
+        name="sectors",
     ),
     # TODO: delete this endpoint
     path(

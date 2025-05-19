@@ -98,8 +98,12 @@ class Sector(models.Model):
 
 
 class ProjectSectorMapping(models.Model):
-    sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    sector = models.ForeignKey(
+        Sector, on_delete=models.CASCADE, related_name="project_sector_mapping"
+    )
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, related_name="project_sector_mapping"
+    )
 
     created_at = models.DateTimeField(
         help_text="Time when mapping was created",
@@ -123,14 +127,21 @@ class ProjectSectorMapping(models.Model):
         app_label = "organization"
         verbose_name = "Project Sector Mapping"
         ordering = ["id"]
+        unique_together = ("sector", "project")
 
     def __str__(self):
         return f"{self.sector.name}--{self.project.name}"
 
 
 class OrganizationSectorMapping(models.Model):
-    sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    sector = models.ForeignKey(
+        Sector, on_delete=models.CASCADE, related_name="organization_sector_mapping"
+    )
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name="organization_sector_mapping",
+    )
 
     created_at = models.DateTimeField(
         help_text="Time when mapping was created",
