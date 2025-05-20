@@ -122,7 +122,7 @@ export default function HubTabsNavigation({
   if (!user && isNarrowScreen) {
     return <></>;
   }
-  const hubTabLink = customHubData({ texts: texts })[hubUrl].hubTabLinkNarrowScreen;
+  const hubTabLink = customHubData({ texts: texts })[hubUrl]?.hubTabLinkNarrowScreen;
 
   return (
     <div className={`${className} ${classes.root}`}>
