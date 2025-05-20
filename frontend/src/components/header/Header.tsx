@@ -314,11 +314,11 @@ export default function Header({
   const localePrefix = getLocalePrefix(locale);
 
   const onNotificationsClose = () => setAnchorEl(null);
-  
+
   const getLogo = () => {
     let imageUrl = "/images";
     if (!isCustomHub) {
-      if (isHubPage && isLocationHub ) {
+      if (isHubPage && isLocationHub) {
         if (transparentHeader) {
           imageUrl += `/hub_logos/ch_${hubUrl?.toLowerCase()}_logo_white.svg`;
         } else {
@@ -327,7 +327,7 @@ export default function Header({
       } else {
         imageUrl = loadDefaultLogo(transparentHeader, isMediumScreen);
       }
-    }else{
+    } else {
       imageUrl += `/hub_logos/ch_${hubUrl}_logo.svg`;
     }
     return imageUrl;
