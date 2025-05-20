@@ -14,7 +14,6 @@ import Dashboard from "../dashboard/Dashboard";
 import LocalAmbassadorInfoBox from "./LocalAmbassadorInfoBox";
 import HubHeadlineContainer from "./HubHeadlineContainer";
 import HubSupporters from "./HubSupporters";
-import { DePrio1Willkommen, EnPrio1Welcome } from "../../../devlink";
 import theme from "../../themes/theme";
 import { PrioOneBackgroundBrowse, PrioOneBackgroundBrowseIcon } from "./CustomBackground";
 import customHubData from "../../../public/data/customHubData";
@@ -169,7 +168,7 @@ export default function HubContent({
   if (fixed && showMoreVisible) {
     setFixed(false);
   }
-  const WelcomeComponent = customHubData()?.[hubUrl]?.welcome?.[locale];
+  const WelcomeComponent = customHubData()[hubUrl]?.welcome?.[locale];
 
   return (
     <div>

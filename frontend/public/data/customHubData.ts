@@ -14,10 +14,10 @@ export default function customHubData({
         en: EnPrio1Welcome,
         de: DePrio1Willkommen,
       },
-      // hubTabLink: {
-      //   href: "https://prio1-klima.net",
-      //   text: texts.PRIO1_klima,
-      // },
+      hubTabLinkNarrowScreen: {
+        href: "https://prio1-klima.net",
+        text: texts.PRIO1_klima,
+      },
       headerLink: getPrio1Links(path_to_redirect, texts),
       headerStaticLink: prio1StaticLinks(texts),
     },
