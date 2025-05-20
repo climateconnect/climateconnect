@@ -9,6 +9,7 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { getLocalePrefix } from "./apiOperations";
+import customHubData from "../data/customHubData";
 
 const COMMON_LINKS = {
   NOTIFICATIONS: {
@@ -78,6 +79,11 @@ const getPrio1Links = (path_to_redirect, texts) => [
   },
   ...COMMON_LINKS.AUTH_LINKS(path_to_redirect, texts, "hub=prio1"),
 ];
+
+// after adding Scottland Hub
+export function getScottLinks(path_to_redirect, texts) {
+  return path_to_redirect;
+}
 
 const getDefaultLinks = (path_to_redirect, texts, isLocationHub, hasHubLandingPage, hubUrl) => {
   const isOnLandingPage = path_to_redirect == `/hubs/${hubUrl}`; // Detect if we are on the landing page
@@ -151,8 +157,9 @@ const getLinks = (
   hubUrl
 ) => {
   return isCustomHub
-    ? getPrio1Links(path_to_redirect, texts)
-    : getDefaultLinks(
+    ? customHubData({ path_to_redirect, texts })[hubUrl].headerLink
+    : // ? getPrio1Links(path_to_redirect, texts)
+      getDefaultLinks(
         path_to_redirect,
         texts,
         isLocationHub || isCustomHub,
@@ -256,7 +263,7 @@ const defaultStaticLinks = (texts) => [
   },
 ];
 
-const Prio1StaticLinks = (texts) => [
+const prio1StaticLinks = (texts) => [
   {
     href: "https://prio1-klima.net/klima-preis/",
     text: texts.PRIO1_Climate_Prize,
@@ -277,19 +284,10 @@ const Prio1StaticLinks = (texts) => [
   },
 ];
 
-const customHubStaticLinksFunction = {
-  prio1: Prio1StaticLinks,
-};
-
-const getCustomHubStaticLinks = (url_slug, texts) => {
-  if (Object.keys(customHubStaticLinksFunction).includes(url_slug))
-    return customHubStaticLinksFunction[url_slug](texts);
-  return defaultStaticLinks(texts);
-};
 const getStaticLinks = (texts, customHubUrlSlug) => {
   return !customHubUrlSlug
     ? defaultStaticLinks(texts)
-    : getCustomHubStaticLinks(customHubUrlSlug, texts);
+    : customHubData({ texts })[customHubUrlSlug].headerStaticLink;
 };
 
 const getStaticLinkFromItem = (locale, item) => {
@@ -299,4 +297,11 @@ const getStaticLinkFromItem = (locale, item) => {
   return `${getLocalePrefix(locale)}${item.href}`;
 };
 
-export { getLinks, getLoggedInLinks, getStaticLinks, getStaticLinkFromItem };
+export {
+  getLinks,
+  getLoggedInLinks,
+  getStaticLinks,
+  getStaticLinkFromItem,
+  getPrio1Links,
+  prio1StaticLinks,
+};
