@@ -165,6 +165,7 @@ class OrganizationSectorMapping(models.Model):
         app_label = "organization"
         verbose_name = "Organization Sector Mapping"
         ordering = ["id"]
+        unique_together = ("sector", "organization")
 
     #
     def __str__(self):

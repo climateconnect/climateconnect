@@ -8,7 +8,14 @@ from django.test import tag
 
 from organization.models.type import ProjectTypesChoices
 from climateconnect_api.models.language import Language
-from organization.models import Sector, Project, ProjectStatus, ProjectSectorMapping
+from organization.models import (
+    Sector,
+    Project,
+    ProjectStatus,
+    ProjectSectorMapping,
+    ProjectTags,
+    ProjectTagging,
+)
 from location.models import Location
 
 from PIL import Image
@@ -90,7 +97,7 @@ class TestProjectsListView(APITestCase):
         ProjectSectorMapping.objects.create(sector=sectors[0], project=projects[0])
         ProjectSectorMapping.objects.create(sector=sectors[0], project=projects[1])
         ProjectSectorMapping.objects.create(sector=sectors[1], project=projects[2])
-        # sector 3 will not be used for this test
+        # sector 3 will not be connected to any project
 
         # act
         response_1 = self.client.get(self.url + "?sector=" + sectors[0].key)
@@ -113,6 +120,63 @@ class TestProjectsListView(APITestCase):
 
         self.assertIsNotNone(results_3)
         self.assertEqual(len(results_3), 0)
+
+    @tag("sectors", "projects")
+    def test_get_projects_lists_content_filtered_by_two_sectors(self):
+        # arranging
+        sectors = [
+            Sector.objects.create(
+                name=f"Test Sector Name {i}",
+                name_de_translation=f"Test Sector Name {i} DE",
+                key=f"test_sector_{i}",
+            )
+            for i in range(3)
+        ]
+
+        projects = self.projects
+
+        ProjectSectorMapping.objects.create(sector=sectors[0], project=projects[0])
+        ProjectSectorMapping.objects.create(sector=sectors[0], project=projects[1])
+        ProjectSectorMapping.objects.create(sector=sectors[1], project=projects[2])
+
+        testcases = [
+            {
+                "url": "sector={},{}".format(sectors[0].key, sectors[1].key),
+                "expected": [
+                    projects[0].url_slug,
+                    projects[1].url_slug,
+                    projects[2].url_slug,
+                ],
+            },
+            {
+                "url": "sector={},{}".format(sectors[0].key, sectors[2].key),
+                "expected": [
+                    projects[0].url_slug,
+                    projects[1].url_slug,
+                ],
+            },
+            {
+                "url": "sector={},{}".format(sectors[1].key, sectors[2].key),
+                "expected": [
+                    projects[2].url_slug,
+                ],
+            },
+        ]
+
+        # act
+        responses = [
+            self.client.get(self.url + "?" + testcase["url"]) for testcase in testcases
+        ]
+
+        # assert
+        for i, response in enumerate(responses):
+            results = response.json().get("results", None)
+
+            self.assertIsNotNone(results)
+            self.assertEqual(len(results), len(testcases[i]["expected"]))
+
+            for project_slug in testcases[i]["expected"]:
+                self.assertContains(response, project_slug)
 
 
 class TestCreateProjectsViews(APITestCase):
@@ -212,13 +276,6 @@ class TestCreateProjectsViews(APITestCase):
 
     def test_post_project_declines_if_not_authenticated(self):
         # arrange
-        # data = {
-        #     "name": "Test Project",
-        #     "description": "Test Project Description",
-        #     "url_slug": "test-project",
-        #     "is_active": True,
-        #     "status": 1,
-        # }
 
         # act
         response = self.client.post(self.url, self.default_project_data, format="json")
@@ -368,3 +425,92 @@ class TestCreateProjectsViews(APITestCase):
         )
 
         pass
+
+
+class TestProjectApi(APITestCase):
+
+    def setUp(self):
+        self.url_slug = "test-project"
+        self.url = reverse(
+            "organization:project-api-view", kwargs={"url_slug": "test-project"}
+        )
+
+        projectStatus_active = ProjectStatus.objects.create(
+            name="active",
+            name_de_translation="aktiv",
+            has_end_date=False,
+            has_start_date=False,
+        )
+
+        self.default_language = Language.objects.create(
+            name="Test English",
+            native_name="English",
+            language_code="en",
+        )
+
+        self.project = Project.objects.create(
+            name="Test Project",
+            description="Test Project Description",
+            url_slug=self.url_slug,
+            is_active=True,
+            status=projectStatus_active,
+            language=self.default_language,
+        )
+
+        self.decoy_project = Project.objects.create(
+            name="decoy",
+            description="decoy desc",
+            url_slug="decoy",
+            is_active=True,
+            status=projectStatus_active,
+        )
+
+    # @tag("projects")
+    # def test_get_project_by_url_slug(self):
+    #     # arrange
+
+    #     # act
+    #     response = self.client.get(self.url)
+    #     res = response.json()
+
+    #     # assert
+    #     self.assertIsNotNone(res)
+    #     self.assertContains(response, "Test Project")
+    #     self.assertNotContains(response, "decoy")
+
+    @tag("sectors", "projects")
+    def test_get_project_by_url_slug_includes_sector(self):
+        # arrange
+        self.sector = Sector.objects.create(
+            name="Test Sector",
+            name_de_translation="Test Sektor DE",
+            key="test_sector",
+        )
+        self.tag = ProjectTags.objects.create(
+            name="Test Tag",
+            name_de_translation="Test Tag DE",
+            key="test_tag",
+        )
+        ProjectSectorMapping.objects.create(sector=self.sector, project=self.project)
+        ProjectTagging.objects.create(
+            project=self.project, project_tag=self.tag, order=1
+        )
+
+        self.sector_decoy = Sector.objects.create(
+            name="Test Sector decoy",
+            name_de_translation="Test Sektor DE decoy",
+            key="test_sector_decoy",
+        )
+        ProjectSectorMapping.objects.create(
+            sector=self.sector_decoy, project=self.decoy_project
+        )
+
+        # act
+        response = self.client.get(self.url)
+        res = response.json()
+
+        # assert
+        self.assertIsNotNone(res)
+        self.assertContains(response, "Test Project")
+        self.assertContains(response, "Test Sector")
+        self.assertNotContains(response, "decoy")

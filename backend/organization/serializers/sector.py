@@ -2,7 +2,7 @@ from django.utils.translation import get_language
 from rest_framework import serializers
 
 from organization.utility.sector import get_sector_name
-from organization.models import Sector
+from organization.models import Sector, ProjectSectorMapping
 
 
 class SectorSerializer(serializers.ModelSerializer):
@@ -11,10 +11,28 @@ class SectorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Sector
-        fields = ("id", "name", "original_name", "key")
+        fields = (
+            "id",
+            "name",
+            "original_name",
+            "key",
+        )
 
     def get_name(self, obj):
         return get_sector_name(obj, get_language())
 
     def get_original_name(self, obj):
         return obj.name
+
+
+class ProjectSectorMappingSerializer(serializers.ModelSerializer):
+    sector = serializers.SerializerMethodField()
+    # project = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProjectSectorMapping
+        fields = ("sector",)
+
+    def get_sector(self, obj):
+        serializer = SectorSerializer(obj.sector)
+        return serializer.data

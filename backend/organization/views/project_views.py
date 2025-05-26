@@ -178,7 +178,7 @@ class ListProjectsView(ListAPIView):
             .select_related("loc", "language", "status")
             .prefetch_related(
                 "skills",
-                "tag_project",
+                "tag_project",  # TODO: remove after updating frontend to use sectors
                 Prefetch(
                     "project_comment",
                     queryset=ProjectComment.objects.select_related("comment_ptr"),
@@ -202,11 +202,21 @@ class ListProjectsView(ListAPIView):
         # maybe use .annotate() to calculate ranking/counts of coments etc.
 
         if "sector" in self.request.query_params:
-            sectors_keys = self.request.query_params.get("sector").split(",")
+            sector_keys = self.request.query_params.get("sector")
 
-            projects = projects.filter(
-                project_sector_mapping__sector__key__in=sectors_keys
-            )
+            if "," not in sector_keys:
+                # in case of a single sector, it is passed as a string
+                sector_keys = [sector_keys]
+            else:
+                sector_keys = sector_keys.split(",")
+
+            if isinstance(sector_keys, list):
+                # remove duplicates
+                sector_keys = list(set(sector_keys))
+
+                projects = projects.filter(
+                    project_sector_mapping__sector__key__in=sector_keys
+                )
 
         # TODO (Karol): replace tags with sectors
         if "hub" in self.request.query_params:
@@ -538,6 +548,7 @@ class CreateProjectView(APIView):
                 logger.error(
                     "Passed sectors are not in list format. Please contact administrator"
                 )
+                # TODO: should I "crash" with 400, or what should I ommit the sectors
 
             # remove duplicates
             sector_keys = list(set(sector_keys))
@@ -557,8 +568,10 @@ class CreateProjectView(APIView):
                     )
             ProjectSectorMapping.objects.bulk_create(
                 [
-                    ProjectSectorMapping(project=project, sector=sector)
-                    for sector in sectors
+                    ProjectSectorMapping(
+                        project=project, sector=sector, order=len(sectors) - i
+                    )
+                    for i, sector in enumerate(sectors)
                 ]
             )
 
@@ -656,6 +669,8 @@ class ProjectAPIView(APIView):
 
     # TODO (Karol): Adapt to sectors instead of tags
     def patch(self, request, url_slug, format=None):
+        # TODO: shouldnt this be run as a transaction
+        # I guess we will never have a conflict, but it would be safer
         try:
             project = Project.objects.get(url_slug=url_slug)
         except Project.DoesNotExist:
@@ -695,6 +710,7 @@ class ProjectAPIView(APIView):
                 except Skill.DoesNotExist:
                     logger.error("Passed skill id {} does not exists")
 
+        # TODO: remove the project_taggings
         old_project_taggings = ProjectTagging.objects.filter(project=project)
         old_project_tags = old_project_taggings.values("project_tag")
         if "project_tags" in request.data:
@@ -721,6 +737,57 @@ class ProjectAPIView(APIView):
                         old_tagging.order = int(order)
                         old_tagging.save()
                 order = order - 1
+
+        if "sectors" in request.data:
+            sector_keys = request.data["sectors"]
+            print("sector_keys", sector_keys)
+
+            # validate input
+            if isinstance(sector_keys, str):
+                if "," not in sector_keys:
+                    # in case of a single sector, it is passed as a string
+                    sector_keys = [sector_keys]
+                else:
+                    sector_keys = sector_keys.split(",")
+
+            if not isinstance(sector_keys, list):
+                logger.error(
+                    "Passed sectors are not in list format. Please contact administrator"
+                )
+                # TODO: should I "crash" with 400, or what should I ommit the sectors
+
+            print("sector_keys", sector_keys)
+            # delete
+            for sectorMapping in ProjectSectorMapping.objects.filter(project=project):
+                if sectorMapping.sector.key not in sector_keys:
+                    sectorMapping.delete()
+
+            # create mapping or update
+            order_value = len(sector_keys)
+            for sector_key in sector_keys:
+                old_sector_mapping = ProjectSectorMapping.objects.filter(
+                    project=project, sector_key=sector_key
+                )
+                if not old_sector_mapping.exists():
+                    # create new project mapping
+                    try:
+                        sector = Sector.objects.get(key=sector_key)
+                        ProjectSectorMapping.objects.create(
+                            project=project, sector=sector, order=order_value
+                        )
+                    except Sector.DoesNotExist:
+                        logger.error(
+                            "Passed sector key {} does not exists".format(sector_key)
+                        )
+                else:
+                    # update existing mappings order value
+                    old_sector_mapping = old_sector_mapping[0]
+                    old_sector_mapping.order = order_value
+
+                    old_sector_mapping.save()
+                # reduce for next element
+                order_value -= 1
+
         if "image" in request.data:
             project.image = get_image_from_data_url(request.data["image"])[0]
         if "thumbnail_image" in request.data:
