@@ -1,8 +1,7 @@
 # from rest_framework.views import ListApiView
-from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from organization.serializers.sector import SectorSerializer

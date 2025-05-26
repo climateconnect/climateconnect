@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.test import tag
 
-from organization.models.type import ProjectTypesChoices
 from climateconnect_api.models.language import Language
 from organization.models import (
     Sector,
@@ -247,7 +246,6 @@ class TestCreateProjectsViews(APITestCase):
 
         self.default_project_data = {
             "name": "Test Project",
-            "project_type": ProjectTypesChoices.project,
             "status": ProjectStatus.objects.first().id,
             "short_description": "Test Project Short Description",
             "collaborators_welcome": True,
