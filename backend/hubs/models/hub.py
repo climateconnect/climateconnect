@@ -268,6 +268,14 @@ class Hub(models.Model):
         blank=True,
     )
 
+    landing_page_component = models.CharField(
+        help_text="Provide the landing page component name. Please ensure it matches the component name from Webflow.",
+        verbose_name="Landing page component name",
+        max_length=128,
+        null=True,
+        blank=True,
+    )
+
     class Meta:
         app_label = "hubs"
         verbose_name = "Hub"

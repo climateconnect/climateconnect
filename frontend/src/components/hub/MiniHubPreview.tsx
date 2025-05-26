@@ -87,7 +87,7 @@ export default function MiniHubPreview({
   //Case 2: General platform -> link to browse page filtered by this sector
   return (
     <Link
-      href={hub && getLocalePrefix(locale) + `/hubs/${hub.url_slug}`}
+      href={hub && getLocalePrefix(locale) + `/hubs/${hub.url_slug}/browse`}
       target="_blank"
       className={classes.link}
       underline="hover"
