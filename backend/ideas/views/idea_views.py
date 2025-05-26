@@ -19,7 +19,7 @@ from climateconnect_api.utility.translation import get_translations
 from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_main.utility.general import get_image_from_data_url
 from chat_messages.models.message import MessageParticipants, Participant
-from chat_messages.utility.chat_setup import create_private_or_group_chat
+from chat_messages.utility.chat_setup import create_group_chat
 from hubs.models.hub import Hub
 from ideas.models import Idea
 from ideas.pagination import IdeasBoardPagination
@@ -185,7 +185,7 @@ class CreateIdeaView(APIView):
         # Creating group chat for the idea.
         if idea:
             IdeaSupporter.objects.create(user=request.user, idea=idea)
-            create_private_or_group_chat(
+            create_group_chat(
                 creator=request.user, group_chat_name=idea.name, related_idea=idea
             )
         return Response(idea.url_slug, status=status.HTTP_200_OK)
