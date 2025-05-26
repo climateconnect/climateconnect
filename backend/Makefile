@@ -25,7 +25,9 @@ install:
 	pdm install
 
 test:
-	python3 manage.py test
+	python3 manage.py test --keepdb
+test-clean:
+	python3 manage.py test --noinput
 
 docker:
 	docker-compose up -d
