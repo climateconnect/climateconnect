@@ -12,16 +12,22 @@ import StyledMenuItem from "../general/StyledMenuItem";
 
 const useStyles = makeStyles<
   Theme,
-  { transparentHeader: boolean; isCustomHub: boolean; isNarrowScreen: boolean; isLandingPage?: boolean }
+  {
+    transparentHeader: boolean;
+    isCustomHub: boolean;
+    isNarrowScreen: boolean;
+    isLandingPage?: boolean;
+  }
 >((theme) => ({
   root: (props) => ({
-    color: props.transparentHeader || (props.isLandingPage && !props.isNarrowScreen)
-      ? "white"
-      : props.isCustomHub
-      ? !props.isNarrowScreen
-        ? theme.palette.primary.contrastText
-        : theme.palette.background.default_contrastText
-      : theme.palette.primary.main,
+    color:
+      props.transparentHeader || (props.isLandingPage && !props.isNarrowScreen)
+        ? "white"
+        : props.isCustomHub
+        ? !props.isNarrowScreen
+          ? theme.palette.primary.contrastText
+          : theme.palette.background.default_contrastText
+        : theme.palette.primary.main,
     cursor: "pointer",
   }),
   languageIcon: {

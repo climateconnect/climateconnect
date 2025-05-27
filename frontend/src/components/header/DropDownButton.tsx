@@ -27,7 +27,7 @@ export default function DropDownButton({ buttonProps, options, children, href }:
   const handleHideOptions = () => {
     setShowOptions(false);
   };
-  
+
   return (
     <div className={classes.root}>
       <Button
