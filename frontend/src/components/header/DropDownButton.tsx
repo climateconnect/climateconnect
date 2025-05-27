@@ -27,16 +27,17 @@ export default function DropDownButton({ buttonProps, options, children, href }:
   const handleHideOptions = () => {
     setShowOptions(false);
   };
+  
   return (
     <div className={classes.root}>
       <Button
-        color="primary"
         ref={buttonRef}
         onMouseEnter={handleShowOptions}
         onMouseLeave={handleHideOptions}
         {...buttonProps}
         className={buttonProps ? `${classes.button} ${buttonProps.className}` : `${classes.button}`}
         href={href ? href : buttonProps.href}
+        color="inherit"
       >
         {children}
         <ArrowDropDownIcon />

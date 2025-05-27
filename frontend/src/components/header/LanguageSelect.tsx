@@ -12,10 +12,10 @@ import StyledMenuItem from "../general/StyledMenuItem";
 
 const useStyles = makeStyles<
   Theme,
-  { transparentHeader: boolean; isCustomHub: boolean; isNarrowScreen: boolean }
+  { transparentHeader: boolean; isCustomHub: boolean; isNarrowScreen: boolean; isLandingPage?: boolean }
 >((theme) => ({
   root: (props) => ({
-    color: props.transparentHeader
+    color: props.transparentHeader || (props.isLandingPage && !props.isNarrowScreen)
       ? "white"
       : props.isCustomHub
       ? !props.isNarrowScreen
@@ -46,11 +46,13 @@ const useStyles = makeStyles<
 type LanguageSelectProps = {
   transparentHeader?: boolean;
   isCustomHub: boolean;
+  isLandingPage?: boolean;
 };
 
 export default function LanguageSelect({
   transparentHeader = false,
   isCustomHub,
+  isLandingPage = false,
 }: LanguageSelectProps) {
   const { locale, locales, startLoading } = useContext(UserContext);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
@@ -58,7 +60,7 @@ export default function LanguageSelect({
   const [open, setOpen] = useState(false);
   const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
-  const classes = useStyles({ transparentHeader, isCustomHub, isNarrowScreen });
+  const classes = useStyles({ transparentHeader, isCustomHub, isNarrowScreen, isLandingPage });
   const router = useRouter();
   useEffect(function () {
     setAnchorEl(buttonRef.current);
