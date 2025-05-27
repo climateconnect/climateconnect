@@ -73,6 +73,11 @@ module.exports = withBundleAnalyzer({
         destination: "/de/projects/workshop-klimapuzzle?hub=marburg",
         permanent: true,
       },
+      {
+        source: "/hubs/prio1",
+        destination: "/hubs/prio1/browse",
+        permanent: false,
+      },
     ];
   },
   webpack(config) {
