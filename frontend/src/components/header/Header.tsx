@@ -39,7 +39,6 @@ import LanguageSelect from "./LanguageSelect";
 import StaticPageLinks from "./StaticPageLinks";
 import { HeaderProps } from "./types";
 import { getLinks, getLoggedInLinks, getStaticLinkFromItem } from "../../../public/lib/headerLink";
-import theme from "../../../src/themes/theme";
 
 type StyleProps = {
   transparentHeader?: boolean;
@@ -53,18 +52,21 @@ type StyleProps = {
   isLandingPage?: boolean;
 };
 
-function headerColor(isCustomHub, transparent, isLandingPage, customTheme) {
-  if (transparent || isLandingPage) return "white";
-  return isCustomHub ? customTheme.palette.primary.contrastText : theme.palette.primary.main;
-}
 
-function headerBackground(background, transparent, isLandingPage) {
-  if (background) return background;
-  if (transparent) return "";
-  return isLandingPage ? theme.palette.primary.main : "white";
-}
 
 const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
+
+  function headerColor(isCustomHub, transparent, isLandingPage, customTheme) {
+    if (transparent || isLandingPage) return "white";
+    return isCustomHub ? customTheme.palette.primary.contrastText : theme.palette.primary.main;
+  }
+
+  function headerBackground(background, transparent, isLandingPage) {
+    if (background) return background;
+    if (transparent) return "";
+    return isLandingPage ? theme.palette.primary.main : "white";
+  }
+
   return {
     root: (props) => {
       return {
