@@ -497,6 +497,16 @@ class HubTheme(models.Model):
         null=True,
         blank=True,
     )
+    header_background = models.ForeignKey(
+        HubThemeColor,
+        related_name="header_background",
+        help_text="Use hex code (e.g. #FFF)",
+        verbose_name="Header background color",
+        on_delete=models.CASCADE,
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         app_label = "hubs"
