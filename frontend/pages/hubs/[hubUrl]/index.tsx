@@ -7,6 +7,7 @@ import PageNotFound from "../../../src/components/general/PageNotFound";
 import getTexts from "../../../public/texts/texts";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 import LoadingSpinner from "../../../src/components/general/LoadingSpinner";
+import theme from "../../../src/themes/theme";
 
 //Types
 type DevlinkComponentType = React.ComponentType<any> | null;
@@ -164,11 +165,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ hubData, hubUrl }) => {
       description={description}
       isHubPage={true}
       hubUrl={hubUrl}
-      // Since the text color of items in the Header is determined by `transparentHeader`,
-      // use `transparentHeader` if you want the items to have white text color.
-      transparentHeader={true}
       isLocationHub={isLocationHubLikeHub(hubData?.hub_type)}
       isLandingPage={true}
+      headerBackground={theme.palette.primary.main}
     >
       {DevlinkComponent ? (
         <DevlinkComponent />
