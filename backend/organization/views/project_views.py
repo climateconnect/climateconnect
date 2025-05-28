@@ -212,21 +212,54 @@ class ListProjectsView(ListAPIView):
                     projects = projects.filter(
                         tag_project__project_tag__in=project_tags_with_children
                     ).distinct()
-                elif hub.hub_type == Hub.LOCATION_HUB_TYPE:
+                # elif hub.hub_type == Hub.LOCATION_HUB_TYPE:
+                #     location = hub.location.all()[0]
+                #     location_multipolygon = location.multi_polygon
+                #     projects = projects.filter(Q(loc__country=location.country))
+                #     if location_multipolygon:
+                #         projects = projects.filter(
+                #             Q(loc__multi_polygon__coveredby=(location_multipolygon))
+                #             | Q(loc__centre_point__coveredby=(location_multipolygon))
+                #         ).annotate(
+                #             distance=Distance(
+                #                 "loc__centre_point", location_multipolygon
+                #             )
+                #         )
+                # elif hub.hub_type == Hub.CUSTOM_HUB_TYPE:
+                #     projects = projects.filter(related_hubs=hub)
+
+
+                # Start with projects related to the hub
+                project_filter = Q(related_hubs=hub)
+
+                if hub.location.all().exists():
+                    # Assuming one location per hub (adjust if needed)
                     location = hub.location.all()[0]
                     location_multipolygon = location.multi_polygon
-                    projects = projects.filter(Q(loc__country=location.country))
+
+                    # Base filter by country
+                    location_filter = Q(loc__country=location.country)
+
+                    # Add spatial filter if location geometry exists
                     if location_multipolygon:
-                        projects = projects.filter(
-                            Q(loc__multi_polygon__coveredby=(location_multipolygon))
-                            | Q(loc__centre_point__coveredby=(location_multipolygon))
-                        ).annotate(
-                            distance=Distance(
-                                "loc__centre_point", location_multipolygon
-                            )
+                        location_filter = location_filter & (
+                            Q(loc__multi_polygon__coveredby=location_multipolygon) |
+                            Q(loc__centre_point__coveredby=location_multipolygon)
                         )
-                elif hub.hub_type == Hub.CUSTOM_HUB_TYPE:
-                    projects = projects.filter(related_hubs=hub)
+
+                    # Merge location logic into overall project filter
+                    project_filter = project_filter | location_filter
+
+                # Filter and remove duplicates
+                projects = projects.filter(project_filter).distinct()
+
+                # Annotate distance if location has geometry
+                if hub.location.all().exists() and location_multipolygon:
+                    projects = projects.annotate(
+                        distance=Distance("loc__centre_point", location_multipolygon)
+                    )
+
+            
 
         if "collaboration" in self.request.query_params:
             collaborators_welcome = self.request.query_params.get("collaboration")
