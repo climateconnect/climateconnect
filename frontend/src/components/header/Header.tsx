@@ -52,10 +52,7 @@ type StyleProps = {
   isLandingPage?: boolean;
 };
 
-
-
 const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
-
   function headerColor(isCustomHub, transparent, isLandingPage, customTheme) {
     if (transparent || isLandingPage) return "white";
     return isCustomHub ? customTheme.palette.primary.contrastText : theme.palette.primary.main;

@@ -92,7 +92,6 @@ const getDefaultLinks = (path_to_redirect, texts, isLocationHub, hasHubLandingPa
         showJustIconUnderSm: HomeIcon,
         showStaticLinksInDropdown:
           isLocationHub && (hasHubLandingPage || isOnLandingPage) ? true : false,
-        
       },
       {
         href: isOnLandingPage
