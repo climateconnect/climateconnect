@@ -203,14 +203,14 @@ class ListProjectsView(ListAPIView):
         # maybe use .annotate() to calculate ranking/counts of coments etc.
 
         if "sectors" in self.request.query_params:
-            sector_keys = self.request.query_params.get("sectors")
-            sector_keys, err = senatize_sector_inputs(sector_keys)
+            _sector_keys = self.request.query_params.get("sectors")
+            sector_keys, err = senatize_sector_inputs(_sector_keys)
 
             if err:
                 # TODO: should I "crash" with 400, or what should I ommit the sectors
                 logger.error(
-                    "Passed sectors are not in list format: {'error':'{}','sector_keys':{}".format(
-                        err, sector_keys
+                    "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                        err, _sector_keys
                     )
                 )
             else:
@@ -535,14 +535,14 @@ class CreateProjectView(APIView):
         team_members = request.data["team_members"]
 
         if "sectors" in request.data:
-            sector_keys = request.data["sectors"]
-            sector_keys, err = senatize_sector_inputs(sector_keys)
+            _sector_keys = request.data["sectors"]
+            sector_keys, err = senatize_sector_inputs(_sector_keys)
 
             if err:
                 # TODO: should I "crash" with 400, or what should I ommit the sectors
                 logger.error(
-                    "Passed sectors are not in list format: {'error':'{}','sector_keys':{}".format(
-                        err, sector_keys
+                    "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                        err, _sector_keys
                     )
                 )
 
@@ -735,14 +735,14 @@ class ProjectAPIView(APIView):
                 order = order - 1
 
         if "sectors" in request.data:
-            sector_keys = request.data["sectors"]
-            sector_keys, err = senatize_sector_inputs(sector_keys)
+            _sector_keys = request.data["sectors"]
+            sector_keys, err = senatize_sector_inputs(_sector_keys)
 
             if err:
                 # TODO: should I "crash" with 400, or what should I ommit the sectors
                 logger.error(
-                    "Passed sectors are not in list format: {'error':'{}','sector_keys':{}".format(
-                        err, sector_keys
+                    "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                        err, _sector_keys
                     )
                 )
                 sector_keys = []
@@ -756,7 +756,7 @@ class ProjectAPIView(APIView):
             order_value = len(sector_keys)
             for sector_key in sector_keys:
                 old_sector_mapping = ProjectSectorMapping.objects.filter(
-                    project=project, sector_key=sector_key
+                    project=project, sector__key=sector_key
                 )
                 if not old_sector_mapping.exists():
                     # create new project mapping

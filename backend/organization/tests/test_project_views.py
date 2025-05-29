@@ -1,4 +1,4 @@
-from rest_framework.test import APITestCase, APIClient
+from rest_framework.test import APITestCase
 from rest_framework import status
 
 from django.contrib.auth.models import User
@@ -6,14 +6,13 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.test import tag
 
-from climateconnect_api.models.language import Language
+from climateconnect_api.models import Role, Language
 from organization.models import (
     Sector,
     Project,
     ProjectStatus,
     ProjectSectorMapping,
-    ProjectTags,
-    ProjectTagging,
+    ProjectMember,
 )
 from location.models import Location
 
@@ -23,6 +22,8 @@ import io
 
 # set this at lowest to 4
 INITIAL_PROJECT_COUNT = 4
+
+# TODO: missing tests for featured projects and the combination with sectors
 
 
 class TestProjectsListView(APITestCase):
@@ -99,9 +100,9 @@ class TestProjectsListView(APITestCase):
         # sector 3 will not be connected to any project
 
         # act
-        response_1 = self.client.get(self.url + "?sector=" + sectors[0].key)
-        response_2 = self.client.get(self.url + "?sector=" + sectors[1].key)
-        response_3 = self.client.get(self.url + "?sector=" + sectors[2].key)
+        response_1 = self.client.get(self.url + "?sectors=" + sectors[0].key)
+        response_2 = self.client.get(self.url + "?sectors=" + sectors[1].key)
+        response_3 = self.client.get(self.url + "?sectors=" + sectors[2].key)
 
         results_1 = response_1.json().get("results", None)
         results_2 = response_2.json().get("results", None)
@@ -140,7 +141,7 @@ class TestProjectsListView(APITestCase):
 
         testcases = [
             {
-                "url": "sector={},{}".format(sectors[0].key, sectors[1].key),
+                "url": "sectors={},{}".format(sectors[0].key, sectors[1].key),
                 "expected": [
                     projects[0].url_slug,
                     projects[1].url_slug,
@@ -148,14 +149,14 @@ class TestProjectsListView(APITestCase):
                 ],
             },
             {
-                "url": "sector={},{}".format(sectors[0].key, sectors[2].key),
+                "url": "sectors={},{}".format(sectors[0].key, sectors[2].key),
                 "expected": [
                     projects[0].url_slug,
                     projects[1].url_slug,
                 ],
             },
             {
-                "url": "sector={},{}".format(sectors[1].key, sectors[2].key),
+                "url": "sectors={},{}".format(sectors[1].key, sectors[2].key),
                 "expected": [
                     projects[2].url_slug,
                 ],
@@ -284,11 +285,9 @@ class TestCreateProjectsViews(APITestCase):
     @tag("projects")
     def test_post_project_without_sector(self):
         # arrange
-        client = APIClient()
-        client.login(username=self.user.username, password=self.user.password)
+        self.client.login(username="testuser", password="testpassword")
 
         # act
-        self.client.login(username="testuser", password="testpassword")
         response = self.client.post(self.url, self.default_project_data, format="json")
 
         # assert
@@ -305,8 +304,7 @@ class TestCreateProjectsViews(APITestCase):
     @tag("sectors", "projects")
     def test_post_project_with_one_sector_as_array(self):
         # arrange
-        client = APIClient()
-        client.login(username=self.user.username, password=self.user.password)
+        self.client.login(username="testuser", password="testpassword")
 
         self.default_project_data["sectors"] = [self.sectors[0].key]
 
@@ -328,13 +326,10 @@ class TestCreateProjectsViews(APITestCase):
     @tag("sectors", "projects")
     def test_post_project_with_one_sector_as_string(self):
         # arrange
-        client = APIClient()
-        client.login(username=self.user.username, password=self.user.password)
-
+        self.client.login(username="testuser", password="testpassword")
         self.default_project_data["sectors"] = self.sectors[0].key
 
         # act
-        self.client.login(username="testuser", password="testpassword")
         response = self.client.post(self.url, self.default_project_data, format="json")
 
         # assert
@@ -351,8 +346,7 @@ class TestCreateProjectsViews(APITestCase):
     @tag("sectors", "projects")
     def test_post_project_with_two_sector_list(self):
         # arrange
-        client = APIClient()
-        client.login(username=self.user.username, password=self.user.password)
+        self.client.login(username="testuser", password="testpassword")
 
         self.default_project_data["sectors"] = [
             self.sectors[0].key,
@@ -360,7 +354,6 @@ class TestCreateProjectsViews(APITestCase):
         ]
 
         # act
-        self.client.login(username="testuser", password="testpassword")
         response = self.client.post(self.url, self.default_project_data, format="json")
 
         # assert
@@ -377,15 +370,13 @@ class TestCreateProjectsViews(APITestCase):
     @tag("sectors", "projects")
     def test_post_project_with_two_sector_comma_seperated(self):
         # arrange
-        client = APIClient()
-        client.login(username=self.user.username, password=self.user.password)
+        self.client.login(username="testuser", password="testpassword")
 
         self.default_project_data["sectors"] = (
             f"{self.sectors[0].key},{self.sectors[1].key}"
         )
 
         # act
-        self.client.login(username="testuser", password="testpassword")
         response = self.client.post(self.url, self.default_project_data, format="json")
 
         # assert
@@ -402,15 +393,13 @@ class TestCreateProjectsViews(APITestCase):
     @tag("sectors", "projects")
     def test_post_project_with_two_sector_dublicated(self):
         # arrange
-        client = APIClient()
-        client.login(username=self.user.username, password=self.user.password)
+        self.client.login(username="testuser", password="testpassword")
 
         self.default_project_data["sectors"] = (
             f"{self.sectors[0].key},{self.sectors[0].key}"
         )
 
         # act
-        self.client.login(username="testuser", password="testpassword")
         response = self.client.post(self.url, self.default_project_data, format="json")
 
         # assert
@@ -432,8 +421,9 @@ class TestProjectApi(APITestCase):
         self.url = reverse(
             "organization:project-api-view", kwargs={"url_slug": "test-project"}
         )
+        self.edit_view_url = self.url + "?" + "edit_view"
 
-        projectStatus_active = ProjectStatus.objects.create(
+        self.projectStatus_active = ProjectStatus.objects.create(
             name="active",
             name_de_translation="aktiv",
             has_end_date=False,
@@ -451,7 +441,7 @@ class TestProjectApi(APITestCase):
             description="Test Project Description",
             url_slug=self.url_slug,
             is_active=True,
-            status=projectStatus_active,
+            status=self.projectStatus_active,
             language=self.default_language,
         )
 
@@ -460,21 +450,36 @@ class TestProjectApi(APITestCase):
             description="decoy desc",
             url_slug="decoy",
             is_active=True,
-            status=projectStatus_active,
+            status=self.projectStatus_active,
         )
 
-    # @tag("projects")
-    # def test_get_project_by_url_slug(self):
-    #     # arrange
+        self.user = User.objects.create_user(
+            username="testuser",
+            password="testpassword",
+        )
 
-    #     # act
-    #     response = self.client.get(self.url)
-    #     res = response.json()
+        self.role = Role.objects.create(
+            name="Admin",
+            role_type=Role.ALL_TYPE,
+        )
+        ProjectMember.objects.create(
+            user=self.user,
+            project=self.project,
+            role=self.role,
+        )
 
-    #     # assert
-    #     self.assertIsNotNone(res)
-    #     self.assertContains(response, "Test Project")
-    #     self.assertNotContains(response, "decoy")
+    @tag("projects")
+    def test_get_project_by_url_slug(self):
+        # arrange
+
+        # act
+        response = self.client.get(self.url)
+        res = response.json()
+
+        # assert
+        self.assertIsNotNone(res)
+        self.assertContains(response, "Test Project")
+        self.assertNotContains(response, "decoy")
 
     @tag("sectors", "projects")
     def test_get_project_by_url_slug_includes_sector(self):
@@ -484,21 +489,13 @@ class TestProjectApi(APITestCase):
             name_de_translation="Test Sektor DE",
             key="test_sector",
         )
-        self.tag = ProjectTags.objects.create(
-            name="Test Tag",
-            name_de_translation="Test Tag DE",
-            key="test_tag",
-        )
-        ProjectSectorMapping.objects.create(sector=self.sector, project=self.project)
-        ProjectTagging.objects.create(
-            project=self.project, project_tag=self.tag, order=1
-        )
-
         self.sector_decoy = Sector.objects.create(
             name="Test Sector decoy",
             name_de_translation="Test Sektor DE decoy",
             key="test_sector_decoy",
         )
+
+        ProjectSectorMapping.objects.create(sector=self.sector, project=self.project)
         ProjectSectorMapping.objects.create(
             sector=self.sector_decoy, project=self.decoy_project
         )
@@ -512,3 +509,245 @@ class TestProjectApi(APITestCase):
         self.assertContains(response, "Test Project")
         self.assertContains(response, "Test Sector")
         self.assertNotContains(response, "decoy")
+
+    @tag("sectors", "projects")
+    def test_get_project_edit_view_by_url_slug_includes_sector(self):
+        # arrange
+        self.sector = Sector.objects.create(
+            name="Test Sector",
+            name_de_translation="Test Sektor DE",
+            key="test_sector",
+        )
+        self.sector_decoy = Sector.objects.create(
+            name="Test Sector decoy",
+            name_de_translation="Test Sektor DE decoy",
+            key="test_sector_decoy",
+        )
+
+        ProjectSectorMapping.objects.create(sector=self.sector, project=self.project)
+        ProjectSectorMapping.objects.create(
+            sector=self.sector_decoy, project=self.decoy_project
+        )
+
+        # act
+        response = self.client.get(self.edit_view_url)
+        res = response.json()
+
+        # assert
+        self.assertIsNotNone(res)
+        self.assertContains(response, "Test Project")
+        self.assertContains(response, "Test Sector")
+        self.assertNotContains(response, "decoy")
+
+    @tag("sectors", "projects")
+    def test_patch_project_adding_first_sector(self):
+        # arrange
+        self.client.login(username="testuser", password="testpassword")
+
+        self.sector = Sector.objects.create(
+            name="Test Sector",
+            name_de_translation="Test Sektor DE",
+            key="test_sector",
+        )
+
+        data = {
+            "sectors": [self.sector.key],
+        }
+
+        # act
+        self.client.patch(self.url, data, format="json")
+        response = self.client.patch(self.url, data, format="json")
+
+        # assert
+        self.assertContains(response, "successfully updated")
+        self.assertEqual(
+            ProjectSectorMapping.objects.filter(
+                project__url_slug=self.project.url_slug, sector__key=self.sector.key
+            ).count(),
+            1,
+        )
+
+    @tag("sectors", "projects")
+    def test_patch_project_adding_another_sectors(self):
+        # arrange
+        self.client.login(username="testuser", password="testpassword")
+
+        self.sectors = [
+            Sector.objects.create(
+                name=f"Test Sector {i}",
+                name_de_translation=f"Test Sektor DE {i}",
+                key=f"test_sector_{i}",
+            )
+            for i in range(2)
+        ]
+        ProjectSectorMapping.objects.create(
+            sector=self.sectors[0], project=self.project
+        )
+
+        data = {
+            "sectors": [self.sectors[0].key, self.sectors[1].key],
+        }
+
+        # act
+        response = self.client.patch(self.url, data, format="json")
+
+        # assert
+        self.assertContains(response, "successfully updated")
+        self.assertEqual(
+            ProjectSectorMapping.objects.filter(
+                project__url_slug=self.project.url_slug
+            ).count(),
+            2,
+        )
+        for sector in self.sectors:
+            self.assertEqual(
+                ProjectSectorMapping.objects.filter(
+                    project__url_slug=self.project.url_slug, sector__key=sector.key
+                ).count(),
+                1,
+            )
+
+    @tag("sectors", "projects")
+    def test_patch_project_adding_multiple_sectors(self):
+        # arrange
+        self.client.login(username="testuser", password="testpassword")
+
+        ## set up another project with the same user as an admin
+        self.other_project = Project.objects.create(
+            name="Other Project",
+            description="Other Project Description",
+            url_slug="other-project",
+            is_active=True,
+            status=self.projectStatus_active,
+            language=self.default_language,
+        )
+        self.other_url = self.url.replace(
+            self.project.url_slug, self.other_project.url_slug
+        )
+        ProjectMember.objects.create(
+            user=self.user,
+            project=self.other_project,
+            role=self.role,
+        )
+
+        self.sectors = [
+            Sector.objects.create(
+                name=f"Test Sector {i}",
+                name_de_translation=f"Test Sektor DE {i}",
+                key=f"test_sector_{i}",
+            )
+            for i in range(4)
+        ]
+        ProjectSectorMapping.objects.create(
+            sector=self.sectors[0], project=self.other_project
+        )
+        ProjectSectorMapping.objects.create(
+            sector=self.sectors[3], project=self.decoy_project
+        )
+
+        data = {
+            "sectors": [
+                self.sectors[0].key,
+                self.sectors[1].key,
+                self.sectors[2].key,
+            ],
+        }
+        data_other = {
+            "sectors": [
+                self.sectors[0].key,
+                self.sectors[1].key,
+                self.sectors[3].key,
+            ],
+        }
+
+        # act
+        response = self.client.patch(self.url, data, format="json")
+        response_other = self.client.patch(self.other_url, data_other, format="json")
+
+        # assert
+        self.assertContains(response, "successfully updated")
+        self.assertContains(response_other, "successfully updated")
+
+        self.assertEqual(
+            ProjectSectorMapping.objects.filter(
+                project__url_slug=self.project.url_slug
+            ).count(),
+            3,
+        )
+        self.assertEqual(
+            ProjectSectorMapping.objects.filter(
+                project__url_slug=self.other_project.url_slug
+            ).count(),
+            3,
+        )
+
+        for sector in self.sectors[:3]:
+            self.assertEqual(
+                ProjectSectorMapping.objects.filter(
+                    project__url_slug=self.project.url_slug, sector__key=sector.key
+                ).count(),
+                1,
+            )
+
+        for sector in [self.sectors[0], self.sectors[1], self.sectors[3]]:
+            self.assertEqual(
+                ProjectSectorMapping.objects.filter(
+                    project__url_slug=self.other_project.url_slug,
+                    sector__key=sector.key,
+                ).count(),
+                1,
+            )
+
+    @tag("sectors", "projects")
+    def test_patch_project_removing_sector(self):
+        # arrange
+        self.client.login(username="testuser", password="testpassword")
+
+        self.sector = Sector.objects.create(
+            name="Test Sector",
+            name_de_translation="Test Sektor DE",
+            key="test_sector",
+        )
+        ProjectSectorMapping.objects.create(sector=self.sector, project=self.project)
+
+        data = {
+            "sectors": [],
+        }
+
+        # act
+        response = self.client.patch(self.url, data, format="json")
+
+        # assert
+        self.assertContains(response, "successfully updated")
+        self.assertEqual(
+            ProjectSectorMapping.objects.filter(
+                project__url_slug=self.project.url_slug
+            ).count(),
+            0,
+        )
+
+    @tag("sectors", "projects")
+    def test_delete_project_sector(self):
+        # arrange
+        self.client.login(username="testuser", password="testpassword")
+        self.sector = Sector.objects.create(
+            name="Test Sector",
+            name_de_translation="Test Sektor DE",
+            key="test_sector",
+        )
+        ProjectSectorMapping.objects.create(sector=self.sector, project=self.project)
+        data = {
+            "sectors": [],
+        }
+
+        # act
+        response = self.client.delete(self.url, data, format="json")
+
+        # assert
+        self.assertContains(response, "successfully deleted")
+        self.assertEqual(
+            ProjectSectorMapping.objects.filter(
+                project__url_slug=self.project.url_slug
+            ).count(),
+            0,
+        )

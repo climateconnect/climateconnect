@@ -175,12 +175,12 @@ class ListOrganizationsAPIView(ListAPIView):
                     organizations = organizations.filter(related_hubs=hub)
 
         if "sectors" in self.request.query_params:
-            sector_keys = self.request.query_params.get("sectors").split(",")
-            sector_keys, err = senatize_sector_inputs(sector_keys)
+            _sector_keys = self.request.query_params.get("sectors").split(",")
+            sector_keys, err = senatize_sector_inputs(_sector_keys)
             if err:
                 logger.error(
-                    "Passed sectors are not in list format: {'error':'{}','sector_keys':{}".format(
-                        err, sector_keys
+                    "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                        err, _sector_keys
                     )
                 )
                 # TODO: should I "crash" with 400, or what should I ommit the sectors
@@ -442,14 +442,14 @@ class CreateOrganizationView(APIView):
 
                 # Create organization tags
                 if "sectors" in request.data:
-                    sector_keys = request.data["sectors"]
-                    sector_keys, err = senatize_sector_inputs(sector_keys)
+                    _sector_keys = request.data["sectors"]
+                    sector_keys, err = senatize_sector_inputs(_sector_keys)
 
                     if err:
                         # TODO: should I "crash" with 400, or what should I ommit the sectors
                         logger.error(
-                            "Passed sectors are not in list format: {'error':'{}','sector_keys':{}".format(
-                                err, sector_keys
+                            "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                                err, _sector_keys
                             )
                         )
                         sector_keys = []
@@ -682,14 +682,14 @@ class OrganizationAPIView(APIView):
         )
 
         if "sectors" in request.data:
-            sector_keys = request.data["sectors"]
-            sector_keys, err = senatize_sector_inputs(sector_keys)
+            _sector_keys = request.data["sectors"]
+            sector_keys, err = senatize_sector_inputs(_sector_keys)
             if err:
                 # do not perform an update of sectors
                 # TODO: should I "crash" with 400, or what should I ommit the sectors
                 logger.error(
-                    "Passed sectors are not in list format: {'error':'{}','sector_keys':{}".format(
-                        err, sector_keys
+                    "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                        err, _sector_keys
                     )
                 )
             else:

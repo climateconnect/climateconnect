@@ -43,9 +43,8 @@ def senatize_sector_inputs(inputs: Any) -> Tuple[Any, Optional[Exception]]:
 
     if isinstance(inputs, list):
         for item in inputs:
-            if isinstance(item, str):
-                item = item.strip()
-            return None, ValueError("All items in the list must be strings.")
+            if not isinstance(item, str):
+                return None, ValueError("All items in the list must be strings.")
     else:
         return None, ValueError("Unsupported input type. Expected str or list of str.")
 
