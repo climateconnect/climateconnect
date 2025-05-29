@@ -1,3 +1,4 @@
+from organization.serializers.sector import ProjectSectorMappingSerializer
 from organization.models.members import MembershipRequests
 from climateconnect_api.models import UserProfile
 from climateconnect_api.models.role import Role
@@ -43,6 +44,9 @@ class ProjectSerializer(serializers.ModelSerializer):
     description = serializers.SerializerMethodField()
     skills = serializers.SerializerMethodField()
     project_parents = serializers.SerializerMethodField()
+    sectors = serializers.SerializerMethodField()
+
+    # TODO (Karol): Remove this field once the frontend is updated to use the new tags serializer
     tags = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
     collaborating_organizations = serializers.SerializerMethodField()
@@ -72,7 +76,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             "skills",
             "helpful_connections",
             "project_parents",
-            "tags",
+            "sectors",
+            "tags",  # TODO (Karol): Remove this field once the frontend is updated to use the new tags serializer
             "created_at",
             "collaborating_organizations",
             "is_draft",
@@ -106,6 +111,13 @@ class ProjectSerializer(serializers.ModelSerializer):
         serializer = ProjectParentsSerializer(obj.project_parent, many=True)
         return serializer.data
 
+    def get_sectors(self, obj):
+        serializer = ProjectSectorMappingSerializer(
+            obj.project_sector_mapping, many=True
+        )
+        return serializer.data
+
+    # TODO (Karol): Remove this method once the frontend is updated to use the new tags serializer
     def get_tags(self, obj):
         serializer = ProjectTaggingSerializer(obj.tag_project, many=True)
         return serializer.data

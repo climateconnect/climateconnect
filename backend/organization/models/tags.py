@@ -175,7 +175,9 @@ class ProjectTags(models.Model):
 
 @receiver(pre_save, sender=ProjectTags)
 def create_project_tag_key(sender, instance, **kwargs):
-    instance.key = instance.name.replace(" ", "").lower()
+    if not instance.key:
+        # If key is not set, generate it from the name
+        instance.key = instance.name.replace(" ", "").lower()
 
 
 class ProjectTagging(models.Model):

@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+//change to sectors
 export default function MiniHubPreviews({
   hubs,
   allHubs,
