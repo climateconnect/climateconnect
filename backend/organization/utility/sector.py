@@ -1,4 +1,5 @@
 from organization.models.sector import Sector
+from typing import Any, Tuple, Optional
 
 
 def get_sector_name(sector: Sector, language_code: str) -> str:
@@ -19,3 +20,35 @@ def get_sector_name(sector: Sector, language_code: str) -> str:
 
     # fallback to the default name if translation is not available
     return sector.name
+
+
+def senatize_sector_inputs(inputs: Any) -> Tuple[Any, Optional[Exception]]:
+    """
+    Process the inputs and return a tuple: (result, error).
+    On success, error is None
+
+    On failure, result is None, and the error holds the exception.
+
+
+    result is an error of strings
+    """
+    if isinstance(inputs, str):
+        inputs = inputs.strip()
+        if "," in inputs:
+            inputs = inputs.split(",")
+        elif ";" in inputs:
+            inputs = inputs.split(";")
+        else:
+            inputs = [inputs]
+
+    if isinstance(inputs, list):
+        for item in inputs:
+            if isinstance(item, str):
+                item = item.strip()
+            return None, ValueError("All items in the list must be strings.")
+    else:
+        return None, ValueError("Unsupported input type. Expected str or list of str.")
+
+    # remove duplicates
+    inputs = list(set(inputs))
+    return inputs, None

@@ -40,6 +40,7 @@ class ProjectTagsSerializer(serializers.ModelSerializer):
         return obj.name
 
 
+# TODO: Rename it to Organization types
 class OrganizationTaggingSerializer(serializers.ModelSerializer):
     organization_tag = serializers.SerializerMethodField()
 
@@ -52,6 +53,7 @@ class OrganizationTaggingSerializer(serializers.ModelSerializer):
         return serializer.data
 
 
+# TODO: rename it to organization types
 class OrganizationTagsSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     original_name = serializers.SerializerMethodField()

@@ -1,4 +1,5 @@
 import logging
+from organization.utility.sector import senatize_sector_inputs
 from organization.utility.follow import (
     check_if_user_follows_organization,
     get_list_of_organization_followers,
@@ -30,11 +31,11 @@ from organization.models import (
     Organization,
     OrganizationMember,
     OrganizationTagging,
-    OrganizationTags,
+    OrganizationTags,  # TODO: rename to type
     ProjectParents,
+    OrganizationSectorMapping,
+    OrganizationTranslation,
 )
-from organization.models.tags import ProjectTags
-from organization.models.translations import OrganizationTranslation
 from organization.pagination import OrganizationsPagination, ProjectsPagination
 from organization.permissions import (
     AddOrganizationMemberPermission,
@@ -52,7 +53,9 @@ from organization.serializers.organization import (
     OrganizationFollowerSerializer,
 )
 from organization.serializers.project import ProjectFromProjectParentsSerializer
-from organization.serializers.tags import OrganizationTagsSerializer
+from organization.serializers.tags import (
+    OrganizationTagsSerializer,
+)  # TODO: rename to organizationType
 from organization.utility.organization import (
     check_create_existing_name,
     check_edit_exisiting_name,
@@ -121,6 +124,10 @@ class ListOrganizationsAPIView(ListAPIView):
             Organization.objects.all()
             .prefetch_related(
                 Prefetch(
+                    "organization_sector_mapping",
+                    queryset=OrganizationSectorMapping.objects.select_related("sector"),
+                ),
+                Prefetch(
                     "tag_organization",
                     queryset=OrganizationTagging.objects.select_related(
                         "organization_tag"
@@ -136,22 +143,13 @@ class ListOrganizationsAPIView(ListAPIView):
             if hub.exists():
                 hub = hub[0]
                 if hub.hub_type == Hub.SECTOR_HUB_TYPE:
-                    project_category = hub.filter_parent_tags.all()
-                    project_category_ids = list(map(lambda c: c.id, project_category))
-                    project_tags = ProjectTags.objects.filter(
-                        id__in=project_category_ids
-                    )
-                    project_tags_with_children = ProjectTags.objects.filter(
-                        Q(parent_tag__in=project_tags) | Q(id__in=project_tags)
-                    )
+                    sectors = hub.sectors.all()
+                    sector_ids = [x.id for x in sectors]
+
                     organizations = organizations.filter(
-                        Q(
-                            project_parent_org__project__tag_project__project_tag__in=project_tags_with_children
-                        )
-                        | Q(
-                            field_tag_organization__field_tag__in=project_tags_with_children
-                        )
+                        organization_sector_mapping__sector_id__in=sector_ids
                     ).distinct()
+
                 elif hub.hub_type == Hub.LOCATION_HUB_TYPE:
                     location = hub.location.first()
                     organizations = organizations.filter(
@@ -176,6 +174,22 @@ class ListOrganizationsAPIView(ListAPIView):
                 elif hub.hub_type == Hub.CUSTOM_HUB_TYPE:
                     organizations = organizations.filter(related_hubs=hub)
 
+        if "sectors" in self.request.query_params:
+            sector_keys = self.request.query_params.get("sectors").split(",")
+            sector_keys, err = senatize_sector_inputs(sector_keys)
+            if err:
+                logger.error(
+                    "Passed sectors are not in list format: {'error':'{}','sector_keys':{}".format(
+                        err, sector_keys
+                    )
+                )
+                # TODO: should I "crash" with 400, or what should I ommit the sectors
+            else:
+                organizations = organizations.filter(
+                    organization_sector_mapping__sector__key__in=sector_keys
+                ).distinct()
+
+        # TODO: rename oragnizationTag to OrganizationType
         if "organization_type" in self.request.query_params:
             organization_type_names = self.request.query_params.get(
                 "organization_type"
@@ -253,6 +267,7 @@ class CreateOrganizationView(APIView):
             "location",
             "image",
             "organization_tags",
+            "sectors",
             "translations",
             "source_language",
             "short_description",
@@ -426,6 +441,42 @@ class CreateOrganizationView(APIView):
                         logger.info("Organization member created {}".format(user.id))
 
                 # Create organization tags
+                if "sectors" in request.data:
+                    sector_keys = request.data["sectors"]
+                    sector_keys, err = senatize_sector_inputs(sector_keys)
+
+                    if err:
+                        # TODO: should I "crash" with 400, or what should I ommit the sectors
+                        logger.error(
+                            "Passed sectors are not in list format: {'error':'{}','sector_keys':{}".format(
+                                err, sector_keys
+                            )
+                        )
+                        sector_keys = []
+
+                    sectors = []
+                    for sector_key in sector_keys:
+                        try:
+                            # TODO: Do not use projectTags
+                            sector = OrganizationTags.objects.get(id=int(sector_key))
+                            sectors.append(sector)
+                        except OrganizationTags.DoesNotExist:
+                            logger.error(
+                                "Passed organization tag ID {} does not exist".format(
+                                    sector_key
+                                )
+                            )
+                    for sector in sectors:
+                        OrganizationSectorMapping.objects.create(
+                            sector=sector, organization=organization
+                        )
+                        logger.info(
+                            "Organization-Sector mapping created for organization {} and sector {}".format(
+                                organization.id, sector.key
+                            )
+                        )
+
+                # TODO: rename organizationTags to organizationTypes
                 if "organization_tags" in request.data:
                     for organization_tag in request.data["organization_tags"]:
                         try:
@@ -630,6 +681,51 @@ class OrganizationAPIView(APIView):
             items_to_translate, request.data, organization, "organization"
         )
 
+        if "sectors" in request.data:
+            sector_keys = request.data["sectors"]
+            sector_keys, err = senatize_sector_inputs(sector_keys)
+            if err:
+                # do not perform an update of sectors
+                # TODO: should I "crash" with 400, or what should I ommit the sectors
+                logger.error(
+                    "Passed sectors are not in list format: {'error':'{}','sector_keys':{}".format(
+                        err, sector_keys
+                    )
+                )
+            else:
+                # perform update of sectors
+                old_org_sector_mapping = OrganizationSectorMapping.objects.filter(
+                    organization=organization
+                )
+                # delete sectors that are not in the request data
+                for o_s_mapping in old_org_sector_mapping:
+                    if o_s_mapping.sector.key not in sector_keys:
+                        o_s_mapping.delete()
+
+                # add new sectors that are in the request data
+                old_sector_keys = list(
+                    set([x.sector.key for x in old_org_sector_mapping])
+                )
+                for sector_key in sector_keys:
+                    if not sector_key in old_sector_keys:
+                        # create mapping only if the sector is not already mapped
+                        # to the organization
+                        try:
+                            # TODO: this sould not be using  OrganizationTags but sectors
+                            sector = OrganizationTags.objects.get(id=int(sector_key))
+                            OrganizationSectorMapping.objects.create(
+                                sector=sector, organization=organization
+                            )
+                        except OrganizationTags.DoesNotExist:
+                            logger.error(
+                                "Passed organization tag ID {} does not exist".format(
+                                    sector_key
+                                )
+                            )
+
+                pass
+
+        # TODO: rename organizationTags to organizationTypes
         old_organization_taggings = OrganizationTagging.objects.filter(
             organization=organization
         ).values("organization_tag")
@@ -829,6 +925,7 @@ class ListOrganizationMembersAPIView(ListAPIView):
         ).order_by("id")
 
 
+# TODO: rename this view to ListOrganizationTags
 class ListOrganizationTags(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = OrganizationTagsSerializer
