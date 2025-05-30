@@ -1,32 +1,29 @@
-import { DePrio1Willkommen, EnPrio1Welcome } from "../../devlink";
-import { getPrio1Links, getScottLinks, prio1StaticLinks } from "../lib/headerLink";
+import { CustomHubConfig } from './customHubtypes';
+import { prio1Config } from './customHubConfig/prio1';
+import { scottConfig } from './customHubConfig/scott';
+
+type CustomHubDataParams = {
+  path_to_redirect?: string;
+  texts?: Record<string, string>;
+};
 
 export default function customHubData({
-  path_to_redirect = "",
+  path_to_redirect = '',
   texts = {},
-}: {
-  path_to_redirect?: string;
-  texts?: any;
-} = {}) {
-  const data = {
-    prio1: {
-      welcome: {
-        en: EnPrio1Welcome,
-        de: DePrio1Willkommen,
-      },
-      hubTabLinkNarrowScreen: {
-        href: "https://prio1-klima.net",
-        text: texts.PRIO1_klima,
-      },
-      headerLink: getPrio1Links(path_to_redirect, texts),
-      headerStaticLink: prio1StaticLinks(texts),
-    },
-    scott: {
-      welcome: "DEVLINK_ELEMENT",
-      headerLink: getScottLinks(path_to_redirect, texts),
-      // change prio1StaticLinks to ScottStaticLinks
-      headerStaticLink: prio1StaticLinks(texts),
-    },
+}: CustomHubDataParams = {}): CustomHubConfig {
+  return {
+    prio1: prio1Config(path_to_redirect, texts),
+    scottish: scottConfig(path_to_redirect, texts),
   };
-  return data;
+}
+
+type GetCustomHubDataParams = {
+  hubUrl: keyof CustomHubConfig;
+  texts?: Record<string, string>;
+  path_to_redirect?: string;
+};
+
+export const getCustomHubData = ({ hubUrl, texts, path_to_redirect }: GetCustomHubDataParams) => {
+  const customHubDataMap = customHubData({ path_to_redirect, texts });
+  return customHubDataMap[hubUrl];
 }

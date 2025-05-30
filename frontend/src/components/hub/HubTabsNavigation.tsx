@@ -8,7 +8,7 @@ import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import HubsDropDown from "../indexPage/hubsSubHeader/HubsDropDown";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
-import customHubData from "../../../public/data/customHubData";
+import {getCustomHubData} from "../../../public/data/customHubData";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -122,7 +122,7 @@ export default function HubTabsNavigation({
   if (!user && isNarrowScreen) {
     return <></>;
   }
-  const hubTabLink = customHubData({ texts: texts })[hubUrl]?.hubTabLinkNarrowScreen;
+  const hubTabLink = getCustomHubData({ hubUrl, texts })?.hubTabLinkNarrowScreen;
 
   return (
     <div className={`${className} ${classes.root}`}>

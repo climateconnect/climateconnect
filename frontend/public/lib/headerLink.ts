@@ -9,7 +9,7 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { getLocalePrefix } from "./apiOperations";
-import customHubData from "../data/customHubData";
+import { getCustomHubData } from "../data/customHubData";
 
 const COMMON_LINKS = {
   NOTIFICATIONS: {
@@ -53,37 +53,6 @@ const COMMON_LINKS = {
     },
   ],
 };
-
-const getPrio1Links = (path_to_redirect, texts) => [
-  {
-    href: "https://prio1-klima.net",
-    text: texts.PRIO1_klima,
-    iconForDrawer: InfoIcon,
-    showStaticLinksInDropdown: true,
-    hideOnStaticPages: true,
-    isExternalLink: true,
-    className: "btnIconTextColor",
-  },
-  {
-    ...COMMON_LINKS.SHARE,
-    href: "/share?hub=prio1",
-    text: texts.share_a_project,
-    hideOnMediumScreen: true,
-  },
-  {
-    type: "languageSelect",
-  },
-  {
-    ...COMMON_LINKS.NOTIFICATIONS,
-    text: texts.inbox,
-  },
-  ...COMMON_LINKS.AUTH_LINKS(path_to_redirect, texts, "hub=prio1"),
-];
-
-// after adding Scottland Hub
-export function getScottLinks(path_to_redirect, texts) {
-  return path_to_redirect;
-}
 
 const getDefaultLinks = (path_to_redirect, texts, isLocationHub, hasHubLandingPage, hubUrl) => {
   const isOnLandingPage = path_to_redirect == `/hubs/${hubUrl}`; // Detect if we are on the landing page
@@ -157,9 +126,8 @@ const getLinks = (
   hubUrl
 ) => {
   return isCustomHub
-    ? customHubData({ path_to_redirect, texts })[hubUrl].headerLink
-    : // ? getPrio1Links(path_to_redirect, texts)
-      getDefaultLinks(
+    ? getCustomHubData({ hubUrl, texts, path_to_redirect }).headerLink
+    : getDefaultLinks(
         path_to_redirect,
         texts,
         isLocationHub || isCustomHub,
@@ -263,31 +231,10 @@ const defaultStaticLinks = (texts) => [
   },
 ];
 
-const prio1StaticLinks = (texts) => [
-  {
-    href: "https://prio1-klima.net/klima-preis/",
-    text: texts.PRIO1_Climate_Prize,
-    target: "_blank",
-    isExternalLink: true,
-  },
-  {
-    href: "https://prio1-klima.net/prio1-community/",
-    text: texts.PRIO1_community,
-    target: "_blank",
-    isExternalLink: true,
-  },
-  {
-    href: "https://prio1-klima.net/akteure/",
-    text: texts.for_actors,
-    target: "_blank",
-    isExternalLink: true,
-  },
-];
-
 const getStaticLinks = (texts, customHubUrlSlug) => {
   return !customHubUrlSlug
     ? defaultStaticLinks(texts)
-    : customHubData({ texts })[customHubUrlSlug].headerStaticLink;
+    : getCustomHubData({ hubUrl: customHubUrlSlug, texts, path_to_redirect: "" }).headerStaticLink;
 };
 
 const getStaticLinkFromItem = (locale, item) => {
@@ -302,6 +249,5 @@ export {
   getLoggedInLinks,
   getStaticLinks,
   getStaticLinkFromItem,
-  getPrio1Links,
-  prio1StaticLinks,
+  COMMON_LINKS,
 };
