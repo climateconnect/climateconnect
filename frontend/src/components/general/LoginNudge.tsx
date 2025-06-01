@@ -35,12 +35,14 @@ export default function LoginNudge({ whatToDo, fullPage, className, hubUrl }: Pr
   const encodedRedirectUrl = encodeURIComponent(currentPath);
 
   let path_to_signin = `${getLocalePrefix(locale)}/signin?`;
-  let path_to_signup = `${getLocalePrefix(locale)}/signup?`;
+  let path_to_signup = `${getLocalePrefix(locale)}/signup`;
 
   path_to_signin += `redirect=${encodedRedirectUrl}`;
 
   if (hubUrl && hubUrl !== "") {
     path_to_signin += `&hub=${hubUrl}`;
+
+    path_to_signup += `?`;
     path_to_signup += `hub=${hubUrl}`;
   }
 
