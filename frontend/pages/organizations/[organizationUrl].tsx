@@ -280,6 +280,7 @@ function OrganizationLayout({
         <LoginNudge
           className={classes.loginNudge}
           whatToDo={texts.to_see_this_organizations_full_information}
+          hubUrl={hubUrl}
         />
       )}
       <Container>

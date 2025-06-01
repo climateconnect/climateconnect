@@ -77,7 +77,7 @@ export default function EditProfilePage({
   if (!profile)
     return (
       <WideLayout {...layoutProps} title={texts.please_log_in + " " + texts.to_edit_your_profile}>
-        <LoginNudge fullPage whatToDo={texts.to_edit_your_profile} />
+        <LoginNudge fullPage whatToDo={texts.to_edit_your_profile} hubUrl={hubUrl} />
       </WideLayout>
     );
   else

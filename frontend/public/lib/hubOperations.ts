@@ -16,19 +16,3 @@ export async function getAllHubs(locale: any, just_sector_hubs?: boolean) {
     return null;
   }
 }
-
-export function extractHubFromUrl(redirectUrl) {
-  const decodedRedirect = decodeURIComponent(redirectUrl);
-  // Check if the path contains /hubs/someValue
-  // and extract the value after /hubs/
-  const hubsPathMatch = decodedRedirect.match(/\/hubs\/([^/?#]+)/);
-  if (hubsPathMatch) {
-    return hubsPathMatch[1];
-  }
-  // Check if there's a query parameter hub= in the URL
-  const hubQueryMatch = decodedRedirect.match(/[?&]hub=([^&#]+)/);
-  if (hubQueryMatch) {
-    return hubQueryMatch[1];
-  }
-  return null;
-}
