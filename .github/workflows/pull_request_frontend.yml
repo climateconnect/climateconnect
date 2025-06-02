@@ -22,9 +22,21 @@ jobs:
       - name: Install Node.js dependencies
         run: yarn --immutable
 
+      - name: Install webflow devlink
+        run: npx webflow devlink install
+        env:
+          WEBFLOW_API_TOKEN: ${{ secrets.WEBFLOW_API_TOKEN }}
+          WEBFLOW_SITE_ID: ${{ secrets.WEBFLOW_SITE_ID }}
+
+      - name: Run webflow devlink sync
+        run: npx webflow devlink sync
+        env:
+          WEBFLOW_API_TOKEN: ${{ secrets.WEBFLOW_API_TOKEN }}
+          WEBFLOW_SITE_ID: ${{ secrets.WEBFLOW_SITE_ID }}
+
       - name: Lint frontend
         run: yarn lint
       - name: Format-check frontend
         run: yarn prettier '**/*.{js,jsx,ts,tsx,json,md}' --check
       - name: Typescript Compile frontend
-        run: yarn tsc 
+        run: yarn tsc
