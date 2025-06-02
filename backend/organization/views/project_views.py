@@ -212,22 +212,6 @@ class ListProjectsView(ListAPIView):
                     projects = projects.filter(
                         tag_project__project_tag__in=project_tags_with_children
                     ).distinct()
-                # elif hub.hub_type == Hub.LOCATION_HUB_TYPE:
-                #     location = hub.location.all()[0]
-                #     location_multipolygon = location.multi_polygon
-                #     projects = projects.filter(Q(loc__country=location.country))
-                #     if location_multipolygon:
-                #         projects = projects.filter(
-                #             Q(loc__multi_polygon__coveredby=(location_multipolygon))
-                #             | Q(loc__centre_point__coveredby=(location_multipolygon))
-                #         ).annotate(
-                #             distance=Distance(
-                #                 "loc__centre_point", location_multipolygon
-                #             )
-                #         )
-                # elif hub.hub_type == Hub.CUSTOM_HUB_TYPE:
-                #     projects = projects.filter(related_hubs=hub)
-
 
                 #projects related to the hub
                 project_filter = Q(related_hubs=hub)
