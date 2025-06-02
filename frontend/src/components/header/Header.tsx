@@ -317,14 +317,18 @@ export default function Header({
 
   const getLogo = () => {
     let imageUrl = "/images";
-    if (isHubPage && isLocationHub) {
-      if (transparentHeader) {
-        imageUrl += `/hub_logos/ch_${hubUrl?.toLowerCase()}_logo_white.svg`;
+    if (!isCustomHub) {
+      if (isHubPage && isLocationHub) {
+        if (transparentHeader) {
+          imageUrl += `/hub_logos/ch_${hubUrl?.toLowerCase()}_logo_white.svg`;
+        } else {
+          imageUrl += `/hub_logos/ch_${hubUrl}_logo.svg`;
+        }
       } else {
-        imageUrl += `/hub_logos/ch_${hubUrl}_logo.svg`;
+        imageUrl = loadDefaultLogo(transparentHeader, isMediumScreen);
       }
     } else {
-      imageUrl = loadDefaultLogo(transparentHeader, isMediumScreen);
+      imageUrl += `/hub_logos/ch_${hubUrl}_logo.svg`;
     }
     return imageUrl;
   };
@@ -342,7 +346,6 @@ export default function Header({
   };
 
   const logo = getLogo();
-
   const getLogoLink = () => {
     if (hubUrl) {
       return `${localePrefix}/hubs/${hubUrl}/browse`;
