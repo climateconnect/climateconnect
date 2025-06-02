@@ -1,6 +1,6 @@
-import { CustomHubConfig } from './customHubtypes';
-import { prio1Config } from './customHubConfig/prio1';
-import { scottConfig } from './customHubConfig/scott';
+import { CustomHubConfig } from "./customHubtypes";
+import { prio1Config } from "./customHubConfig/prio1";
+import { scottConfig } from "./customHubConfig/scott";
 
 type CustomHubDataParams = {
   path_to_redirect?: string;
@@ -8,7 +8,7 @@ type CustomHubDataParams = {
 };
 
 export default function customHubData({
-  path_to_redirect = '',
+  path_to_redirect = "",
   texts = {},
 }: CustomHubDataParams = {}): CustomHubConfig {
   return {
@@ -25,4 +25,4 @@ type GetCustomHubDataParams = {
 
 export const getCustomHubData = ({ hubUrl, texts, path_to_redirect }: GetCustomHubDataParams) => {
   return customHubData({ path_to_redirect, texts })[hubUrl];
-}
+};

@@ -244,10 +244,4 @@ const getStaticLinkFromItem = (locale, item) => {
   return `${getLocalePrefix(locale)}${item.href}`;
 };
 
-export {
-  getLinks,
-  getLoggedInLinks,
-  getStaticLinks,
-  getStaticLinkFromItem,
-  COMMON_LINKS,
-};
+export { getLinks, getLoggedInLinks, getStaticLinks, getStaticLinkFromItem, COMMON_LINKS };

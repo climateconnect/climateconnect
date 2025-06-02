@@ -1,6 +1,6 @@
-import { Link } from '../customHubtypes';
-import { COMMON_LINKS } from '../../lib/headerLink';
-import InfoIcon from '@mui/icons-material/Info';
+import { Link } from "../customHubtypes";
+import { COMMON_LINKS } from "../../lib/headerLink";
+import InfoIcon from "@mui/icons-material/Info";
 
 type GetLinksOptions = {
   baseUrl: string;
@@ -20,7 +20,7 @@ export const getSharedLinks = (
     showStaticLinksInDropdown: true,
     hideOnStaticPages: true,
     isExternalLink: true,
-    className: 'btnIconTextColor',
+    className: "btnIconTextColor",
   },
   {
     ...COMMON_LINKS.SHARE,
@@ -29,7 +29,7 @@ export const getSharedLinks = (
     hideOnMediumScreen: true,
   },
   {
-    type: 'languageSelect',
+    type: "languageSelect",
   },
   {
     ...COMMON_LINKS.NOTIFICATIONS,
@@ -46,12 +46,8 @@ export type StaticLinkConfig = {
   isExternalLink?: boolean;
 };
 
-export function getStaticLinks(
-  texts: any,
-  configs: StaticLinkConfig[],
-  baseUrl?: string
-): Link[] {
-  return configs.map(({ href, textKey, target = '_blank', isExternalLink = true }) => ({
+export function getStaticLinks(texts: any, configs: StaticLinkConfig[], baseUrl?: string): Link[] {
+  return configs.map(({ href, textKey, target = "_blank", isExternalLink = true }) => ({
     href: baseUrl ? `${baseUrl}${href}` : href,
     text: texts[textKey],
     target,

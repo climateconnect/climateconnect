@@ -8,7 +8,7 @@ import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import HubsDropDown from "../indexPage/hubsSubHeader/HubsDropDown";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
-import {getCustomHubData} from "../../../public/data/customHubData";
+import { getCustomHubData } from "../../../public/data/customHubData";
 
 const useStyles = makeStyles((theme) => ({
   root: {

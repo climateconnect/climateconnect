@@ -1,5 +1,5 @@
-import { ComponentType } from 'react';
-import { SvgIconProps } from '@mui/material';
+import { ComponentType } from "react";
+import { SvgIconProps } from "@mui/material";
 
 export type Link = {
   href: string;
@@ -15,10 +15,12 @@ export type Link = {
 };
 
 export type HubConfig = {
-  welcome: {
-    en: any;
-    de: any;
-  } | string;
+  welcome:
+    | {
+        en: any;
+        de: any;
+      }
+    | string;
   hubTabLinkNarrowScreen?: Link;
   headerLink: Link[];
   headerStaticLink?: Link[];

@@ -16,7 +16,7 @@ import HubHeadlineContainer from "./HubHeadlineContainer";
 import HubSupporters from "./HubSupporters";
 import theme from "../../themes/theme";
 import { PrioOneBackgroundBrowse, PrioOneBackgroundBrowseIcon } from "./CustomBackground";
-import {getCustomHubData} from "../../../public/data/customHubData";
+import { getCustomHubData } from "../../../public/data/customHubData";
 
 type MakeStylesProps = {
   isLocationHub: boolean;
@@ -168,7 +168,7 @@ export default function HubContent({
   if (fixed && showMoreVisible) {
     setFixed(false);
   }
-  const WelcomeComponent = getCustomHubData({hubUrl: hubUrl}).welcome?.[locale];
+  const WelcomeComponent = getCustomHubData({ hubUrl: hubUrl }).welcome?.[locale];
 
   return (
     <div>
