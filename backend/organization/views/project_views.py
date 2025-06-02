@@ -213,7 +213,7 @@ class ListProjectsView(ListAPIView):
                         tag_project__project_tag__in=project_tags_with_children
                     ).distinct()
 
-                #projects related to the hub
+                # projects related to the hub
                 project_filter = Q(related_hubs=hub)
 
                 if hub.location.all().exists():
@@ -223,8 +223,8 @@ class ListProjectsView(ListAPIView):
 
                     if location_multipolygon:
                         location_filter = location_filter & (
-                            Q(loc__multi_polygon__coveredby=location_multipolygon) |
-                            Q(loc__centre_point__coveredby=location_multipolygon)
+                            Q(loc__multi_polygon__coveredby=location_multipolygon)
+                            | Q(loc__centre_point__coveredby=location_multipolygon)
                         )
 
                     # Merge location logic into related_hubs logic
