@@ -24,6 +24,5 @@ type GetCustomHubDataParams = {
 };
 
 export const getCustomHubData = ({ hubUrl, texts, path_to_redirect }: GetCustomHubDataParams) => {
-  const customHubDataMap = customHubData({ path_to_redirect, texts });
-  return customHubDataMap[hubUrl];
+  return customHubData({ path_to_redirect, texts })[hubUrl];
 }

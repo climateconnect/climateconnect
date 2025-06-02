@@ -126,7 +126,7 @@ const getLinks = (
   hubUrl
 ) => {
   return isCustomHub
-    ? getCustomHubData({ hubUrl, texts, path_to_redirect }).headerLink
+    ? getCustomHubData({ hubUrl, texts, path_to_redirect })?.headerLink
     : getDefaultLinks(
         path_to_redirect,
         texts,
@@ -234,7 +234,7 @@ const defaultStaticLinks = (texts) => [
 const getStaticLinks = (texts, customHubUrlSlug) => {
   return !customHubUrlSlug
     ? defaultStaticLinks(texts)
-    : getCustomHubData({ hubUrl: customHubUrlSlug, texts, path_to_redirect: "" }).headerStaticLink;
+    : getCustomHubData({ hubUrl: customHubUrlSlug, texts, path_to_redirect: "" })?.headerStaticLink;
 };
 
 const getStaticLinkFromItem = (locale, item) => {
