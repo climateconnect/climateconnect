@@ -401,7 +401,6 @@ class CreateOrganizationView(APIView):
                         except Hub.DoesNotExist:
                             logger.error("Passed hub url_slug {} does not exist")
                     organization.hubs.set(hubs)
-                print(organization.related_hubs.all())
                 organization.save()
 
                 # Create organization translations

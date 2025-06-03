@@ -50,4 +50,6 @@ def senatize_sector_inputs(inputs: Any) -> Tuple[Any, Optional[Exception]]:
 
     # remove duplicates
     inputs = list(set(inputs))
+    inputs = [item.strip() for item in inputs if item.strip()]
+    inputs = [item for item in inputs if len(item) > 0]
     return inputs, None
