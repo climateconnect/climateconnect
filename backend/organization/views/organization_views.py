@@ -35,6 +35,7 @@ from organization.models import (
     ProjectParents,
     OrganizationSectorMapping,
     OrganizationTranslation,
+    Sector,
 )
 from organization.pagination import OrganizationsPagination, ProjectsPagination
 from organization.permissions import (
@@ -455,17 +456,13 @@ class CreateOrganizationView(APIView):
                         sector_keys = []
 
                     sectors = []
-                    for sector_key in sector_keys:
-                        try:
-                            # TODO: Do not use projectTags
-                            sector = OrganizationTags.objects.get(id=int(sector_key))
-                            sectors.append(sector)
-                        except OrganizationTags.DoesNotExist:
+                    sectors = Sector.objects.filter(key__in=sector_keys)
+                    for key in sector_keys:
+                        if key not in sectors.values_list("key", flat=True):
                             logger.error(
-                                "Passed organization tag ID {} does not exist".format(
-                                    sector_key
-                                )
+                                "Passed sector key {} does not exist".format(key)
                             )
+
                     for sector in sectors:
                         OrganizationSectorMapping.objects.create(
                             sector=sector, organization=organization
@@ -707,7 +704,7 @@ class OrganizationAPIView(APIView):
                     set([x.sector.key for x in old_org_sector_mapping])
                 )
                 for sector_key in sector_keys:
-                    if not sector_key in old_sector_keys:
+                    if sector_key not in old_sector_keys:
                         # create mapping only if the sector is not already mapped
                         # to the organization
                         try:

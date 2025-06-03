@@ -89,7 +89,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
     def get_sectors(self, obj):
         serializer = OrganizationSectorMappingSerializer(
-            obj.organization_sector_mapping
+            obj.organization_sector_mapping.all(), many=True
         )
         return serializer.data
 
@@ -234,7 +234,7 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
 
     def get_sectors(self, obj):
         serializer = OrganizationSectorMappingSerializer(
-            obj.organization_sector_mapping
+            obj.organization_sector_mapping.all(), many=True
         )
         return serializer.data
 

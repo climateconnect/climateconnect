@@ -113,7 +113,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def get_sectors(self, obj):
         serializer = ProjectSectorMappingSerializer(
-            obj.project_sector_mapping, many=True
+            obj.project_sector_mapping.all(), many=True
         )
         return serializer.data
 
@@ -265,6 +265,8 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
 
 class ProjectStubSerializer(serializers.ModelSerializer):
     project_parents = serializers.SerializerMethodField()
+    # TODO: remove tags
+    # TODO: add sectors instead of tags
     tags = serializers.SerializerMethodField()
     project_type = SerializerMethodField()
     image = serializers.SerializerMethodField()
