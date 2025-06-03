@@ -18,7 +18,6 @@ const COMMON_LINKS = {
     hasBadge: true,
     onlyShowIconOnNormalScreen: true,
     onlyShowIconOnMobile: true,
-    className: "notificationsButton",
     icon: NotificationsIcon,
     alwaysDisplayDirectly: true,
     onlyShowLoggedIn: true,
@@ -99,6 +98,8 @@ const getDefaultLinks = (path_to_redirect, texts, isLocationHub, hasHubLandingPa
         vanillaIfLoggedOut: true,
         hideOnStaticPages: true,
         alwaysDisplayDirectly: "loggedIn",
+        // We can use more than one className here
+        className: "btnColor buttonMarginLeft",
       },
       {
         ...COMMON_LINKS.SHARE,
