@@ -8,7 +8,7 @@ export const getScottLinks = (pathToRedirect: string, texts: any): Link[] =>
   getSharedLinks(pathToRedirect, texts, {
     baseUrl: SCOTT_BASE_URL,
     hubKey: "scottish",
-    mainTextKey: "Scott_klima",
+    mainTextKey: "climateconnect.scot",
   });
 
 const SCOTTISH_STATIC_LINKS_CONFIG: StaticLinkConfig[] = [
