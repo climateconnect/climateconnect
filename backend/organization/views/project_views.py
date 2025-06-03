@@ -170,6 +170,7 @@ class ListProjectsView(ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
+        # TODO: remove user profile, as it is not used
         user_profile = None
         if user.is_authenticated:
             user_profile = user.user_profile if user.user_profile else None  # noqa
@@ -223,20 +224,14 @@ class ListProjectsView(ListAPIView):
             if hub.exists():
                 hub = hub[0]
                 if hub.hub_type == Hub.SECTOR_HUB_TYPE:
-                    # TODO (Karol): replace tags with sectors
-                    project_category = Hub.objects.get(
-                        url_slug=self.request.query_params.get("hub")
-                    ).filter_parent_tags.all()
-                    project_category_ids = list(map(lambda c: c.id, project_category))
-                    project_tags = ProjectTags.objects.filter(
-                        id__in=project_category_ids
-                    )
-                    project_tags_with_children = ProjectTags.objects.filter(
-                        Q(parent_tag__in=project_tags) | Q(id__in=project_tags)
-                    )
+                    sectors = hub.sectors.all()
+
+                    sector_ids = [x.id for x in sectors]
+
                     projects = projects.filter(
-                        tag_project__project_tag__in=project_tags_with_children
+                        project_sector_mapping__sector_id__in=sector_ids
                     ).distinct()
+
                 elif hub.hub_type == Hub.LOCATION_HUB_TYPE:
                     location = hub.location.all()[0]
                     location_multipolygon = location.multi_polygon

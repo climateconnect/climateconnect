@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.test import tag
 
+from hubs.models.hub import Hub
 from climateconnect_api.models import Role, Language
 from organization.models import (
     Sector,
@@ -178,6 +179,84 @@ class TestProjectsListView(APITestCase):
             for project_slug in testcases[i]["expected"]:
                 self.assertContains(response, project_slug)
 
+    @tag("sectors", "projects")
+    def test_get_projects_lists_content_filtered_by_sector_hub(self):
+        # arrange
+        sectors = [
+            Sector.objects.create(
+                name=f"Test Sector Name {i}",
+                name_de_translation=f"Test Sector Name {i} DE",
+                key=f"test_sector_{i}",
+            )
+            for i in range(3)
+        ]
+
+        projects = self.projects
+        ## mapping projects to sectors
+        ## testing number of projects per sector: 2, 1 and 0 (testing a loop)
+        ProjectSectorMapping.objects.create(sector=sectors[0], project=projects[0])
+        ProjectSectorMapping.objects.create(sector=sectors[0], project=projects[1])
+        ProjectSectorMapping.objects.create(sector=sectors[1], project=projects[2])
+
+        # linking sectors to sector hubs, to query projects by sector hubs
+        self.sector_hubs = [
+            Hub.objects.create(
+                name="Test sector Hub {}".format(i),
+                url_slug="test-hub-{}".format(i),
+                hub_type=Hub.SECTOR_HUB_TYPE,
+            )
+            for i in range(3)
+        ]
+        for i in range(3):
+            self.sector_hubs[i].sectors.add(sectors[i])
+
+        self.decoy_hub = Hub.objects.create(
+            name="Decoy Hub",
+            url_slug="decoy-hub",
+            hub_type=Hub.LOCATION_HUB_TYPE,
+        )
+
+        testcases = [
+            # test query by a single sector hub
+            {
+                "url": "hub={}".format(self.sector_hubs[0].url_slug),
+                "expected": [
+                    projects[0].url_slug,
+                    projects[1].url_slug,
+                ],
+            },
+            {
+                "url": "hub={}".format(self.sector_hubs[1].url_slug),
+                "expected": [
+                    projects[2].url_slug,
+                ],
+            },
+            {
+                "url": "hub={}".format(self.sector_hubs[2].url_slug),
+                "expected": [],
+            },
+            {
+                "url": "hub={}".format(self.decoy_hub.url_slug),
+                "expected": [],
+            },
+        ]
+
+        # act
+        responses = [
+            self.client.get(self.url + "?" + testcases[i]["url"]) for i in range(3)
+        ]
+
+        # assert
+        for i, response in enumerate(responses):
+            results = response.json().get("results", None)
+
+            self.assertIsNotNone(results)
+            self.assertEqual(len(results), len(testcases[i]["expected"]))
+
+            for project_slug in testcases[i]["expected"]:
+                self.assertContains(response, project_slug)
+        pass
+
 
 class TestCreateProjectsViews(APITestCase):
     # -----------------------------------------------------
@@ -292,7 +371,6 @@ class TestCreateProjectsViews(APITestCase):
 
         # assert
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        # TODO: check that no sectors are linked to the project
         self.assertEqual(
             ProjectSectorMapping.objects.filter(
                 project__url_slug=self.default_project_data["url_slug"]
