@@ -564,12 +564,12 @@ class TestProjectApi(APITestCase):
         # arrange
         self.sector = Sector.objects.create(
             name="Test Sector",
-            name_de_translation="Test Sektor DE",
+            name_de_translation="Test Sector DE",
             key="test_sector",
         )
         self.sector_decoy = Sector.objects.create(
             name="Test Sector decoy",
-            name_de_translation="Test Sektor DE decoy",
+            name_de_translation="Test Sector DE decoy",
             key="test_sector_decoy",
         )
 
@@ -593,12 +593,12 @@ class TestProjectApi(APITestCase):
         # arrange
         self.sector = Sector.objects.create(
             name="Test Sector",
-            name_de_translation="Test Sektor DE",
+            name_de_translation="Test Sector DE",
             key="test_sector",
         )
         self.sector_decoy = Sector.objects.create(
             name="Test Sector decoy",
-            name_de_translation="Test Sektor DE decoy",
+            name_de_translation="Test Sector DE decoy",
             key="test_sector_decoy",
         )
 
@@ -624,7 +624,7 @@ class TestProjectApi(APITestCase):
 
         self.sector = Sector.objects.create(
             name="Test Sector",
-            name_de_translation="Test Sektor DE",
+            name_de_translation="Test Sector DE",
             key="test_sector",
         )
 
@@ -640,6 +640,12 @@ class TestProjectApi(APITestCase):
         self.assertContains(response, "successfully updated")
         self.assertEqual(
             ProjectSectorMapping.objects.filter(
+                project__url_slug=self.project.url_slug
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            ProjectSectorMapping.objects.filter(
                 project__url_slug=self.project.url_slug, sector__key=self.sector.key
             ).count(),
             1,
@@ -653,7 +659,7 @@ class TestProjectApi(APITestCase):
         self.sectors = [
             Sector.objects.create(
                 name=f"Test Sector {i}",
-                name_de_translation=f"Test Sektor DE {i}",
+                name_de_translation=f"Test Sector DE {i}",
                 key=f"test_sector_{i}",
             )
             for i in range(2)
@@ -711,7 +717,7 @@ class TestProjectApi(APITestCase):
         self.sectors = [
             Sector.objects.create(
                 name=f"Test Sector {i}",
-                name_de_translation=f"Test Sektor DE {i}",
+                name_de_translation=f"Test Sector DE {i}",
                 key=f"test_sector_{i}",
             )
             for i in range(4)
@@ -783,7 +789,7 @@ class TestProjectApi(APITestCase):
 
         self.sector = Sector.objects.create(
             name="Test Sector",
-            name_de_translation="Test Sektor DE",
+            name_de_translation="Test Sector DE",
             key="test_sector",
         )
         ProjectSectorMapping.objects.create(sector=self.sector, project=self.project)
@@ -810,7 +816,7 @@ class TestProjectApi(APITestCase):
         self.client.login(username="testuser", password="testpassword")
         self.sector = Sector.objects.create(
             name="Test Sector",
-            name_de_translation="Test Sektor DE",
+            name_de_translation="Test Sector DE",
             key="test_sector",
         )
         ProjectSectorMapping.objects.create(sector=self.sector, project=self.project)

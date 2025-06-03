@@ -703,16 +703,15 @@ class OrganizationAPIView(APIView):
                     set([x.sector.key for x in old_org_sector_mapping])
                 )
                 for sector_key in sector_keys:
+                    # create mapping only if the sector is not already mapped
+                    # to the organization
                     if sector_key not in old_sector_keys:
-                        # create mapping only if the sector is not already mapped
-                        # to the organization
                         try:
-                            # TODO: this sould not be using  OrganizationTags but sectors
-                            sector = OrganizationTags.objects.get(id=int(sector_key))
+                            sector = Sector.objects.get(key=sector_key)
                             OrganizationSectorMapping.objects.create(
                                 sector=sector, organization=organization
                             )
-                        except OrganizationTags.DoesNotExist:
+                        except Sector.DoesNotExist:
                             logger.error(
                                 "Passed organization tag ID {} does not exist".format(
                                     sector_key
@@ -751,7 +750,7 @@ class OrganizationAPIView(APIView):
 
         organization.save()
         return Response(
-            {"message": _("Successfully updated organization.")},
+            {"message": _("successfully updated organization.")},
             status=status.HTTP_200_OK,
         )
 

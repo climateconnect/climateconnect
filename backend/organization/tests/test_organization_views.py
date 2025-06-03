@@ -6,12 +6,13 @@ from django.test import tag
 from rest_framework import status
 
 from django.contrib.auth.models import User
-from climateconnect_api.models.language import Language
+from climateconnect_api.models import Role, Language, UserProfile
 from location.models import Location
 from organization.models import (
     Sector,
     Organization,
     OrganizationSectorMapping,
+    OrganizationMember,
 )
 from hubs.models import Hub
 
@@ -39,7 +40,6 @@ class TestListOrganizationsAPIView(APITestCase):
             )
             for i in range(NUMBER_OF_ORGANIZATIONS)
         ]
-        # self.user =
 
     @tag("organizations")
     def test_get_organizations(self):
@@ -58,7 +58,7 @@ class TestListOrganizationsAPIView(APITestCase):
     @tag("organizations", "sectors")
     def test_get_organizations_filtered_by_sector(self):
         # arrange
-        self.sectors = [
+        sectors = [
             Sector.objects.create(
                 name=f"Test Sector Name {i}",
                 name_de_translation=f"Test Sector Name {i} DE",
@@ -70,21 +70,21 @@ class TestListOrganizationsAPIView(APITestCase):
         # testing >1, =1 and no sector
         OrganizationSectorMapping.objects.create(
             organization=self.organizations[0],
-            sector=self.sectors[0],
+            sector=sectors[0],
         )
         OrganizationSectorMapping.objects.create(
             organization=self.organizations[1],
-            sector=self.sectors[0],
+            sector=sectors[0],
         )
         OrganizationSectorMapping.objects.create(
             organization=self.organizations[2],
-            sector=self.sectors[1],
+            sector=sectors[1],
         )
 
         # act
-        response_1 = self.client.get(self.url + "?sectors=" + self.sectors[0].key)
-        response_2 = self.client.get(self.url + "?sectors=" + self.sectors[1].key)
-        response_3 = self.client.get(self.url + "?sectors=" + self.sectors[2].key)
+        response_1 = self.client.get(self.url + "?sectors=" + sectors[0].key)
+        response_2 = self.client.get(self.url + "?sectors=" + sectors[1].key)
+        response_3 = self.client.get(self.url + "?sectors=" + sectors[2].key)
 
         results_1 = response_1.json().get("results", None)
         results_2 = response_2.json().get("results", None)
@@ -106,7 +106,7 @@ class TestListOrganizationsAPIView(APITestCase):
     @tag("organizations", "sectors")
     def test_get_organizations_filtered_by_two_sectors(self):
         # arrange
-        self.sectors = [
+        sectors = [
             Sector.objects.create(
                 name=f"Test Sector Name {i}",
                 name_de_translation=f"Test Sector Name {i} DE",
@@ -118,20 +118,20 @@ class TestListOrganizationsAPIView(APITestCase):
         # testing >1, =1 and no sector
         OrganizationSectorMapping.objects.create(
             organization=self.organizations[0],
-            sector=self.sectors[0],
+            sector=sectors[0],
         )
         OrganizationSectorMapping.objects.create(
             organization=self.organizations[1],
-            sector=self.sectors[0],
+            sector=sectors[0],
         )
         OrganizationSectorMapping.objects.create(
             organization=self.organizations[2],
-            sector=self.sectors[1],
+            sector=sectors[1],
         )
 
         testcases = [
             {
-                "url": "sectors={},{}".format(self.sectors[0].key, self.sectors[1].key),
+                "url": "sectors={},{}".format(sectors[0].key, sectors[1].key),
                 "expected": [
                     self.organizations[0].url_slug,
                     self.organizations[1].url_slug,
@@ -139,14 +139,14 @@ class TestListOrganizationsAPIView(APITestCase):
                 ],
             },
             {
-                "url": "sectors={},{}".format(self.sectors[0].key, self.sectors[2].key),
+                "url": "sectors={},{}".format(sectors[0].key, sectors[2].key),
                 "expected": [
                     self.organizations[0].url_slug,
                     self.organizations[1].url_slug,
                 ],
             },
             {
-                "url": "sectors={},{}".format(self.sectors[1].key, self.sectors[2].key),
+                "url": "sectors={},{}".format(sectors[1].key, sectors[2].key),
                 "expected": [
                     self.organizations[2].url_slug,
                 ],
@@ -170,31 +170,31 @@ class TestListOrganizationsAPIView(APITestCase):
     @tag("organizations", "hubs", "sectors")
     def test_get_organizations_filtered_by_sector_hub(self):
         # arrange
-        self.sector = Sector.objects.create(
+        sector = Sector.objects.create(
             name="Test Sector Hub",
             name_de_translation="Test Sektor Hub DE",
             key="test_sector_hub",
         )
 
-        self.hub = Hub.objects.create(
+        hub = Hub.objects.create(
             name="Test Hub",
             url_slug="test-hub",
             hub_type=Hub.SECTOR_HUB_TYPE,
         )
-        self.hub.sectors.add(self.sector)
+        hub.sectors.add(sector)
 
         OrganizationSectorMapping.objects.create(
-            organization=self.organizations[0], sector=self.sector
+            organization=self.organizations[0], sector=sector
         )
         OrganizationSectorMapping.objects.create(
-            organization=self.organizations[1], sector=self.sector
+            organization=self.organizations[1], sector=sector
         )
         OrganizationSectorMapping.objects.create(
-            organization=self.organizations[2], sector=self.sector
+            organization=self.organizations[2], sector=sector
         )
 
         # act
-        response = self.client.get(self.url + "?hub={}".format(self.hub.url_slug))
+        response = self.client.get(self.url + "?hub={}".format(hub.url_slug))
         results = response.json().get("results", None)
 
         # assert
@@ -302,7 +302,7 @@ class TestCreateOrganizationView(APITestCase):
         # arrange
         self.client.login(username="testuser", password="testpassword")
 
-        self.sector = Sector.objects.create(
+        sector = Sector.objects.create(
             name="Test Sector",
             name_de_translation="Test Sektor DE",
             key="test_sector",
@@ -316,7 +316,7 @@ class TestCreateOrganizationView(APITestCase):
         )
 
         organization_data = self.deafault_organization
-        organization_data["sectors"] = [self.sector.key]
+        organization_data["sectors"] = [sector.key]
 
         # act
         response = self.client.post(self.url, data=organization_data, format="json")
@@ -332,7 +332,7 @@ class TestCreateOrganizationView(APITestCase):
         self.assertEqual(
             OrganizationSectorMapping.objects.filter(
                 organization__url_slug=self.deafault_organization["url_slug"],
-                sector=self.sector,
+                sector=sector,
             ).count(),
             1,
         )
@@ -342,7 +342,7 @@ class TestCreateOrganizationView(APITestCase):
         # arrange
         self.client.login(username="testuser", password="testpassword")
 
-        self.sector = Sector.objects.create(
+        sector = Sector.objects.create(
             name="Test Sector",
             name_de_translation="Test Sektor DE",
             key="test_sector",
@@ -356,7 +356,7 @@ class TestCreateOrganizationView(APITestCase):
         )
 
         organization_data = self.deafault_organization
-        organization_data["sectors"] = self.sector.key
+        organization_data["sectors"] = sector.key
 
         # act
         response = self.client.post(self.url, data=organization_data, format="json")
@@ -372,7 +372,7 @@ class TestCreateOrganizationView(APITestCase):
         self.assertEqual(
             OrganizationSectorMapping.objects.filter(
                 organization__url_slug=self.deafault_organization["url_slug"],
-                sector=self.sector,
+                sector=sector,
             ).count(),
             1,
         )
@@ -382,7 +382,7 @@ class TestCreateOrganizationView(APITestCase):
         # arrange
         self.client.login(username="testuser", password="testpassword")
 
-        self.sectors = [
+        sectors = [
             Sector.objects.create(
                 name="Test Sector {}".format(i),
                 name_de_translation="Test Sektor DE {}".format(i),
@@ -399,7 +399,7 @@ class TestCreateOrganizationView(APITestCase):
         )
 
         organization_data = self.deafault_organization
-        organization_data["sectors"] = [s.key for s in self.sectors]
+        organization_data["sectors"] = [s.key for s in sectors]
 
         # act
         self.client.post(self.url, data=organization_data, format="json")
@@ -411,7 +411,7 @@ class TestCreateOrganizationView(APITestCase):
             ).count(),
             2,
         )
-        for sector in self.sectors:
+        for sector in sectors:
             self.assertEqual(
                 OrganizationSectorMapping.objects.filter(
                     organization__url_slug=self.deafault_organization["url_slug"],
@@ -425,7 +425,7 @@ class TestCreateOrganizationView(APITestCase):
         # arrange
         self.client.login(username="testuser", password="testpassword")
 
-        self.sectors = [
+        sectors = [
             Sector.objects.create(
                 name="Test Sector {}".format(i),
                 name_de_translation="Test Sektor DE {}".format(i),
@@ -442,7 +442,7 @@ class TestCreateOrganizationView(APITestCase):
         )
 
         organization_data = self.deafault_organization
-        organization_data["sectors"] = ",".join([s.key for s in self.sectors])
+        organization_data["sectors"] = ",".join([s.key for s in sectors])
 
         # act
         self.client.post(self.url, data=organization_data, format="json")
@@ -454,7 +454,7 @@ class TestCreateOrganizationView(APITestCase):
             ).count(),
             2,
         )
-        for sector in self.sectors:
+        for sector in sectors:
             self.assertEqual(
                 OrganizationSectorMapping.objects.filter(
                     organization__url_slug=self.deafault_organization["url_slug"],
@@ -474,3 +474,284 @@ class TestOrganizationAPIView(APITestCase):
             "organization:organization-api-view",
             kwargs={"url_slug": self.url_slug},
         )
+        self.edit_view_url = self.url + "?" + "edit_view"
+
+        self.user = User.objects.create_user(
+            username="testuser",
+            password="testpassword",
+            id=1,
+        )
+        self.user_decoy = User.objects.create_user(
+            username="decoy",
+            password="decoy",
+            id=2,
+        )
+        UserProfile.objects.create(user=self.user)
+        UserProfile.objects.create(user=self.user_decoy)
+
+        self.role = Role.objects.create(
+            name="Admin",
+            role_type=Role.ALL_TYPE,
+        )
+
+        Language.objects.create(
+            name="Test English",
+            native_name="English",
+            language_code="en",
+        )
+        self.default_language = Language.objects.create(
+            name="Test Deutsch",
+            native_name="Deutsch",
+            language_code="de",
+        )
+
+        self.org = Organization.objects.create(
+            name=f"Test Organization",
+            url_slug=f"test-organization",
+            language=self.default_language,
+        )
+        self.org_decoy = Organization.objects.create(
+            name=f"Decoy Organization",
+            url_slug=f"decoy-organization",
+            language=self.default_language,
+        )
+
+        OrganizationMember.objects.create(
+            user=self.user, organization=self.org, role=self.role
+        )
+        OrganizationMember.objects.create(
+            user=self.user_decoy, organization=self.org_decoy, role=self.role
+        )
+
+    @tag("organiztaion")
+    def test_get_organization_by_url_slug(self):
+        # arrange
+
+        # act
+        response = self.client.get(self.url)
+        res = response.json()
+
+        # assert
+        self.assertIsNotNone(res)
+        self.assertContains(response, self.org.name)
+        self.assertNotContains(response, self.org_decoy.name)
+        pass
+
+    @tag("organiztaion", "sectors")
+    def test_get_organization_by_url_slug_includes_sectors(self):
+        # arrange
+        sector = Sector.objects.create(
+            name="Test Sector", name_de_translation="Test Sector DE", key="test_sector"
+        )
+        sector_decoy = Sector.objects.create(
+            name="Test Sector decoy",
+            name_de_translation="Test Sector DE decoy",
+            key="decoy_sector",
+        )
+
+        OrganizationSectorMapping.objects.create(sector=sector, organization=self.org)
+        OrganizationSectorMapping.objects.create(
+            sector=sector_decoy, organization=self.org_decoy
+        )
+
+        # act
+        response = self.client.get(self.url)
+        res = response.json()
+
+        # assert
+        self.assertIsNotNone(res)
+        self.assertContains(response, self.org.name)
+        self.assertContains(response, sector.name)
+        self.assertNotContains(response, "decoy")
+        pass
+
+    @tag("organiztaion", "sectors")
+    def test_get_organization_edit_view_by_url_slug_includes_sectors(self):
+        # arrange
+        sector = Sector.objects.create(
+            name="Test Sector", name_de_translation="Test Sector DE", key="test_sector"
+        )
+        sector_decoy = Sector.objects.create(
+            name="Test Sector decoy",
+            name_de_translation="Test Sector DE decoy",
+            key="decoy_sector",
+        )
+
+        OrganizationSectorMapping.objects.create(sector=sector, organization=self.org)
+        OrganizationSectorMapping.objects.create(
+            sector=sector_decoy, organization=self.org_decoy
+        )
+
+        # act
+        response = self.client.get(self.edit_view_url)
+        res = response.json()
+
+        # assert
+        self.assertIsNotNone(res)
+        self.assertContains(response, self.org.name)
+        self.assertContains(response, sector.name)
+        self.assertNotContains(response, "decoy")
+        pass
+
+    @tag("organization", "sectors")
+    def test_patch_organization_adding_first_sector(self):
+        # arrange
+        self.client.login(username="testuser", password="testpassword")
+        sector = Sector.objects.create(
+            name="Test Sector", name_de_translation="Test Sector DE", key="test_sector"
+        )
+        Sector.objects.create(
+            name="Test Sector decoy",
+            name_de_translation="Test Sector DE decoy",
+            key="decoy_sector",
+        )
+
+        data = {"sectors": [sector.key]}
+
+        # act
+        self.client.patch(self.url, data, format="json")
+        response = self.client.patch(self.url, data, format="json")
+
+        # assert
+        self.assertContains(response, "successfully updated")
+        self.assertEqual(
+            OrganizationSectorMapping.objects.filter(
+                organization__url_slug=self.org.url_slug,
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            OrganizationSectorMapping.objects.filter(
+                organization__url_slug=self.org.url_slug, sector__key=sector.key
+            ).count(),
+            1,
+        )
+
+    @tag("organization", "sectors")
+    def test_patch_organization_adding_multiple_sectors(self):
+        self.client.login(username="testuser", password="testpassword")
+        sectors = [
+            Sector.objects.create(
+                name=f"Test Sector {i}",
+                name_de_translation=f"Test Sector DE {i}",
+                key=f"test_sector_{i}",
+            )
+            for i in range(4)
+        ]
+        Sector.objects.create(
+            name="Test Sector decoy",
+            name_de_translation="Test Sector DE decoy",
+            key="decoy_sector",
+        )
+
+        data = {"sectors": [s.key for s in sectors]}
+
+        # act
+        self.client.patch(self.url, data, format="json")
+        response = self.client.patch(self.url, data, format="json")
+
+        # assert
+        self.assertContains(response, "successfully updated")
+        self.assertEqual(
+            OrganizationSectorMapping.objects.filter(
+                organization__url_slug=self.org.url_slug,
+            ).count(),
+            len(sectors),
+        )
+        for s in sectors:
+            self.assertEqual(
+                OrganizationSectorMapping.objects.filter(
+                    organization__url_slug=self.org.url_slug, sector__key=s.key
+                ).count(),
+                1,
+            )
+
+    @tag("organization", "sectors")
+    def test_patch_organization_adding_another_sector(self):
+        # arrange
+        self.client.login(username="testuser", password="testpassword")
+        sector = Sector.objects.create(
+            name="Test Sector", name_de_translation="Test Sector DE", key="test_sector"
+        )
+        sector_other = Sector.objects.create(
+            name="Test Sector decoy",
+            name_de_translation="Test Sector DE decoy",
+            key="decoy_sector",
+        )
+
+        OrganizationSectorMapping.objects.create(
+            organization=self.org, sector=sector_other
+        )
+
+        data = {"sectors": [sector.key, sector_other.key]}
+
+        # act
+        self.client.patch(self.url, data, format="json")
+        response = self.client.patch(self.url, data, format="json")
+
+        # assert
+        self.assertContains(response, "successfully updated")
+        self.assertEqual(
+            OrganizationSectorMapping.objects.filter(
+                organization__url_slug=self.org.url_slug,
+            ).count(),
+            2,
+        )
+        self.assertEqual(
+            OrganizationSectorMapping.objects.filter(
+                organization__url_slug=self.org.url_slug, sector__key=sector.key
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            OrganizationSectorMapping.objects.filter(
+                organization__url_slug=self.org.url_slug, sector__key=sector_other.key
+            ).count(),
+            1,
+        )
+
+    @tag("organization", "sectors")
+    def test_patch_organization_removing_sector(self):
+        # TODO:
+        # arrange
+        self.client.login(username="testuser", password="testpassword")
+        sector = Sector.objects.create(
+            name="Test Sector", name_de_translation="Test Sector DE", key="test_sector"
+        )
+        sector_other = Sector.objects.create(
+            name="Test Sector decoy",
+            name_de_translation="Test Sector DE decoy",
+            key="decoy_sector",
+        )
+
+        OrganizationSectorMapping.objects.create(organization=self.org, sector=sector)
+        OrganizationSectorMapping.objects.create(
+            organization=self.org, sector=sector_other
+        )
+        OrganizationSectorMapping.objects.create(
+            organization=self.org_decoy, sector=sector
+        )
+
+        data = {"sectors": []}
+
+        # act
+        response = self.client.patch(self.url, data, format="json")
+
+        # assert
+
+        self.assertContains(response, "successfully updated")
+        self.assertEqual(
+            OrganizationSectorMapping.objects.filter(
+                organization__url_slug=self.org.url_slug,
+            ).count(),
+            0,
+        )
+
+        self.assertEqual(
+            OrganizationSectorMapping.objects.filter(
+                organization__url_slug=self.org_decoy.url_slug,
+            ).count(),
+            1,
+        )
+
+        pass
