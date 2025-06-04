@@ -24,6 +24,7 @@ import EnterDetailledOrganizationInfo from "./../src/components/organization/Ent
 import Alert from "@mui/material/Alert";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
+import theme from "../src/themes/theme";
 
 const useStyles = makeStyles((theme) => ({
   headline: {
@@ -351,7 +352,9 @@ export default function CreateOrganization({
   const layoutProps = {
     hubUrl: hubUrl,
     customTheme: customTheme,
-    headerBackground: hubUrl === "prio1" ? "#7883ff" : "#FFF",
+    headerBackground: customTheme
+      ? customTheme.palette.header.background
+      : theme.palette.background.default,
   };
 
   if (!user)
