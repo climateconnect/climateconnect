@@ -220,19 +220,16 @@ class ListProjectsView(ListAPIView):
                     location = hub.location.all()[0]
                     location_multipolygon = location.multi_polygon
                     location_filter = Q(loc__country=location.country)
-
                     if location_multipolygon:
                         location_filter = location_filter & (
                             Q(loc__multi_polygon__coveredby=location_multipolygon)
                             | Q(loc__centre_point__coveredby=location_multipolygon)
                         )
-
                     # Merge location logic into related_hubs logic
                     project_filter = project_filter | location_filter
 
                 # Filter and remove duplicates
-                projects = projects.filter(project_filter).distinct()
-
+                projects = projects.filter(location_filter).distinct()
                 if hub.location.all().exists() and location_multipolygon:
                     projects = projects.annotate(
                         distance=Distance("loc__centre_point", location_multipolygon)

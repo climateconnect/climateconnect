@@ -209,34 +209,33 @@ class ListMemberProfilesView(ListAPIView):
             .annotate(is_image_null=Count("image", filter=Q(image="")))
             .order_by("is_image_null", "-id")
         )
-
         if "hub" in self.request.query_params:
             hubs = Hub.objects.filter(url_slug=self.request.query_params["hub"])
             if hubs.exists():
                 hub = hubs[0]
-                if hub.hub_type == Hub.LOCATION_HUB_TYPE:
-                    location = hub.location.all()[0]
-                    user_profiles = user_profiles.filter(
-                        Q(location__country=location.country)
-                        & (
-                            Q(
-                                location__multi_polygon__coveredby=(
-                                    location.multi_polygon
-                                )
-                            )
-                            | Q(
-                                location__centre_point__coveredby=(
-                                    location.multi_polygon
-                                )
+                user_filter = Q(related_hubs=hub)  
+                if hub.location.exists():
+                    location = hub.location.first()
+                    location_multipolygon = location.multi_polygon
+
+                    if location_multipolygon:
+                        location_filter = (
+                            Q(location__country=location.country)
+                            & (
+                                Q(location__multi_polygon__coveredby=location_multipolygon)
+                                | Q(location__centre_point__coveredby=location_multipolygon)
                             )
                         )
-                    ).annotate(
-                        distance=Distance(
-                            "location__centre_point", location.multi_polygon
-                        )
+                        user_filter |= location_filter  # Combine with related_hubs filter
+
+               
+                user_profiles = user_profiles.filter(user_filter).distinct()
+
+                # Optionally annotate distance
+                if hub.location.exists() and location_multipolygon:
+                    user_profiles = user_profiles.annotate(
+                        distance=Distance("location__centre_point", location_multipolygon)
                     )
-                elif hub.hub_type == Hub.CUSTOM_HUB_TYPE:
-                    user_profiles = user_profiles.filter(related_hubs=hub)
 
         if "skills" in self.request.query_params:
             skill_names = self.request.query_params.get("skills").split(",")
