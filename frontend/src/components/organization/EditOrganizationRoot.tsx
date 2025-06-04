@@ -216,9 +216,7 @@ export default function EditOrganizationRoot({
   useEffect(() => {
     if (organization.language && organization.language !== locale) {
       showFeedbackMessage({
-        message: ` ${texts.organization_language} ${organization.language.toUpperCase()} ${
-          texts.edit_in_another_language
-        } ${locale.toUpperCase()}. ${texts.please_use_the_button}.`,
+        message: ` ${texts.editing_org_in_wrong_language}.`,
       });
       if (checkTranslationsButtonRef.current) {
         checkTranslationsButtonRef.current.scrollIntoView({ behavior: "smooth" });
