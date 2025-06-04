@@ -13,7 +13,7 @@ export async function getDataFromServer({
   location,
 }) {
   let url = `/api/${type}/?page=${page}`;
-  
+
   if (hubUrl) {
     url += `&hub=${hubUrl}`;
   }
@@ -33,7 +33,7 @@ export async function getDataFromServer({
     const resp = location
       ? await apiRequest({ method: "post", url, payload: location, token, locale })
       : await apiRequest({ method: "get", url, token, locale });
-      
+
     if (resp.data.length === 0) {
       console.log(`No data of type ${type} found...`);
       return null;

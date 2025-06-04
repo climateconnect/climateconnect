@@ -213,28 +213,28 @@ class ListMemberProfilesView(ListAPIView):
             hubs = Hub.objects.filter(url_slug=self.request.query_params["hub"])
             if hubs.exists():
                 hub = hubs[0]
-                user_filter = Q(related_hubs=hub)  
+                user_filter = Q(related_hubs=hub)
                 if hub.location.exists():
                     location = hub.location.first()
                     location_multipolygon = location.multi_polygon
 
                     if location_multipolygon:
-                        location_filter = (
-                            Q(location__country=location.country)
-                            & (
-                                Q(location__multi_polygon__coveredby=location_multipolygon)
-                                | Q(location__centre_point__coveredby=location_multipolygon)
-                            )
+                        location_filter = Q(location__country=location.country) & (
+                            Q(location__multi_polygon__coveredby=location_multipolygon)
+                            | Q(location__centre_point__coveredby=location_multipolygon)
                         )
-                        user_filter |= location_filter  # Combine with related_hubs filter
+                        user_filter |= (
+                            location_filter  # Combine with related_hubs filter
+                        )
 
-               
                 user_profiles = user_profiles.filter(user_filter).distinct()
 
                 # Optionally annotate distance
                 if hub.location.exists() and location_multipolygon:
                     user_profiles = user_profiles.annotate(
-                        distance=Distance("location__centre_point", location_multipolygon)
+                        distance=Distance(
+                            "location__centre_point", location_multipolygon
+                        )
                     )
 
         if "skills" in self.request.query_params:

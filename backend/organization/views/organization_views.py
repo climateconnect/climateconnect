@@ -159,18 +159,19 @@ class ListOrganizationsAPIView(ListAPIView):
                     location_multipolygon = location.multi_polygon
                 location_filter = Q(location__country=location.country)
                 if location_multipolygon:
-                    location_filter &= (
-                        Q(location__multi_polygon__coveredby=location_multipolygon) |
-                        Q(location__centre_point__coveredby=location_multipolygon)
-                    )
+                    location_filter &= Q(
+                        location__multi_polygon__coveredby=location_multipolygon
+                    ) | Q(location__centre_point__coveredby=location_multipolygon)
                 organization_filter |= location_filter
                 organizations = organizations.filter(organization_filter).distinct()
 
                 if location and location.multi_polygon:
                     organizations = organizations.annotate(
-                        distance=Distance("location__centre_point", location.multi_polygon)
+                        distance=Distance(
+                            "location__centre_point", location.multi_polygon
+                        )
                     )
-                    
+
         if "organization_type" in self.request.query_params:
             organization_type_names = self.request.query_params.get(
                 "organization_type"
