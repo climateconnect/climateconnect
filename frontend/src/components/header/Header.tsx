@@ -351,7 +351,8 @@ export default function Header({
     prio1: "/images/logo_white.png",
     perth: "/images/logo.svg",
   };
-  const poweredByLogoSrc = poweredByLogoMap[hubUrl?.toLowerCase() ?? ""] || "/images/logo_white.png";
+  const poweredByLogoSrc =
+    poweredByLogoMap[hubUrl?.toLowerCase() ?? ""] || "/images/logo_white.png";
 
   return (
     <Box
