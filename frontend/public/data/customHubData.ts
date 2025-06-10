@@ -13,7 +13,7 @@ export default function customHubData({
 }: CustomHubDataParams = {}): CustomHubConfig {
   return {
     prio1: prio1Config(path_to_redirect, texts),
-    scottish: scottConfig(path_to_redirect, texts),
+    perth: scottConfig(path_to_redirect, texts),
   };
 }
 

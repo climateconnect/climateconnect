@@ -1,89 +1,156 @@
 import { Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext } from "react";
-import UserContext from "../context/UserContext";
+import React from "react";
 import Image from "next/image";
 
 const PRIO1_SLUG = "prio1";
+const PERTH_SLUG = "perth";
 
-const useStyles = makeStyles((theme) => ({
-  background: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: -10,
-    overflow: "hidden",
-  },
+type StyleProps = {
+  hubSlug?: string;
+};
 
-  prioOneDefaultBackground: {
-    backgroundColor: theme.palette.secondary.main,
-  },
-  prioOneAuthIcon: {
-    position: "absolute",
-    top: "50vh",
-    left: "70vw",
-    width: "11rem",
-    height: "11rem",
-
-    [theme.breakpoints.up("xl")]: {
-      top: "40vh",
-      left: "auto",
-      right: "4vw",
-      width: "12rem",
-      height: "12rem",
+const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
+  return {
+    background: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: -10,
+      overflow: "hidden",
     },
-  },
-  prioOneMobileBackground: {
-    backgroundColor: theme.palette.background.main,
-  },
-  prioOneAccentBackground: {
-    backgroundColor: theme.palette.secondary.light,
-  },
-  prioOneAccentBackgroundBorderLeft: {
-    borderLeftColor: theme.palette.secondary.light,
-  },
-}));
+
+    prioOneDefaultBackground: {
+      backgroundColor: theme.palette.secondary.main,
+    },
+    prioOneAuthIcon: {
+      position: "absolute",
+      top: "50vh",
+      left: "70vw",
+      width: "11rem",
+      height: "11rem",
+
+      [theme.breakpoints.up("xl")]: {
+        top: "40vh",
+        left: "auto",
+        right: "4vw",
+        width: "12rem",
+        height: "12rem",
+      },
+    },
+    prioOneAccentBackground: {
+      backgroundColor: theme.palette.secondary.light,
+    },
+    splitBackgroundContainer: {
+      position: "relative",
+    },
+    backgroundBorderLeft: (props) => ({
+      borderLeftColor:
+        props.hubSlug === PRIO1_SLUG
+          ? theme.palette.secondary.light
+          : theme.palette.background.default,
+    }),
+
+    splitBackground: {
+      width: 0,
+      height: 0,
+      borderBottom: "85vh solid transparent",
+      borderLeftWidth: `250vw`,
+      borderLeftStyle: "solid",
+      position: "absolute",
+      top: 0,
+      left: 0,
+      transform: "rotate(0deg)",
+    },
+
+    defaultBackground: (props) => ({
+      backgroundColor:
+        props.hubSlug === PRIO1_SLUG ? theme.palette.secondary.main : theme.palette.primary.main,
+    }),
+  };
+});
 
 type Props = { hubUrl: string | undefined };
 
-/**
- * Adds a custom background to the hub, if one is defined. Currently only PrioOne has a custom background.
- * Mind that this component determines itself whether and which background to render based on the hubUrl
- * and the current pathname. This means that the background is not customizable by the user.
- * Some backgrounds are limited to certain pages (e.g. auth pages or browse pages).
- * Additionally, mobile versions are not supported yet and will result in no background being rendered.
- * @param hubUrl The URL of the hub.
- *
- */
+type BackgroundComponentProps = {
+  mobileScreenSize: boolean;
+  classes: ReturnType<typeof useStyles>;
+};
+
+const isAuthPath = (pathname: string): boolean => {
+  return (
+    pathname.endsWith("/signup") ||
+    pathname.endsWith("/signin") ||
+    pathname.endsWith("/accountcreated")
+  );
+};
+
 export function CustomBackground({ hubUrl }: Props) {
+  const classes = useStyles({ hubSlug: hubUrl });
   const mobileScreenSize = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+  const pathname = window.location.pathname;
+  const browsePath = pathname.endsWith("/hubs/prio1/browse");
+  const isAuthPage = isAuthPath(pathname);
 
   if (!hubUrl) {
     return null;
   }
-  const pathname = window.location.pathname;
+
+  if (browsePath) {
+    return null;
+  }
+
+  if (!isAuthPage) {
+    return null;
+  }
 
   switch (hubUrl.toLowerCase()) {
-    case "prio1": {
-      if (pathname.endsWith("/hubs/prio1/browse")) {
-        // HubContent itself includes the background in the correct place.
-        // There is no background for the whole page needed. Therefore, return null in this case.
-        return null;
-      } else if (
-        pathname.endsWith("/signup") ||
-        pathname.endsWith("/signin") ||
-        pathname.endsWith("/accountcreated")
-      ) {
-        return <PrioOneBackgroundAuth mobileScreenSize={mobileScreenSize} />;
-      }
-    }
-    default: {
-      // all other hubs (and non hubs should not render a background)
+    case PRIO1_SLUG:
+      return <PrioOneBackgroundAuth mobileScreenSize={mobileScreenSize} classes={classes} />;
+    case PERTH_SLUG:
+      return <PerthBackgroundAuth mobileScreenSize={mobileScreenSize} classes={classes} />;
+    default:
       return null;
-    }
   }
+}
+
+const BackgroundSplitSection = ({ classes }) => {
+  return (
+    <div className={classes.splitBackgroundContainer}>
+      <div className={`${classes.backgroundBorderLeft} ${classes.splitBackground}`} />
+    </div>
+  );
+};
+
+function PrioOneBackgroundAuth({ mobileScreenSize, classes }: BackgroundComponentProps) {
+  if (mobileScreenSize) {
+    return <></>;
+  }
+
+  return (
+    <div className={`${classes.background} ${classes.defaultBackground}`}>
+      <BackgroundSplitSection classes={classes} />
+      <div className={classes.prioOneAuthIcon}>
+        <Image
+          className={classes.prioOneAuthIcon}
+          src={"/images/custom_hubs/" + PRIO1_SLUG + "_group.svg"}
+          layout="fill"
+        ></Image>
+      </div>
+    </div>
+  );
+}
+function PerthBackgroundAuth({ mobileScreenSize, classes }: BackgroundComponentProps) {
+  if (mobileScreenSize) {
+    return <></>;
+  }
+  return (
+    <div className={`${classes.background} ${classes.defaultBackground}`}>
+      <BackgroundSplitSection classes={classes} />
+    </div>
+  );
 }
 
 export function PrioOneBackgroundBrowse({ isLoggedInUser }: { isLoggedInUser: boolean }) {
@@ -138,41 +205,5 @@ export function PrioOneBackgroundBrowseIcon() {
       width={width}
       height={height}
     ></Image>
-  );
-}
-
-function PrioOneBackgroundAuth({ mobileScreenSize }) {
-  const classes = useStyles();
-  if (mobileScreenSize) {
-    return <div className={`${classes.background} ${classes.prioOneMobileBackground}`}></div>;
-  }
-  return (
-    <div className={`${classes.background} ${classes.prioOneDefaultBackground}`}>
-      {/* Container within the background */}
-      <div style={{ position: "relative" }}>
-        {/* Upper triangle */}
-        <div
-          className={classes.prioOneAccentBackgroundBorderLeft}
-          style={{
-            width: 0,
-            height: 0,
-            borderBottom: "85vh solid transparent",
-            borderLeftWidth: `250vw`,
-            borderLeftStyle: "solid",
-            position: "absolute",
-            top: 0,
-            left: 0,
-            transform: "rotate(0deg)",
-          }}
-        />
-      </div>
-      <div className={classes.prioOneAuthIcon}>
-        <Image
-          className={classes.prioOneAuthIcon}
-          src={"/images/custom_hubs/" + PRIO1_SLUG + "_group.svg"}
-          layout="fill"
-        ></Image>
-      </div>
-    </div>
   );
 }

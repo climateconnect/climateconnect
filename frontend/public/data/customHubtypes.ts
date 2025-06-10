@@ -28,5 +28,5 @@ export type HubConfig = {
 
 export type CustomHubConfig = {
   prio1: HubConfig;
-  scottish: HubConfig;
+  perth: HubConfig;
 };

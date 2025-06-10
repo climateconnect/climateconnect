@@ -229,7 +229,7 @@ class ListProjectsView(ListAPIView):
                     project_filter = project_filter | location_filter
 
                 # Filter and remove duplicates
-                projects = projects.filter(location_filter).distinct()
+                projects = projects.filter(project_filter).distinct()
                 if hub.location.all().exists() and location_multipolygon:
                     projects = projects.annotate(
                         distance=Distance("loc__centre_point", location_multipolygon)

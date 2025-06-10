@@ -7,7 +7,7 @@ const NETWORKS_URL = `${SCOTT_BASE_URL}/networks-across-perth-kinross`;
 export const getScottLinks = (pathToRedirect: string, texts: any): Link[] =>
   getSharedLinks(pathToRedirect, texts, {
     baseUrl: SCOTT_BASE_URL,
-    hubKey: "scottish",
+    hubKey: "perth",
     mainTextKey: "climateconnect.scot",
   });
 
