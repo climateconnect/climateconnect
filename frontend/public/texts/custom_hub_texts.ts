@@ -19,7 +19,8 @@ const prio1_texts = {
 const perth_texts = {
   here_you_can_create_your_personal_account: {
     en: "Create your personal Climate Connect account here to join the Perth and Kinross Hub.",
-    de: "Erstelle hier deinen persönlichen Climate Connect Account, um dem Perth und Kinross Hub beizuteten.",
+    de:
+      "Erstelle hier deinen persönlichen Climate Connect Account, um dem Perth und Kinross Hub beizuteten.",
   },
   // overwrite/delete the default text
   you_will_have_an_opportunity_to_create_or_add_an_organization_once_signed_up: {
