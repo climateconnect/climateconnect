@@ -347,6 +347,11 @@ export default function Header({
     return `${localePrefix}/`;
   };
   const logoLink = getLogoLink();
+  const poweredByLogoMap: Record<string, string> = {
+    prio1: "/images/logo_white.png",
+    perth: "/images/logo.svg",
+  };
+  const poweredByLogoSrc = poweredByLogoMap[hubUrl?.toLowerCase() ?? ""] || "/images/logo_white.png";
 
   return (
     <Box
@@ -366,7 +371,7 @@ export default function Header({
           <Link href={localePrefix + "/"} className={classes.poweredByContainer}>
             <span className={classes.poweredByTxt}>{texts.powered_by}</span>
             <img
-              src="/images/logo_white.png"
+              src={poweredByLogoSrc}
               alt={texts.climate_connect_logo}
               className={classes.poweredByImg}
             />
