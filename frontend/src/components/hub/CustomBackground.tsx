@@ -91,7 +91,8 @@ export function CustomBackground({ hubUrl }: Props) {
   const classes = useStyles({ hubSlug: hubUrl });
   const mobileScreenSize = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const pathname = window.location.pathname;
-  const browsePath = pathname.endsWith("/hubs/prio1/browse");
+  const browseRegex = /\/hubs\/[^/]+\/browse$/;
+  const browsePath = browseRegex.test(pathname);
   const isAuthPage = isAuthPath(pathname);
 
   if (!hubUrl) {

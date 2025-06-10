@@ -7,10 +7,16 @@ import theme from "../../../themes/theme";
 import UserContext from "../../context/UserContext";
 import GoBackFromProjectPageButton from "../../project/Buttons/GoBackFromProjectPageButton";
 import HubLinks from "./HubLinks";
+const PRIO1_SLUG = "prio1";
 
-const useStyles = makeStyles((theme) => ({
+type StyleProps = {
+  hubSlug?: string;
+};
+
+const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => ({
   root: (props: any) => ({
-    background: props.isCustomHub ? theme.palette.secondary.main : theme.palette.primary.main,
+    background:
+      props.hubSlug === PRIO1_SLUG ? theme.palette.secondary.main : theme.palette.primary.main,
   }),
   link: {
     color: theme.palette.primary.contrastText,
@@ -45,8 +51,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function HubsSubHeader({ hubs, onlyShowDropDown, isCustomHub }: any) {
-  const classes = useStyles({ isCustomHub });
+export default function HubsSubHeader({ hubs, onlyShowDropDown, isCustomHub, hubSlug }: any) {
+  const classes = useStyles({ hubSlug: hubSlug });
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });

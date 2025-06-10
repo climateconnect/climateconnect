@@ -246,7 +246,12 @@ export default function ProjectPage({
       title={project ? project.name : texts.project + " " + texts.not_found}
       subHeader={
         !tinyScreen ? (
-          <HubsSubHeader hubs={hubs} onlyShowDropDown={true} isCustomHub={isCustomHub} />
+          <HubsSubHeader
+            hubs={hubs}
+            onlyShowDropDown={true}
+            isCustomHub={isCustomHub}
+            hubSlug={hubUrl}
+          />
         ) : (
           <></>
         )
