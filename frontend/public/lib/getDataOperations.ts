@@ -13,6 +13,7 @@ export async function getDataFromServer({
   location,
 }) {
   let url = `/api/${type}/?page=${page}`;
+
   if (hubUrl) {
     url += `&hub=${hubUrl}`;
   }

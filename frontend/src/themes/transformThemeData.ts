@@ -1,5 +1,18 @@
-import { createTheme, alpha, darken, lighten } from "@mui/material";
+import { createTheme, darken } from "@mui/material";
 import defaultTheme from "./hubTheme";
+
+declare module "@mui/material/styles" {
+  interface Palette {
+    header: {
+      background: string;
+    };
+  }
+  interface PaletteOptions {
+    header?: {
+      background: string;
+    };
+  }
+}
 
 // transform theme data received from the API into a structured theme object
 export const transformThemeData = (data, baseTheme: any = undefined) => {
@@ -78,6 +91,12 @@ export const transformThemeData = (data, baseTheme: any = undefined) => {
 
         // TODO: dark and light are missing and might be calculated based on the main
         // using create Theme
+      },
+      header: {
+        background: data?.header_background?.main,
+        light: data?.header_background?.light,
+        extraLight: data?.header_background?.extraLight,
+        contrastText: data?.header_background?.contrastText,
       },
     },
   };
