@@ -66,6 +66,7 @@ export default function HubsSubHeader({ hubs, onlyShowDropDown, isCustomHub, hub
               texts={texts}
               locale={locale}
               tinyScreen={isNarrowScreen}
+              hubSlug={hubSlug}
             />
           )}
         </div>
