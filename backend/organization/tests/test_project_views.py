@@ -1009,12 +1009,6 @@ class TestProjectApi(APITestCase):
                 sector=sector, project=self.project, order=i
             )
 
-        for i, sector in enumerate(self.sectors):
-            mappings = ProjectSectorMapping.objects.filter(
-                project__url_slug=self.project.url_slug, sector__key=sector.key
-            )
-            mapping = mappings[0]
-
         data = {
             "sectors": [self.sectors[N - i - 1].key for i in range(N)]
             + [s.key for s in self.sectors],
@@ -1033,11 +1027,9 @@ class TestProjectApi(APITestCase):
         )
 
         for i, sector in enumerate(self.sectors):
-            mappings = ProjectSectorMapping.objects.filter(
+            mapping = ProjectSectorMapping.objects.filter(
                 project__url_slug=self.project.url_slug, sector__key=sector.key
-            )
-            self.assertEqual(mappings.count(), 1)
-            mapping = mappings[0]
+            ).first()
             self.assertEqual(mapping.order, i + 1)
 
     @tag("sectors", "projects")

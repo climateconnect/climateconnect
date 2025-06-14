@@ -509,6 +509,43 @@ class TestCreateOrganizationView(APITestCase):
                 1,
             )
 
+    @tag("organization", "sectors")
+    def test_post_organization_with_sectors_correctly_ordered(self):
+        # arrange
+        self.client.login(username="testuser", password="testpassword")
+
+        N = 4
+        sectors = [
+            Sector.objects.create(
+                name="Test Sector {}".format(i),
+                name_de_translation="Test Sektor DE {}".format(i),
+                key="test_sector {}".format(i),
+            )
+            for i in range(N)
+        ]
+
+        organization_data = self.deafault_organization
+        organization_data["sectors"] = [s.key for s in sectors]
+        ordering = {s.key: len(sectors) - i for i, s in enumerate(sectors)}
+
+        # act
+        self.client.post(self.url, data=organization_data, format="json")
+
+        # assert
+        self.assertEqual(
+            OrganizationSectorMapping.objects.filter(
+                organization__url_slug=self.deafault_organization["url_slug"],
+            ).count(),
+            N,
+        )
+        for sector in sectors:
+            mapping = OrganizationSectorMapping.objects.filter(
+                organization__url_slug=self.deafault_organization["url_slug"],
+                sector=sector,
+            )
+            self.assertEqual(mapping.count(), 1)
+            self.assertEqual(mapping.first().order, ordering[sector.key])
+
 
 class TestOrganizationAPIView(APITestCase):
     # test get & test get edit-view
@@ -638,6 +675,49 @@ class TestOrganizationAPIView(APITestCase):
         self.assertContains(response, sector.name)
         self.assertNotContains(response, "decoy")
         pass
+
+    @tag("organization", "sectors")
+    def test_get_organization_includes_sectors_correctly_ordered(self):
+        # arrange
+        N = 4
+        sectors = [
+            Sector.objects.create(
+                name=f"Test Sector {i}",
+                name_de_translation=f"Test Sector DE {i}",
+                key=f"test_sector_{i}",
+            )
+            for i in range(N)
+        ]
+        ordering = {sectors[i].key: N - i for i in range(N)}
+
+        for sector in sectors:
+            OrganizationSectorMapping.objects.create(
+                sector=sector, organization=self.org, order=ordering[sector.key]
+            )
+        # act
+        response = self.client.get(self.url)
+        res_view = response.json().get("sectors", None)
+
+        response_edit = self.client.get(self.edit_view_url)
+        res_edit = response_edit.json().get("sectors", None)
+
+        # assert
+        for res in [res_view, res_edit]:
+            self.assertIsNotNone(res)
+
+            for item in res:
+                sector = item.get("sector", None)
+                order = item.get("order", None)
+
+                self.assertIsNotNone(sector)
+                self.assertIsNotNone(order)
+
+                key = sector["key"]
+                order = int(order)
+                expected_order = ordering[key]
+
+                self.assertIsNotNone(expected_order)
+                self.assertEqual(order, expected_order)
 
     @tag("organization", "sectors")
     def test_patch_organization_adding_first_sector(self):
@@ -801,3 +881,87 @@ class TestOrganizationAPIView(APITestCase):
         )
 
         pass
+
+    @tag("organization", "sectors")
+    def test_patch_organization_ordering_of_sectors_correctly_assigned(self):
+        # arrange
+        self.client.login(username="testuser", password="testpassword")
+        N = 4
+        sectors = [
+            Sector.objects.create(
+                name=f"Test Sector {i}",
+                name_de_translation=f"Test Sector DE {i}",
+                key=f"test_sector_{i}",
+            )
+            for i in range(N)
+        ]
+
+        OrganizationSectorMapping.objects.create(
+            organization=self.org, sector=sectors[0], order=1
+        )
+
+        ordering = {s.key: N - i - 1 for i, s in enumerate(sectors[1:])}
+        data = {"sectors": [s.key for s in sectors[1:]]}
+
+        # act
+        self.client.patch(self.url, data, format="json")
+        response = self.client.patch(self.url, data, format="json")
+
+        # assert
+        self.assertContains(response, "successfully updated")
+        self.assertEqual(
+            OrganizationSectorMapping.objects.filter(
+                organization__url_slug=self.org.url_slug,
+            ).count(),
+            3,
+        )
+
+        for sector in sectors[1:]:
+            mapping = OrganizationSectorMapping.objects.filter(
+                organization__url_slug=self.org.url_slug, sector=sector
+            )
+            self.assertEqual(mapping.count(), 1)
+            self.assertEqual(mapping.first().order, ordering[sector.key])
+
+    @tag("organization", "sectors")
+    def test_patch_organization_reordering_of_sectors(self):
+        # arrange
+        self.client.login(username="testuser", password="testpassword")
+
+        N = 4
+        sectors = [
+            Sector.objects.create(
+                name=f"Test Sector {i}",
+                name_de_translation=f"Test Sector DE {i}",
+                key=f"test_sector_{i}",
+            )
+            for i in range(N)
+        ]
+        for i, sector in enumerate(sectors):
+            OrganizationSectorMapping.objects.create(
+                organization=self.org, sector=sector, order=i + 1
+            )
+        ordering = {s.key: i + 1 for i, s in enumerate(sectors)}
+        data = {"sectors": [s.key for s in sectors]}
+        data["sectors"].reverse()
+        data["sectors"] += [s.key for s in sectors]  # adding obsolete duplicates
+
+        # act
+        self.client.patch(self.url, data, format="json")
+        response = self.client.patch(self.url, data, format="json")
+
+        # assert
+        self.assertContains(response, "successfully updated")
+        self.assertEqual(
+            OrganizationSectorMapping.objects.filter(
+                organization__url_slug=self.org.url_slug,
+            ).count(),
+            N,
+        )
+
+        for sector in sectors:
+            mapping = OrganizationSectorMapping.objects.filter(
+                organization__url_slug=self.org.url_slug, sector=sector
+            ).first()
+            self.assertIsNotNone(mapping)
+            self.assertEqual(mapping.order, ordering[sector.key])

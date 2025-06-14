@@ -392,6 +392,7 @@ class CreateOrganizationView(APIView):
                         setattr(organization, field, request.data[field])
 
                 # change to sectors
+                # TODO: should this be removed?
                 if "hubs" in request.data:
                     hubs = []
                     for hub_url_slug in request.data["hubs"]:
@@ -455,22 +456,27 @@ class CreateOrganizationView(APIView):
                         sector_keys = []
 
                     sectors = []
-                    sectors = Sector.objects.filter(key__in=sector_keys)
-                    for key in sector_keys:
-                        if key not in sectors.values_list("key", flat=True):
+                    for sector_key in sector_keys:
+                        try:
+                            sector = Sector.objects.get(key=sector_key)
+                            sectors.append(sector)
+                        except Sector.DoesNotExist:
                             logger.error(
-                                "Passed sector key {} does not exist".format(key)
+                                "During organization creation of organization {}: Passed sector {} does not exists".format(
+                                    organization.url_slug,
+                                    sector_key,
+                                )
                             )
-
-                    for sector in sectors:
-                        OrganizationSectorMapping.objects.create(
-                            sector=sector, organization=organization
-                        )
-                        logger.info(
-                            "Organization-Sector mapping created for organization {} and sector {}".format(
-                                organization.id, sector.key
+                    OrganizationSectorMapping.objects.bulk_create(
+                        [
+                            OrganizationSectorMapping(
+                                sector=sector,
+                                organization=organization,
+                                order=len(sectors) - i,
                             )
-                        )
+                            for i, sector in enumerate(sectors)
+                        ]
+                    )
 
                 # TODO: rename organizationTags to organizationTypes
                 if "organization_tags" in request.data:
@@ -702,15 +708,28 @@ class OrganizationAPIView(APIView):
                 old_sector_keys = list(
                     set([x.sector.key for x in old_org_sector_mapping])
                 )
+
+                order_value = len(sector_keys)
                 for sector_key in sector_keys:
                     # create mapping only if the sector is not already mapped
                     # to the organization
-                    if sector_key not in old_sector_keys:
+
+                    if sector_key in old_sector_keys:
+                        mapping = OrganizationSectorMapping.objects.filter(
+                            sector__key=sector_key, organization=organization
+                        ).first()
+                        mapping.order = order_value
+                        mapping.save()
+                        order_value -= 1
+                    else:
                         try:
                             sector = Sector.objects.get(key=sector_key)
                             OrganizationSectorMapping.objects.create(
-                                sector=sector, organization=organization
+                                sector=sector,
+                                organization=organization,
+                                order=order_value,
                             )
+                            order_value -= 1
                         except Sector.DoesNotExist:
                             logger.error(
                                 "Passed organization tag ID {} does not exist".format(
