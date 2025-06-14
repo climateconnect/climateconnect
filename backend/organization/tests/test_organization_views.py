@@ -25,12 +25,6 @@ NUMBER_OF_ORGANIZATIONS = 5
 
 
 class TestListOrganizationsAPIView(APITestCase):
-    # test get (no selectors [0])
-    # test get (select hub [1, 2])
-    # test get (select sector hub [1, 2])
-    # test get (select sector [1, 2])
-    # test get (select sector [(1,1), (2,2)] )
-
     def setUp(self):
         self.url = reverse("organization:list-organizations-api-view")
         self.organizations = [
@@ -166,6 +160,58 @@ class TestListOrganizationsAPIView(APITestCase):
 
             for slugs in testcases[i]["expected"]:
                 self.assertContains(response, slugs)
+
+    @tag("organizations", "sectors")
+    def test_get_organizations_with_correct_ordering(self):
+        # arrange
+        N = 4
+        org = self.organizations[0]
+        sectors = [
+            Sector.objects.create(
+                name=f"Test Sector Name {i}",
+                name_de_translation=f"Test Sector Name {i} DE",
+                key=f"test_sector_{i}",
+            )
+            for i in range(4)
+        ]
+        ordering = {sectors[i].key: i + 1 for i in range(N)}
+
+        for sector in sectors:
+            OrganizationSectorMapping.objects.create(
+                sector=sector, organization=org, order=ordering[sector.key]
+            )
+
+        # act
+        response = self.client.get(self.url)
+        results = response.json().get("results", None)
+
+        # assert
+        self.assertIsNotNone(results)
+
+        ## find the correct org that should be tested
+        res_org = None
+        for o in results:
+            if "url_slug" in o and o["url_slug"] == org.url_slug:
+                res_org = o
+
+        self.assertIsNotNone(res_org)
+
+        sectors = res_org.get("sectors", None)
+        self.assertIsNotNone(sectors)
+
+        for item in sectors:
+            sector = item.get("sector", None)
+            order = item.get("order", None)
+
+            self.assertIsNotNone(sector)
+            self.assertIsNotNone(order)
+
+            key = sector["key"]
+            order = int(order)
+            expected_order = ordering[key]
+
+            self.assertIsNotNone(expected_order)
+            self.assertEqual(order, expected_order)
 
     @tag("organizations", "hubs", "sectors")
     def test_get_organizations_filtered_by_sector_hub(self):
