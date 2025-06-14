@@ -266,7 +266,7 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
 class ProjectStubSerializer(serializers.ModelSerializer):
     project_parents = serializers.SerializerMethodField()
     # TODO: remove tags
-    # TODO: add sectors instead of tags
+    sectors = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
     project_type = SerializerMethodField()
     image = serializers.SerializerMethodField()
@@ -288,6 +288,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             "project_type",
             "project_parents",
             "tags",
+            "sectors",
             "is_draft",
             "short_description",
             "number_of_comments",
@@ -332,6 +333,13 @@ class ProjectStubSerializer(serializers.ModelSerializer):
                 }
             ]
 
+    def get_sectors(self, obj):
+        serializer = ProjectSectorMappingSerializer(
+            obj.project_sector_mapping.all(), many=True
+        )
+        return serializer.data
+
+    # TODO: remove
     def get_tags(self, obj):
         # .all() so that it can use the prefetched data
         serializer = ProjectTaggingSerializer(obj.tag_project.all(), many=True)
