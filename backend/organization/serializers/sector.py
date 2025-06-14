@@ -32,7 +32,7 @@ class ProjectSectorMappingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProjectSectorMapping
-        fields = ("sector",)
+        fields = ("sector", "order")
 
     def get_sector(self, obj):
         serializer = SectorSerializer(obj.sector)
@@ -45,7 +45,7 @@ class OrganizationSectorMappingSerializer(serializers.ModelSerializer):
     # project = serializers.SerializerMethodField()
     class Meta:
         model = OrganizationSectorMapping
-        fields = ("sector",)
+        fields = ("sector", "order")
 
     def get_sector(self, obj):
         serializer = SectorSerializer(obj.sector)

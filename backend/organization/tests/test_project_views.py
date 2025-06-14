@@ -24,8 +24,6 @@ import io
 # set this at lowest to 4
 INITIAL_PROJECT_COUNT = 4
 
-# TODO: missing tests for featured projects and the combination with sectors
-
 
 class TestProjectsListView(APITestCase):
     # -----------------------------------------------------
@@ -256,6 +254,80 @@ class TestProjectsListView(APITestCase):
             for project_slug in testcases[i]["expected"]:
                 self.assertContains(response, project_slug)
         pass
+
+    @tag("sectors", "projects")
+    def test_get_project_sector_ordering(self):
+        # arrange
+        sectors = [
+            Sector.objects.create(
+                name=f"Test Sector Name {i}",
+                name_de_translation=f"Test Sector Name {i} DE",
+                key=f"test_sector_{i}",
+            )
+            for i in range(3)
+        ]
+
+        projects = self.projects
+        ## mapping projects to sectors
+        ## Setup orderings for sector 0
+        ordering_0 = [
+            (0, 1),
+            (1, 2),
+            (2, 3),
+        ]
+        for x, y in ordering_0:
+            ProjectSectorMapping.objects.create(
+                project=projects[0], sector=sectors[x], order=y
+            )
+
+        ## Setup orderings for sector 1
+        ordering_1 = [
+            (2, 1),
+            (1, 2),
+            (0, 3),
+        ]
+        for x, y in ordering_1:
+            ProjectSectorMapping.objects.create(
+                project=projects[1], sector=sectors[x], order=y
+            )
+
+        # act
+        response = self.client.get(self.url + "?sectors=" + sectors[0].key)
+        result = response.json().get("results", None)
+        self.assertIsNotNone(result)
+
+        project_0 = None
+        project_1 = None
+
+        for _project in result:
+            if _project["url_slug"] == self.projects[0].url_slug:
+                project_0 = _project
+            if _project["url_slug"] == self.projects[1].url_slug:
+                project_1 = _project
+
+        # assert
+        self.assertIsNotNone(project_0)
+        self.assertIsNotNone(project_1)
+
+        sectors_0 = project_0.get("sectors", None)
+        sectors_1 = project_1.get("sectors", None)
+
+        self.assertIsNotNone(sectors_0)
+        self.assertIsNotNone(sectors_1)
+
+        self.assertEqual(len(sectors_0), 3)
+        self.assertEqual(len(sectors_1), 3)
+
+        for i, (x, y) in enumerate(ordering_0):
+            self.assertEqual(
+                sectors_0[i]["sector"]["key"],
+                sectors[x].key,
+            )
+            self.assertEqual(sectors_0[i]["order"], y)
+
+        for i, (x, y) in enumerate(ordering_1):
+            self.assertEqual(sectors_1[i]["sector"]["key"], sectors[x].key)
+            self.assertEqual(sectors_1[i]["order"], y)
 
 
 class TestCreateProjectsViews(APITestCase):
@@ -491,6 +563,28 @@ class TestCreateProjectsViews(APITestCase):
 
         pass
 
+    @tag("sectors", "projects")
+    def test_post_project_with_sectors_will_keep_the_correct_ordering(self):
+        # arrange
+        self.client.login(username="testuser", password="testpassword")
+
+        self.default_project_data["sectors"] = ",".join([s.key for s in self.sectors])
+
+        # act
+        response = self.client.post(self.url, self.default_project_data, format="json")
+
+        # assert
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        mappings = ProjectSectorMapping.objects.filter(
+            project__url_slug=self.default_project_data["url_slug"]
+        )
+        self.assertEqual(len(self.sectors), mappings.count())
+        n = len(self.sectors)
+        for i, mapping in enumerate(mappings):
+            expected_order = n - i
+            self.assertEqual(expected_order, mapping.order)
+        pass
+
 
 class TestProjectApi(APITestCase):
 
@@ -616,6 +710,50 @@ class TestProjectApi(APITestCase):
         self.assertContains(response, "Test Project")
         self.assertContains(response, "Test Sector")
         self.assertNotContains(response, "decoy")
+
+    @tag("sectors", "projects")
+    def test_get_project_by_url_slug_includes_sector_correctly_sorted(self):
+        # arrange
+        N = 4
+        self.sectors = [
+            Sector.objects.create(
+                name=f"Test Sector{i}",
+                name_de_translation=f"Test Sector DE {i}",
+                key=f"test_sector_{i}",
+            )
+            for i in range(N)
+        ]
+        ordering = {self.sectors[i].key: i + 1 for i in range(N)}
+
+        for sector in self.sectors:
+            ProjectSectorMapping.objects.create(
+                sector=sector, project=self.project, order=ordering[sector.key]
+            )
+
+        # act
+        response = self.client.get(self.url)
+        res_view = response.json().get("sectors", None)
+
+        response_edit = self.client.get(self.edit_view_url)
+        res_edit = response_edit.json().get("sectors", None)
+
+        # assert
+        ## perform it for both results, as the ordering should be the same on both views
+        for res in [res_view, res_edit]:
+            self.assertIsNotNone(res)
+            for item in res:
+                sector = item.get("sector", None)
+                order = item.get("order", None)
+
+                self.assertIsNotNone(sector)
+                self.assertIsNotNone(order)
+
+                key = sector["key"]
+                order = int(order)
+                expected_order = ordering[key]
+
+                self.assertIsNotNone(expected_order)
+                self.assertEqual(order, expected_order)
 
     @tag("sectors", "projects")
     def test_patch_project_adding_first_sector(self):
@@ -809,6 +947,98 @@ class TestProjectApi(APITestCase):
             ).count(),
             0,
         )
+
+    @tag("sectors", "projects")
+    def test_patch_project_ordering_of_sectors_correctly_assigned(self):
+        # arrange
+        self.client.login(username="testuser", password="testpassword")
+
+        self.sectors = [
+            Sector.objects.create(
+                name=f"Test Sector {i}",
+                name_de_translation=f"Test Sector DE {i}",
+                key=f"test_sector_{i}",
+            )
+            for i in range(4)
+        ]
+        ProjectSectorMapping.objects.create(
+            sector=self.sectors[0], project=self.project, order=1
+        )
+
+        data = {
+            "sectors": [self.sectors[3].key, self.sectors[2].key, self.sectors[1].key]
+        }
+
+        # act
+        response = self.client.patch(self.url, data, format="json")
+
+        # assert
+        self.assertContains(response, "successfully updated")
+        self.assertEqual(
+            ProjectSectorMapping.objects.filter(
+                project__url_slug=self.project.url_slug
+            ).count(),
+            3,
+        )
+
+        for i, sector in enumerate(self.sectors[1:]):
+            mappings = ProjectSectorMapping.objects.filter(
+                project__url_slug=self.project.url_slug, sector__key=sector.key
+            )
+            self.assertEqual(mappings.count(), 1)
+            mapping = mappings[0]
+            self.assertEqual(mapping.order, i + 1)
+
+    @tag("sectors", "projects")
+    def test_patch_project_reordering_of_sectors(self):
+        # arrange
+        self.client.login(username="testuser", password="testpassword")
+
+        N = 4
+        self.sectors = [
+            Sector.objects.create(
+                name=f"Test Sector {i}",
+                name_de_translation=f"Test Sector DE {i}",
+                key=f"test_sector_{i}",
+            )
+            for i in range(N)
+        ]
+
+        for i, sector in enumerate(self.sectors):
+            ProjectSectorMapping.objects.create(
+                sector=sector, project=self.project, order=i
+            )
+
+        for i, sector in enumerate(self.sectors):
+            mappings = ProjectSectorMapping.objects.filter(
+                project__url_slug=self.project.url_slug, sector__key=sector.key
+            )
+            mapping = mappings[0]
+
+        data = {
+            "sectors": [self.sectors[N - i - 1].key for i in range(N)]
+            + [s.key for s in self.sectors],
+        }
+
+        # act
+        response = self.client.patch(self.url, data, format="json")
+
+        # assert
+        self.assertContains(response, "successfully updated")
+        self.assertEqual(
+            ProjectSectorMapping.objects.filter(
+                project__url_slug=self.project.url_slug
+            ).count(),
+            N,
+        )
+
+        for i, sector in enumerate(self.sectors):
+            mappings = ProjectSectorMapping.objects.filter(
+                project__url_slug=self.project.url_slug, sector__key=sector.key
+            )
+            self.assertEqual(mappings.count(), 1)
+            mapping = mappings[0]
+            self.assertEqual(mapping.order, i + 1)
 
     @tag("sectors", "projects")
     def test_delete_project_sector(self):

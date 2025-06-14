@@ -48,8 +48,16 @@ def senatize_sector_inputs(inputs: Any) -> Tuple[Any, Optional[Exception]]:
     else:
         return None, ValueError("Unsupported input type. Expected str or list of str.")
 
-    # remove duplicates
-    inputs = list(set(inputs))
+    # remove duplicates while keeping the order
+    # start from the last item.
+    # if it is contained in the previous elements, remove it form the list
+    i = len(inputs) - 1
+    while i >= 0:
+        s = inputs[i]
+        if s in inputs[:i]:
+            inputs = inputs[:i] + inputs[i + 1 :]  # remove the current item
+        i -= 1
+
     inputs = [item.strip() for item in inputs if item.strip()]
     inputs = [item for item in inputs if len(item) > 0]
     return inputs, None
