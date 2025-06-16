@@ -174,12 +174,6 @@ urlpatterns = [
         sector_views.ListSectors.as_view(),
         name="sectors",
     ),
-    # TODO: delete this endpoint
-    path(
-        "projecttags/",
-        project_views.ListProjectTags.as_view(),
-        name="list-project-tags",
-    ),
     path(
         "projectstatus/",  # TODO: check if still in use, otherwise remove
         project_views.ListProjectStatus.as_view(),
