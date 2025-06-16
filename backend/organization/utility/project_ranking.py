@@ -26,7 +26,7 @@ class ProjectRanking:
             "last_project_comment": 1.4,
             "last_project_like": 1.6,
             "last_project_follower": 1.4,
-            "total_tags": 0.2,
+            "total_sectors": 0.2,
             "location": 0.2,
             "description": 10,
             "total_skills": 0.2,
@@ -128,7 +128,7 @@ class ProjectRanking:
         from organization.models import (
             ProjectComment,
             ProjectLike,
-            ProjectTagging,
+            ProjectSectorMapping,
             ProjectFollower,
         )
 
@@ -220,7 +220,9 @@ class ProjectRanking:
                 last_interaction_timestamp=last_project_follower_timestamp,
                 max_boost=None,
             ),
-            "total_tags": ProjectTagging.objects.filter(project_id=project_id).count(),
+            "total_sectors": ProjectSectorMapping.objects.filter(
+                project_id=project_id
+            ).count(),
             "location": 1 if location else 0,
             "description": 1 if description and len(description) > 0 else 0,
             "total_skills": total_skills,
