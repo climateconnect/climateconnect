@@ -1,10 +1,10 @@
 import { Link } from "@mui/material";
 import React from "react";
 import { getLocalePrefix } from "../lib/apiOperations";
-import getLanguageNames from "../data/languageNames"
+import getLanguageNames from "../data/languageNames";
 
 export default function getOrganizationTexts({ organization, locale }) {
-  const org_lang_name = getLanguageNames(organization?.language, locale)
+  const org_lang_name = getLanguageNames(organization?.language, locale);
   return {
     log_in_to_edit_organization: {
       en: "You have to log in to edit an organization.",
@@ -390,7 +390,7 @@ export default function getOrganizationTexts({ organization, locale }) {
     },
     editing_org_in_wrong_language: {
       en: `Because you shared your organization in ${org_lang_name}, you can only edit the text in ${org_lang_name} here. If you want to change the text in other languages click on \"Check Translations\" below.`,
-      de: `Weil Du Deine Organisation auf ${org_lang_name} geteilt hast, kannst du hier den Text nur auf ${org_lang_name} bearbeiten. Wenn Du die anderen Sprachen bearbeiten möchtest, klicke auf \"Übersetzungen überprüfen\" weiter unten.`
-    }
+      de: `Weil Du Deine Organisation auf ${org_lang_name} geteilt hast, kannst du hier den Text nur auf ${org_lang_name} bearbeiten. Wenn Du die anderen Sprachen bearbeiten möchtest, klicke auf \"Übersetzungen überprüfen\" weiter unten.`,
+    },
   };
 }
