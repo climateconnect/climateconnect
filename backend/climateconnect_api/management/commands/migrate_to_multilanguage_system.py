@@ -4,7 +4,7 @@ from climateconnect_api.models.common import Skill
 from typing import Any
 from django.core.management.base import BaseCommand
 
-from organization.models import ProjectTags
+from organization.models.tags import ProjectTags
 
 projecttags_translation_map = [
     {"name_en": "Land use", "name_de": "Landnutzung"},
