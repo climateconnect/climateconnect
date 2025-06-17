@@ -1,5 +1,22 @@
 {
   "typescript.tsdk": "./frontend/node_modules/typescript/lib",
   "python.defaultInterpreterPath": "./backend/.venv/bin/python3",
-  "python.formatting.provider": "black"
+  "python.formatting.provider": "black",
+  // Most of this config is from https://github.com/VSCodeVim/Vim
+  // Some mappings are from https://github.com/VSCodeVim/Vim/#key-remapping
+  // Another example full config to look at: https://gist.github.com/safinakib/cc081218b73139ee81e5cb96dbc8e5db
+
+  "vim.easymotion": true,
+  "vim.incsearch": true,
+  "vim.useSystemClipboard": true,
+  "vim.useCtrlKeys": false,
+  "vim.hlsearch": true,
+  "vim.handleKeys": {
+    "<C-r>": true,
+    "<C-f>": false
+  },
+  // To improve performance
+  "extensions.experimental.affinity": {
+    "vscodevim.vim": 1
+  }
 }

@@ -1,4 +1,5 @@
-default: start
+default: all
+
 
 start:
 	$(info )
@@ -25,7 +26,9 @@ install:
 	pdm install
 
 test:
-	python3 manage.py test
+	python3 manage.py test --keepdb
+test-clean:
+	python3 manage.py test --noinput
 
 docker:
 	docker-compose up -d
@@ -33,12 +36,13 @@ docker:
 	$(info -- Running Docker in background (detached mode) --)
 	$(info )
 
-all: docker start
 
 # Note: this should be in sync with out CI GitHub action that lints too. See
 # those files under .github/workflows
-lint:
-	flake8 . --count --select=E9,F6,F7,F8 --show-source --statistics
+# lint:
+#  	 flake8 . --count --select=E9,F6,F7,F8 --show-source --statistics
+ruff:
+	ruff check .
 
 format:
 	black .
@@ -51,3 +55,7 @@ migrations: migrate
 
 test-data:
 	python3 manage.py create_test_data --number_of_rows 4
+
+all: format ruff start
+
+precommit: format ruff test
