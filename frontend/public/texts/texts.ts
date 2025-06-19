@@ -63,6 +63,7 @@ type Args<P extends Page> = {
   climateMatchQuestion?: string;
   hubAmbassador?: string;
   creator?: string;
+  count?: number;
 };
 
 export default function getTexts<P extends Page>({
@@ -83,6 +84,7 @@ export default function getTexts<P extends Page>({
   climateMatchQuestion,
   hubAmbassador,
   creator,
+  count,
 }: Args<P>) {
   // These are the multiple text files for various translations. They're
   // split up to reduce the amount of work required to download
@@ -123,6 +125,7 @@ export default function getTexts<P extends Page>({
       locale: locale,
       creator: creator,
       hubName: hubName,
+      count: count,
     }),
     settings: settings_texts,
   };
