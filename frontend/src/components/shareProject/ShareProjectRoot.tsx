@@ -266,7 +266,6 @@ export default function ShareProjectRoot({
         sectors: sectorsAfterRemoval,
     });
   };
-  // console.log("ShareProjectRoot: project.sectors", project.sectors);
   
   return (
     <>
