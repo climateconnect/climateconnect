@@ -70,7 +70,6 @@ const getSteps = (texts) => {
 export default function ShareProjectRoot({
   availabilityOptions,
   userOrganizations,
-  categoryOptions,
   skillsOptions,
   rolesOptions,
   user,
@@ -79,11 +78,13 @@ export default function ShareProjectRoot({
   setMessage,
   projectTypeOptions,
   hubName,
+  sectorOptions,
 }) {
   const classes = useStyles();
   const { locale, locales } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const steps = getSteps(texts);
+
   const [project, setProject] = React.useState(
     getDefaultProjectValues(
       {
@@ -164,6 +165,8 @@ export default function ShareProjectRoot({
     event.preventDefault();
     setLoadingSubmit(true);
     const payload = await formatProjectForRequest(project, translations);
+    payload.sectors = project.sectors?.map((sector) => sector.key);
+
     try {
       const resp = await apiRequest({
         method: "post",
@@ -245,6 +248,26 @@ export default function ShareProjectRoot({
     },
   ];
 
+  const onSelectNewSector = (event) => {
+    event.preventDefault();
+    const sector = sectorOptions.find((sector) => sector.name === event.target.value);
+    if (project?.sectors?.filter((h) => h.name === sector.name)?.length === 0) {
+      setProject({
+        ...project,
+        sectors: [...project.sectors, sector],
+      });
+    }
+  };
+
+  const onClickRemoveSector = (sector) => {
+    const sectorsAfterRemoval = project?.sectors?.filter((h) => h.name !== sector.name);
+    setProject({
+      ...project,
+        sectors: sectorsAfterRemoval,
+    });
+  };
+  // console.log("ShareProjectRoot: project.sectors", project.sectors);
+  
   return (
     <>
       {!finished ? (
@@ -271,10 +294,15 @@ export default function ShareProjectRoot({
           {curStep.key === "selectCategory" && (
             <SelectCategory
               project={project}
-              handleSetProjectData={handleSetProject}
               goToNextStep={goToNextStep}
               goToPreviousStep={goToPreviousStep}
-              categoryOptions={categoryOptions}
+              sectorsToSelectFrom={sectorOptions.filter(
+                (sector) =>
+                  project?.sectors?.filter((addedSector) => addedSector.name === sector.name)
+                    .length === 0
+              )}
+              onSelectNewSector={onSelectNewSector}
+              onClickRemoveSector={onClickRemoveSector}
             />
           )}
           {curStep.key === "enterDetails" && (
@@ -373,6 +401,7 @@ const getDefaultProjectValues = (
     language: locale,
     project_type: projectTypeOptions.find((t) => t.type_id === "project"),
     hubName: hubName,
+    sectors: [],
   };
 };
 

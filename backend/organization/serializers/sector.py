@@ -17,6 +17,8 @@ class SectorSerializer(serializers.ModelSerializer):
             "name",
             "original_name",
             "key",
+            "image",
+            "icon"
         )
 
     def get_name(self, obj):
