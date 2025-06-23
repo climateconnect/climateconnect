@@ -4,8 +4,7 @@ import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import NavigationButtons from "../general/NavigationButtons";
-import MiniHubPreviews from "../hub/MiniHubPreviews";
-
+import ActiveSectorSelector from "../hub/activeSectorSelector";
 const useStyles = makeStyles((theme) => {
   return {
     headline: {
@@ -38,7 +37,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function SelectCategory({
+export default function SelectSector({
   project,
   goToNextStep,
   goToPreviousStep,
@@ -63,24 +62,14 @@ export default function SelectCategory({
   };
 
   //(Share Project step 2)
-  //Use ActiveHubsSelect instead of MultiLevelSelector (Ask Tobi if different design should be used)
+  //Use ActiveSectorSelector instead of MultiLevelSelector (Ask Tobi if different design should be used)
   return (
     <Container maxWidth="lg">
-      <div className={classes.appealBox}>
-        <Typography className={classes.appealText}>
-          {texts.you_can_combine_categories_text}
-        </Typography>
-        <Typography className={classes.appealText}>
-          {texts.this_way_you_can_specify_what_you_are_doing_and_in_which_field}
-        </Typography>
-      </div>
       <div className={classes.block}>
         <Container maxWidth="md">
-          <MiniHubPreviews
-            allowCreate
-            editMode
-            allHubs={sectorsToSelectFrom}
-            hubs={project.sectors ? project.sectors : []}
+          <ActiveSectorSelector
+            selectedHubs={project.sectors ? project.sectors : []}
+            hubsToSelectFrom={sectorsToSelectFrom}
             onSelectNewHub={onSelectNewSector}
             onClickRemoveHub={onClickRemoveSector}
           />

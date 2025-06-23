@@ -13,10 +13,10 @@ import StepsTracker from "./../general/StepsTracker";
 import AddTeam from "./AddTeam";
 import EnterDetails from "./EnterDetails";
 import ProjectSubmittedPage from "./ProjectSubmittedPage";
-import SelectCategory from "./SelectCategory";
 import ShareProject from "./ShareProject";
 import { Project } from "../../types";
 import { parseLocation } from "../../../public/lib/locationOperations";
+import SelectSector from "./SelectSector";
 
 const DEFAULT_STATUS = 2;
 
@@ -42,9 +42,9 @@ const getSteps = (texts) => {
       headline: texts.share_your_climate_project,
     },
     {
-      key: "selectCategory",
+      key: "selectSector",
       text: texts.project_category,
-      headline: texts.select_1_to_3_categories_that_fit_your_project,
+      headline: texts.select_1_to_3_sectors_that_fit_your_project,
     },
     {
       key: "enterDetails",
@@ -290,8 +290,8 @@ export default function ShareProjectRoot({
               hubName={hubName}
             />
           )}
-          {curStep.key === "selectCategory" && (
-            <SelectCategory
+          {curStep.key === "selectSector" && (
+            <SelectSector
               project={project}
               goToNextStep={goToNextStep}
               goToPreviousStep={goToPreviousStep}

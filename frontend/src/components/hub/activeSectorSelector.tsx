@@ -11,8 +11,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-//Change to ActiveSectorSelector
-export default function ActiveHubsSelect({
+export default function ActiveSectorSelector({
   selectedHubs,
   hubsToSelectFrom,
   onSelectNewHub,
