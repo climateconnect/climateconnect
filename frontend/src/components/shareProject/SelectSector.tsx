@@ -4,8 +4,7 @@ import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import NavigationButtons from "../general/NavigationButtons";
-import MultiLevelSelector from "../general/MultiLevelSelector";
-
+import ActiveSectorSelector from "../hub/ActiveSectorSelector";
 const useStyles = makeStyles((theme) => {
   return {
     headline: {
@@ -19,6 +18,7 @@ const useStyles = makeStyles((theme) => {
     },
     block: {
       marginBottom: theme.spacing(4),
+      marginTop: theme.spacing(4),
     },
     backButton: {
       color: theme.palette.primary.main,
@@ -37,55 +37,43 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function SelectCategory({
+export default function SelectSector({
   project,
-  handleSetProjectData,
   goToNextStep,
   goToPreviousStep,
-  categoryOptions,
+  sectorsToSelectFrom,
+  onSelectNewSector,
+  onClickRemoveSector,
 }) {
   const classes = useStyles();
-  const [selectedCategories, setSelectedCategories] = React.useState(
-    project.project_tags ? project.project_tags : []
-  );
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
 
   const onClickNextStep = () => {
-    if (selectedCategories.length <= 0) alert(texts.please_choose_at_least_one_category);
-    else if (selectedCategories.length > 3) alert(texts.you_can_only_choose_up_to_3_categories);
+    if (project.sectors.length <= 0) alert(texts.please_choose_at_least_one_category);
+    else if (project.sectors.length > 3) alert(texts.you_can_only_choose_up_to_3_categories);
     else {
-      handleSetProjectData({ project_tags: selectedCategories });
       goToNextStep();
     }
   };
 
   const onClickPreviousStep = () => {
-    handleSetProjectData({ project_tags: selectedCategories });
     goToPreviousStep();
   };
 
   //(Share Project step 2)
-  //Use ActiveHubsSelect instead of MultiLevelSelector (Ask Tobi if different design should be used)
+  //Use ActiveSectorSelector instead of MultiLevelSelector (Ask Tobi if different design should be used)
   return (
     <Container maxWidth="lg">
-      <div className={classes.appealBox}>
-        <Typography className={classes.appealText}>
-          {texts.you_can_combine_categories_text}
-        </Typography>
-        <Typography className={classes.appealText}>
-          {texts.this_way_you_can_specify_what_you_are_doing_and_in_which_field}
-        </Typography>
-      </div>
       <div className={classes.block}>
-        <MultiLevelSelector
-          itemsToSelectFrom={categoryOptions}
-          maxSelections={3}
-          itemNamePlural="categories"
-          selected={selectedCategories}
-          setSelected={setSelectedCategories}
-          dragAble={true}
-        />
+        <Container maxWidth="md">
+          <ActiveSectorSelector
+            selectedHubs={project.sectors ? project.sectors : []}
+            hubsToSelectFrom={sectorsToSelectFrom}
+            onSelectNewHub={onSelectNewSector}
+            onClickRemoveHub={onClickRemoveSector}
+          />
+        </Container>
       </div>
       <NavigationButtons
         className={classes.block}

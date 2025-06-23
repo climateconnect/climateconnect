@@ -41,6 +41,7 @@ export type Project = {
   creator?: User | Organization | any; //TODO: remove 'any' once User and Organization types are properly defined
   image?: string;
   hubName?: string;
+  sectors?: any[];
 };
 
 export type BrowseTab = "projects" | "organizations" | "members" | "events";
