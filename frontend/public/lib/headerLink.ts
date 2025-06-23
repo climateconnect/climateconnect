@@ -118,6 +118,7 @@ const getDefaultLinks = (path_to_redirect, texts, isLocationHub, hasHubLandingPa
       },
       {
         href: hubUrl === ERLANGEN_SLUG ? ERLANGEN_DONATE : "/donate",
+        isExternalLink: hubUrl === ERLANGEN_SLUG,
         text: texts.donate,
         iconForDrawer: FavoriteBorderIcon,
         isOutlinedInHeader: true,
