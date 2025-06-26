@@ -12,14 +12,7 @@ class SectorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Sector
-        fields = (
-            "id",
-            "name",
-            "original_name",
-            "key",
-            "image",
-            "icon"
-        )
+        fields = ("id", "name", "original_name", "key", "image", "icon")
 
     def get_name(self, obj):
         return get_sector_name(obj, get_language())

@@ -2,9 +2,9 @@ import NextCookies from "next-cookies";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest, sendToLogin } from "../public/lib/apiOperations";
-import { getProjectTypeOptions } from "../public/lib/getOptions";
+import { getProjectTypeOptions, getSectorOptions } from "../public/lib/getOptions";
 import { nullifyUndefinedValues } from "../public/lib/profileOperations";
-import { parseOptions, parseSectorOptions } from "../public/lib/selectOptionsOperations";
+import { parseOptions } from "../public/lib/selectOptionsOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import LoginNudge from "../src/components/general/LoginNudge";
@@ -12,7 +12,6 @@ import WideLayout from "../src/components/layouts/WideLayout";
 import ShareProjectRoot from "../src/components/shareProject/ShareProjectRoot";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
-
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hub;
 
@@ -39,7 +38,7 @@ export async function getServerSideProps(ctx) {
     getStatusOptions(auth_token, ctx.locale),
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
-    getSectorOptions(auth_token, ctx.locale),
+    getSectorOptions(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -122,25 +121,6 @@ const getAvailabilityOptions = async (token, locale) => {
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;
-    }
-  } catch (err: any) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-};
-
-const getSectorOptions = async (token, locale) => {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: "/api/sectors/",
-      token: token,
-      locale: locale,
-    });
-    if (resp.data.length === 0) return null;
-    else {
-      return parseSectorOptions(resp.data);
     }
   } catch (err: any) {
     console.log(err);

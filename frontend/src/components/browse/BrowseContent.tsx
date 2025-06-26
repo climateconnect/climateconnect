@@ -297,7 +297,6 @@ export default function BrowseContent({
     const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFiltersMetadata);
     for (const [key, value] of Object.entries(splitQueryObject.filters) as any) {
       const metadata = possibleFiltersMetadata.find((f) => f.key === key);
-
       if (value.indexOf(",") > 0) {
         queryObject[key] = value.split(",").map((v) => getValueInCurrentLanguage(metadata, v));
       } else if (
