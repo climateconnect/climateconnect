@@ -5,7 +5,6 @@ import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import {
   getOrganizationTagsOptions,
-  getProjectTagsOptions,
   getProjectTypeOptions,
   getSkillsOptions,
   getSectorOptions,
@@ -25,7 +24,6 @@ import { FilterProvider } from "../src/components/provider/FilterProvider";
 export async function getServerSideProps(ctx) {
   const { hideInfo } = NextCookies(ctx);
   const [
-    project_categories,
     organization_types,
     skills,
     hubs,
@@ -33,7 +31,6 @@ export async function getServerSideProps(ctx) {
     projectTypes,
     sectorOptions,
   ] = await Promise.all([
-    getProjectTagsOptions(null, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
     getAllHubs(ctx.locale),
@@ -45,7 +42,6 @@ export async function getServerSideProps(ctx) {
     props: nullifyUndefinedValues({
       filterChoices: {
         sectors: sectorOptions,
-        project_categories: project_categories,
         organization_types: organization_types,
         skills: skills,
       },

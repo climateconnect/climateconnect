@@ -70,7 +70,6 @@ const getFilterName = (filter, key, filterChoices) => {
   const keyToFilterChoicesKeyMap = {
     organization_type: "organization_types",
     skills: "skills",
-    category: "project_categories",
     sectors: "sectors",
   };
   //get the filter choice we were looking for (either on top level or one level down)
