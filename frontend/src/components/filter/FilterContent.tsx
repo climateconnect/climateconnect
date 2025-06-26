@@ -100,7 +100,6 @@ export default function FilterContent({
   nonFilterParams,
 }) {
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
-
   const reducedPossibleFilters = getReducedPossibleFilters(possibleFilters);
 
   // Update possible filters from current filters

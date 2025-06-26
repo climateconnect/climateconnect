@@ -33,8 +33,6 @@ export default function getFilters({ key, filterChoices, locale }) {
         .filter((m) => !organizationsFilters.map((o) => o.key).includes(m.key)),
     ];
   }
-
-  console.log("possibleFilters invalid input:" + key);
   return [];
 }
 
@@ -119,6 +117,16 @@ const getProjectsFilters = (filterChoices, texts, english_texts) => [
     options: filterChoices?.organization_types?.map((t) => ({ ...t, key: t.id })),
     key: "organization_type",
     tooltipText: texts.organization_type_tooltip,
+  },
+  {
+    icon: GroupIcon,
+    iconName: "GroupIcon",
+    // A hack: need an extra space character to create some horizontal space between the icon and text
+    title: " " + texts.sectors,
+    type: "multiselect",
+    options: filterChoices?.sectors?.map((t) => ({ ...t, key: t.key })),
+    key: "sectors",
+    tooltipText: texts.sectors_tooltip,
   },
   {
     icon: ExploreIcon,
