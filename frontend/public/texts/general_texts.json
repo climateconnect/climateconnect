@@ -798,5 +798,33 @@
   "step_2_of_2_sign_up": {
     "en": "Step 2 of 2: Basic Info",
     "de": "Schritt 2 von 2: Grundlegende Informationen"
+  },
+  "send_request": {
+    "en": "SEND REQUEST",
+    "de": "ANFRAGE SENDEN"
+  },
+  "ignore": {
+    "en": "IGNORE",
+    "de": "IGNORIEREN"
+  },
+  "message_back": {
+    "en": "MESSAGE BACK",
+    "de": "MESSAGE ZURÜCK"
+  },
+  "accept": {
+    "en": "ACCEPT",
+    "de": "AKZEPT"
+  },
+  "request_accepted": {
+    "en": "REQUEST ACCEPTED",
+    "de": "ANTRAG AKZEPTIERT"
+  },
+  "request_declined": {
+    "en": "REQUEST DECLINED",
+    "de": "ANTRAG ABGELEHNT"
+  },
+  "answer_pending": {
+    "en": "ANSWER PENDING",
+    "de": "ANTWORT AUSSTEHEND"
   }
 }
