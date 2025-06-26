@@ -59,7 +59,7 @@ export async function getProjectTagsOptions(hub, locale) {
     return null;
   }
 }
-export async function getSectorOptions(locale){
+export async function getSectorOptions(locale) {
   try {
     const resp = await apiRequest({
       method: "get",
@@ -75,7 +75,7 @@ export async function getSectorOptions(locale){
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
-};
+}
 
 export async function getProjectTypeOptions(locale) {
   const url = `/api/project_type_options/`;

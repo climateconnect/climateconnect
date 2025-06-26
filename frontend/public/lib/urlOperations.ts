@@ -32,7 +32,7 @@ const getFilterUrl = ({
     filterChoices: filterChoices,
     locale: locale,
   });
-  
+
   const encodedNonFilterParams = encodeObjectToQueryParams(nonFilterParams);
   // Only include "?" if query params aren't nullish
 
@@ -42,7 +42,7 @@ const getFilterUrl = ({
           encodedNonFilterParams ? encodedNonFilterParams : ""
         }${idea ? `idea=${idea.url_slug}` : ""}`
       : "";
-        
+
   // Build a URL with properties. E.g., /browse?...
   const origin = window?.location?.origin;
   const pathname = window?.location?.pathname;
@@ -118,9 +118,8 @@ const encodeQueryParamsFromFilters = ({ filters, infoMetadata, filterChoices, lo
       //Submitted location filters should always be in the form of an object
       //Simplified example: {place_id: 12323423, display_name: "Test"}
       //When a location is just a string, the filter is not submitted yet (e.g. "New Y")
-      
+
       if (type === "location") {
-        
         if (typeof filters[filterKey] === "object") {
           const encodedFragment = `place=${filters[filterKey].place_id}&osm=${filters[filterKey].osm_id}&loc_type=${filters[filterKey].osm_type}&`;
           queryParamFragment += encodedFragment;
@@ -142,8 +141,9 @@ const encodeQueryParamsFromFilters = ({ filters, infoMetadata, filterChoices, lo
         }).find((f) => f.key === filterKey);
         if (Array.isArray(filters[filterKey])) {
           filterValues = [
-            filters[filterKey].map((filter) =>{ 
-             return getFilterName(filter, filterKey, filterChoices)}),
+            filters[filterKey].map((filter) => {
+              return getFilterName(filter, filterKey, filterChoices);
+            }),
           ].join();
         } else {
           const options = (possibleFiltersForFilterKey as any).options;
@@ -152,7 +152,6 @@ const encodeQueryParamsFromFilters = ({ filters, infoMetadata, filterChoices, lo
             propertyToFilterBy: "name",
             valueToFilterBy: filters[filterKey],
           })?.original_name; //options.find((o) => o.name === filters[filterKey]).original_name;
-          
         }
         // We also need to handle reserved characters, which
         // are not escaped by encodeURI as they're necessary

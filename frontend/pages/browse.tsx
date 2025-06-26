@@ -39,8 +39,7 @@ export async function getServerSideProps(ctx) {
     getAllHubs(ctx.locale),
     getLocationFilteredBy(ctx.query),
     getProjectTypeOptions(ctx.locale),
-    getSectorOptions(ctx.locale)
-
+    getSectorOptions(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
