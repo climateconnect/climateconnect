@@ -91,6 +91,7 @@ type Args = {
   locationOptionsOpen: boolean;
   handleSetLocationOptionsOpen: Function;
   locationInputRef: any;
+  sectorOptions: any;
 };
 
 //TODO: Allow changing project type?!
@@ -104,6 +105,7 @@ export default function EditProjectOverview({
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
   locationInputRef,
+  sectorOptions,
 }: Args) {
   const classes = useStyles({});
   const { locale } = useContext(UserContext);
@@ -130,6 +132,7 @@ export default function EditProjectOverview({
     locationOptionsOpen: locationOptionsOpen,
     locationInputRef: locationInputRef,
     texts: texts,
+    sectorOptions: sectorOptions,
   };
 
   return (
@@ -154,6 +157,7 @@ function SmallScreenOverview({
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
   texts,
+  sectorOptions,
 }) {
   const classes = useStyles({});
   return (
@@ -208,6 +212,7 @@ function LargeScreenOverview({
   locationInputRef,
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
+  sectorOptions,
 }) {
   const classes = useStyles({});
   function handleUpdateSelectedHub(hubUrl: string) {
@@ -255,6 +260,7 @@ function LargeScreenOverview({
             project={project}
             handleChangeProject={handleChangeProject}
             texts={texts}
+            sectorOptions={sectorOptions}
           />
           <CustomHubSelection
             currentHubName={project.hubUrl ?? ""}
@@ -376,7 +382,7 @@ const InputWebsite = ({ project, handleChangeProject, texts }) => {
   );
 };
 
-const InputTags = ({ project, handleChangeProject, tagsOptions, texts }) => {
+const InputTags = ({ project, handleChangeProject, tagsOptions, texts, sectorOptions }) => {
   const classes = useStyles({});
   const [open, setOpen] = React.useState(false);
   const [selectedItems, setSelectedItems] = React.useState(project.tags ? [...project.tags] : []);
@@ -393,25 +399,24 @@ const InputTags = ({ project, handleChangeProject, tagsOptions, texts }) => {
     if (tags) handleChangeProject(tags, "tags");
     setOpen(false);
   };
-
-  const handleTagDelete = (tag) => {
-    handleChangeProject([...project.tags.filter((t) => t.id !== tag.id)], "tags");
-    setSelectedItems([...project.tags.filter((t) => t.id !== tag.id)]);
+  const handleSectorDelete = (sector) => {
+    handleChangeProject([...project.sectors.filter((t) => t.id !== sector.id)], "sectors");
+    setSelectedItems([...project.sectors.filter((t) => t.id !== sector.id)]);
   };
-
+  
   return (
     <div className={classes.projectInfoEl}>
       <Typography variant="body2" className={classes.overviewHeadline}>
         {texts.project_categories}
       </Typography>
-      {project.tags && (
+     {project.sectors && (
         <List className={classes.flexContainer}>
-          {project.tags.map((tag, index) => (
+          {project.sectors.map((sector) => (
             <Chip
-              key={index}
-              label={tag.name}
+              key={sector.order}
+              label={sector.name}
               className={classes.skill}
-              onDelete={() => handleTagDelete(tag)}
+              onDelete={() => handleSectorDelete(sector)}
             />
           ))}
           <Button
@@ -420,7 +425,7 @@ const InputTags = ({ project, handleChangeProject, tagsOptions, texts }) => {
             color="primary"
             onClick={onClickCategoriesDialogOpen}
           >
-            {project.tags && project.tags.length ? texts.edit_categories : texts.add_categories}
+            {project.sectors && project.sectors.length ? texts.edit_sectors : texts.add_sectors}
           </Button>
         </List>
       )}

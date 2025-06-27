@@ -55,6 +55,7 @@ type Props = {
   handleSetErrorMessage: any;
   initialTranslations: any;
   projectTypeOptions: any;
+  sectorOptions?: any[];
 };
 
 export default function EditProjectRoot({
@@ -68,6 +69,7 @@ export default function EditProjectRoot({
   handleSetErrorMessage,
   initialTranslations,
   projectTypeOptions,
+  sectorOptions,
 }: Props) {
   const classes = useStyles();
   const token = new Cookies().get("auth_token");
@@ -346,6 +348,7 @@ export default function EditProjectRoot({
             locationOptionsOpen={locationOptionsOpen}
             handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
             locationInputRef={locationInputRef}
+            sectorOptions={sectorOptions}
           />
           <EditProjectContent
             project={project}

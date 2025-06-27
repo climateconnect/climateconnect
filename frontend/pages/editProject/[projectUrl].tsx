@@ -9,6 +9,7 @@ import {
   getProjectTypeOptions,
   getSkillsOptions,
   getStatusOptions,
+  getSectorOptions, 
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
@@ -49,6 +50,7 @@ export async function getServerSideProps(ctx) {
     tagsOptions,
     projectTypeOptions,
     hubThemeData,
+    sectorOptions,
   ] = await Promise.all([
     getProjectByIdIfExists(projectUrl, auth_token, ctx.locale),
     getMembersByProject(projectUrl, auth_token, ctx.locale),
@@ -58,6 +60,7 @@ export async function getServerSideProps(ctx) {
     getProjectTagsOptions(null, ctx.locale),
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
+    getSectorOptions(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -70,6 +73,7 @@ export async function getServerSideProps(ctx) {
       projectTypeOptions: projectTypeOptions,
       hubThemeData: hubThemeData,
       hubUrl: hubUrl,
+      sectorOptions: sectorOptions,
     }),
   };
 }
@@ -84,6 +88,7 @@ export default function EditProjectPage({
   projectTypeOptions,
   hubThemeData,
   hubUrl,
+  sectorOptions,
 }) {
   const classes = useStyles();
   const [curProject, setCurProject] = React.useState({
@@ -182,6 +187,7 @@ export default function EditProjectPage({
           statusOptions={statusOptions}
           handleSetProject={handleSetProject}
           tagsOptions={tagsOptions}
+          sectorOptions={sectorOptions}
           user_role={user_role}
           handleSetErrorMessage={handleSetErrorMessage}
           initialTranslations={project.translations}
@@ -218,6 +224,7 @@ const parseProject = (project) => ({
   project_parents: project.project_parents[0],
   is_personal_project: !project.project_parents[0].parent_organization,
   skills: project.skills.map((s) => ({ ...s, key: s.id })),
+  sectors: project.sectors.map(item => ({...item.sector, order: item.order})),
 });
 
 const getUserOrganizations = async (token, locale) => {
