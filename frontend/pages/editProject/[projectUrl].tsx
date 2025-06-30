@@ -5,7 +5,6 @@ import React, { useContext } from "react";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getLocalePrefix, sendToLogin } from "../../public/lib/apiOperations";
 import {
-  getProjectTagsOptions,
   getProjectTypeOptions,
   getSkillsOptions,
   getStatusOptions,
@@ -47,7 +46,6 @@ export async function getServerSideProps(ctx) {
     skillsOptions,
     userOrganizations,
     statusOptions,
-    tagsOptions,
     projectTypeOptions,
     hubThemeData,
     sectorOptions,
@@ -57,7 +55,6 @@ export async function getServerSideProps(ctx) {
     getSkillsOptions(ctx.locale),
     getUserOrganizations(auth_token, ctx.locale),
     getStatusOptions(ctx.locale),
-    getProjectTagsOptions(null, ctx.locale),
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
     getSectorOptions(ctx.locale),
@@ -69,7 +66,6 @@ export async function getServerSideProps(ctx) {
       skillsOptions: skillsOptions,
       userOrganizations: userOrganizations,
       statusOptions: statusOptions,
-      tagsOptions: tagsOptions,
       projectTypeOptions: projectTypeOptions,
       hubThemeData: hubThemeData,
       hubUrl: hubUrl,
@@ -84,7 +80,6 @@ export default function EditProjectPage({
   skillsOptions,
   userOrganizations,
   statusOptions,
-  tagsOptions,
   projectTypeOptions,
   hubThemeData,
   hubUrl,
@@ -111,6 +106,7 @@ export default function EditProjectPage({
   const handleSetProject = (newProject) => {
     setCurProject({ ...newProject });
   };
+  
   if (!user)
     return (
       <WideLayout
@@ -186,7 +182,6 @@ export default function EditProjectPage({
           userOrganizations={userOrganizations}
           statusOptions={statusOptions}
           handleSetProject={handleSetProject}
-          tagsOptions={tagsOptions}
           sectorOptions={sectorOptions}
           user_role={user_role}
           handleSetErrorMessage={handleSetErrorMessage}

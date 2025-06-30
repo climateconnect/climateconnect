@@ -49,7 +49,6 @@ type Props = {
   userOrganizations: any;
   statusOptions: any;
   handleSetProject: any;
-  tagsOptions: any;
   oldProject: Project;
   user_role: Role;
   handleSetErrorMessage: any;
@@ -63,7 +62,6 @@ export default function EditProjectRoot({
   skillsOptions,
   userOrganizations,
   handleSetProject,
-  tagsOptions,
   oldProject,
   user_role,
   handleSetErrorMessage,
@@ -340,7 +338,6 @@ export default function EditProjectRoot({
             />
           )}
           <EditProjectOverview
-            tagsOptions={tagsOptions}
             project={project}
             smallScreen={isNarrowScreen}
             handleSetProject={handleSetProject}
@@ -410,6 +407,7 @@ const parseProjectForRequest = async (project, translationChanges) => {
     ...project,
     translations: translationChanges,
   };
+  
   if (project.project_type) ret.project_type = project.project_type.type_id;
   if (project.image) ret.image = await blobFromObjectUrl(project.image);
   if (project.loc) ret.loc = parseLocation(project.loc, true);
@@ -417,6 +415,7 @@ const parseProjectForRequest = async (project, translationChanges) => {
     ret.thumbnail_image = await blobFromObjectUrl(project.thumbnail_image);
   if (project.skills) ret.skills = project.skills.map((s) => s.id);
   if (project.tags) ret.project_tags = project.tags.map((t) => t.id);
+  if(project.sectors) ret.sectors = ret.sectors.map((s) => s.key);
   if (project.status) ret.status = project.status.id;
   if (project.project_parents && project.project_parents.parent_organization)
     ret.parent_organization = project.project_parents.parent_organization.id;

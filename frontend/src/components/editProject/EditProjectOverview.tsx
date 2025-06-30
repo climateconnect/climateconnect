@@ -1,9 +1,9 @@
-import { Button, Chip, Container, List, TextField, Typography } from "@mui/material";
+import { Button, Chip, Container, List, TextField, Typography, Grid } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import React, { useContext } from "react";
-
+import SelectField from "../general/SelectField";
 // Relative imports
 import {
   getCompressedJPG,
@@ -77,8 +77,8 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
   overviewHeadline: {
     fontSize: 12,
   },
-  openCategoriesDialogButton: {
-    marginTop: theme.spacing(1),
+  sectorField: {
+    marginTop: theme.spacing(3),
   },
 }));
 
@@ -86,7 +86,6 @@ type Args = {
   project: Project;
   handleSetProject: Function;
   smallScreen: Boolean;
-  tagsOptions: object;
   overviewInputsRef: any;
   locationOptionsOpen: boolean;
   handleSetLocationOptionsOpen: Function;
@@ -100,7 +99,6 @@ export default function EditProjectOverview({
   project,
   handleSetProject,
   smallScreen,
-  tagsOptions,
   overviewInputsRef,
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
@@ -120,12 +118,10 @@ export default function EditProjectOverview({
       thumbnail_image: newThumbnailImage,
     });
   };
-
   const passThroughProps = {
     project: project,
     handleChangeProject: handleChangeProject,
     handleChangeImage: handleChangeImage,
-    tagsOptions: tagsOptions,
     overviewInputsRef: overviewInputsRef,
     handleSetProject: handleSetProject,
     handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
@@ -150,7 +146,6 @@ function SmallScreenOverview({
   project,
   handleChangeProject,
   handleChangeImage,
-  tagsOptions,
   overviewInputsRef,
   handleSetProject,
   locationInputRef,
@@ -190,11 +185,11 @@ function SmallScreenOverview({
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
         />
         <InputWebsite project={project} handleChangeProject={handleChangeProject} texts={texts} />
-        <InputTags
-          tagsOptions={tagsOptions}
+        <InputSectors
           project={project}
           handleChangeProject={handleChangeProject}
           texts={texts}
+          sectorOptions={sectorOptions}
         />
       </div>
     </>
@@ -205,7 +200,6 @@ function LargeScreenOverview({
   project,
   handleChangeProject,
   handleChangeImage,
-  tagsOptions,
   handleSetProject,
   overviewInputsRef,
   texts,
@@ -255,8 +249,7 @@ function LargeScreenOverview({
             handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           />
           <InputWebsite project={project} handleChangeProject={handleChangeProject} texts={texts} />
-          <InputTags
-            tagsOptions={tagsOptions}
+          <InputSectors
             project={project}
             handleChangeProject={handleChangeProject}
             texts={texts}
@@ -382,65 +375,51 @@ const InputWebsite = ({ project, handleChangeProject, texts }) => {
   );
 };
 
-const InputTags = ({ project, handleChangeProject, tagsOptions, texts, sectorOptions }) => {
+const InputSectors = ({ project, handleChangeProject, texts, sectorOptions }) => {
   const classes = useStyles({});
-  const [open, setOpen] = React.useState(false);
-  const [selectedItems, setSelectedItems] = React.useState(project.tags ? [...project.tags] : []);
 
-  const onClickCategoriesDialogOpen = () => {
-    setOpen(true);
+  const handleValueChange = (selectedNames) => {
+    // Map selected names to sector objects
+    const selectedSectors = sectorOptions.filter((sector) => selectedNames.includes(sector.name));
+    handleChangeProject(selectedSectors, "sectors");
   };
 
-  const handleCloseDialog = () => {
-    setOpen(false);
-  };
-
-  const handleSaveSelection = (tags) => {
-    if (tags) handleChangeProject(tags, "tags");
-    setOpen(false);
-  };
   const handleSectorDelete = (sector) => {
     handleChangeProject([...project.sectors.filter((t) => t.id !== sector.id)], "sectors");
-    setSelectedItems([...project.sectors.filter((t) => t.id !== sector.id)]);
   };
-  
+
   return (
     <div className={classes.projectInfoEl}>
       <Typography variant="body2" className={classes.overviewHeadline}>
         {texts.project_categories}
       </Typography>
-     {project.sectors && (
+      {project.sectors && (
         <List className={classes.flexContainer}>
           {project.sectors.map((sector) => (
             <Chip
-              key={sector.order}
+              key={sector.name}
               label={sector.name}
               className={classes.skill}
               onDelete={() => handleSectorDelete(sector)}
             />
           ))}
-          <Button
-            className={classes.openCategoriesDialogButton}
-            variant="contained"
-            color="primary"
-            onClick={onClickCategoriesDialogOpen}
-          >
-            {project.sectors && project.sectors.length ? texts.edit_sectors : texts.add_sectors}
-          </Button>
+          <Grid container >
+            <Grid xs={12} sm={8} md={5} lg={5} item>
+              <SelectField
+                options={sectorOptions}
+                className={classes.sectorField}
+                multiple
+                values={project.sectors?.map((s) => s.name)}
+                label={<div className={classes.iconLabel}>{texts.sectors}</div>}
+                size="small"
+                onChange={(event) => {
+                  handleValueChange(event.target.value);
+                }}
+              />
+            </Grid>
+          </Grid>
         </List>
       )}
-      <MultiLevelSelectDialog
-        open={open}
-        onSave={handleSaveSelection}
-        onClose={handleCloseDialog}
-        type="categories"
-        options={tagsOptions}
-        /*TODO(undefined) items={project.tags}*/
-        selectedItems={selectedItems}
-        setSelectedItems={setSelectedItems}
-        maxSelections={3}
-        dragAble={true}
-      />
     </div>
   );
 };

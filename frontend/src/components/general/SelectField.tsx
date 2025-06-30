@@ -88,7 +88,6 @@ export default function SelectField({
       onChange(event);
     }
   };
-
   //TODO: possibly address warnings, that are produced by this component
   return (
     <TextField
