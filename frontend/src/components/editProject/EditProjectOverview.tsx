@@ -1,9 +1,9 @@
-import { Button, Chip, Container, List, TextField, Typography } from "@mui/material";
+import { Button, Chip, Container, List, TextField, Typography, Grid } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import React, { useContext } from "react";
-
+import SelectField from "../general/SelectField";
 // Relative imports
 import {
   getCompressedJPG,
@@ -77,8 +77,8 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
   overviewHeadline: {
     fontSize: 12,
   },
-  openCategoriesDialogButton: {
-    marginTop: theme.spacing(1),
+  sectorField: {
+    marginTop: theme.spacing(3),
   },
 }));
 
@@ -86,11 +86,11 @@ type Args = {
   project: Project;
   handleSetProject: Function;
   smallScreen: Boolean;
-  tagsOptions: object;
   overviewInputsRef: any;
   locationOptionsOpen: boolean;
   handleSetLocationOptionsOpen: Function;
   locationInputRef: any;
+  sectorOptions: any;
 };
 
 //TODO: Allow changing project type?!
@@ -99,11 +99,11 @@ export default function EditProjectOverview({
   project,
   handleSetProject,
   smallScreen,
-  tagsOptions,
   overviewInputsRef,
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
   locationInputRef,
+  sectorOptions,
 }: Args) {
   const classes = useStyles({});
   const { locale } = useContext(UserContext);
@@ -118,18 +118,17 @@ export default function EditProjectOverview({
       thumbnail_image: newThumbnailImage,
     });
   };
-
   const passThroughProps = {
     project: project,
     handleChangeProject: handleChangeProject,
     handleChangeImage: handleChangeImage,
-    tagsOptions: tagsOptions,
     overviewInputsRef: overviewInputsRef,
     handleSetProject: handleSetProject,
     handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
     locationOptionsOpen: locationOptionsOpen,
     locationInputRef: locationInputRef,
     texts: texts,
+    sectorOptions: sectorOptions,
   };
 
   return (
@@ -147,13 +146,13 @@ function SmallScreenOverview({
   project,
   handleChangeProject,
   handleChangeImage,
-  tagsOptions,
   overviewInputsRef,
   handleSetProject,
   locationInputRef,
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
   texts,
+  sectorOptions,
 }) {
   const classes = useStyles({});
   return (
@@ -186,11 +185,11 @@ function SmallScreenOverview({
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
         />
         <InputWebsite project={project} handleChangeProject={handleChangeProject} texts={texts} />
-        <InputTags
-          tagsOptions={tagsOptions}
+        <InputSectors
           project={project}
           handleChangeProject={handleChangeProject}
           texts={texts}
+          sectorOptions={sectorOptions}
         />
       </div>
     </>
@@ -201,13 +200,13 @@ function LargeScreenOverview({
   project,
   handleChangeProject,
   handleChangeImage,
-  tagsOptions,
   handleSetProject,
   overviewInputsRef,
   texts,
   locationInputRef,
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
+  sectorOptions,
 }) {
   const classes = useStyles({});
   function handleUpdateSelectedHub(hubUrl: string) {
@@ -250,11 +249,11 @@ function LargeScreenOverview({
             handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           />
           <InputWebsite project={project} handleChangeProject={handleChangeProject} texts={texts} />
-          <InputTags
-            tagsOptions={tagsOptions}
+          <InputSectors
             project={project}
             handleChangeProject={handleChangeProject}
             texts={texts}
+            sectorOptions={sectorOptions}
           />
           <CustomHubSelection
             currentHubName={project.hubUrl ?? ""}
@@ -376,27 +375,17 @@ const InputWebsite = ({ project, handleChangeProject, texts }) => {
   );
 };
 
-const InputTags = ({ project, handleChangeProject, tagsOptions, texts }) => {
+const InputSectors = ({ project, handleChangeProject, texts, sectorOptions }) => {
   const classes = useStyles({});
-  const [open, setOpen] = React.useState(false);
-  const [selectedItems, setSelectedItems] = React.useState(project.tags ? [...project.tags] : []);
 
-  const onClickCategoriesDialogOpen = () => {
-    setOpen(true);
+  const handleValueChange = (selectedNames) => {
+    // Map selected names to sector objects
+    const selectedSectors = sectorOptions.filter((sector) => selectedNames.includes(sector.name));
+    handleChangeProject(selectedSectors, "sectors");
   };
 
-  const handleCloseDialog = () => {
-    setOpen(false);
-  };
-
-  const handleSaveSelection = (tags) => {
-    if (tags) handleChangeProject(tags, "tags");
-    setOpen(false);
-  };
-
-  const handleTagDelete = (tag) => {
-    handleChangeProject([...project.tags.filter((t) => t.id !== tag.id)], "tags");
-    setSelectedItems([...project.tags.filter((t) => t.id !== tag.id)]);
+  const handleSectorDelete = (sector) => {
+    handleChangeProject([...project.sectors.filter((t) => t.id !== sector.id)], "sectors");
   };
 
   return (
@@ -404,38 +393,33 @@ const InputTags = ({ project, handleChangeProject, tagsOptions, texts }) => {
       <Typography variant="body2" className={classes.overviewHeadline}>
         {texts.project_categories}
       </Typography>
-      {project.tags && (
+      {project.sectors && (
         <List className={classes.flexContainer}>
-          {project.tags.map((tag, index) => (
+          {project.sectors.map((sector) => (
             <Chip
-              key={index}
-              label={tag.name}
+              key={sector.name}
+              label={sector.name}
               className={classes.skill}
-              onDelete={() => handleTagDelete(tag)}
+              onDelete={() => handleSectorDelete(sector)}
             />
           ))}
-          <Button
-            className={classes.openCategoriesDialogButton}
-            variant="contained"
-            color="primary"
-            onClick={onClickCategoriesDialogOpen}
-          >
-            {project.tags && project.tags.length ? texts.edit_categories : texts.add_categories}
-          </Button>
+          <Grid container >
+            <Grid xs={12} sm={8} md={5} lg={5} item>
+              <SelectField
+                options={sectorOptions}
+                className={classes.sectorField}
+                multiple
+                values={project.sectors?.map((s) => s.name)}
+                label={<div className={classes.iconLabel}>{texts.sectors}</div>}
+                size="small"
+                onChange={(event) => {
+                  handleValueChange(event.target.value);
+                }}
+              />
+            </Grid>
+          </Grid>
         </List>
       )}
-      <MultiLevelSelectDialog
-        open={open}
-        onSave={handleSaveSelection}
-        onClose={handleCloseDialog}
-        type="categories"
-        options={tagsOptions}
-        /*TODO(undefined) items={project.tags}*/
-        selectedItems={selectedItems}
-        setSelectedItems={setSelectedItems}
-        maxSelections={3}
-        dragAble={true}
-      />
     </div>
   );
 };

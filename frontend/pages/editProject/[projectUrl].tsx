@@ -5,10 +5,10 @@ import React, { useContext } from "react";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getLocalePrefix, sendToLogin } from "../../public/lib/apiOperations";
 import {
-  getProjectTagsOptions,
   getProjectTypeOptions,
   getSkillsOptions,
   getStatusOptions,
+  getSectorOptions, 
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
@@ -46,18 +46,18 @@ export async function getServerSideProps(ctx) {
     skillsOptions,
     userOrganizations,
     statusOptions,
-    tagsOptions,
     projectTypeOptions,
     hubThemeData,
+    sectorOptions,
   ] = await Promise.all([
     getProjectByIdIfExists(projectUrl, auth_token, ctx.locale),
     getMembersByProject(projectUrl, auth_token, ctx.locale),
     getSkillsOptions(ctx.locale),
     getUserOrganizations(auth_token, ctx.locale),
     getStatusOptions(ctx.locale),
-    getProjectTagsOptions(null, ctx.locale),
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
+    getSectorOptions(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -66,10 +66,10 @@ export async function getServerSideProps(ctx) {
       skillsOptions: skillsOptions,
       userOrganizations: userOrganizations,
       statusOptions: statusOptions,
-      tagsOptions: tagsOptions,
       projectTypeOptions: projectTypeOptions,
       hubThemeData: hubThemeData,
       hubUrl: hubUrl,
+      sectorOptions: sectorOptions,
     }),
   };
 }
@@ -80,10 +80,10 @@ export default function EditProjectPage({
   skillsOptions,
   userOrganizations,
   statusOptions,
-  tagsOptions,
   projectTypeOptions,
   hubThemeData,
   hubUrl,
+  sectorOptions,
 }) {
   const classes = useStyles();
   const [curProject, setCurProject] = React.useState({
@@ -106,6 +106,7 @@ export default function EditProjectPage({
   const handleSetProject = (newProject) => {
     setCurProject({ ...newProject });
   };
+  
   if (!user)
     return (
       <WideLayout
@@ -181,7 +182,7 @@ export default function EditProjectPage({
           userOrganizations={userOrganizations}
           statusOptions={statusOptions}
           handleSetProject={handleSetProject}
-          tagsOptions={tagsOptions}
+          sectorOptions={sectorOptions}
           user_role={user_role}
           handleSetErrorMessage={handleSetErrorMessage}
           initialTranslations={project.translations}
@@ -218,6 +219,7 @@ const parseProject = (project) => ({
   project_parents: project.project_parents[0],
   is_personal_project: !project.project_parents[0].parent_organization,
   skills: project.skills.map((s) => ({ ...s, key: s.id })),
+  sectors: project.sectors.map(item => ({...item.sector, order: item.order})),
 });
 
 const getUserOrganizations = async (token, locale) => {
