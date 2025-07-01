@@ -8,7 +8,7 @@ import {
   getProjectTypeOptions,
   getSkillsOptions,
   getStatusOptions,
-  getSectorOptions, 
+  getSectorOptions,
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
@@ -106,7 +106,7 @@ export default function EditProjectPage({
   const handleSetProject = (newProject) => {
     setCurProject({ ...newProject });
   };
-  
+
   if (!user)
     return (
       <WideLayout
@@ -219,7 +219,7 @@ const parseProject = (project) => ({
   project_parents: project.project_parents[0],
   is_personal_project: !project.project_parents[0].parent_organization,
   skills: project.skills.map((s) => ({ ...s, key: s.id })),
-  sectors: project.sectors.map(item => ({...item.sector, order: item.order})),
+  sectors: project.sectors.map((item) => ({ ...item.sector, order: item.order })),
 });
 
 const getUserOrganizations = async (token, locale) => {

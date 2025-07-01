@@ -403,7 +403,7 @@ const InputSectors = ({ project, handleChangeProject, texts, sectorOptions }) =>
               onDelete={() => handleSectorDelete(sector)}
             />
           ))}
-          <Grid container >
+          <Grid container>
             <Grid xs={12} sm={8} md={5} lg={5} item>
               <SelectField
                 options={sectorOptions}
