@@ -7,9 +7,9 @@ import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 import {
   getOrganizationTagsOptions,
-  getProjectTagsOptions,
   getProjectTypeOptions,
   getSkillsOptions,
+   getSectorOptions,
 } from "../../../public/lib/getOptions";
 import { getAllHubs } from "../../../public/lib/hubOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
@@ -88,7 +88,6 @@ export async function getServerSideProps(ctx) {
 
   const [
     hubData,
-    project_categories,
     organization_types,
     skills,
     location_filtered_by,
@@ -96,9 +95,9 @@ export async function getServerSideProps(ctx) {
     hubDescription,
     projectTypes,
     hubThemeData,
+    sectorOptions,
   ] = await Promise.all([
     getHubData(hubUrl, ctx.locale),
-    getProjectTagsOptions(hubUrl, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
     getLocationFilteredBy(ctx.query),
@@ -106,6 +105,7 @@ export async function getServerSideProps(ctx) {
     retrieveDescriptionFromWebflow(ctx.query, ctx.locale),
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
+    getSectorOptions(ctx.locale),
   ]);
   return {
     props: {
@@ -124,7 +124,7 @@ export async function getServerSideProps(ctx) {
       image_attribution: hubData?.image_attribution ?? null,
       hubLocation: hubData?.location?.length > 0 ? hubData.location[0] : null,
       filterChoices: {
-        project_categories: project_categories,
+        sectors: sectorOptions,
         organization_types: organization_types,
         skills: skills,
       },

@@ -59,6 +59,7 @@ export async function getProjectTagsOptions(hub, locale) {
     return null;
   }
 }
+
 export async function getSectorOptions(locale) {
   try {
     const resp = await apiRequest({
