@@ -169,6 +169,7 @@ export async function applyNewFilters({
   handleSetTabsWhereFiltersWereApplied,
   hubUrl,
 }: any) {
+  
   // Don't fetch data again if the exact same filters were already applied in this tab
   if (
     !hasDifferingValues({

@@ -91,7 +91,7 @@ function GridItem({ project, hubUrl, displayOnePreviewInRow }) {
   const projectPreviewProps = {
     project: project,
   } as any;
-
+  
   const columnValuesFromBreakpoint = {
     xsValue: 12,
     smValue: displayOnePreviewInRow ? 12 : 6,

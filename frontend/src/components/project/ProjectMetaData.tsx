@@ -7,7 +7,7 @@ import UserContext from "../context/UserContext";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import LocationDisplay from "./LocationDisplay";
-import ProjectCategoriesDisplay from "./ProjectCategoriesDisplay";
+import ProjectSectorsDisplay from "./ProjectSectorsDisplay";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import { Project } from "../../types";
@@ -91,10 +91,12 @@ const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
 
 type Props = { project: Project; hovering: boolean; withDescription?: boolean };
 export default function ProjectMetaData({ project, hovering, withDescription }: Props) {
+  
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const project_parent = project.project_parents![0];
-  const main_project_tag = project.tags!.map((t) => t.project_tag.name)[0];
+  const main_project_sector = project.sectors!.map((s) => s?.sector?.name)[0];
+  
   if (withDescription) {
     return (
       <WithDescription
@@ -102,7 +104,7 @@ export default function ProjectMetaData({ project, hovering, withDescription }: 
         project_parent={project_parent}
         project={project}
         hovering={hovering}
-        main_project_tag={main_project_tag}
+        main_project_sector={main_project_sector}
         texts={texts}
       />
     );
@@ -113,7 +115,7 @@ export default function ProjectMetaData({ project, hovering, withDescription }: 
       // className={classes.WithDescription}
       project_parent={project_parent}
       project={project}
-      main_project_tag={main_project_tag}
+      main_project_sector={main_project_sector}
       texts={texts}
     />
   );
@@ -124,7 +126,7 @@ const WithDescription = ({
   project_parent,
   hovering,
   project,
-  main_project_tag,
+  main_project_sector,
 }: any) => {
   const classes = useStyles({});
   return (
@@ -147,9 +149,9 @@ const WithDescription = ({
             </Typography>
           </Collapse>
           {!hovering && (
-            <ProjectCategoriesDisplay
-              main_project_tag={main_project_tag}
-              projectTagClassName={classes.metadataText}
+            <ProjectSectorsDisplay
+              main_project_sector={main_project_sector}
+              projectSectorClassName={classes.metadataText}
               iconClassName={classes.cardIcon}
             />
           )}
@@ -157,10 +159,10 @@ const WithDescription = ({
         </Box>
       </Container>
       {hovering && (
-        <ProjectCategoriesDisplay
-          main_project_tag={main_project_tag}
+        <ProjectSectorsDisplay
+          main_project_sector={main_project_sector}
           hovering={hovering}
-          projectTagClassName={classes.metadataText}
+          projectSectorClassName={classes.metadataText}
           iconClassName={classes.cardIcon}
         />
       )}
@@ -172,7 +174,7 @@ const WithOutDescription = ({
   className,
   project_parent,
   project,
-  main_project_tag,
+  main_project_sector,
   texts,
 }: any) => {
   const classes = useStyles({});
@@ -188,9 +190,9 @@ const WithOutDescription = ({
             <PlaceIcon className={classes.cardIcon} />
           </Tooltip>
           <Typography className={classes.metadataText}>{project.location}</Typography>
-          <ProjectCategoriesDisplay
-            main_project_tag={main_project_tag}
-            projectTagClassName={classes.metadataText}
+          <ProjectSectorsDisplay
+            main_project_sector={main_project_sector}
+            projectSectorClassName={classes.metadataText}
             iconClassName={classes.cardIcon}
           />
           <AdditionalPreviewInfo project={project} />
