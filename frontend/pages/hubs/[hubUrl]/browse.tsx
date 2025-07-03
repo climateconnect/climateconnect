@@ -167,7 +167,7 @@ export default function Hub({
   const token = new Cookies().get("auth_token");
   const [hubAmbassador, setHubAmbassador] = useState(null);
   const [hubSupporters, setHubSupporters] = useState(null);
-  const contentRef = useRef(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     (async () => {
@@ -190,7 +190,7 @@ export default function Hub({
   };
 
   const scrollToSolutions = () => {
-    contentRef.current.scrollIntoView({ behavior: "smooth" });
+    contentRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const customSearchBarLabels = {
@@ -277,10 +277,8 @@ export default function Hub({
             welcomeMessageLoggedOut={welcomeMessageLoggedOut}
             isLocationHub={isLocationHub}
             location={hubLocation}
-            allHubs={allHubs}
             hubData={hubData}
             image={getImageUrl(image)}
-            source={image_attribution}
           />
           {!isLocationHub && <BrowseExplainer />}
           <BrowseContext.Provider value={contextValues}>
