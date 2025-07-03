@@ -267,6 +267,16 @@ class Hub(models.Model):
         blank=True,
     )
 
+    parent_hub = models.ForeignKey(
+        "self",
+        help_text="Points to the parent hub if this is a sub-hub",
+        verbose_name="Parent Hub",
+        related_name="sub_hubs",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
+
     class Meta:
         app_label = "hubs"
         verbose_name = "Hub"
@@ -275,6 +285,12 @@ class Hub(models.Model):
 
     def __str__(self):
         return "%s" % (self.name)
+
+    def is_sub_hub(self):
+        """
+        Returns True if this hub is a sub-hub, otherwise False.
+        """
+        return self.parent_hub is not None
 
 
 class HubAmbassador(models.Model):

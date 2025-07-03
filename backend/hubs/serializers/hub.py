@@ -20,6 +20,9 @@ from climateconnect_api.models import UserProfile
 
 
 class HubSerializer(serializers.ModelSerializer):
+    # TODO: adjust this serializer to include data from the children / sub-hubs
+    # TODO: also, include the parent hub if this is a sub-hub
+
     stats = serializers.SerializerMethodField()
     hub_type = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
@@ -32,6 +35,8 @@ class HubSerializer(serializers.ModelSerializer):
     quick_info = serializers.SerializerMethodField()
     stat_box_title = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
+    parent_hub = serializers.SerializerMethodField()
+    children = serializers.SerializerMethodField()
 
     class Meta:
         model = Hub
@@ -52,6 +57,8 @@ class HubSerializer(serializers.ModelSerializer):
             "url_slug",
             "custom_footer_image",
             "landing_page_component",
+            "parent_hub",
+            "children",
         )
 
     def get_stats(self, obj):
@@ -91,6 +98,14 @@ class HubSerializer(serializers.ModelSerializer):
         if obj.location:
             return LocationSerializer(obj.location.all(), many=True).data
         return None
+
+    def get_parent_hub(self, obj):
+        if not obj.parent_hub:
+            return None
+        return HubStubSerializer(obj.parent_hub).data
+
+    def get_children(self, obj):
+        return HubStubSerializer(obj.sub_hubs.all(), many=True).data
 
 
 class HubAmbassadorSerializer(serializers.ModelSerializer):
