@@ -1,6 +1,7 @@
 import logging
 import traceback
 from django.db.models import Case, When, Prefetch
+from hubs.utility.hub import get_parents_hubs
 from organization.utility.cache import generate_project_ranking_cache_key
 from organization.utility.follow import (
     get_list_of_project_followers,
@@ -193,11 +194,14 @@ class ListProjectsView(ListAPIView):
             )
         )
         # maybe use .annotate() to calculate ranking/counts of coments etc.
-
         if "hub" in self.request.query_params:
+
+            # retrieve hub and its parents
             hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
-            if hub.exists():
-                hub = hub[0]
+            hubs = get_parents_hubs(hub[0]) if hub.exists() else []
+
+            # most upper hub is the "grandest" parent
+            for hub in reversed(hubs):
                 if hub.hub_type == Hub.SECTOR_HUB_TYPE:
                     project_category = Hub.objects.get(
                         url_slug=self.request.query_params.get("hub")

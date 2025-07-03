@@ -1,5 +1,5 @@
 from rest_framework.generics import ListAPIView
-from django.db.models import Case, When, IntegerField
+from django.db.models import Q
 from hubs.serializers.hub import (
     HubAmbassadorSerializer,
     HubSerializer,
@@ -8,6 +8,7 @@ from hubs.serializers.hub import (
     HubThemeSerializer,
 )
 from hubs.models.hub import Hub, HubAmbassador, HubSupporter, HubTheme
+from hubs.utility.hub import get_parents_hubs_and_annotations
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -42,7 +43,7 @@ class HubAmbassadorAPIView(APIView):
             )
         # themes should be inherited from parent hubs
         # therefore, collect all parents and walk the parent hub up
-        hubs, annotations = __get_parents_hubs_and_annotations(hub)
+        hubs, annotations = get_parents_hubs_and_annotations(hub)
 
         ambassadors = HubAmbassador.objects.filter(hub__in=hubs).annotate(
             parent_hub_order=annotations
@@ -61,7 +62,9 @@ class ListHubsView(ListAPIView):
     serializer_class = HubStubSerializer
 
     def get_queryset(self):
-        return Hub.objects.filter(importance__gte=1).prefetch_related("language")
+        return Hub.objects.filter(
+            Q(parent_hub__isnull=True) & Q(importance__gte=1)
+        ).prefetch_related("language")
 
 
 class ListSectorHubsView(ListAPIView):
@@ -106,7 +109,7 @@ class HubThemeAPIView(APIView):
 
         # themes should be inherited from parent hubs
         # therefore, collect all parents and walk the parent hub up
-        hubs, annotations = __get_parents_hubs_and_annotations(hub)
+        hubs, annotations = get_parents_hubs_and_annotations(hub)
 
         hub_themes = HubTheme.objects.filter(hub__in=hubs).annotate(
             parent_hub_order=annotations
@@ -121,19 +124,3 @@ class HubThemeAPIView(APIView):
         hub_theme = hub_themes.order_by("parent_hub_order").first()
         serializer = HubThemeSerializer(hub_theme)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-def __get_parents_hubs_and_annotations(hub):
-    hubs = [hub]
-    while hub.parent_hub:
-        hub = hub.parent_hub
-        hubs.append(hub)
-
-    whens = [When(hub=h, then=i + 1) for i, h in enumerate(hubs)]
-
-    annotations = Case(
-        *whens,
-        default=-1,
-        output_field=IntegerField(),
-    )
-    return hubs, annotations

@@ -1,4 +1,5 @@
 from hubs.models import Hub, HubStat, HubSupporter
+from django.db.models import Case, When, IntegerField
 
 
 def get_hub_attribute(hub: Hub, attribute_name, language_code: str) -> str:
@@ -54,3 +55,23 @@ def get_hub_supporter_attribute(
         if attribute_translation and len(attribute_translation) > 0:
             return attribute_translation
     return getattr(hub_supporter, attribute_name)
+
+
+def get_parents_hubs(hub):
+    hubs = [hub]
+    while hub.parent_hub:
+        hub = hub.parent_hub
+        hubs.append(hub)
+    return hubs
+
+
+def get_parents_hubs_and_annotations(hub):
+    hubs = get_parents_hubs(hub)
+    whens = [When(hub=h, then=i + 1) for i, h in enumerate(hubs)]
+
+    annotations = Case(
+        *whens,
+        default=-1,
+        output_field=IntegerField(),
+    )
+    return hubs, annotations
