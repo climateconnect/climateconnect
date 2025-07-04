@@ -22,6 +22,7 @@ export default function DevlinkPage({
 }: any) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
+
   return (
     <>
       <WideLayout

@@ -8,6 +8,7 @@ import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import HubsDropDown from "../indexPage/hubsSubHeader/HubsDropDown";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
+import { getCustomHubData } from "../../../public/data/customHubData";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -121,6 +122,8 @@ export default function HubTabsNavigation({
   if (!user && isNarrowScreen) {
     return <></>;
   }
+  const hubTabLink = getCustomHubData({ hubUrl, texts })?.hubTabLinkNarrowScreen;
+
   return (
     <div className={`${className} ${classes.root}`}>
       <Container maxWidth="lg" className={classes.container}>
@@ -167,14 +170,14 @@ export default function HubTabsNavigation({
           )}
           {isNarrowScreen && (
             <>
-              {hubUrl === "prio1" && (
+              {hubTabLink && (
                 <Link
                   className={classes.climateMatchLink}
-                  href={"https://prio1-klima.net"}
+                  href={hubTabLink.href}
                   target="_blank"
                   underline="hover"
                 >
-                  {texts.PRIO1_klima}
+                  {hubTabLink.text}
                 </Link>
               )}
               <Link

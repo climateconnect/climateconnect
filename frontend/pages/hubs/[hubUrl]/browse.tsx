@@ -215,6 +215,8 @@ export default function Hub({
   const contextValues = {
     projectTypes: projectTypes,
   };
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+
   return (
     <>
       {hubDescription && hubDescription.headContent && (
@@ -223,7 +225,9 @@ export default function Hub({
       <WideLayout
         title={headline}
         hideAlert
-        headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
+        headerBackground={
+          customTheme ? customTheme.palette.header.background : theme.palette.background.default
+        }
         image={getImageUrl(image)}
         isHubPage
         hubUrl={hubUrl}
@@ -232,7 +236,7 @@ export default function Hub({
           hubData?.custom_footer_image && getImageUrl(hubData?.custom_footer_image)
         }
         isLocationHub={isLocationHub}
-        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+        customTheme={customTheme}
         hasHubLandingPage={hubData?.landing_page_component ? true : false}
       >
         <div className={classes.content}>
