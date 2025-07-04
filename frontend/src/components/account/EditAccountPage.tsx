@@ -14,7 +14,7 @@ import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Alert from "@mui/material/Alert";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useRef, useState, useEffect } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import {
   getCompressedJPG,
@@ -37,7 +37,6 @@ import DetailledDescriptionInput from "./DetailledDescriptionInput";
 import SelectField from "../general/SelectField";
 import { AvatarImage, UserAvatar } from "./UserAvatar";
 import CloseIcon from "@mui/icons-material/Close";
-
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
 const useStyles = makeStyles<Theme, { background_image?: string }>((theme) => ({
@@ -206,11 +205,11 @@ export default function EditAccountPage({
   onClickCheckTranslations,
   allHubs,
   type,
+  checkTranslationsRef,
 }: any) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
   const organizationTexts = getTexts({ page: "organization", locale: locale });
-
   const imageInputFileRef = useRef<HTMLInputElement | null>(null);
   const closeIconRef = useRef<SVGSVGElement | null>(null);
 
@@ -836,6 +835,7 @@ export default function EditAccountPage({
                   variant="contained"
                   color="primary"
                   onClick={() => onClickCheckTranslations(editedAccount)}
+                  ref={checkTranslationsRef}
                 >
                   {texts.check_translations}
                 </Button>

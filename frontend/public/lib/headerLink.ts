@@ -11,6 +11,8 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import { getLocalePrefix } from "./apiOperations";
 import { getCustomHubData } from "../data/customHubData";
 
+const ERLANGEN_SLUG = "erlangen";
+const ERLANGEN_DONATE = "https://www.climatehub.earth/300";
 const COMMON_LINKS = {
   NOTIFICATIONS: {
     type: "notificationsButton",
@@ -89,7 +91,8 @@ const getDefaultLinks = (path_to_redirect, texts, isLocationHub, hasHubLandingPa
         hideOnStaticPages: true,
       },
       {
-        href: "/donate",
+        href: hubUrl === ERLANGEN_SLUG ? ERLANGEN_DONATE : "/donate",
+        isExternalLink: hubUrl === ERLANGEN_SLUG,
         text: texts.donate,
         iconForDrawer: FavoriteBorderIcon,
         isOutlinedInHeader: true,
@@ -179,13 +182,13 @@ const getLoggedInLinks = ({ loggedInUser, texts, queryString }) => {
   ];
 };
 
-const defaultStaticLinks = (texts) => [
+const defaultStaticLinks = (texts, hubUrl) => [
   {
     href: "/about",
     text: texts.about,
   },
   {
-    href: "/donate",
+    href: hubUrl === ERLANGEN_SLUG ? ERLANGEN_DONATE : "/donate",
     text: texts.donate,
     only_show_on_static_page: true,
   },
@@ -232,10 +235,40 @@ const defaultStaticLinks = (texts) => [
   },
 ];
 
+const Prio1StaticLinks = (texts) => [
+  {
+    href: "https://prio1-klima.net/klima-preis/",
+    text: texts.PRIO1_Climate_Prize,
+    target: "_blank",
+    isExternalLink: true,
+  },
+  {
+    href: "https://prio1-klima.net/prio1-community/",
+    text: texts.PRIO1_community,
+    target: "_blank",
+    isExternalLink: true,
+  },
+  {
+    href: "https://prio1-klima.net/akteure/",
+    text: texts.for_actors,
+    target: "_blank",
+    isExternalLink: true,
+  },
+];
+
+const customHubStaticLinksFunction = {
+  prio1: Prio1StaticLinks,
+};
+
+const getCustomHubStaticLinks = (url_slug, texts) => {
+  if (Object.keys(customHubStaticLinksFunction).includes(url_slug))
+    return customHubStaticLinksFunction[url_slug](texts);
+  return defaultStaticLinks(texts, url_slug);
+};
 const getStaticLinks = (texts, customHubUrlSlug) => {
   return !customHubUrlSlug
-    ? defaultStaticLinks(texts)
-    : getCustomHubData({ hubUrl: customHubUrlSlug, texts, path_to_redirect: "" })?.headerStaticLink;
+    ? defaultStaticLinks(texts, "")
+    : getCustomHubStaticLinks(customHubUrlSlug, texts);
 };
 
 const getStaticLinkFromItem = (locale, item) => {
