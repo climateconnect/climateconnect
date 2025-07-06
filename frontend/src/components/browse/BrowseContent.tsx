@@ -80,6 +80,7 @@ export default function BrowseContent({
   hubAmbassador,
   contentRef,
   hubSupporters,
+  isLocationHub,
 }: any) {
   const initialState = {
     items: {
@@ -121,7 +122,7 @@ export default function BrowseContent({
   const [hash, setHash] = useState<BrowseTab | null>(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
 
-  const isLocationHubFlag = isLocationHubLikeHub(hubData?.hub_type);
+  const isLocationHubFlag = isLocationHub || isLocationHubLikeHub(hubData?.hub_type);
 
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const type_names = {

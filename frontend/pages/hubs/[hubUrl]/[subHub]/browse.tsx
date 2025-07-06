@@ -9,34 +9,30 @@ import {
   getProjectTagsOptions,
   getProjectTypeOptions,
   getSkillsOptions,
-} from "../../../public/lib/getOptions";
-import { getAllHubs } from "../../../public/lib/hubOperations";
-import { getImageUrl } from "../../../public/lib/imageOperations";
-import { getLocationFilteredBy } from "../../../public/lib/locationOperations";
-import getTexts from "../../../public/texts/texts";
-import BrowseContent from "../../../src/components/browse/BrowseContent";
-import UserContext from "../../../src/components/context/UserContext";
-import BrowseExplainer from "../../../src/components/hub/BrowseExplainer";
-import HubContent from "../../../src/components/hub/HubContent";
-import HubHeaderImage from "../../../src/components/hub/HubHeaderImage";
-import NavigationSubHeader from "../../../src/components/hub/NavigationSubHeader";
-import WideLayout from "../../../src/components/layouts/WideLayout";
-import DonationCampaignInformation from "../../../src/components/staticpages/donate/DonationCampaignInformation";
+} from "../../../../public/lib/getOptions";
+import { getAllHubs } from "../../../../public/lib/hubOperations";
+import { getImageUrl } from "../../../../public/lib/imageOperations";
+import { getLocationFilteredBy } from "../../../../public/lib/locationOperations";
+import getTexts from "../../../../public/texts/texts";
+import BrowseContent from "../../../../src/components/browse/BrowseContent";
+import UserContext from "../../../../src/components/context/UserContext";
+import HubContent from "../../../../src/components/hub/HubContent";
+import WideLayout from "../../../../src/components/layouts/WideLayout";
+import DonationCampaignInformation from "../../../../src/components/staticpages/donate/DonationCampaignInformation";
 import { Theme } from "@mui/material/styles";
-import theme from "../../../src/themes/hubTheme";
-import BrowseContext from "../../../src/components/context/BrowseContext";
-import { transformThemeData } from "../../../src/themes/transformThemeData";
-import getHubTheme from "../../../src/themes/fetchHubTheme";
-import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
-import { FilterProvider } from "../../../src/components/provider/FilterProvider";
+import theme from "../../../../src/themes/hubTheme";
+import BrowseContext from "../../../../src/components/context/BrowseContext";
+import { transformThemeData } from "../../../../src/themes/transformThemeData";
+import getHubTheme from "../../../../src/themes/fetchHubTheme";
+import { FilterProvider } from "../../../../src/components/provider/FilterProvider";
+import { retrieveDescriptionFromWebflow } from "../../../../src/utils/webflow";
+import { HubDescription } from "../../../../src/components/hub/description/HubDescription";
+import { FabShareButton } from "../../../../src/components/hub/FabShareButton";
 import {
   getHubAmbassadorData,
   getHubData,
   getHubSupportersData,
-} from "../../../public/lib/getHubData";
-import { retrieveDescriptionFromWebflow } from "../../../src/utils/webflow";
-import { HubDescription } from "../../../src/components/hub/description/HubDescription";
-import { FabShareButton } from "../../../src/components/hub/FabShareButton";
+} from "../../../../public/lib/getHubData";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -44,9 +40,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-//potentially switch back to getinitialprops here?!
 export async function getServerSideProps(ctx) {
-  const hubUrl = ctx.query.hubUrl;
+  const parentUrl = ctx.query.hubUrl;
+  const subHub = ctx.query.subHub;
+  const hubUrl = subHub ? `${parentUrl}_${subHub}` : parentUrl;
 
   const [
     hubData,
@@ -72,7 +69,6 @@ export async function getServerSideProps(ctx) {
   return {
     props: {
       hubUrl: hubUrl,
-      isLocationHub: isLocationHubLikeHub(hubData?.hub_type),
       hubData: hubData,
       name: hubData?.name ?? null,
       headline: hubData?.headline ?? null,
@@ -83,7 +79,6 @@ export async function getServerSideProps(ctx) {
       quickInfo: hubData?.quick_info ?? null,
       stats: hubData?.stats ?? null,
       statBoxTitle: hubData?.stat_box_title ?? null,
-      image_attribution: hubData?.image_attribution ?? null,
       hubLocation: hubData?.location?.length > 0 ? hubData.location[0] : null,
       filterChoices: {
         project_categories: project_categories,
@@ -100,12 +95,12 @@ export async function getServerSideProps(ctx) {
   };
 }
 
+// TODO: refactor this component so that the code of it and the /hubs/[hubUrl]/browse.tsx
+// is not duplicated
 export default function Hub({
   headline,
   hubUrl,
-  image_attribution,
   image,
-  isLocationHub,
   name,
   quickInfo,
   statBoxTitle,
@@ -135,10 +130,9 @@ export default function Hub({
     (async () => {
       const retrievedHubAmbassador = await getHubAmbassadorData(hubUrl, locale);
       setHubAmbassador(retrievedHubAmbassador);
-      if (isLocationHub) {
-        const retrivedHubSupporters = await getHubSupportersData(hubUrl, locale);
-        setHubSupporters(retrivedHubSupporters);
-      }
+
+      const retrivedHubSupporters = await getHubSupportersData(hubUrl, locale);
+      setHubSupporters(retrivedHubSupporters);
     })();
   }, [locale]);
 
@@ -147,30 +141,15 @@ export default function Hub({
   //Refs and state for tutorial
   const [requestTabNavigation, tabNavigationRequested] = useState("foo");
 
-  const navRequested = (tabKey) => {
-    tabNavigationRequested(tabKey);
-  };
-
   const scrollToSolutions = () => {
     contentRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const customSearchBarLabels = {
-    projects: isLocationHub
-      ? texts.search_projects_in_location
-      : texts.search_for_solutions_in_sector,
-    organizations: isLocationHub
-      ? texts.search_organization_in_location
-      : texts.search_for_organizations_in_sector,
-    members: isLocationHub
-      ? texts.search_profiles_in_location
-      : texts.search_for_climate_actors_in_sector,
+    projects: texts.search_projects_in_location,
+    organizations: texts.search_organization_in_location,
+    members: texts.search_profiles_in_location,
     profiles: texts.search_profiles_in_location,
-  };
-
-  const closeHubHeaderImage = (e) => {
-    e.preventDefault();
-    console.log("closing hub header image");
   };
 
   const contextValues = {
@@ -192,32 +171,11 @@ export default function Hub({
         customFooterImage={
           hubData?.custom_footer_image && getImageUrl(hubData?.custom_footer_image)
         }
-        isLocationHub={isLocationHub}
         customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
         hasHubLandingPage={hubData?.landing_page_component ? true : false}
       >
         <div className={classes.content}>
           {<DonationCampaignInformation />}
-          {!isLocationHub && (
-            <NavigationSubHeader
-              type={"hub"}
-              hubName={name}
-              allHubs={allHubs}
-              isLocationHub={isLocationHub}
-              hubUrl={hubUrl}
-              navigationRequested={navRequested}
-            />
-          )}
-          {!isLocationHub && (
-            <HubHeaderImage
-              image={getImageUrl(image)}
-              source={image_attribution}
-              onClose={closeHubHeaderImage}
-              isLocationHub={isLocationHub} // TODO: needed?
-              statBoxTitle={statBoxTitle}
-              stats={stats}
-            />
-          )}
           <HubContent
             headline={headline}
             hubAmbassador={hubAmbassador}
@@ -237,12 +195,11 @@ export default function Hub({
             subHeadline={subHeadline}
             welcomeMessageLoggedIn={welcomeMessageLoggedIn}
             welcomeMessageLoggedOut={welcomeMessageLoggedOut}
-            isLocationHub={isLocationHub}
+            isLocationHub={true}
             location={hubLocation}
             hubData={hubData}
             image={getImageUrl(image)}
           />
-          {!isLocationHub && <BrowseExplainer />}
           <BrowseContext.Provider value={contextValues}>
             <FilterProvider
               filterChoices={filterChoices}
@@ -256,7 +213,7 @@ export default function Hub({
                 customSearchBarLabels={customSearchBarLabels}
                 hubAmbassador={hubAmbassador}
                 filterChoices={filterChoices}
-                hideMembers={!isLocationHub}
+                hideMembers={false}
                 hubName={name}
                 initialLocationFilter={initialLocationFilter}
                 // TODO: is this still needed?
@@ -268,6 +225,7 @@ export default function Hub({
                 hubUrl={hubUrl}
                 tabNavigationRequested={requestTabNavigation}
                 hubSupporters={hubSupporters}
+                isLocationHub={true}
               />
             </FilterProvider>
           </BrowseContext.Provider>
