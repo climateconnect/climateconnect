@@ -20,9 +20,6 @@ from climateconnect_api.models import UserProfile
 
 
 class HubSerializer(serializers.ModelSerializer):
-    # TODO: adjust this serializer to include data from the children / sub-hubs
-    # TODO: also, include the parent hub if this is a sub-hub
-
     stats = serializers.SerializerMethodField()
     hub_type = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()

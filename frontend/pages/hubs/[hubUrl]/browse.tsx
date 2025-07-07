@@ -73,8 +73,6 @@ export async function getServerSideProps(ctx) {
     getLinkedHubsData(hubUrl),
   ]);
 
-  console.log("linkedHubs", linkedHubs);
-
   return {
     props: {
       hubUrl: hubUrl,
@@ -138,16 +136,6 @@ export default function Hub({
   const [hubAmbassador, setHubAmbassador] = useState(null);
   const [hubSupporters, setHubSupporters] = useState(null);
   const contentRef = useRef<HTMLDivElement>(null);
-
-  // linkedHubs = [
-  //   { hubName: "Energy", hubUrl: "/hubs/perth/energy/browse", backgroundColor: "#f0f8ff" },
-  //   {
-  //     hubName: "Transport",
-  //     hubUrl: "/hubs/perth/transport/browse",
-  //     backgroundColor: "#ffe4e1",
-  //   },
-  //   { hubName: "Food", hubUrl: "/hubs/perth/food/browse", backgroundColor: "#fff5ee" },
-  // ];
 
   useEffect(() => {
     (async () => {
