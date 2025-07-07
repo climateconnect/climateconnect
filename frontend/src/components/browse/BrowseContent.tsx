@@ -25,9 +25,8 @@ import LoadingSpinner from "../general/LoadingSpinner";
 import MobileBottomMenu from "./MobileBottomMenu";
 import HubTabsNavigation from "../hub/HubTabsNavigation";
 import HubSupporters from "../hub/HubSupporters";
-import HubLinkButton from "../hub/HubLinkButton";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
-import { BrowseTab } from "../../types";
+import { BrowseTab, LinkedHub } from "../../types";
 import { FilterContext } from "../context/FilterContext";
 
 const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
@@ -62,16 +61,28 @@ const useStyles = makeStyles((theme) => {
       left: 0,
       right: 0,
     },
-    linkedHubsContainer: {
-      display: "flex",
-      flexDirection: "row",
-      justifyContent: "center",
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2),
-      gap: theme.spacing(1),
-    },
   };
 });
+
+type BrowseContentProps = {
+  initialMembers?: any;
+  initialOrganizations?: any;
+  initialProjects?: any;
+  customSearchBarLabels?: any;
+  errorMessage?: any;
+  filterChoices: any;
+  hideMembers?: any;
+  hubName?: string;
+  allHubs?: any;
+  hubData?: any;
+  initialLocationFilter?: any;
+  hubUrl?: string;
+  hubAmbassador?: any;
+  contentRef?: any;
+  hubSupporters?: any;
+  isLocationHub?: boolean;
+  linkedHubs?: LinkedHub[];
+};
 
 export default function BrowseContent({
   initialMembers,
@@ -91,7 +102,7 @@ export default function BrowseContent({
   hubSupporters,
   isLocationHub,
   linkedHubs,
-}: any) {
+}: BrowseContentProps) {
   const initialState = {
     items: {
       projects: initialProjects ? [...initialProjects.projects] : [],
@@ -474,8 +485,9 @@ export default function BrowseContent({
     initialLocationFilter: initialLocationFilter,
     isFiltering: isFiltering,
     state: state,
-    hubName: hubName,
+    hubName: hubName || "",
     nonFilterParams: nonFilterParams,
+    linkedHubs: linkedHubs || [],
   };
   return (
     <LoadingContext.Provider
@@ -495,7 +507,7 @@ export default function BrowseContent({
         />
       )}
       <Container maxWidth="lg" className={classes.contentRefContainer}>
-        {isNarrowScreen && hubSupporters && (
+        {isNarrowScreen && hubSupporters && hubName && (
           <HubSupporters supportersList={hubSupporters} hubName={hubName} />
         )}
         <div ref={contentRef} className={classes.contentRef} />
@@ -511,14 +523,6 @@ export default function BrowseContent({
           />
         </Suspense>
 
-        {/* Show the linked hubs only on desktop screens */}
-        {!isNarrowScreen && linkedHubs?.length > 0 && (
-          <div className={classes.linkedHubsContainer}>
-            {linkedHubs.map((linkedHub) => (
-              <HubLinkButton hub={linkedHub} />
-            ))}
-          </div>
-        )}
         {/* Desktop screens: show tabs under the search bar */}
         {/* Mobile screens: show tabs fixed to the bottom of the screen */}
         {!isNarrowScreen && !isLocationHubFlag && (

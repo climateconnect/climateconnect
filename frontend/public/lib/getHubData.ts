@@ -54,19 +54,20 @@ const getHubSupportersData = async (url_slug, locale) => {
   }
 };
 
-function parseLinkedHubData(data): LinkedHub | null {
+function parseLinkedHubData(data: any): LinkedHub | null {
   if (!data || !data.name || !data.url_slug || !data.icon) {
     console.error("Invalid linked hub data:", data);
     return null;
   }
-
   const url_segments = data.url_slug.split("_");
-  const url_segment = join(...url_segments);
-  console.log("url_segment", url_segment);
+  let hubUrl = `/hubs/${url_segments[0]}/browse`;
+  if (url_segments.length > 1) {
+    hubUrl += "?sub=" + data.url_slug;
+  }
 
   return {
     hubName: data.name,
-    hubUrl: `/hubs/${url_segment}/browse`,
+    hubUrl: hubUrl,
     icon: data.icon,
     backgroundColor: data.icon_background_color,
   };

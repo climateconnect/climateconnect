@@ -47,7 +47,18 @@ const useStyles = makeStyles((theme) => ({
 
 //potentially switch back to getinitialprops here?!
 export async function getServerSideProps(ctx) {
-  const hubUrl = ctx.query.hubUrl;
+  let hubUrl = ctx.query.hubUrl;
+
+  const subHub = ctx.query.sub;
+  if (subHub) {
+    // check if hub really exists before blindly overwriting hubUrl
+    const data = await getHubData(subHub, ctx.locale);
+    if (data) {
+      hubUrl = subHub;
+    }
+  }
+
+  // perth/browse?sub=perth_engery
 
   const [
     hubData,
@@ -76,7 +87,7 @@ export async function getServerSideProps(ctx) {
   return {
     props: {
       hubUrl: hubUrl,
-      isLocationHub: isLocationHubLikeHub(hubData?.hub_type),
+      isLocationHub: isLocationHubLikeHub(hubData?.hub_type, hubData?.parent_hub),
       hubData: hubData,
       name: hubData?.name ?? null,
       headline: hubData?.headline ?? null,
@@ -265,14 +276,9 @@ export default function Hub({
                 hideMembers={!isLocationHub}
                 hubName={name}
                 initialLocationFilter={initialLocationFilter}
-                // TODO: is this still needed?
-                // initialOrganizations={initialOrganizations}
-                // initialProjects={initialProjects}
                 allHubs={allHubs}
-                hubLocation={hubLocation}
                 hubData={hubData}
                 hubUrl={hubUrl}
-                tabNavigationRequested={requestTabNavigation}
                 hubSupporters={hubSupporters}
                 linkedHubs={linkedHubs}
               />
