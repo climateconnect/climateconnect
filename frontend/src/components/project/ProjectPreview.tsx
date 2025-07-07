@@ -108,7 +108,7 @@ const useStyles = makeStyles((theme) => {
 
 export default function ProjectPreview({ project, projectRef, hubUrl, className }: any) {
   const [hovering, setHovering] = React.useState(false);
-  
+
   const { locale } = useContext(UserContext);
   const { projectTypes } = useContext(BrowseContext);
   const projectType =

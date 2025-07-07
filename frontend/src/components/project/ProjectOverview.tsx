@@ -291,7 +291,8 @@ function ShortProjectInfo({ project }) {
           <Tooltip title={texts.categories}>
             <ExploreIcon className={classes.icon} />
           </Tooltip>{" "}
-          {project?.sectors?.length > 0 && project.sectors.map((data) => data.sector?.name).join(", ")}
+          {project?.sectors?.length > 0 &&
+            project.sectors.map((data) => data.sector?.name).join(", ")}
         </Typography>
       </div>
       <div className={classes.projectInfoEl}>

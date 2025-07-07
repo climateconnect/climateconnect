@@ -81,7 +81,6 @@ export default function BrowseContent({
   contentRef,
   hubSupporters,
 }: any) {
-  
   const initialState = {
     items: {
       projects: initialProjects ? [...initialProjects.projects] : [],
@@ -409,7 +408,6 @@ export default function BrowseContent({
       });
     }
     setIsFiltering(false);
-    
   };
 
   /**

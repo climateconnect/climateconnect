@@ -91,12 +91,11 @@ const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
 
 type Props = { project: Project; hovering: boolean; withDescription?: boolean };
 export default function ProjectMetaData({ project, hovering, withDescription }: Props) {
-  
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const project_parent = project.project_parents![0];
   const main_project_sector = project.sectors!.map((s) => s?.sector?.name)[0];
-  
+
   if (withDescription) {
     return (
       <WithDescription
