@@ -82,3 +82,10 @@ export type Supporter = {
   importance: number;
   organization_url_slug: string;
 };
+
+export type LinkedHub = {
+  hubName: string;
+  hubUrl: string;
+  icon: string;
+  backgroundColor?: string;
+};

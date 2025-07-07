@@ -143,6 +143,7 @@ class HubStubSerializer(serializers.ModelSerializer):
             "url_slug",
             "hub_type",
             "icon",
+            "icon_background_color",
             "landing_page_component",
         )
 

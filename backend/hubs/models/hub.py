@@ -174,6 +174,14 @@ class Hub(models.Model):
         upload_to=hub_image_path,
     )
 
+    icon_background_color = models.CharField(
+        help_text="The background color of the icon as a hex code (e.g. #FFF or #002244).",
+        verbose_name="Icon Background Color",
+        max_length=7,
+        null=True,
+        blank=True,
+    )
+
     thumbnail_image = models.ImageField(
         help_text="Image to show on hub card",
         verbose_name="Thumbnail image",

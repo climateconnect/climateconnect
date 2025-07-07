@@ -25,6 +25,7 @@ import LoadingSpinner from "../general/LoadingSpinner";
 import MobileBottomMenu from "./MobileBottomMenu";
 import HubTabsNavigation from "../hub/HubTabsNavigation";
 import HubSupporters from "../hub/HubSupporters";
+import HubLinkButton from "../hub/HubLinkButton";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 import { BrowseTab } from "../../types";
 import { FilterContext } from "../context/FilterContext";
@@ -61,6 +62,14 @@ const useStyles = makeStyles((theme) => {
       left: 0,
       right: 0,
     },
+    linkedHubsContainer: {
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "center",
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
+      gap: theme.spacing(1),
+    },
   };
 });
 
@@ -81,6 +90,7 @@ export default function BrowseContent({
   contentRef,
   hubSupporters,
   isLocationHub,
+  linkedHubs,
 }: any) {
   const initialState = {
     items: {
@@ -103,6 +113,7 @@ export default function BrowseContent({
   };
 
   const token = new Cookies().get("auth_token");
+  const isLocationHubFlag = isLocationHub || isLocationHubLikeHub(hubData?.hub_type);
 
   const {
     filters,
@@ -121,8 +132,6 @@ export default function BrowseContent({
 
   const [hash, setHash] = useState<BrowseTab | null>(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
-
-  const isLocationHubFlag = isLocationHub || isLocationHubLikeHub(hubData?.hub_type);
 
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const type_names = {
@@ -501,6 +510,15 @@ export default function BrowseContent({
             applyBackgroundColor={isLocationHubFlag}
           />
         </Suspense>
+
+        {/* Show the linked hubs only on desktop screens */}
+        {!isNarrowScreen && linkedHubs?.length > 0 && (
+          <div className={classes.linkedHubsContainer}>
+            {linkedHubs.map((linkedHub) => (
+              <HubLinkButton hub={linkedHub} />
+            ))}
+          </div>
+        )}
         {/* Desktop screens: show tabs under the search bar */}
         {/* Mobile screens: show tabs fixed to the bottom of the screen */}
         {!isNarrowScreen && !isLocationHubFlag && (
@@ -531,9 +549,7 @@ export default function BrowseContent({
             hubUrl={hubUrl}
           />
         )}
-
         {!isLocationHubFlag && <Divider className={classes.mainContentDivider} />}
-
         <Suspense fallback={<LoadingSpinner isLoading />}>
           <TabContentWrapper type={"projects"} {...tabContentWrapperProps}>
             <ProjectPreviews
