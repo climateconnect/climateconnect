@@ -252,7 +252,7 @@ const ProjectBottomBar = ({ project }) => {
         />
         <ProjectSectorsDisplay
           className={classes.projectCategories}
-          main_project_sector={project.tags[0]?.project_tag?.name}
+          main_project_sector={project.sectors[0]?.sector?.name}
           color="primary"
         />
       </div>
