@@ -1,8 +1,7 @@
-import { join } from "path";
-import { LinkedHub } from "../../src/types";
+import { HubData, LinkedHub, LocaleType } from "../../src/types";
 import { apiRequest } from "./apiOperations";
 
-const getHubData = async (url_slug, locale) => {
+const getHubData = async (url_slug: string, locale: LocaleType): Promise<HubData | null> => {
   try {
     const resp = await apiRequest({
       method: "get",
@@ -13,7 +12,7 @@ const getHubData = async (url_slug, locale) => {
   } catch (err: any) {
     if (err.response && err.response.data) {
       console.log(err.response.data);
-      console.error("Error in getHubData!: " + err.response.data.detail);
+      console.error("Error in getHubData!: " + err.response?.data?.detail || err.message || err);
     }
     return null;
   }

@@ -10,7 +10,7 @@ import {
   getProjectTypeOptions,
   getSkillsOptions,
 } from "../../../public/lib/getOptions";
-import { getAllHubs } from "../../../public/lib/hubOperations";
+import { extractHubFrom, getAllHubs } from "../../../public/lib/hubOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import { getLocationFilteredBy } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
@@ -48,8 +48,8 @@ const useStyles = makeStyles((theme) => ({
 //potentially switch back to getinitialprops here?!
 export async function getServerSideProps(ctx) {
   let hubUrl = ctx.query.hubUrl;
+  let { subHub } = extractHubFrom(ctx);
 
-  const subHub = ctx.query.sub;
   if (subHub) {
     // check if hub really exists before blindly overwriting hubUrl
     const data = await getHubData(subHub, ctx.locale);
@@ -57,8 +57,6 @@ export async function getServerSideProps(ctx) {
       hubUrl = subHub;
     }
   }
-
-  // perth/browse?sub=perth_engery
 
   const [
     hubData,
@@ -99,7 +97,7 @@ export async function getServerSideProps(ctx) {
       stats: hubData?.stats ?? null,
       statBoxTitle: hubData?.stat_box_title ?? null,
       image_attribution: hubData?.image_attribution ?? null,
-      hubLocation: hubData?.location?.length > 0 ? hubData.location[0] : null,
+      hubLocation: hubData?.location?.length > 0 ? hubData?.location[0] : null,
       filterChoices: {
         project_categories: project_categories,
         organization_types: organization_types,
