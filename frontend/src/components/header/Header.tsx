@@ -53,12 +53,12 @@ type StyleProps = {
 };
 
 const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
-  function headerColor(isCustomHub, transparent, isLandingPage, customTheme) {
+  function getHeaderColor(isCustomHub, transparent, isLandingPage, customTheme) {
     if (transparent || isLandingPage) return "white";
     return isCustomHub ? customTheme.palette.primary.contrastText : theme.palette.primary.main;
   }
 
-  function headerBackground(background, transparent, isLandingPage) {
+  function getHeaderBackground(background, transparent, isLandingPage) {
     if (background) return background;
     if (transparent) return "";
     return isLandingPage ? theme.palette.primary.main : "white";
@@ -76,12 +76,12 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
         width: props.fixedHeader ? "100%" : "auto",
         top: props.fixedHeader ? 0 : "auto",
         //Use custom background if the header is fixed and not transparent (landing page) or if it's a custom hub
-        background: headerBackground(
+        background: getHeaderBackground(
           props.background,
           props.transparentHeader,
           props.isLandingPage
         ),
-        color: headerColor(props.isCustomHub, props.transparentHeader, props.isLandingPage, theme),
+        color: getHeaderColor(props.isCustomHub, props.transparentHeader, props.isLandingPage, theme),
         textDecoration: "inherit",
         transition: "all 0.25s linear", // use all instead of transform since the background color too is changing at some point. It'll be nice to have a smooth transition.
       };
