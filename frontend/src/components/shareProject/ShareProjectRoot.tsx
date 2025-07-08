@@ -263,10 +263,10 @@ export default function ShareProjectRoot({
     const sectorsAfterRemoval = project?.sectors?.filter((h) => h.name !== sector.name);
     setProject({
       ...project,
-        sectors: sectorsAfterRemoval,
+      sectors: sectorsAfterRemoval,
     });
   };
-  
+
   return (
     <>
       {!finished ? (

@@ -25,15 +25,12 @@ export function parseOptions(options, parentPropertyName) {
     });
 }
 
-
 export function parseSectorOptions(options) {
   return options.map((o) => {
     const { image, ...rest } = o; // Destructure to remove `image`
     return {
       ...rest,
-      thumbnail_image: image, 
+      thumbnail_image: image,
     };
   });
 }
-
-
