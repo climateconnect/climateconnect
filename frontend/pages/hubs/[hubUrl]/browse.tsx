@@ -137,7 +137,7 @@ export default function Hub({
   hubThemeData,
   linkedHubs,
 }) {
-  const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
+  const { locale, CUSTOM_HUB_URLS, donationGoal } = useContext(UserContext);
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const classes = useStyles();
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
@@ -145,6 +145,7 @@ export default function Hub({
   const [hubAmbassador, setHubAmbassador] = useState(null);
   const [hubSupporters, setHubSupporters] = useState(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const donationGoalActive = donationGoal && donationGoal.hub === hubUrl;
 
   useEffect(() => {
     (async () => {
@@ -212,7 +213,7 @@ export default function Hub({
         hasHubLandingPage={hubData?.landing_page_component ? true : false}
       >
         <div className={classes.content}>
-          {<DonationCampaignInformation />}
+          {donationGoalActive && <DonationCampaignInformation />}
           {!isLocationHub && (
             <NavigationSubHeader
               type={"hub"}
