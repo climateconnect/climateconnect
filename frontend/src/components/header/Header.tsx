@@ -81,7 +81,12 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
           props.transparentHeader,
           props.isLandingPage
         ),
-        color: getHeaderColor(props.isCustomHub, props.transparentHeader, props.isLandingPage, theme),
+        color: getHeaderColor(
+          props.isCustomHub,
+          props.transparentHeader,
+          props.isLandingPage,
+          theme
+        ),
         textDecoration: "inherit",
         transition: "all 0.25s linear", // use all instead of transform since the background color too is changing at some point. It'll be nice to have a smooth transition.
       };
