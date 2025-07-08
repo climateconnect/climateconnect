@@ -98,7 +98,7 @@ const getHubData = async (url_slug: string, locale: LocaleType): Promise<HubData
 
 const LandingPage: React.FC<LandingPageProps> = ({ hubData, hubUrl }) => {
   const { locale, donationGoal } = useContext(UserContext);
-  const donationGoalActive = donationGoal && donationGoal.hub === hubUrl
+  const donationGoalActive = donationGoal && donationGoal.hub === hubUrl;
   const texts = getTexts({ page: "landing_page", locale: locale }) as TextsType;
   const [DevlinkComponent, setDevlinkComponent] = useState<DevlinkComponentType>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);

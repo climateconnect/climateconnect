@@ -1,4 +1,4 @@
-import { Button, IconButton,Theme } from "@mui/material";
+import { Button, IconButton, Theme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
@@ -6,13 +6,16 @@ import { useRouter } from "next/router";
 import React from "react";
 
 type StyleProps = {
-  hubSlug?:string
-}
+  hubSlug?: string;
+};
 const PRIO1_SLUG = "prio1";
 
 const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => ({
-  button: props => ({
-    color: props.hubSlug === PRIO1_SLUG ? theme.palette.background.default : theme.palette.primary.contrastText,
+  button: (props) => ({
+    color:
+      props.hubSlug === PRIO1_SLUG
+        ? theme.palette.background.default
+        : theme.palette.primary.contrastText,
     height: 54,
     [theme.breakpoints.down("sm")]: {
       minWidth: 35,
