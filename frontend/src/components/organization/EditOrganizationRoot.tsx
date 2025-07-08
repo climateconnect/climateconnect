@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import Router from "next/router";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 import { arraysEqual } from "../../../public/lib/generalOperations";
@@ -20,6 +20,7 @@ import TranslateTexts from "../general/TranslateTexts";
 import Alert from "@mui/material/Alert";
 
 import { parseOrganization } from "../../../public/lib/organizationOperations";
+import FeedbackContext from "../context/FeedbackContext";
 
 const useStyles = makeStyles((theme) => ({
   headline: {
@@ -54,9 +55,7 @@ export default function EditOrganizationRoot({
   const { locale, locales } = useContext(UserContext);
   const STEPS = ["edit_organization", "edit_translations"];
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
-
   const [editedOrganization, setEditedOrganization] = useState({ ...organization });
-
   const texts = getTexts({
     page: "organization",
     locale: locale,
@@ -203,6 +202,7 @@ export default function EditOrganizationRoot({
       showCharacterCounter: true,
     },
   ];
+  const checkTranslationsButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const hideGetInvolvedField =
     editedOrganization.types.map((type) => type.hide_get_involved).includes(true) ||
@@ -211,6 +211,18 @@ export default function EditOrganizationRoot({
   const textsToTranslate = hideGetInvolvedField
     ? standardTextsToTranslate
     : standardTextsToTranslate.concat(getInvolvedText);
+
+  const { showFeedbackMessage } = useContext(FeedbackContext);
+  useEffect(() => {
+    if (organization.language && organization.language !== locale) {
+      showFeedbackMessage({
+        message: ` ${texts.editing_org_in_wrong_language}.`,
+      });
+      if (checkTranslationsButtonRef.current) {
+        checkTranslationsButtonRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, []);
 
   return (
     <>
@@ -230,6 +242,7 @@ export default function EditOrganizationRoot({
             onClickCheckTranslations={onClickCheckTranslations}
             allHubs={allHubs}
             type="organization"
+            checkTranslationsRef={checkTranslationsButtonRef}
           />
         ) : (
           <>

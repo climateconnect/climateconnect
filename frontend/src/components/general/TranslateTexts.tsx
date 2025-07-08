@@ -150,7 +150,6 @@ export default function TranslateTexts({
 }: Props) {
   const visibleFooterHeight = VisibleFooterHeight({});
   const classes = useStyles({ visibleFooterHeight: visibleFooterHeight });
-
   const { locale } = useContext(UserContext);
   //For the organization page, we need to retrieve the organization name to get the german text.
   //Therefore we pass organization even it this might not make sense in most cases.
