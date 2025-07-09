@@ -76,7 +76,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("organization", "0106_organizationsectormapping_projectsectormapping_sector"),
-        ("hubs", "0036_hub_sectors"),
+        ("hubs", "0037_hub_sectors"),
     ]
 
     operations = [

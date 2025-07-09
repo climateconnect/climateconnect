@@ -202,6 +202,7 @@ class Hub(models.Model):
         default=100,
     )
 
+    # TODO remove
     filter_parent_tags = models.ManyToManyField(
         ProjectTags,
         related_name="hub_parent_tags",
