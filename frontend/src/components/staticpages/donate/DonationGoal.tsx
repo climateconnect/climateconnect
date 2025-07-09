@@ -13,6 +13,7 @@ type StyleProps = {
   isInWidget: boolean;
   barColor?: string;
   small: boolean;
+  textMarginLeft?: string;
 };
 const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
   root: (props) => ({
@@ -31,6 +32,11 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
       bottom: 42,
     },
   }),
+  container: {
+    position: "relative",
+    paddingLeft: 0,
+    paddingRight: 0,
+  },
   rootFixed: {
     [theme.breakpoints.up("md")]: {
       position: "fixed",
@@ -54,14 +60,21 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
     height: props.small || props.isInWidget ? 15 : 25,
     borderRadius: 15,
     backgroundColor: theme.palette.grey[theme.palette.mode === "light" ? 200 : 700],
-    [theme.breakpoints.down("sm")]: {
-      height: 15,
-    },
   }),
   bar: (props) => ({
     borderRadius: 5,
     backgroundColor: props.barColor ? props.barColor : theme.palette.primary.main,
   }),
+  barText: (props) => ({
+    position: "absolute",
+    top: "50%",
+    left: props.textMarginLeft,
+    transform: "translate(0, -50%)", // Center the text
+    zIndex: 1000,
+    color: theme.palette.primary.main,
+    fontWeight: "bold",
+    fontSize: 20
+  })
 }));
 
 export default function DonationGoal({
@@ -82,25 +95,14 @@ export default function DonationGoal({
     small: small,
     barOnly: barOnly,
     isInWidget: isInWidget,
+    textMarginLeft: ((current/goal) < 0.9) ? `${(current / goal) * 100 + 1}%` : `${(current / goal) * 100 -25}%`,
   });
   const { locale } = useContext(UserContext);
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const texts = getTexts({ page: "donate", locale: locale, classes: classes, goal: goal });
   return (
     <div className={`${className} ${classes.root}`}>
-      <Container>
-        {(!barOnly || !isNarrowScreen) && (
-          <>
-            <Typography className={classes.text}>
-              {name}:{!embedded && <br />}{" "}
-              <Typography className={classes.amount} component="span">
-                {current}€
-              </Typography>{" "}
-              {texts.raised_out_of_goal}
-            </Typography>
-          </>
-        )}
-
+      <Container className={classes.container}>
         <LinearProgress
           variant="determinate"
           value={current / goal < 100 ? (current / goal) * 100 : 100}
@@ -109,6 +111,7 @@ export default function DonationGoal({
             bar: classes.bar,
           }}
         />
+        <div className={classes.barText}>{current}/{goal}</div>
       </Container>
     </div>
   );
