@@ -168,7 +168,7 @@ export default function Hub({
   const [hubAmbassador, setHubAmbassador] = useState(null);
   const [hubSupporters, setHubSupporters] = useState(null);
   const contentRef = useRef(null);
-  const donationGoalActive = donationGoal && donationGoal.hub === hubUrl
+  const donationGoalActive = donationGoal && donationGoal.hub === hubUrl;
 
   useEffect(() => {
     (async () => {
