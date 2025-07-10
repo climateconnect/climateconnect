@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("organization", "0106_organizationsectormapping_projectsectormapping_sector"),
-        ("hubs", "0036_hub_landing_page_component"),
+        ("hubs", "0035_auto_20250218_1128"),
     ]
 
     operations = [

@@ -99,9 +99,9 @@ class TestProjectsListView(APITestCase):
         # sector 3 will not be connected to any project
 
         # act
-        response_1 = self.client.get(self.url + "?sectors=" + sectors[0].name)
-        response_2 = self.client.get(self.url + "?sectors=" + sectors[1].name)
-        response_3 = self.client.get(self.url + "?sectors=" + sectors[2].name)
+        response_1 = self.client.get(self.url + "?sectors=" + sectors[0].key)
+        response_2 = self.client.get(self.url + "?sectors=" + sectors[1].key)
+        response_3 = self.client.get(self.url + "?sectors=" + sectors[2].key)
 
         results_1 = response_1.json().get("results", None)
         results_2 = response_2.json().get("results", None)
@@ -140,7 +140,7 @@ class TestProjectsListView(APITestCase):
 
         testcases = [
             {
-                "url": "sectors={},{}".format(sectors[0].name, sectors[1].name),
+                "url": "sectors={},{}".format(sectors[0].key, sectors[1].key),
                 "expected": [
                     projects[0].url_slug,
                     projects[1].url_slug,
@@ -148,14 +148,14 @@ class TestProjectsListView(APITestCase):
                 ],
             },
             {
-                "url": "sectors={},{}".format(sectors[0].name, sectors[2].name),
+                "url": "sectors={},{}".format(sectors[0].key, sectors[2].key),
                 "expected": [
                     projects[0].url_slug,
                     projects[1].url_slug,
                 ],
             },
             {
-                "url": "sectors={},{}".format(sectors[1].name, sectors[2].name),
+                "url": "sectors={},{}".format(sectors[1].key, sectors[2].key),
                 "expected": [
                     projects[2].url_slug,
                 ],
@@ -292,7 +292,7 @@ class TestProjectsListView(APITestCase):
             )
 
         # act
-        response = self.client.get(self.url + "?sectors=" + sectors[0].name)
+        response = self.client.get(self.url + "?sectors=" + sectors[0].key)
         result = response.json().get("results", None)
         self.assertIsNotNone(result)
 
