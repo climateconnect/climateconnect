@@ -72,6 +72,8 @@ def load_sector_images_from_sector_hubs(apps, schema_editor):
             f"--> Porting images and icons from hub {hub.name} to sector {sector.key}"
         )
         if hub.image is not None:
+            print(hub.image)
+            print(hub.image.path)
             img = hub.image.open()
             content = ContentFile(img.read())
             file_ending = "." + hub.image.name.split(".")[-1]
