@@ -4,6 +4,7 @@ export type User = {
   id: string;
   first_name?: string;
   last_name?: string;
+  url_slug?: string;
 };
 
 export type Role = {
@@ -42,6 +43,8 @@ export type Project = {
   image?: string;
   hubName?: string;
   sectors?: any[];
+  related_hubs?: any[];
+  hubUrl?: string;
 };
 
 export type BrowseTab = "projects" | "organizations" | "members" | "events";
@@ -82,4 +85,13 @@ export type Supporter = {
   logo: string;
   importance: number;
   organization_url_slug: string;
+};
+
+export type SectorOptionType = {
+  icon?: string;
+  id: number;
+  name: string;
+  key: string;
+  original_name?: string; 
+  thumbnail_image?: string;
 };

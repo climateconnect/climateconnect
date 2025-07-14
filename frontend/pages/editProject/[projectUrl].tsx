@@ -20,6 +20,7 @@ import Layout from "../../src/components/layouts/layout";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
+import { Project, SectorOptionType } from "../../src/types";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -74,15 +75,6 @@ export async function getServerSideProps(ctx) {
   };
 }
 
-type SectorOptionType = {
-  icon?: string;
-  id: number;
-  name: string;
-  key: string;
-  original_name?: string; 
-  thumbnail_image?: string;
-};
-
 export default function EditProjectPage({
   project,
   members,
@@ -94,7 +86,7 @@ export default function EditProjectPage({
   hubUrl,
   sectorOptions,
 }: {
-  project: any;
+  project: Project;
   members: any[];
   skillsOptions: any[];
   userOrganizations: any[];
@@ -104,11 +96,12 @@ export default function EditProjectPage({
   hubUrl: string;
   sectorOptions: SectorOptionType[];
 }) {
+  
   const classes = useStyles();
   const [curProject, setCurProject] = React.useState({
     ...project,
     status: statusOptions.find((s) => s.name === project?.status),
-    hubUrl: project.related_hubs?.length > 0 ? project.related_hubs[0] : null,
+    hubUrl: project?.related_hubs?.length ? project.related_hubs[0] : null,
   });
   project = {
     ...project,
