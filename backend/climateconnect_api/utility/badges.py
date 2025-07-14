@@ -6,19 +6,33 @@ from django.db.models import Q
 
 def get_badges(user_profile):
     badges = []
-    all_donations = Donation.objects.filter(user=user_profile.user)
-    user_badges = UserBadge.objects.filter(user=user_profile.user)
-    if user_badges.exists():
+
+    # Get all donations, but only if they have not been prefetched / cached:
+    if "donation_user" in user_profile.user._prefetched_objects_cache:
+        all_donations = user_profile.user.donation_user.all()
+    else:
+        all_donations = Donation.objects.filter(user=user_profile.user)
+
+    # Get all badges, but only if they have not been prefetched / cached:
+    if "userbadge_user" in user_profile.user._prefetched_objects_cache:
+        user_badges = user_profile.user.userbadge_user.all()
+    else:
+        user_badges = UserBadge.objects.filter(user=user_profile.user).all()
+
+    if len(user_badges) > 0:
         for badge in user_badges:
             badges.append(badge.badge)
-    if all_donations.exists():
+    if len(all_donations) > 0:
         d = get_oldest_relevant_donation(all_donations)
         if d:
             today = datetime.datetime.today()
             time_donated = time_donated = today - d.date_first_received.replace(
                 tzinfo=None
             )
-            if d:
+            if d:  # TODO: this check is redundant, as d is always not None here
+                # TODO: update this filter logic to be performed by python instead
+                # of the database, as it is not efficient to filter at this stage (might be performed
+                # during serialization)
                 highest_donations_in_streak = all_donations.filter(
                     date_first_received__gte=d.date_first_received
                 ).order_by("donation_amount")

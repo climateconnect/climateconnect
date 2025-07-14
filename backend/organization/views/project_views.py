@@ -1,6 +1,7 @@
 import logging
 import traceback
 from django.db.models import Case, When, Prefetch
+from climateconnect_api.models.badge import UserBadge
 from organization.utility.cache import generate_project_ranking_cache_key
 from organization.utility.follow import (
     get_list_of_project_followers,
@@ -165,6 +166,9 @@ class ListProjectsView(ListAPIView):
         return self.list(request, *args, **kwargs)
 
     def get_queryset(self):
+        if hasattr(self, "_cached_queryset"):
+            return self._cached_queryset
+
         user = self.request.user
         user_profile = None
         if user.is_authenticated:
@@ -174,25 +178,30 @@ class ListProjectsView(ListAPIView):
             Project.objects.filter(is_draft=False, is_active=True)
             .select_related("loc", "language", "status")
             .prefetch_related(
-                "skills",
-                "tag_project",
-                Prefetch(
-                    "project_comment",
-                    queryset=ProjectComment.objects.select_related("comment_ptr"),
-                ),
                 "project_liked",
-                "project_following",
+                "project_comment",
                 "project_collaborator",
+                Prefetch(
+                    "tag_project",
+                    queryset=ProjectTagging.objects.select_related("project_tag"),
+                ),
                 Prefetch(
                     "project_parent",
                     queryset=ProjectParents.objects.select_related(
                         "parent_organization",
-                        "parent_user__user_profile",
+                        # "parent_user",
+                    ).prefetch_related(
+                        Prefetch(
+                            "parent_user",
+                            queryset=User.objects.prefetch_related(
+                                "userbadge_user__badge", "donation_user", "user_profile"
+                            ),
+                        )
                     ),
                 ),
             )
         )
-        # maybe use .annotate() to calculate ranking/counts of coments etc.
+        # maybe use .annotate() to calculate ranking/counts of comments etc.
 
         if "hub" in self.request.query_params:
             hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
@@ -323,6 +332,10 @@ class ListProjectsView(ListAPIView):
             )
             projects = projects.filter(loc__in=location_ids)
 
+        # explicitly evaluate the items
+        # this should be the only db call
+        projects = list(projects.all())
+
         if settings.CACHE_BACHED_RANK_REQUEST:
             ### retrieve all cached rankings for all projects
             ### and recalculate the rankings for projects that are missing cached rankings
@@ -344,12 +357,14 @@ class ListProjectsView(ListAPIView):
             }
 
             # sort by _cached_rankings and then drop the cache_keys
-            project_ids = map(
-                lambda x: x[0],
-                sorted(
-                    zip(project_ids, cache_keys),
-                    key=lambda x: _cached_rankings[x[1]] * (-1),
-                ),
+            project_ids = list(
+                map(
+                    lambda x: x[0],
+                    sorted(
+                        zip(project_ids, cache_keys),
+                        key=lambda x: _cached_rankings[x[1]] * (-1),
+                    ),
+                )
             )
         else:
             project_ids = [
@@ -365,7 +380,12 @@ class ListProjectsView(ListAPIView):
                 for position, id in enumerate(project_ids, start=1)
             )
         )
-        return projects.order_by(preferred_order)
+
+        # sort the projects using python instead of SQL (which would lead to a new DB call)
+        self._cached_queryset = sorted(
+            projects, key=lambda project: project_ids.index(project.id)
+        )
+        return self._cached_queryset
 
 
 class CreateProjectView(APIView):

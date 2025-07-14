@@ -136,6 +136,9 @@ class ProjectRanking:
 
         weights = self._weights()
 
+        # TODO: move this up / to the project_view
+        # alternatively, check the object if "_prefetched_objects_cache"
+        # is filled with the right value
         last_project_comment = (
             ProjectComment.objects.filter(project_id=project_id)
             .order_by("-created_at")
@@ -146,6 +149,7 @@ class ProjectRanking:
             if not last_project_comment
             else last_project_comment.created_at.timestamp()
         )
+        # TODO: same as above
         last_project_like = (
             ProjectLike.objects.filter(project_id=project_id)
             .order_by("-created_at")
@@ -154,6 +158,7 @@ class ProjectRanking:
         last_project_like_timestamp = (
             None if not last_project_like else last_project_like.created_at.timestamp()
         )
+        # TODO: same as above
         last_project_follower = (
             ProjectFollower.objects.filter(project_id=project_id)
             .order_by("-created_at")
@@ -201,6 +206,12 @@ class ProjectRanking:
                 last_interaction_timestamp=created_at.timestamp(), max_boost=None
             )
 
+        # TODO: move all of the queries of them out, this should be done in the project_view
+        # using annotations, we can perform this (1) without an additional query
+        # and (2) by offloading the calculation to the database, so that
+        # we do not need to query the comments, followers and so on...
+
+        # otherwise, check "_prefetched_objects_cache"
         project_factors = {
             "total_comments": ProjectComment.objects.filter(
                 project_id=project_id
@@ -231,6 +242,9 @@ class ProjectRanking:
             int(sum(project_factors[factor] * weights[factor] for factor in weights))
             + project_manually_set_rating
         )
+
+        # TODO: the following comment is made irrelevant by the fact that we
+        # are now caching the project ranking in the project_view
 
         # Now we want to change the order every time somebody
         # visits the page we would add some randomization.

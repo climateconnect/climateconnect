@@ -252,13 +252,13 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
 
 
 class ProjectStubSerializer(serializers.ModelSerializer):
-    project_parents = serializers.SerializerMethodField()
-    tags = serializers.SerializerMethodField()
-    project_type = SerializerMethodField()
+    name = serializers.SerializerMethodField()
     image = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
-    name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
+    project_type = SerializerMethodField()
+    project_parents = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
     number_of_comments = serializers.SerializerMethodField()
     number_of_likes = serializers.SerializerMethodField()
     collaborating_organizations = serializers.SerializerMethodField()
@@ -267,20 +267,20 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         model = Project
         fields = (
             "id",
+            "is_draft",
+            "start_date",
+            "end_date",
             "name",
             "url_slug",
             "image",
             "location",
+            "short_description",
             "project_type",
             "project_parents",
             "tags",
-            "is_draft",
-            "short_description",
             "number_of_comments",
             "number_of_likes",
             "collaborating_organizations",
-            "start_date",
-            "end_date",
         )
 
     def get_name(self, obj):
@@ -289,6 +289,8 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     def get_short_description(self, obj):
         return get_project_short_description(obj, get_language())
 
+    # TODO: does the frontend even use project_parents?
+    # should this even
     def get_project_parents(self, obj):
         # Query the first element but use .all()
         # as it is aware of prefetched Data
@@ -354,6 +356,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     def get_number_of_likes(self, obj):
         return obj.project_liked.count()
 
+    # TODO: should this be in the stub serializer?
     def get_collaborating_organizations(self, obj):
         serializer = ProjectCollaboratorsSerializer(obj.project_collaborator, many=True)
         return serializer.data
