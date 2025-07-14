@@ -167,56 +167,26 @@ class ListProjectsView(ListAPIView):
         return self.list(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        start_time = datetime.now()
-        print(f"Start time: {start_time}")
-
         qs = self.get_queryset()
-        print(
-            f"Time after get_queryset: {(datetime.now() - start_time).total_seconds() * 1000} ms"
-        )
-
+        # filter first
         filtered_queryset = self.filter_queryset(qs)
-        print(
-            f"Time after filter_queryset: {(datetime.now() - start_time).total_seconds() * 1000} ms"
-        )
-        projects = list(qs.all())
-        print(
-            f"Time after db: {(datetime.now() - start_time).total_seconds() * 1000} ms"
-        )
 
-        ranked_qs = self.__perform_ordering_based_on_rank(filtered_queryset)
-        print(
-            f"Time after __perform_ordering_based_on_rank: {(datetime.now() - start_time).total_seconds() * 1000} ms"
-        )
-
-        paginated_qs = self.paginate_queryset(ranked_qs)
-        print(
-            f"Time after paginate_queryset: {(datetime.now() - start_time).total_seconds() * 1000} ms"
-        )
-
-        serializer = self.get_serializer(paginated_qs, many=True)
-        print(
-            f"Time after get_serializer: {(datetime.now() - start_time).total_seconds() * 1000} ms"
-        )
-
-        return self.get_paginated_response(serializer.data)
-        # qs = self.get_queryset()
-        # # filter first
-        # filtered_queryset = self.filter_queryset(qs)
-        # # then order by rank
-        # ranked_qs = self.__perform_ordering_based_on_rank(filtered_queryset)
-        # # then paginate
-        # paginated_qs = self.paginate_queryset(ranked_qs)
-
-        # # the serialize
-        # serializer = self.get_serializer(paginated_qs, many=True)
-        # return self.get_paginated_response(serializer.data)
-
-    def __perform_ordering_based_on_rank(self, projects):
         # explicitly evaluate the queryset to avoid lazy evaluation
         # causing multiple database hits
 
         # this should be the only db call
+        projects = list(filtered_queryset.all())
+
+        # then order by rank
+        ranked_projects = self.__perform_ordering_based_on_rank(projects)
+        # then paginate
+        paginated_projects = self.paginate_queryset(ranked_projects)
+
+        # the serialize
+        serializer = self.get_serializer(paginated_projects, many=True)
+        return self.get_paginated_response(serializer.data)
+
+    def __perform_ordering_based_on_rank(self, projects):
 
         if settings.CACHE_BACHED_RANK_REQUEST:
             ### retrieve all cached rankings for all projects
