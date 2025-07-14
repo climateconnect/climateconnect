@@ -18,7 +18,7 @@ import UserContext from "../context/UserContext";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
 import ProjectLocationSearchBar from "../shareProject/ProjectLocationSearchBar";
-import { Project } from "../../types";
+import { Project, SectorOptionType } from "../../types";
 import CustomHubSelection from "../project/CustomHubSelection";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
@@ -90,7 +90,7 @@ type Args = {
   locationOptionsOpen: boolean;
   handleSetLocationOptionsOpen: Function;
   locationInputRef: any;
-  sectorOptions: any;
+  sectorOptions: SectorOptionType[];
 };
 
 //TODO: Allow changing project type?!
