@@ -123,6 +123,7 @@ from organization.utility.requests import MembershipRequestsManager
 from organization.utility import MembershipTarget
 from organization.models.type import ProjectTypesChoices
 from climateconnect_api.tasks import calculate_project_rankings
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -164,6 +165,105 @@ class ListProjectsView(ListAPIView):
 
         # Call the standard list method which handles filtering and pagination
         return self.list(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        start_time = datetime.now()
+        print(f"Start time: {start_time}")
+
+        qs = self.get_queryset()
+        print(
+            f"Time after get_queryset: {(datetime.now() - start_time).total_seconds() * 1000} ms"
+        )
+
+        filtered_queryset = self.filter_queryset(qs)
+        print(
+            f"Time after filter_queryset: {(datetime.now() - start_time).total_seconds() * 1000} ms"
+        )
+        projects = list(qs.all())
+        print(
+            f"Time after db: {(datetime.now() - start_time).total_seconds() * 1000} ms"
+        )
+
+        ranked_qs = self.__perform_ordering_based_on_rank(filtered_queryset)
+        print(
+            f"Time after __perform_ordering_based_on_rank: {(datetime.now() - start_time).total_seconds() * 1000} ms"
+        )
+
+        paginated_qs = self.paginate_queryset(ranked_qs)
+        print(
+            f"Time after paginate_queryset: {(datetime.now() - start_time).total_seconds() * 1000} ms"
+        )
+
+        serializer = self.get_serializer(paginated_qs, many=True)
+        print(
+            f"Time after get_serializer: {(datetime.now() - start_time).total_seconds() * 1000} ms"
+        )
+
+        return self.get_paginated_response(serializer.data)
+        # qs = self.get_queryset()
+        # # filter first
+        # filtered_queryset = self.filter_queryset(qs)
+        # # then order by rank
+        # ranked_qs = self.__perform_ordering_based_on_rank(filtered_queryset)
+        # # then paginate
+        # paginated_qs = self.paginate_queryset(ranked_qs)
+
+        # # the serialize
+        # serializer = self.get_serializer(paginated_qs, many=True)
+        # return self.get_paginated_response(serializer.data)
+
+    def __perform_ordering_based_on_rank(self, projects):
+        # explicitly evaluate the queryset to avoid lazy evaluation
+        # causing multiple database hits
+
+        # this should be the only db call
+
+        if settings.CACHE_BACHED_RANK_REQUEST:
+            ### retrieve all cached rankings for all projects
+            ### and recalculate the rankings for projects that are missing cached rankings
+
+            # generate all cache keys cached rankings of all projects
+            project_ids = [project.id for project in projects]
+            cache_keys = [
+                generate_project_ranking_cache_key(project_id=pid)
+                for pid in project_ids
+            ]
+
+            # prefetch the cached rankings all at once
+            cached_rankings = cache.get_many(cache_keys)
+
+            # TODO: cache misses should be handled in one go
+            # current status: iterate over all projects (and therefore over all cache misses)
+            # one by one and updating the cache one by one
+
+            # save the cached values to the view
+            _cached_rankings = {
+                key: cached_rankings[key] if key in cached_rankings else project.ranking
+                for key, project in zip(cache_keys, projects)
+            }
+
+            # sort by _cached_rankings and then drop the cache_keys
+            project_ids = map(
+                lambda x: x[0],
+                sorted(
+                    zip(project_ids, cache_keys),
+                    key=lambda x: _cached_rankings[x[1]] * (-1),
+                ),
+            )
+        else:
+            project_ids = [
+                project.id
+                for project in sorted(
+                    projects, key=lambda project: -project.cached_ranking
+                )
+            ]
+
+        preferred_order = {
+            id: position for position, id in enumerate(project_ids, start=1)
+        }
+
+        # sort the projects using python instead of SQL (which would lead to a new DB call)
+        return sorted(projects, key=lambda project: preferred_order.get(project.id, 0))
 
     def get_queryset(self):
         if hasattr(self, "_cached_queryset"):
@@ -332,60 +432,8 @@ class ListProjectsView(ListAPIView):
             )
             projects = projects.filter(loc__in=location_ids)
 
-        # explicitly evaluate the items
-        # this should be the only db call
-        projects = list(projects.all())
-
-        if settings.CACHE_BACHED_RANK_REQUEST:
-            ### retrieve all cached rankings for all projects
-            ### and recalculate the rankings for projects that are missing cached rankings
-
-            # generate all cache keys cached rankings of all projects
-            project_ids = [project.id for project in projects]
-            cache_keys = [
-                generate_project_ranking_cache_key(project_id=pid)
-                for pid in project_ids
-            ]
-
-            # prefetch the cached rankings all at once
-            cached_rankings = cache.get_many(cache_keys)
-
-            # save the cached values to the view
-            _cached_rankings = {
-                key: cached_rankings[key] if key in cached_rankings else project.ranking
-                for key, project in zip(cache_keys, projects)
-            }
-
-            # sort by _cached_rankings and then drop the cache_keys
-            project_ids = list(
-                map(
-                    lambda x: x[0],
-                    sorted(
-                        zip(project_ids, cache_keys),
-                        key=lambda x: _cached_rankings[x[1]] * (-1),
-                    ),
-                )
-            )
-        else:
-            project_ids = [
-                project.id
-                for project in sorted(
-                    projects, key=lambda project: -project.cached_ranking
-                )
-            ]
-
-        preferred_order = Case(
-            *(
-                When(id=id, then=position)
-                for position, id in enumerate(project_ids, start=1)
-            )
-        )
-
-        # sort the projects using python instead of SQL (which would lead to a new DB call)
-        self._cached_queryset = sorted(
-            projects, key=lambda project: project_ids.index(project.id)
-        )
-        return self._cached_queryset
+        self._cached_queryset = projects
+        return projects
 
 
 class CreateProjectView(APIView):

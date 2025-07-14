@@ -7,14 +7,24 @@ from django.db.models import Q
 def get_badges(user_profile):
     badges = []
 
+    prefetched_cache_exists = hasattr(user_profile, "user") and hasattr(
+        user_profile.user, "_prefetched_objects_cache"
+    )
+
     # Get all donations, but only if they have not been prefetched / cached:
-    if "donation_user" in user_profile.user._prefetched_objects_cache:
+    if (
+        prefetched_cache_exists
+        and "donation_user" in user_profile.user._prefetched_objects_cache
+    ):
         all_donations = user_profile.user.donation_user.all()
     else:
         all_donations = Donation.objects.filter(user=user_profile.user)
 
     # Get all badges, but only if they have not been prefetched / cached:
-    if "userbadge_user" in user_profile.user._prefetched_objects_cache:
+    if (
+        prefetched_cache_exists
+        and "userbadge_user" in user_profile.user._prefetched_objects_cache
+    ):
         user_badges = user_profile.user.userbadge_user.all()
     else:
         user_badges = UserBadge.objects.filter(user=user_profile.user).all()
