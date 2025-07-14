@@ -84,14 +84,15 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
 
 type Args = {
   project: Project;
-  handleSetProject: Function;
+  handleSetProject: (project: Project) => void;
   smallScreen: Boolean;
   overviewInputsRef: any;
   locationOptionsOpen: boolean;
-  handleSetLocationOptionsOpen: Function;
+  handleSetLocationOptionsOpen: (open: boolean) => void;
   locationInputRef: any;
   sectorOptions: SectorOptionType[];
 };
+
 
 //TODO: Allow changing project type?!
 
@@ -142,6 +143,19 @@ export default function EditProjectOverview({
   );
 }
 
+type ScreenOverviewProps = {
+  project: Project;
+  handleChangeProject: (newValue: any, key: string) => void;
+  handleChangeImage: (newImage: any, newThumbnailImage: any) => void;
+  overviewInputsRef: React.RefObject<HTMLInputElement>;
+  handleSetProject: (project: Project) => void;
+  locationInputRef: React.RefObject<HTMLInputElement>;
+  locationOptionsOpen: boolean;
+  handleSetLocationOptionsOpen: (open: boolean) => void;
+  texts: any;
+  sectorOptions: SectorOptionType[];
+};
+
 function SmallScreenOverview({
   project,
   handleChangeProject,
@@ -153,7 +167,7 @@ function SmallScreenOverview({
   handleSetLocationOptionsOpen,
   texts,
   sectorOptions,
-}) {
+}: ScreenOverviewProps) {
   const classes = useStyles({});
   return (
     <>
@@ -207,7 +221,7 @@ function LargeScreenOverview({
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
   sectorOptions,
-}) {
+}: ScreenOverviewProps) {
   const classes = useStyles({});
   function handleUpdateSelectedHub(hubUrl: string) {
     handleSetProject({

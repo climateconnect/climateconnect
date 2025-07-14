@@ -45,6 +45,7 @@ export type Project = {
   sectors?: any[];
   related_hubs?: any[];
   hubUrl?: string;
+  thumbnail_image?: string;
 };
 
 export type BrowseTab = "projects" | "organizations" | "members" | "events";
