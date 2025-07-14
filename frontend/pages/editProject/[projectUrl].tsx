@@ -74,6 +74,15 @@ export async function getServerSideProps(ctx) {
   };
 }
 
+type SectorOptionType = {
+  icon?: string;
+  id: number;
+  name: string;
+  key: string;
+  original_name?: string; 
+  thumbnail_image?: string;
+};
+
 export default function EditProjectPage({
   project,
   members,
@@ -84,6 +93,16 @@ export default function EditProjectPage({
   hubThemeData,
   hubUrl,
   sectorOptions,
+}: {
+  project: any;
+  members: any[];
+  skillsOptions: any[];
+  userOrganizations: any[];
+  statusOptions: any[];
+  projectTypeOptions: any[];
+  hubThemeData: any;
+  hubUrl: string;
+  sectorOptions: SectorOptionType[];
 }) {
   const classes = useStyles();
   const [curProject, setCurProject] = React.useState({
