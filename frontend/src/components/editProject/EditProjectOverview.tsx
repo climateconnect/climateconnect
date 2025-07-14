@@ -389,7 +389,14 @@ const InputWebsite = ({ project, handleChangeProject, texts }) => {
   );
 };
 
-const InputSectors = ({ project, handleChangeProject, texts, sectorOptions }) => {
+type InputSectorsProps = {
+  project: Project;
+  handleChangeProject: (newValue: any, key: string) => void;
+  texts: any;
+  sectorOptions: SectorOptionType[];
+};
+
+const InputSectors = ({ project, handleChangeProject, texts, sectorOptions }: InputSectorsProps) => {
   const classes = useStyles({});
 
   const handleValueChange = (selectedNames) => {
@@ -399,7 +406,7 @@ const InputSectors = ({ project, handleChangeProject, texts, sectorOptions }) =>
   };
 
   const handleSectorDelete = (sector) => {
-    handleChangeProject([...project.sectors.filter((t) => t.id !== sector.id)], "sectors");
+    handleChangeProject([...(project.sectors ?? []).filter((t) => t.id !== sector.id)], "sectors");
   };
 
   return (
@@ -407,9 +414,9 @@ const InputSectors = ({ project, handleChangeProject, texts, sectorOptions }) =>
       <Typography variant="body2" className={classes.overviewHeadline}>
         {texts.project_categories}
       </Typography>
-      {project.sectors && (
+      {(project.sectors ?? []).length > 0 && (
         <List className={classes.flexContainer}>
-          {project.sectors.map((sector) => (
+          {project?.sectors?.map((sector) => (
             <Chip
               key={sector.name}
               label={sector.name}
