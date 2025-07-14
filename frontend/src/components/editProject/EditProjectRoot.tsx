@@ -69,7 +69,6 @@ export default function EditProjectRoot({
   projectTypeOptions,
   sectorOptions,
 }: Props) {
-  
   const classes = useStyles();
   const token = new Cookies().get("auth_token");
   const { locale, locales, user } = useContext(UserContext);

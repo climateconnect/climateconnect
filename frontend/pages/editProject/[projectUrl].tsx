@@ -96,7 +96,6 @@ export default function EditProjectPage({
   hubUrl: string;
   sectorOptions: SectorOptionType[];
 }) {
-  
   const classes = useStyles();
   const [curProject, setCurProject] = React.useState({
     ...project,

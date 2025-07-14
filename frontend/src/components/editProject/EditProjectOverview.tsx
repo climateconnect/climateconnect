@@ -93,7 +93,6 @@ type Args = {
   sectorOptions: SectorOptionType[];
 };
 
-
 //TODO: Allow changing project type?!
 
 export default function EditProjectOverview({
@@ -396,7 +395,12 @@ type InputSectorsProps = {
   sectorOptions: SectorOptionType[];
 };
 
-const InputSectors = ({ project, handleChangeProject, texts, sectorOptions }: InputSectorsProps) => {
+const InputSectors = ({
+  project,
+  handleChangeProject,
+  texts,
+  sectorOptions,
+}: InputSectorsProps) => {
   const classes = useStyles({});
 
   const handleValueChange = (selectedNames) => {
