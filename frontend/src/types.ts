@@ -13,6 +13,15 @@ export type Role = {
   role_type: "all" | "read write" | "read only";
 };
 
+export type SectorOptionType = {
+  icon?: string;
+  id: number;
+  name: string;
+  key: string;
+  original_name?: string; 
+  thumbnail_image?: string;
+};
+
 export type Project = {
   collaborators_welcome: boolean;
   status: string;
@@ -41,7 +50,7 @@ export type Project = {
   creator?: User | Organization | any; //TODO: remove 'any' once User and Organization types are properly defined
   image?: string;
   hubName?: string;
-  sectors?: any[];
+  sectors?: SectorOptionType[];
 };
 
 export type BrowseTab = "projects" | "organizations" | "members" | "events";
