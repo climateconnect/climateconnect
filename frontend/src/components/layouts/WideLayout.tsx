@@ -107,7 +107,7 @@ export default function WideLayout({
   hideAlert,
   isLandingPage,
   hasHubLandingPage,
-  showDonationGoal
+  showDonationGoal,
 }: Props) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(hideAlert ? false : true);
@@ -190,10 +190,7 @@ export default function WideLayout({
             </Alert>
           )}
           {subHeader && subHeader}
-          {!fixedHeader &&
-            showDonationGoal && (
-              <DonationCampaignInformation />
-            )}
+          {!fixedHeader && showDonationGoal && <DonationCampaignInformation />}
           {children}
         </Container>
       )}

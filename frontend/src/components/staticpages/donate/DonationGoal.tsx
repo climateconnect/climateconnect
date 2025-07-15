@@ -73,8 +73,8 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
     zIndex: 1000,
     color: theme.palette.primary.main,
     fontWeight: "bold",
-    fontSize: 20
-  })
+    fontSize: 20,
+  }),
 }));
 
 export default function DonationGoal({
@@ -95,7 +95,8 @@ export default function DonationGoal({
     small: small,
     barOnly: barOnly,
     isInWidget: isInWidget,
-    textMarginLeft: ((current/goal) < 0.9) ? `${(current / goal) * 100 + 1}%` : `${(current / goal) * 100 -25}%`,
+    textMarginLeft:
+      current / goal < 0.9 ? `${(current / goal) * 100 + 1}%` : `${(current / goal) * 100 - 25}%`,
   });
   const { locale } = useContext(UserContext);
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
@@ -111,7 +112,9 @@ export default function DonationGoal({
             bar: classes.bar,
           }}
         />
-        <div className={classes.barText}>{current}/{goal}</div>
+        <div className={classes.barText}>
+          {current}/{goal}
+        </div>
       </Container>
     </div>
   );

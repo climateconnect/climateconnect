@@ -1,6 +1,6 @@
 import logging
 import traceback
-from django.db.models import Case, When, Prefetch
+from django.db.models import Prefetch
 from organization.utility.cache import generate_project_ranking_cache_key
 from organization.utility.follow import (
     get_list_of_project_followers,
@@ -164,7 +164,79 @@ class ListProjectsView(ListAPIView):
         # Call the standard list method which handles filtering and pagination
         return self.list(request, *args, **kwargs)
 
+    def get(self, request, *args, **kwargs):
+        qs = self.get_queryset()
+        # filter first
+        filtered_queryset = self.filter_queryset(qs)
+
+        # explicitly evaluate the queryset to avoid lazy evaluation
+        # causing multiple database hits
+
+        # this should be the only db call
+        projects = list(filtered_queryset.all())
+
+        # then order by rank
+        ranked_projects = self.__perform_ordering_based_on_rank(projects)
+        # then paginate
+        paginated_projects = self.paginate_queryset(ranked_projects)
+
+        # the serialize
+        serializer = self.get_serializer(paginated_projects, many=True)
+        return self.get_paginated_response(serializer.data)
+
+    def __perform_ordering_based_on_rank(self, projects):
+
+        if settings.CACHE_BACHED_RANK_REQUEST:
+            ### retrieve all cached rankings for all projects
+            ### and recalculate the rankings for projects that are missing cached rankings
+
+            # generate all cache keys cached rankings of all projects
+            project_ids = [project.id for project in projects]
+            cache_keys = [
+                generate_project_ranking_cache_key(project_id=pid)
+                for pid in project_ids
+            ]
+
+            # prefetch the cached rankings all at once
+            cached_rankings = cache.get_many(cache_keys)
+
+            # TODO: cache misses should be handled in one go
+            # current status: iterate over all projects (and therefore over all cache misses)
+            # one by one and updating the cache one by one
+
+            # save the cached values to the view
+            _cached_rankings = {
+                key: cached_rankings[key] if key in cached_rankings else project.ranking
+                for key, project in zip(cache_keys, projects)
+            }
+
+            # sort by _cached_rankings and then drop the cache_keys
+            project_ids = map(
+                lambda x: x[0],
+                sorted(
+                    zip(project_ids, cache_keys),
+                    key=lambda x: _cached_rankings[x[1]] * (-1),
+                ),
+            )
+        else:
+            project_ids = [
+                project.id
+                for project in sorted(
+                    projects, key=lambda project: -project.cached_ranking
+                )
+            ]
+
+        preferred_order = {
+            id: position for position, id in enumerate(project_ids, start=1)
+        }
+
+        # sort the projects using python instead of SQL (which would lead to a new DB call)
+        return sorted(projects, key=lambda project: preferred_order.get(project.id, 0))
+
     def get_queryset(self):
+        if hasattr(self, "_cached_queryset"):
+            return self._cached_queryset
+
         user = self.request.user
         user_profile = None
         if user.is_authenticated:
@@ -174,25 +246,30 @@ class ListProjectsView(ListAPIView):
             Project.objects.filter(is_draft=False, is_active=True)
             .select_related("loc", "language", "status")
             .prefetch_related(
-                "skills",
-                "tag_project",
-                Prefetch(
-                    "project_comment",
-                    queryset=ProjectComment.objects.select_related("comment_ptr"),
-                ),
                 "project_liked",
-                "project_following",
+                "project_comment",
                 "project_collaborator",
+                Prefetch(
+                    "tag_project",
+                    queryset=ProjectTagging.objects.select_related("project_tag"),
+                ),
                 Prefetch(
                     "project_parent",
                     queryset=ProjectParents.objects.select_related(
                         "parent_organization",
-                        "parent_user__user_profile",
+                        # "parent_user",
+                    ).prefetch_related(
+                        Prefetch(
+                            "parent_user",
+                            queryset=User.objects.prefetch_related(
+                                "userbadge_user__badge", "donation_user", "user_profile"
+                            ),
+                        )
                     ),
                 ),
             )
         )
-        # maybe use .annotate() to calculate ranking/counts of coments etc.
+        # maybe use .annotate() to calculate ranking/counts of comments etc.
 
         if "hub" in self.request.query_params:
             hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
@@ -323,49 +400,8 @@ class ListProjectsView(ListAPIView):
             )
             projects = projects.filter(loc__in=location_ids)
 
-        if settings.CACHE_BACHED_RANK_REQUEST:
-            ### retrieve all cached rankings for all projects
-            ### and recalculate the rankings for projects that are missing cached rankings
-
-            # generate all cache keys cached rankings of all projects
-            project_ids = [project.id for project in projects]
-            cache_keys = [
-                generate_project_ranking_cache_key(project_id=pid)
-                for pid in project_ids
-            ]
-
-            # prefetch the cached rankings all at once
-            cached_rankings = cache.get_many(cache_keys)
-
-            # save the cached values to the view
-            _cached_rankings = {
-                key: cached_rankings[key] if key in cached_rankings else project.ranking
-                for key, project in zip(cache_keys, projects)
-            }
-
-            # sort by _cached_rankings and then drop the cache_keys
-            project_ids = map(
-                lambda x: x[0],
-                sorted(
-                    zip(project_ids, cache_keys),
-                    key=lambda x: _cached_rankings[x[1]] * (-1),
-                ),
-            )
-        else:
-            project_ids = [
-                project.id
-                for project in sorted(
-                    projects, key=lambda project: -project.cached_ranking
-                )
-            ]
-
-        preferred_order = Case(
-            *(
-                When(id=id, then=position)
-                for position, id in enumerate(project_ids, start=1)
-            )
-        )
-        return projects.order_by(preferred_order)
+        self._cached_queryset = projects
+        return projects
 
 
 class CreateProjectView(APIView):

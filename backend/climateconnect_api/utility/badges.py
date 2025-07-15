@@ -6,35 +6,59 @@ from django.db.models import Q
 
 def get_badges(user_profile):
     badges = []
-    all_donations = Donation.objects.filter(user=user_profile.user)
-    user_badges = UserBadge.objects.filter(user=user_profile.user)
-    if user_badges.exists():
+
+    prefetched_cache_exists = hasattr(user_profile, "user") and hasattr(
+        user_profile.user, "_prefetched_objects_cache"
+    )
+
+    # Get all donations, but only if they have not been prefetched / cached:
+    if (
+        prefetched_cache_exists
+        and "donation_user" in user_profile.user._prefetched_objects_cache
+    ):
+        all_donations = user_profile.user.donation_user.all()
+    else:
+        all_donations = Donation.objects.filter(user=user_profile.user)
+
+    # Get all badges, but only if they have not been prefetched / cached:
+    if (
+        prefetched_cache_exists
+        and "userbadge_user" in user_profile.user._prefetched_objects_cache
+    ):
+        user_badges = user_profile.user.userbadge_user.all()
+    else:
+        user_badges = UserBadge.objects.filter(user=user_profile.user).all()
+
+    if user_badges:
         for badge in user_badges:
             badges.append(badge.badge)
-    if all_donations.exists():
+
+    if all_donations:
         d = get_oldest_relevant_donation(all_donations)
         if d:
             today = datetime.datetime.today()
             time_donated = time_donated = today - d.date_first_received.replace(
                 tzinfo=None
             )
-            if d:
-                highest_donations_in_streak = all_donations.filter(
-                    date_first_received__gte=d.date_first_received
-                ).order_by("donation_amount")
-                highest_donation_in_streak = highest_donations_in_streak[0]
-                badges_for_which_user_qualifies = DonorBadge.objects.filter(
-                    (
-                        Q(regular_donor_minimum_duration__lte=time_donated)
-                        | Q(
-                            instantly_awarded_over_amount__lte=highest_donation_in_streak.donation_amount
-                        )
-                    ),
-                    is_active=True,
-                ).order_by("-regular_donor_minimum_duration")
-                # Return the best badge the user qualifies for
-                if badges_for_which_user_qualifies.exists():
-                    badges.append(badges_for_which_user_qualifies[0])
+            # TODO: update this filter logic to be performed by python instead
+            # of the database, as it is not efficient to filter at this stage (might be performed
+            # during serialization)
+            highest_donations_in_streak = all_donations.filter(
+                date_first_received__gte=d.date_first_received
+            ).order_by("donation_amount")
+            highest_donation_in_streak = highest_donations_in_streak[0]
+            badges_for_which_user_qualifies = DonorBadge.objects.filter(
+                (
+                    Q(regular_donor_minimum_duration__lte=time_donated)
+                    | Q(
+                        instantly_awarded_over_amount__lte=highest_donation_in_streak.donation_amount
+                    )
+                ),
+                is_active=True,
+            ).order_by("-regular_donor_minimum_duration")
+            # Return the best badge the user qualifies for
+            if badges_for_which_user_qualifies.exists():
+                badges.append(badges_for_which_user_qualifies[0])
 
     return badges
 
