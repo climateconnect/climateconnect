@@ -5,6 +5,23 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import MiniHubPreviews from "./MiniHubPreviews";
 
+type SelectedHubs = {
+  hub_type: string;
+  icon?: string;
+  landing_page_component?: string;
+  name: string;
+  quick_info?: string;
+  thumbnail_image?: string;
+  url_slug: string;  
+}
+
+type ActiveSectorSelectorProps = {
+  selectedHubs: SelectedHubs[];
+  hubsToSelectFrom: SelectedHubs[];
+  onSelectNewHub: (hub: SelectedHubs) => void;
+  onClickRemoveHub: (hub: SelectedHubs) => void;
+ }
+
 const useStyles = makeStyles(() => ({
   headline: {
     fontWeight: 700,
@@ -16,7 +33,7 @@ export default function ActiveSectorSelector({
   hubsToSelectFrom,
   onSelectNewHub,
   onClickRemoveHub,
-}) {
+}:ActiveSectorSelectorProps) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
