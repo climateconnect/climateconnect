@@ -11,11 +11,7 @@ export const getScottLinks = (pathToRedirect: string, texts: any): Link[] =>
     mainTextKey: "climateconnect.scot",
   });
 
-const SCOTTISH_STATIC_LINKS_CONFIG: StaticLinkConfig[] = [
-  { href: "/nature-network/", textKey: "scottish_network" },
-  { href: "/climate-cafe-network/", textKey: "scottish_climate_cafe_network" },
-  { href: "/zero-waste-network/", textKey: "zero_waste_network" },
-];
+const SCOTTISH_STATIC_LINKS_CONFIG: StaticLinkConfig[] = [];
 
 export const scottishStaticLinks = (texts: any): Link[] =>
   getStaticLinks(texts, SCOTTISH_STATIC_LINKS_CONFIG, NETWORKS_URL);
@@ -26,6 +22,6 @@ export const scottConfig = (pathToRedirect: string, texts: any) => ({
     href: SCOTT_BASE_URL,
     text: texts.PRIO1_klima,
   },
-  headerLink: getScottLinks(pathToRedirect, texts),
-  headerStaticLink: scottishStaticLinks(texts),
+  headerLinks: getScottLinks(pathToRedirect, texts),
+  headerStaticLinks: scottishStaticLinks(texts),
 });

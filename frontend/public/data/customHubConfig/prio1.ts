@@ -29,6 +29,6 @@ export const prio1Config = (pathToRedirect: string, texts: any) => ({
     href: PRIO1_BASE_URL,
     text: texts.PRIO1_klima,
   },
-  headerLink: getPrio1Links(pathToRedirect, texts),
-  headerStaticLink: prio1StaticLinks(texts),
+  headerLinks: getPrio1Links(pathToRedirect, texts),
+  headerStaticLinks: prio1StaticLinks(texts),
 });

@@ -1,5 +1,5 @@
+import { COMMON_LINKS } from "../../lib/headerLinks";
 import { Link } from "../customHubtypes";
-import { COMMON_LINKS } from "../../lib/headerLink";
 import InfoIcon from "@mui/icons-material/Info";
 
 type GetLinksOptions = {
@@ -17,7 +17,6 @@ export const getSharedLinks = (
     href: options.baseUrl,
     text: texts[options.mainTextKey],
     iconForDrawer: InfoIcon,
-    showStaticLinksInDropdown: true,
     hideOnStaticPages: true,
     isExternalLink: true,
     className: "btnIconTextColor",
