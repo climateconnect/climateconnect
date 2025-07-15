@@ -18,7 +18,7 @@ export type SectorOptionType = {
   id: number;
   name: string;
   key: string;
-  original_name?: string; 
+  original_name?: string;
   thumbnail_image?: string;
 };
 
