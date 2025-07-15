@@ -85,7 +85,7 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
 type Args = {
   project: Project;
   handleSetProject: (project: Project) => void;
-  smallScreen: Boolean;
+  smallScreen: boolean;
   overviewInputsRef: any;
   locationOptionsOpen: boolean;
   handleSetLocationOptionsOpen: (open: boolean) => void;
@@ -151,7 +151,7 @@ type ScreenOverviewProps = {
   locationInputRef: React.RefObject<HTMLInputElement>;
   locationOptionsOpen: boolean;
   handleSetLocationOptionsOpen: (open: boolean) => void;
-  texts: any;
+  texts: Record<string, string>;
   sectorOptions: SectorOptionType[];
 };
 
@@ -391,7 +391,7 @@ const InputWebsite = ({ project, handleChangeProject, texts }) => {
 type InputSectorsProps = {
   project: Project;
   handleChangeProject: (newValue: any, key: string) => void;
-  texts: any;
+  texts: Record<string, string>;
   sectorOptions: SectorOptionType[];
 };
 
