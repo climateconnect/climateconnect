@@ -85,7 +85,7 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
 type Args = {
   project: Project;
   handleSetProject: (project: Project) => void;
-  smallScreen: Boolean;
+  smallScreen: boolean;
   overviewInputsRef: any;
   locationOptionsOpen: boolean;
   handleSetLocationOptionsOpen: (open: boolean) => void;
