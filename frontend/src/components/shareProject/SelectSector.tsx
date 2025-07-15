@@ -62,7 +62,6 @@ export default function SelectSector({
   };
 
   //(Share Project step 2)
-  //Use ActiveSectorSelector instead of MultiLevelSelector (Ask Tobi if different design should be used)
   return (
     <Container maxWidth="lg">
       <div className={classes.block}>
