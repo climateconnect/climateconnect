@@ -168,7 +168,7 @@ export default function HubContent({
   if (fixed && showMoreVisible) {
     setFixed(false);
   }
-  const WelcomeComponent = getCustomHubData({ hubUrl: hubUrl }).welcome?.[locale];
+  const WelcomeComponent = getCustomHubData({ hubUrl: hubUrl })?.welcome?.[locale];
 
   return (
     <div>
