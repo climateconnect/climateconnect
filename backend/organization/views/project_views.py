@@ -1,7 +1,6 @@
 import logging
 import traceback
-from django.db.models import Case, When, Prefetch
-from climateconnect_api.models.badge import UserBadge
+from django.db.models import Prefetch
 from organization.utility.cache import generate_project_ranking_cache_key
 from organization.utility.follow import (
     get_list_of_project_followers,
@@ -123,7 +122,6 @@ from organization.utility.requests import MembershipRequestsManager
 from organization.utility import MembershipTarget
 from organization.models.type import ProjectTypesChoices
 from climateconnect_api.tasks import calculate_project_rankings
-from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
