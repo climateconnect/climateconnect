@@ -130,7 +130,7 @@ const getLinks = (
   hubUrl
 ) => {
   return isCustomHub
-    ? getCustomHubData({ hubUrl, texts, path_to_redirect })?.headerLink
+    ? getCustomHubData({ hubUrl, texts, path_to_redirect })?.headerLinks
     : getDefaultLinks(
         path_to_redirect,
         texts,
@@ -235,35 +235,9 @@ const defaultStaticLinks = (texts, hubUrl) => [
   },
 ];
 
-const Prio1StaticLinks = (texts) => [
-  {
-    href: "https://prio1-klima.net/klima-preis/",
-    text: texts.PRIO1_Climate_Prize,
-    target: "_blank",
-    isExternalLink: true,
-  },
-  {
-    href: "https://prio1-klima.net/prio1-community/",
-    text: texts.PRIO1_community,
-    target: "_blank",
-    isExternalLink: true,
-  },
-  {
-    href: "https://prio1-klima.net/akteure/",
-    text: texts.for_actors,
-    target: "_blank",
-    isExternalLink: true,
-  },
-];
-
-const customHubStaticLinksFunction = {
-  prio1: Prio1StaticLinks,
-};
-
 const getCustomHubStaticLinks = (url_slug, texts) => {
-  if (Object.keys(customHubStaticLinksFunction).includes(url_slug))
-    return customHubStaticLinksFunction[url_slug](texts);
-  return defaultStaticLinks(texts, url_slug);
+  const customHubData = getCustomHubData({hubUrl: url_slug, texts});
+  return customHubData?.headerStaticLinks || defaultStaticLinks(texts, url_slug)
 };
 const getStaticLinks = (texts, customHubUrlSlug) => {
   return !customHubUrlSlug

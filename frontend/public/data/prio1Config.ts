@@ -1,5 +1,5 @@
 import { Link } from "./types";
-import { COMMON_LINKS } from "../lib/headerLink";
+import { COMMON_LINKS } from "../lib/headerLinks";
 import InfoIcon from "@mui/icons-material/Info";
 import { DePrio1Willkommen, EnPrio1Welcome } from "../../devlink";
 
@@ -57,6 +57,6 @@ export const prio1Config = (pathToRedirect: string, texts: any) => ({
     href: "https://prio1-klima.net",
     text: texts.PRIO1_klima,
   },
-  headerLink: getPrio1Links(pathToRedirect, texts),
-  headerStaticLink: prio1StaticLinks(texts),
+  headerLinks: getPrio1Links(pathToRedirect, texts),
+  headerStaticLinks: prio1StaticLinks(texts),
 });

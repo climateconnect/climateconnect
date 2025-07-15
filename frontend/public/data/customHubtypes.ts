@@ -22,8 +22,8 @@ export type HubConfig = {
       }
     | string;
   hubTabLinkNarrowScreen?: Link;
-  headerLink: Link[];
-  headerStaticLink?: Link[];
+  headerLinks: Link[];
+  headerStaticLinks?: Link[];
 };
 
 export type CustomHubConfig = {
