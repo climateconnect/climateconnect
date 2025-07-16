@@ -14,9 +14,10 @@ import AddTeam from "./AddTeam";
 import EnterDetails from "./EnterDetails";
 import ProjectSubmittedPage from "./ProjectSubmittedPage";
 import ShareProject from "./ShareProject";
-import { Project } from "../../types";
+import { Project, SkillType, Role, Organization, SectorOptionType } from "../../types";
 import { parseLocation } from "../../../public/lib/locationOperations";
 import SelectSector from "./SelectSector";
+
 
 const DEFAULT_STATUS = 2;
 
@@ -67,6 +68,26 @@ const getSteps = (texts) => {
   return steps;
 };
 
+type availabilityOptionsProps={
+  id: number;
+  key: string;
+  name: string;
+}
+
+type ShareProjectRootProps = {
+  availabilityOptions: availabilityOptionsProps[];
+  userOrganizations: Organization[]
+  skillsOptions: SkillType[];
+  rolesOptions: Role[];
+  user: any;
+  statusOptions: any[];
+  token: string;
+  setMessage: (message: string) => void;
+  projectTypeOptions: any[];
+  hubName?: string;
+  sectorOptions: SectorOptionType[];
+};
+
 export default function ShareProjectRoot({
   availabilityOptions,
   userOrganizations,
@@ -79,7 +100,8 @@ export default function ShareProjectRoot({
   projectTypeOptions,
   hubName,
   sectorOptions,
-}) {
+}:ShareProjectRootProps) {
+  
   const classes = useStyles();
   const { locale, locales } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });

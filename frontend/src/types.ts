@@ -11,6 +11,8 @@ export type Role = {
   name: string;
   name_de_translation?: string;
   role_type: "all" | "read write" | "read only";
+  explanation?: string;
+  explanation_de_translation?: string;
 };
 
 export type SectorOptionType = {
@@ -21,6 +23,15 @@ export type SectorOptionType = {
   original_name?: string;
   thumbnail_image?: string;
 };
+
+export type SkillType = {
+  id: number;
+  key: number;
+  name: string;
+  original_name: string;
+  parent_skill?: string;
+  subcategories:SkillType[];
+}
 
 export type Project = {
   collaborators_welcome: boolean;
