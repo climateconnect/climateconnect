@@ -38,7 +38,11 @@ export default function SectorsPreview({
           />
         ))}
       {allowCreate && (
-        <GridItem createMode sectorsToSelectFrom={sectorsToSelectFrom} onSelectNewSector={onSelectNewSector} />
+        <GridItem
+          createMode
+          sectorsToSelectFrom={sectorsToSelectFrom}
+          onSelectNewSector={onSelectNewSector}
+        />
       )}
     </Grid>
   );
