@@ -67,7 +67,7 @@ const useStyles = makeStyles<Theme, any>((theme) => ({
   },
 }));
 
-export default function MiniHubPreview({
+export default function MiniSectorPreview({
   hub,
   hubsToSelectFrom,
   editMode,

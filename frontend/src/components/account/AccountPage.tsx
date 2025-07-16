@@ -9,7 +9,7 @@ import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 import DetailledDescription from "./DetailledDescription";
 import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
-import MiniHubPreviews from "../hub/MiniHubPreviews";
+import Sectors from "../hub/Sectors";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import ProfileBadge from "../profile/ProfileBadge";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
@@ -362,7 +362,7 @@ export default function AccountPage({
               <>
                 {i.value.length > 0 && <div className={classes.subtitle}>{i.name}:</div>}
 
-                <MiniHubPreviews hubs={i.value} />
+                <Sectors hubs={i.value} />
               </>
             );
           } else if (i.type === "select" && value) {

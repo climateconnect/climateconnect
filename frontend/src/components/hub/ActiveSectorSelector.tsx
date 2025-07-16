@@ -3,7 +3,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-import MiniHubPreviews from "./MiniHubPreviews";
+import Sectors from "./Sectors";
 
 type SelectedHubs = {
   hub_type: string;
@@ -42,7 +42,7 @@ export default function ActiveSectorSelector({
       <Typography color="text" className={classes.headline}>
         {texts.add_hubs_in_which_your_organization_is_active}
       </Typography>
-      <MiniHubPreviews
+      <Sectors
         allowCreate
         editMode
         allHubs={hubsToSelectFrom}

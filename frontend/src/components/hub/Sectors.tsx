@@ -1,7 +1,7 @@
 import Grid from "@mui/material/Unstable_Grid2";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
-import MiniHubPreview from "./MiniHubPreview";
+import MiniSectorPreview from "./MiniSectorPreview";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 
 const useStyles = makeStyles((theme) => ({
@@ -16,8 +16,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-//change to sectors
-export default function MiniHubPreviews({
+export default function Sectors({
   hubs,
   allHubs,
   allowCreate,
@@ -62,7 +61,7 @@ function GridItem({
       lg={6}
       component="li"
     >
-      <MiniHubPreview
+      <MiniSectorPreview
         hub={hub}
         createMode={createMode}
         editMode={editMode}
