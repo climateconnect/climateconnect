@@ -50,8 +50,8 @@ export default function SelectSector({
   const texts = getTexts({ page: "project", locale: locale });
 
   const onClickNextStep = () => {
-    if (project.sectors.length <= 0) alert(texts.please_choose_at_least_one_category);
-    else if (project.sectors.length > 3) alert(texts.you_can_only_choose_up_to_3_categories);
+    if (project.sectors.length <= 0) alert(texts.please_choose_at_least_one_sector);
+    else if (project.sectors.length > 3) alert(texts.you_can_only_choose_up_to_3_sectors);
     else {
       goToNextStep();
     }
