@@ -67,10 +67,10 @@ export default function SelectSector({
       <div className={classes.block}>
         <Container maxWidth="md">
           <ActiveSectorSelector
-            selectedHubs={project.sectors ? project.sectors : []}
-            hubsToSelectFrom={sectorsToSelectFrom}
-            onSelectNewHub={onSelectNewSector}
-            onClickRemoveHub={onClickRemoveSector}
+            selectedSectors={project.sectors ? project.sectors : []}
+            sectorsToSelectFrom={sectorsToSelectFrom}
+            onSelectNewSector={onSelectNewSector}
+            onClickRemoveSector={onClickRemoveSector}
           />
         </Container>
       </div>

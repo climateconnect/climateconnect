@@ -5,7 +5,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import SectorsPreview from "./SectorsPreview";
 
-type SelectedHubs = {
+type selectedSectors = {
   hub_type: string;
   icon?: string;
   landing_page_component?: string;
@@ -16,10 +16,10 @@ type SelectedHubs = {
 };
 
 type ActiveSectorSelectorProps = {
-  selectedHubs: SelectedHubs[];
-  hubsToSelectFrom: SelectedHubs[];
-  onSelectNewHub: (hub: SelectedHubs) => void;
-  onClickRemoveHub: (hub: SelectedHubs) => void;
+  selectedSectors: selectedSectors[];
+  sectorsToSelectFrom: selectedSectors[];
+  onSelectNewSector: (hub: selectedSectors) => void;
+  onClickRemoveSector: (hub: selectedSectors) => void;
 };
 
 const useStyles = makeStyles(() => ({
@@ -29,10 +29,10 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function ActiveSectorSelector({
-  selectedHubs,
-  hubsToSelectFrom,
-  onSelectNewHub,
-  onClickRemoveHub,
+  selectedSectors,
+  sectorsToSelectFrom,
+  onSelectNewSector,
+  onClickRemoveSector,
 }: ActiveSectorSelectorProps) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -45,10 +45,10 @@ export default function ActiveSectorSelector({
       <SectorsPreview
         allowCreate
         editMode
-        allHubs={hubsToSelectFrom}
-        hubs={selectedHubs}
-        onSelectNewHub={onSelectNewHub}
-        onClickRemoveHub={onClickRemoveHub}
+        sectorsToSelectFrom={sectorsToSelectFrom}
+        sectors={selectedSectors}
+        onSelectNewSector={onSelectNewSector}
+        onClickRemoveSector={onClickRemoveSector}
       />
     </div>
   );
