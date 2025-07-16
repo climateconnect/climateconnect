@@ -29,9 +29,9 @@ const perth_texts = {
   },
   auth_image_subtitle: {
     en:
-      "Perth and Kinross Hub is integrated into the Germany-wide Climate Connect platform. To become part of the Perth and Kinross Hub, simply register here and you're in!",
+      "Perth and Kinross Hub is integrated into the global Climate Connect platform. To become part of the Perth and Kinross Hub, simply register here and you're in!",
     de:
-      "Perth und Kinross Hub ist integriert in die deutschlandweite Climate Connect Plattform. Um Teil des Perth and Kinross Hubs zu werden, melde dich einfach hier an und schon bist du dabei!",
+      "Der Perth und Kinross Hub ist integriert in die global Climate Connect Plattform. Um Teil des Perth and Kinross Hubs zu werden, melde dich einfach hier an und schon bist du dabei!",
   },
 };
 
