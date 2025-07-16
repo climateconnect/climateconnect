@@ -12,15 +12,15 @@ type SelectedHubs = {
   name: string;
   quick_info?: string;
   thumbnail_image?: string;
-  url_slug: string;  
-}
+  url_slug: string;
+};
 
 type ActiveSectorSelectorProps = {
   selectedHubs: SelectedHubs[];
   hubsToSelectFrom: SelectedHubs[];
   onSelectNewHub: (hub: SelectedHubs) => void;
   onClickRemoveHub: (hub: SelectedHubs) => void;
- }
+};
 
 const useStyles = makeStyles(() => ({
   headline: {
@@ -33,7 +33,7 @@ export default function ActiveSectorSelector({
   hubsToSelectFrom,
   onSelectNewHub,
   onClickRemoveHub,
-}:ActiveSectorSelectorProps) {
+}: ActiveSectorSelectorProps) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
