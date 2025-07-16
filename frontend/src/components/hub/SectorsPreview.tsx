@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Sectors({
+export default function SectorsPreview({
   hubs,
   allHubs,
   allowCreate,
