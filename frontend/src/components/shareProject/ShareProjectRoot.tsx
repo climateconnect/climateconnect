@@ -18,7 +18,6 @@ import { Project, SkillType, Role, Organization, SectorOptionType } from "../../
 import { parseLocation } from "../../../public/lib/locationOperations";
 import SelectSector from "./SelectSector";
 
-
 const DEFAULT_STATUS = 2;
 
 const useStyles = makeStyles((theme) => {
@@ -68,15 +67,15 @@ const getSteps = (texts) => {
   return steps;
 };
 
-type availabilityOptionsProps={
+type availabilityOptionsProps = {
   id: number;
   key: string;
   name: string;
-}
+};
 
 type ShareProjectRootProps = {
   availabilityOptions: availabilityOptionsProps[];
-  userOrganizations: Organization[]
+  userOrganizations: Organization[];
   skillsOptions: SkillType[];
   rolesOptions: Role[];
   user: any;
@@ -100,8 +99,7 @@ export default function ShareProjectRoot({
   projectTypeOptions,
   hubName,
   sectorOptions,
-}:ShareProjectRootProps) {
-  
+}: ShareProjectRootProps) {
   const classes = useStyles();
   const { locale, locales } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });

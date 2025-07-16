@@ -30,8 +30,8 @@ export type SkillType = {
   name: string;
   original_name: string;
   parent_skill?: string;
-  subcategories:SkillType[];
-}
+  subcategories: SkillType[];
+};
 
 export type Project = {
   collaborators_welcome: boolean;
