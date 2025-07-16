@@ -111,7 +111,7 @@ export default function Signin({ hubSlug, hubThemeData, message, message_type })
         redirectUrl += decodedRedirect;
         setRedirectUrl(redirectUrl);
       } else if (params.hub) {
-        setRedirectUrl(getLocalePrefix(locale) + "/hubs/" + params.hub);
+        setRedirectUrl(getLocalePrefix(locale) + "/hubs/" + params.hub + "/browse");
       }
       setInitialized(true);
       //TODO: remove router

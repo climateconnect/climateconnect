@@ -95,13 +95,12 @@ export default function EditOrganizationPage({ organization, tagOptions, allHubs
 }
 
 // This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
-async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
+async function getOrganizationByUrlIfExists(organizationUrl, token) {
   try {
     const resp = await apiRequest({
       method: "get",
       url: "/api/organizations/" + organizationUrl + "/?edit_view=true",
       token: token,
-      locale: locale,
     });
     return parseOrganization(resp.data, true);
   } catch (err: any) {

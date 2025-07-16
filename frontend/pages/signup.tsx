@@ -72,7 +72,7 @@ export default function Signup({ hubUrl, hubThemeData }) {
 
   useEffect(function () {
     if (user) {
-      const redirectUrl = hubUrl ? `${getLocalePrefix(locale)}/hubs/${hubUrl}` : "/";
+      const redirectUrl = hubUrl ? `${getLocalePrefix(locale)}/hubs/${hubUrl}/browse` : "/";
       redirectOnLogin(user, redirectUrl, locale);
     }
   });

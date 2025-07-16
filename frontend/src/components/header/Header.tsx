@@ -49,6 +49,7 @@ type StyleProps = {
   isLocationHub?: boolean;
   isCustomHub?: boolean;
   isLoggedInUser?: boolean;
+  isLandingPage?: boolean;
 };
 
 const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
@@ -70,6 +71,8 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
             ? props.background
               ? props.background
               : "#F8F8F8"
+            : props.isLandingPage
+            ? theme.palette.primary.main
             : "",
         transition: "all 0.25s linear", // use all instead of transform since the background color too is changing at some point. It'll be nice to have a smooth transition.
       };
@@ -195,9 +198,10 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
     // This className is used to style the DropDownButton component in the Header.
     // It is applied in the headerLink.ts file.
     btnIconTextColor: (props) => ({
-      color: props.isCustomHub
-        ? theme.palette.primary.contrastText
-        : theme.palette.background.default_contrastText,
+      color:
+        props.isCustomHub || props.transparentHeader
+          ? theme.palette.primary.contrastText
+          : theme.palette.background.default_contrastText,
     }),
     btnColor: (props) => ({
       color: props.isCustomHub
@@ -277,6 +281,8 @@ export default function Header({
   background,
   isHubPage,
   hubUrl,
+  isLandingPage,
+  hasHubLandingPage,
 }: HeaderProps) {
   const {
     user,
@@ -295,7 +301,7 @@ export default function Header({
   const isCustomHub = customHubUrls.includes(hubUrl);
   const isLocationHub = LOCATION_HUBS.includes(hubUrl);
 
-  const LINKS = getLinks(pathName, texts, isLocationHub, isCustomHub);
+  const LINKS = getLinks(pathName, texts, isLocationHub, isCustomHub, hasHubLandingPage, hubUrl);
   const classes = useStyles({
     fixedHeader: fixedHeader,
     transparentHeader: transparentHeader,
@@ -305,6 +311,7 @@ export default function Header({
     isLocationHub: isLocationHub,
     isCustomHub: isCustomHub,
     isLoggedInUser: user ? true : false,
+    isLandingPage: isLandingPage,
   });
   const toggleShowNotifications = (event) => {
     if (!anchorEl) setAnchorEl(event.currentTarget);
@@ -323,9 +330,8 @@ export default function Header({
         imageUrl = loadDefaultLogo(transparentHeader, isMediumScreen);
       }
     } else {
-      imageUrl = `/images/hub_logos/prio1.png`;
+      imageUrl += `/hub_logos/ch_${hubUrl}_logo.svg`;
     }
-
     return imageUrl;
   };
 
@@ -342,10 +348,9 @@ export default function Header({
   };
 
   const logo = getLogo();
-
   const getLogoLink = () => {
     if (hubUrl) {
-      return `${localePrefix}/hubs/${hubUrl}`;
+      return `${localePrefix}/hubs/${hubUrl}/browse`;
     }
     return `${localePrefix}/`;
   };
