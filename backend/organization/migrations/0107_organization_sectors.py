@@ -36,7 +36,7 @@ def link_organization_to_sectors(apps, schema_editor):
 
     for org in Organization.objects.all():
         for hub in org.hubs.all():
-            if not hub.hub_type is Hub.HUB_TYPE_SECTOR:
+            if not hub.hub_type is Hub.SECTOR_HUB_TYPE:
                 fail(org, hub)
                 continue
 
