@@ -231,7 +231,6 @@ export default function Hub({
         customFooterImage={
           hubData?.custom_footer_image && getImageUrl(hubData?.custom_footer_image)
         }
-        isLocationHub={isLocationHub}
         customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
         hasHubLandingPage={hubData?.landing_page_component ? true : false}
       >
