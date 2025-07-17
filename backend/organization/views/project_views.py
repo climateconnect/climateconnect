@@ -534,11 +534,18 @@ class CreateProjectView(APIView):
             sector_keys, err = sanitize_sector_inputs(_sector_keys)
 
             if err:
-                # TODO: should I "crash" with 400, or what should I ommit the sectors
                 logger.error(
                     "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
                         err, _sector_keys
                     )
+                )
+                return Response(
+                    {
+                        "message": "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                            err, _sector_keys
+                        )
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
 
             # remove duplicates
@@ -658,7 +665,6 @@ class ProjectAPIView(APIView):
             serializer = ProjectSerializer(project, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # TODO (Karol): Adapt to sectors instead of tags
     def patch(self, request, url_slug, format=None):
         # TODO: shouldnt this be run as a transaction
         # I guess we will never have a conflict, but it would be safer
@@ -740,7 +746,14 @@ class ProjectAPIView(APIView):
                         err, _sector_keys
                     )
                 )
-                sector_keys = []
+                return Response(
+                    {
+                        "message": "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                            err, _sector_keys
+                        )
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
             # delete sectors that are not mapped to the project anymore
             for sectorMapping in ProjectSectorMapping.objects.filter(project=project):

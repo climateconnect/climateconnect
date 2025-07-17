@@ -577,7 +577,6 @@ class OrganizationAPIView(APIView):
             )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # Adapt to Sectors
     def patch(self, request, url_slug, format=None):
         try:
             organization = Organization.objects.get(url_slug=str(url_slug))
@@ -693,6 +692,14 @@ class OrganizationAPIView(APIView):
                     "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
                         err, _sector_keys
                     )
+                )
+                return Response(
+                    {
+                        "message": "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                            err, _sector_keys
+                        )
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
             else:
                 # perform update of sectors
