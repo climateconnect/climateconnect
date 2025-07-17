@@ -687,7 +687,6 @@ class OrganizationAPIView(APIView):
             sector_keys, err = sanitize_sector_inputs(_sector_keys)
             if err:
                 # do not perform an update of sectors
-                # TODO: should I "crash" with 400, or what should I ommit the sectors
                 logger.error(
                     "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
                         err, _sector_keys
@@ -946,7 +945,6 @@ class ListOrganizationMembersAPIView(ListAPIView):
         ).order_by("id")
 
 
-# TODO: rename this view to ListOrganizationTags
 class ListOrganizationTags(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = OrganizationTagsSerializer
