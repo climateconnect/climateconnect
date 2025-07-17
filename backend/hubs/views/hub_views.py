@@ -86,14 +86,26 @@ class HubAmbassadorAPIView(APIView):
             )
         # themes should be inherited from parent hubs
 
-        ambassador = hub.ambassador_hub
-        if not ambassador and hub.parent_hub:
+        ambassador = None
+        if hasattr(hub, "ambassador_hub"):
+            ambassador = hub.ambassador_hub
+
+        if (
+            ambassador is None
+            and hub.parent_hub
+            and hasattr(hub.parent_hub, "ambassador_hub")
+        ):
             ambassador = hub.parent_hub.ambassador_hub
 
-        if ambassador:
+        # "if ambassador" does not suffice, because ambassador_hub is
+        # a foreign key. Therefore, hub.ambassador_hub will not be None
+        # but 'hubs.HubAmbassador.None'
+        if ambassador.exists():
+            print("ambassador found", ambassador)
             serializer = HubAmbassadorSerializer(ambassador, many=False)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
+            print("ambassador not found", ambassador)
             return Response(None, status=status.HTTP_404_NOT_FOUND)
 
 
@@ -149,8 +161,11 @@ class HubThemeAPIView(APIView):
 
         # themes should be inherited from parent hubs
 
-        hub_theme = hub.hub_theme
-        if not hub_theme and hub.parent_hub:
+        hub_theme = None
+        if hasattr(hub, "hub_theme"):
+            hub_theme = hub.hub_theme
+
+        if not hub_theme and hub.parent_hub and hasattr(hub.parent_hub, "hub_theme"):
             hub_theme = hub.parent_hub.hub_theme
 
         if not hub_theme:
