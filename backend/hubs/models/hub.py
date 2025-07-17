@@ -294,6 +294,17 @@ class Hub(models.Model):
         on_delete=models.SET_NULL,
     )
 
+    # Constraints to ensure that the hub is a parent or a sub-hub
+    def clean(self):
+        if self.parent_hub:
+            # hub is a child, now ensure that it is not a parent hub
+            childs = Hub.objects.filter(parent_hub=self)
+            if childs.exists():
+                raise models.ValidationError(
+                    "This hub cannot be a parent hub because it is already a sub-hub of another hub."
+                )
+        return super().clean()
+
     class Meta:
         app_label = "hubs"
         verbose_name = "Hub"
