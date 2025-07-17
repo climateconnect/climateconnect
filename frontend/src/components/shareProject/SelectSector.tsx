@@ -50,8 +50,8 @@ export default function SelectSector({
   const texts = getTexts({ page: "project", locale: locale });
 
   const onClickNextStep = () => {
-    if (project.sectors.length <= 0) alert(texts.please_choose_at_least_one_category);
-    else if (project.sectors.length > 3) alert(texts.you_can_only_choose_up_to_3_categories);
+    if (project.sectors.length <= 0) alert(texts.please_choose_at_least_one_sector);
+    else if (project.sectors.length > 3) alert(texts.you_can_only_choose_up_to_3_sectors);
     else {
       goToNextStep();
     }
@@ -62,16 +62,15 @@ export default function SelectSector({
   };
 
   //(Share Project step 2)
-  //Use ActiveSectorSelector instead of MultiLevelSelector (Ask Tobi if different design should be used)
   return (
     <Container maxWidth="lg">
       <div className={classes.block}>
         <Container maxWidth="md">
           <ActiveSectorSelector
-            selectedHubs={project.sectors ? project.sectors : []}
-            hubsToSelectFrom={sectorsToSelectFrom}
-            onSelectNewHub={onSelectNewSector}
-            onClickRemoveHub={onClickRemoveSector}
+            selectedSectors={project.sectors ? project.sectors : []}
+            sectorsToSelectFrom={sectorsToSelectFrom}
+            onSelectNewSector={onSelectNewSector}
+            onClickRemoveSector={onClickRemoveSector}
           />
         </Container>
       </div>

@@ -12,6 +12,17 @@ export type Role = {
   name: string;
   name_de_translation?: string;
   role_type: "all" | "read write" | "read only";
+  explanation?: string;
+  explanation_de_translation?: string;
+};
+
+export type SkillType = {
+  id: number;
+  key: number;
+  name: string;
+  original_name: string;
+  parent_skill?: string;
+  subcategories: SkillType[];
 };
 
 export type Project = {
@@ -42,10 +53,10 @@ export type Project = {
   creator?: User | Organization | any; //TODO: remove 'any' once User and Organization types are properly defined
   image?: string;
   hubName?: string;
-  sectors?: any[];
   related_hubs?: any[];
   hubUrl?: string;
   thumbnail_image?: string;
+  sectors?: SectorOptionType[];
 };
 
 export type BrowseTab = "projects" | "organizations" | "members" | "events";
