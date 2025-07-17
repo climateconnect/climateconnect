@@ -2,7 +2,7 @@ import logging
 import traceback
 from django.db.models import Case, When, Prefetch
 
-from organization.utility.sector import senatize_sector_inputs
+from organization.utility.sector import sanitize_sector_inputs
 from organization.utility.cache import generate_project_ranking_cache_key
 from organization.utility.follow import (
     get_list_of_project_followers,
@@ -205,7 +205,7 @@ class ListProjectsView(ListAPIView):
 
         if "sectors" in self.request.query_params:
             _sector_names = self.request.query_params.get("sectors")
-            sector_names, err = senatize_sector_inputs(_sector_names)
+            sector_names, err = sanitize_sector_inputs(_sector_names)
 
             if err:
                 # TODO: should I "crash" with 400, or what should I ommit the sectors
@@ -403,8 +403,6 @@ class CreateProjectView(APIView):
             "short_description",
             "collaborators_welcome",
             "team_members",
-            # TODO (Karol): remove / change to project_sectors
-            # "project_tags",
             "loc",
             "image",
             "source_language",
@@ -530,18 +528,22 @@ class CreateProjectView(APIView):
 
         if "sectors" in request.data:
             _sector_keys = request.data["sectors"]
-            sector_keys, err = senatize_sector_inputs(_sector_keys)
+            sector_keys, err = sanitize_sector_inputs(_sector_keys)
 
             if err:
-                # TODO: should I "crash" with 400, or what should I ommit the sectors
                 logger.error(
                     "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
                         err, _sector_keys
                     )
                 )
-
-            # remove duplicates
-            sector_keys = list(set(sector_keys))
+                return Response(
+                    {
+                        "message": "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                            err, _sector_keys
+                        )
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
             sectors = []
 
@@ -657,7 +659,6 @@ class ProjectAPIView(APIView):
             serializer = ProjectSerializer(project, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # TODO (Karol): Adapt to sectors instead of tags
     def patch(self, request, url_slug, format=None):
         # TODO: shouldnt this be run as a transaction
         # I guess we will never have a conflict, but it would be safer
@@ -730,7 +731,7 @@ class ProjectAPIView(APIView):
 
         if "sectors" in request.data:
             _sector_keys = request.data["sectors"]
-            sector_keys, err = senatize_sector_inputs(_sector_keys)
+            sector_keys, err = sanitize_sector_inputs(_sector_keys)
 
             if err:
                 # TODO: should I "crash" with 400, or what should I ommit the sectors
@@ -739,7 +740,14 @@ class ProjectAPIView(APIView):
                         err, _sector_keys
                     )
                 )
-                sector_keys = []
+                return Response(
+                    {
+                        "message": "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                            err, _sector_keys
+                        )
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
             # delete sectors that are not mapped to the project anymore
             for sectorMapping in ProjectSectorMapping.objects.filter(project=project):

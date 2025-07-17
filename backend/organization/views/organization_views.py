@@ -1,5 +1,5 @@
 import logging
-from organization.utility.sector import senatize_sector_inputs
+from organization.utility.sector import sanitize_sector_inputs
 from organization.utility.follow import (
     check_if_user_follows_organization,
     get_list_of_organization_followers,
@@ -177,7 +177,7 @@ class ListOrganizationsAPIView(ListAPIView):
 
         if "sectors" in self.request.query_params:
             _sector_keys = self.request.query_params.get("sectors").split(",")
-            sector_keys, err = senatize_sector_inputs(_sector_keys)
+            sector_keys, err = sanitize_sector_inputs(_sector_keys)
             if err:
                 logger.error(
                     "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
@@ -444,7 +444,7 @@ class CreateOrganizationView(APIView):
                 # Create organization tags
                 if "sectors" in request.data:
                     _sector_keys = request.data["sectors"]
-                    sector_keys, err = senatize_sector_inputs(_sector_keys)
+                    sector_keys, err = sanitize_sector_inputs(_sector_keys)
 
                     if err:
                         # TODO: should I "crash" with 400, or what should I ommit the sectors
@@ -577,7 +577,6 @@ class OrganizationAPIView(APIView):
             )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # Adapt to Sectors
     def patch(self, request, url_slug, format=None):
         try:
             organization = Organization.objects.get(url_slug=str(url_slug))
@@ -685,14 +684,21 @@ class OrganizationAPIView(APIView):
 
         if "sectors" in request.data:
             _sector_keys = request.data["sectors"]
-            sector_keys, err = senatize_sector_inputs(_sector_keys)
+            sector_keys, err = sanitize_sector_inputs(_sector_keys)
             if err:
                 # do not perform an update of sectors
-                # TODO: should I "crash" with 400, or what should I ommit the sectors
                 logger.error(
                     "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
                         err, _sector_keys
                     )
+                )
+                return Response(
+                    {
+                        "message": "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                            err, _sector_keys
+                        )
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
             else:
                 # perform update of sectors
@@ -939,7 +945,6 @@ class ListOrganizationMembersAPIView(ListAPIView):
         ).order_by("id")
 
 
-# TODO: rename this view to ListOrganizationTags
 class ListOrganizationTags(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = OrganizationTagsSerializer
