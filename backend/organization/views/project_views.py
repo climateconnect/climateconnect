@@ -548,9 +548,6 @@ class CreateProjectView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            # remove duplicates
-            sector_keys = list(set(sector_keys))
-
             sectors = []
 
             for sector_key in sector_keys:
