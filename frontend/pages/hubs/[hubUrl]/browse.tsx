@@ -10,7 +10,7 @@ import {
   getProjectTypeOptions,
   getSkillsOptions,
 } from "../../../public/lib/getOptions";
-import { extractHubFrom, getAllHubs } from "../../../public/lib/hubOperations";
+import { extractHubUrlsFromContext, getAllHubs } from "../../../public/lib/hubOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import { getLocationFilteredBy } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
 //potentially switch back to getinitialprops here?!
 export async function getServerSideProps(ctx) {
   let hubUrl = ctx.query.hubUrl;
-  let { subHub } = extractHubFrom(ctx);
+  let { subHub } = extractHubUrlsFromContext(ctx);
 
   if (subHub) {
     // check if hub really exists before blindly overwriting hubUrl

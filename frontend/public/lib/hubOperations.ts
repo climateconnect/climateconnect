@@ -10,7 +10,7 @@ function parseQuery(query: string | string[] | undefined) {
   return hub;
 }
 
-export function extractHubFrom(ctx: GetServerSidePropsContext) {
+export function extractHubUrlsFromContext(ctx: GetServerSidePropsContext) {
   const hubUrl = parseQuery(ctx.query.hubUrl);
   const subHub = parseQuery(ctx.query.sub);
 
