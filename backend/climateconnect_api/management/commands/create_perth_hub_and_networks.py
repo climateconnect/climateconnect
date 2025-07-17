@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from hubs.models.hub import HubThemeColor, HubTheme
 from climateconnect_api.models.language import Language
 from organization.models import Sector
 from hubs.models import Hub
@@ -176,30 +177,62 @@ class Command(BaseCommand):
 
             language = Language.objects.filter(code=hub_data["language"]).first()
 
-            hub, created = Hub.objects.get_or_create(
+            hub, _ = Hub.objects.get_or_create(
                 url_slug=hub_data["url_slug"],
-                defaults={
-                    "name": hub_data["name"],
-                    "headline": hub_data["headline"],
-                    "sub_headline": hub_data["sub_headline"],
-                    "description": hub_data["description"],
-                    "welcome_message_logged_in": hub_data["welcome_message_logged_in"],
-                    "welcome_message_logged_out": hub_data[
-                        "welcome_message_logged_out"
-                    ],
-                    "hub_type": hub_data["hub_type"],
-                    "segway_text": hub_data["segway_text"],
-                    "image_attribution": hub_data["image_attribution"],
-                    "image_path": hub_data["image_path"],
-                    "icon_path": hub_data["icon_path"],
-                    "icon_background_color": hub_data["icon_background_color"],
-                    "thumbnail_image_path": hub_data["thumbnail_image_path"],
-                    "importance": hub_data["importance"],
-                    "sectors": sector,
-                    "language": language,
-                },
+                name=hub_data["name"],
+                headline=hub_data["headline"],
+                sub_headline=hub_data["sub_headline"],
+                description=hub_data["description"],
+                welcome_message_logged_in=hub_data["welcome_message_logged_in"],
+                welcome_message_logged_out=hub_data["welcome_message_logged_out"],
+                hub_type=hub_data["hub_type"],
+                segway_text=hub_data["segway_text"],
+                image_attribution=hub_data["image_attribution"],
+                image_path=hub_data["image_path"],
+                icon_path=hub_data["icon_path"],
+                icon_background_color=hub_data["icon_background_color"],
+                thumbnail_image_path=hub_data["thumbnail_image_path"],
+                importance=hub_data["importance"],
+                sectors=sector,
+                language=language,
             )
 
             # TODO: translations
             # TODO: ambassador
-            # TODO: hubtheme
+
+            # setup the colors for the hub:
+            main, _ = HubThemeColor.objects.get_or_create(
+                hub=hub,
+                name="Perth Main",
+                main="#9DCC8F",
+                light="#EFF5F2",
+                extraLight="#EFF5F2",
+                contrastText="#000033",
+            )
+
+            secondary, _ = HubThemeColor.objects.get_or_create(
+                hub=hub,
+                name="Perth Secondary",
+                main="#476B84",
+                light="#476B84",
+                extraLight="#476B84",
+                contrastText="#F8F8F8",
+            )
+
+            background, _ = HubThemeColor.objects.get_or_create(
+                hub=hub,
+                name="Perth Background",
+                main="#FFFFFF",
+                light="#FFFFFF",
+                extraLight="#FFFFFF",
+                contrastText="#000033",
+            )
+
+            perth_hub = Hub.objects.filter(url_slug="perth-and-kinross").first()
+
+            HubTheme.objects.get_or_create(
+                hub=perth_hub,
+                primary=main,
+                secondary=secondary,
+                background=background,
+            )
