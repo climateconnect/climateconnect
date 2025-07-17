@@ -213,7 +213,7 @@ class Hub(models.Model):
     sectors = models.ManyToManyField(
         Sector,
         related_name="hub_sectors",
-        help_text="Only projects with these sectors will be shown in the hub",
+        help_text="Only projects with these sectors will be shown in the hub (applies only to hubs of type sector_hub)",
         verbose_name="Hub sectors",
         blank=True,
     )

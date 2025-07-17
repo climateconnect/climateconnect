@@ -17,33 +17,28 @@ SECTOR_DEFINITIONS = {
     x.key: x
     for x in [
         Sector_Definition(
-            "Food",
-            "Ernährung",
+            "Food & Agriculture",
+            "Ernährung & Landwirtschaft",
             "food",
         ),
         Sector_Definition(
-            "Agri & Land use",
-            "Landwirtschaft & Landnutzung",
-            "agri",
-        ),
-        Sector_Definition(
-            "Buildings",
+            "Building & Housing",
             "Bauen und Wohnen",
-            "buldings",
+            "housing",
         ),
         Sector_Definition(
             "Energy",
-            "Energiewende",
+            "Energie",
             "energy",
         ),
         Sector_Definition(
-            "Policy & Governance",
-            "Politik und Verwaltung",
+            "Politics & Activism",
+            "Politik und Aktivismus",
             "policy",
         ),
         Sector_Definition(
-            "Education, Social Action & Health",
-            "Bildung, Soziale Aktion & Gesundheit",
+            "Education",
+            "Bildung",
             "education",
         ),
         Sector_Definition(
@@ -52,34 +47,19 @@ SECTOR_DEFINITIONS = {
             "mobility",
         ),
         Sector_Definition(
-            "Industry & Building",
-            "Industrie & Bauwesen",
-            "industry",
+            "Nature & Biodiversity",
+            "Natur und Biodiversität",
+            "nature",
         ),
         Sector_Definition(
-            "Costal and Ocean sinks",
-            "Küsten- und Ozeanspeicher",
-            "costal",
+            "Resources & Consumption",
+            "Konsum & Resourcen",
+            "resources",
         ),
         Sector_Definition(
-            "Engineered sinks",
-            "Technisch erzeugte Speicher",
-            "engineered",
-        ),
-        Sector_Definition(
-            "Research",
-            "Wissenschaft",
-            "research",
-        ),
-        Sector_Definition(
-            "Climate change adaption",
-            "Anpassung an den Klimawandel",
+            "Climate Adaption",
+            "Klimaanpassung",
             "adaption",
-        ),
-        Sector_Definition(
-            "Climate justice",
-            "Klimagerechtigkeit",
-            "justice",
         ),
     ]
 }
@@ -87,29 +67,28 @@ SECTOR_DEFINITIONS = {
 DELETION_TOKEN = "DELETION_TOKEN"
 
 MAPPING = {
-    "Air": SECTOR_DEFINITIONS["industry"],
-    "Construction": SECTOR_DEFINITIONS["industry"],
-    "Buildings": SECTOR_DEFINITIONS["buldings"],
+    "Air": DELETION_TOKEN,
+    "Buildings": SECTOR_DEFINITIONS["housing"],
+    "Education on climate change adaption": SECTOR_DEFINITIONS["education"],
     "Climate change adaption": SECTOR_DEFINITIONS["adaption"],
-    "Climate justice": SECTOR_DEFINITIONS["justice"],
+    "Climate justice": SECTOR_DEFINITIONS["policy"],
+    "Demonstrations & strikes": SECTOR_DEFINITIONS["policy"],
+    "Petition": SECTOR_DEFINITIONS["policy"],
     "Education & Social action": SECTOR_DEFINITIONS["education"],
     "Energy": SECTOR_DEFINITIONS["energy"],
     "Food": SECTOR_DEFINITIONS["food"],
     "Funding": DELETION_TOKEN,
-    "Geoengineering": SECTOR_DEFINITIONS["engineered"],
-    "Land use": SECTOR_DEFINITIONS["agri"],
+    "Geoengineering": SECTOR_DEFINITIONS["adaption"],
+    "Climate-friendly agriculture": SECTOR_DEFINITIONS["food"],
+    "Land use": SECTOR_DEFINITIONS["nature"],
     "Policy & Governance": SECTOR_DEFINITIONS["policy"],
     "Product": DELETION_TOKEN,
-    "Production, consumption and recycling": SECTOR_DEFINITIONS["industry"],
-    "Research": SECTOR_DEFINITIONS["research"],
+    "Production, consumption and recycling": SECTOR_DEFINITIONS["resources"],
+    "Research": DELETION_TOKEN,
     "Mobility": SECTOR_DEFINITIONS["mobility"],
-    "Water": DELETION_TOKEN,  # TODO
-    "Reducing marine pollution": SECTOR_DEFINITIONS["costal"],
-    "Fighting ocean acidification": SECTOR_DEFINITIONS["costal"],
-    "Fighting overfishing": SECTOR_DEFINITIONS["costal"],
-    "Protecting marine ecosystems": SECTOR_DEFINITIONS["costal"],
-    "Improving water use efficiency": SECTOR_DEFINITIONS["industry"],
-    "Water recycling": SECTOR_DEFINITIONS["industry"],
+    "Water": SECTOR_DEFINITIONS["resources"],  # TODO
+    "Fighting ocean acidification": SECTOR_DEFINITIONS["nature"],
+    "Protecting marine ecosystems": SECTOR_DEFINITIONS["nature"],
     "Event": DELETION_TOKEN,
 }
 
