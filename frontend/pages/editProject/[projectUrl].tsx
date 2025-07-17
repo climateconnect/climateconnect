@@ -5,10 +5,10 @@ import React, { useContext } from "react";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getLocalePrefix, sendToLogin } from "../../public/lib/apiOperations";
 import {
-  getProjectTagsOptions,
   getProjectTypeOptions,
   getSkillsOptions,
   getStatusOptions,
+  getSectorOptions,
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
@@ -20,6 +20,7 @@ import Layout from "../../src/components/layouts/layout";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
+import { Project, SectorOptionType } from "../../src/types";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,18 +47,18 @@ export async function getServerSideProps(ctx) {
     skillsOptions,
     userOrganizations,
     statusOptions,
-    tagsOptions,
     projectTypeOptions,
     hubThemeData,
+    sectorOptions,
   ] = await Promise.all([
     getProjectByIdIfExists(projectUrl, auth_token, ctx.locale),
     getMembersByProject(projectUrl, auth_token, ctx.locale),
     getSkillsOptions(ctx.locale),
     getUserOrganizations(auth_token, ctx.locale),
     getStatusOptions(ctx.locale),
-    getProjectTagsOptions(null, ctx.locale),
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
+    getSectorOptions(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -66,10 +67,10 @@ export async function getServerSideProps(ctx) {
       skillsOptions: skillsOptions,
       userOrganizations: userOrganizations,
       statusOptions: statusOptions,
-      tagsOptions: tagsOptions,
       projectTypeOptions: projectTypeOptions,
       hubThemeData: hubThemeData,
       hubUrl: hubUrl,
+      sectorOptions: sectorOptions,
     }),
   };
 }
@@ -80,16 +81,26 @@ export default function EditProjectPage({
   skillsOptions,
   userOrganizations,
   statusOptions,
-  tagsOptions,
   projectTypeOptions,
   hubThemeData,
   hubUrl,
+  sectorOptions,
+}: {
+  project: Project;
+  members: any[];
+  skillsOptions: any[];
+  userOrganizations: any[];
+  statusOptions: any[];
+  projectTypeOptions: any[];
+  hubThemeData: any;
+  hubUrl: string;
+  sectorOptions: SectorOptionType[];
 }) {
   const classes = useStyles();
   const [curProject, setCurProject] = React.useState({
     ...project,
     status: statusOptions.find((s) => s.name === project?.status),
-    hubUrl: project.related_hubs?.length > 0 ? project.related_hubs[0] : null,
+    hubUrl: project?.related_hubs?.length ? project.related_hubs[0] : null,
   });
   project = {
     ...project,
@@ -106,6 +117,7 @@ export default function EditProjectPage({
   const handleSetProject = (newProject) => {
     setCurProject({ ...newProject });
   };
+
   if (!user)
     return (
       <WideLayout
@@ -181,7 +193,7 @@ export default function EditProjectPage({
           userOrganizations={userOrganizations}
           statusOptions={statusOptions}
           handleSetProject={handleSetProject}
-          tagsOptions={tagsOptions}
+          sectorOptions={sectorOptions}
           user_role={user_role}
           handleSetErrorMessage={handleSetErrorMessage}
           initialTranslations={project.translations}
@@ -218,6 +230,7 @@ const parseProject = (project) => ({
   project_parents: project.project_parents[0],
   is_personal_project: !project.project_parents[0].parent_organization,
   skills: project.skills.map((s) => ({ ...s, key: s.id })),
+  sectors: project.sectors.map((item) => ({ ...item.sector, order: item.order })),
 });
 
 const getUserOrganizations = async (token, locale) => {

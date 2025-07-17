@@ -1,7 +1,7 @@
 import Grid from "@mui/material/Unstable_Grid2";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
-import MiniHubPreview from "./MiniHubPreview";
+import MiniSectorPreview from "./MiniSectorPreview";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 
 const useStyles = makeStyles((theme) => ({
@@ -16,59 +16,62 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-//change to sectors
-export default function MiniHubPreviews({
-  hubs,
-  allHubs,
+export default function SectorsPreview({
+  sectors,
+  sectorsToSelectFrom,
   allowCreate,
   editMode,
-  onSelectNewHub,
-  onClickRemoveHub,
+  onSelectNewSector,
+  onClickRemoveSector,
 }) {
   const classes = useStyles();
   return (
     <Grid container component="ul" spacing={2} className={`${classes.reset} ${classes.root}`}>
-      {hubs
-        .filter((hub) => !isLocationHubLikeHub(hub.hub_type))
-        .map((hub) => (
+      {sectors
+        ?.filter((sector) => !isLocationHubLikeHub(sector.hub_type))
+        .map((sector) => (
           <GridItem
-            hub={hub}
-            key={hub.url_slug}
+            sector={sector}
+            key={sector.url_slug}
             editMode={editMode}
-            onClickRemoveHub={onClickRemoveHub}
+            onClickRemoveSector={onClickRemoveSector}
           />
         ))}
       {allowCreate && (
-        <GridItem createMode hubsToSelectFrom={allHubs} onSelectNewHub={onSelectNewHub} />
+        <GridItem
+          createMode
+          sectorsToSelectFrom={sectorsToSelectFrom}
+          onSelectNewSector={onSelectNewSector}
+        />
       )}
     </Grid>
   );
 }
 
 function GridItem({
-  hub,
+  sector,
   createMode,
   editMode,
-  hubsToSelectFrom,
-  onSelectNewHub,
-  onClickRemoveHub,
+  sectorsToSelectFrom,
+  onSelectNewSector,
+  onClickRemoveSector,
 }: any) {
   return (
     <Grid
-      key={hub ? hub.url_slug : "create"}
+      key={sector ? sector.url_slug : "create"}
       xs={12}
       sm={editMode ? 6 : 12}
       md={8}
       lg={6}
       component="li"
     >
-      <MiniHubPreview
-        hub={hub}
+      <MiniSectorPreview
+        sector={sector}
         createMode={createMode}
         editMode={editMode}
-        hubsToSelectFrom={hubsToSelectFrom}
-        onSelect={onSelectNewHub}
-        onClickRemoveHub={onClickRemoveHub}
+        sectorsToSelectFrom={sectorsToSelectFrom}
+        onSelect={onSelectNewSector}
+        onClickRemoveSector={onClickRemoveSector}
       />
     </Grid>
   );

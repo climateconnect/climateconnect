@@ -18,7 +18,7 @@ import {
   getTranslationsWithoutRedundantKeys,
 } from "../../../public/lib/translationOperations";
 import getTexts from "../../../public/texts/texts";
-import { Project, Role } from "../../types";
+import { Project, Role, SectorOptionType } from "../../types";
 import UserContext from "../context/UserContext";
 import NavigationButtons from "../general/NavigationButtons";
 import TranslateTexts from "../general/TranslateTexts";
@@ -49,12 +49,12 @@ type Props = {
   userOrganizations: any;
   statusOptions: any;
   handleSetProject: any;
-  tagsOptions: any;
   oldProject: Project;
   user_role: Role;
   handleSetErrorMessage: any;
   initialTranslations: any;
   projectTypeOptions: any;
+  sectorOptions?: SectorOptionType[];
 };
 
 export default function EditProjectRoot({
@@ -62,12 +62,12 @@ export default function EditProjectRoot({
   skillsOptions,
   userOrganizations,
   handleSetProject,
-  tagsOptions,
   oldProject,
   user_role,
   handleSetErrorMessage,
   initialTranslations,
   projectTypeOptions,
+  sectorOptions,
 }: Props) {
   const classes = useStyles();
   const token = new Cookies().get("auth_token");
@@ -257,12 +257,14 @@ export default function EditProjectRoot({
       locale: locale,
     })
       .then(function () {
-        Router.push({
-          pathname: "/profiles/" + user.url_slug,
-          query: {
-            message: texts.you_have_successfully_deleted_your_project,
-          },
-        });
+        if (user && user.url_slug) {
+          Router.push({
+            pathname: "/profiles/" + user.url_slug,
+            query: {
+              message: texts.you_have_successfully_deleted_your_project,
+            },
+          });
+        }
       })
       .catch(function (error) {
         console.log(error);
@@ -338,7 +340,6 @@ export default function EditProjectRoot({
             />
           )}
           <EditProjectOverview
-            tagsOptions={tagsOptions}
             project={project}
             smallScreen={isNarrowScreen}
             handleSetProject={handleSetProject}
@@ -346,6 +347,7 @@ export default function EditProjectRoot({
             locationOptionsOpen={locationOptionsOpen}
             handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
             locationInputRef={locationInputRef}
+            sectorOptions={sectorOptions}
           />
           <EditProjectContent
             project={project}
@@ -407,6 +409,7 @@ const parseProjectForRequest = async (project, translationChanges) => {
     ...project,
     translations: translationChanges,
   };
+
   if (project.project_type) ret.project_type = project.project_type.type_id;
   if (project.image) ret.image = await blobFromObjectUrl(project.image);
   if (project.loc) ret.loc = parseLocation(project.loc, true);
@@ -414,6 +417,7 @@ const parseProjectForRequest = async (project, translationChanges) => {
     ret.thumbnail_image = await blobFromObjectUrl(project.thumbnail_image);
   if (project.skills) ret.skills = project.skills.map((s) => s.id);
   if (project.tags) ret.project_tags = project.tags.map((t) => t.id);
+  if (project.sectors) ret.sectors = ret.sectors.map((s) => s.key);
   if (project.status) ret.status = project.status.id;
   if (project.project_parents && project.project_parents.parent_organization)
     ret.parent_organization = project.project_parents.parent_organization.id;

@@ -46,11 +46,11 @@ const useStyles = makeStyles<Theme, any>((theme) => ({
     height: 60,
     backgroundPosition: "center",
   }),
-  hubName: {
+  sectorName: {
     fontSize: 19,
     fontWeight: 600,
   },
-  hubIcon: {
+  sectorIcon: {
     height: 26,
     marginBottom: -3,
     marginRight: theme.spacing(0.25),
@@ -67,27 +67,27 @@ const useStyles = makeStyles<Theme, any>((theme) => ({
   },
 }));
 
-export default function MiniHubPreview({
-  hub,
-  hubsToSelectFrom,
+export default function MiniSectorPreview({
+  sector,
+  sectorsToSelectFrom,
   editMode,
   createMode = false,
   onSelect,
-  onClickRemoveHub,
+  onClickRemoveSector,
 }) {
-  const classes = useStyles({ createMode: createMode, thumbnail_image: hub?.thumbnail_image });
+  const classes = useStyles({ createMode: createMode, thumbnail_image: sector?.thumbnail_image });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
   const handleRemoveHub = (event) => {
     event.preventDefault();
-    onClickRemoveHub(hub);
+    onClickRemoveSector(sector);
   };
   //Link to filtered projects instead to hub
   //Case 1: Location hub (?hub=erlangen) -> link to hub page filtered by this sector
   //Case 2: General platform -> link to browse page filtered by this sector
   return (
     <Link
-      href={hub && getLocalePrefix(locale) + `/hubs/${hub.url_slug}/browse`}
+      href={sector && getLocalePrefix(locale) + `/hubs/${sector.url_slug}/browse`}
       target="_blank"
       className={classes.link}
       underline="hover"
@@ -103,7 +103,7 @@ export default function MiniHubPreview({
             src={
               createMode
                 ? "/images/mini_hub_preview_background.jpg"
-                : getImageUrl(hub?.thumbnail_image)
+                : getImageUrl(sector?.thumbnail_image)
             }
             className={classes.placeholderImage}
           />
@@ -114,13 +114,13 @@ export default function MiniHubPreview({
               label={texts.add_a_hub_where_you_are_active}
               size="small"
               color="contrast"
-              options={hubsToSelectFrom}
+              options={sectorsToSelectFrom}
               onChange={(event) => event.target.value && onSelect(event)}
             />
           ) : (
-            <Typography color="text" className={classes.hubName}>
-              {hub.icon && <img src={getImageUrl(hub.icon)} className={classes.hubIcon} />}
-              {hub?.name}
+            <Typography color="text" className={classes.sectorName}>
+              {sector.icon && <img src={getImageUrl(sector.icon)} className={classes.sectorIcon} />}
+              {sector?.name}
             </Typography>
           )}
         </div>

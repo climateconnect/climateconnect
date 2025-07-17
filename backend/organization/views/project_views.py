@@ -204,21 +204,20 @@ class ListProjectsView(ListAPIView):
         # maybe use .annotate() to calculate ranking/counts of coments etc.
 
         if "sectors" in self.request.query_params:
-            _sector_keys = self.request.query_params.get("sectors")
-            sector_keys, err = sanitize_sector_inputs(_sector_keys)
+            _sector_names = self.request.query_params.get("sectors")
+            sector_names, err = sanitize_sector_inputs(_sector_names)
 
             if err:
                 # TODO: should I "crash" with 400, or what should I ommit the sectors
                 logger.error(
                     "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
-                        err, _sector_keys
+                        err, _sector_names
                     )
                 )
             else:
                 projects = projects.filter(
-                    project_sector_mapping__sector__key__in=sector_keys
+                    project_sector_mapping__sector__name__in=sector_names
                 )
-
         if "hub" in self.request.query_params:
             hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
             if hub.exists():
@@ -404,8 +403,6 @@ class CreateProjectView(APIView):
             "short_description",
             "collaborators_welcome",
             "team_members",
-            # TODO (Karol): remove / change to project_sectors
-            "project_tags",
             "loc",
             "image",
             "source_language",

@@ -10,8 +10,6 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { getLocalePrefix } from "./apiOperations";
 
-const ERLANGEN_SLUG = "erlangen";
-const ERLANGEN_DONATE = "https://www.climatehub.earth/300";
 const COMMON_LINKS = {
   NOTIFICATIONS: {
     type: "notificationsButton",
@@ -117,8 +115,7 @@ const getDefaultLinks = (path_to_redirect, texts, isLocationHub, hasHubLandingPa
         hideOnStaticPages: true,
       },
       {
-        href: hubUrl === ERLANGEN_SLUG ? ERLANGEN_DONATE : "/donate",
-        isExternalLink: hubUrl === ERLANGEN_SLUG,
+        href: "/donate",
         text: texts.donate,
         iconForDrawer: FavoriteBorderIcon,
         isOutlinedInHeader: true,
@@ -206,13 +203,13 @@ const getLoggedInLinks = ({ loggedInUser, texts, queryString }) => {
   ];
 };
 
-const defaultStaticLinks = (texts, hubUrl) => [
+const defaultStaticLinks = (texts) => [
   {
     href: "/about",
     text: texts.about,
   },
   {
-    href: hubUrl === ERLANGEN_SLUG ? ERLANGEN_DONATE : "/donate",
+    href: "/donate",
     text: texts.donate,
     only_show_on_static_page: true,
   },
@@ -287,11 +284,11 @@ const customHubStaticLinksFunction = {
 const getCustomHubStaticLinks = (url_slug, texts) => {
   if (Object.keys(customHubStaticLinksFunction).includes(url_slug))
     return customHubStaticLinksFunction[url_slug](texts);
-  return defaultStaticLinks(texts, url_slug);
+  return defaultStaticLinks(texts);
 };
 const getStaticLinks = (texts, customHubUrlSlug) => {
   return !customHubUrlSlug
-    ? defaultStaticLinks(texts, "")
+    ? defaultStaticLinks(texts)
     : getCustomHubStaticLinks(customHubUrlSlug, texts);
 };
 

@@ -8,6 +8,7 @@ import theme from "../../themes/theme";
 import Footer from "../footer/Footer";
 import LoadingContainer from "../general/LoadingContainer";
 import Header from "../header/Header";
+import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
 import LayoutWrapper from "./LayoutWrapper";
 //We are ignoring the "missing" devlink import because it will be there at runtime
 //You will need to run 'npx webflow devlink sync' to generate this file.
@@ -59,6 +60,7 @@ export default function Layout({
           background={headerBackground}
           hubUrl={hubUrl}
         />
+        {<DonationCampaignInformation />}
         {isLoading ? (
           <LoadingContainer headerHeight={113} footerHeight={80} />
         ) : (
