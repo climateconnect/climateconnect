@@ -541,14 +541,14 @@ export default function EditAccountPage({
         return (
           <ActiveSectorSelector
             //TODO(unused) info={i}
-            hubsToSelectFrom={allHubs.filter(
+            selectedSectors={editedAccount.info.hubs}
+            sectorsToSelectFrom={allHubs.filter(
               (h) =>
                 editedAccount?.info?.hubs.filter((addedHub) => addedHub.url_slug === h.url_slug)
                   .length === 0
             )}
-            onClickRemoveHub={onClickRemoveHub}
-            selectedHubs={editedAccount.info.hubs}
-            onSelectNewHub={onSelectNewHub}
+            onSelectNewSector={onSelectNewHub}
+            onClickRemoveSector={onClickRemoveHub}
           />
         );
         //This is the fallback for normal textfields
