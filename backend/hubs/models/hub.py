@@ -1,3 +1,4 @@
+from django.forms import ValidationError
 from climateconnect_api.models.language import Language
 from location.models import Location
 from organization.models.tags import ProjectTags
@@ -297,12 +298,27 @@ class Hub(models.Model):
     # Constraints to ensure that the hub is a parent or a sub-hub
     def clean(self):
         if self.parent_hub:
-            # hub is a child, now ensure that it is not a parent hub
-            childs = Hub.objects.filter(parent_hub=self)
-            if childs.exists():
-                raise models.ValidationError(
-                    "This hub cannot be a parent hub because it is already a sub-hub of another hub."
+            # ensure no self loop
+            if self == self.parent_hub:
+                raise ValidationError("A hub cannot be its own parent.")
+
+            # hub is now a child. Ensure that it is not a parent hub
+            children = Hub.objects.filter(parent_hub=self)
+            if children.exists():
+                raise ValidationError(
+                    "This hub cannot be a parent hub because it is already a sub-hub of another hub. child: {}| parent: {}".format(
+                        self.parent_hub.name, children.first().name
+                    )
                 )
+
+            # ensure that the parent hub is not a child of another hub
+            if self.parent_hub.parent_hub:
+                raise ValidationError(
+                    "A hub cannot be a parent-hub of another parent-hub. Please ensure that the parent hub is a top-level hub. self: {}| parent: {}| parents parent: {}".format(
+                        self.name, self.parent_hub.name, self.parent_hub.parent_hub.name
+                    )
+                )
+
         return super().clean()
 
     class Meta:
