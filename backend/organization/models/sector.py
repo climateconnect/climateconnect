@@ -27,7 +27,7 @@ class Sector(models.Model):
     # Adding this because we use project tags to filter project and its not possible to filter Name because
     # it contains spaces.
     key = models.CharField(
-        help_text="unique search key of the sector. Example: 'Food & Agriculture' becomes foodagriculture,
+        help_text="unique search key of the sector. Example: 'Food & Agriculture' becomes foodagriculture",
         verbose_name="Key",
         max_length=256,
         unique=True,
