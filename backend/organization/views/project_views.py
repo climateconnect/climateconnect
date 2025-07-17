@@ -1,7 +1,6 @@
 import logging
 import traceback
 from django.db.models import Case, When, Prefetch
-from hubs.utility.hub import get_parents_hubs
 from organization.utility.cache import generate_project_ranking_cache_key
 from organization.utility.follow import (
     get_list_of_project_followers,
@@ -198,14 +197,22 @@ class ListProjectsView(ListAPIView):
 
             # retrieve hub and its parents
             hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
-            hubs = get_parents_hubs(hub[0]) if hub.exists() else []
+            if not hub:
+                # If hub doesn't exist, return empty queryset or handle appropriately
+                return projects.none()
+
+            hubs = [hub]
+            if hub.parent_hub:
+                hubs.append(hub.parent_hub)
 
             # most upper hub is the "grandest" parent
-            for hub in reversed(hubs):
-                if hub.hub_type == Hub.SECTOR_HUB_TYPE:
-                    project_category = Hub.objects.get(
-                        url_slug=self.request.query_params.get("hub")
-                    ).filter_parent_tags.all()
+            for current_hub in hubs:
+                if current_hub.hub_type == Hub.SECTOR_HUB_TYPE:
+                    # TODO: overhaul this logic after sector are implemented
+                    # also, do not forget about which db calls are being made
+
+                    project_category = current_hub.filter_parent_tags.all()
+
                     project_category_ids = list(map(lambda c: c.id, project_category))
                     project_tags = ProjectTags.objects.filter(
                         id__in=project_category_ids
@@ -216,8 +223,8 @@ class ListProjectsView(ListAPIView):
                     projects = projects.filter(
                         tag_project__project_tag__in=project_tags_with_children
                     ).distinct()
-                elif hub.hub_type == Hub.LOCATION_HUB_TYPE:
-                    location = hub.location.all()[0]
+                elif current_hub.hub_type == Hub.LOCATION_HUB_TYPE:
+                    location = current_hub.location.all()[0]
                     location_multipolygon = location.multi_polygon
                     projects = projects.filter(Q(loc__country=location.country))
                     if location_multipolygon:
@@ -229,8 +236,8 @@ class ListProjectsView(ListAPIView):
                                 "loc__centre_point", location_multipolygon
                             )
                         )
-                elif hub.hub_type == Hub.CUSTOM_HUB_TYPE:
-                    projects = projects.filter(related_hubs=hub)
+                elif current_hub.hub_type == Hub.CUSTOM_HUB_TYPE:
+                    projects = projects.filter(related_hubs=current_hub)
 
         if "collaboration" in self.request.query_params:
             collaborators_welcome = self.request.query_params.get("collaboration")

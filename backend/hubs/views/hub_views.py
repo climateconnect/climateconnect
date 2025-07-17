@@ -7,8 +7,7 @@ from hubs.serializers.hub import (
     HubSupporterSerializer,
     HubThemeSerializer,
 )
-from hubs.models.hub import Hub, HubAmbassador, HubSupporter, HubTheme
-from hubs.utility.hub import get_parents_hubs_and_annotations
+from hubs.models.hub import Hub, HubSupporter
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -86,15 +85,12 @@ class HubAmbassadorAPIView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
         # themes should be inherited from parent hubs
-        # therefore, collect all parents and walk the parent hub up
-        hubs, annotations = get_parents_hubs_and_annotations(hub)
 
-        ambassadors = HubAmbassador.objects.filter(hub__in=hubs).annotate(
-            parent_hub_order=annotations
-        )
+        ambassador = hub.ambassador_hub
+        if not ambassador and hub.parent_hub:
+            ambassador = hub.parent_hub.ambassador_hub
 
-        if ambassadors.exists():
-            ambassador = ambassadors.order_by("parent_hub_order").first()
+        if ambassador:
             serializer = HubAmbassadorSerializer(ambassador, many=False)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
@@ -152,19 +148,16 @@ class HubThemeAPIView(APIView):
             )
 
         # themes should be inherited from parent hubs
-        # therefore, collect all parents and walk the parent hub up
-        hubs, annotations = get_parents_hubs_and_annotations(hub)
 
-        hub_themes = HubTheme.objects.filter(hub__in=hubs).annotate(
-            parent_hub_order=annotations
-        )
+        hub_theme = hub.hub_theme
+        if not hub_theme and hub.parent_hub:
+            hub_theme = hub.parent_hub.hub_theme
 
-        if not hub_themes.exists():
+        if not hub_theme:
             return Response(
                 {"message": "Hub theme not found: {}".format(url_slug)},
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        hub_theme = hub_themes.order_by("parent_hub_order").first()
         serializer = HubThemeSerializer(hub_theme)
         return Response(serializer.data, status=status.HTTP_200_OK)
