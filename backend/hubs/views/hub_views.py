@@ -7,7 +7,7 @@ from hubs.serializers.hub import (
     HubSupporterSerializer,
     HubThemeSerializer,
 )
-from hubs.models.hub import Hub, HubSupporter
+from hubs.models.hub import Hub, HubAmbassador, HubSupporter
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -78,7 +78,11 @@ class HubAmbassadorAPIView(APIView):
 
     def get(self, request, url_slug):
         try:
-            hub = Hub.objects.get(url_slug=str(url_slug))
+            hub = (
+                Hub.objects.prefetch_related("ambassador_hub")
+                .select_related("parent_hub")
+                .get(url_slug=str(url_slug))
+            )
         except Hub.DoesNotExist:
             return Response(
                 {"message": "Hub not found: {}".format(url_slug)},
@@ -87,20 +91,20 @@ class HubAmbassadorAPIView(APIView):
         # themes should be inherited from parent hubs
 
         ambassador = None
-        if hasattr(hub, "ambassador_hub"):
-            ambassador = hub.ambassador_hub
+        if hub.ambassador_hub.all():
+            ambassador = hub.ambassador_hub.all()[0]
 
         if (
             ambassador is None
             and hub.parent_hub
-            and hasattr(hub.parent_hub, "ambassador_hub")
+            and hub.parent_hub.ambassador_hub.all()
         ):
-            ambassador = hub.parent_hub.ambassador_hub
+            ambassador = hub.parent_hub.ambassador_hub.all()[0]
 
         # "if ambassador" does not suffice, because ambassador_hub is
         # a foreign key. Therefore, hub.ambassador_hub will not be None
         # but 'hubs.HubAmbassador.None'
-        if ambassador.exists():
+        if ambassador and hasattr(ambassador, "title"):
             print("ambassador found", ambassador)
             serializer = HubAmbassadorSerializer(ambassador, many=False)
             return Response(serializer.data, status=status.HTTP_200_OK)

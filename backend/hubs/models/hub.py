@@ -375,6 +375,8 @@ class HubAmbassador(models.Model):
         blank=True,
         on_delete=models.CASCADE,
     )
+
+    # TODO: this is wierd, as one hub could have multiple ambassadors this way
     hub = models.ForeignKey(
         Hub,
         help_text="Points to hub the user is ambassador of",
