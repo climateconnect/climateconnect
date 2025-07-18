@@ -202,7 +202,6 @@ class Command(BaseCommand):
 
             # setup the colors for the hub:
             main, _ = HubThemeColor.objects.get_or_create(
-                hub=hub,
                 name="Perth Main",
                 main="#9DCC8F",
                 light="#EFF5F2",
@@ -211,7 +210,6 @@ class Command(BaseCommand):
             )
 
             secondary, _ = HubThemeColor.objects.get_or_create(
-                hub=hub,
                 name="Perth Secondary",
                 main="#476B84",
                 light="#476B84",
@@ -220,7 +218,6 @@ class Command(BaseCommand):
             )
 
             background, _ = HubThemeColor.objects.get_or_create(
-                hub=hub,
                 name="Perth Background",
                 main="#FFFFFF",
                 light="#FFFFFF",
