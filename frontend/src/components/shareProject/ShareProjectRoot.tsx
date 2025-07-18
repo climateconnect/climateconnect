@@ -16,7 +16,7 @@ import ProjectSubmittedPage from "./ProjectSubmittedPage";
 import ShareProject from "./ShareProject";
 import { Project, SkillType, Role, Organization, SectorOptionType } from "../../types";
 import { parseLocation } from "../../../public/lib/locationOperations";
-import SelectSector from "./SelectSector";
+import SelectSectors from "./SelectSector";
 
 const DEFAULT_STATUS = 2;
 
@@ -315,7 +315,7 @@ export default function ShareProjectRoot({
             />
           )}
           {curStep.key === "selectSector" && (
-            <SelectSector
+            <SelectSectors
               project={project}
               goToNextStep={goToNextStep}
               goToPreviousStep={goToPreviousStep}

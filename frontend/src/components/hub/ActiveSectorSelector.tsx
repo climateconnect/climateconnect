@@ -15,7 +15,7 @@ type selectedSectors = {
   url_slug: string;
 };
 
-type ActiveSectorSelectorProps = {
+type ActiveSectorsSelectorProps = {
   selectedSectors: selectedSectors[];
   sectorsToSelectFrom: selectedSectors[];
   onSelectNewSector: (hub: selectedSectors) => void;
@@ -28,12 +28,12 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function ActiveSectorSelector({
+export default function ActiveSectorsSelector({
   selectedSectors,
   sectorsToSelectFrom,
   onSelectNewSector,
   onClickRemoveSector,
-}: ActiveSectorSelectorProps) {
+}: ActiveSectorsSelectorProps) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
