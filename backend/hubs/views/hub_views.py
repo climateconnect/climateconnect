@@ -95,11 +95,9 @@ class HubAmbassadorAPIView(APIView):
         # a foreign key. Therefore, hub.ambassador_hub will not be None
         # but 'hubs.HubAmbassador.None'
         if ambassador and hasattr(ambassador, "title"):
-            print("ambassador found", ambassador)
             serializer = HubAmbassadorSerializer(ambassador, many=False)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            print("ambassador not found", ambassador)
             return Response(None, status=status.HTTP_404_NOT_FOUND)
 
 
