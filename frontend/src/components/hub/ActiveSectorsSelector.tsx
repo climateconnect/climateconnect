@@ -19,8 +19,8 @@ type ActiveSectorsSelectorProps = {
   selectedSectors: selectedSectors[];
   sectorsToSelectFrom: selectedSectors[];
   maxSelectedNumber?: number;
-  onSelectNewSector: (hub: selectedSectors) => void;
-  onClickRemoveSector: (hub: selectedSectors) => void;
+  onSelectNewSector: (event: any) => void;
+  onClickRemoveSector: (sector: selectedSectors) => void;
 };
 
 const useStyles = makeStyles(() => ({
