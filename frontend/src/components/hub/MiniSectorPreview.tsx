@@ -17,7 +17,7 @@ const useStyles = makeStyles<Theme, any>((theme) => ({
   root: {
     display: "flex",
     flexDirection: "column",
-    cursor: "pointer",
+    cursor: (props) => (props.sector?.url_slug ? "pointer" : "default"),
     "-webkit-user-select": "none",
     "-moz-user-select": "none",
     "-ms-user-select": "none",
@@ -46,11 +46,11 @@ const useStyles = makeStyles<Theme, any>((theme) => ({
     height: 60,
     backgroundPosition: "center",
   }),
-  hubName: {
+  sectorName: {
     fontSize: 19,
     fontWeight: 600,
   },
-  hubIcon: {
+  sectorIcon: {
     height: 26,
     marginBottom: -3,
     marginRight: theme.spacing(0.25),
@@ -67,64 +67,76 @@ const useStyles = makeStyles<Theme, any>((theme) => ({
   },
 }));
 
-export default function MiniHubPreview({
-  hub,
-  hubsToSelectFrom,
+// Add a key to force re-render when sector changes
+export default function MiniSectorPreview({
+  sector,
+  sectorsToSelectFrom,
   editMode,
   createMode = false,
   onSelect,
-  onClickRemoveHub,
+  onClickRemoveSector,
 }) {
-  const classes = useStyles({ createMode: createMode, thumbnail_image: hub?.thumbnail_image });
+  const classes = useStyles({
+    createMode: createMode,
+    sector: sector,
+    thumbnail_image: sector?.thumbnail_image,
+  });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
   const handleRemoveHub = (event) => {
     event.preventDefault();
-    onClickRemoveHub(hub);
+    onClickRemoveSector(sector);
   };
-  //Link to filtered projects instead to hub
-  //Case 1: Location hub (?hub=erlangen) -> link to hub page filtered by this sector
-  //Case 2: General platform -> link to browse page filtered by this sector
-  return (
+  // TODO: Link to filtered projects instead to hub
+  //  Case 1: Location hub (?hub=erlangen) -> link to hub page filtered by this sector
+  //  Case 2: General platform -> link to browse page filtered by this sector
+
+  const inner_component = (
+    <Card className={classes.root}>
+      {editMode && (
+        <IconButton className={classes.closeIconButton} size="small" onClick={handleRemoveHub}>
+          <CloseIcon />
+        </IconButton>
+      )}
+      <div className={classes.placeholderImageContainer}>
+        <img
+          src={
+            createMode
+              ? "/images/mini_hub_preview_background.jpg"
+              : getImageUrl(sector?.thumbnail_image)
+          }
+          className={classes.placeholderImage}
+        />
+      </div>
+      <div className={classes.textContainer}>
+        {createMode ? (
+          <SelectField
+            label={texts.add_a_sector_where_you_are_active}
+            size="small"
+            color="contrast"
+            options={sectorsToSelectFrom}
+            onChange={(event) => event.target.value && onSelect(event)}
+          />
+        ) : (
+          <Typography color="text" className={classes.sectorName}>
+            {sector.icon && <img src={getImageUrl(sector.icon)} className={classes.sectorIcon} />}
+            {sector?.name}
+          </Typography>
+        )}
+      </div>
+    </Card>
+  );
+
+  return sector?.url_slug ? (
     <Link
-      href={hub && getLocalePrefix(locale) + `/hubs/${hub.url_slug}/browse`}
+      href={getLocalePrefix(locale) + `/hubs/${sector.url_slug}/browse`}
       target="_blank"
       className={classes.link}
       underline="hover"
     >
-      <Card className={classes.root}>
-        {editMode && (
-          <IconButton className={classes.closeIconButton} size="small" onClick={handleRemoveHub}>
-            <CloseIcon />
-          </IconButton>
-        )}
-        <div className={classes.placeholderImageContainer}>
-          <img
-            src={
-              createMode
-                ? "/images/mini_hub_preview_background.jpg"
-                : getImageUrl(hub?.thumbnail_image)
-            }
-            className={classes.placeholderImage}
-          />
-        </div>
-        <div className={classes.textContainer}>
-          {createMode ? (
-            <SelectField
-              label={texts.add_a_hub_where_you_are_active}
-              size="small"
-              color="contrast"
-              options={hubsToSelectFrom}
-              onChange={(event) => event.target.value && onSelect(event)}
-            />
-          ) : (
-            <Typography color="text" className={classes.hubName}>
-              {hub.icon && <img src={getImageUrl(hub.icon)} className={classes.hubIcon} />}
-              {hub?.name}
-            </Typography>
-          )}
-        </div>
-      </Card>
+      {inner_component}
     </Link>
+  ) : (
+    inner_component
   );
 }

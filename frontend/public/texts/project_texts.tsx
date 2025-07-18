@@ -764,13 +764,25 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
         </>
       ),
     },
-    please_choose_at_least_one_category: {
-      en: "Please choose at least one category!",
-      de: "Bitte wähle mindestens eine Kategorie aus!",
+    add_sectors_that_fit: {
+      en: "Add Sectors which fit:",
+      de: "Füge Sektoren hinzu, die passen:",
     },
-    you_can_only_choose_up_to_3_categories: {
-      en: "You can only choose up to 3 categories.",
-      de: "Du kannst nur bis zu 3 Kategorien auswählen",
+    select_1_to_3_sectors_that_fit_your_project: {
+      en: "Select 1-3 sectors that fit your project",
+      de: "Wähle 1-3 Sektoren, die zu deinem Projekt passen",
+    },
+    add_a_sector_where_you_are_active: {
+      en: "Add a Sector",
+      de: "Füge einen Sektor hinzu",
+    },
+    please_choose_at_least_one_sector: {
+      en: "Please choose at least one sector!",
+      de: "Bitte wähle mindestens eine Sektor aus!",
+    },
+    you_can_only_choose_up_to_3_sectors: {
+      en: "You can only choose up to 3 sectors.",
+      de: "Du kannst nur bis zu 3 Sektoren auswählen",
     },
     you_can_combine_categories_text: {
       en: `You can combine categories. For example if you fund treeplanting, select both
