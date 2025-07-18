@@ -306,7 +306,7 @@ class Hub(models.Model):
             children = Hub.objects.filter(parent_hub=self)
             if children.exists():
                 raise ValidationError(
-                    "This hub cannot be a parent hub because it is already a sub-hub of another hub. child: {}| parent: {}".format(
+                    "This hub cannot be a parent hub because it is already a sub-hub of another hub. parent: {}| child: {}".format(
                         self.parent_hub.name, children.first().name
                     )
                 )
