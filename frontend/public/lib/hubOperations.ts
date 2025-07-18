@@ -1,20 +1,15 @@
 import { apiRequest } from "./apiOperations";
 import { GetServerSidePropsContext } from "next";
 
-function parseQuery(query: string | string[] | undefined) {
-  if (Array.isArray(query)) {
-    console.warn("[Warning]: multiple (sub) hubs given in the query:", query);
-    console.warn("[Warning]: only using the first, ignoring the others");
-  }
-  const hub = Array.isArray(query) ? query[0] : query ?? "";
-  return hub;
-}
-
 export function extractHubUrlsFromContext(ctx: GetServerSidePropsContext) {
-  const hubUrl = parseQuery(ctx.query.hubUrl);
-  const subHub = parseQuery(ctx.query.sub);
+  const hubUrl = ctx.query.hubUrl;
+  const subHub = ctx.query.subHub;
 
-  return { hubUrl, subHub };
+  if (!subHub) {
+    return { hubUrl, subHub: undefined };
+  }
+
+  return { hubUrl, subHub: hubUrl + "_" + subHub };
 }
 
 export async function getAllHubs(locale: any, just_sector_hubs?: boolean) {

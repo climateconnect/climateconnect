@@ -59,9 +59,11 @@ function parseLinkedHubData(data: any): LinkedHub | null {
     return null;
   }
   const url_segments = data.url_slug.split("_");
-  let hubUrl = `/hubs/${url_segments[0]}/browse`;
-  if (url_segments.length > 1) {
-    hubUrl += "?sub=" + data.url_slug;
+  let hubUrl;
+  if (url_segments.length == 1) {
+    hubUrl = `/hubs/${url_segments[0]}/browse`;
+  } else {
+    hubUrl = `/hubs/${url_segments[0]}/${url_segments[1]}/browse`;
   }
 
   return {

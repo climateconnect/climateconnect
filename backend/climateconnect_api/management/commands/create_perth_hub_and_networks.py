@@ -187,6 +187,7 @@ class Command(BaseCommand):
                 hub_type=hub_data["hub_type"],
                 segway_text=hub_data["segway_text"],
                 image_attribution=hub_data["image_attribution"],
+                # TODO: fix images
                 image_path=hub_data["image_path"],
                 icon_path=hub_data["icon_path"],
                 icon_background_color=hub_data["icon_background_color"],
