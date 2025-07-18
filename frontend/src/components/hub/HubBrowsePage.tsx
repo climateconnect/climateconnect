@@ -75,11 +75,6 @@ export async function getHubBrowseServerSideProps(ctx) {
 
   if (subHub) {
     hubUrl = subHub;
-    // // check if hub really exists before blindly overwriting hubUrl
-    // const data = await getHubData(subHub, ctx.locale);
-    // if (data) {
-    //   hubUrl = subHub;
-    // }
   }
 
   const [
