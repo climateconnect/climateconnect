@@ -16,7 +16,7 @@ import ProjectSubmittedPage from "./ProjectSubmittedPage";
 import ShareProject from "./ShareProject";
 import { Project, SkillType, Role, Organization, SectorOptionType } from "../../types";
 import { parseLocation } from "../../../public/lib/locationOperations";
-import SelectSectors from "./SelectSector";
+import SelectSectors from "./SelectSectors";
 
 const DEFAULT_STATUS = 2;
 

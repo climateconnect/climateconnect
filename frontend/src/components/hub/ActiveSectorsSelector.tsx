@@ -18,6 +18,7 @@ type selectedSectors = {
 type ActiveSectorsSelectorProps = {
   selectedSectors: selectedSectors[];
   sectorsToSelectFrom: selectedSectors[];
+  maxSelectedNumber?: number;
   onSelectNewSector: (hub: selectedSectors) => void;
   onClickRemoveSector: (hub: selectedSectors) => void;
 };
@@ -31,20 +32,22 @@ const useStyles = makeStyles(() => ({
 export default function ActiveSectorsSelector({
   selectedSectors,
   sectorsToSelectFrom,
+  maxSelectedNumber = 3,
   onSelectNewSector,
   onClickRemoveSector,
 }: ActiveSectorsSelectorProps) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "hub", locale: locale });
+  const texts = getTexts({ page: "project", locale: locale });
   return (
     <div>
       <Typography color="text" className={classes.headline}>
-        {texts.add_hubs_in_which_your_organization_is_active}
+        {texts.add_sectors_that_fit}
       </Typography>
       <SectorsPreview
-        allowCreate
-        editMode
+        allowCreate={true}
+        editMode={true}
+        maxSelectedNumber={maxSelectedNumber}
         sectorsToSelectFrom={sectorsToSelectFrom}
         sectors={selectedSectors}
         onSelectNewSector={onSelectNewSector}

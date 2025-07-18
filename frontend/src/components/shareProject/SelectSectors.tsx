@@ -69,6 +69,7 @@ export default function SelectSectors({
           <ActiveSectorsSelector
             selectedSectors={project.sectors ? project.sectors : []}
             sectorsToSelectFrom={sectorsToSelectFrom}
+            maxSelectedNumber={3}
             onSelectNewSector={onSelectNewSector}
             onClickRemoveSector={onClickRemoveSector}
           />

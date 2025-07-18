@@ -111,14 +111,6 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
       en: "Click here to minimize the info about the hub",
       de: "Klicke hier, um den Info-Bereich der Hub auszublenden",
     },
-    add_a_hub_where_you_are_active: {
-      en: "Add a Sector",
-      de: "Füge einen Aktivitätsbereich hinzu",
-    },
-    add_hubs_in_which_your_organization_is_active: {
-      en: "Add Hubs (sectors) in which your organization is active",
-      de: "Füge Hubs (Aktivitätsbereiche) hinzu, in denen deine Organisation aktiv ist",
-    },
     please_create_an_account_or_log_in_to_contact_the_ambassador: {
       en: `Please sign up to contact ${hubAmbassador?.user?.first_name}.`,
       de: `Bitte melde dich an, um ${hubAmbassador?.user?.first_name} zu kontaktieren.`,
