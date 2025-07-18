@@ -83,7 +83,7 @@ export default function MiniSectorPreview({
   });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
-  const handleRemoveHub = (event) => {
+  const handleRemoveSector = (event) => {
     event.preventDefault();
     onClickRemoveSector(sector);
   };
@@ -94,7 +94,7 @@ export default function MiniSectorPreview({
   const inner_component = (
     <Card className={classes.root}>
       {editMode && (
-        <IconButton className={classes.closeIconButton} size="small" onClick={handleRemoveHub}>
+        <IconButton className={classes.closeIconButton} size="small" onClick={handleRemoveSector}>
           <CloseIcon />
         </IconButton>
       )}
