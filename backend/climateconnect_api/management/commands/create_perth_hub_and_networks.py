@@ -164,7 +164,6 @@ class Command(BaseCommand):
                 # landing_page_component TODO
                 "parent_hub": "perth-and-kinross",
             },
-            {"name": ""},
         ]
 
         for hub_data in hubs:
@@ -231,5 +230,5 @@ class Command(BaseCommand):
                 hub=perth_hub,
                 primary=main,
                 secondary=secondary,
-                background=background,
+                background_default=background,
             )
