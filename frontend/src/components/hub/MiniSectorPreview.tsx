@@ -134,7 +134,7 @@ export default function MiniSectorPreview({
       className={classes.link}
       underline="hover"
     >
-      <>{inner_component}</>
+      {inner_component}
     </Link>
   ) : (
     inner_component

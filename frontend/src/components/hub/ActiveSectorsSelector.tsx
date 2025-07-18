@@ -5,7 +5,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import SectorsPreview from "./SectorsPreview";
 
-type selectedSectors = {
+type selectedSector = {
   hub_type: string;
   icon?: string;
   landing_page_component?: string;
@@ -16,11 +16,11 @@ type selectedSectors = {
 };
 
 type ActiveSectorsSelectorProps = {
-  selectedSectors: selectedSectors[];
-  sectorsToSelectFrom: selectedSectors[];
+  selectedSectors: selectedSector[];
+  sectorsToSelectFrom: selectedSector[];
   maxSelectedNumber?: number;
   onSelectNewSector: (event: any) => void;
-  onClickRemoveSector: (sector: selectedSectors) => void;
+  onClickRemoveSector: (sector: selectedSector) => void;
 };
 
 const useStyles = makeStyles(() => ({
