@@ -30,7 +30,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
     color: "black",
     width: "100%",
     textDecoration: "none !important",
-    backgroundColor: "lightgray",
+    backgroundColor: "#EFF5F2",
     paddingTop: theme.spacing(3),
     paddingBottom: theme.spacing(1),
     paddingInline: theme.spacing(3),
