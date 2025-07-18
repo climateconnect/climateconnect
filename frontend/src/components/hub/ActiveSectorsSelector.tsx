@@ -5,7 +5,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import SectorsPreview from "./SectorsPreview";
 
-type selectedSectors = {
+type selectedSector = {
   hub_type: string;
   icon?: string;
   landing_page_component?: string;
@@ -15,11 +15,12 @@ type selectedSectors = {
   url_slug: string;
 };
 
-type ActiveSectorSelectorProps = {
-  selectedSectors: selectedSectors[];
-  sectorsToSelectFrom: selectedSectors[];
-  onSelectNewSector: (hub: selectedSectors) => void;
-  onClickRemoveSector: (hub: selectedSectors) => void;
+type ActiveSectorsSelectorProps = {
+  selectedSectors: selectedSector[];
+  sectorsToSelectFrom: selectedSector[];
+  maxSelectedNumber?: number;
+  onSelectNewSector: (event: any) => void;
+  onClickRemoveSector: (sector: selectedSector) => void;
 };
 
 const useStyles = makeStyles(() => ({
@@ -28,23 +29,25 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function ActiveSectorSelector({
+export default function ActiveSectorsSelector({
   selectedSectors,
   sectorsToSelectFrom,
+  maxSelectedNumber = 3,
   onSelectNewSector,
   onClickRemoveSector,
-}: ActiveSectorSelectorProps) {
+}: ActiveSectorsSelectorProps) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "hub", locale: locale });
+  const texts = getTexts({ page: "project", locale: locale });
   return (
     <div>
       <Typography color="text" className={classes.headline}>
-        {texts.add_hubs_in_which_your_organization_is_active}
+        {texts.add_sectors_that_fit}
       </Typography>
       <SectorsPreview
-        allowCreate
-        editMode
+        allowCreate={true}
+        editMode={true}
+        maxSelectedNumber={maxSelectedNumber}
         sectorsToSelectFrom={sectorsToSelectFrom}
         sectors={selectedSectors}
         onSelectNewSector={onSelectNewSector}

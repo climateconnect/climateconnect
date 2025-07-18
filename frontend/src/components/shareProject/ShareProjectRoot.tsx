@@ -16,7 +16,7 @@ import ProjectSubmittedPage from "./ProjectSubmittedPage";
 import ShareProject from "./ShareProject";
 import { Project, SkillType, Role, Organization, SectorOptionType } from "../../types";
 import { parseLocation } from "../../../public/lib/locationOperations";
-import SelectSector from "./SelectSector";
+import SelectSectors from "./SelectSectors";
 
 const DEFAULT_STATUS = 2;
 
@@ -271,7 +271,11 @@ export default function ShareProjectRoot({
   const onSelectNewSector = (event) => {
     event.preventDefault();
     const sector = sectorOptions.find((sector) => sector.name === event.target.value);
-    if (project?.sectors?.filter((h) => h.name === sector.name)?.length === 0) {
+    if (
+      sector &&
+      project?.sectors &&
+      project.sectors.filter((h) => h.name === sector.name)?.length === 0
+    ) {
       setProject({
         ...project,
         sectors: [...project.sectors, sector],
@@ -311,7 +315,7 @@ export default function ShareProjectRoot({
             />
           )}
           {curStep.key === "selectSector" && (
-            <SelectSector
+            <SelectSectors
               project={project}
               goToNextStep={goToNextStep}
               goToPreviousStep={goToPreviousStep}

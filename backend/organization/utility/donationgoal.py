@@ -9,7 +9,10 @@ def get_donationgoal_name(donation_goal: DonationGoal, language_code: str) -> st
             return translation
     return donation_goal.name
 
-def get_donationgoal_call_to_action_text(donation_goal: DonationGoal, language_code: str) -> str:
+
+def get_donationgoal_call_to_action_text(
+    donation_goal: DonationGoal, language_code: str
+) -> str:
     lang_translation_attr = "call_to_action_text_{}_translation".format(language_code)
     if hasattr(donation_goal, lang_translation_attr):
         translation = getattr(donation_goal, lang_translation_attr)

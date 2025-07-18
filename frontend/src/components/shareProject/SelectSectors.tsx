@@ -4,7 +4,7 @@ import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import NavigationButtons from "../general/NavigationButtons";
-import ActiveSectorSelector from "../hub/ActiveSectorSelector";
+import ActiveSectorsSelector from "../hub/ActiveSectorsSelector";
 const useStyles = makeStyles((theme) => {
   return {
     headline: {
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function SelectSector({
+export default function SelectSectors({
   project,
   goToNextStep,
   goToPreviousStep,
@@ -66,9 +66,10 @@ export default function SelectSector({
     <Container maxWidth="lg">
       <div className={classes.block}>
         <Container maxWidth="md">
-          <ActiveSectorSelector
+          <ActiveSectorsSelector
             selectedSectors={project.sectors ? project.sectors : []}
             sectorsToSelectFrom={sectorsToSelectFrom}
+            maxSelectedNumber={3}
             onSelectNewSector={onSelectNewSector}
             onClickRemoveSector={onClickRemoveSector}
           />
