@@ -4,7 +4,7 @@ import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import NavigationButtons from "../general/NavigationButtons";
-import ActiveSectorsSelector from "../hub/ActiveSectorSelector";
+import ActiveSectorsSelector from "../hub/ActiveSectorsSelector";
 const useStyles = makeStyles((theme) => {
   return {
     headline: {
