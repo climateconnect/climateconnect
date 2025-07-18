@@ -361,8 +361,8 @@ export default function AccountPage({
             return (
               <>
                 {i.value.length > 0 && <div className={classes.subtitle}>{i.name}:</div>}
-
-                <SectorsPreview hubs={i.value} />
+                {/* TODO: SectorsPreview accepts sectors and no hubs  */}
+                <SectorsPreview hubs={i.value} /> {/* TODO: fix this*/}
               </>
             );
           } else if (i.type === "select" && value) {

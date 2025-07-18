@@ -541,7 +541,7 @@ export default function EditAccountPage({
         return (
           <ActiveSectorsSelector
             //TODO(unused) info={i}
-            selectedSectors={editedAccount.info.hubs}
+            selectedSectors={editedAccount.info.hubs} // TODO: change this to Sectors in the appropriate PR
             sectorsToSelectFrom={allHubs.filter(
               (h) =>
                 editedAccount?.info?.hubs.filter((addedHub) => addedHub.url_slug === h.url_slug)
