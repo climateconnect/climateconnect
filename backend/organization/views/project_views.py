@@ -1,6 +1,8 @@
 import logging
 import traceback
 from django.db.models import Case, When, Prefetch
+
+from organization.utility.sector import sanitize_sector_inputs
 from organization.utility.cache import generate_project_ranking_cache_key
 from organization.utility.follow import (
     get_list_of_project_followers,
@@ -54,6 +56,8 @@ from organization.models import (
     ProjectTags,
     ProjectLike,
     OrganizationFollower,
+    Sector,
+    ProjectSectorMapping,
 )
 
 from organization.models.type import PROJECT_TYPES
@@ -166,6 +170,7 @@ class ListProjectsView(ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
+        # TODO: remove user profile, as it is not used
         user_profile = None
         if user.is_authenticated:
             user_profile = user.user_profile if user.user_profile else None  # noqa
@@ -175,7 +180,7 @@ class ListProjectsView(ListAPIView):
             .select_related("loc", "language", "status")
             .prefetch_related(
                 "skills",
-                "tag_project",
+                "tag_project",  # TODO: remove after updating frontend to use sectors
                 Prefetch(
                     "project_comment",
                     queryset=ProjectComment.objects.select_related("comment_ptr"),
@@ -190,27 +195,47 @@ class ListProjectsView(ListAPIView):
                         "parent_user__user_profile",
                     ),
                 ),
+                Prefetch(
+                    "project_sector_mapping",
+                    queryset=ProjectSectorMapping.objects.select_related("sector"),
+                ),
             )
         )
         # maybe use .annotate() to calculate ranking/counts of coments etc.
 
+        if "sectors" in self.request.query_params:
+            _sector_keys = self.request.query_params.get("sectors")
+            sector_keys, err = sanitize_sector_inputs(_sector_keys)
+
+            if err:
+                # TODO: should I "crash" with 400, or what should I ommit the sectors
+                logger.error(
+                    "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                        err, _sector_keys
+                    )
+                )
+            else:
+                projects = projects.filter(
+                    project_sector_mapping__sector__key__in=sector_keys
+                )
+
         if "hub" in self.request.query_params:
-            hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
-            if hub.exists():
-                hub = hub[0]
-                if hub.hub_type == Hub.SECTOR_HUB_TYPE:
-                    project_category = Hub.objects.get(
-                        url_slug=self.request.query_params.get("hub")
-                    ).filter_parent_tags.all()
-                    project_category_ids = list(map(lambda c: c.id, project_category))
-                    project_tags = ProjectTags.objects.filter(
-                        id__in=project_category_ids
-                    )
-                    project_tags_with_children = ProjectTags.objects.filter(
-                        Q(parent_tag__in=project_tags) | Q(id__in=project_tags)
-                    )
+            # retrieve hub and its parents
+            hub = Hub.objects.filter(url_slug=self.request.query_params["hub"]).first()
+            if not hub:
+                return projects.none()
+
+            hubs = [hub]
+            if hub.parent_hub:
+                hubs.append(hub.parent_hub)
+
+            for current_hub in hubs:
+                if current_hub.hub_type == Hub.SECTOR_HUB_TYPE:
+                    sectors = current_hub.sectors.all()
+                    sector_ids = [x.id for x in sectors]
+
                     projects = projects.filter(
-                        tag_project__project_tag__in=project_tags_with_children
+                        project_sector_mapping__sector_id__in=sector_ids
                     ).distinct()
 
                 # projects related to the hub
@@ -391,11 +416,13 @@ class CreateProjectView(APIView):
             "short_description",
             "collaborators_welcome",
             "team_members",
+            # TODO (Karol): remove / change to project_sectors
             "project_tags",
             "loc",
             "image",
             "source_language",
             "translations",
+            "hubName",  # TODO: fix this behavior: 'hubName' has to be set, but can be None
         ]
         for param in required_params:
             if param not in request.data:
@@ -514,6 +541,48 @@ class CreateProjectView(APIView):
         roles = Role.objects.all()
         team_members = request.data["team_members"]
 
+        if "sectors" in request.data:
+            _sector_keys = request.data["sectors"]
+            sector_keys, err = sanitize_sector_inputs(_sector_keys)
+
+            if err:
+                logger.error(
+                    "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                        err, _sector_keys
+                    )
+                )
+                return Response(
+                    {
+                        "message": "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                            err, _sector_keys
+                        )
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            sectors = []
+
+            for sector_key in sector_keys:
+                try:
+                    sector = Sector.objects.get(key=sector_key)
+                    sectors.append(sector)
+                except Sector.DoesNotExist:
+                    logger.error(
+                        "During project creation of project {}: Passed sector {} does not exists".format(
+                            project.url_slug,
+                            sector_key,
+                        )
+                    )
+            ProjectSectorMapping.objects.bulk_create(
+                [
+                    ProjectSectorMapping(
+                        project=project, sector=sector, order=len(sectors) - i
+                    )
+                    for i, sector in enumerate(sectors)
+                ]
+            )
+
+        # TODO (Karol): Change this to sectors
         if "project_tags" in request.data:
             order = len(request.data["project_tags"])
             for project_tag_id in request.data["project_tags"]:
@@ -606,6 +675,8 @@ class ProjectAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, url_slug, format=None):
+        # TODO: shouldnt this be run as a transaction
+        # I guess we will never have a conflict, but it would be safer
         try:
             project = Project.objects.get(url_slug=url_slug)
         except Project.DoesNotExist:
@@ -645,6 +716,7 @@ class ProjectAPIView(APIView):
                 except Skill.DoesNotExist:
                     logger.error("Passed skill id {} does not exists")
 
+        # TODO: remove the project_taggings
         old_project_taggings = ProjectTagging.objects.filter(project=project)
         old_project_tags = old_project_taggings.values("project_tag")
         if "project_tags" in request.data:
@@ -671,6 +743,58 @@ class ProjectAPIView(APIView):
                         old_tagging.order = int(order)
                         old_tagging.save()
                 order = order - 1
+
+        if "sectors" in request.data:
+            _sector_keys = request.data["sectors"]
+            sector_keys, err = sanitize_sector_inputs(_sector_keys)
+
+            if err:
+                # TODO: should I "crash" with 400, or what should I ommit the sectors
+                logger.error(
+                    "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                        err, _sector_keys
+                    )
+                )
+                return Response(
+                    {
+                        "message": "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                            err, _sector_keys
+                        )
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            # delete sectors that are not mapped to the project anymore
+            for sectorMapping in ProjectSectorMapping.objects.filter(project=project):
+                if sectorMapping.sector.key not in sector_keys:
+                    sectorMapping.delete()
+
+            # create mapping or update
+            order_value = len(sector_keys)
+            for sector_key in sector_keys:
+                old_sector_mapping = ProjectSectorMapping.objects.filter(
+                    project=project, sector__key=sector_key
+                )
+                if not old_sector_mapping.exists():
+                    # create new project mapping
+                    try:
+                        sector = Sector.objects.get(key=sector_key)
+                        ProjectSectorMapping.objects.create(
+                            project=project, sector=sector, order=order_value
+                        )
+                    except Sector.DoesNotExist:
+                        logger.error(
+                            "Passed sector key {} does not exists".format(sector_key)
+                        )
+                else:
+                    # update existing mappings order value
+                    old_sector_mapping = old_sector_mapping[0]
+                    old_sector_mapping.order = order_value
+
+                    old_sector_mapping.save()
+                # reduce for next element
+                order_value -= 1
+
         if "image" in request.data:
             project.image = get_image_from_data_url(request.data["image"])[0]
         if "thumbnail_image" in request.data:
@@ -958,6 +1082,7 @@ class ListProjectMembersView(ListAPIView):
         return project.project_member_project.filter(is_active=True)
 
 
+# TODO (Karol): remove this view, as project tags are being replaced by sectors
 class ListProjectTags(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ProjectTagsSerializer
