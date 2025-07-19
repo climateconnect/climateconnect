@@ -7,7 +7,7 @@ from hubs.serializers.hub import (
     HubSupporterSerializer,
     HubThemeSerializer,
 )
-from hubs.models.hub import Hub, HubAmbassador, HubSupporter
+from hubs.models.hub import Hub, HubSupporter
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
