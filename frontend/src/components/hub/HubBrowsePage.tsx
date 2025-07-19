@@ -165,6 +165,7 @@ export default function HubBrowsePage({
   const [hubSupporters, setHubSupporters] = useState(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const donationGoalActive = donationGoal && donationGoal.hub === hubUrl;
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
 
   useEffect(() => {
     (async () => {
@@ -220,7 +221,9 @@ export default function HubBrowsePage({
       <WideLayout
         title={headline}
         hideAlert
-        headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
+        headerBackground={
+          customTheme ? customTheme.palette.header.background : theme.palette.background.default
+        }
         image={getImageUrl(image)}
         isHubPage
         hubUrl={hubUrl}
@@ -229,7 +232,7 @@ export default function HubBrowsePage({
           hubData?.custom_footer_image && getImageUrl(hubData?.custom_footer_image)
         }
         isLocationHub={isLocationHub}
-        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+        customTheme={customTheme}
         hasHubLandingPage={hubData?.landing_page_component ? true : false}
       >
         <div className={classes.content}>

@@ -1,9 +1,8 @@
 import { Link, MenuItem, MenuList, Paper, Popper } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import UserContext from "../context/UserContext";
-import { getStaticLinkFromItem } from "../../../public/lib/headerLink";
+import { getStaticLinkFromItem } from "../../../public/lib/headerLinks";
 
 const useStyles = makeStyles((theme) => ({
   climateHubOption: {

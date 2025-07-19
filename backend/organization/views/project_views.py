@@ -238,22 +238,27 @@ class ListProjectsView(ListAPIView):
                         project_sector_mapping__sector_id__in=sector_ids
                     ).distinct()
 
-                elif current_hub.hub_type == Hub.LOCATION_HUB_TYPE:
-                    location = current_hub.location.all()[0]
-                    location_multipolygon = location.multi_polygon
-                    projects = projects.filter(Q(loc__country=location.country))
-                    if location_multipolygon:
-                        projects = projects.filter(
-                            Q(loc__multi_polygon__coveredby=(location_multipolygon))
-                            | Q(loc__centre_point__coveredby=(location_multipolygon))
-                        ).annotate(
-                            distance=Distance(
-                                "loc__centre_point", location_multipolygon
-                            )
-                        )
+                # projects related to the hub
+                project_filter = Q(related_hubs=hub)
 
-                elif current_hub.hub_type == Hub.CUSTOM_HUB_TYPE:
-                    projects = projects.filter(related_hubs=current_hub)
+                if hub.location.all().exists():
+                    location = hub.location.all()[0]
+                    location_multipolygon = location.multi_polygon
+                    location_filter = Q(loc__country=location.country)
+                    if location_multipolygon:
+                        location_filter = location_filter & (
+                            Q(loc__multi_polygon__coveredby=location_multipolygon)
+                            | Q(loc__centre_point__coveredby=location_multipolygon)
+                        )
+                    # Merge location logic into related_hubs logic
+                    project_filter = project_filter | location_filter
+
+                # Filter and remove duplicates
+                projects = projects.filter(project_filter).distinct()
+                if hub.location.all().exists() and location_multipolygon:
+                    projects = projects.annotate(
+                        distance=Distance("loc__centre_point", location_multipolygon)
+                    )
 
         if "collaboration" in self.request.query_params:
             collaborators_welcome = self.request.query_params.get("collaboration")
