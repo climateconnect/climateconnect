@@ -236,8 +236,8 @@ const defaultStaticLinks = (texts, hubUrl) => [
 ];
 
 const getCustomHubStaticLinks = (url_slug, texts) => {
-  const customHubData = getCustomHubData({hubUrl: url_slug, texts});
-  return customHubData?.headerStaticLinks || defaultStaticLinks(texts, url_slug)
+  const customHubData = getCustomHubData({ hubUrl: url_slug, texts });
+  return customHubData?.headerStaticLinks || defaultStaticLinks(texts, url_slug);
 };
 const getStaticLinks = (texts, customHubUrlSlug) => {
   return !customHubUrlSlug

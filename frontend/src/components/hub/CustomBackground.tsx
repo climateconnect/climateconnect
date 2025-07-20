@@ -149,7 +149,7 @@ function PerthBackgroundAuth({ mobileScreenSize, classes }: BackgroundComponentP
 }
 
 export function PrioOneBackgroundBrowse({ isLoggedInUser }: { isLoggedInUser: boolean }) {
-  const classes = useStyles();
+  const classes = useStyles({});
   const largeScreenSize = useMediaQuery("(max-width: 1300px)");
 
   return (

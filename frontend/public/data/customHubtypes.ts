@@ -2,8 +2,8 @@ import { ComponentType } from "react";
 import { SvgIconProps } from "@mui/material";
 
 export type Link = {
-  href: string;
-  text: string;
+  href?: string;
+  text?: string;
   target?: string;
   iconForDrawer?: ComponentType<SvgIconProps>;
   showStaticLinksInDropdown?: boolean;
@@ -12,6 +12,8 @@ export type Link = {
   className?: string;
   hideOnMediumScreen?: boolean;
   type?: string;
+  only_show_in_languages?: any;
+  only_show_on_static_page?: boolean;
 };
 
 export type HubConfig = {

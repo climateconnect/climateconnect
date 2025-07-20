@@ -97,7 +97,7 @@ export async function getHubBrowseServerSideProps(ctx) {
     getHubTheme(hubUrl),
     getLinkedHubsData(hubUrl),
   ]);
-  if(hubData?.parent_hub?.url_slug){
+  if (hubData?.parent_hub?.url_slug) {
     hubUrl = hubData?.parent_hub?.url_slug;
   }
 
