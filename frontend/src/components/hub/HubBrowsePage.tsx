@@ -38,6 +38,7 @@ import {
 import { retrieveDescriptionFromWebflow } from "../../utils/webflow";
 import { HubDescription } from "./description/HubDescription";
 import { FabShareButton } from "./FabShareButton";
+import React from "react";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -48,6 +49,7 @@ const useStyles = makeStyles((theme) => ({
 export interface HubBrowsePageProps {
   headline: string;
   hubUrl: string;
+  subHubUrl: string;
   image_attribution: string;
   image: string;
   isLocationHub: boolean;
@@ -71,11 +73,6 @@ export interface HubBrowsePageProps {
 
 export async function getHubBrowseServerSideProps(ctx) {
   let hubUrl = ctx.query.hubUrl;
-  let { subHub } = extractHubUrlsFromContext(ctx);
-
-  if (subHub) {
-    hubUrl = subHub;
-  }
 
   const [
     hubData,
@@ -100,6 +97,9 @@ export async function getHubBrowseServerSideProps(ctx) {
     getHubTheme(hubUrl),
     getLinkedHubsData(hubUrl),
   ]);
+  if(hubData?.parent_hub?.url_slug){
+    hubUrl = hubData?.parent_hub?.url_slug;
+  }
 
   return {
     props: {
@@ -227,7 +227,6 @@ export default function HubBrowsePage({
         image={getImageUrl(image)}
         isHubPage
         hubUrl={hubUrl}
-        hideDonationCampaign
         customFooterImage={
           hubData?.custom_footer_image && getImageUrl(hubData?.custom_footer_image)
         }
