@@ -1,7 +1,8 @@
 //Lists all static page links. Expects navigation_texts
-import { getStaticLinks } from "../../public/lib/headerLink";
+import { getStaticLinks } from "../lib/headerLinks";
 export function getStaticPageLinks(texts, locale, customHubUrlSlug, isStaticPage = false) {
-  const links = getStaticLinks(texts, customHubUrlSlug);
+  const links = getStaticLinks(texts, customHubUrlSlug) || [];
+
   if (locale) {
     return links.filter((l) => {
       if (
