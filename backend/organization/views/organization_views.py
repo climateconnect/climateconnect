@@ -150,25 +150,30 @@ class ListOrganizationsAPIView(ListAPIView):
                     organizations = organizations.filter(
                         organization_sector_mapping__sector_id__in=sector_ids
                     ).distinct()
-                # organization related to the hub
-                organization_filter = Q(related_hubs=hub)
-                location = hub.location.first()
-                if location:
-                    location_multipolygon = location.multi_polygon
-                location_filter = Q(location__country=location.country)
-                if location_multipolygon:
-                    location_filter &= Q(
-                        location__multi_polygon__coveredby=location_multipolygon
-                    ) | Q(location__centre_point__coveredby=location_multipolygon)
-                organization_filter |= location_filter
-                organizations = organizations.filter(organization_filter).distinct()
 
-                if location and location.multi_polygon:
-                    organizations = organizations.annotate(
+                elif hub.hub_type == Hub.LOCATION_HUB_TYPE:
+                    location = hub.location.first()
+                    organizations = organizations.filter(
+                        Q(location__country=location.country)
+                        & (
+                            Q(
+                                location__multi_polygon__coveredby=(
+                                    location.multi_polygon
+                                )
+                            )
+                            | Q(
+                                location__centre_point__coveredby=(
+                                    location.multi_polygon
+                                )
+                            )
+                        )
+                    ).annotate(
                         distance=Distance(
                             "location__centre_point", location.multi_polygon
                         )
                     )
+                elif hub.hub_type == Hub.CUSTOM_HUB_TYPE:
+                    organizations = organizations.filter(related_hubs=hub)
 
         if "sectors" in self.request.query_params:
             _sector_keys = self.request.query_params.get("sectors").split(",")

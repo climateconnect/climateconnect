@@ -238,27 +238,22 @@ class ListProjectsView(ListAPIView):
                         project_sector_mapping__sector_id__in=sector_ids
                     ).distinct()
 
-                # projects related to the hub
-                project_filter = Q(related_hubs=hub)
-
-                if hub.location.all().exists():
-                    location = hub.location.all()[0]
+                elif current_hub.hub_type == Hub.LOCATION_HUB_TYPE:
+                    location = current_hub.location.all()[0]
                     location_multipolygon = location.multi_polygon
-                    location_filter = Q(loc__country=location.country)
+                    projects = projects.filter(Q(loc__country=location.country))
                     if location_multipolygon:
-                        location_filter = location_filter & (
-                            Q(loc__multi_polygon__coveredby=location_multipolygon)
-                            | Q(loc__centre_point__coveredby=location_multipolygon)
+                        projects = projects.filter(
+                            Q(loc__multi_polygon__coveredby=(location_multipolygon))
+                            | Q(loc__centre_point__coveredby=(location_multipolygon))
+                        ).annotate(
+                            distance=Distance(
+                                "loc__centre_point", location_multipolygon
+                            )
                         )
-                    # Merge location logic into related_hubs logic
-                    project_filter = project_filter | location_filter
 
-                # Filter and remove duplicates
-                projects = projects.filter(project_filter).distinct()
-                if hub.location.all().exists() and location_multipolygon:
-                    projects = projects.annotate(
-                        distance=Distance("loc__centre_point", location_multipolygon)
-                    )
+                elif current_hub.hub_type == Hub.CUSTOM_HUB_TYPE:
+                    projects = projects.filter(related_hubs=current_hub)
 
         if "collaboration" in self.request.query_params:
             collaborators_welcome = self.request.query_params.get("collaboration")
@@ -1091,6 +1086,7 @@ class ListProjectTags(ListAPIView):
         if "hub" in self.request.query_params:
             try:
                 hub = Hub.objects.get(url_slug=self.request.query_params["hub"])
+                print(hub.hub_type)
                 if hub.hub_type == Hub.SECTOR_HUB_TYPE:
                     parent_tag = hub.filter_parent_tags.all()[0]
                     return ProjectTags.objects.filter(parent_tag=parent_tag)
