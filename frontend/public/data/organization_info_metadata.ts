@@ -51,8 +51,8 @@ export default function getOrganizationInfoMetadata(locale, organization?, isEdi
         ...getOrganizationSizeAndInvolvement(texts, isEditing),
       },
     }),
-    hubs: {
-      ...getHubs(texts),
+    sectors: {
+      ...getSectors(texts),
     },
   };
   return metaData;
@@ -223,11 +223,11 @@ function getGetInvolved(texts, isEditing) {
   };
 }
 
-function getHubs(texts) {
+function getSectors(texts) {
   return {
     name: `${texts.organization_is_active_in_these_sectors}`,
-    key: "hubs",
-    type: "hubs",
+    key: "sectors",
+    type: "sectors",
   };
 }
 

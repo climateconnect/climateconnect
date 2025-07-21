@@ -357,12 +357,12 @@ export default function AccountPage({
                 <MessageContent content={value ? value + additionalText : i.missingMessage} />
               </div>
             );
-          } else if (i.type === "hubs") {
+          } else if (i.type === "sectors") {
             return (
               <>
                 {i.value.length > 0 && <div className={classes.subtitle}>{i.name}:</div>}
 
-                <SectorsPreview hubs={i.value} />
+                <SectorsPreview sectors={i.value} />
               </>
             );
           } else if (i.type === "select" && value) {

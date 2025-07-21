@@ -12,7 +12,7 @@ type selectedSectors = {
   name: string;
   quick_info?: string;
   thumbnail_image?: string;
-  url_slug: string;
+  key: string;
 };
 
 type ActiveSectorSelectorProps = {
@@ -36,11 +36,11 @@ export default function ActiveSectorSelector({
 }: ActiveSectorSelectorProps) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "hub", locale: locale });
+  const texts = getTexts({ page: "organization", locale: locale });
   return (
     <div>
       <Typography color="text" className={classes.headline}>
-        {texts.add_hubs_in_which_your_organization_is_active}
+        {texts.add_sectors_in_which_your_organization_is_active}
       </Typography>
       <SectorsPreview
         allowCreate

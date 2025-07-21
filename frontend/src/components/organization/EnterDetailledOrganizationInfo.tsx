@@ -38,7 +38,7 @@ export default function EnterDetailledOrganizationInfo({
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
   loadingSubmit,
-  allHubs,
+  allSectors,
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
@@ -80,7 +80,7 @@ export default function EnterDetailledOrganizationInfo({
         existingName={existingName}
         existingUrlSlug={existingUrlSlug}
         loadingSubmit={loadingSubmit}
-        allHubs={allHubs}
+        allSectors={allSectors}
       />
     </div>
   );
