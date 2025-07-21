@@ -412,6 +412,7 @@ class CreateProjectView(APIView):
             "collaborators_welcome",
             "team_members",
             "loc",
+            "sectors",
             "image",
             "source_language",
             "translations",
