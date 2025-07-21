@@ -26,7 +26,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import ButtonLoader from "../general/ButtonLoader";
-import ActiveHubsSelect from "../hub/ActiveHubsSelect";
+import ActiveSectorsSelector from "../hub/ActiveSectorsSelector";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 import LocationSearchBar from "../search/LocationSearchBar";
@@ -539,16 +539,16 @@ export default function EditAccountPage({
           });
         };
         return (
-          <ActiveHubsSelect
+          <ActiveSectorsSelector
             //TODO(unused) info={i}
-            hubsToSelectFrom={allHubs.filter(
+            selectedSectors={editedAccount.info.hubs}
+            sectorsToSelectFrom={allHubs.filter(
               (h) =>
                 editedAccount?.info?.hubs.filter((addedHub) => addedHub.url_slug === h.url_slug)
                   .length === 0
             )}
-            onClickRemoveHub={onClickRemoveHub}
-            selectedHubs={editedAccount.info.hubs}
-            onSelectNewHub={onSelectNewHub}
+            onSelectNewSector={onSelectNewHub}
+            onClickRemoveSector={onClickRemoveHub}
           />
         );
         //This is the fallback for normal textfields

@@ -4,7 +4,7 @@ import Cookies from "universal-cookie";
 import { apiRequest, sendToLogin } from "../public/lib/apiOperations";
 import { getProjectTypeOptions } from "../public/lib/getOptions";
 import { nullifyUndefinedValues } from "../public/lib/profileOperations";
-import { parseOptions } from "../public/lib/selectOptionsOperations";
+import { parseOptions, parseSectorOptions } from "../public/lib/selectOptionsOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import LoginNudge from "../src/components/general/LoginNudge";
@@ -26,33 +26,33 @@ export async function getServerSideProps(ctx) {
   const [
     availabilityOptions,
     userOrganizations,
-    categoryOptions,
     skillsOptions,
     rolesOptions,
     statusOptions,
     projectTypeOptions,
     hubThemeData,
+    sectorOptions,
   ] = await Promise.all([
     getAvailabilityOptions(auth_token, ctx.locale),
     getUserOrganizations(auth_token, ctx.locale),
-    getCategoryOptions(auth_token, ctx.locale),
     getSkillsOptions(auth_token, ctx.locale),
     getRolesOptions(auth_token, ctx.locale),
     getStatusOptions(auth_token, ctx.locale),
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
+    getSectorOptions(auth_token, ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
       availabilityOptions: availabilityOptions,
       userOrganizations: userOrganizations,
-      categoryOptions: categoryOptions,
       skillsOptions: skillsOptions,
       rolesOptions: rolesOptions,
       statusOptions: statusOptions,
       projectTypeOptions: projectTypeOptions,
       hubUrl: hubUrl ?? undefined,
       hubThemeData: hubThemeData ?? undefined,
+      sectorOptions: sectorOptions ?? undefined,
     }),
   };
 }
@@ -60,13 +60,13 @@ export async function getServerSideProps(ctx) {
 export default function Share({
   availabilityOptions,
   userOrganizations,
-  categoryOptions,
   skillsOptions,
   rolesOptions,
   statusOptions,
   projectTypeOptions,
   hubUrl,
   hubThemeData,
+  sectorOptions,
 }) {
   const token = new Cookies().get("auth_token");
   const { user, locale } = useContext(UserContext);
@@ -101,7 +101,6 @@ export default function Share({
         <ShareProjectRoot
           availabilityOptions={availabilityOptions}
           userOrganizations={userOrganizations}
-          categoryOptions={categoryOptions}
           skillsOptions={skillsOptions}
           rolesOptions={rolesOptions}
           user={user}
@@ -110,6 +109,7 @@ export default function Share({
           setMessage={handleSetErrorMessage}
           projectTypeOptions={projectTypeOptions}
           hubName={hubUrl}
+          sectorOptions={sectorOptions}
         />
       </WideLayout>
     );
@@ -135,17 +135,21 @@ const getAvailabilityOptions = async (token, locale) => {
   }
 };
 
-const getCategoryOptions = async (token, locale) => {
+const getSectorOptions = async (token, locale) => {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/projecttags/",
+      url: "/api/sectors/",
       token: token,
       locale: locale,
     });
-    if (resp.data.results.length === 0) return null;
+    if (resp.data.length === 0) return null;
     else {
-      return parseOptions(resp.data.results, "parent_tag");
+      console.log("Sectors fetched successfully");
+      let sectorOptions = parseSectorOptions(resp.data);
+      sectorOptions.sort((a, b) => a.name.localeCompare(b.name));
+
+      return sectorOptions;
     }
   } catch (err: any) {
     console.log(err);

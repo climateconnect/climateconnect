@@ -35,13 +35,13 @@ class DonationGoal(models.Model):
     current_amount = models.PositiveIntegerField(
         help_text="The current amount including the unit (e.g. '500€')",
         verbose_name="Current Amount",
-        default=0
+        default=0,
     )
 
     goal_amount = models.PositiveIntegerField(
         help_text="The goal amount including the unit (e.g. '1000€')",
         verbose_name="Goal Amount",
-        default=0
+        default=0,
     )
 
     unit = models.CharField(

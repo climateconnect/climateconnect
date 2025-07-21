@@ -411,9 +411,8 @@ class CreateProjectView(APIView):
             "short_description",
             "collaborators_welcome",
             "team_members",
-            # TODO (Karol): remove / change to project_sectors
-            "project_tags",
             "loc",
+            "sectors",
             "image",
             "source_language",
             "translations",
