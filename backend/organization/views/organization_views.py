@@ -268,7 +268,7 @@ class CreateOrganizationView(APIView):
             "location",
             "image",
             "organization_tags",
-            "sectors",
+            #"sectors",
             "translations",
             "source_language",
             "short_description",
