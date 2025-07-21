@@ -302,14 +302,15 @@ class Hub(models.Model):
             if self == self.parent_hub:
                 raise ValidationError("A hub cannot be its own parent.")
 
-            # hub is now a child. Ensure that it is not a parent hub
-            children = Hub.objects.filter(parent_hub=self)
-            if children.exists():
-                raise ValidationError(
-                    "This hub cannot be a parent hub because it is already a sub-hub of another hub. parent: {}| child: {}".format(
-                        self.parent_hub.name, children.first().name
+            # hub is now a child. Ensure that it is not a parent hub. This is only relevant on patch
+            if self.id:
+                children = Hub.objects.filter(parent_hub=self)
+                if children.exists():
+                    raise ValidationError(
+                        "This hub cannot be a parent hub because it is already a sub-hub of another hub. parent: {}| child: {}".format(
+                            self.parent_hub.name, children.first().name
+                        )
                     )
-                )
 
             # ensure that the parent hub is not a child of another hub
             if self.parent_hub.parent_hub:
