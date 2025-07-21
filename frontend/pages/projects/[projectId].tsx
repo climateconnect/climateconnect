@@ -462,7 +462,7 @@ function parseProject(project) {
       : project.project_parents[0].parent_user,
     isPersonalProject: !project.project_parents[0].parent_organization,
     is_draft: project.is_draft,
-    tags: project.tags.map((t) => t.project_tag.name),
+    sectors: project.sectors.sort((a, b) => a.order - b.order).map((s) => s.sector),
     collaborating_organizations: project.collaborating_organizations.map(
       (o) => o.collaborating_organization
     ),

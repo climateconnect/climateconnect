@@ -66,9 +66,9 @@ export async function getSectorOptions(locale) {
       url: "/api/sectors/",
       locale: locale,
     });
-    if (resp.data.length === 0) return null;
+    if (resp.data?.results?.length === 0) return null;
     else {
-      return parseSectorOptions(resp.data);
+      return parseSectorOptions(resp.data.results);
     }
   } catch (err: any) {
     console.log(err);

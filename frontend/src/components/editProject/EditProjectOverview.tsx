@@ -15,7 +15,6 @@ import {
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
 import ProjectLocationSearchBar from "../shareProject/ProjectLocationSearchBar";
 import { Project, SectorOptionType } from "../../types";
@@ -412,39 +411,33 @@ const InputSectors = ({
   const handleSectorDelete = (sector) => {
     handleChangeProject([...(project.sectors ?? []).filter((t) => t.id !== sector.id)], "sectors");
   };
-
   return (
     <div className={classes.projectInfoEl}>
-      <Typography variant="body2" className={classes.overviewHeadline}>
-        {texts.project_categories}
-      </Typography>
-      {(project.sectors ?? []).length > 0 && (
-        <List className={classes.flexContainer}>
-          {project?.sectors?.map((sector) => (
-            <Chip
-              key={sector.name}
-              label={sector.name}
-              className={classes.skill}
-              onDelete={() => handleSectorDelete(sector)}
+      <List className={classes.flexContainer}>
+        {project?.sectors?.map((sector) => (
+          <Chip
+            key={sector.name}
+            label={sector.name}
+            className={classes.skill}
+            onDelete={() => handleSectorDelete(sector)}
+          />
+        ))}
+        <Grid container>
+          <Grid xs={12} sm={8} md={5} lg={5} item>
+            <SelectField
+              options={sectorOptions}
+              className={classes.sectorField}
+              multiple
+              values={project.sectors?.map((s) => s.name)}
+              label={<div className={classes.iconLabel}>{texts.project_categories}</div>}
+              size="small"
+              onChange={(event) => {
+                handleValueChange(event.target.value);
+              }}
             />
-          ))}
-          <Grid container>
-            <Grid xs={12} sm={8} md={5} lg={5} item>
-              <SelectField
-                options={sectorOptions}
-                className={classes.sectorField}
-                multiple
-                values={project.sectors?.map((s) => s.name)}
-                label={<div className={classes.iconLabel}>{texts.sectors}</div>}
-                size="small"
-                onChange={(event) => {
-                  handleValueChange(event.target.value);
-                }}
-              />
-            </Grid>
           </Grid>
-        </List>
-      )}
+        </Grid>
+      </List>
     </div>
   );
 };

@@ -478,8 +478,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Fass kurz zusammen, was ihr tun (bis zu 280 Zeichen)",
     },
     project_categories: {
-      en: "Project categories",
-      de: "Projektkategorien",
+      en: "Topics",
+      de: "Themenfelder",
     },
     project_website: {
       en: "Project website",
