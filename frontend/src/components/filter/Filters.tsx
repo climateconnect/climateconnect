@@ -101,6 +101,7 @@ export default function Filters({
 }: any) {
   const { locale } = useContext(UserContext);
   const { filters: currentFilters } = useContext(FilterContext);
+
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const classes = useStyles({
     justifyContent: justifyContent ? justifyContent : "space-around",
@@ -121,6 +122,7 @@ export default function Filters({
           // Get the current values for each potential filter
           // from what could already be previously selected
           const currentFilterValue = currentFilters[filter.key];
+
           let component;
           if (filter.type === "text") {
             component = (
@@ -192,6 +194,7 @@ export default function Filters({
             // Only perform one React state change if there's an initial
             // set of selected categories
             const curSelectedItems = selectedItems[filter.key];
+
             /**
              * Update the selected items object with new entries. New selected items is
              * an array of objects.

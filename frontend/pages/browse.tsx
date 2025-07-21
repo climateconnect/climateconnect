@@ -5,9 +5,9 @@ import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import {
   getOrganizationTagsOptions,
+  getProjectTagsOptions,
   getProjectTypeOptions,
   getSkillsOptions,
-  getSectorOptions,
 } from "../public/lib/getOptions";
 import { getAllHubs } from "../public/lib/hubOperations";
 import { getLocationFilteredBy } from "../public/lib/locationOperations";
@@ -24,24 +24,24 @@ import { FilterProvider } from "../src/components/provider/FilterProvider";
 export async function getServerSideProps(ctx) {
   const { hideInfo } = NextCookies(ctx);
   const [
+    project_categories,
     organization_types,
     skills,
     hubs,
     location_filtered_by,
     projectTypes,
-    sectorOptions,
   ] = await Promise.all([
+    getProjectTagsOptions(null, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
     getAllHubs(ctx.locale),
     getLocationFilteredBy(ctx.query),
     getProjectTypeOptions(ctx.locale),
-    getSectorOptions(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
       filterChoices: {
-        sectors: sectorOptions,
+        project_categories: project_categories,
         organization_types: organization_types,
         skills: skills,
       },
@@ -57,6 +57,7 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter, pro
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
   const { locale } = useContext(UserContext);
+
   const isScrollingUp = !useScrollTrigger({
     disableHysteresis: false,
     threshold: 0,
@@ -67,6 +68,7 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter, pro
   const contextValues = {
     projectTypes: projectTypes,
   };
+
   return (
     <>
       <WideLayout showOnScrollUp={showOnScrollUp} subHeader={<HubsSubHeader hubs={hubs} />}>

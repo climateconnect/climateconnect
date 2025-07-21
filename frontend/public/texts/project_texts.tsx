@@ -490,12 +490,12 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Falls dein Projekt eine Webseite hat, kannst du sie hier eintragen",
     },
     edit_sectors: {
-      en: "Edit sectors",
-      de: "Sektoren bearbeiten",
+      en: "Edit topics",
+      de: "Themenfelder bearbeiten",
     },
     add_sectors: {
-      en: "Add sectors",
-      de: "Sektoren hinzufügen",
+      en: "Add topics",
+      de: "Themenfelder hinzufügen",
     },
     project_name: {
       en: "Project name",
