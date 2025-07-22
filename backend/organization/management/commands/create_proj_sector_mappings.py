@@ -98,26 +98,29 @@ class Command(BaseCommand):
           if ProjectSectorMapping.objects.filter(project=project).exists():
               print("Project {} already has sector mappings.".format(project.id))
           else:
-              print("Creating sector mappings for project {}.".format(project.id))
-              taggings = ProjectTagging.objects.filter(project=project)
-              for tagging in taggings:
+            print("Creating sector mappings for project {}.".format(project.id))
+            taggings = ProjectTagging.objects.filter(project=project)
+            for tagging in taggings:
                 tag = tagging.project_tag
-                parent_tag = tag.parent_tag
-                if tag.name in MAPPING or (parent_tag is not None and parent_tag.key in MAPPING):
-                  sector = MAPPING[tag.name] if MAPPING[tag.name] else MAPPING[parent_tag.name]
-                  if sector == DELETION_TOKEN:
-                      print("Skipping deletion token for tag {}".format(tag.name))
-                      continue
-                  else:
-                    sector = Sector.objects.get(key=sector.key)
-                  mapping, created = ProjectSectorMapping.objects.get_or_create(
-                      project=project,
-                      sector=sector
-                  )
-                  if created:
-                      print("Created mapping for project {} and sector {}.".format(project.id, sector.key))
-                  proj_counter += 1
+                if tag.name not in MAPPING and tag.parent_tag is not None:
+                    tag = tag.parent_tag
+                if tag.name in MAPPING:
+                    sector = MAPPING[tag.name]
+                    if sector == DELETION_TOKEN:
+                        print("Skipping deletion token for tag {}".format(tag.name))
+                        continue
+                    else:
+                        sector = Sector.objects.get(key=sector.key)
+                        mapping, created = ProjectSectorMapping.objects.get_or_create(
+                            project=project,
+                            sector=sector
+                        )
+                    if created:
+                        print("Created mapping for project {} and sector {}.".format(project.id, sector.key))
+                    proj_counter += 1
                 else:
-                    print("Tag {} not found in mapping, skipping.".format(tag.key))
+                    print("Tag {} not found in mapping, skipping.".format(tag.name))
+                    print(tag.parent_tag)
+            return
 
       print("Total projects updated: {}".format(proj_counter))
