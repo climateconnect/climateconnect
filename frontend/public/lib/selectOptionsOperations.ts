@@ -34,3 +34,35 @@ export function parseSectorOptions(options) {
     };
   });
 }
+
+export function transformSectorOptionsToPerthSubHub(originalArray) {
+  // Define the mapping for name changes.
+  const nameMapping = {
+    "Education": "Climate Café",
+    "Food & Agriculture": "Food",
+    "Nature & Biodiversity": "Nature",
+    "Mobility": "Transport",
+    "Resources & Consumption": "Zero Waste"
+  };
+
+  const allowedOriginalNames = [
+    "Energy"
+  ];
+
+  //hasOwnProperty method used to check if nameMapping object has a property with a specified name
+  const filteredArray = originalArray.filter(item => {
+    return nameMapping.hasOwnProperty(item.name) || allowedOriginalNames.includes(item.name);
+  });
+
+  const newArray = filteredArray.map(item => {
+    const newItem = { ...item };
+
+    if (nameMapping.hasOwnProperty(newItem.name)) {
+      newItem.name = nameMapping[newItem.name];
+      newItem.original_name = nameMapping[item.name];
+    }
+    return newItem;
+  });
+
+  return newArray;
+}

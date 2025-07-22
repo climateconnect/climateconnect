@@ -4,7 +4,7 @@ import Cookies from "universal-cookie";
 import { apiRequest, sendToLogin } from "../public/lib/apiOperations";
 import { getProjectTypeOptions } from "../public/lib/getOptions";
 import { nullifyUndefinedValues } from "../public/lib/profileOperations";
-import { parseOptions, parseSectorOptions } from "../public/lib/selectOptionsOperations";
+import { parseOptions, parseSectorOptions, transformSectorOptionsToPerthSubHub } from "../public/lib/selectOptionsOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import LoginNudge from "../src/components/general/LoginNudge";
@@ -68,6 +68,7 @@ export default function Share({
   hubThemeData,
   sectorOptions,
 }) {
+  const transformedData = hubUrl === "perth" ? transformSectorOptionsToPerthSubHub(sectorOptions) : sectorOptions;
   const token = new Cookies().get("auth_token");
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
@@ -75,7 +76,7 @@ export default function Share({
 
   const handleSetErrorMessage = (newMessage) => setErrorMessage(newMessage);
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
-
+  
   if (!user)
     return (
       <WideLayout
@@ -109,7 +110,7 @@ export default function Share({
           setMessage={handleSetErrorMessage}
           projectTypeOptions={projectTypeOptions}
           hubName={hubUrl}
-          sectorOptions={sectorOptions}
+          sectorOptions={transformedData}
         />
       </WideLayout>
     );
