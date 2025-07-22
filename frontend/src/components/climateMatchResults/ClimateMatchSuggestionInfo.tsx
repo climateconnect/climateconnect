@@ -9,7 +9,7 @@ import IdeaHubIcon from "../ideas/IdeaHubIcon";
 import IdeaRatingIcon from "../ideas/IdeaRatingIcon";
 import ContactCreatorButton from "../project/Buttons/ContactCreatorButton";
 import LocationDisplay from "../project/LocationDisplay";
-import ProjectCategoriesDisplay from "../project/ProjectCategoriesDisplay";
+import ProjectCategoriesDisplay from "../project/ProjectSectorsDisplay";
 import ClimateMatchResultImage from "./ClimateMatchResultImage";
 import IconNumberDisplay from "./IconNumberDisplay";
 
@@ -249,11 +249,6 @@ const ProjectBottomBar = ({ project }) => {
           textClassName={classes.locationText}
           iconClassName={classes.locationIcon}
           className={classes.locationDisplay}
-        />
-        <ProjectCategoriesDisplay
-          className={classes.projectCategories}
-          main_project_tag={project.tags[0]?.project_tag?.name}
-          color="primary"
         />
       </div>
       <div className={classes.lowerBarRightSide}>

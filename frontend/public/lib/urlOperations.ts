@@ -32,8 +32,10 @@ const getFilterUrl = ({
     filterChoices: filterChoices,
     locale: locale,
   });
+
   const encodedNonFilterParams = encodeObjectToQueryParams(nonFilterParams);
   // Only include "?" if query params aren't nullish
+
   const filteredQueryParams =
     filteredParams || encodedNonFilterParams
       ? `?${filteredParams ? filteredParams : ""}${
@@ -50,7 +52,7 @@ const getFilterUrl = ({
 };
 
 const findOptionByNameDeep = ({ filterChoices, propertyToFilterBy, valueToFilterBy }) => {
-  return filterChoices.reduce((result, filterChoice) => {
+  return filterChoices?.reduce((result, filterChoice) => {
     if (filterChoice[propertyToFilterBy] === valueToFilterBy) {
       result = filterChoice;
     }
@@ -68,7 +70,7 @@ const getFilterName = (filter, key, filterChoices) => {
   const keyToFilterChoicesKeyMap = {
     organization_type: "organization_types",
     skills: "skills",
-    category: "project_categories",
+    sectors: "sectors",
   };
   //get the filter choice we were looking for (either on top level or one level down)
   const filterName = findOptionByNameDeep({
@@ -76,6 +78,7 @@ const getFilterName = (filter, key, filterChoices) => {
     propertyToFilterBy: "name",
     valueToFilterBy: filter,
   })?.original_name;
+
   return filterName;
 };
 
@@ -114,6 +117,7 @@ const encodeQueryParamsFromFilters = ({ filters, infoMetadata, filterChoices, lo
       //Submitted location filters should always be in the form of an object
       //Simplified example: {place_id: 12323423, display_name: "Test"}
       //When a location is just a string, the filter is not submitted yet (e.g. "New Y")
+
       if (type === "location") {
         if (typeof filters[filterKey] === "object") {
           const encodedFragment = `place=${filters[filterKey].place_id}&osm=${filters[filterKey].osm_id}&loc_type=${filters[filterKey].osm_type}&`;
@@ -136,7 +140,9 @@ const encodeQueryParamsFromFilters = ({ filters, infoMetadata, filterChoices, lo
         }).find((f) => f.key === filterKey);
         if (Array.isArray(filters[filterKey])) {
           filterValues = [
-            filters[filterKey].map((filter) => getFilterName(filter, filterKey, filterChoices)),
+            filters[filterKey].map((filter) => {
+              return getFilterName(filter, filterKey, filterChoices);
+            }),
           ].join();
         } else {
           const options = (possibleFiltersForFilterKey as any).options;

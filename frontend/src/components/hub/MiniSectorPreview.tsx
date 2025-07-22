@@ -40,7 +40,7 @@ const useStyles = makeStyles<Theme, any>((theme) => ({
   placeholderImageContainer: (props) => ({
     background: props.createMode
       ? `url(/images/mini_hub_preview_background.jpg)`
-      : `url(${getImageUrl(props.thumbnail_image)})`,
+      : `url(${getImageUrl(props.image)})`,
     backgroundSize: "cover",
     width: "100%",
     height: 60,
@@ -79,7 +79,7 @@ export default function MiniSectorPreview({
   const classes = useStyles({
     createMode: createMode,
     sector: sector,
-    thumbnail_image: sector?.thumbnail_image,
+    image: sector?.image,
   });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
@@ -91,7 +91,7 @@ export default function MiniSectorPreview({
   //  Case 1: Location hub (?hub=erlangen) -> link to hub page filtered by this sector
   //  Case 2: General platform -> link to browse page filtered by this sector
 
-  const inner_component = (
+  return (
     <Card className={classes.root}>
       {editMode && (
         <IconButton className={classes.closeIconButton} size="small" onClick={handleRemoveHub}>
@@ -103,7 +103,7 @@ export default function MiniSectorPreview({
           src={
             createMode
               ? "/images/mini_hub_preview_background.jpg"
-              : getImageUrl(sector?.thumbnail_image)
+              : getImageUrl(sector?.image)
           }
           className={classes.placeholderImage}
         />
@@ -125,18 +125,5 @@ export default function MiniSectorPreview({
         )}
       </div>
     </Card>
-  );
-
-  return sector?.url_slug ? (
-    <Link
-      href={getLocalePrefix(locale) + `/hubs/${sector.url_slug}/browse`}
-      target="_blank"
-      className={classes.link}
-      underline="hover"
-    >
-      {inner_component}
-    </Link>
-  ) : (
-    inner_component
-  );
+  )
 }

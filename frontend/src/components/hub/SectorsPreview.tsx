@@ -29,11 +29,10 @@ export default function SectorsPreview({
   return (
     <Grid container component="ul" spacing={2} className={`${classes.reset} ${classes.root}`}>
       {sectors
-        ?.filter((sector) => !isLocationHubLikeHub(sector.hub_type))
-        .map((sector, index) => (
+        .map((sector) => (
           <GridItem
             sector={sector}
-            key={`${sector.url_slug}-${Math.random()}`} // unique-key to force re-render
+            key={sector.key}
             editMode={editMode}
             onClickRemoveSector={onClickRemoveSector}
           />
@@ -43,7 +42,6 @@ export default function SectorsPreview({
           createMode
           sectorsToSelectFrom={sectorsToSelectFrom}
           onSelectNewSector={onSelectNewSector}
-          key={`creator-${Math.random()}`} // Unique key, so that old instances are not reused...
         />
       )}
     </Grid>

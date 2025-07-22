@@ -2,7 +2,7 @@ import NextCookies from "next-cookies";
 import React, { useContext, useRef, useState } from "react";
 import getOrganizationInfoMetadata from "../../public/data/organization_info_metadata";
 import { apiRequest, sendToLogin } from "../../public/lib/apiOperations";
-import { getAllHubs } from "../../public/lib/hubOperations";
+import { getAllSectors } from "../../public/lib/sectorOperations";
 import { parseOrganization } from "../../public/lib/organizationOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
@@ -19,22 +19,22 @@ export async function getServerSideProps(ctx) {
     return sendToLogin(ctx, message);
   }
   const url = encodeURI(ctx.query.organizationUrl);
-  const [organization, tagOptions, allHubs] = await Promise.all([
+  const [organization, tagOptions, allSectors] = await Promise.all([
     getOrganizationByUrlIfExists(url, auth_token, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
-    getAllHubs(ctx.locale, true),
+    getAllSectors(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
       organization: organization,
       tagOptions: tagOptions,
-      allHubs: allHubs,
+      allSectors: allSectors,
     }),
   };
 }
 
 //This route should only be accessible to admins of the organization
-export default function EditOrganizationPage({ organization, tagOptions, allHubs }) {
+export default function EditOrganizationPage({ organization, tagOptions, allSectors }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
   const organization_info_metadata = getOrganizationInfoMetadata(locale, organization, true);
@@ -74,7 +74,7 @@ export default function EditOrganizationPage({ organization, tagOptions, allHubs
   return (
     <WideLayout title={organization ? organization.name : texts.not_found_error}>
       <EditOrganizationRoot
-        allHubs={allHubs}
+        allSectors={allSectors}
         errorMessage={errorMessage}
         existingUrlSlug={existingUrlSlug}
         existingName={existingName}
@@ -92,18 +92,17 @@ export default function EditOrganizationPage({ organization, tagOptions, allHubs
   );
 }
 
-// This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
-async function getOrganizationByUrlIfExists(organizationUrl, token) {
+async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
   try {
     const resp = await apiRequest({
       method: "get",
       url: "/api/organizations/" + organizationUrl + "/?edit_view=true",
       token: token,
+      locale: locale
     });
     return parseOrganization(resp.data, true);
   } catch (err: any) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    console.log("Error when getting organization " + organizationUrl)
     return null;
   }
 }

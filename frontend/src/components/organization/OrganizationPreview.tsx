@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme) => {
       gridTemplateColumns: "40px min-content",
       justifyContent: "center",
     },
-    hubs: {
+    number_of_projects: {
       float: "left",
       marginLeft: "20px",
       display: "grid",
@@ -98,7 +98,7 @@ export default function OrganizationPreview({ organization, hubUrl }) {
             </span>
           </Box>
           <Box>
-            <span className={classes.hubs}>
+            <span className={classes.number_of_projects}>
               <Tooltip title="Number of projects">
                 <AssignmentSharp className={classes.iconColor} />
               </Tooltip>

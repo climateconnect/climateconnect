@@ -33,8 +33,6 @@ export default function getFilters({ key, filterChoices, locale }) {
         .filter((m) => !organizationsFilters.map((o) => o.key).includes(m.key)),
     ];
   }
-
-  console.log("possibleFilters invalid input:" + key);
   return [];
 }
 

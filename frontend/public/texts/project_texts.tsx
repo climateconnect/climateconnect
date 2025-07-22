@@ -478,8 +478,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Fass kurz zusammen, was ihr tun (bis zu 280 Zeichen)",
     },
     project_categories: {
-      en: "Project categories",
-      de: "Projektkategorien",
+      en: "Topics",
+      de: "Themenfelder",
     },
     project_website: {
       en: "Project website",
@@ -489,13 +489,13 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "If your project has a website, you can enter it here.",
       de: "Falls dein Projekt eine Webseite hat, kannst du sie hier eintragen",
     },
-    edit_categories: {
-      en: "Edit categories",
-      de: "Kategorien bearbeiten",
+    edit_sectors: {
+      en: "Edit topics",
+      de: "Themenfelder bearbeiten",
     },
-    add_categories: {
-      en: "Add categories",
-      de: "Kategorien hinzufügen",
+    add_sectors: {
+      en: "Add topics",
+      de: "Themenfelder hinzufügen",
     },
     project_name: {
       en: "Project name",
