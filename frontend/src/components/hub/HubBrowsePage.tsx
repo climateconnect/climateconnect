@@ -73,6 +73,11 @@ export interface HubBrowsePageProps {
 
 export async function getHubBrowseServerSideProps(ctx) {
   let hubUrl = ctx.query.hubUrl;
+  let { subHub } = extractHubUrlsFromContext(ctx);
+
+  if (subHub) {
+    hubUrl = subHub;
+  }
 
   const [
     hubData,
@@ -97,13 +102,11 @@ export async function getHubBrowseServerSideProps(ctx) {
     getHubTheme(hubUrl),
     getLinkedHubsData(hubUrl),
   ]);
-  if (hubData?.parent_hub?.url_slug) {
-    hubUrl = hubData?.parent_hub?.url_slug;
-  }
 
   return {
     props: {
-      hubUrl: hubUrl,
+      hubUrl: ctx.query.hubUrl,
+      subHubUrl: subHub || null,
       isLocationHub: isLocationHubLikeHub(hubData?.hub_type, hubData?.parent_hub),
       hubData: hubData,
       name: hubData?.name ?? null,
@@ -136,6 +139,7 @@ export async function getHubBrowseServerSideProps(ctx) {
 export default function HubBrowsePage({
   headline,
   hubUrl,
+  subHubUrl,
   image_attribution,
   image,
   isLocationHub,
@@ -287,7 +291,7 @@ export default function HubBrowsePage({
               initialLocationFilter={initialLocationFilter}
               locale={locale}
               token={token}
-              hubUrl={hubUrl}
+              hubUrl={subHubUrl || hubUrl}
             >
               <BrowseContent
                 contentRef={contentRef}

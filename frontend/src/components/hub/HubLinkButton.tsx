@@ -39,18 +39,19 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
   iconContainer: {
     position: "absolute",
     left: "50%",
-    top: "0%",
+    top: -8,
     transform: "translateX(-50%) translateY(0)",
     alignItems: "center",
     justifyContent: "center",
     width: "50px",
     height: "50px",
-    backgroundColor: (props: { backgroundColor: string }) =>
-      props.backgroundColor || theme.palette.primary.main,
     borderRadius: "50%",
   },
   icon: {
     color: "white",
+    width: 50,
+    border: "3px solid white",
+    borderRadius: "100%"
   },
 
   iconWrapper: {
@@ -78,8 +79,7 @@ export default function HubLinkButton({ hub }: { hub: LinkedHub }) {
     <Link href={hub.hubUrl}>
       <div className={`btn btn-primary ${classes.linkedHubsContainer}`}>
         <div className={classes.iconContainer}>
-          {/* <img className={classes.icon} src={hub.icon} /> */}
-          <div className={classes.iconWrapper}></div>
+          <img className={classes.icon} src={hub.icon} />
         </div>
 
         <h3 className={classes.title}>{hub.hubName}</h3>

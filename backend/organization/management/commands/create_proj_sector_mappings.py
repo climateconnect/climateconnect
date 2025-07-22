@@ -121,6 +121,5 @@ class Command(BaseCommand):
                 else:
                     print("Tag {} not found in mapping, skipping.".format(tag.name))
                     print(tag.parent_tag)
-            return
 
       print("Total projects updated: {}".format(proj_counter))
