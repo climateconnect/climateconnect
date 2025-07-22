@@ -20,4 +20,5 @@ class ListSectors(ListAPIView):
         """
         Get all sectors.
         """
-        return Sector.objects.all()
+        # accept the parent hub url >> look for the children
+        return Sector.objects.all() # add importance > 0 or is a sector of a linked hubs (parent, children, siblings)
