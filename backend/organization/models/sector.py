@@ -27,7 +27,11 @@ class Sector(models.Model):
     # Adding this because we use project tags to filter project and its not possible to filter Name because
     # it contains spaces.
     key = models.CharField(
+<<<<<<< HEAD
         help_text="unique search key of the sector. Example: `Student organization` becomes studentorganization",
+=======
+        help_text="unique search key of the sector. Example: 'Food & Agriculture' becomes foodagriculture",
+>>>>>>> master
         verbose_name="Key",
         max_length=256,
         unique=True,
@@ -77,6 +81,7 @@ class Sector(models.Model):
         upload_to=sector_image_path,
     )
 
+<<<<<<< HEAD
     # Option 1: Parent Hubs
     # - Scottland hub
     #   - Climate Caffe
@@ -88,6 +93,8 @@ class Sector(models.Model):
 
     # For this PR: Add importance field, sort by importance and filter out importance == 0 in serializer
 
+=======
+>>>>>>> master
     class Meta:
         app_label = "organization"
         verbose_name = "Sector"

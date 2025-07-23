@@ -1,3 +1,4 @@
+from django.forms import ValidationError
 from climateconnect_api.models.language import Language
 from location.models import Location
 from organization.models.tags import ProjectTags
@@ -175,6 +176,14 @@ class Hub(models.Model):
         upload_to=hub_image_path,
     )
 
+    icon_background_color = models.CharField(
+        help_text="The background color of the icon as a hex code (e.g. #FFF or #002244).",
+        verbose_name="Icon Background Color",
+        max_length=7,
+        null=True,
+        blank=True,
+    )
+
     thumbnail_image = models.ImageField(
         help_text="Image to show on hub card",
         verbose_name="Thumbnail image",
@@ -213,7 +222,7 @@ class Hub(models.Model):
     sectors = models.ManyToManyField(
         Sector,
         related_name="hub_sectors",
-        help_text="Only projects with these sectors will be shown in the hub",
+        help_text="Only projects with these sectors will be shown in the hub (applies only to hubs of type sector_hub)",
         verbose_name="Hub sectors",
         blank=True,
     )
@@ -276,6 +285,43 @@ class Hub(models.Model):
         blank=True,
     )
 
+    parent_hub = models.ForeignKey(
+        "self",
+        help_text="Points to the parent hub if this is a sub-hub",
+        verbose_name="Parent Hub",
+        related_name="sub_hubs",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
+
+    # Constraints to ensure that the hub is a parent or a sub-hub
+    def clean(self):
+        if self.parent_hub:
+            # ensure no self loop
+            if self == self.parent_hub:
+                raise ValidationError("A hub cannot be its own parent.")
+
+            # hub is now a child. Ensure that it is not a parent hub. This is only relevant on patch
+            if self.id:
+                children = Hub.objects.filter(parent_hub=self)
+                if children.exists():
+                    raise ValidationError(
+                        "This hub cannot be a parent hub because it is already a sub-hub of another hub. parent: {}| child: {}".format(
+                            self.parent_hub.name, children.first().name
+                        )
+                    )
+
+            # ensure that the parent hub is not a child of another hub
+            if self.parent_hub.parent_hub:
+                raise ValidationError(
+                    "A hub cannot be a parent-hub of another parent-hub. Please ensure that the parent hub is a top-level hub. self: {}| parent: {}| parents parent: {}".format(
+                        self.name, self.parent_hub.name, self.parent_hub.parent_hub.name
+                    )
+                )
+
+        return super().clean()
+
     class Meta:
         app_label = "hubs"
         verbose_name = "Hub"
@@ -284,6 +330,12 @@ class Hub(models.Model):
 
     def __str__(self):
         return "%s" % (self.name)
+
+    def is_sub_hub(self):
+        """
+        Returns True if this hub is a sub-hub, otherwise False.
+        """
+        return self.parent_hub is not None
 
 
 class HubAmbassador(models.Model):
@@ -324,6 +376,8 @@ class HubAmbassador(models.Model):
         blank=True,
         on_delete=models.CASCADE,
     )
+
+    # TODO: this is wierd, as one hub could have multiple ambassadors this way
     hub = models.ForeignKey(
         Hub,
         help_text="Points to hub the user is ambassador of",
@@ -501,6 +555,16 @@ class HubTheme(models.Model):
         related_name="background_default",
         help_text="Use hex code (e.g. #FFF)",
         verbose_name="default background color",
+        on_delete=models.CASCADE,
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    header_background = models.ForeignKey(
+        HubThemeColor,
+        related_name="header_background",
+        help_text="Use hex code (e.g. #FFF)",
+        verbose_name="Header background color",
         on_delete=models.CASCADE,
         max_length=1024,
         null=True,

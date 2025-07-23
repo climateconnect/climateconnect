@@ -4,7 +4,7 @@ import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import NavigationButtons from "../general/NavigationButtons";
-import ActiveSectorSelector from "../hub/ActiveSectorSelector";
+import ActiveSectorsSelector from "../hub/ActiveSectorsSelector";
 const useStyles = makeStyles((theme) => {
   return {
     headline: {
@@ -37,7 +37,8 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function SelectSector({
+
+export default function SelectSectors({
   project,
   goToNextStep,
   goToPreviousStep,
@@ -50,8 +51,8 @@ export default function SelectSector({
   const texts = getTexts({ page: "project", locale: locale });
 
   const onClickNextStep = () => {
-    if (project.sectors.length <= 0) alert(texts.please_choose_at_least_one_category);
-    else if (project.sectors.length > 3) alert(texts.you_can_only_choose_up_to_3_categories);
+    if (project.sectors.length <= 0) alert(texts.please_choose_at_least_one_sector);
+    else if (project.sectors.length > 3) alert(texts.you_can_only_choose_up_to_3_sectors);
     else {
       goToNextStep();
     }
@@ -62,16 +63,16 @@ export default function SelectSector({
   };
 
   //(Share Project step 2)
-  //Use ActiveSectorSelector instead of MultiLevelSelector (Ask Tobi if different design should be used)
   return (
     <Container maxWidth="lg">
       <div className={classes.block}>
         <Container maxWidth="md">
-          <ActiveSectorSelector
-            selectedHubs={project.sectors ? project.sectors : []}
-            hubsToSelectFrom={sectorsToSelectFrom}
-            onSelectNewHub={onSelectNewSector}
-            onClickRemoveHub={onClickRemoveSector}
+          <ActiveSectorsSelector
+            selectedSectors={project.sectors ? project.sectors : []}
+            sectorsToSelectFrom={sectorsToSelectFrom}
+            maxSelectedNumber={3}
+            onSelectNewSector={onSelectNewSector}
+            onClickRemoveSector={onClickRemoveSector}
           />
         </Container>
       </div>

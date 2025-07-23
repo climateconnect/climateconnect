@@ -15,6 +15,7 @@ class ListSectors(ListAPIView):
 
     permission_classes = [AllowAny]
     serializer_class = SectorSerializer
+<<<<<<< HEAD
     queryset = Sector.objects.all()
 
     def get(self, request, *args, **kwargs):
@@ -24,3 +25,11 @@ class ListSectors(ListAPIView):
         sectors = self.get_queryset()
         serializer = self.get_serializer(sectors, many=True)
         return Response(serializer.data)
+=======
+
+    def get_queryset(self):
+        """
+        Get all sectors.
+        """
+        return Sector.objects.all()
+>>>>>>> master

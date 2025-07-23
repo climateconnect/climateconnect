@@ -22,7 +22,11 @@ def get_sector_name(sector: Sector, language_code: str) -> str:
     return sector.name
 
 
+<<<<<<< HEAD
 def senatize_sector_inputs(inputs: Any) -> Tuple[Any, Optional[Exception]]:
+=======
+def sanitize_sector_inputs(inputs: Any) -> Tuple[Any, Optional[Exception]]:
+>>>>>>> master
     """
     Process the inputs and return a tuple: (result, error).
     On success, error is None
