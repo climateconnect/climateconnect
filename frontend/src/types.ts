@@ -25,6 +25,15 @@ export type SkillType = {
   subcategories: SkillType[];
 };
 
+export type SectorOptionType = {
+  icon?: string;
+  id: number;
+  name: string;
+  key: string;
+  original_name?: string;
+  thumbnail_image?: string;
+};
+
 export type Project = {
   collaborators_welcome: boolean;
   status: string;
@@ -99,14 +108,6 @@ export type Supporter = {
   organization_url_slug: string;
 };
 
-export type SectorOptionType = {
-  icon?: string;
-  id: number;
-  name: string;
-  key: string;
-  original_name?: string;
-  thumbnail_image?: string;
-};
 export type LinkedHub = {
   hubName: string;
   hubUrl: string;

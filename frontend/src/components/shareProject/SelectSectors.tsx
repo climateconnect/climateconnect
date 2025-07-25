@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
+
 export default function SelectSectors({
   project,
   goToNextStep,

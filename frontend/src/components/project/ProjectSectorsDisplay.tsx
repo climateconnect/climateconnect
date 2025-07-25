@@ -40,7 +40,7 @@ export default function ProjectSectorsDisplay({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   return (
-    <Tooltip title={texts.categories}>
+    <Tooltip title={texts.sectors}>
       <div className={`${classes.sectors} ${className}`}>
         <ExploreIcon
           className={`${iconClassName ? iconClassName : classes.icon}`}

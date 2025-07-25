@@ -41,17 +41,16 @@ export async function getStatusOptions(locale) {
   }
 }
 
-export async function getProjectTagsOptions(hub, locale) {
-  const url = hub ? `/api/projecttags/?hub=${hub}` : `/api/projecttags/`;
+export async function getSectorOptions(locale) {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: url,
+      url: "/api/sectors/",
       locale: locale,
     });
-    if (resp.data.results.length === 0) return null;
+    if (resp.data.length === 0) return null;
     else {
-      return parseOptions(resp.data.results, "parent_tag");
+      return parseSectorOptions(resp.data);
     }
   } catch (err: any) {
     console.log(err);
