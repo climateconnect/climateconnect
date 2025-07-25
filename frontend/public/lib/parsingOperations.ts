@@ -14,7 +14,7 @@ const parseProjects = (projects) => {
   return projects.map((project) => ({
     ...project,
     location: project.location,
-    sectors: project.sectors.sort((a, b) => a.order - b.order).map((s) => s.sector)
+    sectors: project.sectors.sort((a, b) => a.order - b.order).map((s) => s.sector),
   }));
 };
 

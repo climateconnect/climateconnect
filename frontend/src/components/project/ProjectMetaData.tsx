@@ -7,7 +7,7 @@ import UserContext from "../context/UserContext";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import LocationDisplay from "./LocationDisplay";
-import ProjectSectorsDisplay from "./ProjectSectorsDisplay"
+import ProjectSectorsDisplay from "./ProjectSectorsDisplay";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import { Project } from "../../types";

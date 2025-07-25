@@ -390,7 +390,7 @@ class CreateOrganizationView(APIView):
                         ):
                             continue
                         setattr(organization, field, request.data[field])
-        
+
                 # Create organization translations
                 if translations:
                     for key in translations["translations"]:

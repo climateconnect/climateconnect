@@ -51,7 +51,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
     color: "white",
     width: 50,
     border: "3px solid white",
-    borderRadius: "100%"
+    borderRadius: "100%",
   },
 
   iconWrapper: {

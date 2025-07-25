@@ -31,7 +31,7 @@ export function parseSectorOptions(options) {
     return {
       ...rest,
       thumbnail_image: image,
-      image: image
+      image: image,
     };
   });
 }

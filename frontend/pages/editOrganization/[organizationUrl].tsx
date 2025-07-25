@@ -98,11 +98,11 @@ async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
       method: "get",
       url: "/api/organizations/" + organizationUrl + "/?edit_view=true",
       token: token,
-      locale: locale
+      locale: locale,
     });
     return parseOrganization(resp.data, true);
   } catch (err: any) {
-    console.log("Error when getting organization " + organizationUrl)
+    console.log("Error when getting organization " + organizationUrl);
     return null;
   }
 }

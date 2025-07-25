@@ -100,11 +100,7 @@ export default function MiniSectorPreview({
       )}
       <div className={classes.placeholderImageContainer}>
         <img
-          src={
-            createMode
-              ? "/images/mini_hub_preview_background.jpg"
-              : getImageUrl(sector?.image)
-          }
+          src={createMode ? "/images/mini_hub_preview_background.jpg" : getImageUrl(sector?.image)}
           className={classes.placeholderImage}
         />
       </div>
@@ -125,5 +121,5 @@ export default function MiniSectorPreview({
         )}
       </div>
     </Card>
-  )
+  );
 }

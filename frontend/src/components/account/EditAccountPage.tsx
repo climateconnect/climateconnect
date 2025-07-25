@@ -517,7 +517,7 @@ export default function EditAccountPage({
           event.preventDefault();
           const sector = allSectors.find((h) => h.name === event.target.value);
           if (editedAccount?.info?.sectors?.filter((s) => s.key === sector.key)?.length === 0) {
-            const sectorsAfterAddition = [...editedAccount.info.sectors, sector]
+            const sectorsAfterAddition = [...editedAccount.info.sectors, sector];
             setEditedAccount({
               ...editedAccount,
               info: {
@@ -526,7 +526,7 @@ export default function EditAccountPage({
               },
             });
           }
-        }
+        };
 
         const onClickRemoveSector = (sector) => {
           const sectorsAfterRemoval = editedAccount?.info?.sectors.filter(
