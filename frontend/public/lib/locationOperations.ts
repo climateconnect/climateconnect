@@ -354,5 +354,6 @@ export async function getLocationFilteredBy(query) {
     return full_location;
   } catch (e) {
     console.log(e);
+    return null;
   }
 }

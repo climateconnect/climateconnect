@@ -295,6 +295,14 @@
     "en": "Error: There wasn't a Super Admin. Please contact contact@climateconnect.earth to resolve this issue.",
     "de": "Fehler: Es gab keine(n) Super Admin. Bitte schreibe an contact@climateconnect.earth damit wir das Problem beheben können."
   },
+  "error_during_search": {
+    "en": "Error during search. Maybe try another search. We will work swiftly to solve it :)",
+    "de": "Fehler bei der Suchanfrage. Versuche lieber eine andere. Währenddessen kümmern wir uns um den Fehler :)"
+  },
+  "error_during_search_short": {
+    "en": "Error during search.",
+    "de": "Fehler bei der Suchanfrage."
+  },
   "not_all_your_updates_have_worked": {
     "en": "Not all your updates have worked.",
     "de": "Nicht alle deine Updates haben funktioniert."
