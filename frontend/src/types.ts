@@ -25,6 +25,15 @@ export type SkillType = {
   subcategories: SkillType[];
 };
 
+export type SectorOptionType = {
+  icon?: string;
+  id: number;
+  name: string;
+  key: string;
+  original_name?: string;
+  thumbnail_image?: string;
+};
+
 export type Project = {
   collaborators_welcome: boolean;
   status: string;
@@ -53,14 +62,10 @@ export type Project = {
   creator?: User | Organization | any; //TODO: remove 'any' once User and Organization types are properly defined
   image?: string;
   hubName?: string;
-<<<<<<< HEAD
-  sectors?: any[];
-=======
   related_hubs?: any[];
   hubUrl?: string;
   thumbnail_image?: string;
   sectors?: SectorOptionType[];
->>>>>>> master
 };
 
 export type BrowseTab = "projects" | "organizations" | "members" | "events";
@@ -103,14 +108,6 @@ export type Supporter = {
   organization_url_slug: string;
 };
 
-export type SectorOptionType = {
-  icon?: string;
-  id: number;
-  name: string;
-  key: string;
-  original_name?: string;
-  thumbnail_image?: string;
-};
 export type LinkedHub = {
   hubName: string;
   hubUrl: string;
