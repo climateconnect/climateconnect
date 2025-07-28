@@ -18,9 +18,11 @@ export default function DevlinkPage({
   hubUrl,
   fixedHeader,
   isLandingPage,
+  showDonationGoal,
 }: any) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
+
   return (
     <>
       <WideLayout

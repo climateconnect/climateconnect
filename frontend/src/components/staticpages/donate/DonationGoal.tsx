@@ -1,6 +1,5 @@
 import { Container, LinearProgress, Theme, Typography, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import { String } from "lodash";
 import React, { useContext } from "react";
 import getTexts from "../../../../public/texts/texts";
 import theme from "../../../themes/theme";
@@ -62,6 +61,16 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
     borderRadius: 5,
     backgroundColor: props.barColor ? props.barColor : theme.palette.primary.main,
   }),
+  barText: (props) => ({
+    position: "absolute",
+    top: "50%",
+    left: props.textMarginLeft,
+    transform: "translate(0, -50%)", // Center the text
+    zIndex: 1000,
+    color: theme.palette.primary.main,
+    fontWeight: "bold",
+    fontSize: 20,
+  }),
 }));
 
 export default function DonationGoal({
@@ -82,6 +91,8 @@ export default function DonationGoal({
     small: small,
     barOnly: barOnly,
     isInWidget: isInWidget,
+    textMarginLeft:
+      current / goal < 0.9 ? `${(current / goal) * 100 + 1}%` : `${(current / goal) * 100 - 25}%`,
   });
   const { locale } = useContext(UserContext);
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
@@ -109,6 +120,9 @@ export default function DonationGoal({
             bar: classes.bar,
           }}
         />
+        <div className={classes.barText}>
+          {current}/{goal}
+        </div>
       </Container>
     </div>
   );

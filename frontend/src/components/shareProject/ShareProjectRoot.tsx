@@ -14,9 +14,9 @@ import AddTeam from "./AddTeam";
 import EnterDetails from "./EnterDetails";
 import ProjectSubmittedPage from "./ProjectSubmittedPage";
 import ShareProject from "./ShareProject";
-import { Project } from "../../types";
+import { Project, SkillType, Role, Organization, SectorOptionType } from "../../types";
 import { parseLocation } from "../../../public/lib/locationOperations";
-import SelectSector from "./SelectSector";
+import SelectSectors from "./SelectSectors";
 
 const DEFAULT_STATUS = 2;
 
@@ -67,6 +67,26 @@ const getSteps = (texts) => {
   return steps;
 };
 
+type availabilityOptionsProps = {
+  id: number;
+  key: string;
+  name: string;
+};
+
+type ShareProjectRootProps = {
+  availabilityOptions: availabilityOptionsProps[];
+  userOrganizations: Organization[];
+  skillsOptions: SkillType[];
+  rolesOptions: Role[];
+  user: any;
+  statusOptions: any[];
+  token: string;
+  setMessage: (message: string) => void;
+  projectTypeOptions: any[];
+  hubName?: string;
+  sectorOptions: SectorOptionType[];
+};
+
 export default function ShareProjectRoot({
   availabilityOptions,
   userOrganizations,
@@ -79,7 +99,7 @@ export default function ShareProjectRoot({
   projectTypeOptions,
   hubName,
   sectorOptions,
-}) {
+}: ShareProjectRootProps) {
   const classes = useStyles();
   const { locale, locales } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
@@ -251,7 +271,11 @@ export default function ShareProjectRoot({
   const onSelectNewSector = (event) => {
     event.preventDefault();
     const sector = sectorOptions.find((sector) => sector.name === event.target.value);
-    if (project?.sectors?.filter((h) => h.name === sector.name)?.length === 0) {
+    if (
+      sector &&
+      project?.sectors &&
+      project.sectors.filter((h) => h.name === sector.name)?.length === 0
+    ) {
       setProject({
         ...project,
         sectors: [...project.sectors, sector],
@@ -291,7 +315,7 @@ export default function ShareProjectRoot({
             />
           )}
           {curStep.key === "selectSector" && (
-            <SelectSector
+            <SelectSectors
               project={project}
               goToNextStep={goToNextStep}
               goToPreviousStep={goToPreviousStep}

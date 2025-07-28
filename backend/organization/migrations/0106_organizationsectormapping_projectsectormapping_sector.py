@@ -17,6 +17,7 @@ SECTOR_DEFINITIONS = {
     x.key: x
     for x in [
         Sector_Definition(
+<<<<<<< HEAD
             "Food",
             "Ernährung",
             "food",
@@ -44,6 +45,30 @@ SECTOR_DEFINITIONS = {
         Sector_Definition(
             "Education, Social Action & Health",
             "Bildung, Soziale Aktion & Gesundheit",
+=======
+            "Food & Agriculture",
+            "Ernährung & Landwirtschaft",
+            "food",
+        ),
+        Sector_Definition(
+            "Building & Housing",
+            "Bauen und Wohnen",
+            "housing",
+        ),
+        Sector_Definition(
+            "Energy",
+            "Energie",
+            "energy",
+        ),
+        Sector_Definition(
+            "Politics & Activism",
+            "Politik und Aktivismus",
+            "policy",
+        ),
+        Sector_Definition(
+            "Education",
+            "Bildung",
+>>>>>>> master
             "education",
         ),
         Sector_Definition(
@@ -52,6 +77,7 @@ SECTOR_DEFINITIONS = {
             "mobility",
         ),
         Sector_Definition(
+<<<<<<< HEAD
             "Industry & Building",
             "Industrie & Bauwesen",
             "industry",
@@ -81,21 +107,48 @@ SECTOR_DEFINITIONS = {
             "Klimagerechtigkeit",
             "justice",
         ),
+=======
+            "Nature & Biodiversity",
+            "Natur und Biodiversität",
+            "nature",
+        ),
+        Sector_Definition(
+            "Resources & Consumption",
+            "Konsum & Resourcen",
+            "resources",
+        ),
+        Sector_Definition(
+            "Climate Adaption",
+            "Klimaanpassung",
+            "adaption",
+        ),
+>>>>>>> master
     ]
 }
 
 DELETION_TOKEN = "DELETION_TOKEN"
 
 MAPPING = {
+<<<<<<< HEAD
     "Air": SECTOR_DEFINITIONS["industry"],
     "Construction": SECTOR_DEFINITIONS["industry"],
     "Buildings": SECTOR_DEFINITIONS["buldings"],
     "Climate change adaption": SECTOR_DEFINITIONS["adaption"],
     "Climate justice": SECTOR_DEFINITIONS["justice"],
+=======
+    "Air": DELETION_TOKEN,
+    "Buildings": SECTOR_DEFINITIONS["housing"],
+    "Education on climate change adaption": SECTOR_DEFINITIONS["education"],
+    "Climate change adaption": SECTOR_DEFINITIONS["adaption"],
+    "Climate justice": SECTOR_DEFINITIONS["policy"],
+    "Demonstrations & strikes": SECTOR_DEFINITIONS["policy"],
+    "Petition": SECTOR_DEFINITIONS["policy"],
+>>>>>>> master
     "Education & Social action": SECTOR_DEFINITIONS["education"],
     "Energy": SECTOR_DEFINITIONS["energy"],
     "Food": SECTOR_DEFINITIONS["food"],
     "Funding": DELETION_TOKEN,
+<<<<<<< HEAD
     "Geoengineering": SECTOR_DEFINITIONS["engineered"],
     "Land use": SECTOR_DEFINITIONS["agri"],
     "Policy & Governance": SECTOR_DEFINITIONS["policy"],
@@ -110,6 +163,19 @@ MAPPING = {
     "Protecting marine ecosystems": SECTOR_DEFINITIONS["costal"],
     "Improving water use efficiency": SECTOR_DEFINITIONS["industry"],
     "Water recycling": SECTOR_DEFINITIONS["industry"],
+=======
+    "Geoengineering": SECTOR_DEFINITIONS["adaption"],
+    "Climate-friendly agriculture": SECTOR_DEFINITIONS["food"],
+    "Land use": SECTOR_DEFINITIONS["nature"],
+    "Policy & Governance": SECTOR_DEFINITIONS["policy"],
+    "Product": DELETION_TOKEN,
+    "Production, consumption and recycling": SECTOR_DEFINITIONS["resources"],
+    "Research": DELETION_TOKEN,
+    "Mobility": SECTOR_DEFINITIONS["mobility"],
+    "Water": SECTOR_DEFINITIONS["resources"],  # TODO
+    "Fighting ocean acidification": SECTOR_DEFINITIONS["nature"],
+    "Protecting marine ecosystems": SECTOR_DEFINITIONS["nature"],
+>>>>>>> master
     "Event": DELETION_TOKEN,
 }
 

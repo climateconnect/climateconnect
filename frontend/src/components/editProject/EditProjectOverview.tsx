@@ -15,10 +15,9 @@ import {
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
 import ProjectLocationSearchBar from "../shareProject/ProjectLocationSearchBar";
-import { Project } from "../../types";
+import { Project, SectorOptionType } from "../../types";
 import CustomHubSelection from "../project/CustomHubSelection";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
@@ -84,13 +83,13 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
 
 type Args = {
   project: Project;
-  handleSetProject: Function;
-  smallScreen: Boolean;
+  handleSetProject: (project: Project) => void;
+  smallScreen: boolean;
   overviewInputsRef: any;
   locationOptionsOpen: boolean;
-  handleSetLocationOptionsOpen: Function;
+  handleSetLocationOptionsOpen: (open: boolean) => void;
   locationInputRef: any;
-  sectorOptions: any;
+  sectorOptions: SectorOptionType[];
 };
 
 //TODO: Allow changing project type?!
@@ -142,6 +141,19 @@ export default function EditProjectOverview({
   );
 }
 
+type ScreenOverviewProps = {
+  project: Project;
+  handleChangeProject: (newValue: any, key: string) => void;
+  handleChangeImage: (newImage: any, newThumbnailImage: any) => void;
+  overviewInputsRef: React.RefObject<HTMLInputElement>;
+  handleSetProject: (project: Project) => void;
+  locationInputRef: React.RefObject<HTMLInputElement>;
+  locationOptionsOpen: boolean;
+  handleSetLocationOptionsOpen: (open: boolean) => void;
+  texts: Record<string, string>;
+  sectorOptions: SectorOptionType[];
+};
+
 function SmallScreenOverview({
   project,
   handleChangeProject,
@@ -153,7 +165,7 @@ function SmallScreenOverview({
   handleSetLocationOptionsOpen,
   texts,
   sectorOptions,
-}) {
+}: ScreenOverviewProps) {
   const classes = useStyles({});
   return (
     <>
@@ -207,7 +219,7 @@ function LargeScreenOverview({
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
   sectorOptions,
-}) {
+}: ScreenOverviewProps) {
   const classes = useStyles({});
   function handleUpdateSelectedHub(hubUrl: string) {
     handleSetProject({
@@ -375,7 +387,19 @@ const InputWebsite = ({ project, handleChangeProject, texts }) => {
   );
 };
 
-const InputSectors = ({ project, handleChangeProject, texts, sectorOptions }) => {
+type InputSectorsProps = {
+  project: Project;
+  handleChangeProject: (newValue: any, key: string) => void;
+  texts: Record<string, string>;
+  sectorOptions: SectorOptionType[];
+};
+
+const InputSectors = ({
+  project,
+  handleChangeProject,
+  texts,
+  sectorOptions,
+}: InputSectorsProps) => {
   const classes = useStyles({});
 
   const handleValueChange = (selectedNames) => {
@@ -385,41 +409,35 @@ const InputSectors = ({ project, handleChangeProject, texts, sectorOptions }) =>
   };
 
   const handleSectorDelete = (sector) => {
-    handleChangeProject([...project.sectors.filter((t) => t.id !== sector.id)], "sectors");
+    handleChangeProject([...(project.sectors ?? []).filter((t) => t.id !== sector.id)], "sectors");
   };
-
   return (
     <div className={classes.projectInfoEl}>
-      <Typography variant="body2" className={classes.overviewHeadline}>
-        {texts.project_categories}
-      </Typography>
-      {project.sectors && (
-        <List className={classes.flexContainer}>
-          {project.sectors.map((sector) => (
-            <Chip
-              key={sector.name}
-              label={sector.name}
-              className={classes.skill}
-              onDelete={() => handleSectorDelete(sector)}
+      <List className={classes.flexContainer}>
+        {project?.sectors?.map((sector) => (
+          <Chip
+            key={sector.name}
+            label={sector.name}
+            className={classes.skill}
+            onDelete={() => handleSectorDelete(sector)}
+          />
+        ))}
+        <Grid container>
+          <Grid xs={12} sm={8} md={5} lg={5} item>
+            <SelectField
+              options={sectorOptions}
+              className={classes.sectorField}
+              multiple
+              values={project.sectors?.map((s) => s.name)}
+              label={<div className={classes.iconLabel}>{texts.project_categories}</div>}
+              size="small"
+              onChange={(event) => {
+                handleValueChange(event.target.value);
+              }}
             />
-          ))}
-          <Grid container>
-            <Grid xs={12} sm={8} md={5} lg={5} item>
-              <SelectField
-                options={sectorOptions}
-                className={classes.sectorField}
-                multiple
-                values={project.sectors?.map((s) => s.name)}
-                label={<div className={classes.iconLabel}>{texts.sectors}</div>}
-                size="small"
-                onChange={(event) => {
-                  handleValueChange(event.target.value);
-                }}
-              />
-            </Grid>
           </Grid>
-        </List>
-      )}
+        </Grid>
+      </List>
     </div>
   );
 };

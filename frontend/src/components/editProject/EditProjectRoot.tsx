@@ -18,7 +18,7 @@ import {
   getTranslationsWithoutRedundantKeys,
 } from "../../../public/lib/translationOperations";
 import getTexts from "../../../public/texts/texts";
-import { Project, Role } from "../../types";
+import { Project, Role, SectorOptionType } from "../../types";
 import UserContext from "../context/UserContext";
 import NavigationButtons from "../general/NavigationButtons";
 import TranslateTexts from "../general/TranslateTexts";
@@ -54,7 +54,7 @@ type Props = {
   handleSetErrorMessage: any;
   initialTranslations: any;
   projectTypeOptions: any;
-  sectorOptions?: any[];
+  sectorOptions?: SectorOptionType[];
 };
 
 export default function EditProjectRoot({
@@ -257,12 +257,14 @@ export default function EditProjectRoot({
       locale: locale,
     })
       .then(function () {
-        Router.push({
-          pathname: "/profiles/" + user.url_slug,
-          query: {
-            message: texts.you_have_successfully_deleted_your_project,
-          },
-        });
+        if (user && user.url_slug) {
+          Router.push({
+            pathname: "/profiles/" + user.url_slug,
+            query: {
+              message: texts.you_have_successfully_deleted_your_project,
+            },
+          });
+        }
       })
       .catch(function (error) {
         console.log(error);
