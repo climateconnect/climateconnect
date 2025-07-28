@@ -51,7 +51,6 @@ class OrganizationSerializer(serializers.ModelSerializer):
     short_description = serializers.SerializerMethodField()
     about = serializers.SerializerMethodField()
     language = serializers.SerializerMethodField()
-    hubs = serializers.SerializerMethodField()
     creator = serializers.SerializerMethodField()
     number_of_followers = serializers.SerializerMethodField()
     get_involved = serializers.SerializerMethodField()
@@ -112,10 +111,6 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
     def get_about(self, obj):
         return get_organization_about_section(obj, get_language())
-
-    def get_hubs(self, obj):
-        serializer = HubStubSerializer(obj.hubs, many=True)
-        return serializer.data
 
     def get_get_involved(self, obj):
         return get_organization_get_involved(obj, get_language())

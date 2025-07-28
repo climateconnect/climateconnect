@@ -31,9 +31,65 @@ class DonationGoal(models.Model):
         help_text="Date and time when the goal ends", verbose_name="End date"
     )
 
+<<<<<<< HEAD
     amount = models.PositiveIntegerField(
         help_text="The donated amount in € we want to reach with this goal between start data and end date",
         verbose_name="Goal Amount",
+=======
+    current_amount = models.PositiveIntegerField(
+        help_text="The current amount including the unit (e.g. '500€')",
+        verbose_name="Current Amount",
+        default=0,
+    )
+
+    goal_amount = models.PositiveIntegerField(
+        help_text="The goal amount including the unit (e.g. '1000€')",
+        verbose_name="Goal Amount",
+        default=0,
+    )
+
+    unit = models.CharField(
+        help_text="Unit of the donation goal, e.g. '€'",
+        verbose_name="Unit",
+        max_length=64,
+        default="€",
+        null=True,
+        blank=True,
+    )
+
+    call_to_action_text = models.CharField(
+        help_text="Text for the call to action, e.g. 'Donate now!'",
+        verbose_name="Call to Action Text",
+        max_length=512,
+        null=True,
+        blank=True,
+    )
+
+    call_to_action_text_de_translation = models.CharField(
+        help_text="German translation for text for the call to action, e.g. 'Jetzt spenden!'",
+        verbose_name="Call to Action Text (German Translation)",
+        max_length=512,
+        null=True,
+        blank=True,
+    )
+
+    call_to_action_link = models.CharField(
+        help_text="Link for the call to action, e.g. 'https://climatehub.earth/300'",
+        verbose_name="Call to Action Link",
+        max_length=512,
+        null=True,
+        blank=True,
+    )
+
+    hub = models.ForeignKey(
+        Hub,
+        related_name="donationgoal_hub",
+        help_text="Choose a hub if the donation goal should only be shown on one hub",
+        verbose_name="Hub",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+>>>>>>> master
     )
 
     created_at = models.DateTimeField(

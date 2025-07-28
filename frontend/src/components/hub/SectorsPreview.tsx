@@ -20,6 +20,10 @@ export default function SectorsPreview({
   sectors,
   sectorsToSelectFrom,
   allowCreate,
+<<<<<<< HEAD
+=======
+  maxSelectedNumber = -1,
+>>>>>>> master
   editMode,
   onSelectNewSector,
   onClickRemoveSector,
@@ -27,6 +31,7 @@ export default function SectorsPreview({
   const classes = useStyles();
   return (
     <Grid container component="ul" spacing={2} className={`${classes.reset} ${classes.root}`}>
+<<<<<<< HEAD
       {sectors
         ?.filter((sector) => !isLocationHubLikeHub(sector.hub_type))
         .map((sector) => (
@@ -38,6 +43,17 @@ export default function SectorsPreview({
           />
         ))}
       {allowCreate && (
+=======
+      {sectors.map((sector) => (
+        <GridItem
+          sector={sector}
+          key={sector.key}
+          editMode={editMode}
+          onClickRemoveSector={onClickRemoveSector}
+        />
+      ))}
+      {allowCreate && (maxSelectedNumber == -1 || sectors.length < maxSelectedNumber) && (
+>>>>>>> master
         <GridItem
           createMode
           sectorsToSelectFrom={sectorsToSelectFrom}

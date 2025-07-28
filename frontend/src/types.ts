@@ -107,3 +107,17 @@ export type SectorOptionType = {
   original_name?: string;
   thumbnail_image?: string;
 };
+export type LinkedHub = {
+  hubName: string;
+  hubUrl: string;
+  icon: string;
+  backgroundColor?: string;
+};
+
+export type LocaleType = "en" | "de" | undefined;
+
+export interface HubData {
+  landing_page_component: string;
+  hub_type: string;
+  [key: string]: any;
+}

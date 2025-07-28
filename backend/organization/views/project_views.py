@@ -219,20 +219,26 @@ class ListProjectsView(ListAPIView):
                     project_sector_mapping__sector__name__in=sector_names
                 )
         if "hub" in self.request.query_params:
-            hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
-            if hub.exists():
-                hub = hub[0]
-                if hub.hub_type == Hub.SECTOR_HUB_TYPE:
-                    sectors = hub.sectors.all()
+            # retrieve hub and its parents
+            hub = Hub.objects.filter(url_slug=self.request.query_params["hub"]).first()
+            if not hub:
+                return projects.none()
 
+            hubs = [hub]
+            if hub.parent_hub:
+                hubs.append(hub.parent_hub)
+
+            for current_hub in hubs:
+                if current_hub.hub_type == Hub.SECTOR_HUB_TYPE:
+                    sectors = current_hub.sectors.all()
                     sector_ids = [x.id for x in sectors]
 
                     projects = projects.filter(
                         project_sector_mapping__sector_id__in=sector_ids
                     ).distinct()
 
-                elif hub.hub_type == Hub.LOCATION_HUB_TYPE:
-                    location = hub.location.all()[0]
+                elif current_hub.hub_type == Hub.LOCATION_HUB_TYPE:
+                    location = current_hub.location.all()[0]
                     location_multipolygon = location.multi_polygon
                     projects = projects.filter(Q(loc__country=location.country))
                     if location_multipolygon:
@@ -244,8 +250,9 @@ class ListProjectsView(ListAPIView):
                                 "loc__centre_point", location_multipolygon
                             )
                         )
-                elif hub.hub_type == Hub.CUSTOM_HUB_TYPE:
-                    projects = projects.filter(related_hubs=hub)
+
+                elif current_hub.hub_type == Hub.CUSTOM_HUB_TYPE:
+                    projects = projects.filter(related_hubs=current_hub)
 
         if "collaboration" in self.request.query_params:
             collaborators_welcome = self.request.query_params.get("collaboration")
@@ -404,6 +411,7 @@ class CreateProjectView(APIView):
             "collaborators_welcome",
             "team_members",
             "loc",
+            "sectors",
             "image",
             "source_language",
             "translations",
@@ -1076,6 +1084,7 @@ class ListProjectTags(ListAPIView):
         if "hub" in self.request.query_params:
             try:
                 hub = Hub.objects.get(url_slug=self.request.query_params["hub"])
+                print(hub.hub_type)
                 if hub.hub_type == Hub.SECTOR_HUB_TYPE:
                     parent_tag = hub.filter_parent_tags.all()[0]
                     return ProjectTags.objects.filter(parent_tag=parent_tag)

@@ -391,19 +391,6 @@ class CreateOrganizationView(APIView):
                             continue
                         setattr(organization, field, request.data[field])
 
-                # change to sectors
-                # TODO: should this be removed?
-                if "hubs" in request.data:
-                    hubs = []
-                    for hub_url_slug in request.data["hubs"]:
-                        try:
-                            hub = Hub.objects.get(url_slug=hub_url_slug)
-                            hubs.append(hub)
-                        except Hub.DoesNotExist:
-                            logger.error("Passed hub url_slug {} does not exist")
-                    organization.hubs.set(hubs)
-                organization.save()
-
                 # Create organization translations
                 if translations:
                     for key in translations["translations"]:
@@ -502,7 +489,7 @@ class CreateOrganizationView(APIView):
                                     organization.id
                                 )
                             )
-
+                organization.save()
                 return Response(
                     {
                         "message": "Organization {} successfully created".format(

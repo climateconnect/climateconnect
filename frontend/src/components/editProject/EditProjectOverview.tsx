@@ -15,7 +15,6 @@ import {
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
 import ProjectLocationSearchBar from "../shareProject/ProjectLocationSearchBar";
 import { Project, SectorOptionType } from "../../types";

@@ -5,7 +5,7 @@ from django.db import migrations, models
 # Mapping based on urlslug to sectors
 MAPPING_SECTOR_HUB_TO_SECTOR = {
     "food": "food",
-    "landuse": None, # this sector hub will be deleted
+    "landuse": None,  # this sector hub will be deleted
     "construction": "housing",
     "biodiversity": "nature",  # TODO: this is mappend to a sector, but should not be deleted...
     "energy": "energy",
@@ -36,7 +36,7 @@ def link_organization_to_sectors(apps, schema_editor):
 
     for org in Organization.objects.all():
         for hub in org.hubs.all():
-            if not hub.hub_type is 0:
+            if not hub.hub_type == 0:
                 fail(org, hub)
                 continue
 

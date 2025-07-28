@@ -6,7 +6,7 @@ import React, { useContext, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../public/data/role_types";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
-import { getAllHubs } from "../public/lib/hubOperations";
+import { getAllSectors } from "../public/lib/sectorOperations";
 import { blobFromObjectUrl } from "../public/lib/imageOperations";
 import {
   getLocationValue,
@@ -24,6 +24,7 @@ import EnterDetailledOrganizationInfo from "./../src/components/organization/Ent
 import Alert from "@mui/material/Alert";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
+import theme from "../src/themes/theme";
 
 const useStyles = makeStyles((theme) => ({
   headline: {
@@ -45,16 +46,16 @@ export async function getServerSideProps(ctx: {
   const { auth_token } = NextCookies(ctx);
   const hubUrl = ctx.query.hub;
   const hubThemeData = await getHubTheme(hubUrl);
-  const [tagOptions, rolesOptions, allHubs] = await Promise.all([
+  const [tagOptions, rolesOptions, allSectors] = await Promise.all([
     await getTags(auth_token, ctx.locale),
     await getRolesOptions(auth_token, ctx.locale),
-    getAllHubs(ctx.locale, true),
+    getAllSectors(ctx.locale),
   ]);
   return {
     props: {
       tagOptions: tagOptions,
       rolesOptions: rolesOptions,
-      allHubs: allHubs,
+      allSectors: allSectors,
       hubUrl: hubUrl ?? null,
       hubThemeData: hubThemeData,
     },
@@ -64,7 +65,7 @@ export async function getServerSideProps(ctx: {
 export default function CreateOrganization({
   tagOptions,
   rolesOptions,
-  allHubs,
+  allSectors,
   hubUrl,
   hubThemeData,
 }) {
@@ -108,15 +109,10 @@ export default function CreateOrganization({
       get_involved: "",
       organization_size: 0,
       website: "",
-      hubs: [],
+      sectors: [],
     },
     types: [] as any[],
   });
-
-  const changeTranslationLanguages = ({ newLanguagesObject }) => {
-    if (newLanguagesObject.sourceLanguage) setSourceLanguage(newLanguagesObject.sourceLanguage);
-    if (newLanguagesObject.targetLanguage) setTargetLanguage(newLanguagesObject.targetLanguage);
-  };
 
   const handleChangeTranslationContent = (locale, newTranslations, isManualChange) => {
     const newTranslationsObject = {
@@ -351,7 +347,9 @@ export default function CreateOrganization({
   const layoutProps = {
     hubUrl: hubUrl,
     customTheme: customTheme,
-    headerBackground: hubUrl === "prio1" ? "#7883ff" : "#FFF",
+    headerBackground: customTheme
+      ? customTheme.palette.header.background
+      : theme.palette.background.default,
   };
 
   if (!user)
@@ -391,7 +389,7 @@ export default function CreateOrganization({
           locationOptionsOpen={locationOptionsOpen}
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           loadingSubmit={loadingSubmit}
-          allHubs={allHubs}
+          allSectors={allSectors}
         />
       </WideLayout>
     );
@@ -455,14 +453,12 @@ export default function CreateOrganization({
           handleSetData={handleSetOrganizationInfo}
           onSubmit={handleSubmit}
           translations={translations}
-          /*TODO(undefined) sourceLanguage={sourceLanguage} */
           targetLanguage={targetLanguage}
           handleChangeTranslationContent={handleChangeTranslationContent}
           goToPreviousStep={goToPreviousStep}
           introTextKey="translate_organization_intro"
           textsToTranslate={textsToTranslate}
           organization={organizationInfo}
-          /*TODO(undefined) changeTranslationLanguages={changeTranslationLanguages} */
         />
       </WideLayout>
     );
@@ -538,7 +534,7 @@ const parseOrganizationForRequest = async (
     get_involved: o.info.get_involved,
     organization_size: o.info.organization_size,
     website: o.info.website,
-    hubs: o.info.hubs.map((h) => h.url_slug),
+    sectors: o.info.sectors.map((h) => h.key),
     about: o.info.about,
     organization_tags: o.types,
     translations: {

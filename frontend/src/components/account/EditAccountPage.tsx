@@ -26,7 +26,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import ButtonLoader from "../general/ButtonLoader";
-import ActiveSectorSelector from "../hub/ActiveSectorSelector";
+import ActiveSectorsSelector from "../hub/ActiveSectorsSelector";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 import LocationSearchBar from "../search/LocationSearchBar";
@@ -203,7 +203,7 @@ export default function EditAccountPage({
   deleteEmail,
   loadingSubmit,
   onClickCheckTranslations,
-  allHubs,
+  allSectors,
   type,
   checkTranslationsRef,
 }: any) {
@@ -512,43 +512,45 @@ export default function EditAccountPage({
             />
           </div>
         );
-      } else if (i.type === "hubs") {
-        const onSelectNewHub = (event) => {
+      } else if (i.type === "sectors") {
+        const onSelectNewSector = (event) => {
           event.preventDefault();
-          const hub = allHubs.find((h) => h.name === event.target.value);
-          if (editedAccount?.info?.hubs?.filter((h) => h.url_slug === hub.url_slug)?.length === 0) {
+          const sector = allSectors.find((h) => h.name === event.target.value);
+          if (editedAccount?.info?.sectors?.filter((s) => s.key === sector.key)?.length === 0) {
+            const sectorsAfterAddition = [...editedAccount.info.sectors, sector];
             setEditedAccount({
               ...editedAccount,
               info: {
                 ...editedAccount.info,
-                hubs: [...editedAccount.info.hubs, hub],
+                sectors: sectorsAfterAddition,
               },
             });
           }
         };
-        const onClickRemoveHub = (hub) => {
-          const hubsAfterRemoval = editedAccount?.info?.hubs.filter(
-            (h) => h.url_slug !== hub.url_slug
+
+        const onClickRemoveSector = (sector) => {
+          const sectorsAfterRemoval = editedAccount?.info?.sectors.filter(
+            (s) => s.key !== sector.key
           );
           setEditedAccount({
             ...editedAccount,
             info: {
               ...editedAccount.info,
-              hubs: hubsAfterRemoval,
+              sectors: sectorsAfterRemoval,
             },
           });
         };
         return (
-          <ActiveSectorSelector
+          <ActiveSectorsSelector
             //TODO(unused) info={i}
-            selectedSectors={editedAccount.info.hubs}
-            sectorsToSelectFrom={allHubs.filter(
-              (h) =>
-                editedAccount?.info?.hubs.filter((addedHub) => addedHub.url_slug === h.url_slug)
+            selectedSectors={editedAccount.info.sectors}
+            sectorsToSelectFrom={allSectors.filter(
+              (s) =>
+                editedAccount?.info?.sectors.filter((addedSectors) => addedSectors.key === s.key)
                   .length === 0
             )}
-            onSelectNewSector={onSelectNewHub}
-            onClickRemoveSector={onClickRemoveHub}
+            onSelectNewSector={onSelectNewSector}
+            onClickRemoveSector={onClickRemoveSector}
           />
         );
         //This is the fallback for normal textfields
