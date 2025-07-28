@@ -118,10 +118,7 @@ export default function EditProjectPage({
   const handleSetProject = (newProject) => {
     setCurProject({ ...newProject });
   };
-<<<<<<< HEAD
-=======
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
->>>>>>> master
 
   if (!user)
     return (
