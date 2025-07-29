@@ -98,7 +98,7 @@ export default function LocalAmbassadorInfoBox({ hubAmbassador, hubData, hubSupp
             {hubAmbassador?.user?.first_name} {hubAmbassador?.user?.last_name}
           </Typography>
           <Typography>
-            {hubAmbassador?.title} {hubData.name}
+            {hubAmbassador?.title}
           </Typography>
           <Button
             variant="outlined"

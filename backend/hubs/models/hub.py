@@ -396,7 +396,7 @@ class HubAmbassador(models.Model):
     def __str__(self):
         return "%s is ambassador for %s" % (
             self.user.first_name + " " + self.user.last_name,
-            self.title,
+            self.hub.url_slug,
         )
 
 
