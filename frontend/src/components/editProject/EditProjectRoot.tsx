@@ -259,16 +259,18 @@ export default function EditProjectRoot({
       locale: locale,
     })
       .then(function () {
-        const query: any = {
-          message: texts.you_have_successfully_deleted_your_project,
-        };
-        if (hubUrl) {
-          query.hub = hubUrl;
+        if (user && user.url_slug) {
+          const query: any = {
+            message: texts.you_have_successfully_deleted_your_project,
+          };
+          if (hubUrl) {
+            query.hub = hubUrl;
+          }
+          Router.push({
+            pathname: "/profiles/" + user.url_slug,
+            query,
+          });
         }
-        Router.push({
-          pathname: "/profiles/" + user.url_slug,
-          query,
-        });
       })
       .catch(function (error) {
         console.log(error);
