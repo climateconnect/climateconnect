@@ -28,7 +28,7 @@ const useStyles = makeStyles(() => ({
     fontWeight: 700,
   },
 }));
-
+// TODO: duplication with ActiveSectorSelector.tsx
 export default function ActiveSectorsSelector({
   selectedSectors,
   sectorsToSelectFrom,
