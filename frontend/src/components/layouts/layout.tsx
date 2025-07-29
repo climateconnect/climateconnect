@@ -8,7 +8,6 @@ import theme from "../../themes/theme";
 import Footer from "../footer/Footer";
 import LoadingContainer from "../general/LoadingContainer";
 import Header from "../header/Header";
-import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
 import LayoutWrapper from "./LayoutWrapper";
 //We are ignoring the "missing" devlink import because it will be there at runtime
 //You will need to run 'npx webflow devlink sync' to generate this file.
@@ -35,6 +34,9 @@ export default function Layout({
   messageType,
   isLoading,
   isStaticPage,
+  headerBackground,
+  customTheme,
+  hubUrl,
 }: any) {
   const classes = useStyles({ donationCampaignRunning: process.env.DONATION_CAMPAIGN_RUNNING });
   const [hideAlertMessage, setHideAlertMessage] = React.useState(false);
@@ -50,9 +52,13 @@ export default function Layout({
   }, []);
   return (
     <DevLinkProvider>
-      <LayoutWrapper theme={theme} title={title}>
-        <Header noSpacingBottom isStaticPage={isStaticPage} />
-        {<DonationCampaignInformation />}
+      <LayoutWrapper theme={customTheme ?? theme} title={title}>
+        <Header
+          noSpacingBottom
+          isStaticPage={isStaticPage}
+          background={headerBackground}
+          hubUrl={hubUrl}
+        />
         {isLoading ? (
           <LoadingContainer headerHeight={113} footerHeight={80} />
         ) : (

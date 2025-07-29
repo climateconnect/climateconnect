@@ -1,5 +1,5 @@
 import NextCookies from "next-cookies";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest } from "../../public/lib/apiOperations";
@@ -18,6 +18,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import ProjectSideBar from "../../src/components/project/ProjectSideBar";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 import getHubTheme from "../../src/themes/fetchHubTheme";
+import theme from "../../src/themes/theme";
 
 type StyleProps = {
   showSimilarProjects: boolean;
@@ -235,6 +236,7 @@ export default function ProjectPage({
 
   const tinyScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
 
   return (
     <WideLayout
@@ -244,15 +246,22 @@ export default function ProjectPage({
       title={project ? project.name : texts.project + " " + texts.not_found}
       subHeader={
         !tinyScreen ? (
-          <HubsSubHeader hubs={hubs} onlyShowDropDown={true} isCustomHub={isCustomHub} />
+          <HubsSubHeader
+            hubs={hubs}
+            onlyShowDropDown={true}
+            isCustomHub={isCustomHub}
+            hubSlug={hubUrl}
+          />
         ) : (
           <></>
         )
       }
-      customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+      customTheme={customTheme}
       isHubPage={!!hubUrl}
       hubUrl={hubUrl}
-      headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
+      headerBackground={
+        customTheme ? customTheme.palette.header.background : theme.palette.background.default
+      }
       image={project ? getImageUrl(project.image) : undefined}
     >
       <BrowseContext.Provider value={contextValues}>
@@ -453,7 +462,7 @@ function parseProject(project) {
       : project.project_parents[0].parent_user,
     isPersonalProject: !project.project_parents[0].parent_organization,
     is_draft: project.is_draft,
-    tags: project.tags.map((t) => t.project_tag.name),
+    sectors: project.sectors.sort((a, b) => a.order - b.order).map((s) => s.sector),
     collaborating_organizations: project.collaborating_organizations.map(
       (o) => o.collaborating_organization
     ),

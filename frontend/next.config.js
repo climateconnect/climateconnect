@@ -8,7 +8,7 @@ require("dotenv").config();
 
 module.exports = withBundleAnalyzer({
   // Read set variables from `.env` file
-  //For CUSTOM_HUB_URLS use a string of urls split by commas, e.g. CUSTOM_HUB_URLS="url1,url2,url3"
+  //For CUSTOM_HUB_URLS use a string of urls split by commas, e.g. CUSTOM_HUB_URLS=url1,url2,url3
   env: pick(process.env, [
     "API_HOST",
     "API_URL",
@@ -67,6 +67,16 @@ module.exports = withBundleAnalyzer({
         source: "/blog/weihnachten",
         destination: "/post/es-ist-weihnachtszeit-auf-climate-connect",
         permanent: true,
+      },
+      {
+        source: "/klimapuzzle",
+        destination: "/de/projects/workshop-klimapuzzle?hub=marburg",
+        permanent: true,
+      },
+      {
+        source: "/hubs/prio1",
+        destination: "/hubs/prio1/browse",
+        permanent: false,
       },
     ];
   },

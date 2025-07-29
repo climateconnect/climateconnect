@@ -82,7 +82,7 @@ const projectOverviewStyles = (theme: Theme): StyleRules => {
       display: "flex",
       border: "1px solid black",
       height: theme.spacing(5),
-      minWidth: 220,
+      // minWidth: 220,
       maxWidth: "100%",
       marginRight: theme.spacing(1),
       background: "none",

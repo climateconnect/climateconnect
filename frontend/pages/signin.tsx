@@ -110,7 +110,7 @@ export default function Signin({ hubSlug, hubThemeData, message, message_type })
         redirectUrl += decodedRedirect;
         setRedirectUrl(redirectUrl);
       } else if (params.hub) {
-        setRedirectUrl(getLocalePrefix(locale) + "/hubs/" + params.hub);
+        setRedirectUrl(getLocalePrefix(locale) + "/hubs/" + params.hub + "/browse");
       }
       setInitialized(true);
       //TODO: remove router
@@ -161,7 +161,9 @@ export default function Signin({ hubSlug, hubThemeData, message, message_type })
       customTheme={customTheme}
       isHubPage={hubSlug !== ""}
       hubUrl={hubSlug}
-      headerBackground={hubSlug === "prio1" && mobileScreenSize ? "#7883ff" : "transparent"}
+      headerBackground={
+        customTheme && mobileScreenSize ? customTheme.palette.header.background : "transparent"
+      }
       footerTextColor={hubSlug && !mobileScreenSize && "white"}
     >
       <Container maxWidth={hugeScreen ? "xl" : "lg"}>

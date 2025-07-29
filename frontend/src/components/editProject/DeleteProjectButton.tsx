@@ -15,14 +15,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function DeleteProjectButton({ project, handleClickDeleteProjectPopup }) {
+export default function DeleteProjectButton({ project, handleClickDeleteProjectPopup, className }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
+  const finalClassName = className
+    ? `${classes.deleteProjectButton} ${className}`
+    : classes.deleteProjectButton;
   return (
     <Button
       classes={{
-        root: classes.deleteProjectButton,
+        root: finalClassName,
       }}
       variant="contained"
       color="error"

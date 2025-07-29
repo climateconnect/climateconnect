@@ -1,7 +1,7 @@
-import { Collapse, Container, Theme } from "@mui/material";
+import { Container, Theme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import Alert from "@mui/material/Alert";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { getParams } from "../../../public/lib/generalOperations";
 import { getMessageFromUrl } from "../../../public/lib/parsingOperations";
 import theme from "../../themes/theme";
@@ -51,7 +51,6 @@ type Props = {
   showOnScrollUp?: boolean;
   largeFooter?: boolean;
   description?: string;
-  landingPage?: boolean;
   headerBackground?: string;
   subHeader?: JSX.Element;
   image?: string;
@@ -61,13 +60,16 @@ type Props = {
   resetAlertMessage?: () => void;
   isHubPage?: boolean;
   hubUrl?: string;
-  hideDonationCampaign?: boolean;
   customFooterImage?: string;
   isLocationHub?: boolean;
   noHeader?: boolean;
   footerTextColor?: string;
   customTheme?: any;
   hideAlert?: boolean;
+  transparentBackgroundColor?: string;
+  hasHubLandingPage?: boolean;
+  isLandingPage?: boolean;
+  showDonationGoal?: boolean;
 };
 //Wrapper layout component for pages where the content takes the whole width of the screen
 export default function WideLayout({
@@ -84,7 +86,6 @@ export default function WideLayout({
   showOnScrollUp, //display the footer when scrolling up, used for "inifinite scroll" pages
   largeFooter,
   description,
-  landingPage,
   headerBackground,
   subHeader,
   image,
@@ -95,12 +96,14 @@ export default function WideLayout({
   isHubPage,
   hubUrl,
   isLocationHub,
-  hideDonationCampaign,
   customFooterImage,
   noHeader,
   footerTextColor,
   customTheme,
   hideAlert,
+  isLandingPage,
+  hasHubLandingPage,
+  showDonationGoal,
 }: Props) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(hideAlert ? false : true);
@@ -148,6 +151,8 @@ export default function WideLayout({
           isHubPage={isHubPage}
           hubUrl={hubUrl}
           isLocationHub={isLocationHub}
+          hasHubLandingPage={hasHubLandingPage}
+          isLandingPage={isLandingPage}
         />
       )}
       {isLoading ? (
@@ -181,14 +186,7 @@ export default function WideLayout({
             </Alert>
           )}
           {subHeader && subHeader}
-          {!fixedHeader &&
-            !hideDonationCampaign &&
-            process.env.DONATION_CAMPAIGN_RUNNING === "true" &&
-            !landingPage && (
-              <Collapse in={showDonationBanner}>
-                <DonationCampaignInformation />
-              </Collapse>
-            )}
+          {!fixedHeader && showDonationGoal && <DonationCampaignInformation />}
           {children}
         </Container>
       )}

@@ -14,6 +14,7 @@ from organization.models import (
     OrganizationFollower,
 )
 from organization.models.project import ProjectParents
+from organization.serializers.sector import OrganizationSectorMappingSerializer
 from organization.serializers.tags import OrganizationTaggingSerializer
 from organization.serializers.translation import OrganizationTranslationSerializer
 from organization.utility.organization import (
@@ -42,6 +43,7 @@ class OrganizationStubSerializer(serializers.ModelSerializer):
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
+    sectors = serializers.SerializerMethodField()
     types = serializers.SerializerMethodField()
     parent_organization = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
@@ -49,7 +51,6 @@ class OrganizationSerializer(serializers.ModelSerializer):
     short_description = serializers.SerializerMethodField()
     about = serializers.SerializerMethodField()
     language = serializers.SerializerMethodField()
-    hubs = serializers.SerializerMethodField()
     creator = serializers.SerializerMethodField()
     number_of_followers = serializers.SerializerMethodField()
     get_involved = serializers.SerializerMethodField()
@@ -58,6 +59,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
         model = Organization
         fields = (
             "id",
+            "sectors",
             "types",
             "name",
             "url_slug",
@@ -84,6 +86,12 @@ class OrganizationSerializer(serializers.ModelSerializer):
     def get_short_description(self, obj):
         return get_organization_short_description(obj, get_language())
 
+    def get_sectors(self, obj):
+        serializer = OrganizationSectorMappingSerializer(
+            obj.organization_sector_mapping.all(), many=True
+        )
+        return serializer.data
+
     def get_types(self, obj):
         serializer = OrganizationTaggingSerializer(obj.tag_organization, many=True)
         return serializer.data
@@ -103,10 +111,6 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
     def get_about(self, obj):
         return get_organization_about_section(obj, get_language())
-
-    def get_hubs(self, obj):
-        serializer = HubStubSerializer(obj.hubs, many=True)
-        return serializer.data
 
     def get_get_involved(self, obj):
         return get_organization_get_involved(obj, get_language())
@@ -185,6 +189,7 @@ class EditOrganizationSerializer(OrganizationSerializer):
 
 
 class OrganizationCardSerializer(serializers.ModelSerializer):
+    sectors = serializers.SerializerMethodField()
     types = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
@@ -201,6 +206,7 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
             "thumbnail_image",
             "location",
             "types",
+            "sectors",
             "short_description",
             "members_count",
             "projects_count",
@@ -219,6 +225,12 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
 
     def get_types(self, obj):
         serializer = OrganizationTaggingSerializer(obj.tag_organization, many=True)
+        return serializer.data
+
+    def get_sectors(self, obj):
+        serializer = OrganizationSectorMappingSerializer(
+            obj.organization_sector_mapping.all(), many=True
+        )
         return serializer.data
 
     def get_members_count(self, obj):
