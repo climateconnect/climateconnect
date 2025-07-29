@@ -9,6 +9,7 @@ import {
   getProjectTagsOptions,
   getProjectTypeOptions,
   getSkillsOptions,
+  getSectorOptions,
 } from "../../../public/lib/getOptions";
 import { extractHubUrlsFromContext, getAllHubs } from "../../../public/lib/hubOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
@@ -81,7 +82,6 @@ export async function getHubBrowseServerSideProps(ctx) {
 
   const [
     hubData,
-    project_categories,
     organization_types,
     skills,
     location_filtered_by,
@@ -90,9 +90,9 @@ export async function getHubBrowseServerSideProps(ctx) {
     projectTypes,
     hubThemeData,
     linkedHubs,
+    sectorOptions,
   ] = await Promise.all([
     getHubData(hubUrl, ctx.locale),
-    getProjectTagsOptions(hubUrl, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
     getLocationFilteredBy(ctx.query),
@@ -101,6 +101,7 @@ export async function getHubBrowseServerSideProps(ctx) {
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
     getLinkedHubsData(hubUrl),
+    getSectorOptions(ctx.locale),
   ]);
 
   return {
@@ -121,7 +122,7 @@ export async function getHubBrowseServerSideProps(ctx) {
       image_attribution: hubData?.image_attribution ?? null,
       hubLocation: hubData?.location?.length > 0 ? hubData?.location[0] : null,
       filterChoices: {
-        project_categories: project_categories,
+        sectors: sectorOptions,
         organization_types: organization_types,
         skills: skills,
       },
@@ -160,6 +161,7 @@ export default function HubBrowsePage({
   hubThemeData,
   linkedHubs,
 }: HubBrowsePageProps) {
+  // donationGoal was removed in PR #1560?
   const { locale, CUSTOM_HUB_URLS, donationGoal } = useContext(UserContext);
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const classes = useStyles();
@@ -168,6 +170,7 @@ export default function HubBrowsePage({
   const [hubAmbassador, setHubAmbassador] = useState(null);
   const [hubSupporters, setHubSupporters] = useState(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  // Do we need this? this line was removed on PR ##1560
   const donationGoalActive = donationGoal && donationGoal.hub === hubUrl;
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
 
@@ -239,6 +242,7 @@ export default function HubBrowsePage({
         hasHubLandingPage={hubData?.landing_page_component ? true : false}
       >
         <div className={classes.content}>
+          {/* donationGoalActive was removed on PR #1560  */}
           {donationGoalActive && <DonationCampaignInformation />}
           {!isLocationHub && (
             <NavigationSubHeader
