@@ -54,6 +54,7 @@ type Props = {
   handleSetErrorMessage: any;
   initialTranslations: any;
   projectTypeOptions: any;
+  hubUrl: string;
   sectorOptions?: SectorOptionType[];
 };
 
@@ -67,6 +68,7 @@ export default function EditProjectRoot({
   handleSetErrorMessage,
   initialTranslations,
   projectTypeOptions,
+  hubUrl,
   sectorOptions,
 }: Props) {
   const classes = useStyles();
@@ -127,8 +129,8 @@ export default function EditProjectRoot({
         if (!project[key]) {
           alert(
             texts.your_project_draft_is_missing_the_following_reqired_property +
-              " " +
-              draftReqiredProperties[key]
+            " " +
+            draftReqiredProperties[key]
           );
           return false;
         }
@@ -195,7 +197,7 @@ export default function EditProjectRoot({
   }
 
   const handleCancel = () => {
-    Router.push("/projects/" + project.url_slug + "/");
+    Router.push(`/projects/${project.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""}`);
   };
 
   const handleSubmit = async (event) => {
@@ -258,11 +260,15 @@ export default function EditProjectRoot({
     })
       .then(function () {
         if (user && user.url_slug) {
+          const query: any = {
+            message: texts.you_have_successfully_deleted_your_project,
+          };
+          if (hubUrl) {
+            query.hub = hubUrl;
+          }
           Router.push({
             pathname: "/profiles/" + user.url_slug,
-            query: {
-              message: texts.you_have_successfully_deleted_your_project,
-            },
+            query,
           });
         }
       })
