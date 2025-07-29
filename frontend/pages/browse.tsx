@@ -8,6 +8,7 @@ import {
   getProjectTagsOptions,
   getProjectTypeOptions,
   getSkillsOptions,
+  getSectorOptions,
 } from "../public/lib/getOptions";
 import { getAllHubs } from "../public/lib/hubOperations";
 import { getLocationFilteredBy } from "../public/lib/locationOperations";
@@ -30,6 +31,7 @@ export async function getServerSideProps(ctx) {
     hubs,
     location_filtered_by,
     projectTypes,
+    sectorOptions,
   ] = await Promise.all([
     getProjectTagsOptions(null, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
@@ -37,6 +39,7 @@ export async function getServerSideProps(ctx) {
     getAllHubs(ctx.locale),
     getLocationFilteredBy(ctx.query),
     getProjectTypeOptions(ctx.locale),
+    getSectorOptions(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -44,6 +47,7 @@ export async function getServerSideProps(ctx) {
         project_categories: project_categories,
         organization_types: organization_types,
         skills: skills,
+        sectors: sectorOptions,
       },
       hideInfo: hideInfo === "true",
       hubs: hubs,

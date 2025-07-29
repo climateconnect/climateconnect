@@ -17,6 +17,10 @@ const useStyles = makeStyles((theme) => {
     selectedChip: {
       margin: theme.spacing(1),
     },
+    selectedChipIcon: {
+      width: 20,
+      height: 20,
+    },
   };
 });
 
@@ -64,10 +68,26 @@ export default function SelectedFilter({
           depending on whether it was caught as the initial location or not*/
           const filterName =
             typeof filter === "object" ? (filter.name ? filter.name : filter.simple_name) : filter;
+
+          // Find matching metadata by original_name or name
+          const matchedOption = filterMetadata.options.find(
+            (opt) => opt.original_name === filterName || opt.name === filterName
+          );
+          const iconUrl = matchedOption?.icon;
           return (
             <Tooltip title={filterMetadata.title} key={filterName}>
               <Chip
-                icon={<filterMetadata.icon name={filterMetadata.iconName} />}
+                icon={
+                  iconUrl ? (
+                    <img
+                      src={iconUrl}
+                      alt={`${filterName} icon`}
+                      className={classes.selectedChipIcon}
+                    />
+                  ) : (
+                    <filterMetadata.icon name={filterMetadata.iconName} />
+                  )
+                }
                 className={classes.selectedChip}
                 label={filterName}
                 color="secondary"
