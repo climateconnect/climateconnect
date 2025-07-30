@@ -171,9 +171,8 @@ export default function LoggedOutLocationHubBox({ headline, isLocationHub, locat
 
   return (
     <div className={classes.root}>
-      {isNarrowScreen && <Headline />}
       <div className={classes.contentContainer}>
-        {!isNarrowScreen && <Headline />}
+        <Headline />
         <div className={classes.lowerBoxWrapper}>
           <div className={classes.advantagesBox}>
             {REASONS_TO_JOIN.map((r) => (
