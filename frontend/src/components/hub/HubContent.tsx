@@ -202,6 +202,7 @@ export default function HubContent({
                     headline={headline}
                     isLocationHub={isLocationHub}
                     location={hubData.name}
+                    hubUrl={hubUrl}
                   />
                 )}
                 {!isNarrowScreen &&
