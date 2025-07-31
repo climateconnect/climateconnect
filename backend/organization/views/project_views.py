@@ -1,6 +1,6 @@
 import logging
 import traceback
-from django.db.models import Case, When, Prefetch, Q
+from django.db.models import Prefetch, Q
 
 from organization.utility.sector import sanitize_sector_inputs
 from organization.utility.cache import generate_project_ranking_cache_key
@@ -32,7 +32,6 @@ from django.core.cache import cache
 from django.contrib.auth.models import User
 from django.contrib.gis.db.models.functions import Distance
 from django.db import transaction
-from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 
 from hubs.models.hub import Hub
