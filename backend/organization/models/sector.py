@@ -77,6 +77,51 @@ class Sector(models.Model):
         upload_to=sector_image_path,
     )
 
+    # Option 1:
+    # TODO: when adding a sector, then also add the relates_to_sector
+    # TODO: when deleting a sector, then also delete the relates_to_sector
+
+    # TODO: Edge Case
+    # what, if both the related sector and the sector are used in a hub?
+    # E.g. Climate Cafe and Education in Perth:
+    # - user selects only Climate Cafe >> but sees Education as well
+    # - user selects both Education and Climate Cafe and then later deletes Climate Cafe >> but this deletes Education as well
+
+    # this will not work, because, if filters stays like this, both sectors have to be selected in any case.
+    # > no redundancy and go with option 2: extending the filter by sector feature.
+
+    # Option 2:
+    # filter by sector: sector__key__in=... or sector__relates_to_sector__key__in=...
+    # >> but now, when serializing, I need to know which sector to use ...
+
+    # Went with option 2
+
+    # browse --> share project for location perth
+    # general sectors
+    # >> education
+
+    # /hubs/perth/browse
+    #
+
+    # > Hubs.specific_sectors: Zero Waste (>), Education, Climate Cafe (>Education), transport (>mobility)
+
+    default_sector = models.BooleanField(
+        help_text="If this sector is a default sector, it will be used if no specific sector is selected.",
+        verbose_name="Default sector",
+        default=True,
+        blank=False,
+        null=False,
+    )
+
+    # climate cafe -> sector: education
+    relates_to_sector = models.ForeignKey(
+        "Sector",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="hub_specific_sector",
+    )
+
     class Meta:
         app_label = "organization"
         verbose_name = "Sector"

@@ -1,6 +1,6 @@
 import logging
 import traceback
-from django.db.models import Case, When, Prefetch
+from django.db.models import Case, When, Prefetch, Q
 
 from organization.utility.sector import sanitize_sector_inputs
 from organization.utility.cache import generate_project_ranking_cache_key
@@ -168,6 +168,43 @@ class ListProjectsView(ListAPIView):
         # Call the standard list method which handles filtering and pagination
         return self.list(request, *args, **kwargs)
 
+    def get(self, request, *args, **kwargs):
+        qs = self.get_queryset()
+        # filter first
+        filtered_queryset = self.filter_queryset(qs)
+
+        # explicitly evaluate the queryset to avoid lazy evaluation
+        # causing multiple database hits
+
+        # this should be the only db call
+        projects = list(filtered_queryset.all())
+
+        # then order by rank
+        ranked_projects = self.__perform_ordering_based_on_rank(projects)
+        # then paginate
+        paginated_projects = self.paginate_queryset(ranked_projects)
+
+        # explicitly prefetch the hub, as the serializer of the sectors will need it
+        hub = None
+        if "hub" in request.query_params:
+            hub = (
+                Hub.objects.filter(url_slug=request.query_params["hub"])
+                .prefetch_related("sectors")
+                .first()
+            )
+            # if the hub is not found, the query is invalid
+            # and we should return an empty response
+            if not hub:
+                return self.get_paginated_response([])
+
+        # the serialize
+        serializer = self.get_serializer(
+            paginated_projects,
+            many=True,
+            context={"hub": hub},
+        )
+        return self.get_paginated_response(serializer.data)
+
     def get_queryset(self):
         user = self.request.user
         # TODO: remove user profile, as it is not used
@@ -216,7 +253,10 @@ class ListProjectsView(ListAPIView):
                 )
             else:
                 projects = projects.filter(
-                    project_sector_mapping__sector__key__in=sector_keys
+                    Q(project_sector_mapping__sector__key__in=sector_keys)
+                    | Q(
+                        project_sector_mapping__sector__relates_to_sector__key__in=sector_keys
+                    )
                 )
 
         if "hub" in self.request.query_params:
@@ -350,6 +390,12 @@ class ListProjectsView(ListAPIView):
             )
             projects = projects.filter(loc__in=location_ids)
 
+        self._cached_queryset = projects
+        return projects
+
+    def __perform_ordering_based_on_rank(self, projects):
+        project_ids = []
+
         if settings.CACHE_BACHED_RANK_REQUEST:
             ### retrieve all cached rankings for all projects
             ### and recalculate the rankings for projects that are missing cached rankings
@@ -364,9 +410,15 @@ class ListProjectsView(ListAPIView):
             # prefetch the cached rankings all at once
             cached_rankings = cache.get_many(cache_keys)
 
+            # TODO: cache misses should be handled in one go
+            # current status: iterate over all projects (and therefore over all cache misses)
+            # one by one and updating the cache one by one
+
             # save the cached values to the view
             _cached_rankings = {
-                key: cached_rankings[key] if key in cached_rankings else project.ranking
+                key: (
+                    cached_rankings[key] if key in cached_rankings else project.ranking
+                )
                 for key, project in zip(cache_keys, projects)
             }
 
@@ -386,13 +438,20 @@ class ListProjectsView(ListAPIView):
                 )
             ]
 
-        preferred_order = Case(
-            *(
-                When(id=id, then=position)
-                for position, id in enumerate(project_ids, start=1)
-            )
-        )
-        return projects.order_by(preferred_order)
+        #    preferred_order = Case(
+        #         *(
+        #             When(id=id, then=position)
+        #             for position, id in enumerate(project_ids, start=1)
+        #         )
+        #     )
+        #     return projects.order_by(preferred_order)
+
+        preferred_order = {
+            id: position for position, id in enumerate(project_ids, start=1)
+        }
+
+        # sort the projects using python instead of SQL (which would lead to a new DB call)
+        return sorted(projects, key=lambda project: preferred_order.get(project.id, 0))
 
 
 class CreateProjectView(APIView):
