@@ -173,14 +173,14 @@ export default function HubBrowsePage({
 
   useEffect(() => {
     (async () => {
-      const retrievedHubAmbassador = await getHubAmbassadorData(hubUrl, locale);
+      const retrievedHubAmbassador = await getHubAmbassadorData(subHubUrl ? subHubUrl : hubUrl, locale);
       setHubAmbassador(retrievedHubAmbassador);
       if (isLocationHub) {
         const retrivedHubSupporters = await getHubSupportersData(hubUrl, locale);
         setHubSupporters(retrivedHubSupporters);
       }
     })();
-  }, [hubUrl, locale]);
+  }, [hubUrl, subHubUrl, locale]);
 
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
