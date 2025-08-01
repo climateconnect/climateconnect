@@ -1,4 +1,4 @@
-import { Button, Chip, Container, List, TextField, Typography, Grid } from "@mui/material";
+import { Button, Chip, Container, List, TextField, Grid } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";

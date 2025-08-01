@@ -6,6 +6,7 @@ from hubs.models import Hub
 
 from organization.serializers.sector import SectorSerializer
 from organization.models import Sector
+from django.utils.translation import get_language
 
 
 class ListSectors(ListAPIView):
@@ -20,16 +21,17 @@ class ListSectors(ListAPIView):
         """
         Get all sectors.
         """
-        # TODO: should sector hubs behave the same as regular hubs
-        # e.g. when shareing a project from a sector hub, should only the sector(s)
-        # of the current sector hub be shown?
+        language_code = get_language()
+        order_by_field = (
+            "name" if language_code == "en" else f"name_{language_code}_translation"
+        )
 
         if "hub" in self.request.query_params:
             hub = Hub.objects.prefetch_related("sectors").get(
                 url_slug=self.request.query_params["hub"]
             )
             specific_sectors = hub.sectors.all()
-            if len(specific_sectors) > 0:
-                return specific_sectors
+            if specific_sectors.exists():
+                return specific_sectors.order_by(order_by_field)
 
-        return Sector.objects.filter(default_sector=True)
+        return Sector.objects.filter(default_sector=True).order_by(order_by_field)

@@ -11,13 +11,13 @@ def sector_image_path(instance, filename):
 # Add Icon and image (copy from sector hub)
 class Sector(models.Model):
     name = models.CharField(
-        help_text="Name of the sector",
+        help_text="Name of the sector. It shall neither contain ',' nor '_' nor '&', as this can cause issues with the search functionality",
         verbose_name="Name",
         max_length=256,
     )
 
     name_de_translation = models.CharField(
-        help_text="German traslation of the name column",
+        help_text="German traslation of the name column. It shall neither contain ',' nor '_' nor '&', as this can cause issues with the search functionality",
         verbose_name="Name DE translation",
         max_length=256,
         null=True,
@@ -121,6 +121,19 @@ class Sector(models.Model):
         blank=True,
         related_name="hub_specific_sector",
     )
+
+    def clean(self):
+        forbidden_characters = [",", "_", "&"]
+        fields_to_check = [
+            self.name,
+            self.key,
+            self.name_de_translation,
+        ]
+        for field in fields_to_check:
+            if field and any(char in field for char in forbidden_characters):
+                raise ValueError(
+                    f"Field '{field}' shall neither contain ',' nor '_' nor '&', as this can cause issues with the search functionality"
+                )
 
     class Meta:
         app_label = "organization"
