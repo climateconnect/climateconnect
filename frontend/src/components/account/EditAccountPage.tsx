@@ -26,7 +26,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import ButtonLoader from "../general/ButtonLoader";
-import ActiveSectorSelector from "../hub/ActiveSectorSelector";
+import ActiveSectorsSelector from "../hub/ActiveSectorsSelector";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 import LocationSearchBar from "../search/LocationSearchBar";
@@ -541,7 +541,7 @@ export default function EditAccountPage({
           });
         };
         return (
-          <ActiveSectorSelector
+          <ActiveSectorsSelector
             //TODO(unused) info={i}
             selectedSectors={editedAccount.info.sectors}
             sectorsToSelectFrom={allSectors.filter(

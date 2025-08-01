@@ -83,8 +83,8 @@ export default function getFilterAndSearchTexts({ filterType, hubName, locale })
       de: "Zusätzliche Infos (z.B. Raum, ...)",
     },
     sectors_tooltip: {
-      en: "Sectors",
-      de: "Sektoren",
+      en: "Topics",
+      de: "Themenfelder",
     },
   };
 }
