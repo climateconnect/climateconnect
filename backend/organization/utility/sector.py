@@ -84,7 +84,9 @@ def __substitute_sector(mapping):
         )
     elif isinstance(mapping, ProjectSectorMapping):
         return ProjectSectorMapping(
-            sector=mapping.sector.relates_to_sector, order=order
+            project=mapping.project,
+            sector=mapping.sector.relates_to_sector,
+            order=order,
         )
 
     raise ValueError("Invalid mapping type.")
@@ -100,7 +102,7 @@ def filter_and_substitue_sector_mapping_based_on_hub_or_defaults(
     Otherwise, return only the sector mappings (including possible substitutions)
     """
     valid_sectors = hub.sectors.all() if hub else None
-    sector_mappings = []
+    filtered_mappings = []
 
     for mapping in sector_mappings:
         mappingToAppend = None
@@ -125,9 +127,10 @@ def filter_and_substitue_sector_mapping_based_on_hub_or_defaults(
             mappingToAppend = __substitute_sector(mapping)
 
         # avoid duplicates
-        if mappingToAppend and all(
-            m.sector != mappingToAppend.sector for m in sector_mappings
-        ):
-            sector_mappings.append(mappingToAppend)
 
-    return sector_mappings
+        if mappingToAppend and all(
+            m.sector != mappingToAppend.sector for m in filtered_mappings
+        ):
+            filtered_mappings.append(mappingToAppend)
+
+    return filtered_mappings
