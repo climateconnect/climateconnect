@@ -171,7 +171,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
         return {
           ...css,
           color: theme.palette.primary.contrastText,
-          backgroundColor: props.isLoggedInUser ? theme.palette.primary.light : "transparent",
+          backgroundColor: theme.palette.primary.main,
         };
       } else {
         return css;
@@ -206,8 +206,8 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
         color: props.isCustomHub
           ? theme.palette.primary.contrastText
           : props.isLandingPage
-          ? "white"
-          : theme.palette.background.default_contrastText,
+            ? "white"
+            : theme.palette.background.default_contrastText,
         borderColor: props.isCustomHub
           ? theme.palette.primary.contrastText
           : theme.palette.primary.main,
@@ -324,9 +324,8 @@ export default function Header({
 
     if (hubUrl && isLocationHub) {
       const logoType = transparentHeader || isLandingPage ? "white" : null;
-      return `${imageUrl}/hub_logos/ch_${hubUrl?.toLowerCase()}_logo${
-        logoType ? `_${logoType}` : ""
-      }.svg`;
+      return `${imageUrl}/hub_logos/ch_${hubUrl?.toLowerCase()}_logo${logoType ? `_${logoType}` : ""
+        }.svg`;
     }
 
     return loadDefaultLogo(transparentHeader, isMediumScreen);
@@ -916,9 +915,8 @@ const NarrowScreenDropdownMenu = ({
         <ArrowDropDownIcon className={classes.drawerItem} />
       </ListItem>
       <div
-        className={`${classes.dropDownBgColorInMobile} ${classes.dropdownMenuInMobile} ${
-          openDropdownInMobile ? classes.dropdownMenuInMobileOpen : ""
-        }`}
+        className={`${classes.dropDownBgColorInMobile} ${classes.dropdownMenuInMobile} ${openDropdownInMobile ? classes.dropdownMenuInMobileOpen : ""
+          }`}
       >
         {STATIC_PAGE_LINKS.map((link, index) => {
           return (
