@@ -90,7 +90,7 @@ export async function getServerSideProps(ctx) {
     hubSupporters,
     hubThemeData,
   ] = await Promise.all([
-    getProjectByIdIfExists(projectUrl, auth_token, ctx.locale),
+    getProjectByIdIfExists(projectUrl, auth_token, ctx.locale, hubUrl),
     getProjectMembersByIdIfExists(projectUrl, ctx.locale),
     getPostsByProject(projectUrl, auth_token, ctx.locale),
     getCommentsByProject(projectUrl, auth_token, ctx.locale),
@@ -317,11 +317,13 @@ export default function ProjectPage({
   );
 }
 
-async function getProjectByIdIfExists(projectUrl, token, locale) {
+async function getProjectByIdIfExists(projectUrl, token, locale, hubUrl?: string | null) {
+  const query = hubUrl ? `?hub=${hubUrl}` : "";
+
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/projects/" + projectUrl + "/",
+      url: "/api/projects/" + projectUrl + "/" + query,
       token: token,
       locale: locale,
     });

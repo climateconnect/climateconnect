@@ -720,10 +720,21 @@ class ProjectAPIView(APIView):
                 {"message": "Project not found: {}".format(url_slug)},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+        hub = (
+            Hub.objects.filter(url_slug=request.query_params.get("hub"))
+            .prefetch_related("sectors")
+            .first()
+            if "hub" in request.query_params
+            else None
+        )
+
         if "edit_view" in request.query_params:
-            serializer = EditProjectSerializer(project, many=False)
+            serializer = EditProjectSerializer(
+                project, many=False, context={"hub": hub}
+            )
         else:
-            serializer = ProjectSerializer(project, many=False)
+            serializer = ProjectSerializer(project, many=False, context={"hub": hub})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, url_slug, format=None):
