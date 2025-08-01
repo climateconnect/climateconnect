@@ -2,10 +2,10 @@
 from rest_framework.generics import ListAPIView
 
 from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
 
 from organization.serializers.sector import SectorSerializer
 from organization.models import Sector
+from django.utils.translation import get_language
 
 
 class ListSectors(ListAPIView):
@@ -20,4 +20,10 @@ class ListSectors(ListAPIView):
         """
         Get all sectors.
         """
-        return Sector.objects.all()
+        language_code = get_language()
+        if language_code == "en":
+            order_by_field = "name"
+        else:
+            order_by_field = f"name_{language_code}_translation"
+
+        return Sector.objects.all().order_by(order_by_field)

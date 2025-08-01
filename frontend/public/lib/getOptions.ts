@@ -69,7 +69,6 @@ export async function getSectorOptions(locale) {
     if (resp?.data?.results.length === 0) return null;
     else {
       let sectorOptions = parseSectorOptions(resp.data.results);
-      sectorOptions.sort((a, b) => a.name.localeCompare(b.name));
       return sectorOptions;
     }
   } catch (err: any) {

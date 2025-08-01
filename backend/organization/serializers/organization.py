@@ -4,7 +4,6 @@ from climateconnect_api.serializers.role import RoleSerializer
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from django.conf import settings
 from django.utils.translation import get_language
-from hubs.serializers.hub import HubStubSerializer
 from rest_framework import serializers
 
 from organization.models import (
