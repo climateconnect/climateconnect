@@ -2,7 +2,10 @@ import logging
 import traceback
 from django.db.models import Prefetch, Q
 
-from organization.utility.sector import sanitize_sector_inputs
+from organization.utility.sector import (
+    create_context_for_hub_specific_sector,
+    sanitize_sector_inputs,
+)
 from organization.utility.cache import generate_project_ranking_cache_key
 from organization.utility.follow import (
     get_list_of_project_followers,
@@ -184,24 +187,18 @@ class ListProjectsView(ListAPIView):
         paginated_projects = self.paginate_queryset(ranked_projects)
 
         # explicitly prefetch the hub, as the serializer of the sectors will need it
-        hub = None
-        if "hub" in request.query_params:
-            hub = (
-                Hub.objects.filter(url_slug=request.query_params["hub"])
-                .prefetch_related("sectors")
-                .first()
-            )
-            # if the hub is not found, the query is invalid
-            # and we should return an empty response
-            if not hub:
-                return self.get_paginated_response([])
+
+        context = create_context_for_hub_specific_sector(request)
+        if context is None:
+            return self.get_paginated_response([])
 
         # the serialize
         serializer = self.get_serializer(
             paginated_projects,
             many=True,
-            context={"hub": hub},
+            context=context,
         )
+
         return self.get_paginated_response(serializer.data)
 
     def get_queryset(self):
@@ -721,20 +718,12 @@ class ProjectAPIView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        hub = (
-            Hub.objects.filter(url_slug=request.query_params.get("hub"))
-            .prefetch_related("sectors")
-            .first()
-            if "hub" in request.query_params
-            else None
-        )
+        context = create_context_for_hub_specific_sector(request)
 
         if "edit_view" in request.query_params:
-            serializer = EditProjectSerializer(
-                project, many=False, context={"hub": hub}
-            )
+            serializer = EditProjectSerializer(project, many=False, context=context)
         else:
-            serializer = ProjectSerializer(project, many=False, context={"hub": hub})
+            serializer = ProjectSerializer(project, many=False, context=context)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, url_slug, format=None):
@@ -1672,3 +1661,11 @@ class SimilarProjects(ListAPIView):
             rating__gte=49,
             is_active=True,
         )
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        _context = create_context_for_hub_specific_sector(self.request)
+        print(_context)
+        context.update({**_context})
+        print(context)
+        return context

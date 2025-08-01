@@ -68,7 +68,9 @@ def sanitize_sector_inputs(inputs: Any) -> Tuple[Any, Optional[Exception]]:
     return inputs, None
 
 
-def __substitute_sector(mapping):
+def __substitute_sector_in_mapping(
+    mapping: Union[ProjectSectorMapping, OrganizationSectorMapping],
+) -> Union[ProjectSectorMapping, OrganizationSectorMapping]:
     """
     Substitute the sector mapping with the related sector if it exists
     keep the order of the mapping.
@@ -105,32 +107,61 @@ def filter_and_substitue_sector_mapping_based_on_hub_or_defaults(
     filtered_mappings = []
 
     for mapping in sector_mappings:
-        mappingToAppend = None
+        # assigments
+        mapping_to_append = None
+        # current sector
+        sector = mapping.sector
+        related_sector = sector.relates_to_sector
+        substituted = __substitute_sector_in_mapping(mapping)
 
-        if valid_sectors and mapping.sector in valid_sectors:
-            # if the sector is valid, add it to the list
-            mappingToAppend = mapping
+        # always display a default sector
+        if sector.default_sector:
+            mapping_to_append = mapping
 
-        elif valid_sectors and mapping.sector.relates_to_sector in valid_sectors:
-            mappingToAppend = __substitute_sector(mapping)
+        # show hub specific sectors
+        elif valid_sectors and sector in valid_sectors:
+            mapping_to_append = mapping
 
-        elif not valid_sectors and mapping.sector.default_sector:
-            # add if the sector is default or relates to a default sector
-            mappingToAppend = mapping
+        # show related sectors, if they are default sectors
+        elif related_sector and related_sector.default_sector:
+            mapping_to_append = substituted
 
-        elif (
-            not valid_sectors
-            and mapping.sector.relates_to_sector
-            and mapping.sector.relates_to_sector.default_sector
+        # show related sectors, if they are specific sectors for this hub
+        elif related_sector and valid_sectors and related_sector in valid_sectors:
+            mapping_to_append = substituted
+
+        # append, while avoiding duplicates
+        if mapping_to_append and all(
+            m.sector != mapping_to_append.sector for m in filtered_mappings
         ):
-            # if the related one is default, substitute it
-            mappingToAppend = __substitute_sector(mapping)
+            filtered_mappings.append(mapping_to_append)
 
-        # avoid duplicates
+    # sector education -> parent: null
+    # +sector climate café  -> parent: education
+    # sector fashion -> parent: null -> no children
 
-        if mappingToAppend and all(
-            m.sector != mappingToAppend.sector for m in filtered_mappings
-        ):
-            filtered_mappings.append(mappingToAppend)
+    # project 1; sectors: climate café, fashion
+
+    # TODO: default sectors shhoud never be filtered out but always returned.
 
     return filtered_mappings
+
+
+def create_context_for_hub_specific_sector(
+    request: Any,
+) -> Optional[dict[str, Any]]:
+    """
+    Create a context for the hub specific sector.
+    """
+    if "hub" in request.query_params:
+        hub = (
+            Hub.objects.filter(url_slug=request.query_params["hub"])
+            .prefetch_related("sectors")
+            .first()
+        )
+        if not hub:
+            return None
+        return {
+            "hub": hub,
+        }
+    return {}

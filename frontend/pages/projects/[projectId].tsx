@@ -96,7 +96,7 @@ export async function getServerSideProps(ctx) {
     getCommentsByProject(projectUrl, auth_token, ctx.locale),
     auth_token ? getUsersInteractionWithProject(projectUrl, auth_token, ctx.locale) : false,
     getAllHubs(ctx.locale),
-    getSimilarProjects(projectUrl, ctx.locale),
+    getSimilarProjects(projectUrl, ctx.locale, hubUrl),
     hubUrl ? getHubSupporters(hubUrl, ctx.locale) : null,
     hubUrl ? getHubTheme(hubUrl) : null,
   ]);
@@ -408,11 +408,12 @@ async function getProjectMembersByIdIfExists(projectUrl, locale) {
   }
 }
 
-async function getSimilarProjects(projectUrl, locale) {
+async function getSimilarProjects(projectUrl, locale, hubUrl?: string | null) {
+  const query = hubUrl ? `?hub=${hubUrl}` : "";
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/projects/" + projectUrl + "/similar/",
+      url: "/api/projects/" + projectUrl + "/similar/" + query,
       locale: locale,
     });
     if (resp.data.results.length === 0) return null;
