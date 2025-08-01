@@ -129,8 +129,8 @@ export default function EditProjectRoot({
         if (!project[key]) {
           alert(
             texts.your_project_draft_is_missing_the_following_reqired_property +
-            " " +
-            draftReqiredProperties[key]
+              " " +
+              draftReqiredProperties[key]
           );
           return false;
         }
