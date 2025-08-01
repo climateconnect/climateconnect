@@ -94,7 +94,12 @@ export default function ProjectMetaData({ project, hovering, withDescription }: 
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const project_parent = project.project_parents![0];
-  const main_project_sector = project.sectors!.map((t) => t.name)[0];
+
+  const sectors_mappings = project.sectors || [];
+  const main_sector_mapping =
+    sectors_mappings.length > 0 ? sectors_mappings.sort((a, b) => a.order - b.order)[0] : null;
+  const main_project_sector = main_sector_mapping?.sector.name || "";
+
   if (withDescription) {
     return (
       <WithDescription
