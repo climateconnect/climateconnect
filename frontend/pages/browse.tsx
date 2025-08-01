@@ -5,9 +5,9 @@ import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import {
   getOrganizationTagsOptions,
-  getProjectTagsOptions,
   getProjectTypeOptions,
   getSkillsOptions,
+  getSectorOptions,
 } from "../public/lib/getOptions";
 import { getAllHubs } from "../public/lib/hubOperations";
 import { getLocationFilteredBy } from "../public/lib/locationOperations";
@@ -24,26 +24,26 @@ import { FilterProvider } from "../src/components/provider/FilterProvider";
 export async function getServerSideProps(ctx) {
   const { hideInfo } = NextCookies(ctx);
   const [
-    project_categories,
     organization_types,
     skills,
     hubs,
     location_filtered_by,
     projectTypes,
+    sectorOptions,
   ] = await Promise.all([
-    getProjectTagsOptions(null, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
     getAllHubs(ctx.locale),
     getLocationFilteredBy(ctx.query),
     getProjectTypeOptions(ctx.locale),
+    getSectorOptions(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
       filterChoices: {
-        project_categories: project_categories,
         organization_types: organization_types,
         skills: skills,
+        sectors: sectorOptions,
       },
       hideInfo: hideInfo === "true",
       hubs: hubs,
