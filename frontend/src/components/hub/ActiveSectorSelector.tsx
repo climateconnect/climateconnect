@@ -28,7 +28,6 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-// TODO: duplication with ActiveSectorsSelector.tsx
 export default function ActiveSectorSelector({
   selectedSectors,
   sectorsToSelectFrom,
