@@ -56,7 +56,7 @@ export type Project = {
   related_hubs?: any[];
   hubUrl?: string;
   thumbnail_image?: string;
-  sectors?: SectorMapping[];
+  sectors?: Sector[];
 };
 
 export type BrowseTab = "projects" | "organizations" | "members" | "events";
@@ -99,18 +99,6 @@ export type Supporter = {
   organization_url_slug: string;
 };
 
-export type SectorOptionType = {
-  icon?: string;
-  id: number;
-  name: string;
-  key: string;
-  original_name?: string;
-  thumbnail_image?: string;
-};
-export type SectorMapping = {
-  sector: Sector;
-  order: number;
-};
 export type Sector = {
   id: number;
   name: string;
