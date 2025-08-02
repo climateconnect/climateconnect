@@ -22,6 +22,8 @@ import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 import { Project, SectorOptionType } from "../../src/types";
 import theme from "../../src/themes/theme";
+import { getHubData } from "../../public/lib/getHubData";
+import isLocationHubLikeHub from "../../public/lib/isLocationHubLikeHub";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,6 +51,7 @@ export async function getServerSideProps(ctx) {
     userOrganizations,
     statusOptions,
     projectTypeOptions,
+    hubData,
     hubThemeData,
     sectorOptions,
   ] = await Promise.all([
@@ -58,6 +61,7 @@ export async function getServerSideProps(ctx) {
     getUserOrganizations(auth_token, ctx.locale),
     getStatusOptions(ctx.locale),
     getProjectTypeOptions(ctx.locale),
+    getHubData(hubUrl, ctx.locale),
     getHubTheme(hubUrl),
     getSectorOptions(ctx.locale),
   ]);
@@ -72,6 +76,7 @@ export async function getServerSideProps(ctx) {
       hubThemeData: hubThemeData,
       hubUrl: hubUrl,
       sectorOptions: sectorOptions,
+      isLocationHub: isLocationHubLikeHub(hubData?.hub_type, hubData?.parent_hub),
     }),
   };
 }
@@ -86,6 +91,7 @@ export default function EditProjectPage({
   hubThemeData,
   hubUrl,
   sectorOptions,
+  isLocationHub,
 }: {
   project: Project;
   members: any[];
@@ -96,6 +102,7 @@ export default function EditProjectPage({
   hubThemeData: any;
   hubUrl: string;
   sectorOptions: SectorOptionType[];
+  isLocationHub: boolean;
 }) {
   const classes = useStyles();
   const [curProject, setCurProject] = React.useState({
@@ -195,6 +202,7 @@ export default function EditProjectPage({
           customTheme ? customTheme.palette.header.background : theme.palette.background.default
         }
         hubUrl={hubUrl}
+        isLocationHub={isLocationHub}
       >
         <EditProjectRoot
           oldProject={project}

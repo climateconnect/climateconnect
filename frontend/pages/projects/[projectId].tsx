@@ -19,6 +19,11 @@ import ProjectSideBar from "../../src/components/project/ProjectSideBar";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import theme from "../../src/themes/theme";
+import { NOTIFICATION_TYPES } from "../../src/components/communication/notifications/Notification";
+import { getProjectTypeOptions } from "../../public/lib/getOptions";
+import BrowseContext from "../../src/components/context/BrowseContext";
+import isLocationHubLikeHub from "../../public/lib/isLocationHubLikeHub";
+import { getHubData } from "../../public/lib/getHubData";
 
 type StyleProps = {
   showSimilarProjects: boolean;
@@ -51,9 +56,6 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
     }),
   };
 });
-import { NOTIFICATION_TYPES } from "../../src/components/communication/notifications/Notification";
-import { getProjectTypeOptions } from "../../public/lib/getOptions";
-import BrowseContext from "../../src/components/context/BrowseContext";
 
 const parseComments = (comments) => {
   return comments
@@ -88,6 +90,7 @@ export async function getServerSideProps(ctx) {
     hubs,
     similarProjects,
     hubSupporters,
+    hubData,
     hubThemeData,
   ] = await Promise.all([
     getProjectByIdIfExists(projectUrl, auth_token, ctx.locale),
@@ -98,6 +101,7 @@ export async function getServerSideProps(ctx) {
     getAllHubs(ctx.locale),
     getSimilarProjects(projectUrl, ctx.locale),
     hubUrl ? getHubSupporters(hubUrl, ctx.locale) : null,
+    hubUrl ? getHubData(hubUrl, ctx.locale) : null,
     hubUrl ? getHubTheme(hubUrl) : null,
   ]);
   return {
@@ -114,6 +118,7 @@ export async function getServerSideProps(ctx) {
       hubSupporters: hubSupporters,
       hubUrl,
       hubThemeData: hubThemeData,
+      isLocationHub: isLocationHubLikeHub(hubData?.hub_type, hubData?.parent_hub),
     }),
   };
 }
@@ -131,6 +136,7 @@ export default function ProjectPage({
   hubSupporters,
   hubUrl,
   hubThemeData,
+  isLocationHub,
 }) {
   const token = new Cookies().get("auth_token");
   const [curComments, setCurComments] = useState(parseComments(comments));
@@ -258,6 +264,7 @@ export default function ProjectPage({
       }
       customTheme={customTheme}
       isHubPage={!!hubUrl}
+      isLocationHub={isLocationHub}
       hubUrl={hubUrl}
       headerBackground={
         customTheme ? customTheme.palette.header.background : theme.palette.background.default
