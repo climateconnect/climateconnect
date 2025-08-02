@@ -94,9 +94,7 @@ export default function ProjectMetaData({ project, hovering, withDescription }: 
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const project_parent = project.project_parents![0];
-
   const main_project_sector = project.sectors!.map((t) => t.name)[0];
-
   if (withDescription) {
     return (
       <WithDescription
