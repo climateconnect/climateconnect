@@ -190,6 +190,7 @@ class ListProjectsView(ListAPIView):
 
         context = create_context_for_hub_specific_sector(request)
         if context is None:
+            logger.warning("Failed to create hub-specific sector context for request")
             return self.get_paginated_response([])
 
         # the serialize
