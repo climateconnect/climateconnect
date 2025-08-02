@@ -77,6 +77,23 @@ class Sector(models.Model):
         upload_to=sector_image_path,
     )
 
+    default_sector = models.BooleanField(
+        help_text="If this sector is a default sector, it will be used if no specific sector is selected.",
+        verbose_name="Default sector",
+        default=True,
+        blank=False,
+        null=False,
+    )
+
+    # climate cafe -> sector: education
+    relates_to_sector = models.ForeignKey(
+        "Sector",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="hub_specific_sector",
+    )
+
     def clean(self):
         forbidden_characters = [",", "_", "&"]
         fields_to_check = [
@@ -169,6 +186,5 @@ class OrganizationSectorMapping(models.Model):
         ordering = ["id"]
         unique_together = ("sector", "organization")
 
-    #
     def __str__(self):
         return f"{self.sector.name}--{self.organization.name}"

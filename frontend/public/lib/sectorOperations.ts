@@ -1,10 +1,12 @@
 import { apiRequest } from "./apiOperations";
 
 export async function getAllSectors(locale: any, hub_url?: string) {
+  //TODO: duplicated code with getOptions.ts > getSectorOptions?
+  const query = hub_url ? `?hub=${hub_url}` : "";
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/sectors/",
+      url: "/api/sectors/" + query,
       locale: locale,
     });
 

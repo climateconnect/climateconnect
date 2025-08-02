@@ -40,7 +40,7 @@ export async function getServerSideProps(ctx) {
     getStatusOptions(auth_token, ctx.locale),
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
-    getSectorOptions(ctx.locale),
+    getSectorOptions(ctx.locale, hubUrl),
   ]);
   return {
     props: nullifyUndefinedValues({

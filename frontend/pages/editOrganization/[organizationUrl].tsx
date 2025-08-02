@@ -10,6 +10,7 @@ import UserContext from "../../src/components/context/UserContext";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import EditOrganizationRoot from "../../src/components/organization/EditOrganizationRoot";
 import { getOrganizationTagsOptions } from "./../../public/lib/getOptions";
+import { SectorOptionType } from "../../src/types";
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
@@ -18,12 +19,14 @@ export async function getServerSideProps(ctx) {
     const message = texts.log_in_to_edit_organization;
     return sendToLogin(ctx, message);
   }
+  const hubUrl = ctx.query.hub;
   const url = encodeURI(ctx.query.organizationUrl);
   const [organization, tagOptions, allSectors] = await Promise.all([
-    getOrganizationByUrlIfExists(url, auth_token, ctx.locale),
+    getOrganizationByUrlIfExists(url, auth_token, ctx.locale, hubUrl),
     getOrganizationTagsOptions(ctx.locale),
-    getAllSectors(ctx.locale),
+    getAllSectors(ctx.locale, hubUrl),
   ]);
+
   return {
     props: nullifyUndefinedValues({
       organization: organization,
@@ -34,7 +37,17 @@ export async function getServerSideProps(ctx) {
 }
 
 //This route should only be accessible to admins of the organization
-export default function EditOrganizationPage({ organization, tagOptions, allSectors }) {
+export default function EditOrganizationPage({
+  organization,
+  tagOptions,
+  allSectors,
+  hubUrl,
+}: {
+  organization: any;
+  tagOptions: any;
+  allSectors: SectorOptionType[];
+  hubUrl?: string;
+}) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
   const organization_info_metadata = getOrganizationInfoMetadata(locale, organization, true);
@@ -43,6 +56,26 @@ export default function EditOrganizationPage({ organization, tagOptions, allSect
   const [existingName, setExistingName] = useState("");
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
+
+  // add all sectors that are assigned to the organization to the possible sectors
+  // so that, when editing a project with e.g. specific sectors all sectors - even
+
+  // hub specific ones are available
+  if (organization && organization.sectors) {
+    for (const sector_mapping of organization.sectors) {
+      if (!sector_mapping || !sector_mapping.sector) {
+        continue;
+      }
+      const sector = sector_mapping.sector as SectorOptionType;
+      // match by sector.key
+      const exists = allSectors.find((s) => s.key === sector.key);
+      if (!exists) {
+        allSectors.push(sector);
+      }
+    }
+    // sort sectors by name
+    allSectors.sort((a, b) => (a.name < b.name ? -1 : 1));
+  }
 
   const handleSetLocationOptionsOpen = (newValue) => {
     setLocationOptionsOpen(newValue);
@@ -92,11 +125,15 @@ export default function EditOrganizationPage({ organization, tagOptions, allSect
   );
 }
 
-async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
+async function getOrganizationByUrlIfExists(organizationUrl, token, locale, hubUrl?: string) {
+  let query = "";
+  query += "/?edit_view=true";
+  query += hubUrl ? `&hub=${hubUrl}` : "";
+
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/organizations/" + organizationUrl + "/?edit_view=true",
+      url: "/api/organizations/" + organizationUrl + query,
       token: token,
       locale: locale,
     });
