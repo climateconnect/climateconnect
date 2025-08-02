@@ -152,7 +152,7 @@ def create_context_for_hub_specific_sector(
             .first()
         )
         if not hub:
-            return None
+            return {}
         return {
             "hub": hub,
         }
