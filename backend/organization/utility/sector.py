@@ -105,6 +105,7 @@ def filter_and_substitue_sector_mapping_based_on_hub_or_defaults(
     """
     valid_sectors = hub.sectors.all() if hub else None
     filtered_mappings = []
+    seen_sectors = set()
 
     for mapping in sector_mappings:
         # assigments
@@ -131,18 +132,9 @@ def filter_and_substitue_sector_mapping_based_on_hub_or_defaults(
             mapping_to_append = substituted
 
         # append, while avoiding duplicates
-        if mapping_to_append and all(
-            m.sector != mapping_to_append.sector for m in filtered_mappings
-        ):
+        if mapping_to_append and mapping_to_append.sector not in seen_sectors:
+            seen_sectors.add(mapping_to_append.sector)
             filtered_mappings.append(mapping_to_append)
-
-    # sector education -> parent: null
-    # +sector climate café  -> parent: education
-    # sector fashion -> parent: null -> no children
-
-    # project 1; sectors: climate café, fashion
-
-    # TODO: default sectors shhoud never be filtered out but always returned.
 
     return filtered_mappings
 
