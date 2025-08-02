@@ -18,7 +18,7 @@ import {
   getTranslationsWithoutRedundantKeys,
 } from "../../../public/lib/translationOperations";
 import getTexts from "../../../public/texts/texts";
-import { Project, Role, SectorOptionType } from "../../types";
+import { Project, Role, Sector } from "../../types";
 import UserContext from "../context/UserContext";
 import NavigationButtons from "../general/NavigationButtons";
 import TranslateTexts from "../general/TranslateTexts";
@@ -55,7 +55,7 @@ type Props = {
   initialTranslations: any;
   projectTypeOptions: any;
   hubUrl: string;
-  sectorOptions?: SectorOptionType[];
+  sectorOptions?: Sector[];
 };
 
 export default function EditProjectRoot({
@@ -129,8 +129,8 @@ export default function EditProjectRoot({
         if (!project[key]) {
           alert(
             texts.your_project_draft_is_missing_the_following_reqired_property +
-            " " +
-            draftReqiredProperties[key]
+              " " +
+              draftReqiredProperties[key]
           );
           return false;
         }
@@ -353,7 +353,7 @@ export default function EditProjectRoot({
             locationOptionsOpen={locationOptionsOpen}
             handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
             locationInputRef={locationInputRef}
-            sectorOptions={sectorOptions}
+            sectorOptions={sectorOptions ?? []}
           />
           <EditProjectContent
             project={project}
