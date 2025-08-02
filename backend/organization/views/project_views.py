@@ -1664,7 +1664,5 @@ class SimilarProjects(ListAPIView):
     def get_serializer_context(self):
         context = super().get_serializer_context()
         _context = create_context_for_hub_specific_sector(self.request)
-        print(_context)
         context.update({**_context})
-        print(context)
         return context
