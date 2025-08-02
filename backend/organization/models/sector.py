@@ -214,6 +214,5 @@ class OrganizationSectorMapping(models.Model):
         ordering = ["id"]
         unique_together = ("sector", "organization")
 
-    #
     def __str__(self):
         return f"{self.sector.name}--{self.organization.name}"
