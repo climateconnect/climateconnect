@@ -26,6 +26,7 @@ export function parseOptions(options, parentPropertyName) {
 }
 
 export function parseSectorOptions(options) {
+  // TODO: should we move this to lib/selectOptionsOperations.ts?
   return options.map((o) => {
     const { image, ...rest } = o;
     return {
