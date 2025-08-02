@@ -28,6 +28,8 @@ import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import ControlPointSharpIcon from "@mui/icons-material/ControlPointSharp";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
+import isLocationHubLikeHub from "../../public/lib/isLocationHubLikeHub";
+import { getHubData } from "../../public/lib/getHubData";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -86,6 +88,7 @@ export async function getServerSideProps(ctx) {
     organizationTypes,
     rolesOptions,
     following,
+    hubData,
     hubThemeData,
   ] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
@@ -94,6 +97,7 @@ export async function getServerSideProps(ctx) {
     getOrganizationTypes(),
     getRolesOptions(auth_token, ctx.locale),
     getIsUserFollowing(organizationUrl, auth_token, ctx.locale),
+    getHubData(hubUrl, ctx.locale),
     getHubTheme(hubUrl),
   ]);
   return {
@@ -106,6 +110,7 @@ export async function getServerSideProps(ctx) {
       following: following,
       hubThemeData: hubThemeData,
       hubUrl: hubUrl,
+      isLocationHub: isLocationHubLikeHub(hubData?.hub_type, hubData?.parent_hub),
     }),
   };
 }
@@ -118,6 +123,7 @@ export default function OrganizationPage({
   following,
   hubThemeData,
   hubUrl,
+  isLocationHub,
 }) {
   const { user, locale } = useContext(UserContext);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization, false);
@@ -167,6 +173,7 @@ export default function OrganizationPage({
         customTheme ? customTheme?.palette?.header.background : theme.palette.background.default
       }
       hubUrl={hubUrl}
+      isLocationHub={isLocationHub}
     >
       {organization ? (
         <OrganizationLayout
