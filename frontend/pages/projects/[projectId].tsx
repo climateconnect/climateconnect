@@ -19,6 +19,10 @@ import ProjectSideBar from "../../src/components/project/ProjectSideBar";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import theme from "../../src/themes/theme";
+import { NOTIFICATION_TYPES } from "../../src/components/communication/notifications/Notification";
+import { getProjectTypeOptions } from "../../public/lib/getOptions";
+import BrowseContext from "../../src/components/context/BrowseContext";
+import { parseData } from "../../public/lib/parsingOperations";
 
 type StyleProps = {
   showSimilarProjects: boolean;
@@ -51,9 +55,6 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
     }),
   };
 });
-import { NOTIFICATION_TYPES } from "../../src/components/communication/notifications/Notification";
-import { getProjectTypeOptions } from "../../public/lib/getOptions";
-import BrowseContext from "../../src/components/context/BrowseContext";
 
 const parseComments = (comments) => {
   return comments
@@ -415,7 +416,7 @@ async function getSimilarProjects(projectUrl, locale) {
     });
     if (resp.data.results.length === 0) return null;
     else {
-      return resp.data.results;
+      return parseData({ type: "projects", data: resp.data.results });
     }
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
