@@ -210,12 +210,19 @@ class ListMemberProfilesView(ListAPIView):
             .order_by("is_image_null", "-id")
         )
         if "hub" in self.request.query_params:
-            hubs = Hub.objects.filter(url_slug=self.request.query_params["hub"])
-            if hubs.exists():
-                hub = hubs[0]
-                user_filter = Q(related_hubs=hub)
-                if hub.location.exists():
-                    location = hub.location.first()
+            hub = Hub.objects.filter(url_slug=self.request.query_params["hub"]).first()
+
+            if not hub:
+                return user_profiles.none()
+
+            hubs = [hub]
+            if hub.parent_hub:
+                hubs.append(hub.parent_hub)
+
+            for current_hub in hubs:
+                user_filter = Q(related_hubs=current_hub)
+                if current_hub.location.exists():
+                    location = current_hub.location.first()
                     location_multipolygon = location.multi_polygon
 
                     if location_multipolygon:
@@ -230,7 +237,7 @@ class ListMemberProfilesView(ListAPIView):
                 user_profiles = user_profiles.filter(user_filter).distinct()
 
                 # Optionally annotate distance
-                if hub.location.exists() and location_multipolygon:
+                if current_hub.location.exists() and location_multipolygon:
                     user_profiles = user_profiles.annotate(
                         distance=Distance(
                             "location__centre_point", location_multipolygon
