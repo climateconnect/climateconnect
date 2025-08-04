@@ -42,7 +42,8 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-type Props = { className?; profile?; avatarClassName?; size?; nolink?; onDelete? };
+type Props = { className?; profile?; avatarClassName?; size?; nolink?; onDelete?; hubUrl?: string };
+
 export default function MiniProfilePreview({
   className,
   profile,
@@ -50,15 +51,18 @@ export default function MiniProfilePreview({
   size,
   nolink,
   onDelete,
+  hubUrl,
 }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
+  const queryString = hubUrl ? "?hub=" + hubUrl : "";
+
   if (!nolink)
     return (
       <>
         <Link
           color="inherit"
-          href={getLocalePrefix(locale) + "/profiles/" + profile.url_slug}
+          href={getLocalePrefix(locale) + `/profiles/${profile.url_slug}${queryString}`}
           className={`${"" /*TODO(undefined) classes.avatarWithInfo*/} ${className}`}
           underline="hover"
         >
