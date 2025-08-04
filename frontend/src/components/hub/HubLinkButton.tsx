@@ -87,7 +87,6 @@ export default function HubLinkButton({ hub }: { hub: LinkedHub }) {
   const backgroundColor = hub.backgroundColor || "lightblue";
 
   const classes = useStyles({ backgroundColor, iconUrl: hub.icon, isNarrowScreen });
-  console.log("hubUrl", hub.hubUrl);
 
   return (
     <Link href={hub.hubUrl}>
