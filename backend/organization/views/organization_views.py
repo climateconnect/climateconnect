@@ -153,42 +153,25 @@ class ListOrganizationsAPIView(ListAPIView):
 
                 elif hub.hub_type == Hub.LOCATION_HUB_TYPE:
                     location = hub.location.first()
-                    organizations = organizations.filter(
-                        Q(location__country=location.country)
-                        & (
-                            Q(
-                                location__multi_polygon__coveredby=(
-                                    location.multi_polygon
-                                )
-                            )
-                            | Q(
-                                location__centre_point__coveredby=(
-                                    location.multi_polygon
-                                )
-                            )
-                        )
-                    ).annotate(
-                        distance=Distance(
+
+                    location_filter = Q()
+                    location_annotation = {}
+                    if location.country:
+                        location_filter |= Q(location__country=location.country)
+                    if location.multi_polygon:
+                        location_filter |= Q(
+                            location__multi_polygon__coveredby=location.multi_polygon
+                        ) | Q(location__centre_point__coveredby=location.multi_polygon)
+                        location_annotation["distance"] = Distance(
                             "location__centre_point", location.multi_polygon
                         )
+
+                    organizations = organizations.filter(location_filter).annotate(
+                        **location_annotation
                     )
+
                 elif hub.hub_type == Hub.CUSTOM_HUB_TYPE:
                     organizations = organizations.filter(related_hubs=hub)
-
-        if "sectors" in self.request.query_params:
-            _sector_keys = self.request.query_params.get("sectors").split(",")
-            sector_keys, err = sanitize_sector_inputs(_sector_keys)
-            if err:
-                logger.error(
-                    "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
-                        err, _sector_keys
-                    )
-                )
-                # TODO: should I "crash" with 400, or what should I ommit the sectors
-            else:
-                organizations = organizations.filter(
-                    organization_sector_mapping__sector__key__in=sector_keys
-                ).distinct()
 
         # TODO: rename oragnizationTag to OrganizationType
         if "organization_type" in self.request.query_params:
