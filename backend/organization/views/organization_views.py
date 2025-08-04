@@ -140,19 +140,26 @@ class ListOrganizationsAPIView(ListAPIView):
         )
 
         if "hub" in self.request.query_params:
-            hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
-            if hub.exists():
-                hub = hub[0]
-                if hub.hub_type == Hub.SECTOR_HUB_TYPE:
-                    sectors = hub.sectors.all()
+            hub = Hub.objects.filter(url_slug=self.request.query_params["hub"]).first()
+
+            if not hub:
+                return organizations.none()
+
+            hubs = [hub]
+            if hub.parent_hub:
+                hubs.append(hub.parent_hub)
+
+            for current_hub in hubs:
+                if current_hub.hub_type == Hub.SECTOR_HUB_TYPE:
+                    sectors = current_hub.sectors.all()
                     sector_ids = [x.id for x in sectors]
 
                     organizations = organizations.filter(
                         organization_sector_mapping__sector_id__in=sector_ids
                     ).distinct()
 
-                elif hub.hub_type == Hub.LOCATION_HUB_TYPE:
-                    location = hub.location.first()
+                elif current_hub.hub_type == Hub.LOCATION_HUB_TYPE:
+                    location = current_hub.location.first()
                     organizations = organizations.filter(
                         Q(location__country=location.country)
                         & (
@@ -172,8 +179,8 @@ class ListOrganizationsAPIView(ListAPIView):
                             "location__centre_point", location.multi_polygon
                         )
                     )
-                elif hub.hub_type == Hub.CUSTOM_HUB_TYPE:
-                    organizations = organizations.filter(related_hubs=hub)
+                elif current_hub.hub_type == Hub.CUSTOM_HUB_TYPE:
+                    organizations = organizations.filter(related_hubs=current_hub)
 
         if "sectors" in self.request.query_params:
             _sector_keys = self.request.query_params.get("sectors").split(",")
