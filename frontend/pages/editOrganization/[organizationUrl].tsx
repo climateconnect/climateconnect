@@ -10,9 +10,7 @@ import UserContext from "../../src/components/context/UserContext";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import EditOrganizationRoot from "../../src/components/organization/EditOrganizationRoot";
 import { getOrganizationTagsOptions } from "./../../public/lib/getOptions";
-import { getHubData } from "../../public/lib/getHubData";
 import getHubTheme from "../../src/themes/fetchHubTheme";
-import isLocationHubLikeHub from "../../public/lib/isLocationHubLikeHub";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 
 export async function getServerSideProps(ctx) {
@@ -25,11 +23,10 @@ export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hub;
 
   const url = encodeURI(ctx.query.organizationUrl);
-  const [organization, tagOptions, allSectors, hubData, hubThemeData] = await Promise.all([
+  const [organization, tagOptions, allSectors, hubThemeData] = await Promise.all([
     getOrganizationByUrlIfExists(url, auth_token, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getAllSectors(ctx.locale),
-    getHubData(hubUrl, ctx.locale),
     getHubTheme(hubUrl),
   ]);
   return {
@@ -39,7 +36,6 @@ export async function getServerSideProps(ctx) {
       allSectors: allSectors,
       hubUrl: hubUrl,
       hubThemeData: hubThemeData,
-      isLocationHub: isLocationHubLikeHub(hubData?.hub_type, hubData?.parent_hub),
     }),
   };
 }
@@ -51,7 +47,6 @@ export default function EditOrganizationPage({
   allSectors,
   hubUrl,
   hubThemeData,
-  isLocationHub,
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
@@ -95,7 +90,6 @@ export default function EditOrganizationPage({
       title={organization ? organization.name : texts.not_found_error}
       hubUrl={hubUrl}
       customTheme={customTheme}
-      isLocationHub={isLocationHub}
     >
       <EditOrganizationRoot
         allSectors={allSectors}
