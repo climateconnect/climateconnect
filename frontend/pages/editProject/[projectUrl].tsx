@@ -208,6 +208,7 @@ export default function EditProjectPage({
           handleSetErrorMessage={handleSetErrorMessage}
           initialTranslations={project.translations}
           projectTypeOptions={projectTypeOptions}
+          hubUrl={hubUrl}
         />
       </WideLayout>
     );

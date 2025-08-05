@@ -129,8 +129,8 @@ export default function EditProjectRoot({
         if (!project[key]) {
           alert(
             texts.your_project_draft_is_missing_the_following_reqired_property +
-            " " +
-            draftReqiredProperties[key]
+              " " +
+              draftReqiredProperties[key]
           );
           return false;
         }
@@ -233,13 +233,9 @@ export default function EditProjectRoot({
             ? texts.your_project_has_been_published_great_work
             : texts.you_have_successfully_edited_your_project,
         };
-        const matchedItem = response?.data?.hubUrl.find(
-          (item) => item.url_slug === project?.hubUrl
-        );
-        if (matchedItem) {
-          query.hub = matchedItem.url_slug;
+        if (hubUrl) {
+          query.hub = hubUrl;
         }
-
         Router.push({
           pathname: "/projects/" + response.data.url_slug,
           query,
