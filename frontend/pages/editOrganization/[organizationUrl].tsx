@@ -66,7 +66,6 @@ export default function EditOrganizationPage({
 
   // add all sectors that are assigned to the organization to the possible sectors
   // so that, when editing a project with e.g. specific sectors all sectors - even
-
   // hub specific ones are available
   if (organization && organization.sectors) {
     for (const sector_mapping of organization.sectors) {
