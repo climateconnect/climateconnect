@@ -1,5 +1,5 @@
 from organization.utility.sector import (
-    filter_and_substitue_sector_mapping_based_on_hub_or_defaults,
+    get_sectors_based_on_hub,
 )
 from organization.serializers.sector import (
     ProjectSectorMappingSerializer,
@@ -119,7 +119,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     def get_sectors(self, obj):
         hub = self.context.get("hub")
 
-        sector_mappings = filter_and_substitue_sector_mapping_based_on_hub_or_defaults(
+        sector_mappings = get_sectors_based_on_hub(
             obj.project_sector_mapping.all(), hub
         )
 
@@ -352,7 +352,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     def get_sectors(self, obj):
         hub = self.context.get("hub")
 
-        sector_mappings = filter_and_substitue_sector_mapping_based_on_hub_or_defaults(
+        sector_mappings = get_sectors_based_on_hub(
             obj.project_sector_mapping.all(), hub
         )
 

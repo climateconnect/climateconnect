@@ -94,7 +94,7 @@ def __substitute_sector_in_mapping(
     raise ValueError("Invalid mapping type.")
 
 
-def filter_and_substitue_sector_mapping_based_on_hub_or_defaults(
+def get_sectors_based_on_hub(
     sector_mappings: List[Union[ProjectSectorMapping, OrganizationSectorMapping]],
     hub: Hub | None,
 ) -> List[Union[ProjectSectorMapping, OrganizationSectorMapping]]:

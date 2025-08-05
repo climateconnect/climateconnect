@@ -1,5 +1,5 @@
 from organization.utility.sector import (
-    filter_and_substitue_sector_mapping_based_on_hub_or_defaults,
+    get_sectors_based_on_hub,
 )
 from climateconnect_api.models.role import Role
 from climateconnect_api.models.user import UserProfile
@@ -91,7 +91,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
     def get_sectors(self, obj):
         hub = self.context.get("hub")
 
-        sector_mappings = filter_and_substitue_sector_mapping_based_on_hub_or_defaults(
+        sector_mappings = get_sectors_based_on_hub(
             obj.organization_sector_mapping.all(), hub
         )
 
@@ -236,7 +236,7 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
     def get_sectors(self, obj):
         hub = self.context.get("hub")
 
-        sector_mappings = filter_and_substitue_sector_mapping_based_on_hub_or_defaults(
+        sector_mappings = get_sectors_based_on_hub(
             obj.organization_sector_mapping.all(), hub
         )
 
