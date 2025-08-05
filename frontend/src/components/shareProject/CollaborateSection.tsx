@@ -1,13 +1,4 @@
-import {
-  Button,
-  Chip,
-  IconButton,
-  List,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-  Theme,
-} from "@mui/material";
+import { Button, Chip, IconButton, List, Tooltip, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
