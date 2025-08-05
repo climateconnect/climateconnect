@@ -19,6 +19,9 @@ import ProjectSideBar from "../../src/components/project/ProjectSideBar";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import theme from "../../src/themes/theme";
+import { NOTIFICATION_TYPES } from "../../src/components/communication/notifications/Notification";
+import { getProjectTypeOptions } from "../../public/lib/getOptions";
+import BrowseContext from "../../src/components/context/BrowseContext";
 
 type StyleProps = {
   showSimilarProjects: boolean;
@@ -51,9 +54,6 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
     }),
   };
 });
-import { NOTIFICATION_TYPES } from "../../src/components/communication/notifications/Notification";
-import { getProjectTypeOptions } from "../../public/lib/getOptions";
-import BrowseContext from "../../src/components/context/BrowseContext";
 
 const parseComments = (comments) => {
   return comments

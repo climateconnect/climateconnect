@@ -10,6 +10,8 @@ import UserContext from "../../src/components/context/UserContext";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import EditOrganizationRoot from "../../src/components/organization/EditOrganizationRoot";
 import { getOrganizationTagsOptions } from "./../../public/lib/getOptions";
+import getHubTheme from "../../src/themes/fetchHubTheme";
+import { transformThemeData } from "../../src/themes/transformThemeData";
 import { SectorOptionType } from "../../src/types";
 
 export async function getServerSideProps(ctx) {
@@ -21,10 +23,11 @@ export async function getServerSideProps(ctx) {
   }
   const hubUrl = ctx.query.hub;
   const url = encodeURI(ctx.query.organizationUrl);
-  const [organization, tagOptions, allSectors] = await Promise.all([
+  const [organization, tagOptions, allSectors, hubThemeData] = await Promise.all([
     getOrganizationByUrlIfExists(url, auth_token, ctx.locale, hubUrl),
     getOrganizationTagsOptions(ctx.locale),
-    getAllSectors(ctx.locale, hubUrl),
+    getAllSectors(ctx.locale),
+    getHubTheme(hubUrl),
   ]);
 
   return {
@@ -32,6 +35,8 @@ export async function getServerSideProps(ctx) {
       organization: organization,
       tagOptions: tagOptions,
       allSectors: allSectors,
+      hubUrl: hubUrl,
+      hubThemeData: hubThemeData,
     }),
   };
 }
@@ -42,11 +47,13 @@ export default function EditOrganizationPage({
   tagOptions,
   allSectors,
   hubUrl,
+  hubThemeData,
 }: {
   organization: any;
   tagOptions: any;
   allSectors: SectorOptionType[];
   hubUrl?: string;
+  hubThemeData?: any;
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
@@ -103,9 +110,14 @@ export default function EditOrganizationPage({
   const handleSetExistingName = (name) => {
     setExistingName(name);
   };
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
 
   return (
-    <WideLayout title={organization ? organization.name : texts.not_found_error}>
+    <WideLayout
+      title={organization ? organization.name : texts.not_found_error}
+      hubUrl={hubUrl}
+      customTheme={customTheme}
+    >
       <EditOrganizationRoot
         allSectors={allSectors}
         errorMessage={errorMessage}
@@ -120,6 +132,7 @@ export default function EditOrganizationPage({
         locationInputRef={locationInputRef}
         organization={organization}
         tagOptions={tagOptions}
+        hubUrl={hubUrl}
       />
     </WideLayout>
   );
