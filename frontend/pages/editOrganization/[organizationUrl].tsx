@@ -105,6 +105,7 @@ export default function EditOrganizationPage({
         locationInputRef={locationInputRef}
         organization={organization}
         tagOptions={tagOptions}
+        hubUrl={hubUrl}
       />
     </WideLayout>
   );
