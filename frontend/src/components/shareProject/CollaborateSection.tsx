@@ -1,4 +1,13 @@
-import { Button, Chip, IconButton, List, Tooltip, Typography } from "@mui/material";
+import {
+  Button,
+  Chip,
+  IconButton,
+  List,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+  Theme,
+} from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
@@ -12,18 +21,22 @@ const useStyles = makeStyles((theme) => {
       display: "flex",
       border: "1px solid black",
       height: theme.spacing(5),
-      minWidth: 220,
+      [theme.breakpoints.up("lg")]: {
+        minWidth: 220,
+      },
       maxWidth: "100%",
       marginRight: theme.spacing(1),
       background: "none",
       borderRadius: 0,
       fontSize: 16,
+      marginBottom: theme.spacing(1),
     },
     flexContainer: {
       display: "flex",
       flexDirection: "row",
       padding: 0,
       marginBottom: theme.spacing(3),
+      flexWrap: "wrap",
     },
   };
 });
@@ -47,6 +60,7 @@ export default function CollaborateSection({
   const [selectedItems, setSelectedItems] = React.useState(
     projectData.skills ? [...projectData.skills] : []
   );
+
   const handleSkillDelete = (skill) => {
     handleSetProjectData({
       skills: projectData.skills
