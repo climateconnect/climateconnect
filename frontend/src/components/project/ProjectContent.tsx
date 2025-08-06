@@ -228,6 +228,7 @@ export default function ProjectContent({
                     className={classes.creator}
                     profile={project.creator}
                     size="small"
+                    hubUrl={hubUrl}
                   />
                 ) : (
                   <MiniOrganizationPreview
