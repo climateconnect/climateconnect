@@ -86,7 +86,7 @@ export default function BasicInfo({
   const StepIndicator = () => (
     <Typography component="div" className={classes.stepIndicator}>
       {/* TODO: use texts */}
-      {texts.step_1_of_2_sign_up}
+      {texts.step_1_of_3_sign_up}
     </Typography>
   );
 

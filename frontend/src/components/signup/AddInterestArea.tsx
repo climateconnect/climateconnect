@@ -7,6 +7,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import Form from "./../general/Form";
 import { Box, Card, CardContent, IconButton, Typography } from "@mui/material";
+import ActiveSectorsSelector from "../hub/ActiveSectorsSelector";
 
 const useStyles = makeStyles((theme) => ({
   contrastBackground: {
@@ -105,9 +106,10 @@ export default function AddInfo({
   ];
 
   const messages = {
-    submitMessage: texts.next_step,
+    submitMessage: texts.submit,
     headerMessage: "",
   };
+
   const formAction = {
     href: getLocalePrefix(locale) + "/addinfo",
     method: "GET",
@@ -151,6 +153,17 @@ export default function AddInfo({
           onGoBack={handleGoBack}
           autocomplete="off"
         />
+        {/* <ActiveSectorsSelector
+          //TODO(unused) info={i}
+          selectedSectors={editedAccount.info.sectors}
+          sectorsToSelectFrom={allSectors.filter(
+            (s) =>
+              editedAccount?.info?.sectors.filter((addedSectors) => addedSectors.key === s.key)
+                .length === 0
+          )}
+          onSelectNewSector={onSelectNewSector}
+          onClickRemoveSector={onClickRemoveSector}
+        /> */}
       </CardContent>
     </Card>
   );

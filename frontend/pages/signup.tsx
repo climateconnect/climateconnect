@@ -22,6 +22,7 @@ import { Container, Theme, useMediaQuery } from "@mui/material";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
 import CustomAuthImage from "../src/components/hub/CustomAuthImage";
+import AddInterestArea from "./../src/components/signup/AddInterestArea";
 
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hub;
@@ -54,7 +55,7 @@ export default function Signup({ hubUrl, hubThemeData }) {
 
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
-  const steps = ["basicinfo", "personalinfo"];
+  const steps = ["basicinfo", "personalinfo", "interestAreaInfo"];
   const [curStep, setCurStep] = useState(steps[0]);
   const [errorMessage, setErrorMessage] = useState("");
   const locationInputRef = useRef(null);
@@ -106,6 +107,24 @@ export default function Signup({ hubUrl, hubThemeData }) {
       location: location,
       sendNewsletter: values.sendNewsletter,
     });
+    setCurStep(steps[2]);
+  };
+
+  const handleAddInterestAreaSubmit = (event, values) => {
+    event.preventDefault();
+    const params = getParams(window?.location?.href);
+    if (!isLocationValid(values.location)) {
+      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage, texts);
+      return;
+    }
+    const location = getLocationValue(values, "location");
+    setUserInfo({
+      ...userInfo,
+      first_name: values.first_name,
+      last_name: values.last_name,
+      location: location,
+      sendNewsletter: values.sendNewsletter,
+    });
 
     const payload = {
       email: userInfo.email.trim().toLowerCase(),
@@ -116,6 +135,7 @@ export default function Signup({ hubUrl, hubThemeData }) {
       send_newsletter: values.sendNewsletter,
       source_language: locale,
       hub: hubUrl,
+      // It is for test so I should remove it later
       sectors: ["education", "mobility", "food"],
     };
 
@@ -166,6 +186,9 @@ export default function Signup({ hubUrl, hubThemeData }) {
     });
     setCurStep(steps[0]);
   };
+  const handleGoBackFromAddInterestArea = (event, values) => {
+    setCurStep(steps[1]);
+  };
 
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
   const customThemeSignUp = hubThemeData
@@ -200,16 +223,24 @@ export default function Signup({ hubUrl, hubThemeData }) {
                   texts={texts}
                   hub={hubUrl}
                 />
+              ) : curStep === "personalinfo" ? (
+                <AddInfo
+                  values={userInfo}
+                  handleSubmit={handleAddInfoSubmit}
+                  errorMessage={errorMessages[steps[1]]}
+                  handleGoBack={handleGoBackFromAddInfo}
+                  locationInputRef={locationInputRef}
+                  locationOptionsOpen={locationOptionsOpen}
+                  handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+                  isSmallScreen={isSmallScreen}
+                />
               ) : (
-                curStep === "personalinfo" && (
-                  <AddInfo
+                curStep === "interestAreaInfo" && (
+                  <AddInterestArea
                     values={userInfo}
-                    handleSubmit={handleAddInfoSubmit}
-                    errorMessage={errorMessages[steps[1]]}
-                    handleGoBack={handleGoBackFromAddInfo}
+                    handleSubmit={handleAddInterestAreaSubmit}
+                    handleGoBack={handleGoBackFromAddInterestArea}
                     locationInputRef={locationInputRef}
-                    locationOptionsOpen={locationOptionsOpen}
-                    handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
                     isSmallScreen={isSmallScreen}
                   />
                 )
