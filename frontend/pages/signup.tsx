@@ -116,6 +116,7 @@ export default function Signup({ hubUrl, hubThemeData }) {
       send_newsletter: values.sendNewsletter,
       source_language: locale,
       hub: hubUrl,
+      sectors: ["education", "mobility", "food"],
     };
 
     const headers = {

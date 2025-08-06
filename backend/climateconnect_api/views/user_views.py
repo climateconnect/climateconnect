@@ -49,6 +49,9 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from organization.models import Sector
+from organization.utility.sector import sanitize_sector_inputs
+from organization.models import UserProfileSectorMapping
 
 logger = logging.getLogger(__name__)
 
@@ -113,6 +116,7 @@ class SignUpView(APIView):
             "location",
             "send_newsletter",
             "source_language",
+            "sectors",
         ]
         for param in required_params:
             if param not in request.data:
@@ -169,6 +173,43 @@ class SignUpView(APIView):
             message = "You're almost done! We have sent an email with a confirmation link to {}. Finish creating your account by clicking the link.".format(
                 user.email
             )  # NOQA
+
+        if "sectors" in request.data:
+            _sector_keys = request.data["sectors"]
+            sector_keys, err = sanitize_sector_inputs(_sector_keys)
+
+            if err:
+                # TODO: should I "crash" with 400, or what should I ommit the sectors
+                logger.error(
+                    "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                        err, _sector_keys
+                    )
+                )
+                sector_keys = []
+
+            sectors = []
+            for sector_key in sector_keys:
+                try:
+                    sector = Sector.objects.get(key=sector_key)
+                    sectors.append(sector)
+                except Sector.DoesNotExist:
+                    logger.error(
+                        "During signup {}: Passed sector {} does not exists".format(
+                            user_profile.url_slug,
+                            sector_key,
+                        )
+                    )
+            UserProfileSectorMapping.objects.bulk_create(
+                [
+                    UserProfileSectorMapping(
+                        sector=sector,
+                        userProfile=user_profile,
+                        order=len(sectors) - i,
+                    )
+                    for i, sector in enumerate(sectors)
+                ]
+            )
+
         user_profile.save()
 
         return Response({"success": message}, status=status.HTTP_201_CREATED)
