@@ -87,9 +87,14 @@ export default function HubLinkButton({ hub }: { hub: LinkedHub }) {
   const backgroundColor = hub.backgroundColor || "lightblue";
 
   const classes = useStyles({ backgroundColor, iconUrl: hub.icon, isNarrowScreen });
-
+  const getLinkUrl = () => {
+    const baseUrl = hub.hubUrl;
+    const hash = window.location.hash;
+    return `${baseUrl}${hash}`;
+  }
+  const linkUrl = getLinkUrl();
   return (
-    <Link href={hub.hubUrl}>
+    <Link href={linkUrl}>
       <div className={`btn btn-primary ${classes.linkedHubsContainer}`}>
         <div className={classes.iconContainer}>
           <img className={classes.icon} src={hub.icon} />
