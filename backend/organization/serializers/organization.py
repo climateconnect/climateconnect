@@ -190,6 +190,13 @@ class EditOrganizationSerializer(OrganizationSerializer):
     def get_name(self, obj):
         return get_organization_name(obj, get_language())
 
+    # Override the get_sectors method to use the hub-specific sectors
+    def get_sectors(self, obj):
+        serializer = OrganizationSectorMappingSerializer(
+            obj.organization_sector_mapping.all(), many=True
+        )
+        return serializer.data
+
     class Meta(OrganizationSerializer.Meta):
         fields = OrganizationSerializer.Meta.fields + ("location", "translations")
 
