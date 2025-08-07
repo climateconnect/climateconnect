@@ -211,6 +211,7 @@ class Hub(models.Model):
         default=100,
     )
 
+    # TODO: remove this field, project tags are obsolete
     filter_parent_tags = models.ManyToManyField(
         ProjectTags,
         related_name="hub_parent_tags",

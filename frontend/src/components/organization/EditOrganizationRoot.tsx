@@ -48,6 +48,7 @@ export default function EditOrganizationRoot({
   locationInputRef,
   organization,
   tagOptions,
+  hubUrl,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
@@ -136,6 +137,7 @@ export default function EditOrganizationRoot({
             pathname: "/organizations/" + organization.url_slug,
             query: {
               message: texts.successfully_edited_organization,
+              hub: hubUrl
             },
           });
         })

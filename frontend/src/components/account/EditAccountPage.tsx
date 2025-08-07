@@ -315,7 +315,7 @@ export default function EditAccountPage({
       <div key={key} className={classes.infoElement}>
         <div className={classes.subtitle}>{infoEl.name}:</div>
         <div className={classes.chipArray}>
-          {infoEl.value.map((entry) => (
+          {selectedItems.map((entry) => (
             <Chip
               size="medium"
               color="secondary"
