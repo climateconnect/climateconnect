@@ -6,13 +6,13 @@ import UserContext from "../context/UserContext";
 import SectorsPreview from "./SectorsPreview";
 
 type selectedSector = {
-  hub_type: string;
+  hub_type?: string;
   icon?: string;
   landing_page_component?: string;
   name: string;
   quick_info?: string;
   thumbnail_image?: string;
-  url_slug: string;
+  url_slug?: string;
 };
 
 type ActiveSectorsSelectorProps = {

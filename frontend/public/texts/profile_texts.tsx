@@ -317,6 +317,12 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       de:
         "Füge deinen Namen und deinen Standort hinzu. So können dich andere finden und wissen, woher du kommst.",
     },
+    signup_step_3_headline: {
+      en:
+        "Let the climate community know what you are already doing or which fields interest you the most. By doing this you can contribute to Projects more easily. Choose up to 3 fields.",
+      de:
+        "Teilen Sie der Klimagemeinschaft mit, was Sie bereits tun oder welche Bereiche Sie am meisten interessieren. Auf diese Weise können Sie leichter zu Projekten beitragen. Wählen Sie bis zu 3 Bereiche aus.",
+    },
     repeat_password: {
       en: "Repeat Password",
       de: "Passwort wiederholen",
@@ -341,6 +347,10 @@ export default function getProfileTexts({ profile, hubName, locale }) {
     user_name_is: {
       en: `${profile?.first_name} is`,
       de: `${profile?.first_name} ist`,
+    },
+    area_of_interest: {
+      en: "Your areas of interest",
+      de: "Deine Interessensgebiete",
     },
   };
 }

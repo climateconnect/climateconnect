@@ -23,23 +23,26 @@ import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
 import CustomAuthImage from "../src/components/hub/CustomAuthImage";
 import AddInterestArea from "./../src/components/signup/AddInterestArea";
+import { getSectorOptions } from "../public/lib/getOptions";
 
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hub;
 
-  const hubThemeData = await getHubTheme(hubUrl);
-
+  const [hubThemeData, sectorOptions] = await Promise.all([
+    getHubTheme(hubUrl),
+    getSectorOptions(ctx.locale),
+  ]);
   return {
     props: {
       hubUrl: hubUrl || null, // undefined is not allowed in JSON, so we use null
       hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
+      sectorOptions: sectorOptions || null,
     },
   };
 }
 
-export default function Signup({ hubUrl, hubThemeData }) {
+export default function Signup({ hubUrl, hubThemeData, sectorOptions }) {
   const { ReactGA } = useContext(UserContext);
-
   const [userInfo, setUserInfo] = React.useState({
     email: "",
     password: "",
@@ -49,6 +52,7 @@ export default function Signup({ hubUrl, hubThemeData }) {
     location: {},
     newsletter: "",
     sendNewsletter: undefined,
+    sectors: [],
   });
   const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
   const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
@@ -135,8 +139,7 @@ export default function Signup({ hubUrl, hubThemeData }) {
       send_newsletter: values.sendNewsletter,
       source_language: locale,
       hub: hubUrl,
-      // It is for test so I should remove it later
-      sectors: ["education", "mobility", "food"],
+      sectors: values.sectors,
     };
 
     const headers = {
@@ -240,8 +243,8 @@ export default function Signup({ hubUrl, hubThemeData }) {
                     values={userInfo}
                     handleSubmit={handleAddInterestAreaSubmit}
                     handleGoBack={handleGoBackFromAddInterestArea}
-                    locationInputRef={locationInputRef}
                     isSmallScreen={isSmallScreen}
+                    sectorOptions={sectorOptions}
                   />
                 )
               )

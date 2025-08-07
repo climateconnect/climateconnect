@@ -1,13 +1,31 @@
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import ArrowBack from "@mui/icons-material/ArrowBack";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
-import { getLocationFields } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-import Form from "./../general/Form";
-import { Box, Card, CardContent, IconButton, Typography } from "@mui/material";
+import { Box, Card, CardContent, IconButton, Typography, Button } from "@mui/material";
 import ActiveSectorsSelector from "../hub/ActiveSectorsSelector";
+import { SectorOptionType } from "../../types";
+
+type SelectedSector = {
+  hub_type: string;
+  icon?: string;
+  landing_page_component?: string;
+  name: string;
+  quick_info?: string;
+  thumbnail_image?: string;
+  url_slug: string;
+  key: string;
+};
+
+type AddInterestAreaProps = {
+  handleSubmit: (event: React.FormEvent, values: any) => void;
+  errorMessage?: string;
+  values: any;
+  handleGoBack: (event: any, values: any) => void;
+  isSmallScreen: boolean;
+  sectorOptions: SectorOptionType[];
+};
 
 const useStyles = makeStyles((theme) => ({
   contrastBackground: {
@@ -45,78 +63,29 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     marginBottom: 2,
   },
+  rightAlignedButton: {
+    float: "right",
+    marginTop: theme.spacing(4),
+  },
 }));
 
-export default function AddInfo({
-  handleSubmit,
-  errorMessage,
+/**
+ * AddInterestArea component allows users to select their areas of interest during signup
+ * It displays a list of sectors that users can select from and manages the selection state
+ */
+export default function AddInterestArea({
   values,
+  handleSubmit,
   handleGoBack,
-  locationInputRef,
-  locationOptionsOpen,
-  handleSetLocationOptionsOpen,
   isSmallScreen,
-}) {
+  sectorOptions,
+}: AddInterestAreaProps) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
-  const fields = [
-    {
-      required: true,
-      label: texts.first_name,
-      type: "text",
-      key: "first_name",
-      value: values["first_name"],
-    },
-    {
-      required: true,
-      label: texts.last_name,
-      type: "text",
-      key: "last_name",
-      value: values["last_name"],
-    },
-    ...getLocationFields({
-      locationInputRef: locationInputRef,
-      locationOptionsOpen: locationOptionsOpen,
-      handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
-      values: values,
-      locationKey: "location",
-      texts: texts,
-    }),
-    {
-      required: false,
-      label: (
-        <span className={classes.checkboxLabels}>
-          {texts.i_would_like_to_receive_emails_about_updates_news_and_interesting_projects}
-        </span>
-      ),
-      type: "checkbox",
-      key: "sendNewsletter",
-      value: false,
-    },
-    {
-      required: true,
-      label: (
-        <span className={classes.checkboxLabels}>{texts.agree_to_tos_and_privacy_policy}</span>
-      ),
-      type: "checkbox",
-      key: "terms",
-      value: false,
-    },
-  ];
-
-  const messages = {
-    submitMessage: texts.submit,
-    headerMessage: "",
-  };
-
-  const formAction = {
-    href: getLocalePrefix(locale) + "/addinfo",
-    method: "GET",
-  };
 
   const GoBackArrow = () => (
-    <IconButton aria-label="close" onClick={() => handleGoBack(undefined, values)}>
+    <IconButton aria-label="go-back" onClick={() => handleGoBack(undefined, values)}>
       <ArrowBack />
     </IconButton>
   );
@@ -124,46 +93,87 @@ export default function AddInfo({
   const StepCounter = () => (
     <Typography variant="subtitle1" component="div">
       {isSmallScreen && <GoBackArrow />}
-      {texts.step_2_of_3_sign_up}
+      {texts.step_3_of_3_sign_up}
     </Typography>
+  );
+  const [selectedSectors, setSelectedSectors] = React.useState<SelectedSector[]>([]);
+  const [formValues, setFormValues] = React.useState(values);
+
+  const handleSectorSelection = (
+    event: React.ChangeEvent<HTMLSelectElement | { value: string }>
+  ) => {
+    event.preventDefault();
+    const sectorName = event.target.value;
+    const selectedSector = sectorOptions.find((s) => s.name === sectorName);
+
+    if (selectedSector && !selectedSectors.some((s) => s.key === selectedSector.key)) {
+      const updatedSectors = [...selectedSectors, selectedSector];
+      const sectorKeys = updatedSectors.map((sector) => sector.key);
+
+      setSelectedSectors(updatedSectors);
+      setFormValues({
+        ...formValues,
+        sectors: sectorKeys,
+      });
+    }
+  };
+
+  const handleSectorRemoval = (sectorToRemove: SelectedSector) => {
+    if (!sectorToRemove) {
+      console.warn("handleSectorRemoval was called without a sector.");
+      return;
+    }
+
+    setSelectedSectors((prevSectors) =>
+      prevSectors.filter((sector) => sector.key !== sectorToRemove.key)
+    );
+  };
+
+  // Filter out sectors that are already in the selectedSectors array.
+  const availableSectors = sectorOptions.filter(
+    (sector) => !selectedSectors.some((selected) => selected.key === sector.key)
   );
 
   return (
     <Card className={classes.root}>
-      {/* TODO: maybe use card Header instead (?)
-      see https://mui.com/material-ui/react-card/ for other usefull card components */}
       {isSmallScreen && (
         <Typography color="primary" variant="h1" className={classes.smallScreenHeadline}>
           {texts.sign_up}
         </Typography>
       )}
+
       <Box className={classes.cardHeaderBox}>
         {!isSmallScreen && <GoBackArrow />}
         <StepCounter />
       </Box>
+
       <CardContent>
-        {!isSmallScreen && <Typography>{texts.signup_step_2_headline}</Typography>}
-        <Form
-          fields={fields}
-          className={classes.formRootClass}
-          messages={messages}
-          formAction={formAction}
-          onSubmit={(event, values) => handleSubmit(event, values)}
-          errorMessage={errorMessage}
-          onGoBack={handleGoBack}
-          autocomplete="off"
+        {!isSmallScreen && (
+          <>
+            <Typography color="primary" variant="h1">
+              {texts.area_of_interest}
+            </Typography>
+            <Typography>{texts.signup_step_3_headline}</Typography>
+          </>
+        )}
+
+        <ActiveSectorsSelector
+          selectedSectors={selectedSectors}
+          sectorsToSelectFrom={availableSectors}
+          onSelectNewSector={handleSectorSelection}
+          onClickRemoveSector={handleSectorRemoval}
         />
-        {/* <ActiveSectorsSelector
-          //TODO(unused) info={i}
-          selectedSectors={editedAccount.info.sectors}
-          sectorsToSelectFrom={allSectors.filter(
-            (s) =>
-              editedAccount?.info?.sectors.filter((addedSectors) => addedSectors.key === s.key)
-                .length === 0
-          )}
-          onSelectNewSector={onSelectNewSector}
-          onClickRemoveSector={onClickRemoveSector}
-        /> */}
+
+        <Button
+          fullWidth
+          variant="contained"
+          type="submit"
+          color="primary"
+          className={classes.rightAlignedButton}
+          onClick={(event) => handleSubmit(event, formValues)}
+        >
+          {texts.submit}
+        </Button>
       </CardContent>
     </Card>
   );
