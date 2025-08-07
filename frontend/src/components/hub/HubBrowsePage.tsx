@@ -6,7 +6,6 @@ import { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import {
   getOrganizationTagsOptions,
-  getProjectTagsOptions,
   getProjectTypeOptions,
   getSkillsOptions,
   getSectorOptions,
@@ -39,7 +38,6 @@ import {
 import { retrieveDescriptionFromWebflow } from "../../utils/webflow";
 import { HubDescription } from "./description/HubDescription";
 import { FabShareButton } from "./FabShareButton";
-import React from "react";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -101,7 +99,7 @@ export async function getHubBrowseServerSideProps(ctx) {
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
     getLinkedHubsData(hubUrl),
-    getSectorOptions(ctx.locale),
+    getSectorOptions(ctx.locale, hubUrl),
   ]);
 
   return {

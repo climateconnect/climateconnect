@@ -1,5 +1,8 @@
 import logging
-from organization.utility.sector import sanitize_sector_inputs
+from organization.utility.sector import (
+    create_context_for_hub_specific_sector,
+    sanitize_sector_inputs,
+)
 from organization.utility.follow import (
     check_if_user_follows_organization,
     get_list_of_organization_followers,
@@ -118,7 +121,8 @@ class ListOrganizationsAPIView(ListAPIView):
         return OrganizationCardSerializer
 
     def get_serializer_context(self):
-        return {"language_code": self.request.LANGUAGE_CODE}
+        context = create_context_for_hub_specific_sector(self.request)
+        return {"language_code": self.request.LANGUAGE_CODE, **context}
 
     def get_queryset(self):
         organizations = (
@@ -557,17 +561,18 @@ class OrganizationAPIView(APIView):
                 {"message": _("Organization not found:") + url_slug},
                 status=status.HTTP_404_NOT_FOUND,
             )
+        _context = create_context_for_hub_specific_sector(self.request)
         if "edit_view" in request.query_params:
             serializer = EditOrganizationSerializer(
                 organization,
                 many=False,
-                context={"language_code": request.LANGUAGE_CODE},
+                context={"language_code": request.LANGUAGE_CODE, **_context},
             )
         else:
             serializer = OrganizationSerializer(
                 organization,
                 many=False,
-                context={"language_code": request.LANGUAGE_CODE},
+                context={"language_code": request.LANGUAGE_CODE, **_context},
             )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -952,7 +957,8 @@ class ListFeaturedOrganizations(ListAPIView):
     serializer_class = OrganizationCardSerializer
 
     def get_serializer_context(self):
-        return {"language_code": self.request.LANGUAGE_CODE}
+        context = create_context_for_hub_specific_sector(self.request)
+        return {"language_code": self.request.LANGUAGE_CODE, **context}
 
     def get_queryset(self):
         return Organization.objects.filter(rating__lte=99)[0:4]

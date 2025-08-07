@@ -59,11 +59,13 @@ export async function getProjectTagsOptions(hub, locale) {
     return null;
   }
 }
-export async function getSectorOptions(locale) {
+export async function getSectorOptions(locale, hubUrl?: string) {
+  //TODO: duplicated code with sectorOperations.ts > getAllSectors?
+  const query = hubUrl ? `?hub=${hubUrl}` : "";
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/sectors/",
+      url: `/api/sectors/${query}`,
       locale: locale,
     });
     if (resp?.data?.results.length === 0) return null;

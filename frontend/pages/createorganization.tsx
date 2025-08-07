@@ -49,7 +49,7 @@ export async function getServerSideProps(ctx: {
   const [tagOptions, rolesOptions, allSectors] = await Promise.all([
     await getTags(auth_token, ctx.locale),
     await getRolesOptions(auth_token, ctx.locale),
-    getAllSectors(ctx.locale),
+    getAllSectors(ctx.locale, hubUrl),
   ]);
   return {
     props: {

@@ -1,4 +1,9 @@
-from organization.serializers.sector import ProjectSectorMappingSerializer
+from organization.utility.sector import (
+    get_sectors_based_on_hub,
+)
+from organization.serializers.sector import (
+    ProjectSectorMappingSerializer,
+)
 from organization.models.members import MembershipRequests
 from climateconnect_api.models import UserProfile
 from climateconnect_api.models.role import Role
@@ -112,9 +117,13 @@ class ProjectSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_sectors(self, obj):
-        serializer = ProjectSectorMappingSerializer(
-            obj.project_sector_mapping.all(), many=True
+        hub = self.context.get("hub")
+
+        sector_mappings = get_sectors_based_on_hub(
+            obj.project_sector_mapping.all(), hub
         )
+
+        serializer = ProjectSectorMappingSerializer(sector_mappings, many=True)
         return serializer.data
 
     # TODO (Karol): Remove this method once the frontend is updated to use the new tags serializer
@@ -200,6 +209,13 @@ class EditProjectSerializer(ProjectSerializer):
 
     def get_related_hubs(self, obj):
         return [hub.url_slug for hub in obj.related_hubs.all()]
+
+    # Override the get_sectors method to use the hub-specific sectors
+    def get_sectors(self, obj):
+        serializer = ProjectSectorMappingSerializer(
+            obj.project_sector_mapping.all(), many=True
+        )
+        return serializer.data
 
     class Meta(ProjectSerializer.Meta):
         fields = ProjectSerializer.Meta.fields + ("loc", "translations", "related_hubs")
@@ -334,9 +350,13 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             ]
 
     def get_sectors(self, obj):
-        serializer = ProjectSectorMappingSerializer(
-            obj.project_sector_mapping.all(), many=True
+        hub = self.context.get("hub")
+
+        sector_mappings = get_sectors_based_on_hub(
+            obj.project_sector_mapping.all(), hub
         )
+
+        serializer = ProjectSectorMappingSerializer(sector_mappings, many=True)
         return serializer.data
 
     # TODO: remove

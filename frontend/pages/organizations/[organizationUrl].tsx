@@ -88,7 +88,7 @@ export async function getServerSideProps(ctx) {
     following,
     hubThemeData,
   ] = await Promise.all([
-    getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
+    getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale, hubUrl),
     getProjectsByOrganization(organizationUrl, auth_token, ctx.locale),
     getMembersByOrganization(organizationUrl, auth_token, ctx.locale),
     getOrganizationTypes(),
@@ -368,11 +368,14 @@ function OrganizationLayout({
   );
 }
 
-async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
+async function getOrganizationByUrlIfExists(organizationUrl, token, locale, hubUrl?: string) {
+  let query = "";
+  query += hubUrl ? `?hub=${hubUrl}` : "";
+
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/organizations/" + organizationUrl + "/",
+      url: "/api/organizations/" + organizationUrl + "/" + query,
       token: token,
       locale: locale,
     });
