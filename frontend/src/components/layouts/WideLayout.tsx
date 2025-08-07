@@ -167,8 +167,8 @@ export default function WideLayout({
                 (messageType
                   ? messageType
                   : initialMessageType
-                    ? initialMessageType
-                    : "success") as any
+                  ? initialMessageType
+                  : "success") as any
               }
               ref={(node: any) => {
                 if (node) {

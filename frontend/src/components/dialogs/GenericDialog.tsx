@@ -179,8 +179,9 @@ export default function GenericDialog({
         )}
       </DialogTitle>
       <div
-        className={`${classes.dialogContent} ${topBarFixed && classes.scrollDialogContent
-          } ${dialogContentClass}`}
+        className={`${classes.dialogContent} ${
+          topBarFixed && classes.scrollDialogContent
+        } ${dialogContentClass}`}
       >
         {children}
         {useApplyButton && applyText && showApplyAtBottom && (
