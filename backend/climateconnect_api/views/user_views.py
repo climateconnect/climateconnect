@@ -116,7 +116,7 @@ class SignUpView(APIView):
             "location",
             "send_newsletter",
             "source_language",
-            "sectors",
+            # "sectors",
         ]
         for param in required_params:
             if param not in request.data:

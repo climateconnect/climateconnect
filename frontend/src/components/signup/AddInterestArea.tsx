@@ -51,6 +51,9 @@ const useStyles = makeStyles((theme) => ({
     float: "right",
     marginTop: theme.spacing(4),
   },
+  textColor: {
+    color: theme.palette.background.default_contrastText,
+  },
 }));
 
 /**
@@ -121,7 +124,11 @@ export default function AddInterestArea({
   return (
     <Card className={classes.root}>
       {isSmallScreen && (
-        <Typography color="primary" variant="h1" className={classes.smallScreenHeadline}>
+        <Typography
+          className={classes.textColor}
+          variant="h1"
+          className={classes.smallScreenHeadline}
+        >
           {texts.sign_up}
         </Typography>
       )}
@@ -134,7 +141,7 @@ export default function AddInterestArea({
       <CardContent>
         {!isSmallScreen && (
           <>
-            <Typography color="primary" variant="h1">
+            <Typography className={classes.textColor} variant="h1">
               {texts.area_of_interest}
             </Typography>
             <Typography>{texts.signup_step_3_headline}</Typography>
