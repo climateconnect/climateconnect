@@ -152,7 +152,7 @@ export default function GenericDialog({
         {useApplyButton && applyText && !showApplyAtBottom && (
           <>
             {applyIcon && isSmallScreen ? (
-              <IconButton className={classes.saveIconButton} size="large">
+              <IconButton onClick={onApply} className={classes.saveIconButton} size="large">
                 <applyIcon.icon />
               </IconButton>
             ) : (
@@ -179,9 +179,8 @@ export default function GenericDialog({
         )}
       </DialogTitle>
       <div
-        className={`${classes.dialogContent} ${
-          topBarFixed && classes.scrollDialogContent
-        } ${dialogContentClass}`}
+        className={`${classes.dialogContent} ${topBarFixed && classes.scrollDialogContent
+          } ${dialogContentClass}`}
       >
         {children}
         {useApplyButton && applyText && showApplyAtBottom && (
