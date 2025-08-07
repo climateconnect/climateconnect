@@ -3,7 +3,7 @@ import { makeStyles } from "@mui/styles";
 import Image from "next/image";
 import { Theme } from "@mui/material/styles";
 
-type Props = { hubUrl: string | undefined; texts: any | null; step?: string };
+type Props = { hubUrl: string | undefined; texts: any | null; authStep?: string };
 
 const PRIO1_SLUG = "prio1";
 const PERTH_SLUG = "perth";
@@ -56,9 +56,9 @@ function isNumber(value: any): boolean {
   return !isNaN(parseFloat(value)) && isFinite(value);
 }
 
-export default function CustomAuthImage({ hubUrl, texts, step }: Props): JSX.Element | null {
+export default function CustomAuthImage({ hubUrl, texts, authStep }: Props): JSX.Element | null {
   if (!hubUrl) {
-    return <DefaultAuthImage step={step} />;
+    return <DefaultAuthImage authStep={authStep} />;
   }
 
   switch (hubUrl.toLowerCase()) {
@@ -67,11 +67,16 @@ export default function CustomAuthImage({ hubUrl, texts, step }: Props): JSX.Ele
     }
     case PERTH_SLUG: {
       return (
-        <AuthImage texts={texts} hubSlug={PERTH_SLUG} step={step} logoSrc="/images/logo.svg" />
+        <AuthImage
+          texts={texts}
+          hubSlug={PERTH_SLUG}
+          authStep={authStep}
+          logoSrc="/images/logo.svg"
+        />
       );
     }
     default: {
-      return <DefaultAuthImage step={step} />;
+      return <DefaultAuthImage authStep={authStep} />;
     }
   }
 }
@@ -79,17 +84,17 @@ export default function CustomAuthImage({ hubUrl, texts, step }: Props): JSX.Ele
 function AuthImage({
   texts,
   hubSlug,
-  step,
+  authStep,
   logoSrc,
 }: {
   texts: any;
   hubSlug: string;
-  step?: string;
+  authStep?: string;
   logoSrc: string;
 }): JSX.Element {
   const classes = useStyles();
-  return step ? (
-    <DefaultAuthImage step={step} />
+  return authStep ? (
+    <DefaultAuthImage authStep={authStep} />
   ) : (
     <div className={classes.prio1root}>
       <div className={classes.prio1_imageContainer}>
@@ -111,9 +116,9 @@ function AuthImage({
   );
 }
 
-function DefaultAuthImage({ step }: { step?: string }): JSX.Element {
+function DefaultAuthImage({ authStep }: { authStep?: string }): JSX.Element {
   const finalSrc =
-    step === "interestAreaInfo"
+    authStep === "interestAreaInfo"
       ? "/images/sign_up/Questions-pana.svg"
       : "/images/sign_up/mobile-login-pana.svg";
 
