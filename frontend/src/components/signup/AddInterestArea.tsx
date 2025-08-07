@@ -28,28 +28,12 @@ type AddInterestAreaProps = {
 };
 
 const useStyles = makeStyles((theme) => ({
-  contrastBackground: {
-    color: theme.palette.background.default_contrastText,
-  },
   root: {
     [theme.breakpoints.down("sm")]: {
       padding: 0,
       borderRadius: 0,
       boxShadow: "none",
     },
-  },
-  checkboxLabels: {
-    [theme.breakpoints.up("sm")]: {
-      fontSize: 14,
-    },
-    [theme.breakpoints.down("sm")]: {
-      fontWeight: "normal",
-    },
-  },
-  formRootClass: {
-    padding: 0,
-    maxWidth: 700,
-    margin: "0 auto 0 0", // basically a left align
   },
   smallScreenHeadline: {
     fontSize: 35,
