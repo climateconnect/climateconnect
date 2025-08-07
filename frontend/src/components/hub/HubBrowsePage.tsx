@@ -311,6 +311,7 @@ export default function HubBrowsePage({
                 hubUrl={hubUrl}
                 hubSupporters={hubSupporters}
                 linkedHubs={linkedHubs}
+                isLocationHub={isLocationHub}
               />
             </FilterProvider>
           </BrowseContext.Provider>
