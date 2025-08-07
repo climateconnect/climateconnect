@@ -1,5 +1,4 @@
 import React, { useContext, useState, useEffect } from "react";
-import { apiRequest } from "../../../public/lib/apiOperations";
 import UserContext from "../../../src/components/context/UserContext";
 import DevlinkPage from "../../../src/components/devlink/DevlinkPage";
 import WideLayout from "../../../src/components/layouts/WideLayout";
@@ -7,16 +6,12 @@ import PageNotFound from "../../../src/components/general/PageNotFound";
 import getTexts from "../../../public/texts/texts";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 import LoadingSpinner from "../../../src/components/general/LoadingSpinner";
+import theme from "../../../src/themes/theme";
+import { HubData } from "../../../src/types";
+import { getHubData } from "../../../public/lib/getHubData";
 
 //Types
 type DevlinkComponentType = React.ComponentType<any> | null;
-type LocaleType = "en" | "de" | undefined;
-
-interface HubData {
-  landing_page_component: string;
-  hub_type: string;
-  [key: string]: any;
-}
 
 interface TextsType {
   [key: string]: string;
@@ -81,23 +76,9 @@ export async function getServerSideProps(ctx: any) {
   };
 }
 
-const getHubData = async (url_slug: string, locale: LocaleType): Promise<HubData | null> => {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: `/api/hubs/${url_slug}/`,
-      locale,
-    });
-    return resp.data;
-  } catch (err: any) {
-    console.error("Error fetching hub data:", err.response?.data?.detail || err.message || err);
-    return null;
-  }
-};
-
 const LandingPage: React.FC<LandingPageProps> = ({ hubData, hubUrl }) => {
   const { locale, donationGoal } = useContext(UserContext);
-  const donationGoalActive = donationGoal && donationGoal.hub === hubUrl
+  const donationGoalActive = donationGoal && donationGoal.hub === hubUrl;
   const texts = getTexts({ page: "landing_page", locale: locale }) as TextsType;
   const [DevlinkComponent, setDevlinkComponent] = useState<DevlinkComponentType>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -165,11 +146,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ hubData, hubUrl }) => {
       description={description}
       isHubPage={true}
       hubUrl={hubUrl}
-      // Since the text color of items in the Header is determined by `transparentHeader`,
-      // use `transparentHeader` if you want the items to have white text color.
-      transparentHeader={true}
       isLocationHub={isLocationHubLikeHub(hubData?.hub_type)}
       isLandingPage={true}
+      headerBackground={theme.palette.primary.main}
       showDonationGoal={donationGoalActive}
     >
       {DevlinkComponent ? (

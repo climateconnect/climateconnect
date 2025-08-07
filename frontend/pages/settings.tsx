@@ -7,33 +7,50 @@ import SettingsPage from "../src/components/account/SettingsPage";
 import UserContext from "../src/components/context/UserContext";
 import LoginNudge from "../src/components/general/LoginNudge";
 import Layout from "../src/components/layouts/layout";
+import getHubTheme from "../src/themes/fetchHubTheme";
+import { transformThemeData } from "../src/themes/transformThemeData";
+import theme from "../src/themes/theme";
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
-  const { hub } = ctx.query;
+  const [settings, hubThemeData] = await Promise.all([
+    getSettings(auth_token, ctx.locale),
+    getHubTheme(ctx.query.hub),
+  ]);
+
   return {
     props: {
-      settings: await getSettings(auth_token, ctx.locale),
-      hubUrl: hub || null,
+      settings: settings,
+      hubThemeData: hubThemeData || null,
+      hubUrl: ctx.query.hub || null,
     },
   };
 }
 
-export default function Settings({ settings, hubUrl }) {
+export default function Settings({ settings, hubThemeData, hubUrl }) {
   const token = new Cookies().get("auth_token");
   const { user } = useContext(UserContext);
   const [message, setMessage] = React.useState("");
   const [currentSettings, setCurrentSettings] = React.useState(settings);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "settings", locale: locale });
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+  const layoutProps = {
+    hubUrl: hubUrl,
+    customTheme: customTheme,
+    headerBackground: customTheme
+      ? customTheme.palette.header.background
+      : theme.palette.background.default,
+  };
   if (user)
     return (
-      <Layout title={texts.settings} message={message} hubUrl={hubUrl} noSpacingBottom>
+      <Layout title={texts.settings} message={message} {...layoutProps} noSpacingBottom>
         <SettingsPage
           settings={currentSettings}
           setSettings={setCurrentSettings}
           token={token}
           setMessage={setMessage}
+          hubUrl={hubUrl}
         />
       </Layout>
     );

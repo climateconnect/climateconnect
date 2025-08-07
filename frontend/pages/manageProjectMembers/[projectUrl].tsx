@@ -13,6 +13,7 @@ import WideLayout from "../../src/components/layouts/WideLayout";
 import ManageProjectMembers from "../../src/components/project/ManageProjectMembers";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
+import theme from "../../src/themes/theme";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -68,10 +69,13 @@ export default function manageProjectMembers({
   const [currentMembers, setCurrentMembers] = React.useState(
     members ? [...members.sort((a, b) => b.role.role_type - a.role.role_type)] : []
   );
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
   const layoutProps = {
     hubUrl: hubUrl,
-    customTheme: hubThemeData ? transformThemeData(hubThemeData) : undefined,
-    headerBackground: hubUrl === "prio1" ? "#7883ff" : "#FFF",
+    customTheme: customTheme,
+    headerBackground: customTheme
+      ? customTheme.palette.header.background
+      : theme.palette.background.default,
   };
   if (!user)
     return (

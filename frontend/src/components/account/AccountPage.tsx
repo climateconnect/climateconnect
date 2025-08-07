@@ -9,7 +9,7 @@ import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 import DetailledDescription from "./DetailledDescription";
 import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
-import MiniHubPreviews from "../hub/MiniHubPreviews";
+import SectorsPreview from "../hub/SectorsPreview";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import ProfileBadge from "../profile/ProfileBadge";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
@@ -357,12 +357,12 @@ export default function AccountPage({
                 <MessageContent content={value ? value + additionalText : i.missingMessage} />
               </div>
             );
-          } else if (i.type === "hubs") {
+          } else if (i.type === "sectors") {
             return (
               <>
                 {i.value.length > 0 && <div className={classes.subtitle}>{i.name}:</div>}
 
-                <MiniHubPreviews hubs={i.value} />
+                <SectorsPreview sectors={i.value} />
               </>
             );
           } else if (i.type === "select" && value) {

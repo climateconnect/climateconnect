@@ -51,7 +51,6 @@ type Props = {
   showOnScrollUp?: boolean;
   largeFooter?: boolean;
   description?: string;
-  landingPage?: boolean;
   headerBackground?: string;
   subHeader?: JSX.Element;
   image?: string;
@@ -61,7 +60,6 @@ type Props = {
   resetAlertMessage?: () => void;
   isHubPage?: boolean;
   hubUrl?: string;
-  hideDonationCampaign?: boolean;
   customFooterImage?: string;
   noHeader?: boolean;
   footerTextColor?: string;
@@ -87,7 +85,6 @@ export default function WideLayout({
   showOnScrollUp, //display the footer when scrolling up, used for "inifinite scroll" pages
   largeFooter,
   description,
-  landingPage,
   headerBackground,
   subHeader,
   image,
@@ -97,7 +94,7 @@ export default function WideLayout({
   resetAlertMessage,
   isHubPage,
   hubUrl,
-  hideDonationCampaign,
+  isLocationHub,
   customFooterImage,
   noHeader,
   footerTextColor,
@@ -105,7 +102,7 @@ export default function WideLayout({
   hideAlert,
   isLandingPage,
   hasHubLandingPage,
-  showDonationGoal
+  showDonationGoal,
 }: Props) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(hideAlert ? false : true);
@@ -170,8 +167,8 @@ export default function WideLayout({
                 (messageType
                   ? messageType
                   : initialMessageType
-                  ? initialMessageType
-                  : "success") as any
+                    ? initialMessageType
+                    : "success") as any
               }
               ref={(node: any) => {
                 if (node) {
@@ -187,10 +184,7 @@ export default function WideLayout({
             </Alert>
           )}
           {subHeader && subHeader}
-          {!fixedHeader &&
-            showDonationGoal && (
-              <DonationCampaignInformation />
-            )}
+          {!fixedHeader && showDonationGoal && <DonationCampaignInformation />}
           {children}
         </Container>
       )}

@@ -1,5 +1,5 @@
 import NextCookies from "next-cookies";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest } from "../../public/lib/apiOperations";
@@ -18,6 +18,10 @@ import makeStyles from "@mui/styles/makeStyles";
 import ProjectSideBar from "../../src/components/project/ProjectSideBar";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 import getHubTheme from "../../src/themes/fetchHubTheme";
+import theme from "../../src/themes/theme";
+import { NOTIFICATION_TYPES } from "../../src/components/communication/notifications/Notification";
+import { getProjectTypeOptions } from "../../public/lib/getOptions";
+import BrowseContext from "../../src/components/context/BrowseContext";
 
 type StyleProps = {
   showSimilarProjects: boolean;
@@ -50,9 +54,6 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
     }),
   };
 });
-import { NOTIFICATION_TYPES } from "../../src/components/communication/notifications/Notification";
-import { getProjectTypeOptions } from "../../public/lib/getOptions";
-import BrowseContext from "../../src/components/context/BrowseContext";
 
 const parseComments = (comments) => {
   return comments
@@ -89,13 +90,13 @@ export async function getServerSideProps(ctx) {
     hubSupporters,
     hubThemeData,
   ] = await Promise.all([
-    getProjectByIdIfExists(projectUrl, auth_token, ctx.locale),
+    getProjectByIdIfExists(projectUrl, auth_token, ctx.locale, hubUrl),
     getProjectMembersByIdIfExists(projectUrl, ctx.locale),
     getPostsByProject(projectUrl, auth_token, ctx.locale),
     getCommentsByProject(projectUrl, auth_token, ctx.locale),
     auth_token ? getUsersInteractionWithProject(projectUrl, auth_token, ctx.locale) : false,
     getAllHubs(ctx.locale),
-    getSimilarProjects(projectUrl, ctx.locale),
+    getSimilarProjects(projectUrl, ctx.locale, hubUrl),
     hubUrl ? getHubSupporters(hubUrl, ctx.locale) : null,
     hubUrl ? getHubTheme(hubUrl) : null,
   ]);
@@ -235,6 +236,7 @@ export default function ProjectPage({
 
   const tinyScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
 
   return (
     <WideLayout
@@ -244,15 +246,22 @@ export default function ProjectPage({
       title={project ? project.name : texts.project + " " + texts.not_found}
       subHeader={
         !tinyScreen ? (
-          <HubsSubHeader hubs={hubs} onlyShowDropDown={true} isCustomHub={isCustomHub} />
+          <HubsSubHeader
+            hubs={hubs}
+            onlyShowDropDown={true}
+            isCustomHub={isCustomHub}
+            hubSlug={hubUrl}
+          />
         ) : (
           <></>
         )
       }
-      customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+      customTheme={customTheme}
       isHubPage={!!hubUrl}
       hubUrl={hubUrl}
-      headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
+      headerBackground={
+        customTheme ? customTheme.palette.header.background : theme.palette.background.default
+      }
       image={project ? getImageUrl(project.image) : undefined}
     >
       <BrowseContext.Provider value={contextValues}>
@@ -308,11 +317,13 @@ export default function ProjectPage({
   );
 }
 
-async function getProjectByIdIfExists(projectUrl, token, locale) {
+async function getProjectByIdIfExists(projectUrl, token, locale, hubUrl?: string | null) {
+  const query = hubUrl ? `?hub=${hubUrl}` : "";
+
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/projects/" + projectUrl + "/",
+      url: "/api/projects/" + projectUrl + "/" + query,
       token: token,
       locale: locale,
     });
@@ -397,11 +408,12 @@ async function getProjectMembersByIdIfExists(projectUrl, locale) {
   }
 }
 
-async function getSimilarProjects(projectUrl, locale) {
+async function getSimilarProjects(projectUrl, locale, hubUrl?: string | null) {
+  const query = hubUrl ? `?hub=${hubUrl}` : "";
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/projects/" + projectUrl + "/similar/",
+      url: "/api/projects/" + projectUrl + "/similar/" + query,
       locale: locale,
     });
     if (resp.data.results.length === 0) return null;
@@ -453,7 +465,7 @@ function parseProject(project) {
       : project.project_parents[0].parent_user,
     isPersonalProject: !project.project_parents[0].parent_organization,
     is_draft: project.is_draft,
-    tags: project.tags.map((t) => t.project_tag.name),
+    sectors: project.sectors.sort((a, b) => a.order - b.order).map((s) => s.sector),
     collaborating_organizations: project.collaborating_organizations.map(
       (o) => o.collaborating_organization
     ),

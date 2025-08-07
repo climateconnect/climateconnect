@@ -6,13 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('hubs', '0035_auto_20250218_1128'),
+        ("hubs", "0035_auto_20250218_1128"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='hub',
-            name='landing_page_component',
-            field=models.CharField(blank=True, help_text='Provide the landing page component name. Please ensure it matches the component name from Webflow.', max_length=128, null=True, verbose_name='Landing page component name'),
+            model_name="hub",
+            name="landing_page_component",
+            field=models.CharField(
+                blank=True,
+                help_text="Provide the landing page component name. Please ensure it matches the component name from Webflow.",
+                max_length=128,
+                null=True,
+                verbose_name="Landing page component name",
+            ),
         ),
     ]

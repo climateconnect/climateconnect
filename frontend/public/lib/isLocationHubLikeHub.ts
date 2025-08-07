@@ -1,3 +1,7 @@
-export default function isLocationHubLikeHub(hubType: string) {
-  return hubType === "location hub" || hubType === "custom hub";
+export default function isLocationHubLikeHub(hubType?: string, parentHub?: string) {
+  const isLocationHub = hubType && hubType === "location hub";
+  const isCustomHub = hubType && hubType === "custom hub";
+  const hasParentHub = parentHub != null;
+
+  return isLocationHub || isCustomHub || hasParentHub;
 }

@@ -478,8 +478,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Fass kurz zusammen, was ihr tun (bis zu 280 Zeichen)",
     },
     project_categories: {
-      en: "Project categories",
-      de: "Projektkategorien",
+      en: "Topics",
+      de: "Themenfelder",
     },
     project_website: {
       en: "Project website",
@@ -489,13 +489,13 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "If your project has a website, you can enter it here.",
       de: "Falls dein Projekt eine Webseite hat, kannst du sie hier eintragen",
     },
-    edit_categories: {
-      en: "Edit categories",
-      de: "Kategorien bearbeiten",
+    edit_sectors: {
+      en: "Edit topics",
+      de: "Themenfelder bearbeiten",
     },
-    add_categories: {
-      en: "Add categories",
-      de: "Kategorien hinzufügen",
+    add_sectors: {
+      en: "Add topics",
+      de: "Themenfelder hinzufügen",
     },
     project_name: {
       en: "Project name",
@@ -764,13 +764,25 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
         </>
       ),
     },
-    please_choose_at_least_one_category: {
-      en: "Please choose at least one category!",
-      de: "Bitte wähle mindestens eine Kategorie aus!",
+    add_sectors_that_fit: {
+      en: "Add topics which fit:",
+      de: "Füge Themenfelder hinzu, die passen:",
     },
-    you_can_only_choose_up_to_3_categories: {
-      en: "You can only choose up to 3 categories.",
-      de: "Du kannst nur bis zu 3 Kategorien auswählen",
+    select_1_to_3_sectors_that_fit_your_project: {
+      en: "Select 1-3 topics that fit your project",
+      de: "Wähle 1-3 Themenfelder, die zu deinem Projekt passen",
+    },
+    add_a_sector_where_you_are_active: {
+      en: "Add a Topic",
+      de: "Füge ein Themenfeld hinzu",
+    },
+    please_choose_at_least_one_sector: {
+      en: "Please choose at least one topic!",
+      de: "Bitte wähle mindestens ein Themenfeld aus!",
+    },
+    you_can_only_choose_up_to_3_sectors: {
+      en: "You can only choose up to 3 topics.",
+      de: "Du kannst nur bis zu 3 Themenfelder auswählen",
     },
     you_can_combine_categories_text: {
       en: `You can combine categories. For example if you fund treeplanting, select both

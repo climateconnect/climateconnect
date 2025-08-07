@@ -18,7 +18,7 @@ import {
   getTranslationsWithoutRedundantKeys,
 } from "../../../public/lib/translationOperations";
 import getTexts from "../../../public/texts/texts";
-import { Project, Role } from "../../types";
+import { Project, Role, SectorOptionType } from "../../types";
 import UserContext from "../context/UserContext";
 import NavigationButtons from "../general/NavigationButtons";
 import TranslateTexts from "../general/TranslateTexts";
@@ -49,13 +49,13 @@ type Props = {
   userOrganizations: any;
   statusOptions: any;
   handleSetProject: any;
-  tagsOptions: any;
   oldProject: Project;
   user_role: Role;
   handleSetErrorMessage: any;
   initialTranslations: any;
   projectTypeOptions: any;
   hubUrl: string;
+  sectorOptions?: SectorOptionType[];
 };
 
 export default function EditProjectRoot({
@@ -63,13 +63,13 @@ export default function EditProjectRoot({
   skillsOptions,
   userOrganizations,
   handleSetProject,
-  tagsOptions,
   oldProject,
   user_role,
   handleSetErrorMessage,
   initialTranslations,
   projectTypeOptions,
   hubUrl,
+  sectorOptions,
 }: Props) {
   const classes = useStyles();
   const token = new Cookies().get("auth_token");
@@ -129,8 +129,8 @@ export default function EditProjectRoot({
         if (!project[key]) {
           alert(
             texts.your_project_draft_is_missing_the_following_reqired_property +
-              " " +
-              draftReqiredProperties[key]
+            " " +
+            draftReqiredProperties[key]
           );
           return false;
         }
@@ -197,7 +197,7 @@ export default function EditProjectRoot({
   }
 
   const handleCancel = () => {
-    Router.push("/projects/" + project.url_slug + "/");
+    Router.push(`/projects/${project.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""}`);
   };
 
   const handleSubmit = async (event) => {
@@ -255,12 +255,18 @@ export default function EditProjectRoot({
       locale: locale,
     })
       .then(function () {
-        Router.push({
-          pathname: "/profiles/" + user.url_slug,
-          query: {
+        if (user && user.url_slug) {
+          const query: any = {
             message: texts.you_have_successfully_deleted_your_project,
-          },
-        });
+          };
+          if (hubUrl) {
+            query.hub = hubUrl;
+          }
+          Router.push({
+            pathname: "/profiles/" + user.url_slug,
+            query,
+          });
+        }
       })
       .catch(function (error) {
         console.log(error);
@@ -336,7 +342,6 @@ export default function EditProjectRoot({
             />
           )}
           <EditProjectOverview
-            tagsOptions={tagsOptions}
             project={project}
             smallScreen={isNarrowScreen}
             handleSetProject={handleSetProject}
@@ -344,6 +349,7 @@ export default function EditProjectRoot({
             locationOptionsOpen={locationOptionsOpen}
             handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
             locationInputRef={locationInputRef}
+            sectorOptions={sectorOptions}
           />
           <EditProjectContent
             project={project}
@@ -405,6 +411,7 @@ const parseProjectForRequest = async (project, translationChanges) => {
     ...project,
     translations: translationChanges,
   };
+
   if (project.project_type) ret.project_type = project.project_type.type_id;
   if (project.image) ret.image = await blobFromObjectUrl(project.image);
   if (project.loc) ret.loc = parseLocation(project.loc, true);
@@ -412,6 +419,7 @@ const parseProjectForRequest = async (project, translationChanges) => {
     ret.thumbnail_image = await blobFromObjectUrl(project.thumbnail_image);
   if (project.skills) ret.skills = project.skills.map((s) => s.id);
   if (project.tags) ret.project_tags = project.tags.map((t) => t.id);
+  if (project.sectors) ret.sectors = ret.sectors.map((s) => s.key);
   if (project.status) ret.status = project.status.id;
   if (project.project_parents && project.project_parents.parent_organization)
     ret.parent_organization = project.project_parents.parent_organization.id;

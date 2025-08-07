@@ -121,7 +121,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LoggedOutLocationHubBox({ headline, isLocationHub, location }) {
+export default function LoggedOutLocationHubBox({ headline, isLocationHub, location, hubUrl }) {
   const { locale, user } = useContext(UserContext);
 
   const texts = getTexts({ page: "dashboard", locale: locale, location: location });
@@ -171,9 +171,8 @@ export default function LoggedOutLocationHubBox({ headline, isLocationHub, locat
 
   return (
     <div className={classes.root}>
-      {isNarrowScreen && <Headline />}
       <div className={classes.contentContainer}>
-        {!isNarrowScreen && <Headline />}
+        <Headline />
         <div className={classes.lowerBoxWrapper}>
           <div className={classes.advantagesBox}>
             {REASONS_TO_JOIN.map((r) => (
@@ -184,7 +183,7 @@ export default function LoggedOutLocationHubBox({ headline, isLocationHub, locat
         <div className={classes.buttonContainer}>
           <Button
             variant="contained"
-            href={`${getLocalePrefix(locale)}/signup`}
+            href={`${getLocalePrefix(locale)}/signup${hubUrl ? `?hub=${hubUrl}` : ""}`}
             className={classes.signUpButton}
           >
             {isNarrowScreen ? texts.sign_up_now : texts.sign_up_now_to_make_a_difference}

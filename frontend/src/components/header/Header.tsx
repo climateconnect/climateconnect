@@ -25,7 +25,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import MenuIcon from "@mui/icons-material/Menu";
 import noop from "lodash/noop";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { getStaticPageLinks } from "../../../public/data/getStaticPageLinks"; // Relative imports
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
@@ -38,7 +38,7 @@ import DropDownButton from "./DropDownButton";
 import LanguageSelect from "./LanguageSelect";
 import StaticPageLinks from "./StaticPageLinks";
 import { HeaderProps } from "./types";
-import { getLinks, getLoggedInLinks, getStaticLinkFromItem } from "../../../public/lib/headerLink";
+import { getLinks, getLoggedInLinks, getStaticLinkFromItem } from "../../../public/lib/headerLinks";
 
 type StyleProps = {
   transparentHeader?: boolean;
@@ -53,6 +53,17 @@ type StyleProps = {
 };
 
 const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
+  function getHeaderColor(isCustomHub, transparent, isLandingPage, customTheme) {
+    if (transparent || isLandingPage) return "white";
+    return isCustomHub ? customTheme.palette.primary.contrastText : theme.palette.primary.main;
+  }
+
+  function getHeaderBackground(background, transparent, isLandingPage) {
+    if (background) return background;
+    if (transparent) return "";
+    return isLandingPage ? theme.palette.primary.main : "white";
+  }
+
   return {
     root: (props) => {
       return {
@@ -63,17 +74,20 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
             : `1px solid ${theme.palette.grey[300]}`,
         position: props.fixedHeader ? "fixed" : ("auto" as "inherit"),
         width: props.fixedHeader ? "100%" : "auto",
-        // height: props.fixedHeader ? 97 : "auto",
         top: props.fixedHeader ? 0 : "auto",
         //Use custom background if the header is fixed and not transparent (landing page) or if it's a custom hub
-        background:
-          (!props.transparentHeader && props.fixedHeader) || props.isCustomHub
-            ? props.background
-              ? props.background
-              : "#F8F8F8"
-            : props.isLandingPage
-            ? theme.palette.primary.main
-            : "",
+        background: getHeaderBackground(
+          props.background,
+          props.transparentHeader,
+          props.isLandingPage
+        ),
+        color: getHeaderColor(
+          props.isCustomHub,
+          props.transparentHeader,
+          props.isLandingPage,
+          theme
+        ),
+        textDecoration: "inherit",
         transition: "all 0.25s linear", // use all instead of transform since the background color too is changing at some point. It'll be nice to have a smooth transition.
       };
     },
@@ -145,14 +159,6 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       },
       justifyContent: "space-around",
     },
-    menuLink: (props) => ({
-      color: props.transparentHeader
-        ? "white"
-        : props.isCustomHub
-        ? theme.palette.primary.contrastText
-        : theme.palette.primary.main,
-      textDecoration: "inherit",
-    }),
     shareProjectButton: (props) => {
       const css = {
         height: 36,
@@ -165,7 +171,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
         return {
           ...css,
           color: theme.palette.primary.contrastText,
-          backgroundColor: props.isLoggedInUser ? theme.palette.primary.light : "transparent",
+          backgroundColor: theme.palette.primary.main,
         };
       } else {
         return css;
@@ -195,27 +201,23 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       display: "flex",
       justifyContent: "center",
     },
-    // This className is used to style the DropDownButton component in the Header.
-    // It is applied in the headerLink.ts file.
-    btnIconTextColor: (props) => ({
-      color:
-        props.isCustomHub || props.transparentHeader
+    btnColor: (props) => {
+      return {
+        color: props.isCustomHub
           ? theme.palette.primary.contrastText
-          : theme.palette.background.default_contrastText,
-    }),
-    btnColor: (props) => ({
-      color: props.isCustomHub
-        ? theme.palette.primary.contrastText
-        : theme.palette.background.default_contrastText,
-      borderColor: props.isCustomHub
-        ? theme.palette.primary.contrastText
-        : theme.palette.primary.main,
-      "&:hover": {
+          : props.isLandingPage
+            ? "white"
+            : theme.palette.background.default_contrastText,
         borderColor: props.isCustomHub
           ? theme.palette.primary.contrastText
           : theme.palette.primary.main,
-      },
-    }),
+        "&:hover": {
+          borderColor: props.isCustomHub
+            ? theme.palette.primary.contrastText
+            : theme.palette.primary.main,
+        },
+      };
+    },
     linkUnderline: (props) => ({
       color: props.isCustomHub
         ? theme.palette.background.default_contrastText
@@ -313,6 +315,7 @@ export default function Header({
     isLoggedInUser: user ? true : false,
     isLandingPage: isLandingPage,
   });
+
   const toggleShowNotifications = (event) => {
     if (!anchorEl) setAnchorEl(event.currentTarget);
     else setAnchorEl(null);
@@ -320,7 +323,6 @@ export default function Header({
   const localePrefix = getLocalePrefix(locale);
 
   const onNotificationsClose = () => setAnchorEl(null);
-
   const getLogo = () => {
     let imageUrl = "/images";
     if (!isCustomHub) {
@@ -332,7 +334,14 @@ export default function Header({
     } else {
       imageUrl += `/hub_logos/ch_${hubUrl}_logo.svg`;
     }
-    return imageUrl;
+
+    if (hubUrl && isLocationHub) {
+      const logoType = transparentHeader || isLandingPage ? "white" : null;
+      return `${imageUrl}/hub_logos/ch_${hubUrl?.toLowerCase()}_logo${logoType ? `_${logoType}` : ""
+        }.svg`;
+    }
+
+    return loadDefaultLogo(transparentHeader, isMediumScreen);
   };
 
   const loadFallbackLogo = (
@@ -355,6 +364,12 @@ export default function Header({
     return `${localePrefix}/`;
   };
   const logoLink = getLogoLink();
+  const poweredByLogoMap: Record<string, string> = {
+    prio1: "/images/logo_white.png",
+    perth: "/images/logo.svg",
+  };
+  const poweredByLogoSrc =
+    poweredByLogoMap[hubUrl?.toLowerCase() ?? ""] || "/images/logo_white.png";
 
   return (
     <Box
@@ -374,7 +389,7 @@ export default function Header({
           <Link href={localePrefix + "/"} className={classes.poweredByContainer}>
             <span className={classes.poweredByTxt}>{texts.powered_by}</span>
             <img
-              src="/images/logo_white.png"
+              src={poweredByLogoSrc}
               alt={texts.climate_connect_logo}
               className={classes.poweredByImg}
             />
@@ -389,12 +404,13 @@ export default function Header({
             onNotificationsClose={onNotificationsClose}
             notifications={notifications}
             transparentHeader={transparentHeader}
-            fixedHeader={fixedHeader}
             LINKS={LINKS}
             texts={texts}
             getLoggedInLinks={getLoggedInLinks}
             isCustomHub={isCustomHub}
             hubUrl={hubUrl}
+            isLandingPage={isLandingPage}
+            classes={classes}
           />
         ) : (
           <NormalScreenLinks
@@ -412,6 +428,8 @@ export default function Header({
             getLoggedInLinks={getLoggedInLinks}
             isCustomHub={isCustomHub}
             hubUrl={hubUrl}
+            isLandingPage={isLandingPage}
+            classes={classes}
           />
         )}
       </Container>
@@ -435,17 +453,12 @@ function NormalScreenLinks({
   getLoggedInLinks,
   isCustomHub,
   hubUrl,
+  isLandingPage,
+  classes,
 }) {
   const { locale } = useContext(UserContext);
   const localePrefix = getLocalePrefix(locale);
   const theme = useTheme();
-  const classes = useStyles({
-    fixedHeader: fixedHeader,
-    transparentHeader: transparentHeader,
-    isCustomHub: isCustomHub,
-    isLoggedInUser: loggedInUser ? true : false,
-  });
-
   const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("lg"));
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts, locale, isCustomHub && hubUrl);
@@ -468,7 +481,6 @@ function NormalScreenLinks({
           localePrefix: localePrefix,
         });
         const Icon = link.icon;
-
         if (
           !(isMediumScreen && link.hideOnMediumScreen) &&
           !(isStaticPage && link.hideOnStaticPages)
@@ -477,16 +489,20 @@ function NormalScreenLinks({
             <React.Fragment key={index}>
               <span className={classes.menuLink}>
                 {link.type === "languageSelect" ? (
-                  <LanguageSelect transparentHeader={transparentHeader} isCustomHub={isCustomHub} />
+                  <LanguageSelect
+                    transparentHeader={transparentHeader}
+                    isCustomHub={isCustomHub}
+                    isLandingPage={isLandingPage}
+                  />
                 ) : link.onlyShowIconOnNormalScreen ? (
                   <>
-                    <IconButton {...buttonProps} className={classes.link} size="large">
+                    <IconButton {...buttonProps} size="large" className={classes.btnColor}>
                       {link.hasBadge && notifications && notifications.length > 0 ? (
                         <Badge badgeContent={notifications.length} color="error">
-                          <Icon className={classes.btnIconTextColor} />
+                          <Icon />
                         </Badge>
                       ) : (
-                        <Icon className={classes.btnIconTextColor} />
+                        <Icon />
                       )}
                     </IconButton>
                     {link.type === "notificationsButton" && anchorEl && (
@@ -523,14 +539,7 @@ function NormalScreenLinks({
                     <link.showJustIconUnderSm />
                   </IconButton>
                 ) : (
-                  <Button
-                    {...buttonProps}
-                    className={
-                      buttonProps.className === classes.shareProjectButton
-                        ? `${buttonProps.className}`
-                        : `${!transparentHeader && classes.btnColor} ${buttonProps.className}`
-                    }
-                  >
+                  <Button {...buttonProps}>
                     {link.icon && !(link.hideDesktopIconUnderSm && isSmallMediumScreen) && (
                       <link.icon className={classes.normalScreenIcon} />
                     )}
@@ -551,6 +560,7 @@ function NormalScreenLinks({
           getLoggedInLinks={getLoggedInLinks}
           isCustomHub={isCustomHub}
           hubUrl={hubUrl}
+          classes={classes}
         />
       )}
     </Box>
@@ -576,11 +586,8 @@ const LoggedInNormalScreen = ({
   getLoggedInLinks,
   isCustomHub,
   hubUrl,
+  classes,
 }) => {
-  const classes = useStyles({
-    isCustomHub: isCustomHub,
-    isLoggedInUser: loggedInUser ? true : false,
-  });
   const [menuOpen, setMenuOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
 
@@ -608,6 +615,7 @@ const LoggedInNormalScreen = ({
           disableFocusRipple
           style={{ backgroundColor: "transparent" }}
           ref={anchorRef}
+          color="inherit"
         >
           {loggedInUser?.badges?.length > 0 ? (
             <ProfileBadge badge={loggedInUser?.badges[0]} size="small" className={classes.badge}>
@@ -616,7 +624,7 @@ const LoggedInNormalScreen = ({
           ) : (
             <Avatar {...avatarProps} />
           )}
-          <ArrowDropDownIcon className={classes.btnIconTextColor} />
+          <ArrowDropDownIcon />
         </Button>
         <Popper
           open={menuOpen}
@@ -666,23 +674,19 @@ function NarrowScreenLinks({
   onNotificationsClose,
   notifications,
   transparentHeader,
-  fixedHeader,
   LINKS,
   texts,
   getLoggedInLinks,
   isCustomHub,
   hubUrl,
+  isLandingPage,
+  classes,
 }) {
   const { locale } = useContext(UserContext);
   const localePrefix = getLocalePrefix(locale);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const openDrawer = setIsDrawerOpen.bind(null, true);
   const closeDrawer = setIsDrawerOpen.bind(null, false);
-  const classes = useStyles({
-    fixedHeader: fixedHeader,
-    transparentHeader: transparentHeader,
-    isCustomHub: isCustomHub,
-  });
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts, locale, isCustomHub && hubUrl);
   const linksOutsideDrawer = LINKS.filter(
     (link) =>
@@ -708,6 +712,7 @@ function NarrowScreenLinks({
             linksOutsideDrawer: linksOutsideDrawer,
             localePrefix: localePrefix,
           });
+
           if (index === linksOutsideDrawer.length - 1) {
             buttonProps.className = classes.marginRight;
           }
@@ -715,10 +720,14 @@ function NarrowScreenLinks({
             <React.Fragment key={index}>
               {link.onlyShowIconOnMobile ? (
                 <>
-                  <IconButton {...buttonProps} className={classes.marginRight} size="large">
+                  <IconButton
+                    {...buttonProps}
+                    className={`${classes.marginRight} ${classes.btnColor}`}
+                    size="large"
+                  >
                     {link.hasBadge && notifications && notifications.length > 0 ? (
                       <Badge badgeContent={notifications.length} color="error">
-                        <Icon className={classes.btnIconTextColor} />
+                        <Icon />
                       </Badge>
                     ) : (
                       <Icon />
@@ -755,17 +764,10 @@ function NarrowScreenLinks({
                     <LanguageSelect
                       transparentHeader={transparentHeader}
                       isCustomHub={isCustomHub}
+                      isLandingPage={isLandingPage}
                     />
                   ) : (
-                    <Button
-                      {...buttonProps}
-                      className={
-                        buttonProps.className === classes.shareProjectButton
-                          ? `${buttonProps.className}`
-                          : `${classes.btnColor} ${buttonProps.className}`
-                      }
-                      key={index}
-                    >
+                    <Button {...buttonProps} className={buttonProps.className} key={index}>
                       {link.text}
                     </Button>
                   )}
@@ -774,13 +776,13 @@ function NarrowScreenLinks({
             </React.Fragment>
           );
         })}
-        <span className={classes.menuLink}>
+        <span>
           <IconButton
             edge="start"
             aria-label="menu"
             onClick={openDrawer}
             size="large"
-            className={classes.btnIconTextColor}
+            className={classes.btnColor}
           >
             <MenuIcon />
           </IconButton>
@@ -795,7 +797,11 @@ function NarrowScreenLinks({
         >
           <List /*TODO(unused) styles={{ height: "100vh" }} */>
             <ListItem className={classes.languageSelectMobile}>
-              <LanguageSelect transparentHeader={transparentHeader} isCustomHub={isCustomHub} />
+              <LanguageSelect
+                transparentHeader={transparentHeader}
+                isCustomHub={isCustomHub}
+                isLandingPage={isLandingPage}
+              />
             </ListItem>
             {LINKS.filter(
               (link) =>
@@ -922,9 +928,8 @@ const NarrowScreenDropdownMenu = ({
         <ArrowDropDownIcon className={classes.drawerItem} />
       </ListItem>
       <div
-        className={`${classes.dropDownBgColorInMobile} ${classes.dropdownMenuInMobile} ${
-          openDropdownInMobile ? classes.dropdownMenuInMobileOpen : ""
-        }`}
+        className={`${classes.dropDownBgColorInMobile} ${classes.dropdownMenuInMobile} ${openDropdownInMobile ? classes.dropdownMenuInMobileOpen : ""
+          }`}
       >
         {STATIC_PAGE_LINKS.map((link, index) => {
           return (
@@ -961,8 +966,15 @@ const getLinkButtonProps = ({
   // why we use index !== 0 here: (!isNarrowScreen && index !== 0)
   // removed index !== 0 from condition because we want to apply the first link className in the header
   if (!isNarrowScreen) {
-    if (link.className) buttonProps.className = classes[link.className];
-    else buttonProps.className = classes.buttonMarginLeft;
+    if (link.className) {
+      // Support multiple classNames in link.className
+      // e.g. className: "btnColor buttonMarginLeft", in the heaserLink.ts file
+      buttonProps.className = link.className
+        .split(" ")
+        .map((name) => classes[name])
+        .filter(Boolean) // filter(Boolean) removes any undefined values
+        .join(" ");
+    } else buttonProps.className = classes.buttonMarginLeft;
   }
   if ((isNarrowScreen || loggedInUser || !link.vanillaIfLoggedOut) && link.isOutlinedInHeader) {
     buttonProps.variant = "outlined";
@@ -977,7 +989,7 @@ const getLinkButtonProps = ({
     buttonProps.starticon = <link.icon />;
   }
 
-  if (!transparentHeader) buttonProps.color = "primary";
+  // if (!transparentHeader) buttonProps.color = "primary";
   else if (!contained && link.type !== "notificationsButton") buttonProps.color = "inherit";
   if (link.type === "notificationsButton") buttonProps.onClick = toggleShowNotifications;
   if (link.href) {

@@ -14,9 +14,9 @@ import Dashboard from "../dashboard/Dashboard";
 import LocalAmbassadorInfoBox from "./LocalAmbassadorInfoBox";
 import HubHeadlineContainer from "./HubHeadlineContainer";
 import HubSupporters from "./HubSupporters";
-import { DePrio1Willkommen, EnPrio1Welcome } from "../../../devlink";
 import theme from "../../themes/theme";
 import { PrioOneBackgroundBrowse, PrioOneBackgroundBrowseIcon } from "./CustomBackground";
+import { getCustomHubData } from "../../../public/data/customHubData";
 
 type MakeStylesProps = {
   isLocationHub: boolean;
@@ -168,6 +168,8 @@ export default function HubContent({
   if (fixed && showMoreVisible) {
     setFixed(false);
   }
+  const WelcomeComponent = getCustomHubData({ hubUrl: hubUrl })?.welcome?.[locale];
+
   return (
     <div>
       <div>
@@ -179,6 +181,7 @@ export default function HubContent({
         {isLocationHub ? (
           <div className={classes.topSectionWrapper}>
             {hubUrl === "prio1" && <PrioOneBackgroundBrowse isLoggedInUser={user ? true : false} />}
+
             <Container>
               <div className={classes.dashboardAndStatboxWrapper}>
                 {user ? (
@@ -192,17 +195,14 @@ export default function HubContent({
                       />
                     )}
                   </>
-                ) : hubUrl === "prio1" ? (
-                  locale === "de" ? (
-                    <DePrio1Willkommen />
-                  ) : (
-                    <EnPrio1Welcome />
-                  )
+                ) : WelcomeComponent ? (
+                  <WelcomeComponent />
                 ) : (
                   <LoggedOutLocationHubBox
                     headline={headline}
                     isLocationHub={isLocationHub}
                     location={hubData.name}
+                    hubUrl={hubUrl}
                   />
                 )}
                 {!isNarrowScreen &&

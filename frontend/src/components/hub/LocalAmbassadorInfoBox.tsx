@@ -97,9 +97,7 @@ export default function LocalAmbassadorInfoBox({ hubAmbassador, hubData, hubSupp
           <Typography className={classes.name}>
             {hubAmbassador?.user?.first_name} {hubAmbassador?.user?.last_name}
           </Typography>
-          <Typography>
-            {hubAmbassador?.title} {hubData.name}
-          </Typography>
+          <Typography>{hubAmbassador?.title}</Typography>
           <Button
             variant="outlined"
             className={`${classes.button} ${classes.secondaryTextColor}`}
