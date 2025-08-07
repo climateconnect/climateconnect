@@ -34,7 +34,7 @@ export async function getServerSideProps(ctx) {
     props: nullifyUndefinedValues({
       organization: organization,
       tagOptions: tagOptions,
-      allSectors: allSectors,
+      allSectors: getSectorOptionsForEditOrg(organization, allSectors),
       hubUrl: hubUrl,
       hubThemeData: hubThemeData,
     }),
@@ -63,25 +63,6 @@ export default function EditOrganizationPage({
   const [existingName, setExistingName] = useState("");
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
-
-  // add all sectors that are assigned to the organization to the possible sectors
-  // so that, when editing a project with e.g. specific sectors all sectors - even
-  // hub specific ones are available
-  if (organization && organization.sectors) {
-    for (const sector_mapping of organization.sectors) {
-      if (!sector_mapping || !sector_mapping.sector) {
-        continue;
-      }
-      const sector = sector_mapping.sector as SectorOptionType;
-      // match by sector.key
-      const exists = allSectors.find((s) => s.key === sector.key);
-      if (!exists) {
-        allSectors.push(sector);
-      }
-    }
-    // sort sectors by name
-    allSectors.sort((a, b) => (a.name < b.name ? -1 : 1));
-  }
 
   const handleSetLocationOptionsOpen = (newValue) => {
     setLocationOptionsOpen(newValue);
@@ -135,6 +116,28 @@ export default function EditOrganizationPage({
       />
     </WideLayout>
   );
+}
+
+function getSectorOptionsForEditOrg(organization, allSectors) {
+  // add all sectors that are assigned to the organization to the possible sectors
+  // so that, when editing a project with e.g. specific sectors all sectors - even
+  // hub specific ones are available
+  if (organization && organization.sectors) {
+    for (const sector_mapping of organization.sectors) {
+      if (!sector_mapping || !sector_mapping.sector) {
+        continue;
+      }
+      const sector = sector_mapping.sector as SectorOptionType;
+      // match by sector.key
+      const exists = allSectors.find((s) => s.key === sector.key);
+      if (!exists) {
+        allSectors.push(sector);
+      }
+    }
+    // sort sectors by name
+    allSectors.sort((a, b) => (a.name < b.name ? -1 : 1));
+  }
+  return allSectors
 }
 
 async function getOrganizationByUrlIfExists(organizationUrl, token, locale, hubUrl?: string) {
