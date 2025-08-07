@@ -1,4 +1,4 @@
-import { Container, Typography } from "@mui/material";
+import { Container, Theme, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import Alert from "@mui/material/Alert";
 import React, { useEffect } from "react";
@@ -15,16 +15,26 @@ import LayoutWrapper from "./LayoutWrapper";
 // @ts-ignore
 import { DevLinkProvider } from "../../../devlink/DevLinkProvider";
 
-const useStyles = makeStyles((theme) => ({
-  mainHeading: {
-    textAlign: "center",
-    margin: `${theme.spacing(4)} 0`,
-  },
-  alert: () => ({
-    width: "100%",
-    zIndex: 100,
-  }),
-}));
+interface StyleProps {
+  customTheme_default_contrastText?: string;
+  donationCampaignRunning?: boolean;
+}
+
+const useStyles = makeStyles<Theme, StyleProps>((theme) => {
+  return {
+    mainHeading: (props) => ({
+      textAlign: "center",
+      margin: `${theme.spacing(4)} 0`,
+      color: props.customTheme_default_contrastText
+        ? props.customTheme_default_contrastText
+        : theme.palette.background.default_contrastText,
+    }),
+    alert: () => ({
+      width: "100%",
+      zIndex: 100,
+    }),
+  };
+});
 
 export default function Layout({
   title,
@@ -38,10 +48,14 @@ export default function Layout({
   customTheme,
   hubUrl,
 }: any) {
-  const classes = useStyles({ donationCampaignRunning: process.env.DONATION_CAMPAIGN_RUNNING });
+  const classes = useStyles({
+    donationCampaignRunning: process.env.DONATION_CAMPAIGN_RUNNING,
+    customTheme_default_contrastText: customTheme?.palette?.background?.default_contrastText,
+  });
   const [hideAlertMessage, setHideAlertMessage] = React.useState(false);
   const [initialMessageType, setInitialMessageType] = React.useState(null as string | null);
   const [initialMessage, setInitialMessage] = React.useState("");
+
   useEffect(() => {
     const params = getParams(window.location.href);
     if (params.message) setInitialMessage(decodeURI(params.message));
