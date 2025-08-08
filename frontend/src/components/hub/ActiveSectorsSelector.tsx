@@ -28,7 +28,6 @@ const useStyles = makeStyles(() => ({
     fontWeight: 700,
   },
 }));
-
 export default function ActiveSectorsSelector({
   selectedSectors,
   sectorsToSelectFrom,

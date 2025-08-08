@@ -104,6 +104,22 @@ export default function EditProjectPage({
     hubUrl: project?.related_hubs?.length ? project.related_hubs[0] : null,
   });
 
+  // add all sectors that are assigned to the project to the possible sectors
+  // so that, when editing a project with e.g. specific sectors all sectors - even
+
+  // hub specific ones are available
+  if (project.sectors) {
+    for (const sector of project.sectors) {
+      // match by sector.key
+      const exists = sectorOptions.find((s) => s.key === sector.key);
+      if (!exists) {
+        sectorOptions.push(sector);
+      }
+    }
+    // sort sectors by name
+    sectorOptions.sort((a, b) => (a.name < b.name ? -1 : 1));
+  }
+
   project = {
     ...project,
     status: statusOptions.find((s) => s.name === project?.status),
@@ -208,6 +224,7 @@ export default function EditProjectPage({
           handleSetErrorMessage={handleSetErrorMessage}
           initialTranslations={project.translations}
           projectTypeOptions={projectTypeOptions}
+          hubUrl={hubUrl}
         />
       </WideLayout>
     );

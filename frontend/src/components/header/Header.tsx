@@ -206,8 +206,8 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
         color: props.isCustomHub
           ? theme.palette.primary.contrastText
           : props.isLandingPage
-          ? "white"
-          : theme.palette.background.default_contrastText,
+            ? "white"
+            : theme.palette.background.default_contrastText,
         borderColor: props.isCustomHub
           ? theme.palette.primary.contrastText
           : theme.palette.primary.main,
@@ -283,18 +283,26 @@ export default function Header({
   background,
   isHubPage,
   hubUrl,
-  isLocationHub, //->isLocationHub || isCustomhub -> is hubUrl also used by static links?!
   isLandingPage,
   hasHubLandingPage,
 }: HeaderProps) {
-  const { user, signOut, notifications, pathName, locale, CUSTOM_HUB_URLS } = useContext(
-    UserContext
-  );
+  const {
+    user,
+    signOut,
+    notifications,
+    pathName,
+    locale,
+    CUSTOM_HUB_URLS,
+    LOCATION_HUBS,
+  } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
-  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
+  const customHubUrls = CUSTOM_HUB_URLS || ["prio1"];
+  const isCustomHub = customHubUrls.includes(hubUrl);
+  const isLocationHub = LOCATION_HUBS.includes(hubUrl);
+
   const LINKS = getLinks(pathName, texts, isLocationHub, isCustomHub, hasHubLandingPage, hubUrl);
   const classes = useStyles({
     fixedHeader: fixedHeader,
@@ -317,16 +325,14 @@ export default function Header({
   const onNotificationsClose = () => setAnchorEl(null);
   const getLogo = () => {
     let imageUrl = "/images";
-
     if (isCustomHub) {
       return `${imageUrl}/hub_logos/ch_${hubUrl}_logo.svg`;
     }
 
     if (hubUrl && isLocationHub) {
       const logoType = transparentHeader || isLandingPage ? "white" : null;
-      return `${imageUrl}/hub_logos/ch_${hubUrl?.toLowerCase()}_logo${
-        logoType ? `_${logoType}` : ""
-      }.svg`;
+      return `${imageUrl}/hub_logos/ch_${hubUrl?.toLowerCase()}_logo${logoType ? `_${logoType}` : ""
+        }.svg`;
     }
 
     return loadDefaultLogo(transparentHeader, isMediumScreen);
@@ -916,9 +922,8 @@ const NarrowScreenDropdownMenu = ({
         <ArrowDropDownIcon className={classes.drawerItem} />
       </ListItem>
       <div
-        className={`${classes.dropDownBgColorInMobile} ${classes.dropdownMenuInMobile} ${
-          openDropdownInMobile ? classes.dropdownMenuInMobileOpen : ""
-        }`}
+        className={`${classes.dropDownBgColorInMobile} ${classes.dropdownMenuInMobile} ${openDropdownInMobile ? classes.dropdownMenuInMobileOpen : ""
+          }`}
       >
         {STATIC_PAGE_LINKS.map((link, index) => {
           return (
