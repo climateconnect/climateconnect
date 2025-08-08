@@ -16,7 +16,6 @@ import { SectorOptionType } from "../../src/types";
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
-  const { hub } = ctx.query;
   if (ctx.req && !auth_token) {
     const texts = getTexts({ page: "organization", locale: ctx.locale });
     const message = texts.log_in_to_edit_organization;
@@ -138,7 +137,7 @@ function getSectorOptionsForEditOrg(organization, allSectors) {
     // sort sectors by name
     allSectors.sort((a, b) => (a.name < b.name ? -1 : 1));
   }
-  return allSectors
+  return allSectors;
 }
 
 async function getOrganizationByUrlIfExists(organizationUrl, token, locale, hubUrl?: string) {
