@@ -30,7 +30,7 @@ Sentry.init({
 
 declare module "@mui/styles/defaultTheme" {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme {}
+  interface DefaultTheme extends Theme { }
 }
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
@@ -71,8 +71,8 @@ export default function MyApp({ Component, pageProps = {} }) {
   const ENVIRONMENT = process.env.ENVIRONMENT;
   const SOCKET_URL = process.env.SOCKET_URL;
   const CUSTOM_HUB_URLS = process.env.CUSTOM_HUB_URLS ? process.env.CUSTOM_HUB_URLS.split(",") : [];
-  const LOCATION_HUBS = process.env.NEXT_PUBLIC_LOCATION_HUBS
-    ? process.env.NEXT_PUBLIC_LOCATION_HUBS.split(",")
+  const LOCATION_HUBS = process.env.LOCATION_HUBS
+    ? process.env.LOCATION_HUBS.split(",")
     : [];
   // TODO: this should probably be decomposed
   // into individual state updates for
