@@ -3,7 +3,7 @@ import { makeStyles } from "@mui/styles";
 import Image from "next/image";
 import { Theme } from "@mui/material/styles";
 
-type Props = { hubUrl: string | undefined; texts: any };
+type Props = { hubUrl: string | undefined; texts: any | null; authStep?: string };
 
 const PRIO1_SLUG = "prio1";
 const PERTH_SLUG = "perth";
@@ -56,9 +56,9 @@ function isNumber(value: any): boolean {
   return !isNaN(parseFloat(value)) && isFinite(value);
 }
 
-export default function CustomAuthImage({ hubUrl, texts }: Props): JSX.Element | null {
+export default function CustomAuthImage({ hubUrl, texts, authStep }: Props): JSX.Element | null {
   if (!hubUrl) {
-    return <DefaultAuthImage />;
+    return <DefaultAuthImage authStep={authStep} />;
   }
 
   switch (hubUrl.toLowerCase()) {
@@ -66,25 +66,36 @@ export default function CustomAuthImage({ hubUrl, texts }: Props): JSX.Element |
       return <AuthImage texts={texts} hubSlug={PRIO1_SLUG} logoSrc="/images/logo_white.png" />;
     }
     case PERTH_SLUG: {
-      return <AuthImage texts={texts} hubSlug={PERTH_SLUG} logoSrc="/images/logo.svg" />;
+      return (
+        <AuthImage
+          texts={texts}
+          hubSlug={PERTH_SLUG}
+          authStep={authStep}
+          logoSrc="/images/logo.svg"
+        />
+      );
+    }
+    default: {
+      return <DefaultAuthImage authStep={authStep} />;
     }
   }
-
-  return <DefaultAuthImage />;
 }
 
 function AuthImage({
   texts,
   hubSlug,
+  authStep,
   logoSrc,
 }: {
   texts: any;
   hubSlug: string;
+  authStep?: string;
   logoSrc: string;
 }): JSX.Element {
   const classes = useStyles();
-
-  return (
+  return authStep ? (
+    <DefaultAuthImage authStep={authStep} />
+  ) : (
     <div className={classes.prio1root}>
       <div className={classes.prio1_imageContainer}>
         <img
@@ -105,11 +116,16 @@ function AuthImage({
   );
 }
 
-function DefaultAuthImage() {
+function DefaultAuthImage({ authStep }: { authStep?: string }): JSX.Element {
+  const finalSrc =
+    authStep === "interestAreaInfo"
+      ? "/images/sign_up/Questions-pana.svg"
+      : "/images/sign_up/mobile-login-pana.svg";
+
   return (
     <div style={{ position: "relative", width: "100%", aspectRatio: "1" }}>
       <Image
-        src="/images/sign_up/mobile-login-pana.svg"
+        src={finalSrc}
         alt="Sign Up"
         layout="fill" // Image will cover the container
         objectFit="contain" // Ensures it fills without stretching

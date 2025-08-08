@@ -105,10 +105,9 @@ export default function AddInfo({
   ];
 
   const messages = {
-    submitMessage: texts.submit,
+    submitMessage: texts.next_step,
     headerMessage: "",
   };
-
   const formAction = {
     href: getLocalePrefix(locale) + "/addinfo",
     method: "GET",
@@ -123,7 +122,7 @@ export default function AddInfo({
   const StepCounter = () => (
     <Typography variant="subtitle1" component="div">
       {isSmallScreen && <GoBackArrow />}
-      {texts.step_2_of_2_sign_up}
+      {texts.step_2_of_3_sign_up}
     </Typography>
   );
 
