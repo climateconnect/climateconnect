@@ -91,7 +91,7 @@ export default function HubLinkButton({ hub }: { hub: LinkedHub }) {
     const baseUrl = hub.hubUrl;
     const hash = window.location.hash;
     return `${baseUrl}${hash}`;
-  }
+  };
   const linkUrl = getLinkUrl();
   return (
     <Link href={linkUrl}>

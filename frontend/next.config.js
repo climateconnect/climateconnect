@@ -20,6 +20,7 @@ module.exports = withBundleAnalyzer({
     "ENVIRONMENT",
     "GOOGLE_ANALYTICS_CODE",
     "LATEST_NEWSLETTER_LINK",
+    "LOCATION_HUBS",
     "LETS_ENCRYPT_FILE_CONTENT",
     "SOCKET_URL",
     "WEBFLOW_API_TOKEN",

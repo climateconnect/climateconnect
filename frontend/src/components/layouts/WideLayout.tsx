@@ -61,7 +61,6 @@ type Props = {
   isHubPage?: boolean;
   hubUrl?: string;
   customFooterImage?: string;
-  isLocationHub?: boolean;
   noHeader?: boolean;
   footerTextColor?: string;
   customTheme?: any;
@@ -150,7 +149,6 @@ export default function WideLayout({
           background={headerBackground}
           isHubPage={isHubPage}
           hubUrl={hubUrl}
-          isLocationHub={isLocationHub}
           hasHubLandingPage={hasHubLandingPage}
           isLandingPage={isLandingPage}
         />

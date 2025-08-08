@@ -137,7 +137,7 @@ function getSectorOptionsForEditOrg(organization, allSectors) {
     // sort sectors by name
     allSectors.sort((a, b) => (a.name < b.name ? -1 : 1));
   }
-  return allSectors
+  return allSectors;
 }
 
 async function getOrganizationByUrlIfExists(organizationUrl, token, locale, hubUrl?: string) {

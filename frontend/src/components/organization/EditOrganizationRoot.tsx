@@ -137,7 +137,7 @@ export default function EditOrganizationRoot({
             pathname: "/organizations/" + organization.url_slug,
             query: {
               message: texts.successfully_edited_organization,
-              hub: hubUrl
+              hub: hubUrl,
             },
           });
         })
