@@ -94,7 +94,6 @@ export default function WideLayout({
   resetAlertMessage,
   isHubPage,
   hubUrl,
-  isLocationHub,
   customFooterImage,
   noHeader,
   footerTextColor,
