@@ -49,7 +49,7 @@ export default function Layout({
   hubUrl,
 }: any) {
   const classes = useStyles({
-    donationCampaignRunning: process.env.DONATION_CAMPAIGN_RUNNING,
+    donationCampaignRunning: !!process.env.DONATION_CAMPAIGN_RUNNING,
     customTheme_default_contrastText: customTheme?.palette?.background?.default_contrastText,
   });
   const [hideAlertMessage, setHideAlertMessage] = React.useState(false);

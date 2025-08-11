@@ -389,10 +389,9 @@ export default function SettingsPage({ settings, setSettings, token, setMessage,
       </form>
 
       <Typography
-        className={classes.lowerHeaders}
+        className={`${classes.lowerHeaders} ${classes.textColor}`}
         variant="h5"
         component="h2"
-        className={classes.textColor}
       >
         {texts.change_linked_email}
       </Typography>
