@@ -193,12 +193,12 @@ class OrganizationSectorMapping(models.Model):
 
 class UserProfileSectorMapping(models.Model):
     sector = models.ForeignKey(
-        Sector, on_delete=models.CASCADE, related_name="userProfile_sector_mapping"
+        Sector, on_delete=models.CASCADE, related_name="user_profile_sector_mapping"
     )
-    userProfile = models.ForeignKey(
+    user_profile = models.ForeignKey(
         UserProfile,
         on_delete=models.CASCADE,
-        related_name="userProfile_sector_mapping",
+        related_name="user_profile_sector_mapping",
     )
 
     created_at = models.DateTimeField(
@@ -223,8 +223,8 @@ class UserProfileSectorMapping(models.Model):
         app_label = "climateconnect_api"
         verbose_name = "UserProfile Sector Mapping"
         ordering = ["id"]
-        unique_together = ("sector", "userProfile")
+        unique_together = ("sector", "user_profile")
 
     #
     def __str__(self):
-        return f"{self.sector.name}--{self.userProfile.name}"
+        return f"{self.sector.name}--{self.user_profile.name}"

@@ -21,6 +21,7 @@ type ActiveSectorsSelectorProps = {
   maxSelectedNumber?: number;
   onSelectNewSector: (event: any) => void;
   onClickRemoveSector: (sector: selectedSector) => void;
+  hideTitle?: boolean;
 };
 
 const useStyles = makeStyles(() => ({
@@ -34,15 +35,18 @@ export default function ActiveSectorsSelector({
   maxSelectedNumber = 3,
   onSelectNewSector,
   onClickRemoveSector,
+  hideTitle = false,
 }: ActiveSectorsSelectorProps) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   return (
     <div>
-      <Typography color="text" className={classes.headline}>
-        {texts.add_sectors_that_fit}
-      </Typography>
+      {!hideTitle && (
+        <Typography color="text" className={classes.headline}>
+          {texts.add_sectors_that_fit}
+        </Typography>
+      )}
       <SectorsPreview
         allowCreate={true}
         editMode={true}

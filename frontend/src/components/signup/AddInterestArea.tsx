@@ -153,6 +153,7 @@ export default function AddInterestArea({
           sectorsToSelectFrom={availableSectors}
           onSelectNewSector={handleSectorSelection}
           onClickRemoveSector={handleSectorRemoval}
+          hideTitle={true}
         />
 
         <Button

@@ -203,7 +203,7 @@ class SignUpView(APIView):
                 [
                     UserProfileSectorMapping(
                         sector=sector,
-                        userProfile=user_profile,
+                        user_profile=user_profile,
                         order=len(sectors) - i,
                     )
                     for i, sector in enumerate(sectors)
