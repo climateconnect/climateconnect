@@ -142,7 +142,7 @@ export default function AddInterestArea({
         {!isSmallScreen && (
           <>
             <Typography className={classes.textColor} variant="h1">
-              {texts.area_of_interest}
+              {texts.your_area_of_interest}
             </Typography>
             <Typography>{texts.signup_step_3_headline}</Typography>
           </>

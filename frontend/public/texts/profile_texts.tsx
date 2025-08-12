@@ -348,9 +348,13 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       en: `${profile?.first_name} is`,
       de: `${profile?.first_name} ist`,
     },
-    area_of_interest: {
+    your_area_of_interest: {
       en: "Your areas of interest",
       de: "Deine Interessensgebiete",
+    },
+    area_of_interest: {
+      en: "Areas of interest",
+      de: "Interessensgebiete",
     },
   };
 }

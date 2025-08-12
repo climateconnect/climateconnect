@@ -22,6 +22,7 @@ type ActiveSectorsSelectorProps = {
   onSelectNewSector: (event: any) => void;
   onClickRemoveSector: (sector: selectedSector) => void;
   hideTitle?: boolean;
+  title?: string;
 };
 
 const useStyles = makeStyles(() => ({
@@ -36,6 +37,7 @@ export default function ActiveSectorsSelector({
   onSelectNewSector,
   onClickRemoveSector,
   hideTitle = false,
+  title,
 }: ActiveSectorsSelectorProps) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -44,7 +46,7 @@ export default function ActiveSectorsSelector({
     <div>
       {!hideTitle && (
         <Typography color="text" className={classes.headline}>
-          {texts.add_sectors_that_fit}
+          {title || texts.add_sectors_that_fit}
         </Typography>
       )}
       <SectorsPreview
