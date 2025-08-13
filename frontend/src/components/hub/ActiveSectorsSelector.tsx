@@ -6,13 +6,13 @@ import UserContext from "../context/UserContext";
 import SectorsPreview from "./SectorsPreview";
 
 type selectedSector = {
-  hub_type: string;
+  hub_type?: string;
   icon?: string;
   landing_page_component?: string;
   name: string;
   quick_info?: string;
   thumbnail_image?: string;
-  url_slug: string;
+  url_slug?: string;
 };
 
 type ActiveSectorsSelectorProps = {
@@ -21,6 +21,8 @@ type ActiveSectorsSelectorProps = {
   maxSelectedNumber?: number;
   onSelectNewSector: (event: any) => void;
   onClickRemoveSector: (sector: selectedSector) => void;
+  hideTitle?: boolean;
+  title?: string;
 };
 
 const useStyles = makeStyles(() => ({
@@ -34,15 +36,19 @@ export default function ActiveSectorsSelector({
   maxSelectedNumber = 3,
   onSelectNewSector,
   onClickRemoveSector,
+  hideTitle = false,
+  title,
 }: ActiveSectorsSelectorProps) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   return (
     <div>
-      <Typography color="text" className={classes.headline}>
-        {texts.add_sectors_that_fit}
-      </Typography>
+      {!hideTitle && (
+        <Typography color="text" className={classes.headline}>
+          {title || texts.add_sectors_that_fit}
+        </Typography>
+      )}
       <SectorsPreview
         allowCreate={true}
         editMode={true}
