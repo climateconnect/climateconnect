@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     fontWeight: "bold",
     padding: theme.spacing(4),
+    color: theme.palette.background.default_contrastText,
   },
   cardHeaderBox: {
     display: "flex",
@@ -124,11 +125,7 @@ export default function AddInterestArea({
   return (
     <Card className={classes.root}>
       {isSmallScreen && (
-        <Typography
-          className={classes.textColor}
-          variant="h1"
-          className={classes.smallScreenHeadline}
-        >
+        <Typography variant="h1" className={classes.smallScreenHeadline}>
           {texts.sign_up}
         </Typography>
       )}
