@@ -20,7 +20,7 @@ const useStyles = makeStyles(() => ({
     right: "1%",
     display: "flex",
     flexDirection: "column",
-    maxWidth: 315,
+    maxWidth: 350,
   },
   mobileButton: {
     width: "100%",
