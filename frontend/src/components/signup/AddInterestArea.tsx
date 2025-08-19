@@ -125,9 +125,12 @@ export default function AddInterestArea({
   return (
     <Card className={classes.root}>
       {isSmallScreen && (
-        <Typography variant="h1" className={classes.smallScreenHeadline}>
-          {texts.sign_up}
-        </Typography>
+        <>
+          <Typography variant="h1" className={classes.smallScreenHeadline}>
+            {texts.sign_up}
+          </Typography>
+          <Typography>{texts.signup_step_3_headline}</Typography>
+        </>
       )}
 
       <Box className={classes.cardHeaderBox}>
