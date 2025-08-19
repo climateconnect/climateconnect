@@ -29,7 +29,7 @@ export async function getServerSideProps(ctx) {
     getAvailabilityOptions(auth_token, ctx.locale),
     getUserProfile(auth_token, ctx.locale),
     getHubTheme(hubUrl),
-    getSectorOptions(ctx.locale),
+    getSectorOptions(ctx.locale, hubUrl),
   ]);
 
   return {
