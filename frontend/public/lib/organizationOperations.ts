@@ -10,7 +10,7 @@ export function parseOrganization(organization, editMode: boolean = false) {
     types: organization.types.map((t) => ({ ...t.organization_tag, key: t.organization_tag.id })),
     language: organization.language,
     translations: organization.translations,
-    hubs: organization.hubs,
+    sectors: organization.sectors,
     number_of_followers: organization.number_of_followers,
     info: getOrganizationInfo(organization, editMode) as any,
   };
@@ -65,8 +65,8 @@ function getOrganizationInfo(organization, editMode) {
     about: organization.about,
   };
 
-  const hubs = {
-    hubs: organization.hubs,
+  const sectors = {
+    sectors: organization.sectors.sort((a, b) => a.order - b.order).map((s) => s.sector),
   };
 
   const orgSizeAndInvolvement = {
@@ -81,7 +81,7 @@ function getOrganizationInfo(organization, editMode) {
     return {
       ...info,
       ...orgSizeAndInvolvement,
-      ...hubs,
+      ...sectors,
     };
   } else {
     return {
@@ -89,7 +89,7 @@ function getOrganizationInfo(organization, editMode) {
       organization_size_and_involvement: {
         ...orgSizeAndInvolvement,
       },
-      ...hubs,
+      ...sectors,
     };
   }
 }

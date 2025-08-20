@@ -139,6 +139,7 @@ def get_project_description(project: Project, language_code: str) -> str:
     return project.description
 
 
+# TODO (Karol): remove ProjectTags
 def get_projecttag_name(tag: ProjectTags, language_code: str) -> str:
     lang_translation_attr = "name_{}_translation".format(language_code)
     if hasattr(tag, lang_translation_attr):
@@ -219,6 +220,7 @@ def is_part_of_project(user, project):
     return ProjectMember.objects.filter(project=project, user=user).count() > 0
 
 
+# TODO (Karol): update this function to use the sectors instead of tags
 def get_similar_projects(url_slug: str, return_count=5):
     """Returns a list of similar projects to the given project input
     Arguments:

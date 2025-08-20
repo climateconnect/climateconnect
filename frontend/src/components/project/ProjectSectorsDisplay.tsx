@@ -6,7 +6,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
-  categories: (props) => ({
+  sectors: (props) => ({
     display: "flex",
     marginBottom: theme.spacing(0.75),
     background: props.hovering ? "#e1e1e147" : "auto",
@@ -15,7 +15,7 @@ const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
     paddingBottom: props.hovering ? theme.spacing(1) : 0,
     alignItems: "center",
   }),
-  categoryText: {
+  sectorText: {
     marginLeft: theme.spacing(0.5),
     fontSize: 15,
     maxWidth: "250px",
@@ -28,10 +28,10 @@ const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
   },
 }));
 
-export default function ProjectCategoriesDisplay({
-  main_project_tag,
+export default function ProjectSectorsDisplay({
+  main_project_sector,
   hovering,
-  projectTagClassName,
+  projectSectorClassName,
   color,
   iconClassName,
   className,
@@ -41,13 +41,13 @@ export default function ProjectCategoriesDisplay({
   const texts = getTexts({ page: "project", locale: locale });
   return (
     <Tooltip title={texts.categories}>
-      <div className={`${classes.categories} ${className}`}>
+      <div className={`${classes.sectors} ${className}`}>
         <ExploreIcon
           className={`${iconClassName ? iconClassName : classes.icon}`}
           color={color && color}
         />{" "}
-        <Typography className={`${classes.categoryText} ${projectTagClassName}`}>
-          {main_project_tag}
+        <Typography className={`${classes.sectorText} ${projectSectorClassName}`}>
+          {main_project_sector}
         </Typography>
       </div>
     </Tooltip>

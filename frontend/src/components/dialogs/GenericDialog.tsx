@@ -152,7 +152,7 @@ export default function GenericDialog({
         {useApplyButton && applyText && !showApplyAtBottom && (
           <>
             {applyIcon && isSmallScreen ? (
-              <IconButton className={classes.saveIconButton} size="large">
+              <IconButton onClick={onApply} className={classes.saveIconButton} size="large">
                 <applyIcon.icon />
               </IconButton>
             ) : (

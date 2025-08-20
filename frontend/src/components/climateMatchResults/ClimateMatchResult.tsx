@@ -191,7 +191,7 @@ export default function ClimateMatchResult({ suggestion, pos }) {
 const getSuggestionHref = (locale, suggestion) => {
   const ressourceNamePlural = `${suggestion.ressource_type}s`;
   if (suggestion.ressource_type === "idea") {
-    const hubUrlSlug = `/hubs/${suggestion?.hub_shared_in?.url_slug}`;
+    const hubUrlSlug = `/hubs/${suggestion?.hub_shared_in?.url_slug}/browse`;
     const urlPrefix = getLocalePrefix(locale) + hubUrlSlug;
     return `${urlPrefix}?idea=${suggestion.url_slug}#ideas`;
   }

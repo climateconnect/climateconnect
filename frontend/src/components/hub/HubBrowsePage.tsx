@@ -1,94 +1,85 @@
-import { Fab, Typography, useMediaQuery } from "@mui/material";
+import { useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import parseHtml from "html-react-parser";
 import Head from "next/head";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
-import { apiRequest, getLocalePrefix } from "../../public/lib/apiOperations";
 import {
   getOrganizationTagsOptions,
-  getProjectTagsOptions,
   getProjectTypeOptions,
   getSkillsOptions,
-} from "../../public/lib/getOptions";
-import { getAllHubs } from "../../public/lib/hubOperations";
-import { getImageUrl } from "../../public/lib/imageOperations";
-import { getLocationFilteredBy } from "../../public/lib/locationOperations";
-import getTexts from "../../public/texts/texts";
-import BrowseContent from "../../src/components/browse/BrowseContent";
-import UserContext from "../../src/components/context/UserContext";
-import BrowseExplainer from "../../src/components/hub/BrowseExplainer";
-import FashionDescription from "../../src/components/hub/description/FashionDescription";
-import FoodDescription from "../../src/components/hub/description/FoodDescription";
-import HubContent from "../../src/components/hub/HubContent";
-import HubHeaderImage from "../../src/components/hub/HubHeaderImage";
-import NavigationSubHeader from "../../src/components/hub/NavigationSubHeader";
-import WideLayout from "../../src/components/layouts/WideLayout";
-import DonationCampaignInformation from "../../src/components/staticpages/donate/DonationCampaignInformation";
-import { retrievePage } from "../../src/utils/webflow";
-import AddIcon from "@mui/icons-material/Add";
+  getSectorOptions,
+} from "../../../public/lib/getOptions";
+import { extractHubUrlsFromContext, getAllHubs } from "../../../public/lib/hubOperations";
+import { getImageUrl } from "../../../public/lib/imageOperations";
+import { getLocationFilteredBy } from "../../../public/lib/locationOperations";
+import getTexts from "../../../public/texts/texts";
+import BrowseContent from "../browse/BrowseContent";
+import UserContext from "../context/UserContext";
+import BrowseExplainer from "./BrowseExplainer";
+import HubContent from "./HubContent";
+import HubHeaderImage from "./HubHeaderImage";
+import NavigationSubHeader from "./NavigationSubHeader";
+import WideLayout from "../layouts/WideLayout";
+import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
 import { Theme } from "@mui/material/styles";
-import theme from "../../src/themes/hubTheme";
-import BrowseContext from "../../src/components/context/BrowseContext";
-import { transformThemeData } from "../../src/themes/transformThemeData";
-import getHubTheme from "../../src/themes/fetchHubTheme";
-import isLocationHubLikeHub from "../../public/lib/isLocationHubLikeHub";
-import { FilterProvider } from "../../src/components/provider/FilterProvider";
+import theme from "../../themes/hubTheme";
+import BrowseContext from "../context/BrowseContext";
+import { transformThemeData } from "../../themes/transformThemeData";
+import getHubTheme from "../../themes/fetchHubTheme";
+import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
+import { FilterProvider } from "../provider/FilterProvider";
+import {
+  getHubAmbassadorData,
+  getHubData,
+  getHubSupportersData,
+  getLinkedHubsData,
+} from "../../../public/lib/getHubData";
+import { retrieveDescriptionFromWebflow } from "../../utils/webflow";
+import { HubDescription } from "./description/HubDescription";
+import { FabShareButton } from "./FabShareButton";
 
 const useStyles = makeStyles((theme) => ({
-  moreInfoSoon: {
-    fontWeight: 600,
-    maxWidth: 800,
-    marginTop: theme.spacing(2),
-    textAlign: "center",
-  },
   content: {
     position: "relative",
   },
 }));
 
-type ShareProjectMakeStyleProps = {
-  isCustomHub: boolean;
-};
+export interface HubBrowsePageProps {
+  headline: string;
+  hubUrl: string;
+  subHubUrl: string;
+  image_attribution: string;
+  image: string;
+  isLocationHub: boolean;
+  name: string;
+  quickInfo: any;
+  statBoxTitle: string;
+  stats: any;
+  subHeadline: string;
+  welcomeMessageLoggedIn: string;
+  welcomeMessageLoggedOut: string;
+  initialLocationFilter: any;
+  filterChoices: any;
+  allHubs: any[];
+  hubLocation: any;
+  hubData: any;
+  hubDescription: any;
+  projectTypes: any[];
+  hubThemeData: any;
+  linkedHubs: any[];
+}
 
-const shareProjectFabStyle = makeStyles((theme) => ({
-  fabShareProject: (props: ShareProjectMakeStyleProps) => ({
-    position: "fixed",
-    background: props.isCustomHub
-      ? theme.palette.background.default_contrastText
-      : theme.palette.primary.light,
-    color: props.isCustomHub ? theme.palette.background.default : "default",
-    // bottom: theme.spacing(5),
-    right: theme.spacing(3),
-  }),
-}));
+export async function getHubBrowseServerSideProps(ctx) {
+  let hubUrl = ctx.query.hubUrl;
+  let { subHub } = extractHubUrlsFromContext(ctx);
 
-const DESCRIPTION_WEBFLOW_LINKS = {
-  energy: {
-    en: "energy-en",
-    de: "energie-de",
-  },
-  mobility: {
-    de: "mobilitat-de",
-    en: "mobility-en",
-  },
-  biodiversity: {
-    de: "biodiversitat",
-    en: "biodiversity-en",
-  },
-  landuse: {
-    de: "landuse-de",
-    en: "landuse-en",
-  },
-};
-
-//potentially switch back to getinitialprops here?!
-export async function getServerSideProps(ctx) {
-  const hubUrl = ctx.query.hubUrl;
+  if (subHub) {
+    hubUrl = subHub;
+  }
 
   const [
     hubData,
-    project_categories,
     organization_types,
     skills,
     location_filtered_by,
@@ -96,9 +87,10 @@ export async function getServerSideProps(ctx) {
     hubDescription,
     projectTypes,
     hubThemeData,
+    linkedHubs,
+    sectorOptions,
   ] = await Promise.all([
     getHubData(hubUrl, ctx.locale),
-    getProjectTagsOptions(hubUrl, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
     getLocationFilteredBy(ctx.query),
@@ -106,11 +98,15 @@ export async function getServerSideProps(ctx) {
     retrieveDescriptionFromWebflow(ctx.query, ctx.locale),
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
+    getLinkedHubsData(hubUrl),
+    getSectorOptions(ctx.locale, hubUrl),
   ]);
+
   return {
     props: {
-      hubUrl: hubUrl,
-      isLocationHub: isLocationHubLikeHub(hubData?.hub_type),
+      hubUrl: ctx.query.hubUrl,
+      subHubUrl: subHub || null,
+      isLocationHub: isLocationHubLikeHub(hubData?.hub_type, hubData?.parent_hub),
       hubData: hubData,
       name: hubData?.name ?? null,
       headline: hubData?.headline ?? null,
@@ -122,9 +118,9 @@ export async function getServerSideProps(ctx) {
       stats: hubData?.stats ?? null,
       statBoxTitle: hubData?.stat_box_title ?? null,
       image_attribution: hubData?.image_attribution ?? null,
-      hubLocation: hubData?.location?.length > 0 ? hubData.location[0] : null,
+      hubLocation: hubData?.location?.length > 0 ? hubData?.location[0] : null,
       filterChoices: {
-        project_categories: project_categories,
+        sectors: sectorOptions,
         organization_types: organization_types,
         skills: skills,
       },
@@ -134,13 +130,15 @@ export async function getServerSideProps(ctx) {
       hubDescription: hubDescription,
       projectTypes: projectTypes,
       hubThemeData: hubThemeData,
+      linkedHubs: linkedHubs || [],
     },
   };
 }
 
-export default function Hub({
+export default function HubBrowsePage({
   headline,
   hubUrl,
+  subHubUrl,
   image_attribution,
   image,
   isLocationHub,
@@ -159,26 +157,34 @@ export default function Hub({
   hubDescription,
   projectTypes,
   hubThemeData,
-}) {
-  const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
+  linkedHubs,
+}: HubBrowsePageProps) {
+  // donationGoal was removed in PR #1560?
+  const { locale, CUSTOM_HUB_URLS, donationGoal } = useContext(UserContext);
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const classes = useStyles();
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
   const token = new Cookies().get("auth_token");
   const [hubAmbassador, setHubAmbassador] = useState(null);
   const [hubSupporters, setHubSupporters] = useState(null);
-  const contentRef = useRef(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  // Do we need this? this line was removed on PR ##1560
+  const donationGoalActive = donationGoal && donationGoal.hub === hubUrl;
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
 
   useEffect(() => {
     (async () => {
-      const retrievedHubAmbassador = await getHubAmbassadorData(hubUrl, locale);
+      const retrievedHubAmbassador = await getHubAmbassadorData(
+        subHubUrl ? subHubUrl : hubUrl,
+        locale
+      );
       setHubAmbassador(retrievedHubAmbassador);
       if (isLocationHub) {
         const retrivedHubSupporters = await getHubSupportersData(hubUrl, locale);
         setHubSupporters(retrivedHubSupporters);
       }
     })();
-  }, [locale]);
+  }, [hubUrl, subHubUrl, locale]);
 
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
@@ -190,7 +196,7 @@ export default function Hub({
   };
 
   const scrollToSolutions = () => {
-    contentRef.current.scrollIntoView({ behavior: "smooth" });
+    contentRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const customSearchBarLabels = {
@@ -214,6 +220,7 @@ export default function Hub({
   const contextValues = {
     projectTypes: projectTypes,
   };
+
   return (
     <>
       {hubDescription && hubDescription.headContent && (
@@ -222,19 +229,22 @@ export default function Hub({
       <WideLayout
         title={headline}
         hideAlert
-        headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
+        headerBackground={
+          customTheme ? customTheme.palette.header.background : theme.palette.background.default
+        }
         image={getImageUrl(image)}
         isHubPage
         hubUrl={hubUrl}
-        hideDonationCampaign
         customFooterImage={
           hubData?.custom_footer_image && getImageUrl(hubData?.custom_footer_image)
         }
         isLocationHub={isLocationHub}
-        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+        customTheme={customTheme}
+        hasHubLandingPage={hubData?.landing_page_component ? true : false}
       >
         <div className={classes.content}>
-          {<DonationCampaignInformation />}
+          {/* donationGoalActive was removed on PR #1560  */}
+          {donationGoalActive && <DonationCampaignInformation />}
           {!isLocationHub && (
             <NavigationSubHeader
               type={"hub"}
@@ -250,7 +260,7 @@ export default function Hub({
               image={getImageUrl(image)}
               source={image_attribution}
               onClose={closeHubHeaderImage}
-              isLocationHub={isLocationHub}
+              isLocationHub={isLocationHub} // TODO: needed?
               statBoxTitle={statBoxTitle}
               stats={stats}
             />
@@ -276,10 +286,8 @@ export default function Hub({
             welcomeMessageLoggedOut={welcomeMessageLoggedOut}
             isLocationHub={isLocationHub}
             location={hubLocation}
-            allHubs={allHubs}
             hubData={hubData}
             image={getImageUrl(image)}
-            source={image_attribution}
           />
           {!isLocationHub && <BrowseExplainer />}
           <BrowseContext.Provider value={contextValues}>
@@ -288,7 +296,7 @@ export default function Hub({
               initialLocationFilter={initialLocationFilter}
               locale={locale}
               token={token}
-              hubUrl={hubUrl}
+              hubUrl={subHubUrl || hubUrl}
             >
               <BrowseContent
                 contentRef={contentRef}
@@ -298,15 +306,12 @@ export default function Hub({
                 hideMembers={!isLocationHub}
                 hubName={name}
                 initialLocationFilter={initialLocationFilter}
-                // TODO: is this still needed?
-                // initialOrganizations={initialOrganizations}
-                // initialProjects={initialProjects}
                 allHubs={allHubs}
-                hubLocation={hubLocation}
                 hubData={hubData}
                 hubUrl={hubUrl}
-                tabNavigationRequested={requestTabNavigation}
                 hubSupporters={hubSupporters}
+                linkedHubs={linkedHubs}
+                isLocationHub={isLocationHub}
               />
             </FilterProvider>
           </BrowseContext.Provider>
@@ -323,98 +328,3 @@ export default function Hub({
     </>
   );
 }
-
-const FabShareButton = ({ locale, hubAmbassador, isCustomHub, hubUrl }) => {
-  const fabClass = shareProjectFabStyle({ isCustomHub: isCustomHub });
-  const queryString = hubUrl ? `?hub=${hubUrl}` : "";
-  return (
-    <Fab
-      className={fabClass.fabShareProject}
-      size="medium"
-      color="primary"
-      href={`${getLocalePrefix(locale)}/share${queryString}`}
-      sx={{ bottom: (theme) => (hubAmbassador ? theme.spacing(11.5) : theme.spacing(5)) }}
-      // onClick={}
-    >
-      <AddIcon />
-    </Fab>
-  );
-};
-
-const HubDescription = ({ hub, texts }) => {
-  const classes = useStyles();
-  if (hub === "food") return <FoodDescription />;
-  if (hub === "fashion") return <FashionDescription />;
-  return (
-    <Typography className={classes.moreInfoSoon}>
-      {texts.more_info_about_hub_coming_soon}
-    </Typography>
-  );
-};
-
-const WEBFLOW_BASE_LINK = "https://climateconnect.webflow.io/hub-texts/";
-
-const retrieveDescriptionFromWebflow = async (query, locale) => {
-  if (
-    DESCRIPTION_WEBFLOW_LINKS[query?.hubUrl] &&
-    DESCRIPTION_WEBFLOW_LINKS[query?.hubUrl][locale]
-  ) {
-    const props = await retrievePage(
-      WEBFLOW_BASE_LINK + DESCRIPTION_WEBFLOW_LINKS[query.hubUrl][locale]
-    );
-    return props;
-  }
-  return null;
-};
-
-const getHubData = async (url_slug, locale) => {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: `/api/hubs/${url_slug}/`,
-      locale: locale,
-    });
-    return resp.data;
-  } catch (err: any) {
-    if (err.response && err.response.data) {
-      console.log(err.response.data);
-      console.error("Error in getHubData!: " + err.response.data.detail);
-    }
-    return null;
-  }
-};
-
-const getHubAmbassadorData = async (url_slug, locale) => {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: `/api/hubs/${url_slug}/ambassador/`,
-      locale: locale,
-    });
-    return resp.data;
-  } catch (err: any) {
-    if (err.response && err.response.data)
-      console.log("Error in getHubAmbassadorData: " + err.response.data.detail);
-    console.log(err);
-    return null;
-  }
-};
-const getHubSupportersData = async (url_slug, locale) => {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: `/api/hubs/${url_slug}/supporters/`,
-      locale: locale,
-    });
-    return resp.data;
-  } catch (err: any) {
-    //Don't log an error if there simply are no supporters for this hub
-    if (err?.response?.status === 404) {
-      return null;
-    }
-    if (err.response && err.response.data)
-      console.log("Error in getHubSupportersData: " + err.response.data.detail);
-    console.log(err);
-    return null;
-  }
-};

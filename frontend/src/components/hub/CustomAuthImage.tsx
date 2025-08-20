@@ -6,6 +6,7 @@ import { Theme } from "@mui/material/styles";
 type Props = { hubUrl: string | undefined; texts: any };
 
 const PRIO1_SLUG = "prio1";
+const PERTH_SLUG = "perth";
 
 const useStyles = makeStyles((theme: Theme) => ({
   prio1root: {
@@ -57,36 +58,42 @@ function isNumber(value: any): boolean {
 
 export default function CustomAuthImage({ hubUrl, texts }: Props): JSX.Element | null {
   if (!hubUrl) {
-    console.log("undefined");
     return <DefaultAuthImage />;
   }
 
   switch (hubUrl.toLowerCase()) {
     case PRIO1_SLUG: {
-      return <Prio1AuthImage texts={texts} />;
+      return <AuthImage texts={texts} hubSlug={PRIO1_SLUG} logoSrc="/images/logo_white.png" />;
+    }
+    case PERTH_SLUG: {
+      return <AuthImage texts={texts} hubSlug={PERTH_SLUG} logoSrc="/images/logo.svg" />;
     }
   }
 
   return <DefaultAuthImage />;
 }
 
-function Prio1AuthImage({ texts }) {
+function AuthImage({
+  texts,
+  hubSlug,
+  logoSrc,
+}: {
+  texts: any;
+  hubSlug: string;
+  logoSrc: string;
+}): JSX.Element {
   const classes = useStyles();
 
   return (
     <div className={classes.prio1root}>
       <div className={classes.prio1_imageContainer}>
         <img
-          src={"/images/custom_hubs/" + PRIO1_SLUG + ".png"}
+          src={`/images/hub_logos/ch_${hubSlug}_logo.svg`}
           alt={texts.climate_connect_logo}
           className={classes.prio1_image}
         />
         <div className={classes.prio1_X}>X</div>
-        <img
-          src="/images/logo_white.png"
-          alt={texts.climate_connect_logo}
-          className={classes.prio1_image}
-        />
+        <img src={logoSrc} alt={texts.climate_connect_logo} className={classes.prio1_image} />
       </div>
 
       <p className={classes.prio1_text}>
