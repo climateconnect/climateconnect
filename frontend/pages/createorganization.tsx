@@ -6,7 +6,7 @@ import React, { useContext, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../public/data/role_types";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
-import {getSectorOptions} from "../public/lib/getOptions";
+import { getSectorOptions } from "../public/lib/getOptions";
 import { blobFromObjectUrl } from "../public/lib/imageOperations";
 import {
   getLocationValue,
