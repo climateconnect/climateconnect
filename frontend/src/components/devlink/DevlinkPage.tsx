@@ -33,6 +33,7 @@ export default function DevlinkPage({
         noHeader={noHeader}
         transparentHeader={transparentHeader}
         isHubPage={isHubPage}
+        // TODO: Remove this prop when the WideLayout is not used isLocationHub props.
         isLocationHub={isLocationHub}
         hubUrl={hubUrl}
         fixedHeader={fixedHeader}

@@ -17,12 +17,6 @@ export type Link = {
 };
 
 export type HubConfig = {
-  welcome:
-    | {
-        en: any;
-        de: any;
-      }
-    | string;
   hubTabLinkNarrowScreen?: Link;
   headerLinks: Link[];
   headerStaticLinks?: Link[];

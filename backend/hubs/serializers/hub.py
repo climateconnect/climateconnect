@@ -56,6 +56,7 @@ class HubSerializer(serializers.ModelSerializer):
             "landing_page_component",
             "parent_hub",
             "children",
+            "welcome_box_component",
         )
 
     def get_stats(self, obj):

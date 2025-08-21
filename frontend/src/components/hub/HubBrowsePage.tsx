@@ -38,6 +38,7 @@ import {
 import { retrieveDescriptionFromWebflow } from "../../utils/webflow";
 import { HubDescription } from "./description/HubDescription";
 import { FabShareButton } from "./FabShareButton";
+import { useDevlinkComponent } from "../hooks/useDevlinkComponent";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -171,7 +172,11 @@ export default function HubBrowsePage({
   // Do we need this? this line was removed on PR ##1560
   const donationGoalActive = donationGoal && donationGoal.hub === hubUrl;
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
-
+  const { DevlinkComponent, isLoading: isLoadingWelcomebox } = useDevlinkComponent(
+    hubData,
+    hubData?.welcome_box_component,
+    locale
+  );
   useEffect(() => {
     (async () => {
       const retrievedHubAmbassador = await getHubAmbassadorData(
@@ -288,6 +293,8 @@ export default function HubBrowsePage({
             location={hubLocation}
             hubData={hubData}
             image={getImageUrl(image)}
+            DevlinkComponent={DevlinkComponent}
+            isLoadingWelcomebox={isLoadingWelcomebox}
           />
           {!isLocationHub && <BrowseExplainer />}
           <BrowseContext.Provider value={contextValues}>
