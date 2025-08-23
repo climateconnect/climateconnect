@@ -98,7 +98,6 @@ export default function BrowseContent({
   initialOrganizations,
   initialProjects,
   customSearchBarLabels,
-  errorMessage,
   filterChoices,
   hideMembers,
   hubName,
@@ -135,12 +134,9 @@ export default function BrowseContent({
   const token = new Cookies().get("auth_token");
   const isLocationHubFlag = isLocationHub || isLocationHubLikeHub(hubData?.hub_type);
 
-  const {
-    filters,
-    handleUpdateFilterValues,
-    handleSetErrorMessage,
-    handleApplyNewFilters: applyNewFilters,
-  } = useContext(FilterContext);
+  const { filters, handleSetErrorMessage, handleApplyNewFilters: applyNewFilters } = useContext(
+    FilterContext
+  );
 
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles();
@@ -230,7 +226,8 @@ export default function BrowseContent({
       };
       setNonFilterParams(splitQueryObject.nonFilters);
       if (splitQueryObject?.nonFilters?.message) {
-        showFeedbackMessage({
+        // ? is needed due to the context type {showFeedbackMessage?: (..) => void;}
+        showFeedbackMessage?.({
           message: splitQueryObject.nonFilters.message,
         });
       }
@@ -423,7 +420,14 @@ export default function BrowseContent({
       type: type,
       newFilters: newFilters,
       closeFilters: closeFilters,
+    }).catch((e) => {
+      // ? is needed due to the context type {showFeedbackMessage?: (..) => void;}
+      showFeedbackMessage?.({
+        message: e.message ?? texts.error,
+        error: true,
+      });
     });
+
     if (res?.closeFilters) {
       if (isNarrowScreen) setFiltersExpandedOnMobile(false);
       else setFiltersExpanded(false);
@@ -459,7 +463,14 @@ export default function BrowseContent({
       type: type,
       newFilters: newFilters,
       closeFilters: false,
+    }).catch((e) => {
+      // ? is needed due to the context type {showFeedbackMessage?: (..) => void;}
+      showFeedbackMessage?.({
+        message: e.message ?? texts.error,
+        error: true,
+      });
     });
+
     setIsFiltering(false);
     if (newUrl !== window?.location?.href) {
       window.history.pushState({}, "", newUrl);
@@ -480,9 +491,7 @@ export default function BrowseContent({
     tabValue: tabValue,
     TYPES_BY_TAB_VALUE: TYPES_BY_TAB_VALUE,
     filtersExpanded: isNarrowScreen ? filtersExandedOnMobile : filtersExpanded,
-    handleApplyNewFilters: handleApplyNewFilters,
-    handleUpdateFilterValues: handleUpdateFilterValues,
-    errorMessage: errorMessage,
+    handleApplyNewFilters: handleApplyNewFilters, // TOOD: refactor this, so that it does not get propagated
     isMobileScreen: isNarrowScreen,
     filtersExandedOnMobile: filtersExandedOnMobile,
     handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
