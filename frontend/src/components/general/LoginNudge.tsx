@@ -4,6 +4,7 @@ import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -27,8 +28,15 @@ export default function LoginNudge({ whatToDo, fullPage, className }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
+
   const urlParams = new URLSearchParams(window.location.search);
   const hub = urlParams.get("hub");
+
+  const router = useRouter();
+  const { asPath } = router;
+  const path = asPath ? encodeURIComponent(asPath) : "";
+  const redirectUrl = hub ? (path !== null ? path + `&hub=${hub}` : path + `?hub=${hub}`) : path;
+
   return (
     <div className={`${fullPage && classes.loginNudge} ${className}`}>
       <Typography className={fullPage ? classes.loginNudgeText : undefined}>
@@ -36,7 +44,7 @@ export default function LoginNudge({ whatToDo, fullPage, className }: Props) {
         <Link
           underline="always"
           color="primary"
-          href={`${getLocalePrefix(locale)}/signin${hub ? `?hub=${hub}` : ""}`}
+          href={`${getLocalePrefix(locale)}/signin${redirectUrl ? `?redirect=${redirectUrl}` : ""}`}
         >
           {texts.log_in}
         </Link>{" "}
