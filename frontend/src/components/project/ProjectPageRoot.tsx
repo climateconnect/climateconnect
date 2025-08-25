@@ -549,6 +549,8 @@ export default function ProjectPageRoot({
           <ProjectTeamContent
             project={project}
             handleReadNotifications={handleReadNotifications}
+            // TODO: leaveProject props is not used in ProjectTeamContent
+            // should be removed
             leaveProject={requestLeaveProject}
             hubUrl={hubPage}
           />
