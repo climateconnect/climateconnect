@@ -27,19 +27,19 @@ const useStyles = makeStyles((theme) => {
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = Cookies(ctx);
-  const hubUrl = encodeURI(ctx?.query?.hub);
-  const hubThemeData = await getHubTheme(hubUrl);
+  const hubUrl = ctx.query.hub;
   const texts = getTexts({ page: "organization", locale: ctx.locale });
   if (ctx.req && !auth_token) {
     const message = texts.you_have_to_log_in_to_manage_organization_members;
     return sendToLogin(ctx, message);
   }
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
-  const [organization, members, rolesOptions, availabilityOptions] = await Promise.all([
+  const [organization, members, rolesOptions, availabilityOptions, hubThemeData] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
     getMembersByOrganization(organizationUrl, auth_token, ctx.locale),
     getRolesOptions(auth_token, ctx.locale),
     getAvailabilityOptions(auth_token, ctx.locale),
+    getHubTheme(hubUrl)
   ]);
   return {
     props: nullifyUndefinedValues({

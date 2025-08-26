@@ -143,7 +143,10 @@ class OrganizationMemberReadWritePermission(BasePermission):
                 and not requesting_member[0].role.role_type == Role.ALL_TYPE
             ):
                 return True
-            if requesting_member[0].role.role_type > member_to_update[0].role.role_type:
+            if (
+                requesting_member[0].role.role_type
+                >= member_to_update[0].role.role_type
+            ):
                 return True
 
         return False

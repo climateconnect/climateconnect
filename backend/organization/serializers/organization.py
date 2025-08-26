@@ -1,3 +1,6 @@
+from organization.utility.sector import (
+    get_sectors_based_on_hub,
+)
 from climateconnect_api.models.role import Role
 from climateconnect_api.models.user import UserProfile
 from climateconnect_api.serializers.role import RoleSerializer
@@ -86,9 +89,13 @@ class OrganizationSerializer(serializers.ModelSerializer):
         return get_organization_short_description(obj, get_language())
 
     def get_sectors(self, obj):
-        serializer = OrganizationSectorMappingSerializer(
-            obj.organization_sector_mapping.all(), many=True
+        hub = self.context.get("hub")
+
+        sector_mappings = get_sectors_based_on_hub(
+            obj.organization_sector_mapping.all(), hub
         )
+
+        serializer = OrganizationSectorMappingSerializer(sector_mappings, many=True)
         return serializer.data
 
     def get_types(self, obj):
@@ -183,6 +190,13 @@ class EditOrganizationSerializer(OrganizationSerializer):
     def get_name(self, obj):
         return get_organization_name(obj, get_language())
 
+    # Override the get_sectors method to use the hub-specific sectors
+    def get_sectors(self, obj):
+        serializer = OrganizationSectorMappingSerializer(
+            obj.organization_sector_mapping.all(), many=True
+        )
+        return serializer.data
+
     class Meta(OrganizationSerializer.Meta):
         fields = OrganizationSerializer.Meta.fields + ("location", "translations")
 
@@ -227,9 +241,13 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_sectors(self, obj):
-        serializer = OrganizationSectorMappingSerializer(
-            obj.organization_sector_mapping.all(), many=True
+        hub = self.context.get("hub")
+
+        sector_mappings = get_sectors_based_on_hub(
+            obj.organization_sector_mapping.all(), hub
         )
+
+        serializer = OrganizationSectorMappingSerializer(sector_mappings, many=True)
         return serializer.data
 
     def get_members_count(self, obj):

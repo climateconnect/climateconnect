@@ -91,13 +91,13 @@ export async function getServerSideProps(ctx) {
     hubSupporters,
     hubThemeData,
   ] = await Promise.all([
-    getProjectByIdIfExists(projectUrl, auth_token, ctx.locale),
+    getProjectByIdIfExists(projectUrl, auth_token, ctx.locale, hubUrl),
     getProjectMembersByIdIfExists(projectUrl, ctx.locale),
     getPostsByProject(projectUrl, auth_token, ctx.locale),
     getCommentsByProject(projectUrl, auth_token, ctx.locale),
     auth_token ? getUsersInteractionWithProject(projectUrl, auth_token, ctx.locale) : false,
     getAllHubs(ctx.locale),
-    getSimilarProjects(projectUrl, ctx.locale),
+    getSimilarProjects(projectUrl, ctx.locale, hubUrl),
     hubUrl ? getHubSupporters(hubUrl, ctx.locale) : null,
     hubUrl ? getHubTheme(hubUrl) : null,
   ]);
@@ -318,11 +318,13 @@ export default function ProjectPage({
   );
 }
 
-async function getProjectByIdIfExists(projectUrl, token, locale) {
+async function getProjectByIdIfExists(projectUrl, token, locale, hubUrl?: string | null) {
+  const query = hubUrl ? `?hub=${hubUrl}` : "";
+
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/projects/" + projectUrl + "/",
+      url: "/api/projects/" + projectUrl + "/" + query,
       token: token,
       locale: locale,
     });
@@ -407,11 +409,12 @@ async function getProjectMembersByIdIfExists(projectUrl, locale) {
   }
 }
 
-async function getSimilarProjects(projectUrl, locale) {
+async function getSimilarProjects(projectUrl, locale, hubUrl?: string | null) {
+  const query = hubUrl ? `?hub=${hubUrl}` : "";
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/projects/" + projectUrl + "/similar/",
+      url: "/api/projects/" + projectUrl + "/similar/" + query,
       locale: locale,
     });
     if (resp.data.results.length === 0) return null;
