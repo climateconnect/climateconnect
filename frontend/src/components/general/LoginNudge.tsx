@@ -31,29 +31,27 @@ export default function LoginNudge({ whatToDo, fullPage, className }: Props) {
 
   const urlParams = new URLSearchParams(window.location.search);
   const hub = urlParams.get("hub");
-
   const router = useRouter();
-  const { asPath } = router;
-  const path = asPath ? encodeURIComponent(asPath) : "";
-  const redirectUrl = hub ? (path !== null ? path + `&hub=${hub}` : path + `?hub=${hub}`) : path;
+  const currentPath = router.asPath;
+  const encodedRedirectUrl = encodeURIComponent(currentPath);
+  let path_to_signin = `${getLocalePrefix(locale)}/signin?`;
+  let path_to_signup = `${getLocalePrefix(locale)}/signup`;
+  path_to_signin += `redirect=${encodedRedirectUrl}`;
+
+  if (hub && hub !== "") {
+    path_to_signin += `&hub=${hub}`;
+    path_to_signup += `?hub=${hub}`;
+  }
 
   return (
     <div className={`${fullPage && classes.loginNudge} ${className}`}>
       <Typography className={fullPage ? classes.loginNudgeText : undefined}>
         {texts.please}{" "}
-        <Link
-          underline="always"
-          color="primary"
-          href={`${getLocalePrefix(locale)}/signin${redirectUrl ? `?redirect=${redirectUrl}` : ""}`}
-        >
+        <Link underline="always" color="primary" href={path_to_signin}>
           {texts.log_in}
         </Link>{" "}
         {texts.or}{" "}
-        <Link
-          underline="always"
-          color="primary"
-          href={`${getLocalePrefix(locale)}/signup${hub ? `?hub=${hub}` : ""}`}
-        >
+        <Link underline="always" color="primary" href={path_to_signup}>
           {texts.sign_up}
         </Link>{" "}
         {whatToDo}.
