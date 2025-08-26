@@ -34,12 +34,18 @@ export async function getServerSideProps(ctx) {
     return sendToLogin(ctx, message);
   }
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
-  const [organization, members, rolesOptions, availabilityOptions, hubThemeData] = await Promise.all([
+  const [
+    organization,
+    members,
+    rolesOptions,
+    availabilityOptions,
+    hubThemeData,
+  ] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
     getMembersByOrganization(organizationUrl, auth_token, ctx.locale),
     getRolesOptions(auth_token, ctx.locale),
     getAvailabilityOptions(auth_token, ctx.locale),
-    getHubTheme(hubUrl)
+    getHubTheme(hubUrl),
   ]);
   return {
     props: nullifyUndefinedValues({
