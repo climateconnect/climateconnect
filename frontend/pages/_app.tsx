@@ -71,7 +71,7 @@ export default function MyApp({ Component, pageProps = {} }) {
   const ENVIRONMENT = process.env.ENVIRONMENT;
   const SOCKET_URL = process.env.SOCKET_URL;
   const CUSTOM_HUB_URLS = process.env.CUSTOM_HUB_URLS ? process.env.CUSTOM_HUB_URLS.split(",") : [];
-
+  const LOCATION_HUBS = process.env.LOCATION_HUBS ? process.env.LOCATION_HUBS.split(",") : [];
   // TODO: this should probably be decomposed
   // into individual state updates for
   // user, and notifications
@@ -279,6 +279,7 @@ export default function MyApp({ Component, pageProps = {} }) {
     startLoading: startLoading,
     stopLoading: stopLoading,
     hideNotification: hideNotification,
+    LOCATION_HUBS: LOCATION_HUBS,
   };
 
   return (
@@ -410,8 +411,11 @@ async function getDonationGoalData(locale) {
       goal_name: resp?.data?.name,
       goal_start: resp?.data?.start_date,
       goal_end: resp?.data?.end_date,
-      goal_amount: resp?.data?.amount,
+      goal_amount: resp?.data?.goal_amount,
       current_amount: resp?.data?.current_amount,
+      hub: resp?.data?.hub?.url_slug,
+      call_to_action_text: resp?.data?.call_to_action_text,
+      call_to_action_link: resp?.data?.call_to_action_link,
     };
     console.log(ret);
     return ret;

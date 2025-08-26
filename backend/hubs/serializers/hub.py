@@ -32,6 +32,8 @@ class HubSerializer(serializers.ModelSerializer):
     quick_info = serializers.SerializerMethodField()
     stat_box_title = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
+    parent_hub = serializers.SerializerMethodField()
+    children = serializers.SerializerMethodField()
 
     class Meta:
         model = Hub
@@ -51,6 +53,9 @@ class HubSerializer(serializers.ModelSerializer):
             "location",
             "url_slug",
             "custom_footer_image",
+            "landing_page_component",
+            "parent_hub",
+            "children",
         )
 
     def get_stats(self, obj):
@@ -91,6 +96,14 @@ class HubSerializer(serializers.ModelSerializer):
             return LocationSerializer(obj.location.all(), many=True).data
         return None
 
+    def get_parent_hub(self, obj):
+        if not obj.parent_hub:
+            return None
+        return HubStubSerializer(obj.parent_hub).data
+
+    def get_children(self, obj):
+        return HubStubSerializer(obj.sub_hubs.all(), many=True).data
+
 
 class HubAmbassadorSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
@@ -127,6 +140,8 @@ class HubStubSerializer(serializers.ModelSerializer):
             "url_slug",
             "hub_type",
             "icon",
+            "icon_background_color",
+            "landing_page_component",
         )
 
     def get_hub_type(self, obj):
@@ -221,7 +236,8 @@ class HubThemeSerializer(serializers.ModelSerializer):
     primary = HubThemeColorSerializer()
     secondary = HubThemeColorSerializer()
     background_default = HubThemeColorSerializer()
+    header_background = HubThemeColorSerializer()
 
     class Meta:
         model = HubTheme
-        fields = ["primary", "secondary", "background_default"]
+        fields = ["primary", "secondary", "background_default", "header_background"]

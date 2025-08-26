@@ -2,8 +2,18 @@ import { apiRequest } from "./apiOperations";
 import { membersWithAdditionalInfo } from "./getOptions";
 import { parseData } from "./parsingOperations";
 
-export async function getDataFromServer({ type, page, token, urlEnding, hubUrl, locale, idea }) {
+export async function getDataFromServer({
+  type,
+  page,
+  token,
+  urlEnding,
+  hubUrl,
+  locale,
+  idea,
+  location,
+}) {
   let url = `/api/${type}/?page=${page}`;
+
   if (hubUrl) {
     url += `&hub=${hubUrl}`;
   }
@@ -19,7 +29,11 @@ export async function getDataFromServer({ type, page, token, urlEnding, hubUrl, 
 
   try {
     console.log(`Getting data for ${type} at ${url}`);
-    const resp = await apiRequest({ method: "get", url, token, locale });
+
+    const resp = location
+      ? await apiRequest({ method: "post", url, payload: location, token, locale })
+      : await apiRequest({ method: "get", url, token, locale });
+
     if (resp.data.length === 0) {
       console.log(`No data of type ${type} found...`);
       return null;
