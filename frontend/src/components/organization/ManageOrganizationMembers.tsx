@@ -58,13 +58,13 @@ export default function ManageOrganizationMembers({
     hub?: string;
     message?: string;
     errorMessage?: string;
-  }
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const params: Params = {}
+    const params: Params = {};
     if (hubUrl) {
-      params.hub = hubUrl
+      params.hub = hubUrl;
     }
     onSubmit()
       .then(() => {
@@ -168,8 +168,9 @@ export default function ManageOrganizationMembers({
         <div className={classes.buttonsContainer}>
           <div className={classes.buttons}>
             <Button
-              href={`${getLocalePrefix(locale)}/organizations/${organization.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""
-                }`}
+              href={`${getLocalePrefix(locale)}/organizations/${organization.url_slug}${
+                hubUrl ? `?hub=${hubUrl}` : ""
+              }`}
               variant="contained"
               color="grey"
             >
