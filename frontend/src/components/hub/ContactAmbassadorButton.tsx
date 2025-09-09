@@ -33,6 +33,9 @@ const useStyles = makeStyles(() => ({
   mobileAvatar: {
     margin: 1,
   },
+  ambassadorText: {
+    padding: theme.spacing(1, 2),
+  },
 }));
 
 export default function ContactAmbassadorButton({ hubAmbassador, mobile, hubUrl = null }) {
@@ -91,7 +94,7 @@ export default function ContactAmbassadorButton({ hubAmbassador, mobile, hubUrl 
             creatorImageURL={getImageUrl(hubAmbassador?.user?.thumbnail_image)}
             customMessage={hubAmbassador.custom_message}
           />
-          <Button variant="contained" color="primary">
+          <Button variant="contained" color="primary" className={classes.ambassadorText}>
             {texts.contact_ambassador}
           </Button>
         </div>
