@@ -26,17 +26,19 @@ export default function SectorsPreview({
   onClickRemoveSector,
 }) {
   const classes = useStyles();
+
   return (
     <Grid container component="ul" spacing={2} className={`${classes.reset} ${classes.root}`}>
-      {sectors.map((sector) => (
-        <GridItem
-          sector={sector}
-          key={sector.key}
-          editMode={editMode}
-          onClickRemoveSector={onClickRemoveSector}
-        />
-      ))}
-      {allowCreate && (maxSelectedNumber == -1 || sectors.length < maxSelectedNumber) && (
+      {sectors &&
+        sectors.map((sector) => (
+          <GridItem
+            sector={sector}
+            key={sector.key}
+            editMode={editMode}
+            onClickRemoveSector={onClickRemoveSector}
+          />
+        ))}
+      {allowCreate && (maxSelectedNumber == -1 || sectors?.length < maxSelectedNumber) && (
         <GridItem
           createMode
           sectorsToSelectFrom={sectorsToSelectFrom}

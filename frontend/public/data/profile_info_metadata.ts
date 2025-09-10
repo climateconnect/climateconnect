@@ -4,6 +4,11 @@ import getTexts from "../texts/texts";
 export default function getProfileInfoMetadata(locale) {
   const texts = getTexts({ page: "profile", locale: locale });
   return {
+    sectors: {
+      name: texts.area_of_interest,
+      key: "sectors",
+      type: "sectors",
+    },
     availability: {
       name: texts.availability,
       key: "availability",

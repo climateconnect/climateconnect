@@ -3,6 +3,7 @@ from organization.models.sector import (
     OrganizationSectorMapping,
     ProjectSectorMapping,
     Sector,
+    UserProfileSectorMapping,
 )
 from typing import Any, List, Tuple, Optional, Union
 
@@ -69,14 +70,15 @@ def sanitize_sector_inputs(inputs: Any) -> Tuple[Any, Optional[Exception]]:
 
 
 def __substitute_sector_in_mapping(
-    mapping: Union[ProjectSectorMapping, OrganizationSectorMapping],
-) -> Union[ProjectSectorMapping, OrganizationSectorMapping]:
+    mapping: Union[ProjectSectorMapping, OrganizationSectorMapping, UserProfileSectorMapping],
+) -> Union[ProjectSectorMapping, OrganizationSectorMapping, UserProfileSectorMapping]:
     """
     Substitute the sector mapping with the related sector if it exists
     keep the order of the mapping.
 
     if the mapping is an OrganizationSectorMapping, return an OrganizationSectorMapping
     if the mapping is a ProjectSectorMapping, return a ProjectSectorMapping
+    if the mapping is a UserProfileSectorMapping, return a UserProfileSectorMapping
     If the mapping is neither, raise a ValueError.
     """
     order = mapping.order
@@ -90,14 +92,24 @@ def __substitute_sector_in_mapping(
             sector=mapping.sector.relates_to_sector,
             order=order,
         )
+    elif isinstance(mapping, UserProfileSectorMapping):
+        return UserProfileSectorMapping(
+            user_profile=mapping.user_profile,
+            sector=mapping.sector.relates_to_sector,
+            order=order,
+        )
 
     raise ValueError("Invalid mapping type.")
 
 
 def get_sectors_based_on_hub(
-    sector_mappings: List[Union[ProjectSectorMapping, OrganizationSectorMapping]],
+    sector_mappings: List[
+        Union[ProjectSectorMapping, OrganizationSectorMapping, UserProfileSectorMapping]
+    ],
     hub: Hub | None,
-) -> List[Union[ProjectSectorMapping, OrganizationSectorMapping]]:
+) -> List[
+    Union[ProjectSectorMapping, OrganizationSectorMapping, UserProfileSectorMapping]
+]:
     """
     Filter the sector mappings based on the hub or default sectors.
     If the hub is None, return all mappings that are default or relate to a default sector.
