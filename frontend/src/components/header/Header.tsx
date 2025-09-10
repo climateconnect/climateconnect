@@ -482,7 +482,7 @@ function NormalScreenLinks({
         )
           return (
             <React.Fragment key={index}>
-              <span className={classes.menuLink}>
+              <span>
                 {link.type === "languageSelect" ? (
                   <LanguageSelect
                     transparentHeader={transparentHeader}
@@ -754,7 +754,7 @@ function NarrowScreenLinks({
                   )}
                 </>
               ) : (
-                <span className={classes.menuLink}>
+                <span>
                   {link.type === "languageSelect" ? (
                     <LanguageSelect
                       transparentHeader={transparentHeader}
