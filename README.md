@@ -69,7 +69,7 @@ Run `./install_deps.sh` to install the JavaScript dependencies and the Python de
 #### First Time Setup
 
 1.  Go to backend directory: `cd backend`
-1. Make sure `pdm` is installed: https://pdm.fming.dev/latest/#recommended-installation-method
+1.  Make sure `pdm` is installed: https://pdm.fming.dev/latest/#recommended-installation-method
 1.  Run `make install` to install all backend libraries.
 1.  Create `.backend_env` to set environment variables.
     - You can use the script [./initial_dev_setup.sh](./initial_dev_setup.sh) as inspiration.
@@ -182,7 +182,7 @@ BASE_URL_HOST="localhost"
 SOCKET_URL="ws://localhost"
 ENVIRONMENT="development"
 CUSTOM_HUB_URLS="example"
-LOCATION_HUBS=valu1,value2,value3
+LOCATION_HUBS="valu1,value2,value3"
 ```
 
 _Note: This is for people who are using newer version of node (v17.0.1) or have new apple M1 devices. Before running `yarn dev`, please run this command `export NODE_OPTIONS=--openssl-legacy-provider`. You can save this in your `~/.zshrc` file as well._
