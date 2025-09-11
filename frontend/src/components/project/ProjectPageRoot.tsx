@@ -7,7 +7,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { useLongPress } from "use-long-press";
 import ROLE_TYPES from "../../../public/data/role_types";
-import { apiRequest, redirect } from "../../../public/lib/apiOperations";
+import { apiRequest, redirect, getRedirectUrl } from "../../../public/lib/apiOperations";
 import { getParams } from "../../../public/lib/generalOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
 import getTexts from "../../../public/texts/texts";
@@ -156,8 +156,9 @@ export default function ProjectPageRoot({
 
     const creator = project.team.filter((m) => m.permission === ROLE_TYPES.all_type)[0];
     if (!user) {
+      const redirectUrl = getRedirectUrl(locale);
       return redirect("/signin", {
-        redirect: window.location.pathname + window.location.search,
+        redirect: redirectUrl,
         errorMessage: texts.please_create_an_account_or_log_in_to_contact_a_projects_organizer,
       });
     }
