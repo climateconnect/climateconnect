@@ -66,9 +66,7 @@ export default function LocalAmbassadorInfoBox({ hubAmbassador, hubData, hubSupp
 
     if (!user) {
       return redirect("/signup", {
-        redirect: window.location.pathname + window.location.search,
         errorMessage: texts.please_create_an_account_or_log_in_to_contact_the_ambassador,
-        hub: hubData.url_slug,
       });
     }
 
