@@ -123,7 +123,7 @@ export function getRedirectUrl(locale: string): string {
   let redirectUrl = window.location.href
     .replace(window.location.origin, "")
     .replace(`/${locale}/`, "");
-  if (redirectUrl[0] === "/") {
+  if (redirectUrl && redirectUrl[0] === "/") {
     redirectUrl = redirectUrl.slice(1);
   }
   return redirectUrl;
