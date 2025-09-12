@@ -1,6 +1,14 @@
 import { Link } from "../customHubtypes";
-import { EnPrio1Welcome, DePrio1Willkommen } from "../../../devlink";
 import { getSharedLinks, getStaticLinks, StaticLinkConfig } from "./customHubLinks";
+
+//for usage without webflow token
+let enWelcomeModule: any;
+let deWillkommenModul: any;
+if(process.env.ENABLE_DEVLINK === "true"){
+  const devlink = require("../../../devlink");
+  enWelcomeModule = devlink.EnPrio1Welcome
+  enWelcomeModule = devlink.DePrio1Willkommen;
+}
 
 const PRIO1_BASE_URL = "https://prio1-klima.net";
 
@@ -22,8 +30,8 @@ export const prio1StaticLinks = (texts: any): Link[] =>
 
 export const prio1Config = (pathToRedirect: string, texts: any) => ({
   welcome: {
-    en: EnPrio1Welcome,
-    de: DePrio1Willkommen,
+    en: enWelcomeModule,
+    de: deWillkommenModul,
   },
   hubTabLinkNarrowScreen: {
     href: PRIO1_BASE_URL,

@@ -1,8 +1,29 @@
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useEffect } from "react";
-import { CcLandingpage, EnLandingpageClimateConnect } from "../devlink";
 import UserContext from "../src/components/context/UserContext";
 import Layout from "../src/components/layouts/layout";
+import Link from "next/link";
+
+
+//for usage without webflow token
+const Fallback = () => (
+  <div>
+    <p>This page will show webflow content,
+      if the tokens are set up in .env file and devlink folder is created.
+    </p>
+    <Link href="/browse" passHref>
+      <button>Browse</button>
+    </Link>
+  </div>
+  );
+let CCLandingpage: any = Fallback;
+let ENLandingpageClimateConnect: any = Fallback;
+if(process.env.ENABLE_DEVLINK === "true"){
+  const devlink = require("../devlink");
+  CCLandingpage = devlink.CcLandingpage;
+  ENLandingpageClimateConnect = devlink.EnLandingpageClimateConnect;
+}
+
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -29,7 +50,7 @@ export default function Index() {
   return (
     <Layout>
       <div className={classes.container}>
-        {locale === "de" ? <CcLandingpage /> : <EnLandingpageClimateConnect />}
+        {locale === "de" ? <CCLandingpage /> : <ENLandingpageClimateConnect />}
       </div>
     </Layout>
   );
