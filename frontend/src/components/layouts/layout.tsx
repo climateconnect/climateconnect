@@ -9,11 +9,14 @@ import Footer from "../footer/Footer";
 import LoadingContainer from "../general/LoadingContainer";
 import Header from "../header/Header";
 import LayoutWrapper from "./LayoutWrapper";
-//We are ignoring the "missing" devlink import because it will be there at runtime
-//You will need to run 'npx webflow devlink sync' to generate this file.
-//If you do not have access to an API key you can line out.
-// @ts-ignore
-import { DevLinkProvider } from "../../../devlink/DevLinkProvider";
+
+
+//for usage without webflow token
+let DevLinkProvider: any;
+if(process.env.ENABLE_DEVLINK === "true") {
+  const devlink = require("../../../devlink");
+  DevLinkProvider = devlink.DevLinkProvider;
+}
 
 interface StyleProps {
   customTheme_default_contrastText?: string;
@@ -64,9 +67,9 @@ export default function Layout({
       setInitialMessageType("error");
     }
   }, []);
-  return (
-    <DevLinkProvider>
-      <LayoutWrapper theme={customTheme ?? theme} title={title}>
+
+  const pageContent = (
+          <LayoutWrapper theme={customTheme ?? theme} title={title}>
         <Header
           noSpacingBottom
           isStaticPage={isStaticPage}
@@ -104,6 +107,14 @@ export default function Layout({
         )}
         <Footer />
       </LayoutWrapper>
-    </DevLinkProvider>
   );
+
+  if(process.env.ENABLE_DEVLINK === "true"){
+    return <DevLinkProvider>
+        {pageContent}
+      </DevLinkProvider>;
+  } else {
+    return pageContent;
+  }
+    
 }
