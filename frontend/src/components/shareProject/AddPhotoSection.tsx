@@ -64,6 +64,7 @@ export default function AddPhotoSection({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const [tempImage, setTempImage] = React.useState(projectData.image);
+  const [isCompressing, setIsCompressing] = React.useState(false);
   const inputFileRef = React.useRef(null as HTMLInputElement | null);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
 
@@ -73,10 +74,13 @@ export default function AddPhotoSection({
 
   const onImageChange = async (event) => {
     const file = event.target.files[0];
-    if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
+    if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type)) {
       alert(texts.please_upload_either_a_png_or_a_jpg_file);
-    const image = await getCompressedJPG(file, 0.5);
-    setTempImage(image);
+      return;
+    }
+    // Open dialog immediately with original file for instant loading
+    const imageUrl = URL.createObjectURL(file);
+    setTempImage(imageUrl);
     handleDialogClickOpen("avatarDialog");
   };
 
@@ -90,17 +94,33 @@ export default function AddPhotoSection({
     if (image && image instanceof HTMLCanvasElement) {
       whitenTransparentPixels(image);
       image.toBlob(async function (blob) {
-        const resizedBlob = URL.createObjectURL(blob!);
-        const thumbnailBlob = await getResizedImage(
-          URL.createObjectURL(blob!),
-          290,
-          160,
-          "image/jpeg"
-        );
+        if (!blob) return;
+        
+        // Show image immediately (uncompressed) for instant feedback
+        const immediateImageUrl = URL.createObjectURL(blob);
         handleSetProjectData({
-          image: resizedBlob,
-          thumbnail_image: thumbnailBlob,
+          image: immediateImageUrl,
+          thumbnail_image: immediateImageUrl, // temporary thumbnail
         });
+        
+        // Compress in background without blocking UI
+        setIsCompressing(true);
+        try {
+          const compressedImageUrl = await getCompressedJPG(blob, 0.5);
+          const thumbnailBlob = await getResizedImage(
+            compressedImageUrl,
+            290,
+            160,
+            "image/jpeg"
+          );
+          // Update with compressed versions once ready
+          handleSetProjectData({
+            image: compressedImageUrl,
+            thumbnail_image: thumbnailBlob,
+          });
+        } finally {
+          setIsCompressing(false);
+        }
       }, "image/jpeg");
     }
   };
