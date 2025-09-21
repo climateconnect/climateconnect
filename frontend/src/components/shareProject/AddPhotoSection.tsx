@@ -93,26 +93,16 @@ export default function AddPhotoSection({
     handleSetOpen({ avatarDialog: false });
     if (image && image instanceof HTMLCanvasElement) {
       whitenTransparentPixels(image);
+
+      // Keep showing the existing tempImage while compressing
+      setIsCompressing(true);
+
       image.toBlob(async function (blob) {
         if (!blob) return;
-        
-        // Show image immediately (uncompressed) for instant feedback
-        const immediateImageUrl = URL.createObjectURL(blob);
-        handleSetProjectData({
-          image: immediateImageUrl,
-          thumbnail_image: immediateImageUrl, // temporary thumbnail
-        });
-        
-        // Compress in background without blocking UI
-        setIsCompressing(true);
+
         try {
           const compressedImageUrl = await getCompressedJPG(blob, 0.5);
-          const thumbnailBlob = await getResizedImage(
-            compressedImageUrl,
-            290,
-            160,
-            "image/jpeg"
-          );
+          const thumbnailBlob = await getResizedImage(compressedImageUrl, 290, 160, "image/jpeg");
           // Update with compressed versions once ready
           handleSetProjectData({
             image: compressedImageUrl,
