@@ -105,30 +105,22 @@ export async function getCompressedJPG(file, maxSizeMB): Promise<string> {
 
 const drawImageOnCanvas = (image, canvas) => {
   const context = canvas.getContext("2d");
+  let imageWidth, imageHeight;
   if (image.width / image.height === 16 / 9) {
-    //image has right proportions already
-    canvas.width = image.width;
-    canvas.height = image.height;
-    context.fillStyle = "#fff";
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    context.drawImage(image, 0, 0);
+    imageWidth = image.width > 1200 ? 1200 : image.width;
+    imageHeight = image.height * (imageWidth / image.width);
   } else if (image.width / image.height > 16 / 9) {
-    //the image is too wide
-    canvas.width = image.width;
-    canvas.height = image.width * (9 / 16);
-    context.fillStyle = "#fff";
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    const heightDifference = canvas.height - image.height;
-    context.drawImage(image, 0, heightDifference / 2);
+    imageHeight = image.height > 675 ? 675 : image.height;
+    imageWidth = image.width * (imageHeight / image.height);
   } else {
-    //the image is too tall
-    canvas.width = image.width * (16 / 9);
-    canvas.height = image.height;
-    context.fillStyle = "#fff";
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    const widthDifference = canvas.width - image.width;
-    context.drawImage(image, widthDifference / 2, 0);
+    imageWidth = image.width > 1200 ? 1200 : image.width;
+    imageHeight = image.height * (imageWidth / image.width);
   }
+  canvas.width = imageWidth;
+  canvas.height = imageHeight;
+  context.fillStyle = "#fff";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.drawImage(image, 0, 0, canvas.width, canvas.height);
 };
 
 export async function blobFromObjectUrl(objectUrl) {
