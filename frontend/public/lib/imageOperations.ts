@@ -105,21 +105,28 @@ export async function getCompressedJPG(file, maxSizeMB): Promise<string> {
 
 const drawImageOnCanvas = (image, canvas) => {
   const context = canvas.getContext("2d");
-  let imageWidth, imageHeight;
+  let imageFinalWidth, imageFinalHeight;
+  const maxWidth = 1200;
+  const maxHeight = 675;
   if (image.width / image.height === 16 / 9) {
-    imageWidth = image.width > 1200 ? 1200 : image.width;
-    imageHeight = image.height * (imageWidth / image.width);
+    //limited the maximum dimensions of images
+    imageFinalWidth = image.width > maxWidth ? maxWidth : image.width;
+    imageFinalHeight = image.height * (imageFinalWidth / image.width);
+    //the image is too wide
   } else if (image.width / image.height > 16 / 9) {
-    imageHeight = image.height > 675 ? 675 : image.height;
-    imageWidth = image.width * (imageHeight / image.height);
+    imageFinalHeight = image.height > maxHeight ? maxHeight : image.height;
+    imageFinalWidth = image.width * (imageFinalHeight / image.height);
   } else {
-    imageWidth = image.width > 1200 ? 1200 : image.width;
-    imageHeight = image.height * (imageWidth / image.width);
+    //the image is too tall
+    imageFinalWidth = image.width > maxWidth ? maxWidth : image.width;
+    imageFinalHeight = image.height * (imageFinalWidth / image.width);
   }
-  canvas.width = imageWidth;
-  canvas.height = imageHeight;
+  canvas.width = imageFinalWidth;
+  canvas.height = imageFinalHeight;
   context.fillStyle = "#fff";
   context.fillRect(0, 0, canvas.width, canvas.height);
+
+  //This line was causing images with large dimensions to have display issues.
   context.drawImage(image, 0, 0, canvas.width, canvas.height);
 };
 
