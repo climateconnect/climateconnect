@@ -10,10 +10,9 @@ import LoadingContainer from "../general/LoadingContainer";
 import Header from "../header/Header";
 import LayoutWrapper from "./LayoutWrapper";
 
-
 //for usage without webflow token
 let DevLinkProvider: any;
-if(process.env.ENABLE_DEVLINK === "true") {
+if (process.env.ENABLE_DEVLINK === "true") {
   const devlink = require("../../../devlink");
   DevLinkProvider = devlink.DevLinkProvider;
 }
@@ -69,52 +68,49 @@ export default function Layout({
   }, []);
 
   const pageContent = (
-          <LayoutWrapper theme={customTheme ?? theme} title={title}>
-        <Header
-          noSpacingBottom
-          isStaticPage={isStaticPage}
-          background={headerBackground}
-          hubUrl={hubUrl}
-        />
-        {isLoading ? (
-          <LoadingContainer headerHeight={113} footerHeight={80} />
-        ) : (
-          <>
-            {(message || initialMessage) && !(hideAlertMessage === message) && (
-              <Alert
-                className={classes.alert}
-                severity={
-                  messageType ? messageType : initialMessageType ? initialMessageType : "success"
-                }
-                onClose={() => {
-                  setHideAlertMessage(message);
-                }}
-              >
-                {getMessageFromUrl(message ? message : initialMessage)}
-              </Alert>
-            )}
-            <Container maxWidth="lg" component="main">
-              <Container maxWidth="sm">
-                {!hideHeadline && (
-                  <Typography component="h1" variant="h5" className={classes.mainHeading}>
-                    {title}
-                  </Typography>
-                )}
-              </Container>
-              {children}
+    <LayoutWrapper theme={customTheme ?? theme} title={title}>
+      <Header
+        noSpacingBottom
+        isStaticPage={isStaticPage}
+        background={headerBackground}
+        hubUrl={hubUrl}
+      />
+      {isLoading ? (
+        <LoadingContainer headerHeight={113} footerHeight={80} />
+      ) : (
+        <>
+          {(message || initialMessage) && !(hideAlertMessage === message) && (
+            <Alert
+              className={classes.alert}
+              severity={
+                messageType ? messageType : initialMessageType ? initialMessageType : "success"
+              }
+              onClose={() => {
+                setHideAlertMessage(message);
+              }}
+            >
+              {getMessageFromUrl(message ? message : initialMessage)}
+            </Alert>
+          )}
+          <Container maxWidth="lg" component="main">
+            <Container maxWidth="sm">
+              {!hideHeadline && (
+                <Typography component="h1" variant="h5" className={classes.mainHeading}>
+                  {title}
+                </Typography>
+              )}
             </Container>
-          </>
-        )}
-        <Footer />
-      </LayoutWrapper>
+            {children}
+          </Container>
+        </>
+      )}
+      <Footer />
+    </LayoutWrapper>
   );
 
-  if(process.env.ENABLE_DEVLINK === "true"){
-    return <DevLinkProvider>
-        {pageContent}
-      </DevLinkProvider>;
+  if (process.env.ENABLE_DEVLINK === "true") {
+    return <DevLinkProvider>{pageContent}</DevLinkProvider>;
   } else {
     return pageContent;
   }
-    
 }

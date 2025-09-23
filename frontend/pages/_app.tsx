@@ -205,10 +205,10 @@ export default function MyApp({ Component, pageProps = {} }) {
   }, [state.user]);
 
   useEffect(() => {
-      if (isDevlinkEnabled) {
-        import('../devlink/global.css');
-      }
-    }, []);
+    if (isDevlinkEnabled) {
+      import("../devlink/global.css");
+    }
+  }, []);
 
   const connect = (initialClient) => {
     const client = initialClient ? initialClient : WebSocketService("/ws/chat/");

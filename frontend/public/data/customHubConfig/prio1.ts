@@ -4,9 +4,9 @@ import { getSharedLinks, getStaticLinks, StaticLinkConfig } from "./customHubLin
 //for usage without webflow token
 let enWelcomeModule: any;
 let deWillkommenModul: any;
-if(process.env.ENABLE_DEVLINK === "true"){
+if (process.env.ENABLE_DEVLINK === "true") {
   const devlink = require("../../../devlink");
-  enWelcomeModule = devlink.EnPrio1Welcome
+  enWelcomeModule = devlink.EnPrio1Welcome;
   enWelcomeModule = devlink.DePrio1Willkommen;
 }
 
