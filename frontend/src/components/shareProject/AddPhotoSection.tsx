@@ -73,20 +73,18 @@ export default function AddPhotoSection({
   };
 
   const onImageChange = async (event) => {
-    setIsLoading(true);
-
+    const file = event.target.files[0];
+    if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+      alert(texts.please_upload_either_a_png_or_a_jpg_file);
+      return;
+    }
     try {
-      const file = event.target.files[0];
-      if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-        alert(texts.please_upload_either_a_png_or_a_jpg_file);
-        return;
-      }
+      setIsLoading(true);
       handleDialogClickOpen("avatarDialog");
       const image = await getCompressedJPG(file, 0.5);
       setTempImage(image);
     } catch (error) {
-      console.error("Error processing image:", error);
-      alert("An error occurred while processing the image. Please try again.");
+      console.log(error);
     } finally {
       setIsLoading(false);
     }
@@ -158,7 +156,7 @@ export default function AddPhotoSection({
         height={isNarrowScreen ? getImageDialogHeight(window.innerWidth) : 300}
         ratio={16 / 9}
         loading={isLoading}
-        loadingText={texts.please_wait}
+        loadingText={texts.processing_image_please_wait}
       />
     </>
   );

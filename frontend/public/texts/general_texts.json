@@ -447,7 +447,7 @@
     "en": "Upload an image",
     "de": "Bild hochladen"
   },
-  "please_wait": {
+  "processing_image_please_wait": {
     "en": "Please wait until the image is processed...",
     "de": "Bitte warten, bis das Bild verarbeitet ist..."
   },
