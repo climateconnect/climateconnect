@@ -472,14 +472,23 @@ const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
   const [tempImage, setTempImage] = React.useState(
     project.image ? getImageUrl(project.image) : null
   );
-
+  const [isImgLoading, setIsImgLoading] = React.useState(false);
   const onImageChange = async (event) => {
     const file = event.target.files[0];
-    if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
+    if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type)) {
       alert(texts.please_upload_either_a_png_or_a_jpg_file);
-    const image = await getCompressedJPG(file, 0.5);
-    setTempImage(image);
-    setOpen(true);
+      return;
+    }
+    try {
+      setIsImgLoading(true);
+      setOpen(true);
+      const image = await getCompressedJPG(file, 0.5);
+      setTempImage(image);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsImgLoading(false);
+    }
   };
 
   const onUploadImageClick = (event) => {
@@ -539,6 +548,8 @@ const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
         borderRadius={0}
         height={screenSize === "small" ? getImageDialogHeight(window.innerWidth) : 300}
         ratio={16 / 9}
+        loading={isImgLoading}
+        loadingText={texts.processing_image_please_wait}
       />
     </>
   );
