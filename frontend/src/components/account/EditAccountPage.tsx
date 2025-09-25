@@ -598,7 +598,7 @@ export default function EditAccountPage({
       }
     });
   };
-
+  const [isLoading, setIsLoading] = useState(false);
   const onBackgroundChange = async (backgroundEvent) => {
     const file = backgroundEvent.target.files[0];
     if (!file) {
@@ -606,17 +606,19 @@ export default function EditAccountPage({
     }
 
     try {
+      setIsLoading(true);
+      handleDialogClickOpen("backgroundDialog");
       const compressedImage = await getCompressedJPG(file, 1);
-
       setTempImages(() => {
         return {
           ...tempImages,
           background_image: compressedImage,
         };
       });
-      handleDialogClickOpen("backgroundDialog");
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -876,6 +878,8 @@ export default function EditAccountPage({
         mobileHeight={80}
         mediumHeight={120}
         ratio={3}
+        loading={isLoading}
+        loadingText={texts.processing_image_please_wait}
       />
       {possibleAccountTypes && (
         <SelectDialog

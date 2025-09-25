@@ -1,4 +1,4 @@
-import { Slider, Theme } from "@mui/material";
+import { Slider, Theme, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -27,6 +27,12 @@ const useStyles = makeStyles((theme) => ({
   dialog: {
     position: "relative",
   },
+  titleText: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    fontSize: 20,
+    color: theme.palette.text.primary,
+  },
 }));
 
 type Props = {
@@ -39,6 +45,7 @@ type Props = {
   mobileHeight?;
   mediumHeight?;
   loading?;
+  loadingText?;
 };
 
 export default function UploadImageDialog({
@@ -51,6 +58,7 @@ export default function UploadImageDialog({
   mobileHeight,
   mediumHeight,
   loading,
+  loadingText,
 }: Props) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
@@ -116,7 +124,14 @@ export default function UploadImageDialog({
       onApply={applyImage}
     >
       {loading ? (
-        <LoadingSpinner className={classes.loadingSpinner} isLoading />
+        <>
+          <LoadingSpinner className={classes.loadingSpinner} isLoading />
+          {loadingText && (
+            <Typography component="p" className={classes.titleText}>
+              {loadingText}
+            </Typography>
+          )}
+        </>
       ) : (
         <div /*TODO(undefined) className={classes.dialogContent} */>
           <AvatarEditor
