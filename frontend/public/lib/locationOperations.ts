@@ -1,6 +1,15 @@
 import { getLocationFilterKeys } from "../data/locationFilters";
 import { apiRequest } from "./apiOperations";
 
+const CUSTOM_NAME_MAPPINGS = {
+  "Scotland (state), Scotland": "Scotland"
+}
+
+//These countries are wrongly categorized as states in Nominatim. We want to show them as countries as this is more clear
+const MAP_STATE_TO_COUNTRY = ["Scotland", "Wales", "England", "Northern Ireland"];
+
+//This function has an equivalent in backend/location/utility.py -> format_location_name
+//We should consider using the same codebase for these
 export function getNameFromLocation(location) {
   if (location.added_manually)
     return {
@@ -50,13 +59,18 @@ export function getNameFromLocation(location) {
   const middlePartSuffixes = ["city", "state"];
   const firstPart = getFirstPart(location.address, firstPartOrder);
   const middlePart = getMiddlePart(location.address, middlePartOrder, middlePartSuffixes);
-  const showMiddlePart = firstPart !== middlePart;
-  const name =
+  const lastPart = MAP_STATE_TO_COUNTRY.includes(location?.address?.state) ? location.address.state : location.address.country;
+  const showMiddlePart = firstPart !== middlePart && middlePart !== lastPart;
+  let name =
     firstPart +
     ", " +
     (showMiddlePart ? middlePart : "") +
     (showMiddlePart && middlePart?.length > 0 ? ", " : "") +
-    location.address.country;
+    lastPart
+  //For certain locations our automatic name generation doesn't work. In this case we want to override the name with a custom one
+  if (Object.keys(CUSTOM_NAME_MAPPINGS).includes(name)) {
+    name = CUSTOM_NAME_MAPPINGS[name];
+  }
   return {
     city: firstPart,
     state: middlePart,
@@ -96,15 +110,20 @@ export function getNameFromExactLocation(location) {
       : "";
   const middlePart =
     isConcretePlace && location.address.road
-      ? `${location.address.road}${
-          location.address.house_number ? " " + location.address.house_number : ""
-        }, `
+      ? `${location.address.road}${location.address.house_number ? " " + location.address.house_number : ""
+      }, `
       : "";
-  const cityAndCountry = `${getCityOrCountyName(location.address)}, ${location.address.country}`;
-  const name = firstPart + middlePart + cityAndCountry;
+  const city = getCityOrCountyName(location.address)
+  const country = MAP_STATE_TO_COUNTRY.includes(location?.address?.state) ? location.address.state : location.address.country
+  const cityAndCountry = `${firstPart != city && `${city}, `}${country}`;
+  let name = firstPart + middlePart + cityAndCountry;
+  //For certain locations our automatic name generation doesn't work. In this case we want to override the name with a custom one
+  if (Object.keys(CUSTOM_NAME_MAPPINGS).includes(name)) {
+    name = CUSTOM_NAME_MAPPINGS[name];
+  }
   return {
     name: name || location.display_name || "test",
-    city: getCityOrCountyName(location.address),
+    city: city,
     state: location.address.state,
     country: location.address.country,
   };
