@@ -10,6 +10,8 @@ We use Python/Django for our backend and Next.js for the frontend.
 
 Note: we use Python 3, so for all instructions we assume `python` means `python3`.
 
+Currently, our project is only compatible with python3.11.
+
 First, clone the GitHub repository
 
 ```sh
@@ -42,17 +44,18 @@ If you can't or don't want to use VS Code dev containers, follow the steps below
 
 ### Postgres
 
+1. Install Postgresql (https://www.postgresql.org/download/)
 1. Create a local Postgres database with your own username and password. E.g., `createdb climateconnect-dev`.
 1. Install [PostGIS](https://postgis.net/install/) on your local machine.
 1. Create the PostGIS extension within that database: run [`CREATE EXTENSION postgis;`](https://docs.djangoproject.com/en/3.1/ref/contrib/gis/install/postgis/).
 
 You will connect to this for your local backend project.
 
-- Create a new superuser
-- Alter your new user's password
-- Create a new database
+- Create a new superuser (run `CREATE USER username WITH SUPERUSER;`)
+- Alter your new user's password (run `ALTER USER username WITH PASSWORD 'mypassword';`)
+- Create a new database (run `CREATE DATABASE climateconnect OWNER username';`)
 
-Supply these values to your local `backend/.backend_env`.
+Supply these values to your local `backend/.backend_env` (see Project Dependencies->Backend->First Time Setup for more information).
 
 ### Docker
 
@@ -62,6 +65,7 @@ Make sure to install docker-ce, docker-ce-cli, containerd.io, and docker-compose
 
 ## Project Dependencies
 
+Make sure yarn (https://classic.yarnpkg.com/lang/en/docs/install/) and pdm (https://pdm.fming.dev/latest/#recommended-installation-method) are installed.
 Run `./install_deps.sh` to install the JavaScript dependencies and the Python dependencies in a virtualenv.
 
 ### Backend
@@ -69,21 +73,21 @@ Run `./install_deps.sh` to install the JavaScript dependencies and the Python de
 #### First Time Setup
 
 1.  Go to backend directory: `cd backend`
-1. Make sure `pdm` is installed: https://pdm.fming.dev/latest/#recommended-installation-method
 1.  Run `make install` to install all backend libraries.
 1.  Create `.backend_env` to set environment variables.
     - You can use the script [./initial_dev_setup.sh](./initial_dev_setup.sh) as inspiration.
     - You can find up-to-date sample env variables in [`backend/local-env-setup.md`](https://github.com/climateconnect/climateconnect/blob/master/backend/local-env-setup.md).
     - For the [Django `SECRET_KEY`](https://docs.djangoproject.com/en/3.1/ref/settings/#std:setting-SECRET_KEY), run `openssl rand -base64 32` to create a 32 char random secret.
+1. Make sure that PostgreSQL accepts password authenticaiton for your local connections  (https://www.postgresql.org/docs/current/auth-pg-hba-conf.html). Therefore, change the METHOD to `scram-sha-256`.
 1.  Run `make migrate` to run Django migrations.
     - _Note: This command is used for when you first start, or whenever you are adding or updating database models_.
 1.  Create a superuser using `python manage.py createsuperuser`
-    - You can then access your admin panel via <API_URL>/admin/
+    - You can then access your admin panel via <API_URL>/admin/ (e.g. http://localhost:8000/admin/)
 
 #### Continual Development
 
-1.  Ensure Docker is running and then run `sudo docker-compose up`. This will start a Redis server on Docker.
-1.  Ensure the Postgres server is running.
+1.  Ensure Docker is running and then run `sudo docker compose up`. This will start a Redis server on Docker.
+1.  Ensure the Postgres server is running and the venv is activated.
 1.  Run server using `make start`.
 1.  Run Celery using `celery -A climateconnect_main worker -l INFO`
 
@@ -184,6 +188,14 @@ ENVIRONMENT="development"
 CUSTOM_HUB_URLS="example"
 LOCATION_HUBS=valu1,value2,value3
 ```
+
+If you have a Webflow token, set it up in the .env with:
+```sh
+WEBFLOW_API_TOKEN="<myToken>"
+WEBFLOW_SITE_ID="<siteID>"
+ENABLE_DEVLINK="true"
+```
+otherwise just set ```ENABLE_DEVLINK``` to false.
 
 _Note: This is for people who are using newer version of node (v17.0.1) or have new apple M1 devices. Before running `yarn dev`, please run this command `export NODE_OPTIONS=--openssl-legacy-provider`. You can save this in your `~/.zshrc` file as well._
 
