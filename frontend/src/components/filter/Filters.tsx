@@ -84,7 +84,6 @@ const useStyles = makeStyles<Theme, { justifyContent: any }>((theme) => {
 });
 
 export default function Filters({
-  errorMessage,
   handleClickDialogClose,
   handleClickDialogOpen,
   handleClickDialogSave,
@@ -109,12 +108,6 @@ export default function Filters({
   const radiusFilterOptions = getRadiusFilterOptions();
   return (
     <>
-      {errorMessage && (
-        <div className={classes.errorMessageWrapper}>
-          <Typography color="error">{errorMessage}</Typography>
-        </div>
-      )}
-
       <div className={`${classes.flexContainer} ${isInOverlay && classes.verticalFlexContainer}`}>
         {/* Map over the potential filters for each specific tab. For example, on the Members tab,
          the possible filters might be the location filter object, and the skills filter object. */}

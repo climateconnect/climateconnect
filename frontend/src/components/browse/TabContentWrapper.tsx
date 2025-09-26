@@ -55,8 +55,6 @@ export default function TabContentWrapper({
   type,
   filtersExpanded,
   handleApplyNewFilters,
-  handleUpdateFilterValues,
-  errorMessage,
   isMobileScreen,
   filtersExandedOnMobile,
   handleSetLocationOptionsOpen,
@@ -88,8 +86,6 @@ export default function TabContentWrapper({
           className={classes.tabContent}
           type={TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf(type)]}
           applyFilters={handleApplyNewFilters}
-          handleUpdateFilters={handleUpdateFilterValues}
-          errorMessage={errorMessage}
           filtersExpanded={isMobileScreen ? filtersExandedOnMobile : filtersExpanded}
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf(type)]]}
