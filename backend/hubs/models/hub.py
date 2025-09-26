@@ -296,6 +296,14 @@ class Hub(models.Model):
         on_delete=models.SET_NULL,
     )
 
+    welcome_box_component = models.CharField(
+        help_text="Provide the welcome box component name. Please ensure it matches the component name from Webflow.<br> The name must be identical for both the English and German versions, with the language code at the beginning (e.g. 'EnWelcomeBox' or 'DeWelcomeBox').",
+        verbose_name="Welcome box component name",
+        max_length=128,
+        null=True,
+        blank=True,
+    )
+
     # Constraints to ensure that the hub is a parent or a sub-hub
     def clean(self):
         if self.parent_hub:

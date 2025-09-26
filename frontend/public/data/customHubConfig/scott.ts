@@ -17,7 +17,6 @@ export const scottishStaticLinks = (texts: any): Link[] =>
   getStaticLinks(texts, SCOTTISH_STATIC_LINKS_CONFIG, NETWORKS_URL);
 
 export const scottConfig = (pathToRedirect: string, texts: any) => ({
-  welcome: "DEVLINK_ELEMENT",
   hubTabLinkNarrowScreen: {
     href: SCOTT_BASE_URL,
     text: texts.climateconnect_scot,
