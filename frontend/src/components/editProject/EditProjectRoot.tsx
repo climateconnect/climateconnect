@@ -79,7 +79,6 @@ export default function EditProjectRoot({
   const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
   const draftReqiredProperties = {
     name: texts.project_name,
-    loc: texts.location,
   };
   const overviewInputsRef = useRef(null as HTMLInputElement | null);
   const locationInputRef = useRef(null as HTMLInputElement | null);
@@ -116,7 +115,7 @@ export default function EditProjectRoot({
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, handleSetErrorMessage, texts);
       return false;
     }
-    const projectDatesValid = checkProjectDatesValid(project, texts);
+    const projectDatesValid = checkProjectDatesValid(project, texts, isDraft);
     if (projectDatesValid.error) {
       setErrors({
         ...errors,
@@ -160,11 +159,15 @@ export default function EditProjectRoot({
       locale: locale,
     })
       .then(function () {
+        const query: { message: string; hub?: string } = {
+          message: texts.you_have_successfully_edited_your_project,
+        };
+        if (hubUrl) {
+          query.hub = hubUrl;
+        }
         Router.push({
           pathname: "/profiles/" + user.url_slug,
-          query: {
-            message: texts.you_have_successfully_edited_your_project,
-          },
+          query,
         });
       })
       .catch(function (error) {
@@ -228,7 +231,7 @@ export default function EditProjectRoot({
       locale: locale,
     })
       .then(function (response) {
-        const query = {
+        const query: { message: string; hub?: string } = {
           message: was_draft
             ? texts.your_project_has_been_published_great_work
             : texts.you_have_successfully_edited_your_project,

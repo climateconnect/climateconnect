@@ -128,7 +128,7 @@ export default function ProjectPreview({ project, projectRef, hubUrl, className 
     <Link
       href={
         project.is_draft
-          ? `${getLocalePrefix(locale)}/editProject/${project.url_slug}`
+          ? `${getLocalePrefix(locale)}/editProject/${project.url_slug}${queryString}`
           : `${getLocalePrefix(locale)}/projects/${project.url_slug}${queryString}`
       }
       className={classes.noUnderline}
