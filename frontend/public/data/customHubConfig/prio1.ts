@@ -2,13 +2,16 @@ import { Link } from "../customHubtypes";
 import { getSharedLinks, getStaticLinks, StaticLinkConfig } from "./customHubLinks";
 
 //for usage without webflow token
-let enWelcomeModule: any;
-let deWillkommenModul: any;
-if (process.env.ENABLE_DEVLINK === "true") {
-  const devlink = require("../../../devlink");
-  enWelcomeModule = devlink.EnPrio1Welcome;
-  enWelcomeModule = devlink.DePrio1Willkommen;
-}
+const EmptyModule = () => null;
+let enWelcomeModule: any = EmptyModule;
+let deWillkommenModul: any = EmptyModule;
+try {
+  if (process.env.ENABLE_DEVLINK === "true") {
+    const devlink = require("../../../devlink");
+    enWelcomeModule = devlink.EnPrio1Welcome;
+    enWelcomeModule = devlink.DePrio1Willkommen;
+  }
+} catch (error) {}
 
 const PRIO1_BASE_URL = "https://prio1-klima.net";
 

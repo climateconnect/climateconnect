@@ -11,11 +11,14 @@ import Header from "../header/Header";
 import LayoutWrapper from "./LayoutWrapper";
 
 //for usage without webflow token
-let DevLinkProvider: any;
-if (process.env.ENABLE_DEVLINK === "true") {
-  const devlink = require("../../../devlink");
-  DevLinkProvider = devlink.DevLinkProvider;
-}
+const EmptyModule = () => null;
+let DevLinkProvider: any = EmptyModule;
+try {
+  if (process.env.ENABLE_DEVLINK === "true") {
+    const devlink = require("../../../devlink");
+    DevLinkProvider = devlink.DevLinkProvider;
+  }
+} catch (error) {}
 
 interface StyleProps {
   customTheme_default_contrastText?: string;

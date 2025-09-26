@@ -18,11 +18,13 @@ const Fallback = () => (
 );
 let CCLandingpage: any = Fallback;
 let ENLandingpageClimateConnect: any = Fallback;
-if (process.env.ENABLE_DEVLINK === "true") {
-  const devlink = require("../devlink");
-  CCLandingpage = devlink.CcLandingpage;
-  ENLandingpageClimateConnect = devlink.EnLandingpageClimateConnect;
-}
+try {
+  if (process.env.ENABLE_DEVLINK === "true") {
+    const devlink = require("../devlink");
+    CCLandingpage = devlink.CcLandingpage;
+    ENLandingpageClimateConnect = devlink.EnLandingpageClimateConnect;
+  }
+} catch (error) {}
 
 const useStyles = makeStyles((theme) => ({
   container: {

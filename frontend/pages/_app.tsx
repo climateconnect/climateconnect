@@ -15,12 +15,13 @@ import theme from "../src/themes/theme";
 import { CcLocale } from "../src/types";
 import * as Sentry from "@sentry/react";
 
-
 //only bundle global.css if ENABLE_DEVLINK in .env is true
 const isDevlinkEnabled = process.env.ENABLE_DEVLINK === "true";
-if (isDevlinkEnabled) {
-  require("../devlink/global.css");
-}
+try {
+  if (isDevlinkEnabled) {
+    require("../devlink/global.css");
+  }
+} catch (error) {}
 
 // initialize sentry
 
@@ -207,7 +208,6 @@ export default function MyApp({ Component, pageProps = {} }) {
       connect(client);
     }
   }, [state.user]);
-
 
   const connect = (initialClient) => {
     const client = initialClient ? initialClient : WebSocketService("/ws/chat/");
