@@ -14,7 +14,14 @@ import UserContext from "../src/components/context/UserContext";
 import theme from "../src/themes/theme";
 import { CcLocale } from "../src/types";
 import * as Sentry from "@sentry/react";
-import "../devlink/global.css";
+
+//only bundle global.css if ENABLE_DEVLINK in .env is true
+const isDevlinkEnabled = process.env.ENABLE_DEVLINK === "true";
+try {
+  if (isDevlinkEnabled) {
+    require("../devlink/global.css");
+  }
+} catch (error) {}
 
 // initialize sentry
 

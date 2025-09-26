@@ -23,6 +23,7 @@ module.exports = withBundleAnalyzer({
     "LOCATION_HUBS",
     "LETS_ENCRYPT_FILE_CONTENT",
     "SOCKET_URL",
+    "ENABLE_DEVLINK",
     "WEBFLOW_API_TOKEN",
     "WEBFLOW_SITE_ID",
   ]),
