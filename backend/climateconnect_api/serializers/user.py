@@ -12,6 +12,10 @@ from climateconnect_api.utility.user import get_user_profile_biography
 from django.conf import settings
 from django.utils.translation import get_language
 from rest_framework import serializers
+from organization.utility.sector import (
+    get_sectors_based_on_hub,
+)
+from organization.serializers.sector import UserProfileSectorMappingSerializer
 
 
 class PersonalProfileSerializer(serializers.ModelSerializer):
@@ -80,6 +84,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     language = serializers.SerializerMethodField()
     biography = serializers.SerializerMethodField()
     badges = serializers.SerializerMethodField()
+    sectors = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
@@ -99,6 +104,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "location",
             "language",
             "badges",
+            "sectors",
         )
 
     def get_id(self, obj):
@@ -128,6 +134,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
             return serializer.data
         else:
             return None
+
+    def get_sectors(self, obj):
+        hub = self.context.get("hub")
+
+        sector_mappings = get_sectors_based_on_hub(
+            obj.user_profile_sector_mapping.all(), hub
+        )
+
+        serializer = UserProfileSectorMappingSerializer(sector_mappings, many=True)
+        return serializer.data
 
 
 class EditUserProfileSerializer(UserProfileSerializer):
@@ -164,6 +180,7 @@ class UserProfileMinimalSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
     badges = serializers.SerializerMethodField()
+    sectors = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
@@ -177,6 +194,7 @@ class UserProfileMinimalSerializer(serializers.ModelSerializer):
             "location",
             "website",
             "badges",
+            "sectors",
         )
 
     def get_id(self, obj):
@@ -200,6 +218,16 @@ class UserProfileMinimalSerializer(serializers.ModelSerializer):
             return serializer.data
         else:
             return None
+
+    def get_sectors(self, obj):
+        hub = self.context.get("hub")
+
+        sector_mappings = get_sectors_based_on_hub(
+            obj.user_profile_sector_mapping.all(), hub
+        )
+
+        serializer = UserProfileSectorMappingSerializer(sector_mappings, many=True)
+        return serializer.data
 
 
 class UserProfileStubSerializer(serializers.ModelSerializer):

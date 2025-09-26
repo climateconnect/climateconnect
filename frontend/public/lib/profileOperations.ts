@@ -7,6 +7,9 @@ export function parseProfile(profile, detailledSkills, keepOldProps = false) {
   if (keepOldProps) {
     user.first_name = profile.first_name;
   }
+  const sectors = {
+    sectors: profile?.sectors.sort((a, b) => a.order - b.order).map((s) => s.sector),
+  };
   user = {
     ...user,
     badges: profile.badges,
@@ -24,6 +27,7 @@ export function parseProfile(profile, detailledSkills, keepOldProps = false) {
       skills: profile.skills && profile.skills.map((s) => s.name),
       availability: profile.availability && profile.availability.name,
       website: profile.website,
+      ...sectors,
     },
   };
   user = convertUndefinedToNull(user);
