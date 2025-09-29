@@ -147,6 +147,18 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
       en: "Would you also like to support the ClimateHub?",
       de: "Du möchtest den ClimateHub auch unterstützen?",
     },
+    you_are_seeing_projects_related_to: {
+      en: `You are seeing projects, ideas and events related to the topic "${hubName}"`,
+      de: `Du siehst Projekte, Ideen und Events zum Thema "${hubName}"`,
+    },
+    you_are_seeing_organizations_related_to: {
+      en: `You are seeing organizations working on the topic "${hubName}"`,
+      de: `Du siehst Organisationen, die am Thema "${hubName}" arbeiten`,
+    },
+    you_are_seeing_members_related_to: {
+      en: `You are seeing people interested in the topic "${hubName}"`,
+      de: `Du siehst Menschen, die sich für das Thema "${hubName}" interessieren`,
+    },
   };
 
   if (hubName === "Fashion") return { ...generalHubTexts, ...getFashionHubDescription() };
