@@ -46,6 +46,8 @@ type Props = {
   filterMode?: boolean;
   color?: TextFieldProps["color"];
 };
+
+
 export default function LocationSearchBar({
   label,
   required,
@@ -70,7 +72,7 @@ export default function LocationSearchBar({
   filterMode = false, //Are we filtering any content by this location?
   color,
 }: Props) {
-  const { locale } = useContext(UserContext);
+  const { locale, hubUrl } = useContext(UserContext);
   const classes = useStyles({ hideHelperText: hideHelperText });
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const getValue = (newValue, inputValue) => {
@@ -104,6 +106,10 @@ export default function LocationSearchBar({
     [value]
   );
   const [loading, setLoading] = React.useState(false);
+  const HUB_COUNTRY_RESTRICTIONS = {
+    "perth": "gb"
+  }
+
   React.useEffect(() => {
     let active = true;
 
@@ -114,8 +120,12 @@ export default function LocationSearchBar({
           mode: "no-cors",
           referrerPolicy: "origin",
         };
+        let url = `https://nominatim.openstreetmap.org/search?q=${searchValue}&format=json&addressdetails=1&polygon_geojson=1&polygon_threshold=0.001&accept-language=en-US,en;q=0.9`
+        if (Object.keys(HUB_COUNTRY_RESTRICTIONS).includes(hubUrl)) {
+          url += "&countrycodes=" + HUB_COUNTRY_RESTRICTIONS[hubUrl];
+        }
         const response = await axios(
-          `https://nominatim.openstreetmap.org/search?q=${searchValue}&format=json&addressdetails=1&polygon_geojson=1&polygon_threshold=0.001&accept-language=en-US,en;q=0.9`,
+          url,
           config as any
         );
         const bannedClasses = [
@@ -170,12 +180,12 @@ export default function LocationSearchBar({
             filteredData.length > 0
               ? filteredData
               : response.data.slice(0, 2).filter((o) => {
-                  if (filterMode && o.type === "postcode") {
-                    return false;
-                  } else {
-                    return enableExactLocation || !bannedClasses.includes(o.class);
-                  }
-                });
+                if (filterMode && o.type === "postcode") {
+                  return false;
+                } else {
+                  return enableExactLocation || !bannedClasses.includes(o.class);
+                }
+              });
           for (const option of additionalOptions) {
             if (option.simple_name.toLowerCase().includes(searchValue.toLowerCase())) {
               data.push(option);

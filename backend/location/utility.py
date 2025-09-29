@@ -181,6 +181,14 @@ def format_location(location_string, already_loaded):
     }
 
 
+CUSTOM_NAME_MAPPINGS = {"Scotland (state), Scotland": "Scotland"}
+
+# These countries are wrongly categorized as states in Nominatim. We want to show them as countries as this is more clear
+MAP_STATE_TO_COUNTRY = ["Scotland", "Wales", "England", "Northern Ireland"]
+
+
+# This function has an equivalent in backend/location/utility.py -> format_location_name
+# We should consider using the same codebase for these
 def format_location_name(location):
     first_part_order = [
         "village",
@@ -223,15 +231,27 @@ def format_location_name(location):
     middle_part = get_middle_part(
         location["address"], middle_part_order, middle_part_suffixes
     )
+    last_part = (
+        location["address"]["state"]
+        if location["address"].get("state") in MAP_STATE_TO_COUNTRY
+        else location["address"]["country"]
+    )
+    show_middle_part = first_part != middle_part and middle_part != last_part
+    name = (
+        first_part
+        + ", "
+        + (middle_part if show_middle_part else "")
+        + (", " if show_middle_part and middle_part and len(middle_part) > 0 else "")
+        + last_part
+    )
+    # For certain locations our automatic name generation doesn't work. In this case we want to override the name with a custom one
+    if name in CUSTOM_NAME_MAPPINGS:
+        name = CUSTOM_NAME_MAPPINGS[name]
     return {
         "city": first_part,
         "state": middle_part,
         "country": location["address"]["country"],
-        "name": first_part
-        + ", "
-        + middle_part
-        + (", " if len(middle_part) > 0 else "")
-        + location["address"]["country"],
+        "name": name,
     }
 
 

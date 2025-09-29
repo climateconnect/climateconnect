@@ -27,6 +27,7 @@ const UserContext = createContext<{
   stopLoading?: any;
   hideNotification?: any;
   LOCATION_HUBS?: any;
+  hubUrl: string;
 }>(null!);
 
 export default UserContext;
