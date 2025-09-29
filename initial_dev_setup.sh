@@ -24,7 +24,7 @@ SECRET_KEY="$(openssl rand -base64 32)"
 
 if [[ ! -f backend/.backend_env ]]; then
     cat > backend/.backend_env <<EOF
-FRONTEND_URL=http://localhost:3000
+FRONTEND_URL=http://localhost:3001
 SECRET_KEY=$SECRET_KEY
 
 ALLOWED_HOSTS=http://localhost:8000
@@ -35,7 +35,7 @@ DEBUG=True
 AUTO_VERIFY=True
 LOCATION_SERVICE_BASE_URL=https://nominatim.openstreetmap.org
 ENABLE_LEGACY_LOCATION_FORMAT=True
-CELERY_BROKER_URL=redis://redis
+CELERY_BROKER_URL=redis://127.0.0.1
 
 DATABASE_NAME=backend
 DATABASE_USER=backend

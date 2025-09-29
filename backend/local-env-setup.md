@@ -19,7 +19,7 @@ DEBUG=True
 AUTO_VERIFY=True
 
 # Url of location geocoding API
-LOCATION_SERVICE_BASE_URL=""
+LOCATION_SERVICE_BASE_URL="https://nominatim.openstreetmap.org"
 ENABLE_LEGACY_LOCATION_FORMAT="Set to True to disable usage of geocoding API"
 
 CELERY_BROKER_URL="redis://127.0.0.1"
