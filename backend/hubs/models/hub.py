@@ -354,6 +354,20 @@ class HubAmbassador(models.Model):
         null=True,
         blank=True,
     )
+    custom_ambassador_box_text = models.CharField(
+        help_text="Custom text showing up in the box displaying the ambassador. Default: <First name> is responsible for the ClimateHub <Hubname> and is there for you.",
+        verbose_name="Custom box text",
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    custom_ambassador_box_text_de = models.CharField(
+        help_text="German translation for custom ambassador box text",
+        verbose_name="Custom box text",
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
     custom_message = models.CharField(
         help_text="Custom message motivating users to contact the ambassador",
         verbose_name="Custom message",
