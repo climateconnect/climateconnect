@@ -57,9 +57,10 @@ export function getNameFromLocation(location) {
       name: location.display_name,
     };
   }
-  const middlePartSuffixes = ["city", "state"];
+  const middlePartSuffixes = ["town", "city", "state"];
   const firstPart = getFirstPart(location.address, firstPartOrder);
   const middlePart = getMiddlePart(location.address, middlePartOrder, middlePartSuffixes);
+
   const lastPart = MAP_STATE_TO_COUNTRY.includes(location?.address?.state)
     ? location.address.state
     : location.address.country;
