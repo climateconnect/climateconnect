@@ -521,6 +521,10 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Save as draft",
       de: "Als Entwurf speichern",
     },
+    draft: {
+      en: "Draft",
+      de: "Entwurf",
+    },
     you_have_successfully_deleted_your_project: {
       en: "You have successfully deleted your project.",
       de: "Du hast dein Projekt erfolgreich gelöscht.",
