@@ -128,7 +128,6 @@ export default function ClimateMatchResult({ suggestion, pos }) {
     e.preventDefault();
     if (!user) {
       return redirect("/signup", {
-        redirect: window.location.pathname + window.location.search,
         errorMessage: texts.please_create_an_account_or_log_in_to_contact_a_projects_organizer,
       });
     }

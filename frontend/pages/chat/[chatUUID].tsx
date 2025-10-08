@@ -1,7 +1,7 @@
 import NextCookies from "next-cookies";
 import React, { useContext, useEffect } from "react";
 import Cookies from "universal-cookie";
-import { apiRequest, redirect, sendToLogin } from "../../public/lib/apiOperations";
+import { apiRequest, redirect, sendToLogin, getRedirectUrl } from "../../public/lib/apiOperations";
 import { getMessageFromServer } from "../../public/lib/messagingOperations";
 import getTexts from "../../public/texts/texts";
 import MessagingLayout from "../../src/components/communication/chat/MessagingLayout";
@@ -102,9 +102,10 @@ export default function Chat({
   }, [chatSocket, state]);
 
   useEffect(() => {
+    const redirectUrl = getRedirectUrl(locale);
     if (!user)
       redirect("/signin", {
-        redirect: window.location.pathname + window.location.search,
+        redirect: redirectUrl,
         message: texts.login_required,
       });
   }, [user]);
