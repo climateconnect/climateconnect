@@ -17,7 +17,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
 import ProjectLocationSearchBar from "../shareProject/ProjectLocationSearchBar";
-import { Project, SectorOptionType } from "../../types";
+import { Project, Sector } from "../../types";
 import CustomHubSelection from "../project/CustomHubSelection";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
@@ -89,7 +89,7 @@ type Args = {
   locationOptionsOpen: boolean;
   handleSetLocationOptionsOpen: (open: boolean) => void;
   locationInputRef: any;
-  sectorOptions: SectorOptionType[];
+  sectorOptions: Sector[];
 };
 
 //TODO: Allow changing project type?!
@@ -151,7 +151,7 @@ type ScreenOverviewProps = {
   locationOptionsOpen: boolean;
   handleSetLocationOptionsOpen: (open: boolean) => void;
   texts: Record<string, string>;
-  sectorOptions: SectorOptionType[];
+  sectorOptions: Sector[];
 };
 
 function SmallScreenOverview({
@@ -391,7 +391,7 @@ type InputSectorsProps = {
   project: Project;
   handleChangeProject: (newValue: any, key: string) => void;
   texts: Record<string, string>;
-  sectorOptions: SectorOptionType[];
+  sectorOptions: Sector[];
 };
 
 const InputSectors = ({
