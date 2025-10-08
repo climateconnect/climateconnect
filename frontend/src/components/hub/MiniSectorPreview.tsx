@@ -23,6 +23,9 @@ const useStyles = makeStyles<Theme, any>((theme) => ({
     "-ms-user-select": "none",
     userSelect: "none",
     position: "relative",
+    borderRadius: 4,
+    padding: 0,
+    boxShadow: "none",
   },
   textContainer: {
     boxShadow: "3px 3px 6px #00000017",
