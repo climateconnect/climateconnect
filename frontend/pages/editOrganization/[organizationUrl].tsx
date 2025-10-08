@@ -2,7 +2,8 @@ import NextCookies from "next-cookies";
 import React, { useContext, useRef, useState } from "react";
 import getOrganizationInfoMetadata from "../../public/data/organization_info_metadata";
 import { apiRequest, sendToLogin } from "../../public/lib/apiOperations";
-import { getAllSectors } from "../../public/lib/sectorOperations";
+import { getSectorOptions } from "../../public/lib/getOptions";
+
 import { parseOrganization } from "../../public/lib/organizationOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
@@ -26,7 +27,7 @@ export async function getServerSideProps(ctx) {
   const [organization, tagOptions, allSectors, hubThemeData] = await Promise.all([
     getOrganizationByUrlIfExists(url, auth_token, ctx.locale, hubUrl),
     getOrganizationTagsOptions(ctx.locale),
-    getAllSectors(ctx.locale),
+    getSectorOptions(ctx.locale, hubUrl),
     getHubTheme(hubUrl),
   ]);
 
