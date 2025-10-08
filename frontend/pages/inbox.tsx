@@ -5,7 +5,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import NextCookies from "next-cookies";
 import React, { useEffect, useState, useContext } from "react";
 import Cookies from "universal-cookie";
-import { apiRequest, sendToLogin, redirect } from "../public/lib/apiOperations";
+import { apiRequest, sendToLogin, redirect, getRedirectUrl } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import ChatPreviews from "../src/components/communication/chat/ChatPreviews";
 import UserContext from "../src/components/context/UserContext";
@@ -179,9 +179,10 @@ export default function Inbox({ chatData, initialNextPage }) {
   };
 
   useEffect(() => {
+    const redirectUrl = getRedirectUrl(locale);
     if (!user)
       redirect("/signin", {
-        redirect: window.location.pathname + window.location.search,
+        redirect: redirectUrl,
         message: texts.login_required,
       });
   }, [user]);

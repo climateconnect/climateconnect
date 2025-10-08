@@ -2,7 +2,7 @@ import { Button, IconButton } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useContext } from "react";
-import { redirect } from "../../../public/lib/apiOperations";
+import { redirect, getRedirectUrl } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
@@ -20,12 +20,7 @@ export default function LogInAction({ onClose }) {
   const hub = urlParams.get("hub");
 
   const onClickSignUp = () => {
-    let redirectUrl = window.location.href
-      .replace(window.location.origin, "")
-      .replace(`/${locale}/`, "");
-    if (redirectUrl[0] === "/") {
-      redirectUrl = redirectUrl.slice(1, redirectUrl.length);
-    }
+    const redirectUrl = getRedirectUrl(locale);
     redirect("/signin", { redirect: redirectUrl, hub: hub });
   };
 
