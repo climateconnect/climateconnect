@@ -64,6 +64,7 @@ export function getNameFromLocation(location) {
   const lastPart = MAP_STATE_TO_COUNTRY.includes(location?.address?.state)
     ? location.address.state
     : location.address.country;
+
   const showMiddlePart = firstPart !== middlePart && middlePart !== lastPart;
   let name =
     firstPart +
@@ -118,6 +119,7 @@ export function getNameFromExactLocation(location) {
           location.address.house_number ? " " + location.address.house_number : ""
         }, `
       : "";
+
   const city = getCityOrCountyName(location.address);
   const country = MAP_STATE_TO_COUNTRY.includes(location?.address?.state)
     ? location.address.state
@@ -337,6 +339,7 @@ export function getLocationFields({
       ref: locationInputRef,
       locationOptionsOpen: locationOptionsOpen,
       handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
+      enableExactLocation: true,
     },
   ];
 }
