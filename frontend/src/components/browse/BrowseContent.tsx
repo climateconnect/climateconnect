@@ -73,8 +73,8 @@ const useStyles = makeStyles((theme) => {
     subHubInfoText: {
       fontStyle: "italic",
       marginTop: theme.spacing(-1),
-      marginBottom: theme.spacing(2)
-    }
+      marginBottom: theme.spacing(2),
+    },
   };
 });
 
@@ -153,12 +153,14 @@ export default function BrowseContent({
     ? ["projects", "organizations"] // TODO: add "events" here, after implementing event calendar
     : ["projects", "organizations", "members"]; // TODO: add "events" here, after implementing event calendar
   const { locale } = useContext(UserContext);
-  const texts = useMemo(() => getTexts({ page: "hub", locale: locale, hubName: hubData?.name }), [locale]);
+  const texts = useMemo(() => getTexts({ page: "hub", locale: locale, hubName: hubData?.name }), [
+    locale,
+  ]);
 
   const [hash, setHash] = useState<BrowseTab | null>(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
-
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+  // Targets all screen sizes UP TO and including 960px.(i.e., tablet/desktop)
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down(961));
   const type_names = {
     projects: texts.projects,
     organizations: isNarrowScreen ? texts.orgs : texts.organizations,

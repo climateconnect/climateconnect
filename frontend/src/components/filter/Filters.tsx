@@ -30,10 +30,12 @@ const useStyles = makeStyles<Theme, { justifyContent: any }>((theme) => {
     },
     field: {
       display: "flex",
-      width: 190,
+      minWidth: 220,
+    },
+    locationBox: {
+      width: 330,
     },
     locationFieldWrapper: {
-      // width: 290,
       display: "flex",
       borderRadius: 0,
       marginRight: theme.spacing(1),
@@ -248,7 +250,11 @@ export default function Filters({
                 <LocationSearchBar
                   smallInput
                   onSelect={handleLocationSelect}
-                  inputClassName={!isInOverlay ? classes.field : classes.overlayLocationField}
+                  inputClassName={
+                    !isInOverlay
+                      ? `${classes.field} ${classes.locationBox}`
+                      : classes.overlayLocationField
+                  }
                   value={currentFilters[filter.key]}
                   textFieldClassName={classes.locationField}
                   onChange={(value) => handleValueChange(filter.key, value)}
@@ -262,6 +268,7 @@ export default function Filters({
                       {filter.title}
                     </div>
                   }
+                  enableExactLocation
                 />
                 <SelectField
                   key={filter.key}
