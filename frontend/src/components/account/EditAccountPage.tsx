@@ -509,7 +509,6 @@ export default function EditAccountPage({
               handleSetOpen={i.setLocationOptionsOpen}
               open={i.locationOptionsOpen}
               locationInputRef={i.locationInputRef}
-              enableExactLocation
             />
           </div>
         );

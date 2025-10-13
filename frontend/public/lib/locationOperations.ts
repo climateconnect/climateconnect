@@ -122,8 +122,8 @@ export function getNameFromExactLocation(location) {
 
   const city = getCityOrCountyName(location.address);
   const country = MAP_STATE_TO_COUNTRY.includes(location?.address?.state)
-    ? location.address.state
-    : location.address.country;
+    ? location?.address?.state
+    : location?.address?.country;
   const cityAndCountry = `${firstPart != city && `${city}, `}${country}`;
   let name = firstPart + middlePart + cityAndCountry;
   //For certain locations our automatic name generation doesn't work. In this case we want to override the name with a custom one
@@ -133,14 +133,14 @@ export function getNameFromExactLocation(location) {
   return {
     name: name || location.display_name || "test",
     city: city,
-    state: location.address.state,
-    country: location.address.country,
+    state: location?.address?.state,
+    country: location?.address?.country,
   };
 }
 
 const getFirstPart = (address, order) => {
   for (const el of order) {
-    if (address[el]) {
+    if (address && address[el]) {
       if (el === "state") return address[el] + " (state)";
       if (el === "municipality") return address[el] + " (municipality)";
       return address[el];
