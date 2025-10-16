@@ -114,6 +114,7 @@ type Props = {
     ref?: any;
     handleSetLocationOptionsOpen?: any;
     locationOptionsOpen?: any;
+    enableExactLocation?: boolean;
   }[];
   select?: { selectValues: { label: string; value: string }[] };
   messages: {
@@ -353,6 +354,7 @@ export default function Form({
                 handleSetOpen={field.handleSetLocationOptionsOpen}
                 open={field.locationOptionsOpen}
                 className={`${classes.blockElement} ${fieldClassName}`}
+                enableExactLocation={field.enableExactLocation}
               />
             );
           } else if (

@@ -156,7 +156,6 @@ export default function EnterBasicOrganizationInfo({
       value: organizationInfo["verified"],
     },
   ];
-
   const messages = {
     submitMessage: texts.next_step,
   };
