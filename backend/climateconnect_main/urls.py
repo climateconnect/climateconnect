@@ -176,4 +176,7 @@ urls = [
     path("api/", include("climate_match.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+if settings.DEBUG:
+    urls += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
 urlpatterns = urls
