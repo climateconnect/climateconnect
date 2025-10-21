@@ -2,7 +2,5 @@
 /app.yaml
 /gcloud-storage-credentials.json
 
-static/
-staticfiles/
 media/
 .pdm-python
