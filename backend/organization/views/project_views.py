@@ -1,6 +1,6 @@
 import logging
 import traceback
-from django.db.models import Case, When, Prefetch
+from django.db.models import Q, Case, When, Prefetch, Count
 
 from organization.utility.project_ranking import ProjectRanking
 from organization.utility.sector import (
@@ -31,14 +31,11 @@ from climateconnect_main.utility.general import get_image_from_data_url
 
 from dateutil.parser import parse
 
-from django.conf import settings
-
 from django.core.cache import cache
 
 from django.contrib.auth.models import User
 from django.contrib.gis.db.models.functions import Distance
 from django.db import transaction
-from django.db.models import Q, Case, When, Prefetch, Count
 from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 
 from hubs.models.hub import Hub
