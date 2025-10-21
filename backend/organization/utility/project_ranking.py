@@ -2,7 +2,7 @@ import datetime
 import random
 from django.core.cache import cache
 from django.utils import timezone
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 from organization.models.type import ProjectTypesChoices
 from organization.utility.cache import generate_project_ranking_cache_key
 from climateconnect_api.models.user import UserProfile
@@ -245,9 +245,11 @@ class ProjectRanking:
 
         return project_rank
 
-    def calculate_all_project_rankings(self) -> Dict[int, int]:
+    def calculate_all_project_rankings(
+        self, project_ids: List[int] | None = None
+    ) -> Dict[int, int]:
         print("Calculating project rankings for all projects...")
-        vectors = self.__get_project_ranking_vectors()
+        vectors = self.__get_project_ranking_vectors(project_ids)
 
         ranks = {}
         for vector in vectors:
@@ -282,7 +284,7 @@ class ProjectRanking:
 
         return ranks
 
-    def __get_project_ranking_vectors(self):
+    def __get_project_ranking_vectors(self, project_ids: List[int] | None = None):
         """
         Pulls together the ranking vector for each project (using a list of features, that will be used to
         calculate the ranking score (e.g. number of likes, comments, recency of last interaction, etc.):
@@ -312,8 +314,7 @@ class ProjectRanking:
         """
 
         with connection.cursor() as cursor:
-            cursor.execute(
-                """
+            query_template = """
                 SELECT
                     proj.id                         AS project_id,
                     proj.rating                     AS project_manually_set_rating,
@@ -346,11 +347,15 @@ class ProjectRanking:
                 LEFT JOIN   organization_projectlike        likes               ON  proj.id = likes.project_id
                 LEFT JOIN   organization_projectfollower    follower            ON  proj.id = follower.project_id
                 LEFT JOIN   organization_project_skills     skill_mapping       ON  proj.id = skill_mapping.project_id
-
-                GROUP BY
-                    proj.id;
             """
-            )
+            if project_ids:
+                placeholders = ", ".join(["%s"] * len(project_ids))
+                query_template += f" WHERE proj.id IN ({placeholders}) "
+                query_template += " GROUP BY proj.id; "
+                cursor.execute(query_template, project_ids)
+            else:
+                query_template += " GROUP BY proj.id;"
+                cursor.execute(query_template)
             rows = cursor.fetchall()
 
             return rows

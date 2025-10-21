@@ -1,5 +1,6 @@
 from django.urls import path
 
+from organization.views import project_views_v2
 from organization.views import organization_views, project_views, sector_views
 
 app_name = "organization"
@@ -83,8 +84,8 @@ urlpatterns = [
     # Project URLs
     path("projects/", project_views.ListProjectsView.as_view(), name="list-projects"),
     path(
-        "projects/faster/",
-        project_views.CalculateProjectRankingsView.as_view(),
+        "projects/v2/",
+        project_views_v2.ListProjectsViewV2.as_view(),
         name="calculate-project-rankings-view",
     ),
     path(
