@@ -315,27 +315,27 @@ class ProjectRanking:
         with connection.cursor() as cursor:
             query_template = """
                 SELECT
-                    proj.id                         AS project_id,
-                    proj.rating                     AS project_manually_set_rating,
-                    proj.created_at                 AS created_at,
-                    proj.start_date                 AS start_date,
-                    proj.end_date                   AS end_date,
-                    proj.project_type               AS project_type,
+                    proj.id                             AS project_id,
+                    proj.rating                         AS project_manually_set_rating,
+                    proj.created_at                     AS created_at,
+                    proj.start_date                     AS start_date,
+                    proj.end_date                       AS end_date,
+                    proj.project_type                   AS project_type,
                     
                     
 
-                    COUNT(comment.id)               AS total_comments,
-                    COUNT(likes.id)                 AS total_likes,
-                    COUNT(follower.id)              AS total_followers,
-                    COUNT(skill_mapping.id)         AS total_skills,
-                    0                               AS total_tags,
+                    COUNT(DISTINCT comment.id)          AS total_comments,
+                    COUNT(DISTINCT likes.id)            AS total_likes,
+                    COUNT(DISTINCT follower.id)         AS total_followers,
+                    COUNT(DISTINCT skill_mapping.id)    AS total_skills,
+                    0                                   AS total_tags,
 
-                    MAX(comment.created_at)         AS last_project_comment,
-                    MAX(likes.created_at)           AS last_project_like,
-                    MAX(follower.created_at)        AS last_project_follower,
+                    MAX(comment.created_at)             AS last_project_comment,
+                    MAX(likes.created_at)               AS last_project_like,
+                    MAX(follower.created_at)            AS last_project_follower,
 
-                    (proj.loc_id IS NOT NULL)       AS has_location,
-                    (LENGTH(proj.description) > 0)  AS has_description
+                    (proj.loc_id IS NOT NULL)           AS has_location,
+                    (LENGTH(proj.description) > 0)      AS has_description
 
 
                 FROM
@@ -375,8 +375,8 @@ class ProjectRanking:
         last_project_comment_timestamp: Optional[datetime.datetime],
         last_project_like_timestamp: Optional[datetime.datetime],
         last_project_follower_timestamp: Optional[datetime.datetime],
-        has_description: bool,
         has_location: bool,
+        has_description: bool,
     ) -> int:
 
         weights = self._weights()
