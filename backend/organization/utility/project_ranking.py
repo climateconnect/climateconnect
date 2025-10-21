@@ -114,6 +114,10 @@ class ProjectRanking:
             )
         return self._recency_score(timedelta=timedelta)
 
+    # TODO: a future refactor could tackle the code duplication issue regarding the ranking calculation
+    # IMO: one could remove the "recalculate ranking" daily job, as the ranking should now be fast enough
+    # and cachemisses are calculated on the fly
+
     def calculate_ranking(
         self,
         description: str,
