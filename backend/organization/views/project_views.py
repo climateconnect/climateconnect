@@ -346,13 +346,14 @@ class ListProjectsView(ListAPIView):
             # merge dicts:
             rankings = rankings | recalculated_rankings
 
-        project_ids = sorted(
+        ranked_project_ids = sorted(
             project_ids, key=lambda pid: rankings.get(pid, 0), reverse=True
         )
+
         preferred_order = Case(
             *(
                 When(id=id, then=position)
-                for position, id in enumerate(project_ids, start=1)
+                for position, id in enumerate(ranked_project_ids, start=1)
             )
         )
 
