@@ -19,6 +19,8 @@ from climateconnect_api.models import (
     Role,
     Skill,
     UserProfile,
+    Donation,
+    UserBadge,
 )
 from climateconnect_api.models.language import Language
 from climateconnect_api.utility.translation import (
@@ -36,7 +38,7 @@ from django.core.cache import cache
 from django.contrib.auth.models import User
 from django.contrib.gis.db.models.functions import Distance
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Q, Case, When, Prefetch, Count
 from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 
 from hubs.models.hub import Hub
@@ -152,6 +154,7 @@ class ListProjectsView(ListAPIView):
     filterset_fields = ["collaborators_welcome"]
     pagination_class = ProjectsPagination
     serializer_class = ProjectStubSerializer
+    _cached_queryset = None
 
     def post(self, request, *args, **kwargs):
         """
@@ -173,46 +176,18 @@ class ListProjectsView(ListAPIView):
         return self.list(request, *args, **kwargs)
 
     def get_queryset(self):
-        user = self.request.user
-        # TODO: remove user profile, as it is not used
-        user_profile = None
-        if user.is_authenticated:
-            user_profile = user.user_profile if user.user_profile else None  # noqa
+        if self._cached_queryset is not None:
+            return self._cached_queryset
+
         # Get project ranking
-        projects = (
-            Project.objects.filter(is_draft=False, is_active=True)
-            .select_related("loc", "language", "status")
-            .prefetch_related(
-                "skills",
-                "tag_project",  # TODO: remove after updating frontend to use sectors
-                Prefetch(
-                    "project_comment",
-                    queryset=ProjectComment.objects.select_related("comment_ptr"),
-                ),
-                "project_liked",
-                "project_following",
-                "project_collaborator",
-                Prefetch(
-                    "project_parent",
-                    queryset=ProjectParents.objects.select_related(
-                        "parent_organization",
-                        "parent_user__user_profile",
-                    ),
-                ),
-                Prefetch(
-                    "project_sector_mapping",
-                    queryset=ProjectSectorMapping.objects.select_related("sector"),
-                ),
-            )
-        )
-        # maybe use .annotate() to calculate ranking/counts of coments etc.
+        projects = Project.objects.filter(is_draft=False, is_active=True)
 
         if "sectors" in self.request.query_params:
             _sector_names = self.request.query_params.get("sectors")
             sector_names, err = sanitize_sector_inputs(_sector_names)
 
+            # ommiting sectors if parsing error
             if err:
-                # TODO: should I "crash" with 400, or what should I ommit the sectors
                 logger.error(
                     "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
                         err, _sector_names
@@ -268,16 +243,6 @@ class ListProjectsView(ListAPIView):
                 projects = projects.filter(collaborators_welcome=True)
             if collaborators_welcome == "no":
                 projects = projects.filter(collaborators_welcome=False)
-
-        if "category" in self.request.query_params:
-            project_category = self.request.query_params.get("category").split(",")
-            project_tags = ProjectTags.objects.filter(name__in=project_category)
-            # Use .distinct to dedupe selected rows.
-            # https://docs.djangoproject.com/en/dev/ref/models/querysets/#django.db.models.query.QuerySet.distinct
-            # We then sort by rating, to show most relevant results
-            projects = projects.filter(
-                tag_project__project_tag__in=project_tags, is_active=True
-            ).distinct()
 
         if "status" in self.request.query_params:
             statuses = self.request.query_params.get("status").split(",")
@@ -357,41 +322,32 @@ class ListProjectsView(ListAPIView):
             )
             projects = projects.filter(loc__in=location_ids)
 
-        if settings.CACHE_BACHED_RANK_REQUEST:
-            ### retrieve all cached rankings for all projects
-            ### and recalculate the rankings for projects that are missing cached rankings
+        project_ids = projects.values_list("id", flat=True)
 
-            # generate all cache keys cached rankings of all projects
-            project_ids = [project.id for project in projects]
-            cache_keys = [
-                generate_project_ranking_cache_key(project_id=pid)
-                for pid in project_ids
-            ]
+        # preparation
+        cache_keys = [
+            generate_project_ranking_cache_key(project_id=pid) for pid in project_ids
+        ]
+        # get cached rankings
+        cached_rankings = cache.get_many(cache_keys)
+        rankings = {
+            pid: cached_rankings[key]
+            for key, pid in zip(cache_keys, project_ids)
+            if key in cached_rankings
+        }
 
-            # prefetch the cached rankings all at once
-            cached_rankings = cache.get_many(cache_keys)
-
-            # save the cached values to the view
-            _cached_rankings = {
-                key: cached_rankings[key] if key in cached_rankings else project.ranking
-                for key, project in zip(cache_keys, projects)
-            }
-
-            # sort by _cached_rankings and then drop the cache_keys
-            project_ids = map(
-                lambda x: x[0],
-                sorted(
-                    zip(project_ids, cache_keys),
-                    key=lambda x: _cached_rankings[x[1]] * (-1),
-                ),
+        # recalculate cache misses
+        project_ids_cache_misses = [
+            pid
+            for key, pid in zip(cache_keys, project_ids)
+            if key not in cached_rankings
+        ]
+        if len(project_ids_cache_misses) > 0:
+            recalculated_rankings = ProjectRanking().calculate_all_project_rankings(
+                project_ids=project_ids_cache_misses
             )
-        else:
-            project_ids = [
-                project.id
-                for project in sorted(
-                    projects, key=lambda project: -project.cached_ranking
-                )
-            ]
+            # merge dicts:
+            rankings = rankings | recalculated_rankings
 
         preferred_order = Case(
             *(
@@ -399,7 +355,53 @@ class ListProjectsView(ListAPIView):
                 for position, id in enumerate(project_ids, start=1)
             )
         )
-        return projects.order_by(preferred_order)
+
+        # queryset of project parents for prefetching
+
+        project_parent_qs = ProjectParents.objects.select_related(
+            # TODO: look into organizations and optimize further with prefetching and select related (e.g. sectors)
+            "parent_organization__location",
+            # TODO: look into user and userprofile and optimize further with prefetching and select relate
+            "parent_user__user_profile__location",
+        ).prefetch_related(
+            Prefetch(
+                "parent_user__donation_user",
+                queryset=Donation.objects.all(),
+            ),
+            Prefetch(
+                "parent_user__userbadge_user",
+                queryset=UserBadge.objects.select_related("badge"),
+            ),
+            # Prefetch(),
+        )
+
+        queryset = (
+            Project.objects.filter(is_draft=False, is_active=True)
+            .select_related("loc", "language", "status")
+            .prefetch_related(
+                # "skills",
+                "tag_project",  # TODO: remove after updating frontend to use sectors
+                Prefetch(
+                    "project_parent",
+                    queryset=project_parent_qs,
+                ),
+                "project_collaborator",
+                Prefetch(
+                    "project_sector_mapping",
+                    queryset=ProjectSectorMapping.objects.select_related("sector"),
+                ),
+            )
+            .filter(id__in=project_ids)
+            .annotate(
+                comment_count=Count("project_comment", distinct=True),
+                like_count=Count("project_liked", distinct=True),
+            )
+            .order_by(preferred_order)
+        )
+        # cache queryset
+        self._cached_queryset = queryset
+
+        return queryset
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -1624,11 +1626,3 @@ class SimilarProjects(ListAPIView):
         _context = create_context_for_hub_specific_sector(self.request)
         context.update({**_context})
         return context
-
-
-class CalculateProjectRankingsView(APIView):
-    permission_classes = [AllowAny]
-
-    def get(self, request):
-        rankings = ProjectRanking().calculate_all_project_rankings()
-        return Response(rankings, status=status.HTTP_200_OK)
