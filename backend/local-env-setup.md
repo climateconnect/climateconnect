@@ -31,7 +31,8 @@ The following should correspond to how you've configured your _Postgres_ databas
 
 ```
 DATABASE_NAME="climateconnect-dev"
-DATABASE_USER="DATABASE_PASSWORD"
+DATABASE_USER="ToDo"
+DATABASE_PASSWORD="ToDo"
 DATABASE_HOST="localhost"
 DATABASE_PORT="5432"
 ```
