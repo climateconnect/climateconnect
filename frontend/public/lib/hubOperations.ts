@@ -12,6 +12,10 @@ export function extractHubUrlsFromContext(ctx: GetServerSidePropsContext) {
   return { hubUrl, subHub: hubUrl + "_" + subHub };
 }
 
+export function getHubslugFromUrl(query) {
+  return query.hubUrl || query.hub;
+}
+
 export async function getAllHubs(locale: any, just_sector_hubs?: boolean) {
   const url = just_sector_hubs ? `/api/sector_hubs/` : `/api/hubs/`;
   try {

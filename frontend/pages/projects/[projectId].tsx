@@ -19,6 +19,10 @@ import ProjectSideBar from "../../src/components/project/ProjectSideBar";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import theme from "../../src/themes/theme";
+import { NOTIFICATION_TYPES } from "../../src/components/communication/notifications/Notification";
+import { getProjectTypeOptions } from "../../public/lib/getOptions";
+import BrowseContext from "../../src/components/context/BrowseContext";
+import { parseData } from "../../public/lib/parsingOperations";
 
 type StyleProps = {
   showSimilarProjects: boolean;
@@ -51,9 +55,6 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
     }),
   };
 });
-import { NOTIFICATION_TYPES } from "../../src/components/communication/notifications/Notification";
-import { getProjectTypeOptions } from "../../public/lib/getOptions";
-import BrowseContext from "../../src/components/context/BrowseContext";
 
 const parseComments = (comments) => {
   return comments
@@ -75,7 +76,6 @@ const parseComments = (comments) => {
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const projectUrl = encodeURI(ctx?.query?.projectId);
-
   // Updated to ensure `hubUrl` is only encoded if `ctx.query.hub` is defined and not null.
   // This prevents `encodeURI` from converting `undefined` or `null` into the string "undefined" or "null".
   const hubUrl = ctx?.query?.hub ? encodeURI(ctx.query.hub) : null;
@@ -90,13 +90,13 @@ export async function getServerSideProps(ctx) {
     hubSupporters,
     hubThemeData,
   ] = await Promise.all([
-    getProjectByIdIfExists(projectUrl, auth_token, ctx.locale),
+    getProjectByIdIfExists(projectUrl, auth_token, ctx.locale, hubUrl),
     getProjectMembersByIdIfExists(projectUrl, ctx.locale),
     getPostsByProject(projectUrl, auth_token, ctx.locale),
     getCommentsByProject(projectUrl, auth_token, ctx.locale),
     auth_token ? getUsersInteractionWithProject(projectUrl, auth_token, ctx.locale) : false,
     getAllHubs(ctx.locale),
-    getSimilarProjects(projectUrl, ctx.locale),
+    getSimilarProjects(projectUrl, ctx.locale, hubUrl),
     hubUrl ? getHubSupporters(hubUrl, ctx.locale) : null,
     hubUrl ? getHubTheme(hubUrl) : null,
   ]);
@@ -317,11 +317,13 @@ export default function ProjectPage({
   );
 }
 
-async function getProjectByIdIfExists(projectUrl, token, locale) {
+async function getProjectByIdIfExists(projectUrl, token, locale, hubUrl?: string | null) {
+  const query = hubUrl ? `?hub=${hubUrl}` : "";
+
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/projects/" + projectUrl + "/",
+      url: "/api/projects/" + projectUrl + "/" + query,
       token: token,
       locale: locale,
     });
@@ -406,16 +408,17 @@ async function getProjectMembersByIdIfExists(projectUrl, locale) {
   }
 }
 
-async function getSimilarProjects(projectUrl, locale) {
+async function getSimilarProjects(projectUrl, locale, hubUrl?: string | null) {
+  const query = hubUrl ? `?hub=${hubUrl}` : "";
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/projects/" + projectUrl + "/similar/",
+      url: "/api/projects/" + projectUrl + "/similar/" + query,
       locale: locale,
     });
     if (resp.data.results.length === 0) return null;
     else {
-      return resp.data.results;
+      return parseData({ type: "projects", data: resp.data.results });
     }
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);

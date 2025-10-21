@@ -28,7 +28,7 @@ import HubSupporters from "../hub/HubSupporters";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 import { BrowseTab, LinkedHub } from "../../types";
 import { FilterContext } from "../context/FilterContext";
-
+import HubLinkButton from "../hub/HubLinkButton";
 const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
 const OrganizationPreviews = React.lazy(() => import("../organization/OrganizationPreviews"));
 const ProfilePreviews = React.lazy(() => import("../profile/ProfilePreviews"));
@@ -60,6 +60,20 @@ const useStyles = makeStyles((theme) => {
       top: -45,
       left: 0,
       right: 0,
+    },
+    hubLinksContainer: {
+      display: "flex",
+      overflowX: "auto",
+      scrollBehavior: "smooth",
+      // scrollbarWidth: "none",
+      gap: theme.spacing(2),
+      padding: theme.spacing(2, 0),
+      marginBottom: theme.spacing(2),
+    },
+    subHubInfoText: {
+      fontStyle: "italic",
+      marginTop: theme.spacing(-1),
+      marginBottom: theme.spacing(2),
     },
   };
 });
@@ -139,7 +153,9 @@ export default function BrowseContent({
     ? ["projects", "organizations"] // TODO: add "events" here, after implementing event calendar
     : ["projects", "organizations", "members"]; // TODO: add "events" here, after implementing event calendar
   const { locale } = useContext(UserContext);
-  const texts = useMemo(() => getTexts({ page: "general", locale: locale }), [locale]);
+  const texts = useMemo(() => getTexts({ page: "hub", locale: locale, hubName: hubData?.name }), [
+    locale,
+  ]);
 
   const [hash, setHash] = useState<BrowseTab | null>(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
@@ -511,6 +527,13 @@ export default function BrowseContent({
           <HubSupporters supportersList={hubSupporters} hubName={hubName} />
         )}
         <div ref={contentRef} className={classes.contentRef} />
+        {isNarrowScreen && linkedHubs && linkedHubs?.length > 0 && (
+          <div className={classes.hubLinksContainer}>
+            {linkedHubs.map((linkedHub) => (
+              <HubLinkButton key={linkedHub.hubUrl} hub={linkedHub} />
+            ))}
+          </div>
+        )}
         <Suspense fallback={null}>
           <FilterSection
             filtersExpanded={isNarrowScreen ? filtersExandedOnMobile : filtersExpanded}
@@ -556,6 +579,11 @@ export default function BrowseContent({
         {!isLocationHubFlag && <Divider className={classes.mainContentDivider} />}
         <Suspense fallback={<LoadingSpinner isLoading />}>
           <TabContentWrapper type={"projects"} {...tabContentWrapperProps}>
+            {hubData?.parent_hub && (
+              <div className={classes.subHubInfoText}>
+                {texts.you_are_seeing_projects_related_to}
+              </div>
+            )}
             <ProjectPreviews
               //TODO(unused) className={classes.itemsContainer}
               hasMore={state.hasMore.projects}
@@ -566,6 +594,11 @@ export default function BrowseContent({
             />
           </TabContentWrapper>
           <TabContentWrapper type={"organizations"} {...tabContentWrapperProps}>
+            {hubData?.parent_hub && (
+              <div className={classes.subHubInfoText}>
+                {texts.you_are_seeing_organizations_related_to}
+              </div>
+            )}
             <OrganizationPreviews
               hasMore={state.hasMore.organizations}
               loadFunc={() => handleLoadMoreData("organizations")}
@@ -576,6 +609,11 @@ export default function BrowseContent({
           </TabContentWrapper>
           {!hideMembers && (
             <TabContentWrapper type={"members"} {...tabContentWrapperProps}>
+              {hubData?.parent_hub && (
+                <div className={classes.subHubInfoText}>
+                  {texts.you_are_seeing_members_related_to}
+                </div>
+              )}
               <ProfilePreviews
                 hasMore={state.hasMore.members}
                 loadFunc={() => handleLoadMoreData("members")}

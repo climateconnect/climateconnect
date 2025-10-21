@@ -28,6 +28,7 @@ import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import ControlPointSharpIcon from "@mui/icons-material/ControlPointSharp";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
+import { parseProjectStubs } from "../../public/lib/parsingOperations";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -88,7 +89,7 @@ export async function getServerSideProps(ctx) {
     following,
     hubThemeData,
   ] = await Promise.all([
-    getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
+    getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale, hubUrl),
     getProjectsByOrganization(organizationUrl, auth_token, ctx.locale),
     getMembersByOrganization(organizationUrl, auth_token, ctx.locale),
     getOrganizationTypes(),
@@ -368,11 +369,14 @@ function OrganizationLayout({
   );
 }
 
-async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
+async function getOrganizationByUrlIfExists(organizationUrl, token, locale, hubUrl?: string) {
+  let query = "";
+  query += hubUrl ? `?hub=${hubUrl}` : "";
+
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/organizations/" + organizationUrl + "/",
+      url: "/api/organizations/" + organizationUrl + "/" + query,
       token: token,
       locale: locale,
     });
@@ -442,16 +446,6 @@ async function getMembersByOrganization(organizationUrl, token, locale) {
 
 async function getOrganizationTypes() {
   return [];
-}
-
-function parseProjectStubs(projects) {
-  return projects.map((p) => {
-    const project = p.project;
-    return {
-      ...project,
-      location: project.location,
-    };
-  });
 }
 
 function parseOrganizationMembers(members) {

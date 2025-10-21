@@ -17,7 +17,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
 import ProjectLocationSearchBar from "../shareProject/ProjectLocationSearchBar";
-import { Project, SectorOptionType } from "../../types";
+import { Project, Sector } from "../../types";
 import CustomHubSelection from "../project/CustomHubSelection";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
@@ -89,7 +89,7 @@ type Args = {
   locationOptionsOpen: boolean;
   handleSetLocationOptionsOpen: (open: boolean) => void;
   locationInputRef: any;
-  sectorOptions: SectorOptionType[];
+  sectorOptions: Sector[];
 };
 
 //TODO: Allow changing project type?!
@@ -151,7 +151,7 @@ type ScreenOverviewProps = {
   locationOptionsOpen: boolean;
   handleSetLocationOptionsOpen: (open: boolean) => void;
   texts: Record<string, string>;
-  sectorOptions: SectorOptionType[];
+  sectorOptions: Sector[];
 };
 
 function SmallScreenOverview({
@@ -391,7 +391,7 @@ type InputSectorsProps = {
   project: Project;
   handleChangeProject: (newValue: any, key: string) => void;
   texts: Record<string, string>;
-  sectorOptions: SectorOptionType[];
+  sectorOptions: Sector[];
 };
 
 const InputSectors = ({
@@ -472,14 +472,23 @@ const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
   const [tempImage, setTempImage] = React.useState(
     project.image ? getImageUrl(project.image) : null
   );
-
+  const [isImgLoading, setIsImgLoading] = React.useState(false);
   const onImageChange = async (event) => {
     const file = event.target.files[0];
-    if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
+    if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type)) {
       alert(texts.please_upload_either_a_png_or_a_jpg_file);
-    const image = await getCompressedJPG(file, 0.5);
-    setTempImage(image);
-    setOpen(true);
+      return;
+    }
+    try {
+      setIsImgLoading(true);
+      setOpen(true);
+      const image = await getCompressedJPG(file, 0.5);
+      setTempImage(image);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsImgLoading(false);
+    }
   };
 
   const onUploadImageClick = (event) => {
@@ -539,6 +548,8 @@ const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
         borderRadius={0}
         height={screenSize === "small" ? getImageDialogHeight(window.innerWidth) : 300}
         ratio={16 / 9}
+        loading={isImgLoading}
+        loadingText={texts.processing_image_please_wait}
       />
     </>
   );

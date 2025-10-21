@@ -6,7 +6,7 @@ import React, { useContext, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../public/data/role_types";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
-import { getAllSectors } from "../public/lib/sectorOperations";
+import { getSectorOptions } from "../public/lib/getOptions";
 import { blobFromObjectUrl } from "../public/lib/imageOperations";
 import {
   getLocationValue,
@@ -49,7 +49,7 @@ export async function getServerSideProps(ctx: {
   const [tagOptions, rolesOptions, allSectors] = await Promise.all([
     await getTags(auth_token, ctx.locale),
     await getRolesOptions(auth_token, ctx.locale),
-    getAllSectors(ctx.locale),
+    getSectorOptions(ctx.locale, hubUrl),
   ]);
   return {
     props: {

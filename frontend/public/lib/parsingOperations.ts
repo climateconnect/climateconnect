@@ -18,6 +18,17 @@ const parseProjects = (projects) => {
   }));
 };
 
+export function parseProjectStubs(projects) {
+  return projects.map((p) => {
+    const project = p.project;
+    return {
+      ...project,
+      location: project.location,
+      sectors: project.sectors.sort((a, b) => a.order - b.order).map((s) => s.sector),
+    };
+  });
+}
+
 const parseMembers = (members) => {
   return members;
 };

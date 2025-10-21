@@ -108,17 +108,23 @@ class HubSerializer(serializers.ModelSerializer):
 class HubAmbassadorSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
     custom_message = serializers.SerializerMethodField()
+    custom_ambassador_box_text = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
 
     class Meta:
         model = HubAmbassador
-        fields = ("title", "custom_message", "user")
+        fields = ("title", "custom_message", "custom_ambassador_box_text", "user")
 
     def get_title(self, obj):
         return get_attribute_in_correct_language(obj, "title", get_language())
 
     def get_custom_message(self, obj):
         return get_attribute_in_correct_language(obj, "custom_message", get_language())
+
+    def get_custom_ambassador_box_text(self, obj):
+        return get_attribute_in_correct_language(
+            obj, "custom_ambassador_box_text", get_language()
+        )
 
     def get_user(self, obj):
         user = UserProfile.objects.filter(user_id=obj.user.id)

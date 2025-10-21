@@ -211,6 +211,7 @@ class Hub(models.Model):
         default=100,
     )
 
+    # TODO: remove this field, project tags are obsolete
     filter_parent_tags = models.ManyToManyField(
         ProjectTags,
         related_name="hub_parent_tags",
@@ -349,6 +350,20 @@ class HubAmbassador(models.Model):
     title_de = models.CharField(
         help_text="The german translation of the ambassador's title",
         verbose_name="Ambassador title german",
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    custom_ambassador_box_text = models.CharField(
+        help_text="Custom text showing up in the box displaying the ambassador. Default: <First name> is responsible for the ClimateHub <Hubname> and is there for you.",
+        verbose_name="Custom box text",
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    custom_ambassador_box_text_de = models.CharField(
+        help_text="German translation for custom ambassador box text",
+        verbose_name="Custom box text",
         max_length=1024,
         null=True,
         blank=True,

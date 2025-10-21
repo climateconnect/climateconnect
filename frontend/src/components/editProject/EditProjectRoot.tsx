@@ -18,7 +18,7 @@ import {
   getTranslationsWithoutRedundantKeys,
 } from "../../../public/lib/translationOperations";
 import getTexts from "../../../public/texts/texts";
-import { Project, Role, SectorOptionType } from "../../types";
+import { Project, Role, Sector } from "../../types";
 import UserContext from "../context/UserContext";
 import NavigationButtons from "../general/NavigationButtons";
 import TranslateTexts from "../general/TranslateTexts";
@@ -55,7 +55,7 @@ type Props = {
   initialTranslations: any;
   projectTypeOptions: any;
   hubUrl: string;
-  sectorOptions?: SectorOptionType[];
+  sectorOptions?: Sector[];
 };
 
 export default function EditProjectRoot({
@@ -233,13 +233,9 @@ export default function EditProjectRoot({
             ? texts.your_project_has_been_published_great_work
             : texts.you_have_successfully_edited_your_project,
         };
-        const matchedItem = response?.data?.hubUrl.find(
-          (item) => item.url_slug === project?.hubUrl
-        );
-        if (matchedItem) {
-          query.hub = matchedItem.url_slug;
+        if (hubUrl) {
+          query.hub = hubUrl;
         }
-
         Router.push({
           pathname: "/projects/" + response.data.url_slug,
           query,
@@ -353,7 +349,7 @@ export default function EditProjectRoot({
             locationOptionsOpen={locationOptionsOpen}
             handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
             locationInputRef={locationInputRef}
-            sectorOptions={sectorOptions}
+            sectorOptions={sectorOptions ?? []}
           />
           <EditProjectContent
             project={project}
