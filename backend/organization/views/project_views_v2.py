@@ -8,6 +8,7 @@ from django.contrib.gis.db.models.functions import Distance
 
 from django_filters.rest_framework import DjangoFilterBackend
 
+from climateconnect_api.models.badge import UserBadge
 from climateconnect_api.models.donation import Donation
 from organization.models.sector import ProjectSectorMapping
 from organization.utility.project_ranking import ProjectRanking
@@ -33,7 +34,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-USING_CACHE = False
+USING_CACHE = True
 
 
 class ListProjectsViewV2(ListAPIView):
@@ -252,12 +253,18 @@ class ListProjectsViewV2(ListAPIView):
         # queryset of project parents for prefetching
 
         project_parent_qs = ProjectParents.objects.select_related(
-            "parent_organization",
-            "parent_user__user_profile",
+            # TODO: look into organizations and optimize further with prefetching and select related (e.g. sectors)
+            "parent_organization__location",
+            # TODO: look into user and userprofile and optimize further with prefetching and select relate
+            "parent_user__user_profile__location",
         ).prefetch_related(
             Prefetch(
                 "parent_user__donation_user",
                 queryset=Donation.objects.all(),
+            ),
+            Prefetch(
+                "parent_user__userbadge_user",
+                queryset=UserBadge.objects.select_related("badge"),
             ),
             # Prefetch(),
         )

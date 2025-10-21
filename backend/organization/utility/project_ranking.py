@@ -248,7 +248,6 @@ class ProjectRanking:
     def calculate_all_project_rankings(
         self, project_ids: List[int] | None = None
     ) -> Dict[int, int]:
-        print("Calculating project rankings for all projects...")
         vectors = self.__get_project_ranking_vectors(project_ids)
 
         ranks = {}
