@@ -1,4 +1,3 @@
-from django.conf import settings
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
