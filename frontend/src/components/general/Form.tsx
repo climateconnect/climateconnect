@@ -162,7 +162,6 @@ export default function Form({
       return obj;
     }, {})
   );
-
   function updatePercentage(customValues?) {
     const filledFields =
       customValues && typeof customValues === "object"
@@ -230,7 +229,9 @@ export default function Form({
       <form
         action={formAction && formAction.action}
         method={formAction && formAction.method}
-        onSubmit={() => onSubmit(event, values)}
+        onSubmit={() => {
+          onSubmit(event, values);
+        }}
         autoComplete={autocomplete}
       >
         {errorMessage && (

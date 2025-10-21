@@ -57,6 +57,7 @@ export default function EnterDetailledOrganizationInfo({
   const handleCancel = () => {
     Router.push("/browse");
   };
+
   return (
     <div>
       {!errorMessage && (

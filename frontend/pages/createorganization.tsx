@@ -112,7 +112,6 @@ export default function CreateOrganization({
     },
     types: [] as any[],
   });
-
   const handleChangeTranslationContent = (locale, newTranslations, isManualChange) => {
     const newTranslationsObject = {
       ...translations,
@@ -187,7 +186,7 @@ export default function CreateOrganization({
         parentorganization: values.parentorganizationname,
         info: {
           ...organizationInfo.info,
-          location: parseLocation(location),
+          location: parseLocation(location, true),
         },
         types: values.types,
       });

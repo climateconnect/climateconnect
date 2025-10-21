@@ -135,6 +135,7 @@ export function getNameFromExactLocation(location) {
     city: city,
     state: location.address.state,
     country: location.address.country,
+    address: { ...location.address },
   };
 }
 
@@ -262,6 +263,7 @@ export function parseLocation(location, isConcretePlace = false) {
     exact_address: exactAddress,
     additional_info: location?.additionalInfoText || location?.additionalInfo,
     is_exact_location: isConcretePlace,
+    address: { ...location_object },
   };
 }
 

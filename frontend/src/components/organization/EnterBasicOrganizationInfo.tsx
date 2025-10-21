@@ -166,13 +166,13 @@ export default function EnterBasicOrganizationInfo({
         fields={fields}
         messages={messages}
         usePercentage={false}
-        onSubmit={(event, account) =>
+        onSubmit={(event, account) => {
           handleSubmit(event, {
             ...account,
             parentOrganization: parentOrganization,
             types: convertTypeNamesToObject(selectedTypes, tagOptions),
-          })
-        }
+          });
+        }}
         errorMessage={errorMessage}
       />
     </div>

@@ -78,12 +78,7 @@ export default function LocationSearchBar({
     if (!newValue) {
       return inputValue ? inputValue : "";
     } else if (typeof newValue === "object") {
-      if (enableExactLocation) {
-        const nameObj = getNameFromExactLocation(newValue);
-        return nameObj === "" ? nameObj : nameObj.name;
-      } else {
-        return newValue.name ? newValue.name : newValue.simple_name;
-      }
+      return newValue.name ? newValue.name : newValue.simple_name;
     } else {
       return newValue;
     }

@@ -224,7 +224,6 @@ export default function EditAccountPage({
       ? editedAccount.background_image
       : DEFAULT_BACKGROUND_IMAGE,
   });
-
   const [open, setOpen] = useState({
     backgroundDialog: false,
     removeBackgroundDialog: false,
@@ -234,7 +233,6 @@ export default function EditAccountPage({
   const handleDialogClickOpen = (dialogKey) => {
     setOpen({ ...open, [dialogKey]: true });
   };
-
   const handleBackgroundClose = (image) => {
     setOpen({ ...open, backgroundDialog: false });
     if (image && image instanceof HTMLCanvasElement) {
@@ -357,7 +355,6 @@ export default function EditAccountPage({
     //For each info object we want to return the correct input so users can change this info
     return Object.keys(info).map((key) => {
       const i = getFullInfoElement(infoMetadata, key, info[key]);
-
       const handleChange = (event) => {
         let newValue = event.target.value;
 
@@ -385,7 +382,7 @@ export default function EditAccountPage({
           ...editedAccount,
           info: {
             ...editedAccount.info,
-            [key]: parseLocation(location),
+            [key]: parseLocation(location, true),
           },
         });
       };
@@ -509,6 +506,7 @@ export default function EditAccountPage({
               handleSetOpen={i.setLocationOptionsOpen}
               open={i.locationOptionsOpen}
               locationInputRef={i.locationInputRef}
+              enableExactLocation={true}
             />
           </div>
         );

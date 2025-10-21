@@ -47,7 +47,6 @@ export default function ProjectLocationSearchBar({
       });
     }
   };
-
   const handleChangeAdditionalInfoText = (additionalInfo) => {
     handleSetProjectData({
       ...projectData,
@@ -77,7 +76,6 @@ export default function ProjectLocationSearchBar({
     (additionalProps.open = locationOptionsOpen),
       (additionalProps.handleSetOpen = handleSetLocationOptionsOpen);
   }
-
   return (
     <LocationSearchBar
       className={className}
