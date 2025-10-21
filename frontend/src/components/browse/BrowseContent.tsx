@@ -73,8 +73,8 @@ const useStyles = makeStyles((theme) => {
     subHubInfoText: {
       fontStyle: "italic",
       marginTop: theme.spacing(-1),
-      marginBottom: theme.spacing(2)
-    }
+      marginBottom: theme.spacing(2),
+    },
   };
 });
 
@@ -153,7 +153,9 @@ export default function BrowseContent({
     ? ["projects", "organizations"] // TODO: add "events" here, after implementing event calendar
     : ["projects", "organizations", "members"]; // TODO: add "events" here, after implementing event calendar
   const { locale } = useContext(UserContext);
-  const texts = useMemo(() => getTexts({ page: "hub", locale: locale, hubName: hubData?.name }), [locale]);
+  const texts = useMemo(() => getTexts({ page: "hub", locale: locale, hubName: hubData?.name }), [
+    locale,
+  ]);
 
   const [hash, setHash] = useState<BrowseTab | null>(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
