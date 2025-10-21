@@ -60,7 +60,6 @@ export async function getProjectTagsOptions(hub, locale) {
   }
 }
 export async function getSectorOptions(locale, hubUrl?: string) {
-  //TODO: duplicated code with sectorOperations.ts > getAllSectors?
   const query = hubUrl ? `?hub=${hubUrl}` : "";
   try {
     const resp = await apiRequest({
