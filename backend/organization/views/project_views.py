@@ -2,6 +2,7 @@ import logging
 import traceback
 from django.db.models import Case, When, Prefetch
 
+from organization.utility.project_ranking import ProjectRanking
 from organization.utility.sector import (
     create_context_for_hub_specific_sector,
     sanitize_sector_inputs,
@@ -1623,3 +1624,11 @@ class SimilarProjects(ListAPIView):
         _context = create_context_for_hub_specific_sector(self.request)
         context.update({**_context})
         return context
+
+
+class CalculateProjectRankingsView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        rankings = ProjectRanking().calculate_all_project_rankings()
+        return Response(rankings, status=status.HTTP_200_OK)

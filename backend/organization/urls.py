@@ -83,6 +83,11 @@ urlpatterns = [
     # Project URLs
     path("projects/", project_views.ListProjectsView.as_view(), name="list-projects"),
     path(
+        "projects/faster/",
+        project_views.CalculateProjectRankingsView.as_view(),
+        name="calculate-project-rankings-view",
+    ),
+    path(
         "projects/<str:url_slug>/",
         project_views.ProjectAPIView.as_view(),
         name="project-api-view",
