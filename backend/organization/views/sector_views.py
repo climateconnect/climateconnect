@@ -1,11 +1,14 @@
-# from rest_framework.views import ListApiView
 from rest_framework.generics import ListAPIView
 
 from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
+from hubs.models import Hub
 
 from organization.serializers.sector import SectorSerializer
 from organization.models import Sector
+from django.utils.translation import get_language
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ListSectors(ListAPIView):
@@ -15,12 +18,28 @@ class ListSectors(ListAPIView):
 
     permission_classes = [AllowAny]
     serializer_class = SectorSerializer
-    queryset = Sector.objects.all()
 
-    def get(self, request, *args, **kwargs):
+    def get_queryset(self):
         """
         Get all sectors.
         """
-        sectors = self.get_queryset()
-        serializer = self.get_serializer(sectors, many=True)
-        return Response(serializer.data)
+        language_code = get_language()
+        order_by_field = (
+            "name" if language_code == "en" else f"name_{language_code}_translation"
+        )
+
+        if "hub" in self.request.query_params:
+            url_slug = self.request.query_params["hub"]
+
+            try:
+                hub = Hub.objects.prefetch_related("sectors").get(url_slug=url_slug)
+            except Hub.DoesNotExist:
+                self._hub_not_found = url_slug
+                logger.warning(f"Hub not found: {url_slug}")
+                return Sector.objects.none()
+
+            specific_sectors = hub.sectors.all()
+            if specific_sectors.exists():
+                return specific_sectors.order_by(order_by_field)
+
+        return Sector.objects.filter(default_sector=True).order_by(order_by_field)

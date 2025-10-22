@@ -6,9 +6,9 @@ from django.db import migrations, models
 # Mapping based on urlslug to sectors
 MAPPING_SECTOR_HUB_TO_SECTOR = {
     "food": "food",
-    "landuse": "agri",
-    "construction": "industry",
-    "biodiversity": None,  # TODO: this is mappend to a sector, but should not be deleted...
+    "landuse": None,  # this sector hub will be deleted
+    "construction": "housing",
+    "biodiversity": "nature",  # TODO: this is mappend to a sector, but should not be deleted...
     "energy": "energy",
     "policy": "policy",  # TODO: do we really want to keep it?
     "education": "education",

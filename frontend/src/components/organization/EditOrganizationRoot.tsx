@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function EditOrganizationRoot({
-  allHubs,
+  allSectors,
   errorMessage,
   existingName,
   existingUrlSlug,
@@ -48,6 +48,7 @@ export default function EditOrganizationRoot({
   locationInputRef,
   organization,
   tagOptions,
+  hubUrl,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
@@ -82,11 +83,6 @@ export default function EditOrganizationRoot({
       },
     };
     setTranslations({ ...newTranslationsObject });
-  };
-
-  const changeTranslationLanguages = ({ newLanguagesObject }) => {
-    if (newLanguagesObject.sourceLanguage) setSourceLanguage(newLanguagesObject.sourceLanguage);
-    if (newLanguagesObject.targetLanguage) setTargetLanguage(newLanguagesObject.targetLanguage);
   };
 
   const getChanges = (o, oldO) => {
@@ -141,6 +137,7 @@ export default function EditOrganizationRoot({
             pathname: "/organizations/" + organization.url_slug,
             query: {
               message: texts.successfully_edited_organization,
+              hub: hubUrl,
             },
           });
         })
@@ -170,7 +167,7 @@ export default function EditOrganizationRoot({
 
   const handleTranslationsSubmit = async (event) => {
     event.preventDefault();
-    await saveChanges(editedOrganization, true, token, locale);
+    await saveChanges(editedOrganization, true);
   };
 
   const standardTextsToTranslate = [
@@ -240,7 +237,7 @@ export default function EditOrganizationRoot({
             existingName={existingName}
             existingUrlSlug={existingUrlSlug}
             onClickCheckTranslations={onClickCheckTranslations}
-            allHubs={allHubs}
+            allSectors={allSectors}
             type="organization"
             checkTranslationsRef={checkTranslationsButtonRef}
           />
@@ -268,7 +265,6 @@ export default function EditOrganizationRoot({
               introTextKey="translate_organization_intro"
               submitButtonText={texts.save}
               textsToTranslate={textsToTranslate}
-              changeTranslationLanguages={changeTranslationLanguages}
             />
           </>
         )
@@ -308,7 +304,7 @@ const parseForRequest = async (org) => {
     parsedOrg.background_image = await blobFromObjectUrl(org.background_image);
   if (org.thumbnail_image) parsedOrg.thumbnail_image = await blobFromObjectUrl(org.thumbnail_image);
   if (org.image) parsedOrg.image = await blobFromObjectUrl(org.image);
-  if (org.hubs) parsedOrg.hubs = org.hubs.map((h) => h.url_slug);
+  if (org.sectors) parsedOrg.sectors = org.sectors.map((h) => h.key);
   return parsedOrg;
 };
 

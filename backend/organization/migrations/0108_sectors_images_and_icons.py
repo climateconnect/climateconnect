@@ -71,7 +71,9 @@ def load_sector_images_from_sector_hubs(apps, schema_editor):
         print(
             f"--> Porting images and icons from hub {hub.name} to sector {sector.key}"
         )
-        if hub.image is not None:
+        if hub.image and hub.image.name:
+            print(hub.name)
+            print(hub.image)
             img = hub.image.open()
             content = ContentFile(img.read())
             file_ending = "." + hub.image.name.split(".")[-1]
@@ -88,7 +90,7 @@ def load_sector_images_from_sector_hubs(apps, schema_editor):
             print(f"[+] Added image attribution for {sector.key} from hub {hub.name}")
 
         # ICON
-        if hub.icon is not None:
+        if hub.icon and hub.icon.name:
             img = hub.icon.open()
             content = ContentFile(img.read())
             file_ending = "." + hub.icon.name.split(".")[-1]
@@ -100,7 +102,7 @@ def load_sector_images_from_sector_hubs(apps, schema_editor):
             print(f"[+] Added icon             for {sector.key} from hub {hub.name}")
 
         # THUMBNAIL IMAGE
-        if hub.sectors is not None:
+        if hub.thumbnail_image and hub.thumbnail_image.name:
             img = hub.thumbnail_image.open()
             content = ContentFile(img.read())
             file_ending = "." + hub.thumbnail_image.name.split(".")[-1]

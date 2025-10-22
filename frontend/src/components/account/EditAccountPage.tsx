@@ -26,7 +26,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import ButtonLoader from "../general/ButtonLoader";
-import ActiveHubsSelect from "../hub/ActiveHubsSelect";
+import ActiveSectorsSelector from "../hub/ActiveSectorsSelector";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 import LocationSearchBar from "../search/LocationSearchBar";
@@ -203,7 +203,7 @@ export default function EditAccountPage({
   deleteEmail,
   loadingSubmit,
   onClickCheckTranslations,
-  allHubs,
+  allSectors,
   type,
   checkTranslationsRef,
 }: any) {
@@ -315,7 +315,7 @@ export default function EditAccountPage({
       <div key={key} className={classes.infoElement}>
         <div className={classes.subtitle}>{infoEl.name}:</div>
         <div className={classes.chipArray}>
-          {infoEl.value.map((entry) => (
+          {selectedItems.map((entry) => (
             <Chip
               size="medium"
               color="secondary"
@@ -512,43 +512,45 @@ export default function EditAccountPage({
             />
           </div>
         );
-      } else if (i.type === "hubs") {
-        const onSelectNewHub = (event) => {
+      } else if (i.type === "sectors") {
+        const onSelectNewSector = (event) => {
           event.preventDefault();
-          const hub = allHubs.find((h) => h.name === event.target.value);
-          if (editedAccount?.info?.hubs?.filter((h) => h.url_slug === hub.url_slug)?.length === 0) {
+          const sector = allSectors.find((h) => h.name === event.target.value);
+          if (editedAccount?.info?.sectors?.filter((s) => s.key === sector.key)?.length === 0) {
+            const sectorsAfterAddition = [...editedAccount.info.sectors, sector];
             setEditedAccount({
               ...editedAccount,
               info: {
                 ...editedAccount.info,
-                hubs: [...editedAccount.info.hubs, hub],
+                sectors: sectorsAfterAddition,
               },
             });
           }
         };
-        const onClickRemoveHub = (hub) => {
-          const hubsAfterRemoval = editedAccount?.info?.hubs.filter(
-            (h) => h.url_slug !== hub.url_slug
+
+        const onClickRemoveSector = (sector) => {
+          const sectorsAfterRemoval = editedAccount?.info?.sectors.filter(
+            (s) => s.key !== sector.key
           );
           setEditedAccount({
             ...editedAccount,
             info: {
               ...editedAccount.info,
-              hubs: hubsAfterRemoval,
+              sectors: sectorsAfterRemoval,
             },
           });
         };
         return (
-          <ActiveHubsSelect
+          <ActiveSectorsSelector
             //TODO(unused) info={i}
-            hubsToSelectFrom={allHubs.filter(
-              (h) =>
-                editedAccount?.info?.hubs.filter((addedHub) => addedHub.url_slug === h.url_slug)
+            selectedSectors={editedAccount.info.sectors}
+            sectorsToSelectFrom={allSectors.filter(
+              (s) =>
+                editedAccount?.info?.sectors.filter((addedSectors) => addedSectors.key === s.key)
                   .length === 0
             )}
-            onClickRemoveHub={onClickRemoveHub}
-            selectedHubs={editedAccount.info.hubs}
-            onSelectNewHub={onSelectNewHub}
+            onSelectNewSector={onSelectNewSector}
+            onClickRemoveSector={onClickRemoveSector}
           />
         );
         //This is the fallback for normal textfields
@@ -596,7 +598,7 @@ export default function EditAccountPage({
       }
     });
   };
-
+  const [isLoading, setIsLoading] = useState(false);
   const onBackgroundChange = async (backgroundEvent) => {
     const file = backgroundEvent.target.files[0];
     if (!file) {
@@ -604,17 +606,19 @@ export default function EditAccountPage({
     }
 
     try {
+      setIsLoading(true);
+      handleDialogClickOpen("backgroundDialog");
       const compressedImage = await getCompressedJPG(file, 1);
-
       setTempImages(() => {
         return {
           ...tempImages,
           background_image: compressedImage,
         };
       });
-      handleDialogClickOpen("backgroundDialog");
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -874,6 +878,8 @@ export default function EditAccountPage({
         mobileHeight={80}
         mediumHeight={120}
         ratio={3}
+        loading={isLoading}
+        loadingText={texts.processing_image_please_wait}
       />
       {possibleAccountTypes && (
         <SelectDialog

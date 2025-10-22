@@ -22,10 +22,9 @@ export function ProjectSocialMediaShareButton({ className, project, projectAdmin
     project: project,
     creator: projectAdmin,
   });
-
   const projectLinkPath = `${getLocalePrefix(locale)}/projects/${project.url_slug}`;
   const apiEndpointShareButton = `/api/projects/${project.url_slug}/set_shared_project/`;
-  const projectAdminName = project.creator?.name ? project.creator?.name : projectAdmin.name;
+  const projectAdminName = project.creator?.name ? project.creator?.name : projectAdmin?.name;
   const messageTitleShareButton = `${texts.climate_protection_project_by}${projectAdminName}: ${project.name}`;
   const mailBodyShareButton = texts.share_project_email_body;
   const dialogTitleShareButton = texts.tell_others_about_this_project;

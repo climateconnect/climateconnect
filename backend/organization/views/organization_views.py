@@ -1,5 +1,8 @@
 import logging
-from organization.utility.sector import senatize_sector_inputs
+from organization.utility.sector import (
+    create_context_for_hub_specific_sector,
+    sanitize_sector_inputs,
+)
 from organization.utility.follow import (
     check_if_user_follows_organization,
     get_list_of_organization_followers,
@@ -118,7 +121,8 @@ class ListOrganizationsAPIView(ListAPIView):
         return OrganizationCardSerializer
 
     def get_serializer_context(self):
-        return {"language_code": self.request.LANGUAGE_CODE}
+        context = create_context_for_hub_specific_sector(self.request)
+        return {"language_code": self.request.LANGUAGE_CODE, **context}
 
     def get_queryset(self):
         organizations = (
@@ -140,19 +144,26 @@ class ListOrganizationsAPIView(ListAPIView):
         )
 
         if "hub" in self.request.query_params:
-            hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
-            if hub.exists():
-                hub = hub[0]
-                if hub.hub_type == Hub.SECTOR_HUB_TYPE:
-                    sectors = hub.sectors.all()
+            hub = Hub.objects.filter(url_slug=self.request.query_params["hub"]).first()
+
+            if not hub:
+                return organizations.none()
+
+            hubs = [hub]
+            if hub.parent_hub:
+                hubs.append(hub.parent_hub)
+
+            for current_hub in hubs:
+                if current_hub.hub_type == Hub.SECTOR_HUB_TYPE:
+                    sectors = current_hub.sectors.all()
                     sector_ids = [x.id for x in sectors]
 
                     organizations = organizations.filter(
                         organization_sector_mapping__sector_id__in=sector_ids
                     ).distinct()
 
-                elif hub.hub_type == Hub.LOCATION_HUB_TYPE:
-                    location = hub.location.first()
+                elif current_hub.hub_type == Hub.LOCATION_HUB_TYPE:
+                    location = current_hub.location.first()
                     organizations = organizations.filter(
                         Q(location__country=location.country)
                         & (
@@ -172,12 +183,12 @@ class ListOrganizationsAPIView(ListAPIView):
                             "location__centre_point", location.multi_polygon
                         )
                     )
-                elif hub.hub_type == Hub.CUSTOM_HUB_TYPE:
-                    organizations = organizations.filter(related_hubs=hub)
+                elif current_hub.hub_type == Hub.CUSTOM_HUB_TYPE:
+                    organizations = organizations.filter(related_hubs=current_hub)
 
         if "sectors" in self.request.query_params:
             _sector_keys = self.request.query_params.get("sectors").split(",")
-            sector_keys, err = senatize_sector_inputs(_sector_keys)
+            sector_keys, err = sanitize_sector_inputs(_sector_keys)
             if err:
                 logger.error(
                     "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
@@ -391,19 +402,6 @@ class CreateOrganizationView(APIView):
                             continue
                         setattr(organization, field, request.data[field])
 
-                # change to sectors
-                # TODO: should this be removed?
-                if "hubs" in request.data:
-                    hubs = []
-                    for hub_url_slug in request.data["hubs"]:
-                        try:
-                            hub = Hub.objects.get(url_slug=hub_url_slug)
-                            hubs.append(hub)
-                        except Hub.DoesNotExist:
-                            logger.error("Passed hub url_slug {} does not exist")
-                    organization.hubs.set(hubs)
-                organization.save()
-
                 # Create organization translations
                 if translations:
                     for key in translations["translations"]:
@@ -444,7 +442,7 @@ class CreateOrganizationView(APIView):
                 # Create organization tags
                 if "sectors" in request.data:
                     _sector_keys = request.data["sectors"]
-                    sector_keys, err = senatize_sector_inputs(_sector_keys)
+                    sector_keys, err = sanitize_sector_inputs(_sector_keys)
 
                     if err:
                         # TODO: should I "crash" with 400, or what should I ommit the sectors
@@ -502,7 +500,7 @@ class CreateOrganizationView(APIView):
                                     organization.id
                                 )
                             )
-
+                organization.save()
                 return Response(
                     {
                         "message": "Organization {} successfully created".format(
@@ -563,17 +561,18 @@ class OrganizationAPIView(APIView):
                 {"message": _("Organization not found:") + url_slug},
                 status=status.HTTP_404_NOT_FOUND,
             )
+        _context = create_context_for_hub_specific_sector(self.request)
         if "edit_view" in request.query_params:
             serializer = EditOrganizationSerializer(
                 organization,
                 many=False,
-                context={"language_code": request.LANGUAGE_CODE},
+                context={"language_code": request.LANGUAGE_CODE, **_context},
             )
         else:
             serializer = OrganizationSerializer(
                 organization,
                 many=False,
-                context={"language_code": request.LANGUAGE_CODE},
+                context={"language_code": request.LANGUAGE_CODE, **_context},
             )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -685,14 +684,21 @@ class OrganizationAPIView(APIView):
 
         if "sectors" in request.data:
             _sector_keys = request.data["sectors"]
-            sector_keys, err = senatize_sector_inputs(_sector_keys)
+            sector_keys, err = sanitize_sector_inputs(_sector_keys)
             if err:
                 # do not perform an update of sectors
-                # TODO: should I "crash" with 400, or what should I ommit the sectors
                 logger.error(
                     "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
                         err, _sector_keys
                     )
+                )
+                return Response(
+                    {
+                        "message": "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                            err, _sector_keys
+                        )
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
             else:
                 # perform update of sectors
@@ -953,7 +959,8 @@ class ListFeaturedOrganizations(ListAPIView):
     serializer_class = OrganizationCardSerializer
 
     def get_serializer_context(self):
-        return {"language_code": self.request.LANGUAGE_CODE}
+        context = create_context_for_hub_specific_sector(self.request)
+        return {"language_code": self.request.LANGUAGE_CODE, **context}
 
     def get_queryset(self):
         return Organization.objects.filter(rating__lte=99)[0:4]

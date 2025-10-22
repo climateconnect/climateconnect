@@ -374,7 +374,7 @@ def create_projects_related_to_tags():
     print()
     print("fails")
     for key, taggings in fails:
-        print("[!] >>" + key + "\t\t" + taggings)
+        print("[!] >>" + key + "\t\t" + ",".join(map(lambda x: x.name, taggings)))
     print()
     print("fails:", len(fails))
     print("-" * 50)

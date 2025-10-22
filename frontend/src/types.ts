@@ -4,6 +4,7 @@ export type User = {
   id: string;
   first_name?: string;
   last_name?: string;
+  url_slug?: string;
 };
 
 export type Role = {
@@ -11,6 +12,17 @@ export type Role = {
   name: string;
   name_de_translation?: string;
   role_type: "all" | "read write" | "read only";
+  explanation?: string;
+  explanation_de_translation?: string;
+};
+
+export type SkillType = {
+  id: number;
+  key: number;
+  name: string;
+  original_name: string;
+  parent_skill?: string;
+  subcategories: SkillType[];
 };
 
 export type Project = {
@@ -41,6 +53,10 @@ export type Project = {
   creator?: User | Organization | any; //TODO: remove 'any' once User and Organization types are properly defined
   image?: string;
   hubName?: string;
+  related_hubs?: any[];
+  hubUrl?: string;
+  thumbnail_image?: string;
+  sectors?: Sector[];
 };
 
 export type BrowseTab = "projects" | "organizations" | "members" | "events";
@@ -82,3 +98,27 @@ export type Supporter = {
   importance: number;
   organization_url_slug: string;
 };
+
+export type Sector = {
+  id: number;
+  name: string;
+  key: string;
+  icon?: string;
+  original_name?: string;
+  image?: string;
+};
+
+export type LinkedHub = {
+  hubName: string;
+  hubUrl: string;
+  icon: string;
+  backgroundColor?: string;
+};
+
+export type LocaleType = "en" | "de" | undefined;
+
+export interface HubData {
+  landing_page_component: string;
+  hub_type: string;
+  [key: string]: any;
+}

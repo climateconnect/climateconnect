@@ -1,6 +1,6 @@
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { apiRequest } from "./apiOperations";
-import { parseOptions } from "./selectOptionsOperations";
+import { parseOptions, parseSectorOptions } from "./selectOptionsOperations";
 
 export async function getSkillsOptions(locale, parentSkillsOnly?: boolean) {
   try {
@@ -52,6 +52,25 @@ export async function getProjectTagsOptions(hub, locale) {
     if (resp.data.results.length === 0) return null;
     else {
       return parseOptions(resp.data.results, "parent_tag");
+    }
+  } catch (err: any) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
+export async function getSectorOptions(locale, hubUrl?: string) {
+  const query = hubUrl ? `?hub=${hubUrl}` : "";
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: `/api/sectors/${query}`,
+      locale: locale,
+    });
+    if (resp?.data?.results.length === 0) return null;
+    else {
+      let sectorOptions = parseSectorOptions(resp.data.results);
+      return sectorOptions;
     }
   } catch (err: any) {
     console.log(err);

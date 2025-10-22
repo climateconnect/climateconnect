@@ -206,6 +206,7 @@ class Organization(models.Model):
         blank=True,
     )
 
+    # TODO: obsolete field --> should be removed, as mappings to sector hubs in not nessary anymore
     hubs = models.ManyToManyField(
         "hubs.Hub",
         related_name="organization_hubs",
@@ -214,13 +215,14 @@ class Organization(models.Model):
         blank=True,
     )
 
-    sectors = models.ManyToManyField(
-        "organization.Sector",
-        related_name="organization_sectors",
-        help_text="Sectors that the organization is active in. These sectors will be displayed on the organization page.",
-        verbose_name="Sectors",
-        blank=True,
-    )
+    # TODO: obsolete field --> should be using sector mappings instead
+    # sectors = models.ManyToManyField(
+    #     "organization.Sector",
+    #     related_name="organization_sectors",
+    #     help_text="Sectors that the organization is active in. These sectors will be displayed on the organization page.",
+    #     verbose_name="Sectors",
+    #     blank=True,
+    # )
 
     related_hubs = models.ManyToManyField(
         "hubs.Hub",

@@ -363,8 +363,12 @@ export default function getOrganizationTexts({ organization, locale }) {
       de: "Organisationsart (Bis zu 2)",
     },
     organization_is_active_in_these_sectors: {
-      en: `${organization?.name} is active in these sectors`,
+      en: `${organization?.name} is active in these topics`,
       de: `${organization?.name} ist in diesen Bereichen aktiv`,
+    },
+    add_sectors_in_which_your_organization_is_active: {
+      en: "Add topics in which your organization is active",
+      de: "Füge Themenbereiche hinzu, in denen deine Organisation aktiv ist",
     },
     someone_has_already_created_organization: {
       en: "Someone has already created the organization ",

@@ -8,7 +8,7 @@ require("dotenv").config();
 
 module.exports = withBundleAnalyzer({
   // Read set variables from `.env` file
-  //For CUSTOM_HUB_URLS use a string of urls split by commas, e.g. CUSTOM_HUB_URLS="url1,url2,url3"
+  //For CUSTOM_HUB_URLS use a string of urls split by commas, e.g. CUSTOM_HUB_URLS=url1,url2,url3
   env: pick(process.env, [
     "API_HOST",
     "API_URL",
@@ -20,6 +20,7 @@ module.exports = withBundleAnalyzer({
     "ENVIRONMENT",
     "GOOGLE_ANALYTICS_CODE",
     "LATEST_NEWSLETTER_LINK",
+    "LOCATION_HUBS",
     "LETS_ENCRYPT_FILE_CONTENT",
     "SOCKET_URL",
     "WEBFLOW_API_TOKEN",

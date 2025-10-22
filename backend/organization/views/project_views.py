@@ -2,7 +2,10 @@ import logging
 import traceback
 from django.db.models import Case, When, Prefetch
 
-from organization.utility.sector import senatize_sector_inputs
+from organization.utility.sector import (
+    create_context_for_hub_specific_sector,
+    sanitize_sector_inputs,
+)
 from organization.utility.cache import generate_project_ranking_cache_key
 from organization.utility.follow import (
     get_list_of_project_followers,
@@ -166,6 +169,11 @@ class ListProjectsView(ListAPIView):
         return self.list(request, *args, **kwargs)
 
     def get_queryset(self):
+        user = self.request.user
+        # TODO: remove user profile, as it is not used
+        user_profile = None
+        if user.is_authenticated:
+            user_profile = user.user_profile if user.user_profile else None  # noqa
         # Get project ranking
         projects = (
             Project.objects.filter(is_draft=False, is_active=True)
@@ -195,36 +203,45 @@ class ListProjectsView(ListAPIView):
         # maybe use .annotate() to calculate ranking/counts of coments etc.
 
         if "sectors" in self.request.query_params:
-            _sector_keys = self.request.query_params.get("sectors")
-            sector_keys, err = senatize_sector_inputs(_sector_keys)
+            _sector_names = self.request.query_params.get("sectors")
+            sector_names, err = sanitize_sector_inputs(_sector_names)
 
             if err:
                 # TODO: should I "crash" with 400, or what should I ommit the sectors
                 logger.error(
                     "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
-                        err, _sector_keys
+                        err, _sector_names
                     )
                 )
             else:
                 projects = projects.filter(
-                    project_sector_mapping__sector__key__in=sector_keys
+                    Q(project_sector_mapping__sector__name__in=sector_names)
+                    | Q(
+                        project_sector_mapping__sector__relates_to_sector__name__in=sector_names
+                    )
                 )
 
         if "hub" in self.request.query_params:
-            hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
-            if hub.exists():
-                hub = hub[0]
-                if hub.hub_type == Hub.SECTOR_HUB_TYPE:
-                    sectors = hub.sectors.all()
+            # retrieve hub and its parents
+            hub = Hub.objects.filter(url_slug=self.request.query_params["hub"]).first()
+            if not hub:
+                return projects.none()
 
+            hubs = [hub]
+            if hub.parent_hub:
+                hubs.append(hub.parent_hub)
+
+            for current_hub in hubs:
+                if current_hub.hub_type == Hub.SECTOR_HUB_TYPE:
+                    sectors = current_hub.sectors.all()
                     sector_ids = [x.id for x in sectors]
 
                     projects = projects.filter(
                         project_sector_mapping__sector_id__in=sector_ids
                     ).distinct()
 
-                elif hub.hub_type == Hub.LOCATION_HUB_TYPE:
-                    location = hub.location.all()[0]
+                elif current_hub.hub_type == Hub.LOCATION_HUB_TYPE:
+                    location = current_hub.location.all()[0]
                     location_multipolygon = location.multi_polygon
                     projects = projects.filter(Q(loc__country=location.country))
                     if location_multipolygon:
@@ -236,8 +253,9 @@ class ListProjectsView(ListAPIView):
                                 "loc__centre_point", location_multipolygon
                             )
                         )
-                elif hub.hub_type == Hub.CUSTOM_HUB_TYPE:
-                    projects = projects.filter(related_hubs=hub)
+
+                elif current_hub.hub_type == Hub.CUSTOM_HUB_TYPE:
+                    projects = projects.filter(related_hubs=current_hub)
 
         if "collaboration" in self.request.query_params:
             collaborators_welcome = self.request.query_params.get("collaboration")
@@ -368,6 +386,12 @@ class ListProjectsView(ListAPIView):
         )
         return projects.order_by(preferred_order)
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        _context = create_context_for_hub_specific_sector(self.request)
+        context.update({**_context})
+        return context
+
 
 class CreateProjectView(APIView):
     permission_classes = [IsAuthenticated]
@@ -386,6 +410,7 @@ class CreateProjectView(APIView):
             "collaborators_welcome",
             "team_members",
             "loc",
+            "sectors",
             "image",
             "source_language",
             "translations",
@@ -510,18 +535,22 @@ class CreateProjectView(APIView):
 
         if "sectors" in request.data:
             _sector_keys = request.data["sectors"]
-            sector_keys, err = senatize_sector_inputs(_sector_keys)
+            sector_keys, err = sanitize_sector_inputs(_sector_keys)
 
             if err:
-                # TODO: should I "crash" with 400, or what should I ommit the sectors
                 logger.error(
                     "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
                         err, _sector_keys
                     )
                 )
-
-            # remove duplicates
-            sector_keys = list(set(sector_keys))
+                return Response(
+                    {
+                        "message": "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                            err, _sector_keys
+                        )
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
             sectors = []
 
@@ -609,10 +638,13 @@ class ProjectAPIView(APIView):
                 {"message": "Project not found: {}".format(url_slug)},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+        context = create_context_for_hub_specific_sector(request)
+
         if "edit_view" in request.query_params:
-            serializer = EditProjectSerializer(project, many=False)
+            serializer = EditProjectSerializer(project, many=False, context=context)
         else:
-            serializer = ProjectSerializer(project, many=False)
+            serializer = ProjectSerializer(project, many=False, context=context)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, url_slug, format=None):
@@ -659,7 +691,7 @@ class ProjectAPIView(APIView):
 
         if "sectors" in request.data:
             _sector_keys = request.data["sectors"]
-            sector_keys, err = senatize_sector_inputs(_sector_keys)
+            sector_keys, err = sanitize_sector_inputs(_sector_keys)
 
             if err:
                 # TODO: should I "crash" with 400, or what should I ommit the sectors
@@ -668,7 +700,14 @@ class ProjectAPIView(APIView):
                         err, _sector_keys
                     )
                 )
-                sector_keys = []
+                return Response(
+                    {
+                        "message": "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                            err, _sector_keys
+                        )
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
             # delete sectors that are not mapped to the project anymore
             for sectorMapping in ProjectSectorMapping.objects.filter(project=project):
@@ -1488,3 +1527,9 @@ class SimilarProjects(ListAPIView):
             rating__gte=49,
             is_active=True,
         )
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        _context = create_context_for_hub_specific_sector(self.request)
+        context.update({**_context})
+        return context

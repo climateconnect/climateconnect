@@ -43,11 +43,11 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
     fontSize: 20,
     [theme.breakpoints.down("sm")]: {
-      fontSize: 15
-    }
+      fontSize: 15,
+    },
   },
   linkText: {
-    fontSize: 20
+    fontSize: 20,
   },
   showMoreButton: {
     color: "white",
@@ -141,10 +141,13 @@ export default function DonationCampaignInformation() {
                   barColor={theme.palette.yellow.main}
                 />
               )}
-              <Typography className={classes.text}>
-                {donationGoal?.call_to_action_text}
-              </Typography>
-              <Link color="white" className={`${classes.linkText} ${classes.text}`} href={donationGoal?.call_to_action_link} target="_blank">
+              <Typography className={classes.text}>{donationGoal?.call_to_action_text}</Typography>
+              <Link
+                color="white"
+                className={`${classes.linkText} ${classes.text}`}
+                href={donationGoal?.call_to_action_link}
+                target="_blank"
+              >
                 {texts.donate_now}
               </Link>
             </div>

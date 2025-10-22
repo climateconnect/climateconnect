@@ -24,3 +24,14 @@ export function parseOptions(options, parentPropertyName) {
       };
     });
 }
+
+export function parseSectorOptions(options) {
+  return options.map((o) => {
+    const { image, ...rest } = o;
+    return {
+      ...rest,
+      thumbnail_image: image,
+      image: image,
+    };
+  });
+}

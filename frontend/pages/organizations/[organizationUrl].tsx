@@ -28,6 +28,7 @@ import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import ControlPointSharpIcon from "@mui/icons-material/ControlPointSharp";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
+import { parseProjectStubs } from "../../public/lib/parsingOperations";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -88,7 +89,7 @@ export async function getServerSideProps(ctx) {
     following,
     hubThemeData,
   ] = await Promise.all([
-    getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
+    getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale, hubUrl),
     getProjectsByOrganization(organizationUrl, auth_token, ctx.locale),
     getMembersByOrganization(organizationUrl, auth_token, ctx.locale),
     getOrganizationTypes(),
@@ -119,8 +120,7 @@ export default function OrganizationPage({
   hubThemeData,
   hubUrl,
 }) {
-  const { user, locale, CUSTOM_HUB_URLS } = useContext(UserContext);
-  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
+  const { user, locale } = useContext(UserContext);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization, false);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   // l. 105-137 handles following Organizations
@@ -157,14 +157,16 @@ export default function OrganizationPage({
     };
   });
 
-  const customHubTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
   return (
     <WideLayout
       title={organization ? organization.name : texts.not_found_error}
       description={organization?.name + " | " + organization?.info.short_description}
       image={getImageUrl(organization?.image)}
-      headerBackground={isCustomHub ? customHubTheme?.palette?.secondary?.light : "#FFF"}
-      customTheme={customHubTheme}
+      customTheme={customTheme}
+      headerBackground={
+        customTheme ? customTheme?.palette?.header.background : theme.palette.background.default
+      }
       hubUrl={hubUrl}
     >
       {organization ? (
@@ -367,11 +369,14 @@ function OrganizationLayout({
   );
 }
 
-async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
+async function getOrganizationByUrlIfExists(organizationUrl, token, locale, hubUrl?: string) {
+  let query = "";
+  query += hubUrl ? `?hub=${hubUrl}` : "";
+
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/organizations/" + organizationUrl + "/",
+      url: "/api/organizations/" + organizationUrl + "/" + query,
       token: token,
       locale: locale,
     });
@@ -441,16 +446,6 @@ async function getMembersByOrganization(organizationUrl, token, locale) {
 
 async function getOrganizationTypes() {
   return [];
-}
-
-function parseProjectStubs(projects) {
-  return projects.map((p) => {
-    const project = p.project;
-    return {
-      ...project,
-      location: project.location,
-    };
-  });
 }
 
 function parseOrganizationMembers(members) {

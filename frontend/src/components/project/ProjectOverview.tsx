@@ -291,7 +291,7 @@ function ShortProjectInfo({ project }) {
           <Tooltip title={texts.categories}>
             <ExploreIcon className={classes.icon} />
           </Tooltip>{" "}
-          {project.tags.join(", ")}
+          {project?.sectors?.length > 0 && project.sectors.map((s) => s.name).join(", ")}
         </Typography>
       </div>
       <div className={classes.projectInfoEl}>
@@ -321,6 +321,7 @@ function SmallScreenOverview({ screenSize, project, projectAdmin, hubUrl }) {
           className={classes.shareButtonContainer}
           project={project}
           projectAdmin={projectAdmin}
+          hubUrl={hubUrl}
         />
         <img
           className={classes.fullWidthImage}
