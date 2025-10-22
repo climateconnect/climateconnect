@@ -1,5 +1,6 @@
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import GroupWorkIcon from "@mui/icons-material/GroupWork";
@@ -30,6 +31,7 @@ const COMMON_LINKS = {
     href: "/share",
     mediumScreenText: "share",
     iconForDrawer: AddCircleIcon,
+    icon: AddCircleOutlineIcon,
     isFilledInHeader: true,
     className: "shareProjectButton",
     vanillaIfLoggedOut: true,
