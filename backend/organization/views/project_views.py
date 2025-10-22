@@ -331,7 +331,10 @@ class ListProjectsView(ListAPIView):
                 .order_by("distance")
             )
 
-        if "country" and "city" in self.request.query_params:
+        if (
+            "country" in self.request.query_params
+            and "city" in self.request.query_params
+        ):
             location_ids = Location.objects.filter(
                 country=self.request.query_params.get("country"),
                 city=self.request.query_params.get("city"),
