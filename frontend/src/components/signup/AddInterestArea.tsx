@@ -5,7 +5,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import { Box, Card, CardContent, IconButton, Typography, Button } from "@mui/material";
 import ActiveSectorsSelector from "../hub/ActiveSectorsSelector";
-import { SectorOptionType } from "../../types";
+import { Sector } from "../../types";
 
 type SelectedSector = {
   hub_type: string;
@@ -24,7 +24,7 @@ type AddInterestAreaProps = {
   values: any;
   handleGoBack: (event: any, values: any) => void;
   isSmallScreen: boolean;
-  sectorOptions: SectorOptionType[];
+  sectorOptions: Sector[];
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -155,17 +155,27 @@ export default function AddInterestArea({
           onClickRemoveSector={handleSectorRemoval}
           hideTitle={true}
         />
-
-        <Button
-          fullWidth
-          variant="contained"
-          type="submit"
-          color="primary"
-          className={classes.rightAlignedButton}
-          onClick={(event) => handleSubmit(event, formValues)}
-        >
-          {texts.submit}
-        </Button>
+        <Box sx={{ display: "flex", gap: 2, marginTop: 4 }}>
+          {selectedSectors.length === 0 ? (
+            <Button
+              fullWidth
+              color="primary"
+              onClick={(event) => handleSubmit(event, { ...formValues, sectors: [] })}
+            >
+              {texts.skip_and_submit}
+            </Button>
+          ) : (
+            <Button
+              fullWidth
+              variant="contained"
+              type="submit"
+              color="primary"
+              onClick={(event) => handleSubmit(event, formValues)}
+            >
+              {texts.submit}
+            </Button>
+          )}
+        </Box>
       </CardContent>
     </Card>
   );
