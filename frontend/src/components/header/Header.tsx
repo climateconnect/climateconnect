@@ -328,7 +328,6 @@ export default function Header({
     if (isCustomHub) {
       return `${imageUrl}/hub_logos/ch_${hubUrl}_logo.svg`;
     }
-
     if (hubUrl && isLocationHub) {
       const logoType = transparentHeader || isLandingPage ? "white" : null;
       return `${imageUrl}/hub_logos/ch_${hubUrl?.toLowerCase()}_logo${

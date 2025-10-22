@@ -16,7 +16,7 @@ import HubHeadlineContainer from "./HubHeadlineContainer";
 import HubSupporters from "./HubSupporters";
 import theme from "../../themes/theme";
 import { PrioOneBackgroundBrowse, PrioOneBackgroundBrowseIcon } from "./CustomBackground";
-import { getCustomHubData } from "../../../public/data/customHubData";
+import LoadingSpinner from "../general/LoadingSpinner";
 
 type MakeStylesProps = {
   isLocationHub: boolean;
@@ -146,6 +146,8 @@ export default function HubContent({
   hubData,
   hubUrl,
   image,
+  DevlinkComponent,
+  isLoadingWelcomebox = false,
 }) {
   const { locale, user } = useContext(UserContext);
   const classes = useStyles({ isLocationHub: isLocationHub, loggedOut: !user, image: image });
@@ -168,8 +170,6 @@ export default function HubContent({
   if (fixed && showMoreVisible) {
     setFixed(false);
   }
-  const WelcomeComponent = getCustomHubData({ hubUrl: hubUrl })?.welcome?.[locale];
-
   return (
     <div>
       <div>
@@ -195,8 +195,10 @@ export default function HubContent({
                       />
                     )}
                   </>
-                ) : WelcomeComponent ? (
-                  <WelcomeComponent />
+                ) : isLoadingWelcomebox ? (
+                  <LoadingSpinner isLoading />
+                ) : DevlinkComponent ? (
+                  <DevlinkComponent />
                 ) : (
                   <LoggedOutLocationHubBox
                     headline={headline}
