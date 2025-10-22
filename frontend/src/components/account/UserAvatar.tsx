@@ -80,16 +80,19 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
   });
 
   const classes = useStyles({ avatarImage: avatarImage.imageUrl });
-
+  const [isLoading, setIsLoading] = useState(false);
   const onImageChanged = async (avatarEvent) => {
     const file = avatarEvent.target.files[0];
     if (file && file.type) {
       try {
+        setIsLoading(true);
+        setDialogStates({ ...dialogStates, uploadOpen: true });
         const compressedImage = await getCompressedJPG(file, 0.5);
         setTempImage(() => compressedImage);
-        setDialogStates({ ...dialogStates, uploadOpen: true });
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -179,6 +182,8 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
         borderRadius={10000}
         height={isNarrowScreen ? getImageDialogHeight(window.innerWidth) : 200}
         ratio={1}
+        loading={isLoading}
+        loadingText={texts.processing_image_please_wait}
       />
 
       <ConfirmDialog

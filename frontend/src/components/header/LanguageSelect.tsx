@@ -1,4 +1,4 @@
-import { Button, Theme, useMediaQuery } from "@mui/material";
+import { Button, Theme, useMediaQuery, Popper, Paper, MenuList } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import LanguageIcon from "@mui/icons-material/Language";
 import { useRouter } from "next/router";
@@ -12,16 +12,22 @@ import StyledMenuItem from "../general/StyledMenuItem";
 
 const useStyles = makeStyles<
   Theme,
-  { transparentHeader: boolean; isCustomHub: boolean; isNarrowScreen: boolean }
+  {
+    transparentHeader: boolean;
+    isCustomHub: boolean;
+    isNarrowScreen: boolean;
+    isLandingPage?: boolean;
+  }
 >((theme) => ({
   root: (props) => ({
-    color: props.transparentHeader
-      ? "white"
-      : props.isCustomHub
-      ? !props.isNarrowScreen
-        ? theme.palette.primary.contrastText
-        : theme.palette.background.default_contrastText
-      : theme.palette.primary.main,
+    color:
+      props.transparentHeader || (props.isLandingPage && !props.isNarrowScreen)
+        ? "white"
+        : props.isCustomHub
+        ? !props.isNarrowScreen
+          ? theme.palette.primary.contrastText
+          : theme.palette.background.default_contrastText
+        : theme.palette.primary.main,
     cursor: "pointer",
   }),
   languageIcon: {
@@ -36,6 +42,9 @@ const useStyles = makeStyles<
   centerText: {
     textAlign: "center",
   },
+  popper: {
+    width: "67px",
+  },
 }));
 
 /**
@@ -46,11 +55,13 @@ const useStyles = makeStyles<
 type LanguageSelectProps = {
   transparentHeader?: boolean;
   isCustomHub: boolean;
+  isLandingPage?: boolean;
 };
 
 export default function LanguageSelect({
   transparentHeader = false,
   isCustomHub,
+  isLandingPage = false,
 }: LanguageSelectProps) {
   const { locale, locales, startLoading } = useContext(UserContext);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
@@ -58,8 +69,9 @@ export default function LanguageSelect({
   const [open, setOpen] = useState(false);
   const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
-  const classes = useStyles({ transparentHeader, isCustomHub, isNarrowScreen });
+  const classes = useStyles({ transparentHeader, isCustomHub, isNarrowScreen, isLandingPage });
   const router = useRouter();
+
   useEffect(function () {
     setAnchorEl(buttonRef.current);
   }, []);
@@ -103,6 +115,23 @@ export default function LanguageSelect({
 
   // TODO: this could be generalized into a HoverButton component,
   // and used in the Welcome Blurb feature on /hubs
+
+  const MenuItems = () => (
+    <>
+      {locales?.map((l) => (
+        <StyledMenuItem
+          key={l}
+          className={classes.centerText}
+          selected={l === locale}
+          dense={!isMediumScreen}
+          onClick={(e) => handleLanguageClick(e, l)}
+        >
+          {l.toUpperCase()}
+        </StyledMenuItem>
+      ))}
+    </>
+  );
+
   return (
     <>
       <Button
@@ -116,35 +145,38 @@ export default function LanguageSelect({
       >
         {locale}
       </Button>
-      <StyledMenu
-        id="language-select"
-        className={classes.popover}
-        classes={{
-          paper: classes.popoverContent,
-        }}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        keepMounted
-        open={open}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "center",
-        }}
-        container={anchorEl?.parentNode}
-        PaperProps={{ onMouseEnter: handleOpen, onMouseLeave: handleClose }}
-      >
-        {locales?.map((l, index) => (
-          <StyledMenuItem
-            key={index}
-            className={classes.centerText}
-            selected={l === locale}
-            dense={!isMediumScreen}
-            onClick={(e) => handleLanguageClick(e, l)}
-          >
-            {l.toUpperCase()}
-          </StyledMenuItem>
-        ))}
-      </StyledMenu>
+      {isNarrowScreen ? (
+        <StyledMenu
+          id="language-select"
+          className={classes.popover}
+          classes={{
+            paper: classes.popoverContent,
+          }}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          keepMounted
+          open={open}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center",
+          }}
+          container={anchorEl?.parentNode}
+          PaperProps={{ onMouseEnter: handleOpen, onMouseLeave: handleClose }}
+        >
+          <MenuItems />
+        </StyledMenu>
+      ) : (
+        // For some reason, the StyledMenu component doesn't work as expected on Desktop
+        // so we use the Popper and Paper component instead of StyledMenu
+        // (on our new home page, we have focus problem with StyledMenu)
+        <Popper open={open} anchorEl={buttonRef.current} className={classes.popper}>
+          <Paper {...hoverButtonProps} className={classes.paper}>
+            <MenuList>
+              <MenuItems />
+            </MenuList>
+          </Paper>
+        </Popper>
+      )}
     </>
   );
 }

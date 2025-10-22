@@ -54,21 +54,27 @@ export default function ManageOrganizationMembers({
   const router = useRouter();
   const isCreationStage = router.query.isCreationStage;
 
+  type Params = {
+    hub?: string;
+    message?: string;
+    errorMessage?: string;
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
+    const params: Params = {};
+    if (hubUrl) {
+      params.hub = hubUrl;
+    }
     onSubmit()
       .then(() => {
-        redirect("/organizations/" + organization.url_slug, {
-          message: texts.successfully_updated_org_members,
-          hub: hubUrl ? hubUrl : "",
-        });
+        params.message = texts.successfully_updated_org_members;
+        redirect("/organizations/" + organization.url_slug, params);
       })
       .catch((e) => {
         console.log(e);
-        redirect("/organizations/" + organization.url_slug, {
-          errorMessage: texts.not_all_your_updates_have_worked,
-          hub: hubUrl ? hubUrl : "",
-        });
+        params.errorMessage = texts.not_all_your_updates_have_worked;
+        redirect("/organizations/" + organization.url_slug, params);
       });
   };
 

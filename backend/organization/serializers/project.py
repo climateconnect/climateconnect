@@ -1,3 +1,9 @@
+from organization.utility.sector import (
+    get_sectors_based_on_hub,
+)
+from organization.serializers.sector import (
+    ProjectSectorMappingSerializer,
+)
 from organization.models.members import MembershipRequests
 from climateconnect_api.models import UserProfile
 from climateconnect_api.models.role import Role
@@ -43,6 +49,9 @@ class ProjectSerializer(serializers.ModelSerializer):
     description = serializers.SerializerMethodField()
     skills = serializers.SerializerMethodField()
     project_parents = serializers.SerializerMethodField()
+    sectors = serializers.SerializerMethodField()
+
+    # TODO (Karol): Remove this field once the frontend is updated to use the new tags serializer
     tags = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
     collaborating_organizations = serializers.SerializerMethodField()
@@ -72,7 +81,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             "skills",
             "helpful_connections",
             "project_parents",
-            "tags",
+            "sectors",
+            "tags",  # TODO (Karol): Remove this field once the frontend is updated to use the new tags serializer
             "created_at",
             "collaborating_organizations",
             "is_draft",
@@ -106,6 +116,17 @@ class ProjectSerializer(serializers.ModelSerializer):
         serializer = ProjectParentsSerializer(obj.project_parent, many=True)
         return serializer.data
 
+    def get_sectors(self, obj):
+        hub = self.context.get("hub")
+
+        sector_mappings = get_sectors_based_on_hub(
+            obj.project_sector_mapping.all(), hub
+        )
+
+        serializer = ProjectSectorMappingSerializer(sector_mappings, many=True)
+        return serializer.data
+
+    # TODO (Karol): Remove this method once the frontend is updated to use the new tags serializer
     def get_tags(self, obj):
         serializer = ProjectTaggingSerializer(obj.tag_project, many=True)
         return serializer.data
@@ -189,6 +210,13 @@ class EditProjectSerializer(ProjectSerializer):
     def get_related_hubs(self, obj):
         return [hub.url_slug for hub in obj.related_hubs.all()]
 
+    # Override the get_sectors method to use the hub-specific sectors
+    def get_sectors(self, obj):
+        serializer = ProjectSectorMappingSerializer(
+            obj.project_sector_mapping.all(), many=True
+        )
+        return serializer.data
+
     class Meta(ProjectSerializer.Meta):
         fields = ProjectSerializer.Meta.fields + ("loc", "translations", "related_hubs")
 
@@ -253,6 +281,8 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
 
 class ProjectStubSerializer(serializers.ModelSerializer):
     project_parents = serializers.SerializerMethodField()
+    # TODO: remove tags
+    sectors = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
     project_type = SerializerMethodField()
     image = serializers.SerializerMethodField()
@@ -274,6 +304,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             "project_type",
             "project_parents",
             "tags",
+            "sectors",
             "is_draft",
             "short_description",
             "number_of_comments",
@@ -318,6 +349,17 @@ class ProjectStubSerializer(serializers.ModelSerializer):
                 }
             ]
 
+    def get_sectors(self, obj):
+        hub = self.context.get("hub")
+
+        sector_mappings = get_sectors_based_on_hub(
+            obj.project_sector_mapping.all(), hub
+        )
+
+        serializer = ProjectSectorMappingSerializer(sector_mappings, many=True)
+        return serializer.data
+
+    # TODO: remove
     def get_tags(self, obj):
         # .all() so that it can use the prefetched data
         serializer = ProjectTaggingSerializer(obj.tag_project.all(), many=True)

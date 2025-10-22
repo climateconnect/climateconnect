@@ -5,9 +5,9 @@ import React, { useContext } from "react";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getLocalePrefix, sendToLogin } from "../../public/lib/apiOperations";
 import {
-  getProjectTagsOptions,
   getProjectTypeOptions,
   getSkillsOptions,
+  getSectorOptions,
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
@@ -19,6 +19,8 @@ import Layout from "../../src/components/layouts/layout";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
+import { Project, Sector } from "../../src/types";
+import theme from "../../src/themes/theme";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,17 +46,17 @@ export async function getServerSideProps(ctx) {
     members,
     skillsOptions,
     userOrganizations,
-    tagsOptions,
     projectTypeOptions,
     hubThemeData,
+    sectorOptions,
   ] = await Promise.all([
     getProjectByIdIfExists(projectUrl, auth_token, ctx.locale),
     getMembersByProject(projectUrl, auth_token, ctx.locale),
     getSkillsOptions(ctx.locale),
     getUserOrganizations(auth_token, ctx.locale),
-    getProjectTagsOptions(null, ctx.locale),
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
+    getSectorOptions(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -62,10 +64,10 @@ export async function getServerSideProps(ctx) {
       members: members,
       skillsOptions: skillsOptions,
       userOrganizations: userOrganizations,
-      tagsOptions: tagsOptions,
       projectTypeOptions: projectTypeOptions,
       hubThemeData: hubThemeData,
       hubUrl: hubUrl,
+      sectorOptions: sectorOptions,
     }),
   };
 }
@@ -75,22 +77,48 @@ export default function EditProjectPage({
   members,
   skillsOptions,
   userOrganizations,
-  tagsOptions,
   projectTypeOptions,
   hubThemeData,
   hubUrl,
+  sectorOptions,
+}: {
+  project: Project;
+  members: any[];
+  skillsOptions: any[];
+  userOrganizations: any[];
+  statusOptions: any[];
+  projectTypeOptions: any[];
+  hubThemeData: any;
+  hubUrl: string;
+  sectorOptions: Sector[];
 }) {
   const classes = useStyles();
   const [curProject, setCurProject] = React.useState({
     ...project,
-    hubUrl: project.related_hubs?.length > 0 ? project.related_hubs[0] : null,
+    hubUrl: project?.related_hubs?.length ? project.related_hubs[0] : null,
   });
+
+  // add all sectors that are assigned to the project to the possible sectors
+  // so that, when editing a project with e.g. specific sectors all sectors - even
+
+  // hub specific ones are available
+  if (project.sectors) {
+    for (const sector of project.sectors) {
+      // match by sector.key
+      const exists = sectorOptions.find((s) => s.key === sector.key);
+      if (!exists) {
+        sectorOptions.push(sector);
+      }
+    }
+    // sort sectors by name
+    sectorOptions.sort((a, b) => (a.name < b.name ? -1 : 1));
+  }
+
   project = {
     ...project,
   };
   const [errorMessage, setErrorMessage] = React.useState("");
-  const { user, locale, CUSTOM_HUB_URLS } = useContext(UserContext);
-  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
+  const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
 
   const handleSetErrorMessage = (newErrorMessage) => {
@@ -99,12 +127,16 @@ export default function EditProjectPage({
   const handleSetProject = (newProject) => {
     setCurProject({ ...newProject });
   };
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+
   if (!user)
     return (
       <WideLayout
         title={texts.please_log_in_to_edit_project}
-        headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
-        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+        customTheme={customTheme}
+        headerBackground={
+          customTheme ? customTheme.palette.header.background : theme.palette.background.default
+        }
         hubUrl={hubUrl}
       >
         <LoginNudge fullPage whatToDo={texts.to_edit_this_project} />
@@ -126,9 +158,10 @@ export default function EditProjectPage({
     return (
       <WideLayout
         title={texts.not_a_member}
-        hideHeadline={true}
-        headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
-        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+        customTheme={customTheme}
+        headerBackground={
+          customTheme ? customTheme.palette.header.background : theme.palette.background.default
+        }
         hubUrl={hubUrl}
       >
         <Typography variant="h4" color="primary" className={classes.errorTitle}>
@@ -148,8 +181,10 @@ export default function EditProjectPage({
     return (
       <WideLayout
         title={texts.no_permissions_to_edit_project}
-        headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
-        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+        customTheme={customTheme}
+        headerBackground={
+          customTheme ? customTheme.palette.header.background : theme.palette.background.default
+        }
         hubUrl={hubUrl}
       >
         <Typography variant="h4" color="primary" className={classes.errorTitle}>
@@ -161,26 +196,28 @@ export default function EditProjectPage({
     const user_role = members.find((m) => m.user && m.user.id === user.id).role;
     return (
       <WideLayout
-        className={classes.root}
         title={texts.edit_project + " " + project.name}
-        hideHeadline
         message={errorMessage}
         messageType={errorMessage && "error"}
-        headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
-        customTheme={hubThemeData ? transformThemeData(hubThemeData) : undefined}
+        customTheme={customTheme}
+        headerBackground={
+          customTheme ? customTheme.palette.header.background : theme.palette.background.default
+        }
         hubUrl={hubUrl}
       >
         <EditProjectRoot
+          hubUrl={hubUrl}
           oldProject={project}
           project={curProject}
           skillsOptions={skillsOptions}
           userOrganizations={userOrganizations}
           handleSetProject={handleSetProject}
-          tagsOptions={tagsOptions}
+          sectorOptions={sectorOptions}
           user_role={user_role}
           handleSetErrorMessage={handleSetErrorMessage}
           initialTranslations={project.translations}
           projectTypeOptions={projectTypeOptions}
+          hubUrl={hubUrl}
         />
       </WideLayout>
     );
@@ -213,6 +250,7 @@ const parseProject = (project) => ({
   project_parents: project.project_parents[0],
   is_personal_project: !project.project_parents[0].parent_organization,
   skills: project.skills.map((s) => ({ ...s, key: s.id })),
+  sectors: project.sectors.map((item) => ({ ...item.sector, order: item.order })),
 });
 
 const getUserOrganizations = async (token, locale) => {
