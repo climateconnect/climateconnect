@@ -16,11 +16,11 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
       de: "Finde inspirierende Klimaschutz-Ideen aus " + hubName,
     },
     search_for_organizations_in_sector: {
-      en: "Search for climate organizations in the " + hubName + " sector",
+      en: "Search for climate organisations in the " + hubName + " sector",
       de: "Durchsuche Klimaschutzorganisationen im Bereich " + hubName,
     },
     search_organization_in_location: {
-      en: "Search organizations in " + hubName,
+      en: "Search organisations in " + hubName,
       de: "Suche Organisationen in " + hubName,
     },
     search_profiles_in_location: {
@@ -152,7 +152,7 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
       de: `Du siehst Projekte, Ideen und Events zum Thema "${hubName}"`,
     },
     you_are_seeing_organizations_related_to: {
-      en: `You are seeing organizations working on the topic "${hubName}"`,
+      en: `You are seeing organisations working on the topic "${hubName}"`,
       de: `Du siehst Organisationen, die am Thema "${hubName}" arbeiten`,
     },
     you_are_seeing_members_related_to: {

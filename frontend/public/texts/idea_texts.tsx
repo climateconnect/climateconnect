@@ -69,11 +69,11 @@ export default function getIdeaTexts({ idea, creator }) {
       de: "Persönliche Idee",
     },
     organizations_idea: {
-      en: "Organization's idea",
+      en: "Organisation's idea",
       de: "Idee einer Organisation",
     },
     choose_your_organization: {
-      en: "Choose your organization",
+      en: "Choose your organisation",
       de: "Wähle deine Organisation",
     },
     create_idea_add_metadata_motivation_text: {

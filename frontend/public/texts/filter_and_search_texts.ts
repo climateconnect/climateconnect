@@ -23,7 +23,7 @@ export default function getFilterAndSearchTexts({ filterType, hubName, locale })
       de: "Suche nach Klimaprojekten",
     },
     search_organizations: {
-      en: "Search for organizations fighting climate change",
+      en: "Search for organisations fighting climate change",
       de: "Suche nach Organisationen, die den Klimawandel bekämpfen",
     },
     search_active_people: {
@@ -31,7 +31,7 @@ export default function getFilterAndSearchTexts({ filterType, hubName, locale })
       de: "Suche nach Menschen, die gegen den Klimawandel aktiv sind",
     },
     organization_type_tooltip: {
-      en: "Only shows projects created by organizations of the selected type",
+      en: "Only shows projects created by organisations of the selected type",
       de: "Zeige nur Projekte an, die von Organisationen des ausgewählten Typs erstellt wurden",
     },
     categories_tooltip: {
