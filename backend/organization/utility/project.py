@@ -137,6 +137,7 @@ def get_project_description(project: Project, language_code: str) -> str:
     return project.description
 
 
+# TODO (Karol): remove ProjectTags
 def get_projecttag_name(tag: ProjectTags, language_code: str) -> str:
     lang_translation_attr = "name_{}_translation".format(language_code)
     if hasattr(tag, lang_translation_attr):
@@ -215,6 +216,7 @@ def is_part_of_project(user, project):
     return ProjectMember.objects.filter(project=project, user=user).count() > 0
 
 
+# TODO (Karol): update this function to use the sectors instead of tags
 def get_similar_projects(url_slug: str, return_count=5):
     """Returns a list of similar projects to the given project input
     Arguments:
@@ -257,7 +259,7 @@ def get_similar_projects(url_slug: str, return_count=5):
     # calcaulte skills match %
     # since skills are 1 to Many to projects, we need to group the skills in a list
     skills_df = df.groupby(["url_slug"]).agg({"skills": set})
-    source_skills = skills_df.loc[url_slug][0]
+    source_skills = skills_df.loc[url_slug].iloc[0]
     skills_df["source_skills"] = [source_skills for i in range(0, len(skills_df))]
     skills_df["skills_match"] = skills_df.apply(
         lambda x: sets_match(x["source_skills"], x["skills"]), axis=1
@@ -266,7 +268,8 @@ def get_similar_projects(url_slug: str, return_count=5):
     # calcualte tags match %
     # since tags are 1 to Many to projects, we need to group the tags in a list
     tags_df = df.groupby(["url_slug"]).agg({"tag_project": set})
-    source_tags = tags_df.loc[url_slug][0]
+    source_tags = tags_df.loc[url_slug].iloc[0]
+
     tags_df["source_tag_project"] = [source_tags for i in range(0, len(tags_df))]
     tags_df["tags_match"] = tags_df.apply(
         lambda x: sets_match(x["source_tag_project"], x["tag_project"]), axis=1

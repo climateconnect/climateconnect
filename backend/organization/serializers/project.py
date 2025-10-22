@@ -1,3 +1,9 @@
+from organization.utility.sector import (
+    get_sectors_based_on_hub,
+)
+from organization.serializers.sector import (
+    ProjectSectorMappingSerializer,
+)
 from organization.models.members import MembershipRequests
 from climateconnect_api.models import UserProfile
 from climateconnect_api.models.role import Role
@@ -20,7 +26,6 @@ from organization.models import (
     ProjectMember,
     ProjectParents,
 )
-from organization.models.content import ProjectComment
 from organization.models.translations import ProjectTranslation
 from organization.serializers.organization import OrganizationStubSerializer
 from organization.serializers.project_types import ProjectTypesSerializer
@@ -41,6 +46,9 @@ class ProjectSerializer(serializers.ModelSerializer):
     description = serializers.SerializerMethodField()
     skills = serializers.SerializerMethodField()
     project_parents = serializers.SerializerMethodField()
+    sectors = serializers.SerializerMethodField()
+
+    # TODO (Karol): Remove this field once the frontend is updated to use the new tags serializer
     tags = serializers.SerializerMethodField()
     collaborating_organizations = serializers.SerializerMethodField()
     number_of_followers = serializers.SerializerMethodField()
@@ -68,7 +76,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             "skills",
             "helpful_connections",
             "project_parents",
-            "tags",
+            "sectors",
+            "tags",  # TODO (Karol): Remove this field once the frontend is updated to use the new tags serializer
             "created_at",
             "collaborating_organizations",
             "is_draft",
@@ -102,6 +111,17 @@ class ProjectSerializer(serializers.ModelSerializer):
         serializer = ProjectParentsSerializer(obj.project_parent, many=True)
         return serializer.data
 
+    def get_sectors(self, obj):
+        hub = self.context.get("hub")
+
+        sector_mappings = get_sectors_based_on_hub(
+            obj.project_sector_mapping.all(), hub
+        )
+
+        serializer = ProjectSectorMappingSerializer(sector_mappings, many=True)
+        return serializer.data
+
+    # TODO (Karol): Remove this method once the frontend is updated to use the new tags serializer
     def get_tags(self, obj):
         serializer = ProjectTaggingSerializer(obj.tag_project, many=True)
         return serializer.data
@@ -148,6 +168,7 @@ class EditProjectSerializer(ProjectSerializer):
     short_description = serializers.SerializerMethodField()
     helpful_connections = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
+    related_hubs = serializers.SerializerMethodField()
 
     def get_loc(self, obj):
         if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
@@ -177,8 +198,18 @@ class EditProjectSerializer(ProjectSerializer):
     def get_helpful_connections(self, obj):
         return obj.helpful_connections
 
+    def get_related_hubs(self, obj):
+        return [hub.url_slug for hub in obj.related_hubs.all()]
+
+    # Override the get_sectors method to use the hub-specific sectors
+    def get_sectors(self, obj):
+        serializer = ProjectSectorMappingSerializer(
+            obj.project_sector_mapping.all(), many=True
+        )
+        return serializer.data
+
     class Meta(ProjectSerializer.Meta):
-        fields = ProjectSerializer.Meta.fields + ("loc", "translations")
+        fields = ProjectSerializer.Meta.fields + ("loc", "translations", "related_hubs")
 
 
 class ProjectParentsSerializer(serializers.ModelSerializer):
@@ -235,6 +266,8 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
 
 class ProjectStubSerializer(serializers.ModelSerializer):
     project_parents = serializers.SerializerMethodField()
+    # TODO: remove tags
+    sectors = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
     project_type = SerializerMethodField()
     image = serializers.SerializerMethodField()
@@ -256,6 +289,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             "project_type",
             "project_parents",
             "tags",
+            "sectors",
             "is_draft",
             "short_description",
             "number_of_comments",
@@ -272,9 +306,15 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         return get_project_short_description(obj, get_language())
 
     def get_project_parents(self, obj):
-        parent = obj.project_parent.first()
-        if parent is None:
+        # Query the first element but use .all()
+        # as it is aware of prefetched Data
+        # .first() triggers a new query with ... LIMIT 1
+        parents = list(obj.project_parent.all())
+        if not parents:
             return []
+
+        parent = parents[0]  # Get the first parent from prefetched data
+
         if parent.parent_organization:
             return [
                 {
@@ -294,8 +334,20 @@ class ProjectStubSerializer(serializers.ModelSerializer):
                 }
             ]
 
+    def get_sectors(self, obj):
+        hub = self.context.get("hub")
+
+        sector_mappings = get_sectors_based_on_hub(
+            obj.project_sector_mapping.all(), hub
+        )
+
+        serializer = ProjectSectorMappingSerializer(sector_mappings, many=True)
+        return serializer.data
+
+    # TODO: remove
     def get_tags(self, obj):
-        serializer = ProjectTaggingSerializer(obj.tag_project, many=True)
+        # .all() so that it can use the prefetched data
+        serializer = ProjectTaggingSerializer(obj.tag_project.all(), many=True)
         return serializer.data
 
     def get_image(self, obj):
@@ -324,10 +376,10 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         return serializer.data["type_id"]
 
     def get_number_of_comments(self, obj):
-        return ProjectComment.objects.filter(project=obj).count()
+        return obj.project_comment.count()
 
     def get_number_of_likes(self, obj):
-        return ProjectLike.objects.filter(project=obj).count()
+        return obj.project_liked.count()
 
     def get_collaborating_organizations(self, obj):
         serializer = ProjectCollaboratorsSerializer(obj.project_collaborator, many=True)

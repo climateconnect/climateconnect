@@ -20,7 +20,7 @@ const useStyles = makeStyles(() => ({
     right: "1%",
     display: "flex",
     flexDirection: "column",
-    maxWidth: 315,
+    maxWidth: 350,
   },
   mobileButton: {
     width: "100%",
@@ -32,6 +32,9 @@ const useStyles = makeStyles(() => ({
   },
   mobileAvatar: {
     margin: 1,
+  },
+  ambassadorText: {
+    padding: theme.spacing(1, 2),
   },
 }));
 
@@ -48,12 +51,8 @@ export default function ContactAmbassadorButton({ hubAmbassador, mobile, hubUrl 
 
     if (!user) {
       let queryString: any = {
-        redirect: window.location.pathname + window.location.search,
         errorMessage: texts.please_create_an_account_or_log_in_to_contact_the_ambassador,
       };
-      if (hubUrl) {
-        queryString.hub = hubUrl;
-      }
       return redirect("/signup", queryString);
     }
 
@@ -91,7 +90,7 @@ export default function ContactAmbassadorButton({ hubAmbassador, mobile, hubUrl 
             creatorImageURL={getImageUrl(hubAmbassador?.user?.thumbnail_image)}
             customMessage={hubAmbassador.custom_message}
           />
-          <Button variant="contained" color="primary">
+          <Button variant="contained" color="primary" className={classes.ambassadorText}>
             {texts.contact_ambassador}
           </Button>
         </div>

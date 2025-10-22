@@ -24,4 +24,9 @@ urlpatterns = [
         hub_views.HubThemeAPIView.as_view(),
         name="hub_theme_api_view",
     ),
+    path(
+        "hubs/<str:url_slug>/linkedhubs/",
+        hub_views.LinkedHubsAPIView.as_view(),
+        name="hub-annotations-api-view",
+    ),
 ]

@@ -21,6 +21,7 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 from sentry_sdk.integrations.celery import CeleryIntegration
+import django.conf
 
 
 load_dotenv(find_dotenv(".backend_env"))
@@ -39,7 +40,9 @@ SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG", "false") == "true"  # needs to gravitate towards False!
+
 ALLOWED_HOSTS = get_allowed_hosts(env("ALLOWED_HOSTS"))
+
 
 INTERNAL_IPS = [
     # ...
@@ -79,6 +82,11 @@ LIBRARY_APPS = [
 ]
 
 DEBUG_APPS = ["debug_toolbar"]
+
+DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK": lambda request: django.conf.settings.DEBUG,
+    "SHOW_COLLAPSED": False,  # Default is False
+}
 
 SECURITY_MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -297,7 +305,7 @@ LOCALE_PATHS = [
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "fromatters": {"Simple_Format": "{levelname} {message}", "style": "{"},
+    "formatters": {"simple": {"format": "{levelname} {message}", "style": "{"}},
     "handlers": {"console": {"level": "INFO", "class": "logging.StreamHandler"}},
     "loggers": {"django": {"handlers": ["console"], "level": "INFO"}},
 }
@@ -314,6 +322,8 @@ CACHES = {
 DEFAULT_CACHE_TIMEOUT = 2 * 24 * 3600
 
 USER_CHUNK_SIZE = env("USER_CHUNK_SIZE", 100)
+
+CACHE_BACHED_RANK_REQUEST = env("CACHE_BACHED_RANK_REQUEST", "False") == "true"
 
 # SENTRY setup
 SENTRY_DSN = env("SENTRY_DSN")

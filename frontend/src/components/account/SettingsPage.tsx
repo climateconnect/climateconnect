@@ -35,9 +35,6 @@ const useStyles = makeStyles((theme) => ({
   lowerHeaders: {
     marginTop: theme.spacing(2),
   },
-  primaryColor: {
-    color: theme.palette.primary.main,
-  },
   editProfilePageButton: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
@@ -52,9 +49,12 @@ const useStyles = makeStyles((theme) => ({
   spaceStrings: {
     width: 4,
   },
+  textColor: {
+    color: theme.palette.background.default_contrastText,
+  },
 }));
 
-export default function SettingsPage({ settings, setSettings, token, setMessage }) {
+export default function SettingsPage({ settings, setSettings, token, setMessage, hubUrl }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "settings", locale: locale });
@@ -334,22 +334,9 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
     return changedKeys.length > 0;
   };
 
-  /*const changeProfileUrl = event => {
-    event.preventDefault();
-    if (newProfileUrl === settings.url_slug)
-      setErrors({
-        ...errors,
-        profileurlerror: "Your new profile url can not be the same as your old profile url."
-      });
-    else {
-      setErrors({ ...errors, profileurlerror: "" });
-      //TODO: make API request to change preferences
-    }
-  };*/
-
   return (
     <>
-      <Typography color="primary" variant="h5" component="h2">
+      <Typography variant="h5" component="h2" className={classes.textColor}>
         {texts.change_password}
       </Typography>
       <Divider />
@@ -394,14 +381,18 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
             {texts.change_password}
           </Button>
           <Link href={getLocalePrefix(locale) + "/resetpassword"}>
-            <a className={`${classes.forgotPasswordLink} ${classes.primaryColor}`}>
+            <a className={`${classes.forgotPasswordLink} ${classes.textColor}`}>
               {texts.i_forgot_my_password}
             </a>
           </Link>
         </div>
       </form>
 
-      <Typography className={classes.lowerHeaders} color="primary" variant="h5" component="h2">
+      <Typography
+        className={`${classes.lowerHeaders} ${classes.textColor}`}
+        variant="h5"
+        component="h2"
+      >
         {texts.change_linked_email}
       </Typography>
       <Divider />
@@ -431,8 +422,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         </Typography>
       </form>
       <Typography
-        className={classes.lowerHeaders}
-        color="primary"
+        className={`${classes.lowerHeaders} ${classes.textColor}`}
         variant="h5"
         component="h2"
         id="emailPreferences"
@@ -472,8 +462,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         {texts.change_preferences}
       </Button>
       <Typography
-        className={classes.lowerHeaders}
-        color="primary"
+        className={`${classes.lowerHeaders} ${classes.textColor}`}
         variant="h5"
         component="h2"
         id="cookiesettings"
@@ -510,36 +499,11 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       >
         {texts.change_cookie_settings}
       </Button>
-      {/*<Typography className={classes.lowerHeaders} color="primary" variant="h5" component="h2">
-        Change your profile url
-      </Typography>
-      <Divider />
-      <Typography className={classes.blockElement} variant="body2">
-        Your profile url is{" "}
-        <Link href={"/profiles/" + settings.url_slug}>
-          <a className={classes.primaryColor}>climateconnect.earth/{settings.url_slug}</a>
-        </Link>
-      </Typography>
-      {errors.profileurlerror && (
-        <Typography className={classes.blockElement} color="error">
-          {errors.profileurlerror}
-        </Typography>
-      )}
-      <form onSubmit={changeProfileUrl}>
-        <TextField
-          variant="outlined"
-          className={classes.blockElement}
-          type="text"
-          label="New profile url"
-          value={newProfileUrl}
-          onChange={handleNewProfileUrlChange}
-          required
-        />
-        <Button className={classes.blockElement} variant="contained" color="primary" type="submit">
-          Change profile url
-        </Button>
-      </form>*/}
-      <Typography className={classes.lowerHeaders} color="primary" variant="h5" component="h2">
+      <Typography
+        className={`${classes.lowerHeaders} ${classes.textColor}`}
+        variant="h5"
+        component="h2"
+      >
         {texts.edit_your_profile_page}
       </Typography>
       <Divider />
@@ -556,7 +520,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         {texts.if_you_wish_to_delete_this_account}
         <div className={classes.spaceStrings} />
         <Link href="mailto:contact@climateconnect.earth">
-          <a className={classes.primaryColor}>{emailLink}</a>
+          <a className={classes.textColor}>{emailLink}</a>
         </Link>
       </Typography>
     </>

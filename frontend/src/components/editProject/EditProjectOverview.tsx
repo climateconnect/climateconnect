@@ -1,9 +1,9 @@
-import { Button, Chip, Container, List, TextField, Typography } from "@mui/material";
+import { Button, Chip, Container, List, TextField, Grid } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import React, { useContext } from "react";
-
+import SelectField from "../general/SelectField";
 // Relative imports
 import {
   getCompressedJPG,
@@ -15,10 +15,11 @@ import {
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
 import ProjectLocationSearchBar from "../shareProject/ProjectLocationSearchBar";
-import { Project } from "../../types";
+import { Project, Sector } from "../../types";
+import CustomHubSelection from "../project/CustomHubSelection";
+
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
 const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
@@ -65,6 +66,9 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
     cursor: "pointer",
     fontSize: 40,
   },
+  imageBtn: {
+    padding: "8px 32px",
+  },
   locationInput: {
     marginBottom: theme.spacing(1),
     marginTop: theme.spacing(2),
@@ -72,20 +76,20 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
   overviewHeadline: {
     fontSize: 12,
   },
-  openCategoriesDialogButton: {
-    marginTop: theme.spacing(1),
+  sectorField: {
+    marginTop: theme.spacing(3),
   },
 }));
 
 type Args = {
   project: Project;
-  handleSetProject: Function;
-  smallScreen: Boolean;
-  tagsOptions: object;
+  handleSetProject: (project: Project) => void;
+  smallScreen: boolean;
   overviewInputsRef: any;
   locationOptionsOpen: boolean;
-  handleSetLocationOptionsOpen: Function;
+  handleSetLocationOptionsOpen: (open: boolean) => void;
   locationInputRef: any;
+  sectorOptions: Sector[];
 };
 
 //TODO: Allow changing project type?!
@@ -94,11 +98,11 @@ export default function EditProjectOverview({
   project,
   handleSetProject,
   smallScreen,
-  tagsOptions,
   overviewInputsRef,
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
   locationInputRef,
+  sectorOptions,
 }: Args) {
   const classes = useStyles({});
   const { locale } = useContext(UserContext);
@@ -113,18 +117,17 @@ export default function EditProjectOverview({
       thumbnail_image: newThumbnailImage,
     });
   };
-
   const passThroughProps = {
     project: project,
     handleChangeProject: handleChangeProject,
     handleChangeImage: handleChangeImage,
-    tagsOptions: tagsOptions,
     overviewInputsRef: overviewInputsRef,
     handleSetProject: handleSetProject,
     handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
     locationOptionsOpen: locationOptionsOpen,
     locationInputRef: locationInputRef,
     texts: texts,
+    sectorOptions: sectorOptions,
   };
 
   return (
@@ -138,18 +141,31 @@ export default function EditProjectOverview({
   );
 }
 
+type ScreenOverviewProps = {
+  project: Project;
+  handleChangeProject: (newValue: any, key: string) => void;
+  handleChangeImage: (newImage: any, newThumbnailImage: any) => void;
+  overviewInputsRef: React.RefObject<HTMLInputElement>;
+  handleSetProject: (project: Project) => void;
+  locationInputRef: React.RefObject<HTMLInputElement>;
+  locationOptionsOpen: boolean;
+  handleSetLocationOptionsOpen: (open: boolean) => void;
+  texts: Record<string, string>;
+  sectorOptions: Sector[];
+};
+
 function SmallScreenOverview({
   project,
   handleChangeProject,
   handleChangeImage,
-  tagsOptions,
   overviewInputsRef,
   handleSetProject,
   locationInputRef,
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
   texts,
-}) {
+  sectorOptions,
+}: ScreenOverviewProps) {
   const classes = useStyles({});
   return (
     <>
@@ -181,11 +197,11 @@ function SmallScreenOverview({
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
         />
         <InputWebsite project={project} handleChangeProject={handleChangeProject} texts={texts} />
-        <InputTags
-          tagsOptions={tagsOptions}
+        <InputSectors
           project={project}
           handleChangeProject={handleChangeProject}
           texts={texts}
+          sectorOptions={sectorOptions}
         />
       </div>
     </>
@@ -196,15 +212,22 @@ function LargeScreenOverview({
   project,
   handleChangeProject,
   handleChangeImage,
-  tagsOptions,
   handleSetProject,
   overviewInputsRef,
   texts,
   locationInputRef,
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
-}) {
+  sectorOptions,
+}: ScreenOverviewProps) {
   const classes = useStyles({});
+  function handleUpdateSelectedHub(hubUrl: string) {
+    handleSetProject({
+      ...project,
+      hubUrl: hubUrl,
+    });
+  }
+
   return (
     <>
       <InputName
@@ -238,11 +261,15 @@ function LargeScreenOverview({
             handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           />
           <InputWebsite project={project} handleChangeProject={handleChangeProject} texts={texts} />
-          <InputTags
-            tagsOptions={tagsOptions}
+          <InputSectors
             project={project}
             handleChangeProject={handleChangeProject}
             texts={texts}
+            sectorOptions={sectorOptions}
+          />
+          <CustomHubSelection
+            currentHubName={project.hubUrl ?? ""}
+            handleUpdateSelectedHub={handleUpdateSelectedHub}
           />
         </div>
       </div>
@@ -360,66 +387,57 @@ const InputWebsite = ({ project, handleChangeProject, texts }) => {
   );
 };
 
-const InputTags = ({ project, handleChangeProject, tagsOptions, texts }) => {
+type InputSectorsProps = {
+  project: Project;
+  handleChangeProject: (newValue: any, key: string) => void;
+  texts: Record<string, string>;
+  sectorOptions: Sector[];
+};
+
+const InputSectors = ({
+  project,
+  handleChangeProject,
+  texts,
+  sectorOptions,
+}: InputSectorsProps) => {
   const classes = useStyles({});
-  const [open, setOpen] = React.useState(false);
-  const [selectedItems, setSelectedItems] = React.useState(project.tags ? [...project.tags] : []);
 
-  const onClickCategoriesDialogOpen = () => {
-    setOpen(true);
+  const handleValueChange = (selectedNames) => {
+    // Map selected names to sector objects
+    const selectedSectors = sectorOptions.filter((sector) => selectedNames.includes(sector.name));
+    handleChangeProject(selectedSectors, "sectors");
   };
 
-  const handleCloseDialog = () => {
-    setOpen(false);
+  const handleSectorDelete = (sector) => {
+    handleChangeProject([...(project.sectors ?? []).filter((t) => t.id !== sector.id)], "sectors");
   };
-
-  const handleSaveSelection = (tags) => {
-    if (tags) handleChangeProject(tags, "tags");
-    setOpen(false);
-  };
-
-  const handleTagDelete = (tag) => {
-    handleChangeProject([...project.tags.filter((t) => t.id !== tag.id)], "tags");
-    setSelectedItems([...project.tags.filter((t) => t.id !== tag.id)]);
-  };
-
   return (
     <div className={classes.projectInfoEl}>
-      <Typography variant="body2" className={classes.overviewHeadline}>
-        {texts.project_categories}
-      </Typography>
-      {project.tags && (
-        <List className={classes.flexContainer}>
-          {project.tags.map((tag, index) => (
-            <Chip
-              key={index}
-              label={tag.name}
-              className={classes.skill}
-              onDelete={() => handleTagDelete(tag)}
+      <List className={classes.flexContainer}>
+        {project?.sectors?.map((sector) => (
+          <Chip
+            key={sector.name}
+            label={sector.name}
+            className={classes.skill}
+            onDelete={() => handleSectorDelete(sector)}
+          />
+        ))}
+        <Grid container>
+          <Grid xs={12} sm={8} md={5} lg={5} item>
+            <SelectField
+              options={sectorOptions}
+              className={classes.sectorField}
+              multiple
+              values={project.sectors?.map((s) => s.name)}
+              label={<div className={classes.iconLabel}>{texts.project_categories}</div>}
+              size="small"
+              onChange={(event) => {
+                handleValueChange(event.target.value);
+              }}
             />
-          ))}
-          <Button
-            className={classes.openCategoriesDialogButton}
-            variant="contained"
-            color="primary"
-            onClick={onClickCategoriesDialogOpen}
-          >
-            {project.tags && project.tags.length ? texts.edit_categories : texts.add_categories}
-          </Button>
-        </List>
-      )}
-      <MultiLevelSelectDialog
-        open={open}
-        onSave={handleSaveSelection}
-        onClose={handleCloseDialog}
-        type="categories"
-        options={tagsOptions}
-        /*TODO(undefined) items={project.tags}*/
-        selectedItems={selectedItems}
-        setSelectedItems={setSelectedItems}
-        maxSelections={3}
-        dragAble={true}
-      />
+          </Grid>
+        </Grid>
+      </List>
     </div>
   );
 };
@@ -454,14 +472,23 @@ const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
   const [tempImage, setTempImage] = React.useState(
     project.image ? getImageUrl(project.image) : null
   );
-
+  const [isImgLoading, setIsImgLoading] = React.useState(false);
   const onImageChange = async (event) => {
     const file = event.target.files[0];
-    if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
+    if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type)) {
       alert(texts.please_upload_either_a_png_or_a_jpg_file);
-    const image = await getCompressedJPG(file, 0.5);
-    setTempImage(image);
-    setOpen(true);
+      return;
+    }
+    try {
+      setIsImgLoading(true);
+      setOpen(true);
+      const image = await getCompressedJPG(file, 0.5);
+      setTempImage(image);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsImgLoading(false);
+    }
   };
 
   const onUploadImageClick = (event) => {
@@ -502,7 +529,12 @@ const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
           <div className={classes.addPhotoWrapper}>
             <div className={classes.addPhotoContainer}>
               <AddAPhotoIcon className={classes.photoIcon} />
-              <Button variant="contained" color="primary" onClick={onUploadImageClick}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={onUploadImageClick}
+                className={classes.imageBtn}
+              >
                 {!project.image ? texts.upload_image : texts.change_image}
               </Button>
             </div>
@@ -516,6 +548,8 @@ const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
         borderRadius={0}
         height={screenSize === "small" ? getImageDialogHeight(window.innerWidth) : 300}
         ratio={16 / 9}
+        loading={isImgLoading}
+        loadingText={texts.processing_image_please_wait}
       />
     </>
   );

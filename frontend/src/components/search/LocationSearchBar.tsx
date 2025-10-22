@@ -17,9 +17,6 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     marginTop: props.hideHelperText ? 0 : theme.spacing(2),
   }),
-  input: {
-    marginBottom: theme.spacing(2),
-  },
   formHelperText: {
     marginTop: theme.spacing(-2),
   },
@@ -49,6 +46,7 @@ type Props = {
   filterMode?: boolean;
   color?: TextFieldProps["color"];
 };
+
 export default function LocationSearchBar({
   label,
   required,
@@ -73,7 +71,7 @@ export default function LocationSearchBar({
   filterMode = false, //Are we filtering any content by this location?
   color,
 }: Props) {
-  const { locale } = useContext(UserContext);
+  const { locale, hubUrl } = useContext(UserContext);
   const classes = useStyles({ hideHelperText: hideHelperText });
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const getValue = (newValue, inputValue) => {
@@ -107,6 +105,15 @@ export default function LocationSearchBar({
     [value]
   );
   const [loading, setLoading] = React.useState(false);
+  const HUB_COUNTRY_RESTRICTIONS = {
+    perth: "gb",
+  };
+  //For some locations the official name differs from the "word of mouth name".
+  //If people type in the "word of mouth name" we will instead look for the official name
+  const ALIAS_FOR_SEARCH = {
+    perthshire: "Perth and Kinross",
+  };
+
   React.useEffect(() => {
     let active = true;
 
@@ -117,10 +124,14 @@ export default function LocationSearchBar({
           mode: "no-cors",
           referrerPolicy: "origin",
         };
-        const response = await axios(
-          `https://nominatim.openstreetmap.org/search?q=${searchValue}&format=json&addressdetails=1&polygon_geojson=1&polygon_threshold=0.001&accept-language=en-US,en;q=0.9`,
-          config as any
-        );
+        const searchParam = ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
+          ? ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
+          : searchValue;
+        let url = `https://nominatim.openstreetmap.org/search?q=${searchParam}&format=json&addressdetails=1&polygon_geojson=1&polygon_threshold=0.001&accept-language=en-US,en;q=0.9`;
+        if (Object.keys(HUB_COUNTRY_RESTRICTIONS).includes(hubUrl)) {
+          url += "&countrycodes=" + HUB_COUNTRY_RESTRICTIONS[hubUrl];
+        }
+        const response = await axios(url, config as any);
         const bannedClasses = [
           "tourism",
           "railway",
@@ -325,7 +336,7 @@ export default function LocationSearchBar({
             InputProps={{
               ...params.InputProps,
               endAdornment: <React.Fragment>{params.InputProps.endAdornment}</React.Fragment>,
-              className: `${textFieldClassName} ${classes.input}`,
+              className: `${textFieldClassName}`,
             }}
             FormHelperTextProps={{
               classes: {

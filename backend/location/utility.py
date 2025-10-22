@@ -1,5 +1,3 @@
-import json
-
 import requests
 from django.conf import settings
 from django.contrib.gis.geos import (
@@ -13,6 +11,10 @@ from django.contrib.gis.measure import D
 from rest_framework.exceptions import ValidationError
 
 from location.models import Location
+import logging
+import json
+
+logger = logging.getLogger("django")
 
 
 def get_legacy_location(location_object):
@@ -179,6 +181,14 @@ def format_location(location_string, already_loaded):
     }
 
 
+CUSTOM_NAME_MAPPINGS = {"Scotland (state), Scotland": "Scotland"}
+
+# These countries are wrongly categorized as states in Nominatim. We want to show them as countries as this is more clear
+MAP_STATE_TO_COUNTRY = ["Scotland", "Wales", "England", "Northern Ireland"]
+
+
+# This function has an equivalent in backend/location/utility.py -> format_location_name
+# We should consider using the same codebase for these
 def format_location_name(location):
     first_part_order = [
         "village",
@@ -221,15 +231,27 @@ def format_location_name(location):
     middle_part = get_middle_part(
         location["address"], middle_part_order, middle_part_suffixes
     )
+    last_part = (
+        location["address"]["state"]
+        if location["address"].get("state") in MAP_STATE_TO_COUNTRY
+        else location["address"]["country"]
+    )
+    show_middle_part = first_part != middle_part and middle_part != last_part
+    name = (
+        first_part
+        + ", "
+        + (middle_part if show_middle_part else "")
+        + (", " if show_middle_part and middle_part and len(middle_part) > 0 else "")
+        + last_part
+    )
+    # For certain locations our automatic name generation doesn't work. In this case we want to override the name with a custom one
+    if name in CUSTOM_NAME_MAPPINGS:
+        name = CUSTOM_NAME_MAPPINGS[name]
     return {
         "city": first_part,
         "state": middle_part,
         "country": location["address"]["country"],
-        "name": first_part
-        + ", "
-        + middle_part
-        + (", " if len(middle_part) > 0 else "")
-        + location["address"]["country"],
+        "name": name,
     }
 
 
@@ -276,7 +298,23 @@ def get_location_with_range(query_params):
         params = "&format=json&addressdetails=1&polygon_geojson=1&accept-language=en-US,en;q=0.9&polygon_threshold=0.001"
         url = url_root + osm_id_param + params
         response = requests.get(url)
-        location_object = json.loads(response.text)[0]
+        if response.status_code == 200:
+            location_object = json.loads(response.text)[0]
+        else:
+            logger.error(
+                "Error while fetching location: " + "\nresponse:" + response.text
+            )
+
+            # try to use the location within the query params (provided by the client via the post request)
+            # as a backup if the location could not be fetched from the api
+            if "location" not in query_params:
+                raise ValidationError(
+                    f"Error while fetching location and no backup option: {response.status_code} | "
+                    + response.text
+                )
+
+            location_object = query_params.get("location")
+
         location = get_location(format_location(location_object, False))
         location_in_db = (
             location.multi_polygon.buffer(buffer_width)

@@ -1,4 +1,5 @@
 from rest_framework.generics import ListAPIView
+from django.db.models import Q
 from hubs.serializers.hub import (
     HubAmbassadorSerializer,
     HubSerializer,
@@ -6,7 +7,7 @@ from hubs.serializers.hub import (
     HubSupporterSerializer,
     HubThemeSerializer,
 )
-from hubs.models.hub import Hub, HubAmbassador, HubSupporter, HubTheme
+from hubs.models.hub import Hub, HubSupporter
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -28,6 +29,50 @@ class HubAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class LinkedHubsAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, url_slug):
+        try:
+            hub = Hub.objects.get(url_slug=str(url_slug))
+        except Hub.DoesNotExist:
+            return Response(
+                {"message": "Hub not found: {}".format(url_slug)},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # parent:
+        parent = hub.parent_hub
+        parent_serializer = HubStubSerializer(
+            parent, many=False, context={"request": request}
+        )
+
+        # children:
+        children = Hub.objects.filter(parent_hub=hub)
+        child_serializers = HubStubSerializer(
+            children, many=True, context={"request": request}
+        )
+
+        # combine all linked hubs
+        linked_hubs = {
+            "siblings": [],
+            "parent": parent_serializer.data if parent else None,
+            "children": child_serializers.data,
+        }
+        # print(child_serializers.data)
+
+        # siblings:
+        if hub.parent_hub:
+            siblings = Hub.objects.filter(parent_hub=hub.parent_hub).exclude(
+                url_slug=hub.url_slug
+            )
+            sibling_serializers = HubStubSerializer(
+                siblings, many=True, context={"request": request}
+            )
+            linked_hubs["siblings"] = sibling_serializers.data
+        return Response(linked_hubs, status=status.HTTP_200_OK)
+
+
 class HubAmbassadorAPIView(APIView):
     permission_classes = [AllowAny]
 
@@ -39,9 +84,18 @@ class HubAmbassadorAPIView(APIView):
                 {"message": "Hub not found: {}".format(url_slug)},
                 status=status.HTTP_404_NOT_FOUND,
             )
-        ambassador = HubAmbassador.objects.filter(hub=hub)
-        if ambassador.exists():
-            serializer = HubAmbassadorSerializer(ambassador[0], many=False)
+        # themes should be inherited from parent hubs
+
+        ambassador = hub.ambassador_hub.first()
+
+        if ambassador is None and hub.parent_hub:
+            ambassador = hub.parent_hub.ambassador_hub.first()
+
+        # "if ambassador" does not suffice, because ambassador_hub is
+        # a foreign key. Therefore, hub.ambassador_hub will not be None
+        # but 'hubs.HubAmbassador.None'
+        if ambassador and hasattr(ambassador, "title"):
+            serializer = HubAmbassadorSerializer(ambassador, many=False)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(None, status=status.HTTP_404_NOT_FOUND)
@@ -52,7 +106,9 @@ class ListHubsView(ListAPIView):
     serializer_class = HubStubSerializer
 
     def get_queryset(self):
-        return Hub.objects.filter(importance__gte=1).prefetch_related("language")
+        return Hub.objects.filter(
+            Q(parent_hub__isnull=True) & Q(importance__gte=1)
+        ).prefetch_related("language")
 
 
 class ListSectorHubsView(ListAPIView):
@@ -94,9 +150,17 @@ class HubThemeAPIView(APIView):
                 {"message": "Hub not found: {}".format(url_slug)},
                 status=status.HTTP_404_NOT_FOUND,
             )
-        try:
-            hub_theme = HubTheme.objects.get(hub=hub)
-        except HubTheme.DoesNotExist:
+
+        # themes should be inherited from parent hubs
+
+        hub_theme = None
+        if hasattr(hub, "hub_theme"):
+            hub_theme = hub.hub_theme
+
+        if not hub_theme and hub.parent_hub and hasattr(hub.parent_hub, "hub_theme"):
+            hub_theme = hub.parent_hub.hub_theme
+
+        if not hub_theme:
             return Response(
                 {"message": "Hub theme not found: {}".format(url_slug)},
                 status=status.HTTP_404_NOT_FOUND,

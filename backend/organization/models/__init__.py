@@ -31,3 +31,9 @@ from organization.models.translations import (
     PostTranslation,
     CommentTranslation,
 )
+
+from organization.models.sector import (
+    Sector,
+    ProjectSectorMapping,
+    OrganizationSectorMapping,
+)

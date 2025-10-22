@@ -1,6 +1,12 @@
 import logging
 import traceback
-from django.db.models import Case, When
+from django.db.models import Case, When, Prefetch
+
+from organization.utility.sector import (
+    create_context_for_hub_specific_sector,
+    sanitize_sector_inputs,
+)
+from organization.utility.cache import generate_project_ranking_cache_key
 from organization.utility.follow import (
     get_list_of_project_followers,
     set_user_following_project,
@@ -21,6 +27,10 @@ from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_main.utility.general import get_image_from_data_url
 
 from dateutil.parser import parse
+
+from django.conf import settings
+
+from django.core.cache import cache
 
 from django.contrib.auth.models import User
 from django.contrib.gis.db.models.functions import Distance
@@ -48,6 +58,8 @@ from organization.models import (
     ProjectTags,
     ProjectLike,
     OrganizationFollower,
+    Sector,
+    ProjectSectorMapping,
 )
 
 from organization.models.type import PROJECT_TYPES
@@ -138,8 +150,28 @@ class ListProjectsView(ListAPIView):
     pagination_class = ProjectsPagination
     serializer_class = ProjectStubSerializer
 
+    def post(self, request, *args, **kwargs):
+        """
+        Handle POST requests for search functionality.
+        """
+        # Extract location from the POST data
+        location = request.data
+
+        # Add location to the query params
+        query_params = request.query_params.copy()
+
+        if "place_id" in location and "geojson" in location:
+            query_params["location"] = location
+
+        # Replace request.query_params with our updated version
+        request._request.GET = query_params
+
+        # Call the standard list method which handles filtering and pagination
+        return self.list(request, *args, **kwargs)
+
     def get_queryset(self):
         user = self.request.user
+        # TODO: remove user profile, as it is not used
         user_profile = None
         if user.is_authenticated:
             user_profile = user.user_profile if user.user_profile else None  # noqa
@@ -149,33 +181,69 @@ class ListProjectsView(ListAPIView):
             .select_related("loc", "language")
             .prefetch_related(
                 "skills",
-                "tag_project",
-                "project_comment",
+                "tag_project",  # TODO: remove after updating frontend to use sectors
+                Prefetch(
+                    "project_comment",
+                    queryset=ProjectComment.objects.select_related("comment_ptr"),
+                ),
                 "project_liked",
                 "project_following",
+                "project_collaborator",
+                Prefetch(
+                    "project_parent",
+                    queryset=ProjectParents.objects.select_related(
+                        "parent_organization",
+                        "parent_user__user_profile",
+                    ),
+                ),
+                Prefetch(
+                    "project_sector_mapping",
+                    queryset=ProjectSectorMapping.objects.select_related("sector"),
+                ),
             )
         )
+        # maybe use .annotate() to calculate ranking/counts of coments etc.
+
+        if "sectors" in self.request.query_params:
+            _sector_names = self.request.query_params.get("sectors")
+            sector_names, err = sanitize_sector_inputs(_sector_names)
+
+            if err:
+                # TODO: should I "crash" with 400, or what should I ommit the sectors
+                logger.error(
+                    "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                        err, _sector_names
+                    )
+                )
+            else:
+                projects = projects.filter(
+                    Q(project_sector_mapping__sector__name__in=sector_names)
+                    | Q(
+                        project_sector_mapping__sector__relates_to_sector__name__in=sector_names
+                    )
+                )
 
         if "hub" in self.request.query_params:
-            hub = Hub.objects.filter(url_slug=self.request.query_params["hub"])
-            if hub.exists():
-                hub = hub[0]
-                if hub.hub_type == Hub.SECTOR_HUB_TYPE:
-                    project_category = Hub.objects.get(
-                        url_slug=self.request.query_params.get("hub")
-                    ).filter_parent_tags.all()
-                    project_category_ids = list(map(lambda c: c.id, project_category))
-                    project_tags = ProjectTags.objects.filter(
-                        id__in=project_category_ids
-                    )
-                    project_tags_with_children = ProjectTags.objects.filter(
-                        Q(parent_tag__in=project_tags) | Q(id__in=project_tags)
-                    )
+            # retrieve hub and its parents
+            hub = Hub.objects.filter(url_slug=self.request.query_params["hub"]).first()
+            if not hub:
+                return projects.none()
+
+            hubs = [hub]
+            if hub.parent_hub:
+                hubs.append(hub.parent_hub)
+
+            for current_hub in hubs:
+                if current_hub.hub_type == Hub.SECTOR_HUB_TYPE:
+                    sectors = current_hub.sectors.all()
+                    sector_ids = [x.id for x in sectors]
+
                     projects = projects.filter(
-                        tag_project__project_tag__in=project_tags_with_children
+                        project_sector_mapping__sector_id__in=sector_ids
                     ).distinct()
-                elif hub.hub_type == Hub.LOCATION_HUB_TYPE:
-                    location = hub.location.all()[0]
+
+                elif current_hub.hub_type == Hub.LOCATION_HUB_TYPE:
+                    location = current_hub.location.all()[0]
                     location_multipolygon = location.multi_polygon
                     projects = projects.filter(Q(loc__country=location.country))
                     if location_multipolygon:
@@ -187,8 +255,9 @@ class ListProjectsView(ListAPIView):
                                 "loc__centre_point", location_multipolygon
                             )
                         )
-                elif hub.hub_type == Hub.CUSTOM_HUB_TYPE:
-                    projects = projects.filter(related_hubs=hub)
+
+                elif current_hub.hub_type == Hub.CUSTOM_HUB_TYPE:
+                    projects = projects.filter(related_hubs=current_hub)
 
         if "collaboration" in self.request.query_params:
             collaborators_welcome = self.request.query_params.get("collaboration")
@@ -281,11 +350,42 @@ class ListProjectsView(ListAPIView):
             )
             projects = projects.filter(loc__in=location_ids)
 
-        # Sort projects by its ranking
-        project_ids = [
-            project.id
-            for project in sorted(projects, key=lambda project: -project.cached_ranking)
-        ]
+        if settings.CACHE_BACHED_RANK_REQUEST:
+            ### retrieve all cached rankings for all projects
+            ### and recalculate the rankings for projects that are missing cached rankings
+
+            # generate all cache keys cached rankings of all projects
+            project_ids = [project.id for project in projects]
+            cache_keys = [
+                generate_project_ranking_cache_key(project_id=pid)
+                for pid in project_ids
+            ]
+
+            # prefetch the cached rankings all at once
+            cached_rankings = cache.get_many(cache_keys)
+
+            # save the cached values to the view
+            _cached_rankings = {
+                key: cached_rankings[key] if key in cached_rankings else project.ranking
+                for key, project in zip(cache_keys, projects)
+            }
+
+            # sort by _cached_rankings and then drop the cache_keys
+            project_ids = map(
+                lambda x: x[0],
+                sorted(
+                    zip(project_ids, cache_keys),
+                    key=lambda x: _cached_rankings[x[1]] * (-1),
+                ),
+            )
+        else:
+            project_ids = [
+                project.id
+                for project in sorted(
+                    projects, key=lambda project: -project.cached_ranking
+                )
+            ]
+
         preferred_order = Case(
             *(
                 When(id=id, then=position)
@@ -293,6 +393,12 @@ class ListProjectsView(ListAPIView):
             )
         )
         return projects.order_by(preferred_order)
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        _context = create_context_for_hub_specific_sector(self.request)
+        context.update({**_context})
+        return context
 
 
 class CreateProjectView(APIView):
@@ -310,11 +416,12 @@ class CreateProjectView(APIView):
             "short_description",
             "collaborators_welcome",
             "team_members",
-            "project_tags",
             "loc",
+            "sectors",
             "image",
             "source_language",
             "translations",
+            "hubName",  # TODO: fix this behavior: 'hubName' has to be set, but can be None
         ]
         for param in required_params:
             if param not in request.data:
@@ -423,6 +530,48 @@ class CreateProjectView(APIView):
         roles = Role.objects.all()
         team_members = request.data["team_members"]
 
+        if "sectors" in request.data:
+            _sector_keys = request.data["sectors"]
+            sector_keys, err = sanitize_sector_inputs(_sector_keys)
+
+            if err:
+                logger.error(
+                    "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                        err, _sector_keys
+                    )
+                )
+                return Response(
+                    {
+                        "message": "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                            err, _sector_keys
+                        )
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            sectors = []
+
+            for sector_key in sector_keys:
+                try:
+                    sector = Sector.objects.get(key=sector_key)
+                    sectors.append(sector)
+                except Sector.DoesNotExist:
+                    logger.error(
+                        "During project creation of project {}: Passed sector {} does not exists".format(
+                            project.url_slug,
+                            sector_key,
+                        )
+                    )
+            ProjectSectorMapping.objects.bulk_create(
+                [
+                    ProjectSectorMapping(
+                        project=project, sector=sector, order=len(sectors) - i
+                    )
+                    for i, sector in enumerate(sectors)
+                ]
+            )
+
+        # TODO (Karol): Change this to sectors
         if "project_tags" in request.data:
             order = len(request.data["project_tags"])
             for project_tag_id in request.data["project_tags"]:
@@ -508,13 +657,18 @@ class ProjectAPIView(APIView):
                 {"message": "Project not found: {}".format(url_slug)},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+        context = create_context_for_hub_specific_sector(request)
+
         if "edit_view" in request.query_params:
-            serializer = EditProjectSerializer(project, many=False)
+            serializer = EditProjectSerializer(project, many=False, context=context)
         else:
-            serializer = ProjectSerializer(project, many=False)
+            serializer = ProjectSerializer(project, many=False, context=context)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, url_slug, format=None):
+        # TODO: shouldnt this be run as a transaction
+        # I guess we will never have a conflict, but it would be safer
         try:
             project = Project.objects.get(url_slug=url_slug)
         except Project.DoesNotExist:
@@ -554,6 +708,7 @@ class ProjectAPIView(APIView):
                 except Skill.DoesNotExist:
                     logger.error("Passed skill id {} does not exists")
 
+        # TODO: remove the project_taggings
         old_project_taggings = ProjectTagging.objects.filter(project=project)
         old_project_tags = old_project_taggings.values("project_tag")
         if "project_tags" in request.data:
@@ -580,12 +735,74 @@ class ProjectAPIView(APIView):
                         old_tagging.order = int(order)
                         old_tagging.save()
                 order = order - 1
+
+        if "sectors" in request.data:
+            _sector_keys = request.data["sectors"]
+            sector_keys, err = sanitize_sector_inputs(_sector_keys)
+
+            if err:
+                # TODO: should I "crash" with 400, or what should I ommit the sectors
+                logger.error(
+                    "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                        err, _sector_keys
+                    )
+                )
+                return Response(
+                    {
+                        "message": "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                            err, _sector_keys
+                        )
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            # delete sectors that are not mapped to the project anymore
+            for sectorMapping in ProjectSectorMapping.objects.filter(project=project):
+                if sectorMapping.sector.key not in sector_keys:
+                    sectorMapping.delete()
+
+            # create mapping or update
+            order_value = len(sector_keys)
+            for sector_key in sector_keys:
+                old_sector_mapping = ProjectSectorMapping.objects.filter(
+                    project=project, sector__key=sector_key
+                )
+                if not old_sector_mapping.exists():
+                    # create new project mapping
+                    try:
+                        sector = Sector.objects.get(key=sector_key)
+                        ProjectSectorMapping.objects.create(
+                            project=project, sector=sector, order=order_value
+                        )
+                    except Sector.DoesNotExist:
+                        logger.error(
+                            "Passed sector key {} does not exists".format(sector_key)
+                        )
+                else:
+                    # update existing mappings order value
+                    old_sector_mapping = old_sector_mapping[0]
+                    old_sector_mapping.order = order_value
+
+                    old_sector_mapping.save()
+                # reduce for next element
+                order_value -= 1
+
         if "image" in request.data:
             project.image = get_image_from_data_url(request.data["image"])[0]
         if "thumbnail_image" in request.data:
             project.thumbnail_image = get_image_from_data_url(
                 request.data["thumbnail_image"]
             )[0]
+        if "hubUrl" in request.data:
+            related_hub_slug = request.data["hubUrl"]
+            if (
+                related_hub_slug == ""
+            ):  # If the slug is an empty string, clear the related_hubs
+                project.related_hubs.clear()
+            else:  # Otherwise, try to find the Hub and add it
+                hub = Hub.objects.filter(url_slug=related_hub_slug).first()
+                if hub:
+                    project.related_hubs.add(hub)
         if "start_date" in request.data:
             project.start_date = parse(request.data["start_date"])
         if "end_date" in request.data:
@@ -614,7 +831,6 @@ class ProjectAPIView(APIView):
 
             project_parents.parent_organization = organization
             project_parents.save()
-
         project.save()
 
         items_to_translate = [
@@ -629,7 +845,6 @@ class ProjectAPIView(APIView):
                 "translation_key": "helpful_connections_translation",
             },
         ]
-
         if "translations" in request.data:
             edit_translations(items_to_translate, request.data, project, "project")
         calculate_project_rankings([project.id])
@@ -637,6 +852,7 @@ class ProjectAPIView(APIView):
             {
                 "message": "Project {} successfully updated".format(project.name),
                 "url_slug": project.url_slug,
+                "hubUrl": list(project.related_hubs.values("url_slug")),
             },
             status=status.HTTP_200_OK,
         )
@@ -850,6 +1066,7 @@ class ListProjectMembersView(ListAPIView):
         return project.project_member_project.filter(is_active=True)
 
 
+# TODO (Karol): remove this view, as project tags are being replaced by sectors
 class ListProjectTags(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ProjectTagsSerializer
@@ -1367,3 +1584,9 @@ class SimilarProjects(ListAPIView):
             rating__gte=49,
             is_active=True,
         )
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        _context = create_context_for_hub_specific_sector(self.request)
+        context.update({**_context})
+        return context

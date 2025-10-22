@@ -1,8 +1,5 @@
 import CreateIcon from "@mui/icons-material/Create";
-import DoneAllOutlinedIcon from "@mui/icons-material/DoneAllOutlined";
-import ExploreIcon from "@mui/icons-material/Explore";
 import GroupIcon from "@mui/icons-material/Group";
-import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import getTexts from "../texts/texts";
 
@@ -33,8 +30,6 @@ export default function getFilters({ key, filterChoices, locale }) {
         .filter((m) => !organizationsFilters.map((o) => o.key).includes(m.key)),
     ];
   }
-
-  console.log("possibleFilters invalid input:" + key);
   return [];
 }
 
@@ -121,39 +116,14 @@ const getProjectsFilters = (filterChoices, texts, english_texts) => [
     tooltipText: texts.organization_type_tooltip,
   },
   {
-    icon: ExploreIcon,
-    iconName: "ExploreIcon",
-    title: texts.categories,
-    type: "openMultiSelectDialogButton",
-    key: "category",
-    itemType: "project categories",
-    options: filterChoices?.project_categories?.map((c) => ({ ...c, key: c.id })),
-    tooltipText: texts.categories_tooltip,
-  },
-  {
-    icon: GroupAddIcon,
-    iconName: "GroupAddIcon",
-    title: texts.collaboration,
-    type: "select",
-    key: "collaboration",
-    options: [
-      {
-        key: "",
-        name: "",
-        original_name: "",
-      },
-      {
-        key: "yes",
-        name: texts.yes,
-        original_name: english_texts?.yes,
-      },
-      {
-        key: "no",
-        name: texts.no,
-        original_name: english_texts?.no,
-      },
-    ],
-    tooltipText: texts.collaboration_tooltip,
+    icon: GroupIcon,
+    iconName: "GroupIcon",
+    // A hack: need an extra space character to create some horizontal space between the icon and text
+    title: " " + texts.sectors,
+    type: "multiselect",
+    options: filterChoices?.sectors?.map((t) => ({ ...t, key: t.key })),
+    key: "sectors",
+    tooltipText: texts.sectors_tooltip,
   },
   {
     icon: CreateIcon,

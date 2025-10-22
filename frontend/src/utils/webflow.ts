@@ -1,6 +1,39 @@
 import axios from "axios";
 import cheerio from "cheerio";
 
+const WEBFLOW_BASE_LINK = "https://climateconnect.webflow.io/hub-texts/";
+const DESCRIPTION_WEBFLOW_LINKS = {
+  energy: {
+    en: "energy-en",
+    de: "energie-de",
+  },
+  mobility: {
+    de: "mobilitat-de",
+    en: "mobility-en",
+  },
+  biodiversity: {
+    de: "biodiversitat",
+    en: "biodiversity-en",
+  },
+  landuse: {
+    de: "landuse-de",
+    en: "landuse-en",
+  },
+};
+
+const retrieveDescriptionFromWebflow = async (query, locale) => {
+  if (
+    DESCRIPTION_WEBFLOW_LINKS[query?.hubUrl] &&
+    DESCRIPTION_WEBFLOW_LINKS[query?.hubUrl][locale]
+  ) {
+    const props = await retrievePage(
+      WEBFLOW_BASE_LINK + DESCRIPTION_WEBFLOW_LINKS[query.hubUrl][locale]
+    );
+    return props;
+  }
+  return null;
+};
+
 const retrievePage = async (url: string) => {
   const res = await axios.get(url).catch((err) => {
     console.error(err);
@@ -23,4 +56,4 @@ const retrievePage = async (url: string) => {
   };
 };
 
-export { retrievePage };
+export { retrievePage, retrieveDescriptionFromWebflow };

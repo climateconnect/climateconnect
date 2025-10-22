@@ -39,6 +39,7 @@ jobs:
           GOOGLE_ANALYTICS_CODE: ${{ secrets.GOOGLE_ANALYTICS_CODE }}
           LATEST_NEWSLETTER_LINK: ${{ secrets.LATEST_NEWSLETTER_LINK }}
           LETS_ENCRYPT_FILE_CONTENT: ${{ secrets.LETS_ENCRYPT_FILE_CONTENT }}
+          LOCATION_HUBS: ${{ secrets.LOCATION_HUBS }}
           SOCKET_URL: ${{ secrets.SOCKET_URL }}
           WEBFLOW_API_TOKEN: ${{ secrets.WEBFLOW_API_TOKEN }}
           WEBFLOW_SITE_ID: ${{ secrets.WEBFLOW_SITE_ID}}

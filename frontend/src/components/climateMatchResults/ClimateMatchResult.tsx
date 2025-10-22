@@ -128,7 +128,6 @@ export default function ClimateMatchResult({ suggestion, pos }) {
     e.preventDefault();
     if (!user) {
       return redirect("/signup", {
-        redirect: window.location.pathname + window.location.search,
         errorMessage: texts.please_create_an_account_or_log_in_to_contact_a_projects_organizer,
       });
     }
@@ -191,7 +190,7 @@ export default function ClimateMatchResult({ suggestion, pos }) {
 const getSuggestionHref = (locale, suggestion) => {
   const ressourceNamePlural = `${suggestion.ressource_type}s`;
   if (suggestion.ressource_type === "idea") {
-    const hubUrlSlug = `/hubs/${suggestion?.hub_shared_in?.url_slug}`;
+    const hubUrlSlug = `/hubs/${suggestion?.hub_shared_in?.url_slug}/browse`;
     const urlPrefix = getLocalePrefix(locale) + hubUrlSlug;
     return `${urlPrefix}?idea=${suggestion.url_slug}#ideas`;
   }

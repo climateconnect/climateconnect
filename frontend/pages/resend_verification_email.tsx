@@ -8,6 +8,7 @@ import { Container, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
+import theme from "../src/themes/theme";
 
 const useStyles = makeStyles((theme) => ({
   headline: {
@@ -55,7 +56,7 @@ export default function ResendVerificationEmail({ hubUrl, hubThemeData }) {
 
   const onSuccess = (resp) => {
     if (hubUrl) {
-      redirect(`/hubs/${hubUrl}`, {
+      redirect(`/hubs/${hubUrl}/browse`, {
         message: resp.data.message,
       });
     } else {
@@ -77,7 +78,9 @@ export default function ResendVerificationEmail({ hubUrl, hubThemeData }) {
       isHubPage={hubUrl !== ""}
       customTheme={customTheme}
       hubUrl={hubUrl}
-      headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
+      headerBackground={
+        customTheme ? customTheme.palette.header.background : theme.palette.background.default
+      }
     >
       <Container>
         <Typography className={classes.headline} variant="h3">

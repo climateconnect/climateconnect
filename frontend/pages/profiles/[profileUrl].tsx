@@ -13,6 +13,8 @@ import { nullifyUndefinedValues, parseProfile } from "./../../public/lib/profile
 import UserContext from "./../../src/components/context/UserContext";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
+import theme from "../../src/themes/theme";
+import { parseProjectStubs } from "../../public/lib/parsingOperations";
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
@@ -69,7 +71,9 @@ export default function ProfilePage({
       }
       hubUrl={hubUrl}
       customTheme={customTheme}
-      headerBackground={hubUrl === "prio1" ? "#7883ff" : "#FFF"}
+      headerBackground={
+        customTheme ? customTheme.palette.header.background : theme.palette.background.default
+      }
     >
       {profile ? (
         <BrowseContext.Provider value={contextValues}>
@@ -165,16 +169,6 @@ async function getOrganizationsByUser(profileUrl, token, locale) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
-}
-
-function parseProjectStubs(projects) {
-  return projects.map((p) => {
-    const project = p.project;
-    return {
-      ...project,
-      location: project.location,
-    };
-  });
 }
 
 function parseOrganizationStubs(organizations) {

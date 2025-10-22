@@ -181,6 +181,8 @@ API_URL="http://127.0.0.1:8000"
 BASE_URL_HOST="localhost"
 SOCKET_URL="ws://localhost"
 ENVIRONMENT="development"
+CUSTOM_HUB_URLS="example"
+LOCATION_HUBS=valu1,value2,value3
 ```
 
 _Note: This is for people who are using newer version of node (v17.0.1) or have new apple M1 devices. Before running `yarn dev`, please run this command `export NODE_OPTIONS=--openssl-legacy-provider`. You can save this in your `~/.zshrc` file as well._

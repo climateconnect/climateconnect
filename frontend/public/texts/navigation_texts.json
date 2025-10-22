@@ -119,9 +119,9 @@
     "en": "PRIO1 Climate Prize",
     "de": "PRIO1 Klimapreis"
   },
-  "for_young_people": {
-    "en": "For young people",
-    "de": "Für junge Menschen"
+  "PRIO1_community": {
+    "en": "PRIO1 Community",
+    "de": "PRIO1 Community"
   },
   "for_actors": {
     "en": "For actors",
@@ -134,5 +134,21 @@
   "powered_by": {
     "en": "Powered by",
     "de": "Powered by"
+  },
+  "about_climatehub": {
+    "en": "About the ClimateHub",
+    "de": "Über den ClimateHub"
+  },
+  "return_to_climatehub_projects": {
+    "en": "To the projects",
+    "de": "Zu den Projekten"
+  },
+  "climate_connect": {
+    "en": "Climate Connect",
+    "de": "Climate Connect"
+  },
+  "climateconnect_scot": {
+    "en": "Climateconnect.scot",
+    "de": "Climateconnect.scot"
   }
 }

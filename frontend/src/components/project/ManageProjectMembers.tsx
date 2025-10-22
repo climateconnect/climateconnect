@@ -13,12 +13,20 @@ const useStyles = makeStyles((theme) => {
     headline: {
       textAlign: "center",
       marginTop: theme.spacing(4),
+      color: theme.palette.background.default_contrastText,
     },
     buttons: {
       float: "right",
     },
     button: {
       marginRight: theme.spacing(2),
+    },
+    cancelleButton: {
+      backgroundColor: theme.palette.grey[800],
+      "&:hover": {
+        backgroundColor: theme.palette.grey[900],
+      },
+      color: theme.palette.background.default,
     },
     buttonsContainer: {
       height: 40,
@@ -36,6 +44,7 @@ export default function ManageProjectMembers({
   project,
   token,
   availabilityOptions,
+  hubUrl,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -48,18 +57,28 @@ export default function ManageProjectMembers({
   };
   const handleSubmit = (event) => {
     event.preventDefault();
+    // add hubUrl to the redirect if it exists
+    const getRedirectData = (messageKey) => {
+      const data: {
+        message?: string;
+        errorMessage?: string;
+        hub?: string;
+      } =
+        messageKey === "success"
+          ? { message: texts.you_have_successfully_updated_your_team }
+          : { errorMessage: texts.not_all_your_updates_have_worked };
+
+      if (hubUrl) data.hub = hubUrl;
+      return data;
+    };
+
     onSubmit()
       .then((ret) => {
-        if (ret !== false)
-          redirect("/projects/" + project.url_slug, {
-            message: texts.you_have_successfully_updated_your_team,
-          });
+        if (ret !== false) redirect("/projects/" + project.url_slug, getRedirectData("success"));
       })
       .catch((e) => {
         console.log(e);
-        redirect("/projects/" + project.url_slug, {
-          errorMessage: texts.not_all_your_updates_have_worked,
-        });
+        redirect("/projects/" + project.url_slug, getRedirectData("error"));
       });
   };
 
@@ -169,7 +188,7 @@ export default function ManageProjectMembers({
   };
   return (
     <>
-      <Typography variant="h4" color="primary" className={classes.headline}>
+      <Typography variant="h4" className={classes.headline}>
         {texts.manage_members_of_project}
       </Typography>
       <form onSubmit={handleSubmit}>
@@ -187,10 +206,14 @@ export default function ManageProjectMembers({
         <div className={classes.buttonsContainer}>
           <div className={classes.buttons}>
             <Button
-              className={classes.button}
-              href={getLocalePrefix(locale) + "/projects/" + project.url_slug}
+              className={`${classes.button} ${classes.cancelleButton}`}
+              href={
+                getLocalePrefix(locale) +
+                "/projects/" +
+                project.url_slug +
+                (hubUrl ? "?hub=" + hubUrl : "")
+              }
               variant="contained"
-              color="secondary"
             >
               {texts.cancel}
             </Button>

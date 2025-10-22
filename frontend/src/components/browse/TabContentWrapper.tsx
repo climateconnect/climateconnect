@@ -1,17 +1,53 @@
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext } from "react";
+import React, { ReactNode, useContext } from "react";
 import getFilters from "../../../public/data/possibleFilters";
 import UserContext from "../context/UserContext";
 import FilterContent from "../filter/FilterContent";
 import LoadingSpinner from "../general/LoadingSpinner";
 import NoItemsFound from "./NoItemsFound";
+import { Theme, useMediaQuery } from "@mui/material";
+import { LinkedHub } from "../../types";
+import HubLinkButton from "../hub/HubLinkButton";
 
 const useStyles = makeStyles((theme) => ({
   tabContent: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
   },
+  linkedHubsContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    gap: theme.spacing(1),
+  },
 }));
+
+type tabContentWrapperProps = {
+  tabValue: number;
+  TYPES_BY_TAB_VALUE: any;
+  type: any;
+  filtersExpanded: any;
+  handleApplyNewFilters: any;
+  handleUpdateFilterValues: any;
+  errorMessage: any;
+  isMobileScreen: any;
+  filtersExandedOnMobile: any;
+  handleSetLocationOptionsOpen: any;
+  locationInputRefs: any;
+  locationOptionsOpen: any;
+  filterChoices: any;
+  unexpandFiltersOnMobile: any;
+  unexpandFilters: any;
+  initialLocationFilter: any;
+  isFiltering: boolean;
+  state: any;
+  children: ReactNode;
+  hubName: string;
+  nonFilterParams: any;
+  linkedHubs: LinkedHub[];
+};
 
 export default function TabContentWrapper({
   tabValue,
@@ -19,7 +55,6 @@ export default function TabContentWrapper({
   type,
   filtersExpanded,
   handleApplyNewFilters,
-  filters,
   handleUpdateFilterValues,
   errorMessage,
   isMobileScreen,
@@ -36,9 +71,12 @@ export default function TabContentWrapper({
   children,
   hubName,
   nonFilterParams,
-}) {
+  linkedHubs,
+}: tabContentWrapperProps) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+
   return (
     <TabContent
       value={tabValue}
@@ -50,7 +88,6 @@ export default function TabContentWrapper({
           className={classes.tabContent}
           type={TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf(type)]}
           applyFilters={handleApplyNewFilters}
-          filters={filters}
           handleUpdateFilters={handleUpdateFilterValues}
           errorMessage={errorMessage}
           filtersExpanded={isMobileScreen ? filtersExandedOnMobile : filtersExpanded}
@@ -66,6 +103,14 @@ export default function TabContentWrapper({
           initialLocationFilter={initialLocationFilter}
           nonFilterParams={nonFilterParams}
         />
+      )}
+      {/* Show the linked hubs only on desktop screens */}
+      {!isNarrowScreen && linkedHubs?.length > 0 && (
+        <div className={classes.linkedHubsContainer}>
+          {linkedHubs.map((linkedHub) => (
+            <HubLinkButton hub={linkedHub} />
+          ))}
+        </div>
       )}
 
       {/*
