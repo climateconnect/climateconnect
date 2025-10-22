@@ -277,7 +277,6 @@ export default function ProjectContent({
               })}
             </Typography>
           )}
-          {project.end_date && <Typography>{texts.cancelled} :(</Typography>}
         </div>
       </div>
       <div className={classes.contentBlock}>
