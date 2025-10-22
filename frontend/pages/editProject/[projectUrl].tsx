@@ -86,7 +86,6 @@ export default function EditProjectPage({
   members: any[];
   skillsOptions: any[];
   userOrganizations: any[];
-  statusOptions: any[];
   projectTypeOptions: any[];
   hubThemeData: any;
   hubUrl: string;

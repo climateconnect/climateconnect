@@ -77,7 +77,6 @@ type ShareProjectRootProps = {
   skillsOptions: SkillType[];
   rolesOptions: Role[];
   user: any;
-  statusOptions: any[];
   token: string;
   setMessage: (message: string) => void;
   projectTypeOptions: any[];
