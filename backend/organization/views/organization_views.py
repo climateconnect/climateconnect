@@ -244,7 +244,10 @@ class ListOrganizationsAPIView(ListAPIView):
                 .order_by("distance")
             )
 
-        if "country" and "city" in self.request.query_params:
+        if (
+            "country" in self.request.query_params
+            and "city" in self.request.query_params
+        ):
             organizations = organizations.filter(
                 location__country=self.request.query_params.get("country"),
                 location__city=self.request.query_params.get("city"),
