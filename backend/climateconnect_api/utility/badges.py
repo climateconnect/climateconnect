@@ -3,7 +3,7 @@ from time import time
 from climateconnect_api.models.badge import DonorBadge, UserBadge
 from climateconnect_api.models.donation import Donation
 import datetime
-from typing import Iterable
+from typing import List
 
 MIN_DONATION_AMOUNT = 5
 STREAK_GRACE_DAYS = 30  # days
@@ -49,7 +49,7 @@ def get_badges(user_profile):
     return badges
 
 
-def get_oldest_relevant_donation(donations: Iterable[Donation]) -> Donation | None:
+def get_oldest_relevant_donation(donations: List[Donation]) -> Donation | None:
     valid_donations = __extract_valid_donations(donations)
     donations_in_streak = __extract_donations_in_streak(valid_donations)
 
@@ -59,11 +59,11 @@ def get_oldest_relevant_donation(donations: Iterable[Donation]) -> Donation | No
     return None
 
 
-def __extract_valid_donations(donations: Iterable[Donation]) -> Iterable[Donation]:
-    return filter(lambda d: d.donation_amount >= MIN_DONATION_AMOUNT, donations)
+def __extract_valid_donations(donations: List[Donation]) -> List[Donation]:
+    return [d for d in donations if d.donation_amount >= MIN_DONATION_AMOUNT]
 
 
-def __extract_donations_in_streak(donations: Iterable[Donation]) -> Iterable[Donation]:
+def __extract_donations_in_streak(donations: List[Donation]) -> List[Donation]:
     if not donations or len(donations) == 0:
         return []
     today = datetime.date.today()
@@ -92,9 +92,15 @@ def __last_donation_time(donation: Donation) -> datetime.date:
     if donation.is_recurring and donation.date_cancelled is None:
         return datetime.date.today()
     elif donation.is_recurring and donation.date_cancelled is not None:
-        return donation.date_cancelled
+        date_time = donation.date_cancelled
+        if isinstance(date_time, datetime.datetime):
+            date_time = date_time.date()
+        return date_time
     else:
-        return donation.date_first_received
+        date_time = donation.date_cancelled
+        if isinstance(date_time, datetime.datetime):
+            date_time = date_time.date()
+        return date_time
 
 
 def __pick_donor_badge(donation_streak_duration, max_amount):
@@ -135,4 +141,4 @@ def __get_active_donor_badges(ttl_hash=None):
 
 def __current_ttl_hash() -> int:
     # Changes once per minute
-    return int(time.time() // 60)
+    return int(time() // 60)
