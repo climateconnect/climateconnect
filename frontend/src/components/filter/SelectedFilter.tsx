@@ -70,10 +70,10 @@ export default function SelectedFilter({
             typeof filter === "object" ? (filter.name ? filter.name : filter.simple_name) : filter;
 
           // Find matching metadata by original_name or name
-          const matchedOption = filterMetadata.options.find(
+          const matchedOption = filterMetadata?.options?.find(
             (opt) => opt.original_name === filterName || opt.name === filterName
           );
-          const iconUrl = matchedOption?.icon;
+          const iconUrl = matchedOption ? matchedOption?.icon : null;
           return (
             <Tooltip title={filterMetadata.title} key={filterName}>
               <Chip

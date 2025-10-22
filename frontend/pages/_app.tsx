@@ -15,6 +15,7 @@ import theme from "../src/themes/theme";
 import { CcLocale } from "../src/types";
 import * as Sentry from "@sentry/react";
 import "../devlink/global.css";
+import { getHubslugFromUrl } from "../public/lib/hubOperations";
 
 // initialize sentry
 
@@ -268,6 +269,7 @@ export default function MyApp({ Component, pageProps = {} }) {
     CUSTOM_HUB_URLS: CUSTOM_HUB_URLS,
     setNotificationsRead: setNotificationsRead,
     pathName: pathName,
+    hubUrl: getHubslugFromUrl(router.query),
     ReactGA: ReactGA,
     updateCookies: updateCookies,
     socketConnectionState: socketConnectionState,

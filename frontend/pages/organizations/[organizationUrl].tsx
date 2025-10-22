@@ -28,6 +28,7 @@ import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import ControlPointSharpIcon from "@mui/icons-material/ControlPointSharp";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
+import { parseProjectStubs } from "../../public/lib/parsingOperations";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -446,16 +447,6 @@ async function getMembersByOrganization(organizationUrl, token, locale) {
 
 async function getOrganizationTypes() {
   return [];
-}
-
-function parseProjectStubs(projects) {
-  return projects.map((p) => {
-    const project = p.project;
-    return {
-      ...project,
-      location: project.location,
-    };
-  });
 }
 
 function parseOrganizationMembers(members) {

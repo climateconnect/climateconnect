@@ -66,15 +66,29 @@ export default function LocalAmbassadorInfoBox({ hubAmbassador, hubData, hubSupp
 
     if (!user) {
       return redirect("/signup", {
-        redirect: window.location.pathname + window.location.search,
         errorMessage: texts.please_create_an_account_or_log_in_to_contact_the_ambassador,
-        hub: hubData.url_slug,
       });
     }
 
     const chat = await startPrivateChat(hubAmbassador?.user, token, locale);
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
+
+  console.log(hubData);
+
+  const parseTextWithCustomVariables = (m) => {
+    return m.replaceAll("${ambassador.first_name}", hubAmbassador?.user?.first_name);
+  };
+
+  function getAmbassadorBoxText() {
+    if (hubAmbassador?.custom_ambassador_box_text) {
+      return parseTextWithCustomVariables(hubAmbassador.custom_ambassador_box_text);
+    } else {
+      return texts.local_ambassador_is_there_for_you;
+    }
+  }
+  //allow for custom variables
+  const ambassadorBoxText = getAmbassadorBoxText();
   return (
     <div className={classes.root}>
       {!hubSupportersExists && (
@@ -85,7 +99,7 @@ export default function LocalAmbassadorInfoBox({ hubAmbassador, hubData, hubSupp
           >
             {texts.do_you_need_support}
           </Typography>
-          <Typography>{texts.local_ambassador_is_there_for_you}</Typography>
+          <Typography>{ambassadorBoxText}</Typography>
         </div>
       )}
       <div className={classes.lowerSection}>
