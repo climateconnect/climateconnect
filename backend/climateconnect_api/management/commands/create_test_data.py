@@ -1,6 +1,6 @@
 from organization.models.members import ProjectMember
 from climateconnect_api.models.language import Language
-from organization.models.tags import ProjectTagging, ProjectTags, OrganizationTags
+from organization.models.tags import OrganizationTags
 from organization.models.project import ProjectParents
 from django.core.management.base import BaseCommand
 import random
@@ -136,29 +136,6 @@ def create_organization_test_data(number_of_rows: int):
             print("{} orgranization already exists.".format(name))
 
 
-def create_project_tags_test_data():
-    print("Creating project tags test data...")
-    if not ProjectTags.objects.filter(name="Food").exists():
-        food_tag = ProjectTags.objects.create(name="Food", key="food")
-        if not ProjectTags.objects.filter(name="Lowering Food waste").exists():
-            ProjectTags.objects.create(
-                name="Lowering food waste", key="loweringfoodwaste", parent_tag=food_tag
-            )
-        if not ProjectTags.objects.filter(
-            name="Encouraging a plant-based lifestyle"
-        ).exists():
-            ProjectTags.objects.create(
-                name="Encouraging a plant-based lifestyle",
-                key="encouragingaplantbasedlifestyle",
-                parent_tag=food_tag,
-            )
-    if not ProjectTags.objects.filter(name="Transportation").exists():
-        ProjectTags.objects.create(name="Transportation", key="transportation")
-    if not ProjectTags.objects.filter(name="Energy").exists():
-        ProjectTags.objects.create(name="Energy", key="energy")
-    print("finished creating project tags test data!")
-
-
 def create_organization_tags_test_data():
     print("Creating organization tags test data...")
     if not OrganizationTags.objects.filter(name="Volunteer group").exists():
@@ -221,13 +198,6 @@ def create_project_test_data(number_of_rows: int):
                 role_in_project="Project manager",
             )
 
-            number_of_test_project_tags = 5
-            ProjectTagging.objects.create(
-                project=project,
-                project_tag=ProjectTags.objects.all()[
-                    int((i / number_of_rows) * number_of_test_project_tags)
-                ],
-            )
             print("{} project created.".format(name))
         else:
             print("{} project already exists.".format(name))
