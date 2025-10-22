@@ -311,7 +311,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Hilfreiche Fähigkeiten, um mitzuwirken",
     },
     connections_to_these_organizations_could_help_the_project: {
-      en: "Connections to these organizations could help the project",
+      en: "Connections to these organisations could help the project",
       de: "Connections zu diesen Organisationen könnten dem Projekt helfen",
     },
     to_see_this_projects_team_members: {
@@ -351,15 +351,15 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Füge Fähigkeiten hinzu, die Mitstreiter:innen möglichst haben sollten",
     },
     add_connections_that_would_be_beneficial_for_collaborators_to_have: {
-      en: "Connections to which organizations would be helpful for the project?",
+      en: "Connections to which organisations would be helpful for the project?",
       de: "Connections zu welchen Organisationen wären für das Projekt hilfreich?",
     },
     add_connections_that_would_be_beneficial_for_collaborators_to_have_idea: {
-      en: "Connections to which organizations would be helpful for the project?",
+      en: "Connections to which organisations would be helpful for the project?",
       de: "Connections zu welchen Organisationen wären für die Umsetzung der Idee hilfreich?",
     },
     add_connections_that_would_be_beneficial_for_collaborators_to_have_event: {
-      en: "Connections to these organizations would be helpful for organizing the event?",
+      en: "Connections to these organisations would be helpful for organizing the event?",
       de: "Connections zu welchen Organisationen wären für die Event-Organisation hilfreich?",
     },
     to_share_a_project: {
@@ -432,7 +432,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Persönliches Projekt",
     },
     organizations_project: {
-      en: "Organization's project",
+      en: "Organisation's project",
       de: "Projekt einer Organisation",
     },
     created_by: {
@@ -650,25 +650,25 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     add_connections_helptext: {
       en:
-        "Add connections that would be helpful for collaborators to have. Specifically this could be connections to organizations that could help accelerate your project.",
+        "Add connections that would be helpful for collaborators to have. Specifically this could be connections to organisations that could help accelerate your project.",
       de:
         "Füge Connections hinzu, die für Unterstützende hilfreich sein könnten. Konkret könnten dies Connections zu Organisationen sein, die dein Projekt beschleunigen könnten.",
     },
     search_for_collaborating_organizations: {
-      en: "Search for collaborating organizations",
+      en: "Search for collaborating organisations",
       de: "Suche nach Organisationen, mit denen du/ihr zusammenarbeitet",
     },
     type_the_name_of_the_collaborating_organization_you_want_to_add_next: {
-      en: "Type the name of the collaborating organization you want to add next.",
+      en: "Type the name of the collaborating organisation you want to add next.",
       de:
         "Gib den Namen der zusammenarbeitenden Organisation ein, die du als nächstes hinzufügen möchtest.",
     },
     use_the_search_bar_to_add_collaborating_organizations: {
-      en: "Use the search bar to add collaborating organizations.",
+      en: "Use the search bar to add collaborating organisations.",
       de: "Verwende die Suchleiste, um zusammenarbeitende Organisationen hinzuzufügen.",
     },
     responsible_organization: {
-      en: "Responsible Organization",
+      en: "Responsible Organisation",
       de: "Verantwortliche Organisation",
     },
     responsible_person_project: {
@@ -680,7 +680,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Ideenersteller*in",
     },
     responsible_person_org: {
-      en: "Reponsible for organization",
+      en: "Reponsible for organisation",
       de: "Verantwortliche*r",
     },
     responsible_person_generic: {
@@ -688,7 +688,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Verantwortliche*r",
     },
     collaborating_organizations: {
-      en: "Collaborating Organizations",
+      en: "Collaborating Organisations",
       de: "Zusammenarbeitende Organisation",
     },
     there_has_been_an_error_when_trying_to_publish_your_project: {
@@ -797,7 +797,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     if_your_organization_does_not_exist_yet_click_here: {
       en: (
         <>
-          If your organization does not exist yet{" "}
+          If your organisation does not exist yet{" "}
           <Link
             href={`${getLocalePrefix(locale)}/createorganization${
               hubName ? `?hub=${hubName}` : ""
@@ -936,7 +936,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: `Kontaktiere ${creator?.first_name}, um über das Projekt zu reden.`,
     },
     contact_creator_to_know_more_about_organization: {
-      en: `Contact ${creator?.first_name} if you want to chat about this organization.`,
+      en: `Contact ${creator?.first_name} if you want to chat about this organisation.`,
       de: `Kontaktiere ${creator?.first_name}, um über diese Organisation zu reden.`,
     },
     contact_creator_to_know_more_about_idea: {
