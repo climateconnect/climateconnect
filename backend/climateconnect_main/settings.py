@@ -211,8 +211,6 @@ STATIC_URL = (
 STATIC_ROOT = (
     env("STATIC_ROOT") if env("ENVIRONMENT") in ("development", "test") else "static/"
 )
-# STATICFILES_DIRS = [BASE_DIR + "/staticfiles"]
-
 MEDIA_ROOT = env("MEDIA_ROOT")
 MEDIA_URL = "/media/"
 
