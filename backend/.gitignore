@@ -2,5 +2,6 @@
 /app.yaml
 /gcloud-storage-credentials.json
 
+
 media/
 .pdm-python
