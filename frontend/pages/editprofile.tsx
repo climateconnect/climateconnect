@@ -13,15 +13,23 @@ import EditProfileRoot from "./../src/components/profile/EditProfileRoot";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
 import theme from "../src/themes/theme";
+import { getSectorOptions } from "../public/lib/getOptions";
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = Cookies(ctx);
   const hubUrl = ctx.query.hub;
-  const [skillsOptions, availabilityOptions, userProfile, hubThemeData] = await Promise.all([
+  const [
+    skillsOptions,
+    availabilityOptions,
+    userProfile,
+    hubThemeData,
+    allSectors,
+  ] = await Promise.all([
     getSkillsOptions(auth_token, ctx.locale),
     getAvailabilityOptions(auth_token, ctx.locale),
     getUserProfile(auth_token, ctx.locale),
     getHubTheme(hubUrl),
+    getSectorOptions(ctx.locale),
   ]);
 
   return {
@@ -31,6 +39,7 @@ export async function getServerSideProps(ctx) {
       user: userProfile,
       hubUrl: hubUrl,
       hubThemeData: hubThemeData,
+      allSectors: allSectors,
     }),
   };
 }
@@ -41,6 +50,7 @@ export default function EditProfilePage({
   user,
   hubUrl,
   hubThemeData,
+  allSectors,
 }) {
   const { locale } = useContext(UserContext);
   let infoMetadata: any = getProfileInfoMetadata(locale);
@@ -102,6 +112,7 @@ export default function EditProfilePage({
           setErrorMessage={setErrorMessage}
           availabilityOptions={availabilityOptions}
           hubUrl={hubUrl}
+          allSectors={allSectors}
         />
       </WideLayout>
     );
