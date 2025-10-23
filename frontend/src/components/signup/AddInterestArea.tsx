@@ -7,17 +7,6 @@ import { Box, Card, CardContent, IconButton, Typography, Button } from "@mui/mat
 import ActiveSectorsSelector from "../hub/ActiveSectorsSelector";
 import { Sector } from "../../types";
 
-type SelectedSector = {
-  hub_type: string;
-  icon?: string;
-  landing_page_component?: string;
-  name: string;
-  quick_info?: string;
-  thumbnail_image?: string;
-  url_slug: string;
-  key: string;
-};
-
 type AddInterestAreaProps = {
   handleSubmit: (event: React.FormEvent, values: any) => void;
   errorMessage?: string;
@@ -84,7 +73,7 @@ export default function AddInterestArea({
       {texts.step_3_of_3_sign_up}
     </Typography>
   );
-  const [selectedSectors, setSelectedSectors] = React.useState<SelectedSector[]>([]);
+  const [selectedSectors, setSelectedSectors] = React.useState<Sector[]>([]);
   const [formValues, setFormValues] = React.useState(values);
 
   const handleSectorSelection = (
@@ -106,7 +95,7 @@ export default function AddInterestArea({
     }
   };
 
-  const handleSectorRemoval = (sectorToRemove: SelectedSector) => {
+  const handleSectorRemoval = (sectorToRemove: any) => {
     if (!sectorToRemove) {
       console.warn("handleSectorRemoval was called without a sector.");
       return;
