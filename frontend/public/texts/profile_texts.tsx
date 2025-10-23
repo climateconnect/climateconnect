@@ -321,7 +321,7 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       en:
         "Let the climate community know what you are already doing or which fields interest you the most. By doing this you can contribute to Projects more easily. Choose up to 3 fields.",
       de:
-        "Teilen Sie der Klimagemeinschaft mit, was Sie bereits tun oder welche Bereiche Sie am meisten interessieren. Auf diese Weise können Sie leichter zu Projekten beitragen. Wählen Sie bis zu 3 Bereiche aus.",
+        "Lass die Klima-Community wissen, was du schon machst oder welche Themen dich am meisten interessieren. So kannst du einfacher zu Projekten beitragen. Wähle bis zu 3 Bereiche aus.",
     },
     repeat_password: {
       en: "Repeat Password",
