@@ -28,10 +28,7 @@ from organization.models import (
 )
 from organization.models.translations import ProjectTranslation
 from organization.serializers.organization import OrganizationStubSerializer
-from organization.serializers.status import (
-    ProjectTypesSerializer,
-    ProjectStatusSerializer,
-)
+from organization.serializers.project_types import ProjectTypesSerializer
 from organization.serializers.tags import ProjectTaggingSerializer
 from organization.serializers.translation import ProjectTranslationSerializer
 from organization.utility.project import (
@@ -53,7 +50,6 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     # TODO (Karol): Remove this field once the frontend is updated to use the new tags serializer
     tags = serializers.SerializerMethodField()
-    status = serializers.SerializerMethodField()
     collaborating_organizations = serializers.SerializerMethodField()
     number_of_followers = serializers.SerializerMethodField()
     number_of_likes = serializers.SerializerMethodField()
@@ -70,7 +66,6 @@ class ProjectSerializer(serializers.ModelSerializer):
             "name",
             "url_slug",
             "image",
-            "status",
             "start_date",
             "end_date",
             "short_description",
@@ -149,10 +144,6 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def get_helpful_connections(self, obj):
         return get_project_helpful_connections(obj, get_language())
-
-    def get_status(self, obj):
-        serializer = ProjectStatusSerializer(obj.status, many=False)
-        return serializer.data["name"]
 
     def get_language(self, obj):
         return obj.language.language_code
@@ -244,7 +235,6 @@ class ProjectParentsSerializer(serializers.ModelSerializer):
 class ProjectMinimalSerializer(serializers.ModelSerializer):
     skills = SkillSerializer(many=True)
     project_parents = serializers.SerializerMethodField()
-    status = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
 
@@ -255,7 +245,6 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
             "url_slug",
             "skills",
             "image",
-            "status",
             "location",
             "project_parents",
             "is_draft",
@@ -273,10 +262,6 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
         if obj.loc is None:
             return None
         return obj.loc.name
-
-    def get_status(self, obj):
-        serializer = ProjectStatusSerializer(obj.status, many=False)
-        return serializer.data["name"]
 
 
 class ProjectStubSerializer(serializers.ModelSerializer):

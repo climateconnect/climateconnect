@@ -18,8 +18,6 @@ import { Project, SkillType, Role, Organization, Sector } from "../../types";
 import { parseLocation } from "../../../public/lib/locationOperations";
 import SelectSectors from "./SelectSectors";
 
-const DEFAULT_STATUS = 2;
-
 const useStyles = makeStyles((theme) => {
   return {
     stepsTracker: {
@@ -93,7 +91,6 @@ export default function ShareProjectRoot({
   skillsOptions,
   rolesOptions,
   user,
-  statusOptions,
   token,
   setMessage,
   projectTypeOptions,
@@ -112,7 +109,6 @@ export default function ShareProjectRoot({
         role: rolesOptions.find((r) => r.role_type === ROLE_TYPES.all_type),
         role_in_project: "",
       },
-      statusOptions,
       projectTypeOptions,
       userOrganizations,
       locale,
@@ -181,6 +177,7 @@ export default function ShareProjectRoot({
     window.scrollTo(0, 0);
   };
 
+  // TODO: save as draft and submit project share a lot of logic. I could be refactored
   const submitProject = async (event) => {
     event.preventDefault();
     setLoadingSubmit(true);
@@ -402,7 +399,6 @@ export default function ShareProjectRoot({
 //TODO: remove some of these default values as they are just for testing
 const getDefaultProjectValues = (
   loggedInUser,
-  statusOptions,
   projectTypeOptions,
   userOrganizations,
   locale,
@@ -410,7 +406,6 @@ const getDefaultProjectValues = (
 ): Project => {
   return {
     collaborators_welcome: true,
-    status: statusOptions.find((s) => s.id === DEFAULT_STATUS),
     skills: [],
     helpful_connections: [],
     collaborating_organizations: [],
@@ -432,7 +427,6 @@ const formatProjectForRequest = async (project, translations) => {
   return {
     ...project,
     loc: parseLocation(project.loc, true),
-    status: project.status.id,
     skills: project.skills.map((s) => s.key),
     team_members: project.team_members.map((m) => ({
       url_slug: m.url_slug,
