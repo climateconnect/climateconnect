@@ -190,6 +190,10 @@ export default function Signup({ hubUrl, hubThemeData, sectorOptions }) {
     setCurStep(steps[0]);
   };
   const handleGoBackFromAddInterestArea = (event, values) => {
+    setUserInfo({
+      ...userInfo,
+      sectors: values,
+    });
     setCurStep(steps[1]);
   };
 

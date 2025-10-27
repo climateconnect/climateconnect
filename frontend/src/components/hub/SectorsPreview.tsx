@@ -40,6 +40,7 @@ export default function SectorsPreview({
         ))}
       {allowCreate && (maxSelectedNumber == -1 || sectors?.length < maxSelectedNumber) && (
         <GridItem
+          key={`create-${sectorsToSelectFrom?.length || 0}`}
           createMode
           sectorsToSelectFrom={sectorsToSelectFrom}
           onSelectNewSector={onSelectNewSector}

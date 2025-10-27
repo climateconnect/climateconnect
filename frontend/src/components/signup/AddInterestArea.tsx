@@ -62,7 +62,15 @@ export default function AddInterestArea({
   const texts = getTexts({ page: "profile", locale: locale });
 
   const GoBackArrow = () => (
-    <IconButton aria-label="go-back" onClick={() => handleGoBack(undefined, values)}>
+    <IconButton
+      aria-label="go-back"
+      onClick={() =>
+        handleGoBack(
+          undefined,
+          selectedSectors.map((sector) => sector.key)
+        )
+      }
+    >
       <ArrowBack />
     </IconButton>
   );
@@ -73,8 +81,22 @@ export default function AddInterestArea({
       {texts.step_3_of_3_sign_up}
     </Typography>
   );
-  const [selectedSectors, setSelectedSectors] = React.useState<Sector[]>([]);
-  const [formValues, setFormValues] = React.useState(values);
+
+  const getInitialSelectedSectors = () => {
+    if (values.sectors && Array.isArray(values.sectors) && values.sectors.length > 0) {
+      return sectorOptions.filter((sector) => values.sectors.includes(sector.key));
+    }
+    return [];
+  };
+
+  const [selectedSectors, setSelectedSectors] = React.useState<Sector[]>(
+    getInitialSelectedSectors()
+  );
+
+  const [formValues, setFormValues] = React.useState({
+    ...values,
+    sectors: values.sectors || [],
+  });
 
   const handleSectorSelection = (
     event: React.ChangeEvent<HTMLSelectElement | { value: string }>
@@ -100,10 +122,14 @@ export default function AddInterestArea({
       console.warn("handleSectorRemoval was called without a sector.");
       return;
     }
+    const updatedSectors = selectedSectors.filter((sector) => sector.key !== sectorToRemove.key);
+    const sectorKeys = updatedSectors.map((sector) => sector.key);
 
-    setSelectedSectors((prevSectors) =>
-      prevSectors.filter((sector) => sector.key !== sectorToRemove.key)
-    );
+    setSelectedSectors(updatedSectors);
+    setFormValues({
+      ...formValues,
+      sectors: sectorKeys,
+    });
   };
 
   // Filter out sectors that are already in the selectedSectors array.
