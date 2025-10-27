@@ -43,79 +43,65 @@ def get_legacy_location(location_object):
 def get_location(location_object):
     if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
         return get_legacy_location(location_object)
-    required_params = ["place_id", "country", "name", "type", "lon", "lat"]
+
+    required_params = ["place_id", "country", "name", "type", "lon", "lat", "osm_id", "osm_type"]
     for param in required_params:
         if param not in location_object:
             raise ValidationError("Required parameter is missing:" + param)
+
     loc = Location.objects.filter(place_id=location_object["place_id"])
     optional_attribute_names = ["city", "state", "place_name", "exact_address"]
-    optional_attributes = {}
+    
     for attr in optional_attribute_names:
-        if attr in location_object:
-            optional_attributes[attr] = location_object[attr]
-        else:
-            optional_attributes[attr] = ""
-
+        location_object[attr] = location_object.get(attr, "")
+            
     if loc.exists():
         return loc[0]
-    elif location_object["type"] == "Point":
+
+    if location_object["type"] == "global":
+        loc = get_global_location()
+        # TODO 
+        return 
+
+
+    centre_point = None
+    multipolygon = None
+    if location_object["type"] == "Point":
         point = GEOSGeometry(str(location_object["geojson"]))
         coords = list(point)
-        switched_point = Point(coords[1], coords[0])
-        loc = Location.objects.create(
-            place_id=location_object["place_id"],
-            city=optional_attributes["city"],
-            state=optional_attributes["state"],
-            place_name=optional_attributes["place_name"],
-            exact_address=optional_attributes["exact_address"],
-            country=location_object["country"],
-            name=location_object["name"],
-            centre_point=switched_point,
-            is_formatted=True,
-        )
-        # Postcode location do not have an osm_id
-        if "osm_id" in location_object:
-            loc.osm_id = location_object["osm_id"]
-        loc.save()
-        return loc
+        centre_point = Point(coords[1], coords[0])
+
     elif location_object["type"] == "LineString":
         centre_point = Point(
             float(location_object["lat"]), float(location_object["lon"])
         )
-        loc = Location.objects.create(
-            place_id=location_object["place_id"],
-            city=optional_attributes["city"],
-            state=optional_attributes["state"],
-            place_name=optional_attributes["place_name"],
-            exact_address=optional_attributes["exact_address"],
-            country=location_object["country"],
-            name=location_object["name"],
-            centre_point=centre_point,
-            is_formatted=True,
-        )
-        return loc
-    elif location_object["type"] == "global":
-        loc = get_global_location()
-        return loc
-    else:
+    
+    elif location_object["type"] == "Polygon" or location_object["type"] == "MultiPolygon":
         multipolygon = get_multipolygon_from_geojson(location_object["geojson"])
         centre_point = Point(
             float(location_object["lat"]), float(location_object["lon"])
         )
-        loc = Location.objects.create(
-            osm_id=location_object["osm_id"],
-            place_id=location_object["place_id"],
-            city=optional_attributes["city"],
-            state=optional_attributes["state"],
-            place_name=optional_attributes["place_name"],
-            exact_address=optional_attributes["exact_address"],
-            country=location_object["country"],
-            name=location_object["name"],
-            multi_polygon=multipolygon,
-            is_formatted=True,
-            centre_point=centre_point,
-        )
-        return loc
+    else:
+        # TODO: handle case
+        raise Exception("Unsupported location type")
+
+    loc = Location.objects.create(
+        osm_id=location_object.get("osm_id", None),
+        osm_type=location_object.get("osm_type", None),
+        place_id=location_object["place_id"],
+        city=location_object["city"],
+        state=location_object["state"],
+        place_name=location_object["place_name"],
+        exact_address=location_object["exact_address"],
+        country=location_object["country"],
+        name=location_object["name"],
+        centre_point=centre_point,
+        multipolygon=multipolygon,
+        is_formatted=True,
+    )
+
+    loc.save()
+    return loc
 
 
 def get_multipolygon_from_geojson(geojson):
