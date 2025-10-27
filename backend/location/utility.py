@@ -60,8 +60,7 @@ def get_location(location_object):
 
     if location_object["type"] == "global":
         loc = get_global_location()
-        # TODO 
-        return 
+        return loc
 
 
     centre_point = None
@@ -82,7 +81,6 @@ def get_location(location_object):
             float(location_object["lat"]), float(location_object["lon"])
         )
     else:
-        # TODO: handle case
         raise Exception("Unsupported location type")
 
     loc = Location.objects.create(
@@ -156,6 +154,7 @@ def format_location(location_string, already_loaded):
         "type": location_object["geojson"]["type"],
         "place_id": location_object["place_id"],
         "osm_id": location_object["osm_id"],
+        "osm_type": location_object["osm_type"],
         "name": location_name["name"],
         "city": location_name["city"],
         "state": location_name["state"],
