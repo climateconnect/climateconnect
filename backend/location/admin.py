@@ -3,7 +3,24 @@ from django.contrib import admin
 
 # Register your models here.
 
-admin.site.register(Location, admin.ModelAdmin)
+class LocationAdmin(admin.ModelAdmin):
+    search_fields = (
+        'name', 
+        'osm_id',
+    )
+    
+    list_filter = (
+        'osm_type', 
+    )
+    
+    list_display = (
+        'name', 
+        'osm_type',
+        'osm_id', 
+        'place_id',
+    )
+
+admin.site.register(Location, LocationAdmin)
 
 
 class LocationTranslationAdmin(admin.ModelAdmin):
