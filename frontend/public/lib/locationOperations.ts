@@ -248,6 +248,7 @@ export function parseLocation(location, isConcretePlace = false) {
     geojson: location.geojson ? location.geojson : generateGeoJson(location),
     place_id: location?.place_id,
     osm_id: location?.osm_id,
+    osm_type: location?.osm_type,
     name: location_object.name,
     lon: location?.lon,
     lat: location?.lat,

@@ -67,6 +67,14 @@ class Location(models.Model):
         null=True,
     )
 
+    osm_type = models.CharField(
+        help_text="The internal type of this location openstreetmaps",
+        verbose_name="OSM TYPE",
+        blank=True,
+        null=True,
+        max_length=1,
+    )
+
     place_id = models.BigIntegerField(
         help_text="Nominatim's place id of this location",
         verbose_name="Place ID",
