@@ -44,6 +44,7 @@ const useStyles = makeStyles<
   },
   popper: {
     width: "67px",
+    zIndex: 99,
   },
 }));
 
