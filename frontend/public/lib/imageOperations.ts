@@ -1,5 +1,4 @@
 const DEVELOPMENT = ["development", "develop", "test"].includes(process.env.ENVIRONMENT!);
-import imageCompression from "browser-image-compression";
 
 export function getImageUrl(url) {
   if (!url) return;
@@ -83,13 +82,12 @@ export async function getCompressedJPG(file, maxSizeMB): Promise<string> {
       drawImageOnCanvas(image, canvas);
       canvas.toBlob(
         async function (blob) {
-          const options = {
-            maxSizeMB: maxSizeMB,
-            useWebWorker: true,
-          };
           try {
-            const compressedFile = await imageCompression(blob as File, options);
-            resolve(URL.createObjectURL(compressedFile));
+            if (blob) {
+              resolve(URL.createObjectURL(blob));
+            } else {
+              reject(new Error("Failed to create blob"));
+            }
           } catch (error) {
             console.log(error);
             reject(error);
