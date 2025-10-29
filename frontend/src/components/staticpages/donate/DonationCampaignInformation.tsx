@@ -20,6 +20,7 @@ import getTexts from "../../../../public/texts/texts";
 import theme from "../../../themes/theme";
 import UserContext from "../../context/UserContext";
 import DonationGoal from "./DonationGoal";
+import SendIcon from "@mui/icons-material/Send";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -77,12 +78,21 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   donateButton: {
-    marginTop: theme.spacing(4),
-    marginBottom: theme.spacing(1),
-    background: "white",
+    marginTop: theme.spacing(1),
+    borderRadius: "4px",
+    backgroundColor: "hsla(176.25, 66.67%, 90.59%, 1.00)",
+    color: theme.palette.primary.main,
+    fontFamily: "'Open Sans', sans-serif",
+    fontWeight: 600,
+    textDecoration: "none",
+    textTransform: "uppercase",
+    transition: "opacity 200ms ease",
+    "&:hover": {
+      backgroundColor: "hsla(176.25, 66.67%, 85%, 1.00)",
+      opacity: 0.9,
+    },
     [theme.breakpoints.down("sm")]: {
-      marginTop: theme.spacing(-2),
-      marginBottom: theme.spacing(1),
+      marginTop: theme.spacing(1),
     },
   },
   flexWrapper: {
@@ -142,14 +152,14 @@ export default function DonationCampaignInformation() {
                 />
               )}
               <Typography className={classes.text}>{donationGoal?.call_to_action_text}</Typography>
-              <Link
-                color="white"
-                className={`${classes.linkText} ${classes.text}`}
-                href={donationGoal?.call_to_action_link}
+              <Button
+                variant="contained"
                 target="_blank"
+                href={donationGoal?.call_to_action_link}
+                className={classes.donateButton}
               >
                 {texts.donate_now}
-              </Link>
+              </Button>
             </div>
           </div>
         </div>
