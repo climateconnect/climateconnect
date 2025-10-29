@@ -223,7 +223,10 @@ def send_feedback_email(email, message, send_response):
                     "Name": "Climate Connect",
                 },
                 "To": [
-                    {"Email": "contact@climateconnect.earth", "Name": "Climate Connect"}
+                    {
+                        "Email": "feedback@climateconnect.earth",
+                        "Name": "Climate Connect",
+                    }
                 ],
                 "TemplateID": int(settings.FEEDBACK_TEMPLATE_ID),
                 "TemplateLanguage": True,
