@@ -21,10 +21,6 @@ export const prio1StaticLinks = (texts: any): Link[] =>
   getStaticLinks(texts, PRIO1_STATIC_LINKS_CONFIG, PRIO1_BASE_URL);
 
 export const prio1Config = (pathToRedirect: string, texts: any) => ({
-  welcome: {
-    en: EnPrio1Welcome,
-    de: DePrio1Willkommen,
-  },
   hubTabLinkNarrowScreen: {
     href: PRIO1_BASE_URL,
     text: texts.PRIO1_klima,
