@@ -1,26 +1,13 @@
-import {
-  Button,
-  Collapse,
-  Container,
-  IconButton,
-  Link,
-  Theme,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Button, IconButton, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
-import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getCookieProps } from "../../../../public/lib/cookieOperations";
 import getTexts from "../../../../public/texts/texts";
 import theme from "../../../themes/theme";
 import UserContext from "../../context/UserContext";
 import DonationGoal from "./DonationGoal";
-import SendIcon from "@mui/icons-material/Send";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,9 +34,6 @@ const useStyles = makeStyles((theme) => ({
       fontSize: 15,
     },
   },
-  linkText: {
-    fontSize: 20,
-  },
   showMoreButton: {
     color: "white",
     width: "100%",
@@ -65,9 +49,6 @@ const useStyles = makeStyles((theme) => ({
   },
   donationGoal: {
     marginBottom: theme.spacing(3),
-  },
-  link: {
-    color: "white",
   },
   textBlock: {
     marginBottom: theme.spacing(1),
