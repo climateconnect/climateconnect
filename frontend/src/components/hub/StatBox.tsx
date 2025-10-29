@@ -39,17 +39,19 @@ export default function StatBox({ title, stats }) {
         {title}
       </Typography>
       {stats?.length > 0 && stats.map((s) => <Stat key={s.name} statData={s} />)}
-      <Typography className={classes.source}>
-        {texts.source}:{" "}
-        <Link
-          className={classes.link}
-          target="_blank"
-          href={stats[0]?.source_link}
-          underline="hover"
-        >
-          {stats[0]?.source_name}
-        </Link>
-      </Typography>
+      {stats && stats.length > 0 && stats[0]?.source_link && (
+        <Typography className={classes.source}>
+          {texts.source}:{" "}
+          <Link
+            className={classes.link}
+            target="_blank"
+            href={stats[0].source_link}
+            underline="hover"
+          >
+            {stats[0].source_name}
+          </Link>
+        </Typography>
+      )}
     </div>
   );
 }

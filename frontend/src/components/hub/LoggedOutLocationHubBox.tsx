@@ -121,10 +121,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LoggedOutLocationHubBox({ headline, isLocationHub, location, hubUrl }) {
+export default function LoggedOutLocationHubBox({
+  headline,
+  isLocationHub,
+  location,
+  hubUrl,
+  subHub,
+}) {
   const { locale, user } = useContext(UserContext);
 
-  const texts = getTexts({ page: "dashboard", locale: locale, location: location });
+  const texts = getTexts({
+    page: "dashboard",
+    locale: locale,
+    location: location,
+    hubName: hubUrl,
+  });
+
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const classes = useStyles({ isLocationHub: isLocationHub, isNarrowScreen: isNarrowScreen });
 
@@ -168,12 +180,12 @@ export default function LoggedOutLocationHubBox({ headline, isLocationHub, locat
       </div>
     );
   }
-
   return (
     <div className={classes.root}>
       <div className={classes.contentContainer}>
         <Headline />
         <div className={classes.lowerBoxWrapper}>
+          <Typography component="p">{(texts as any)[subHub]}</Typography>
           <div className={classes.advantagesBox}>
             {REASONS_TO_JOIN.map((r) => (
               <ReasonToJoin reason={r} />
