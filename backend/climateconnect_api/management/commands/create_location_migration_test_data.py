@@ -101,5 +101,6 @@ class Command(BaseCommand):
                 self.style.ERROR("no mode chosen, use --delete or provide a --file")
             )
 
-
-# python manage.py create_location_migration_test_data.py --file <path_to_csv_table_with_test_database>
+# usage:
+# python manage.py create_location_migration_test_data --file <path_to_csv_table_with_test_database>
+# python manage.py create_location_migration_test_data --delete
