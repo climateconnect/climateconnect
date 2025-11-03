@@ -1,0 +1,149 @@
+from django.core.management.base import BaseCommand
+#from django.db import transaction
+from location.models import Location, LocationTranslation
+from climateconnect_api.models.language import Language
+import requests
+
+
+
+NOMINATIM_DETAILS_URL = "https://nominatim.openstreetmap.org/lookup"
+CUSTOM_USER_AGENT = "DjangoProjekt/1.0 (katharina.auer@climateconnect.earth)"
+
+def create_name_from_translation_data(original_location: Location, translation_data: dict) -> str:
+        
+    name = []
+    if original_location.place_name:
+        name.append(original_location.place_name)
+        
+    if original_location.exact_address:
+        name.append(original_location.exact_address)
+    
+    for key in ['city_translation', 'state_translation', 'country_translation']:
+        value = translation_data.get(key)
+        if value:
+            name.append(value)
+        
+            
+    return ", ".join(name)
+
+
+def get_language_id(locale: str) -> int:
+    
+    try:
+        language = Language.objects.get(language_code=locale.lower())
+        return language.id
+    
+    except Exception as e:
+        print(f"error: {e}")
+        return None 
+
+
+
+
+
+def create_location_translations(locs: list["Location"], locale: str):
+    
+    all_translations = []
+    language_id = get_language_id(locale)
+
+    for i in range(0, len(locs), 50):
+
+        batch_locations = locs[i:i + 50]
+        osm_ids = []
+        location_map = {}
+        translations_data = []
+
+        for loc in batch_locations:
+            if loc.osm_id and loc.osm_type:
+                osm_string = f"{loc.osm_type}{loc.osm_id}"
+                osm_ids.append(osm_string)
+                location_map[osm_string] = loc
+        
+        params = {
+            'osm_ids': ",".join(osm_ids), 
+            'format': 'json',
+            'extratags': 1, 
+            'addressdetails': 1,
+            'accept-language': locale 
+        }
+
+        headers = {
+        'User-Agent': CUSTOM_USER_AGENT
+        }
+
+        try:
+            response = requests.get(NOMINATIM_DETAILS_URL, params=params, headers=headers)
+            response.raise_for_status()
+            data = response.json()
+        except requests.exceptions.RequestException as e:
+            print(f"error with batch request of {len(osm_ids)} osm_ids): {e}")
+            return []
+
+        for result in data:
+            osm_id_key = f"{result.get('osm_type')}{result.get('osm_id')}"
+            loc = location_map.get(osm_id_key) 
+        
+            if not loc:
+                print(f"warning: something went wrong with the evaluation of request with osm_id: {osm_id_key}")
+                continue
+            
+            address = result.get('address', {})
+            one_translation_data = {}
+        
+            one_translation_data['name_translation'] = result.get('localname')
+            one_translation_data['city_translation'] = address.get('city') or address.get('town') or address.get('village')
+            one_translation_data['state_translation'] = address.get('state')
+            one_translation_data['country_translation'] = address.get('country')
+        
+            if not one_translation_data["name_translation"]:
+                one_translation_data['name_translation'] = create_name_from_translation_data(loc, one_translation_data)
+                if not one_translation_data['name_translation']:
+                    one_translation_data['name_translation'] = loc.name
+        
+        
+            translations_data.append(
+                LocationTranslation(
+                    location_id=loc.id,
+                    language_id=language_id,
+                    name_translation=one_translation_data['name_translation'],
+                    city_translation=one_translation_data.get('city_translation'),
+                    state_translation=one_translation_data.get('state_translation'),
+                    country_translation=one_translation_data.get('country_translation'),
+                )   
+            )
+
+
+        if translations_data:
+            try:
+                LocationTranslation.objects.bulk_create(translations_data, ignore_conflicts=True)
+                locations_created_count += len(translations_data)
+                print(f"successfully saved {len(translations_data)} for batch {i // 50 + 1}")
+            
+            except Exception as e:
+                 print(f"error: {e}")
+
+    return locations_created_count
+        
+
+
+class Command(BaseCommand):
+    help = "add translations of name into <locale> to LocationTranslation table"
+
+    def add_arguments(self, parser):
+        
+        parser.add_argument(
+            "locale",
+            action="store_true",
+            type=str,
+            help="locale that should be added to the LocationTranslation table",
+            required=True,
+        )
+
+    def handle(self, *args, **options) -> str:
+        locale = options.get("locale")
+        
+        
+        
+        #else:
+        #    self.stdout.write(self.style.ERROR("no mode chosen, use --locale to"))
+
