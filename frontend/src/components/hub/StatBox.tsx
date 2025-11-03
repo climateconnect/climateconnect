@@ -44,10 +44,10 @@ export default function StatBox({ title, stats }) {
         <Link
           className={classes.link}
           target="_blank"
-          href={stats[0].source_link}
+          href={stats[0]?.source_link}
           underline="hover"
         >
-          {stats[0].source_name}
+          {stats[0]?.source_name}
         </Link>
       </Typography>
     </div>
