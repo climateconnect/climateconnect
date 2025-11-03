@@ -24,6 +24,14 @@ jobs:
         with:
           node-version: '20.x'
 
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
       - name: yarn install, pull webflow files and build
         run: |
           cd frontend
