@@ -116,27 +116,14 @@ export default function Signup({ hubUrl, hubThemeData, sectorOptions }) {
 
   const handleAddInterestAreaSubmit = (event, values) => {
     event.preventDefault();
-    const params = getParams(window?.location?.href);
-    if (!isLocationValid(values.location)) {
-      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage, texts);
-      return;
-    }
-    const location = getLocationValue(values, "location");
-    setUserInfo({
-      ...userInfo,
-      first_name: values.first_name,
-      last_name: values.last_name,
-      location: location,
-      sendNewsletter: values.sendNewsletter,
-    });
 
     const payload = {
       email: userInfo.email.trim().toLowerCase(),
       password: userInfo.password,
-      first_name: values.first_name.trim(),
-      last_name: values.last_name.trim(),
-      location: parseLocation(location),
-      send_newsletter: values.sendNewsletter,
+      first_name: userInfo.first_name.trim(),
+      last_name: userInfo.last_name.trim(),
+      location: parseLocation(userInfo.location),
+      send_newsletter: userInfo.sendNewsletter,
       source_language: locale,
       hub: hubUrl,
       sectors: values.sectors,
