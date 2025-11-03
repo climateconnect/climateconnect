@@ -9,6 +9,7 @@ import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import { useRouter } from "next/router";
 
 type MakeStylesProps = {
   isLocationHub: boolean;
@@ -121,15 +122,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LoggedOutLocationHubBox({
-  headline,
-  isLocationHub,
-  location,
-  hubUrl,
-  subHub,
-}) {
+export default function LoggedOutLocationHubBox({ headline, isLocationHub, location, hubUrl }) {
   const { locale, user } = useContext(UserContext);
-
   const texts = getTexts({
     page: "dashboard",
     locale: locale,
@@ -180,17 +174,25 @@ export default function LoggedOutLocationHubBox({
       </div>
     );
   }
+  const router = useRouter();
+  const subHub = router.query?.subHub;
+  const parentHub = router.query?.hubUrl;
+
   return (
     <div className={classes.root}>
       <div className={classes.contentContainer}>
         <Headline />
         <div className={classes.lowerBoxWrapper}>
-          <Typography component="p">{(texts as any)[subHub]}</Typography>
-          <div className={classes.advantagesBox}>
-            {REASONS_TO_JOIN.map((r) => (
-              <ReasonToJoin reason={r} />
-            ))}
-          </div>
+          <Typography component="p">
+            {(texts as any)[(subHub ? (subHub as string) : (parentHub as string)) + "_welcometext"]}
+          </Typography>
+          {!subHub && (
+            <div className={classes.advantagesBox}>
+              {REASONS_TO_JOIN.map((r) => (
+                <ReasonToJoin reason={r} />
+              ))}
+            </div>
+          )}
         </div>
         <div className={classes.buttonContainer}>
           <Button

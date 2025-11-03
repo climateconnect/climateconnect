@@ -17,7 +17,7 @@ import HubSupporters from "./HubSupporters";
 import theme from "../../themes/theme";
 import { PrioOneBackgroundBrowse, PrioOneBackgroundBrowseIcon } from "./CustomBackground";
 import { getCustomHubData } from "../../../public/data/customHubData";
-import { useRouter } from "next/router";
+
 type MakeStylesProps = {
   isLocationHub: boolean;
   loggedOut: boolean;
@@ -152,8 +152,6 @@ export default function HubContent({
   const texts = getTexts({ page: "hub", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const [expanded, setExpanded] = React.useState(false);
-  const router = useRouter();
-  const subHub = router.query.subHub;
 
   const handleClickExpand = () => {
     if (expanded === false) {
@@ -204,7 +202,6 @@ export default function HubContent({
                     isLocationHub={isLocationHub}
                     location={hubData.name}
                     hubUrl={hubUrl}
-                    subHub={subHub ? (subHub as string) : hubUrl}
                   />
                 )}
                 {!isNarrowScreen &&

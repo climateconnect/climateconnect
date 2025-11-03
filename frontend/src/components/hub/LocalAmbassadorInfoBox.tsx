@@ -74,8 +74,6 @@ export default function LocalAmbassadorInfoBox({ hubAmbassador, hubData, hubSupp
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
 
-  console.log(hubData);
-
   const parseTextWithCustomVariables = (m) => {
     return m.replaceAll("${ambassador.first_name}", hubAmbassador?.user?.first_name);
   };
