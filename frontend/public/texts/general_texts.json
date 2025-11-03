@@ -804,15 +804,11 @@
     "de": "Schritt 2 von 3: Grundlegende Informationen"
   },
   "step_3_of_3_sign_up": {
-    "en": "Step 3 of 3: Why you join",
-    "de": "Schritt 3 von 3: Warum du mitmachst"
+    "en": "Step 3 of 3: Why you join (optional)",
+    "de": "Schritt 3 von 3: Warum du mitmachst (optional)"
   },
   "sectors": {
     "en": "Topics",
     "de": "Themenfelder"
-  },
-  "skip_and_submit": {
-    "en": "SKIP THIS STEP AND SUBMIT",
-    "de": "DIESEN SCHRITT ÜBERSPRINGEN UND ABSENDEN"
   }
 }

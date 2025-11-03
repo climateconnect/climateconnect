@@ -170,27 +170,15 @@ export default function AddInterestArea({
           onClickRemoveSector={handleSectorRemoval}
           hideTitle={true}
         />
-        <Box sx={{ display: "flex", gap: 2, marginTop: 4 }}>
-          {selectedSectors.length === 0 ? (
-            <Button
-              fullWidth
-              color="primary"
-              onClick={(event) => handleSubmit(event, { ...formValues, sectors: [] })}
-            >
-              {texts.skip_and_submit}
-            </Button>
-          ) : (
-            <Button
-              fullWidth
-              variant="contained"
-              type="submit"
-              color="primary"
-              onClick={(event) => handleSubmit(event, formValues)}
-            >
-              {texts.submit}
-            </Button>
-          )}
-        </Box>
+        <Button
+          fullWidth
+          variant="contained"
+          type="submit"
+          color="primary"
+          onClick={(event) => handleSubmit(event, formValues)}
+        >
+          {texts.submit}
+        </Button>
       </CardContent>
     </Card>
   );
