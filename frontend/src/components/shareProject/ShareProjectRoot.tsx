@@ -14,7 +14,7 @@ import AddTeam from "./AddTeam";
 import EnterDetails from "./EnterDetails";
 import ProjectSubmittedPage from "./ProjectSubmittedPage";
 import ShareProject from "./ShareProject";
-import { Project, SkillType, Role, Organization, SectorOptionType } from "../../types";
+import { Project, SkillType, Role, Organization, Sector } from "../../types";
 import { parseLocation } from "../../../public/lib/locationOperations";
 import SelectSectors from "./SelectSectors";
 
@@ -84,7 +84,7 @@ type ShareProjectRootProps = {
   setMessage: (message: string) => void;
   projectTypeOptions: any[];
   hubName?: string;
-  sectorOptions: SectorOptionType[];
+  sectorOptions: Sector[];
 };
 
 export default function ShareProjectRoot({
