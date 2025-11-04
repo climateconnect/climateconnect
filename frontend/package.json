@@ -5,7 +5,6 @@
   "private": true,
   "scripts": {
     "analyze-bundle": "ANALYZE=true yarn build",
-    "build-storybook": "build-storybook",
     "build": "next build",
     "deploy": "yarn build && yarn export",
     "dev": "next dev",
@@ -17,7 +16,6 @@
     "lint": "eslint .",
     "pretest": "yarn lint",
     "start": "NODE_ENV=production node server.js",
-    "storybook": "start-storybook -p 6006",
     "test:watch": "jest --watch",
     "test": "jest"
   },
@@ -85,10 +83,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.14.3",
-    "@storybook/addon-actions": "^6.2.9",
-    "@storybook/addon-essentials": "^6.2.9",
-    "@storybook/addon-links": "^6.2.9",
-    "@storybook/react": "^6.2.9",
     "@types/humanize-duration": "^3.27.1",
     "@types/lodash": "^4.14.188",
     "@types/react": "^18.0.25",
