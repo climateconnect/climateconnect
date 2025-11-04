@@ -263,6 +263,7 @@ export function parseLocation(location, isConcretePlace = false) {
     exact_address: exactAddress,
     additional_info: location?.additionalInfoText || location?.additionalInfo,
     is_exact_location: isConcretePlace,
+    address: { ...location_object },
   };
 }
 
@@ -340,6 +341,7 @@ export function getLocationFields({
       ref: locationInputRef,
       locationOptionsOpen: locationOptionsOpen,
       handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
+      enableExactLocation: true,
     },
   ];
 }
