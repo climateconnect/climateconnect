@@ -131,18 +131,32 @@ const drawImageOnCanvas = (image, canvas) => {
   }
 };
 
-export async function blobFromObjectUrl(objectUrl) {
-  var a = new FileReader();
-  const originalBlob = await fetch(objectUrl).then((r) => r.blob());
-  const options = {
-    maxSizeMB: 0.5,
-    useWebWorker: true,
-  };
-  const compressedBlob = await imageCompression(originalBlob as File, options);
-  return new Promise(function (resolve) {
-    a.onload = function (e) {
-      resolve(e.target!.result);
+export async function blobFromObjectUrl(objectUrl: string): Promise<string> {
+  try {
+    const response = await fetch(objectUrl);
+    const originalBlob = await response.blob();
+
+    const options = {
+      maxSizeMB: 0.5,
+      useWebWorker: true,
     };
-    a.readAsDataURL(compressedBlob);
-  });
+
+    // imageCompression accepts Blob despite its TypeScript definition requiring File
+    const compressedBlob = await imageCompression(originalBlob as File, options);
+
+    // Convert compressed blob to base64 data URL
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        resolve(e.target!.result as string);
+      };
+      reader.onerror = () => {
+        reject(new Error("Failed to read compressed image"));
+      };
+      reader.readAsDataURL(compressedBlob);
+    });
+  } catch (error) {
+    console.error("Image compression failed:", error);
+    throw new Error(`Failed to compress image from ${objectUrl}: ${error}`);
+  }
 }
