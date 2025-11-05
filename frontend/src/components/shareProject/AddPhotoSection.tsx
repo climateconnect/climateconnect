@@ -60,6 +60,7 @@ export default function AddPhotoSection({
   open,
   handleSetOpen,
 }) {
+  const classes = useStyles(projectData);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const [tempImage, setTempImage] = React.useState(projectData.image);
