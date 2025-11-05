@@ -416,7 +416,7 @@ function SelectedList({
           Array.isArray(selected) &&
           selected?.map((item, index) => (
             // Only show the item if it's valid
-            <ListItem
+            (<ListItem
               key={index}
               button
               className={`${classes.listItem} ${index == 0 && classes.firstItem} ${
@@ -430,7 +430,7 @@ function SelectedList({
               <ListItemIcon className={classes.selectedItemIcon}>
                 <CloseIcon />
               </ListItemIcon>
-            </ListItem>
+            </ListItem>)
           ))}
       </List>
     </div>

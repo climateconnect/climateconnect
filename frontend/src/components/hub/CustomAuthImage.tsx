@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { Theme } from "@mui/material/styles";
 
 type Props = { hubUrl: string | undefined; texts: any | null; authStep?: string };
