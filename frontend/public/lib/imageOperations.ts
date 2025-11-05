@@ -1,3 +1,5 @@
+import imageCompression from "browser-image-compression";
+
 const DEVELOPMENT = ["development", "develop", "test"].includes(process.env.ENVIRONMENT!);
 
 export function getImageUrl(url) {
@@ -131,11 +133,16 @@ const drawImageOnCanvas = (image, canvas) => {
 
 export async function blobFromObjectUrl(objectUrl) {
   var a = new FileReader();
-  const blob = await fetch(objectUrl).then((r) => r.blob());
+  const originalBlob = await fetch(objectUrl).then((r) => r.blob());
+  const options = {
+    maxSizeMB: 0.5,
+    useWebWorker: true,
+  };
+  const compressedBlob = await imageCompression(originalBlob as File, options);
   return new Promise(function (resolve) {
     a.onload = function (e) {
       resolve(e.target!.result);
     };
-    a.readAsDataURL(blob);
+    a.readAsDataURL(compressedBlob);
   });
 }

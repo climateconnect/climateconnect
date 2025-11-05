@@ -12,9 +12,8 @@ import {
   whitenTransparentPixels,
 } from "./../../../public/lib/imageOperations";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
-import imageCompression from "browser-image-compression";
 
-const useStyles = makeStyles<Theme, { image?: string; isCompressing: boolean }>((theme) => {
+const useStyles = makeStyles<Theme, { image?: string }>((theme) => {
   return {
     imageZoneWrapper: {
       display: "block",
@@ -35,7 +34,6 @@ const useStyles = makeStyles<Theme, { image?: string; isCompressing: boolean }>(
       margin: "0 auto",
       cursor: "pointer",
       fontSize: 40,
-      opacity: props.isCompressing ? 0.5 : 1,
     }),
     addPhotoWrapper: {
       position: "absolute",
@@ -66,10 +64,9 @@ export default function AddPhotoSection({
   const texts = getTexts({ page: "project", locale: locale });
   const [tempImage, setTempImage] = React.useState(projectData.image);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [isCompressing, setIsCompressing] = React.useState(false);
   const inputFileRef = React.useRef(null as HTMLInputElement | null);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
-  const classes = useStyles({ image: projectData.image, isCompressing });
+  const classes = useStyles(projectData);
 
   const handleDialogClickOpen = (dialogName) => {
     handleSetOpen({ [dialogName]: true });
@@ -99,32 +96,22 @@ export default function AddPhotoSection({
   };
 
   const handleAvatarDialogClose = async (image) => {
-    // setIsCompressing(true);
     handleSetOpen({ avatarDialog: false });
-
     if (image && image instanceof HTMLCanvasElement) {
       whitenTransparentPixels(image);
       image.toBlob(async function (blob) {
-        const options = {
-          maxSizeMB: 0.5,
-          useWebWorker: true,
-        };
-        const compressedFile = await imageCompression(blob as File, options);
-        const resizedBlob = URL.createObjectURL(compressedFile!);
+        const resizedBlob = URL.createObjectURL(blob!);
         const thumbnailBlob = await getResizedImage(
           URL.createObjectURL(blob!),
           290,
           160,
           "image/jpeg"
         );
-        // console.log("commmmm", isCompressing);
-
         handleSetProjectData({
           image: resizedBlob,
           thumbnail_image: thumbnailBlob,
         });
       }, "image/jpeg");
-      // setIsCompressing(false);
     }
   };
 
@@ -153,12 +140,7 @@ export default function AddPhotoSection({
             <div className={classes.addPhotoWrapper}>
               <div className={classes.addPhotoContainer}>
                 <AddAPhotoIcon className={classes.photoIcon} />
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={onUploadImageClick}
-                  // disabled={isCompressing}
-                >
+                <Button variant="contained" color="primary" onClick={onUploadImageClick}>
                   {!projectData.image ? texts.upload_image : texts.change_image}
                 </Button>
               </div>
