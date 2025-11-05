@@ -28,13 +28,13 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => {
       backgroundImage: `${props.image ? `url(${props.image})` : null}`,
       backgroundSize: "contain",
     }),
-    photoIcon: (props) => ({
+    photoIcon: {
       display: "block",
       marginBottom: theme.spacing(1),
       margin: "0 auto",
       cursor: "pointer",
       fontSize: 40,
-    }),
+    },
     addPhotoWrapper: {
       position: "absolute",
       left: "calc(50% - 85px)",
@@ -66,7 +66,6 @@ export default function AddPhotoSection({
   const [isLoading, setIsLoading] = React.useState(false);
   const inputFileRef = React.useRef(null as HTMLInputElement | null);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
-  const classes = useStyles(projectData);
 
   const handleDialogClickOpen = (dialogName) => {
     handleSetOpen({ [dialogName]: true });
