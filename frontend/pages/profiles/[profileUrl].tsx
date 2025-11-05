@@ -105,6 +105,7 @@ async function getProfileByUrlIfExists(profileUrl, token, locale) {
       token: token,
       locale: locale,
     });
+
     return parseProfile(resp.data, false);
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
