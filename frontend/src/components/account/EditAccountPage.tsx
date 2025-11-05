@@ -206,13 +206,13 @@ export default function EditAccountPage({
   allSectors,
   type,
   checkTranslationsRef,
+  sectorsTitle,
 }: any) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
   const organizationTexts = getTexts({ page: "organization", locale: locale });
   const imageInputFileRef = useRef<HTMLInputElement | null>(null);
   const closeIconRef = useRef<SVGSVGElement | null>(null);
-
   const [editedAccount, setEditedAccount] = React.useState({ ...account });
   const isOrganization = type === "organization";
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
@@ -551,6 +551,7 @@ export default function EditAccountPage({
             )}
             onSelectNewSector={onSelectNewSector}
             onClickRemoveSector={onClickRemoveSector}
+            title={sectorsTitle}
           />
         );
         //This is the fallback for normal textfields

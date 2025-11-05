@@ -49,6 +49,9 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from organization.models import Sector
+from organization.utility.sector import sanitize_sector_inputs
+from organization.models import UserProfileSectorMapping
 
 logger = logging.getLogger(__name__)
 
@@ -169,6 +172,43 @@ class SignUpView(APIView):
             message = "You're almost done! We have sent an email with a confirmation link to {}. Finish creating your account by clicking the link.".format(
                 user.email
             )  # NOQA
+
+        if "sectors" in request.data:
+            _sector_keys = request.data["sectors"]
+            sector_keys, err = sanitize_sector_inputs(_sector_keys)
+
+            if err:
+                # TODO: should I "crash" with 400, or what should I ommit the sectors
+                logger.error(
+                    "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                        err, _sector_keys
+                    )
+                )
+                sector_keys = []
+
+            sectors = []
+            for sector_key in sector_keys:
+                try:
+                    sector = Sector.objects.get(key=sector_key)
+                    sectors.append(sector)
+                except Sector.DoesNotExist:
+                    logger.error(
+                        "During signup {}: Passed sector {} does not exists".format(
+                            user_profile.url_slug,
+                            sector_key,
+                        )
+                    )
+            UserProfileSectorMapping.objects.bulk_create(
+                [
+                    UserProfileSectorMapping(
+                        sector=sector,
+                        user_profile=user_profile,
+                        order=len(sectors) - i,
+                    )
+                    for i, sector in enumerate(sectors)
+                ]
+            )
+
         user_profile.save()
 
         return Response({"success": message}, status=status.HTTP_201_CREATED)
@@ -456,6 +496,69 @@ class EditUserProfile(APIView):
                     user_profile.skills.add(skill)
                 except Skill.DoesNotExist:
                     logger.error("Passed skill id {} does not exists")
+
+        if "sectors" in request.data:
+            _sector_keys = request.data["sectors"]
+            sector_keys, err = sanitize_sector_inputs(_sector_keys)
+            if err:
+                # do not perform an update of sectors
+                logger.error(
+                    "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                        err, _sector_keys
+                    )
+                )
+                return Response(
+                    {
+                        "message": "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                            err, _sector_keys
+                        )
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            else:
+                # perform update of sectors
+                old_user_sector_mapping = UserProfileSectorMapping.objects.filter(
+                    user_profile=user_profile
+                )
+                # delete sectors that are not in the request data
+                for o_s_mapping in old_user_sector_mapping:
+                    if o_s_mapping.sector.key not in sector_keys:
+                        o_s_mapping.delete()
+
+                # add new sectors that are in the request data
+                old_sector_keys = list(
+                    set([x.sector.key for x in old_user_sector_mapping])
+                )
+
+                order_value = len(sector_keys)
+                for sector_key in sector_keys:
+                    # create mapping only if the sector is not already mapped
+                    # to the user profile
+
+                    if sector_key in old_sector_keys:
+                        mapping = UserProfileSectorMapping.objects.filter(
+                            sector__key=sector_key, user_profile=user_profile
+                        ).first()
+                        mapping.order = order_value
+                        mapping.save()
+                        order_value -= 1
+                    else:
+                        try:
+                            sector = Sector.objects.get(key=sector_key)
+                            UserProfileSectorMapping.objects.create(
+                                sector=sector,
+                                user_profile=user_profile,
+                                order=order_value,
+                            )
+                            order_value -= 1
+                        except Sector.DoesNotExist:
+                            logger.error(
+                                "Passed organization tag ID {} does not exist".format(
+                                    sector_key
+                                )
+                            )
+
+                pass
 
         user_profile.save()
 

@@ -380,6 +380,7 @@ async function getOrganizationByUrlIfExists(organizationUrl, token, locale, hubU
       token: token,
       locale: locale,
     });
+
     return parseOrganization(resp.data);
   } catch (err) {
     console.log(err);
