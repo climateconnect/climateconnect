@@ -3,8 +3,12 @@ from django.db import migrations, models
 from pathlib import Path
 import csv
 
-LOOKUP_FILE = '../../climateconnect_api/management/commands/osm_type_lookup_tables/lookup.csv'
-LOOKUP_OSM_ID_FILE = '../../climateconnect_api/management/commands/osm_type_lookup_tables/osm_id_lookup.csv'
+
+CURRENT_DIR = Path(__file__).resolve()
+LOOKUP_DIR = CURRENT_DIR.parent.parent.parent
+
+LOOKUP_FILE = str(LOOKUP_DIR / "climateconnect_api" / "management" / "commands" / "osm_type_lookup_tables" / "lookup.csv")
+LOOKUP_OSM_ID_FILE = str(LOOKUP_DIR / "climateconnect_api" / "management" / "commands" / "osm_type_lookup_tables" / "osm_id_lookup.csv")
 
 def safe_int_migration(str):
     if str is None:
@@ -47,7 +51,7 @@ def fill_osm_type(apps, schema_editor, lookup_file: str = LOOKUP_FILE, lookup_os
     #lookup for locations without osm_ids
     lookup_osm_id_path = Path(lookup_osm_id_file)
     if not lookup_osm_id_path.exists():
-        print(f"Error: lookup_file not found at path {lookup_path}")
+        print(f"Error: lookup_osm_id_file not found at path {lookup_osm_id_path}")
         return {}
 
     try:
