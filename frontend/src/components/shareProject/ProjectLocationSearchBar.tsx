@@ -1,6 +1,5 @@
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
-import { parseLocation } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import { Project } from "../../types";
 import UserContext from "../context/UserContext";
@@ -48,7 +47,6 @@ export default function ProjectLocationSearchBar({
       });
     }
   };
-
   const handleChangeAdditionalInfoText = (additionalInfo) => {
     handleSetProjectData({
       ...projectData,
@@ -78,7 +76,6 @@ export default function ProjectLocationSearchBar({
     (additionalProps.open = locationOptionsOpen),
       (additionalProps.handleSetOpen = handleSetLocationOptionsOpen);
   }
-
   return (
     <LocationSearchBar
       className={className}

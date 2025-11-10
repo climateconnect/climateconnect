@@ -94,7 +94,6 @@ export default function CreateOrganization({
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [existingUrlSlug, setExistingUrlSlug] = useState("");
   const [existingName, setExistingName] = useState("");
-
   const [organizationInfo, setOrganizationInfo] = useState<any>({
     name: "",
     hasparentorganization: false,
@@ -113,7 +112,6 @@ export default function CreateOrganization({
     },
     types: [] as any[],
   });
-
   const handleChangeTranslationContent = (locale, newTranslations, isManualChange) => {
     const newTranslationsObject = {
       ...translations,
@@ -186,7 +184,10 @@ export default function CreateOrganization({
         ...organizationInfo,
         name: values.organizationname,
         parentorganization: values.parentorganizationname,
-        location: parseLocation(location),
+        info: {
+          ...organizationInfo.info,
+          location: parseLocation(location, true),
+        },
         types: values.types,
       });
       /* This is required in the case that the user first inputs a name that is taken 
@@ -222,7 +223,10 @@ export default function CreateOrganization({
           ...organizationInfo,
           name: values.organizationname,
           parentorganization: values.parentorganizationname,
-          location: parseLocation(location),
+          info: {
+            ...organizationInfo.info,
+            location: parseLocation(location),
+          },
           types: values.orgtypes,
         });
         setCurStep(steps[1]);

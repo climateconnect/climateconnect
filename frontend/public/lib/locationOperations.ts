@@ -22,6 +22,7 @@ export function getNameFromLocation(location) {
     return location.city + "" + location.country;
   if (!location.address || !location.address.country) return location.display_name;
   const firstPartOrder = [
+    "hamlet",
     "village",
     "town",
     "city_district",
@@ -56,12 +57,14 @@ export function getNameFromLocation(location) {
       name: location.display_name,
     };
   }
-  const middlePartSuffixes = ["city", "state"];
+  const middlePartSuffixes = ["town", "city", "state"];
   const firstPart = getFirstPart(location.address, firstPartOrder);
   const middlePart = getMiddlePart(location.address, middlePartOrder, middlePartSuffixes);
+
   const lastPart = MAP_STATE_TO_COUNTRY.includes(location?.address?.state)
     ? location.address.state
     : location.address.country;
+
   const showMiddlePart = firstPart !== middlePart && middlePart !== lastPart;
   let name =
     firstPart +
@@ -116,6 +119,7 @@ export function getNameFromExactLocation(location) {
           location.address.house_number ? " " + location.address.house_number : ""
         }, `
       : "";
+
   const city = getCityOrCountyName(location.address);
   const country = MAP_STATE_TO_COUNTRY.includes(location?.address?.state)
     ? location.address.state
@@ -131,6 +135,7 @@ export function getNameFromExactLocation(location) {
     city: city,
     state: location.address.state,
     country: location.address.country,
+    address: { ...location.address },
   };
 }
 
@@ -258,6 +263,7 @@ export function parseLocation(location, isConcretePlace = false) {
     exact_address: exactAddress,
     additional_info: location?.additionalInfoText || location?.additionalInfo,
     is_exact_location: isConcretePlace,
+    address: { ...location_object },
   };
 }
 
@@ -335,6 +341,7 @@ export function getLocationFields({
       ref: locationInputRef,
       locationOptionsOpen: locationOptionsOpen,
       handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
+      enableExactLocation: true,
     },
   ];
 }

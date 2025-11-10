@@ -159,8 +159,8 @@ export default function BrowseContent({
 
   const [hash, setHash] = useState<BrowseTab | null>(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
-
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+  // Targets all screen sizes UP TO and including 960px.(i.e., tablet/desktop)
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down(961));
   const type_names = {
     projects: texts.projects,
     organizations: isNarrowScreen ? texts.orgs : texts.organizations,
