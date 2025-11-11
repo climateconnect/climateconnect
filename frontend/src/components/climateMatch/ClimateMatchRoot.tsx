@@ -174,12 +174,12 @@ export default function ClimateMatchRoot() {
       {step === 0 ? (
         //In the beginning we don't know the hub name and background picture of welcomeToClimateMatch yet
         //We still load the component in loading state because we need to know the height of the container
-        <WelcomeToClimateMatch
+        (<WelcomeToClimateMatch
           isLoading={isLoading}
           goToNextStep={goToNextStep}
           fromHub={fromHub}
           hasDoneClimateMatch={hasDoneClimateMatch}
-        />
+        />)
       ) : (
         <ClimateMatchQuestion
           questions={questions}
