@@ -1,20 +1,23 @@
-import type { Metadata } from "next";
+import { Metadata } from "next";
+import { AppProviders } from "./providers";
+import "../devlink/global.css";
+import "react-multi-carousel/lib/styles.css";
 
 export const metadata: Metadata = {
-  title: "Home",
-  description: "Welcome to Next.js",
+  title: "Climate Connect",
+  description: "Connect for climate action",
 };
 
 export default function RootLayout({
-  // Layouts must accept a children prop.
-  // This will be populated with nested layouts or pages
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html>
+      <body>
+        <AppProviders>{children}</AppProviders>
+      </body>
     </html>
   );
 }
