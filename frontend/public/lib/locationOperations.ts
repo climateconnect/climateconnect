@@ -9,15 +9,13 @@ const CUSTOM_NAME_MAPPINGS = {
 const MAP_STATE_TO_COUNTRY = ["Scotland", "Wales", "England", "Northern Ireland"];
 
 const buildLocationName = (firstPart: string, middlePart: string, lastPart: string): string => {
-
   const parts: string[] = [];
 
   if (firstPart) {
     parts.push(firstPart);
   }
 
-  const showMiddlePart =
-    middlePart && middlePart !== firstPart && middlePart !== lastPart;
+  const showMiddlePart = middlePart && middlePart !== firstPart && middlePart !== lastPart;
 
   if (showMiddlePart) {
     parts.push(middlePart);
@@ -131,6 +129,11 @@ const buildStreetAddress = (location): string => {
   return houseNumber ? `${road} ${houseNumber}` : road;
 };
 
+const buildCityAndCountryPart = (city: string, country: string, firstPart: string): string => {
+  const shouldIncludeCity = firstPart !== city && city;
+  return shouldIncludeCity ? `${city}, ${country}` : country;
+};
+
 export function getNameFromExactLocation(location) {
   //If the location object is empty, just return an empty string
   if (Object.keys(location).length === 0) {
@@ -143,7 +146,8 @@ export function getNameFromExactLocation(location) {
   const country = MAP_STATE_TO_COUNTRY.includes(location?.address?.state)
     ? location.address.state
     : location.address.country;
-  const cityAndCountry = `${firstPart != city && `${city}, `}${country}`;
+  const cityAndCountry = buildCityAndCountryPart(city, country, firstPart);
+
   let name = buildLocationName(firstPart, middlePart, cityAndCountry);
 
   //For certain locations our automatic name generation doesn't work. In this case we want to override the name with a custom one

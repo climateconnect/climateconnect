@@ -91,6 +91,32 @@ describe("getNameFromExactLocation", () => {
     });
   });
 
+  describe("given exact location is a city", () => {
+    it("should return exact location without duplicating the city name", () => {
+      const givenCityLocation = {
+        osm_type: "relation",
+        class: "place",
+        type: "city",
+        addresstype: "city",
+        name: "Name-Sample",
+        display_name: "Display-Name-Sample",
+        address: {
+          city: "City-Sample",
+          state: "State-Sample",
+          county: "County-Sample",
+          country: "Country-Sample",
+        },
+      };
+      const result = getNameFromExactLocation(givenCityLocation);
+      expect(result).toEqual({
+        name: "City-Sample, Country-Sample",
+        city: "City-Sample",
+        state: "State-Sample",
+        country: "Country-Sample",
+      });
+    });
+  });
+
   describe("given location is a concrete place of type hamlet", () => {
     describe("when town exists", () => {
       it("should return exact location with town", () => {
