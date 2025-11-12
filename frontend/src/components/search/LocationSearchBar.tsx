@@ -82,7 +82,7 @@ export default function LocationSearchBar({
         const nameObj = getNameFromExactLocation(newValue);
         return nameObj === "" ? nameObj : nameObj.name;
       } else {
-        return newValue.name ? newValue.name : newValue.simple_name;
+        return newValue.simple_name ? newValue.simple_name : newValue.name;
       }
     } else {
       return newValue;
@@ -195,18 +195,26 @@ export default function LocationSearchBar({
               data.push(option);
             }
           }
-          const options = data.map((o) => {
-            const nameObj = getNameFromExactLocation(o);
-            return {
-              ...o,
-              simple_name: enableExactLocation
-                ? nameObj === ""
-                  ? nameObj
-                  : nameObj.name
-                : getNameFromLocation(o).name,
-              key: o.place_id,
-            };
-          });
+
+          const getSimpleName = (location, enableExactLocation: boolean = false): string => {
+            if (!enableExactLocation) {
+              return getNameFromLocation(location).name;
+            }
+
+            const nameObj = getNameFromExactLocation(location);
+
+            if (nameObj === "") {
+              return "";
+            }
+
+            return nameObj.name;
+          };
+
+          const options = data.map((option) => ({
+            ...option,
+            simple_name: getSimpleName(option, enableExactLocation),
+            key: option.place_id,
+          }));
           setOptions(getOptionsWithoutRedundancies(options));
           setLoading(false);
         }
