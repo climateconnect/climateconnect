@@ -283,7 +283,6 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     project_parents = serializers.SerializerMethodField()
     # TODO: remove tags
     sectors = serializers.SerializerMethodField()
-    tags = serializers.SerializerMethodField()
     project_type = SerializerMethodField()
     image = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
@@ -303,7 +302,6 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             "location",
             "project_type",
             "project_parents",
-            "tags",
             "sectors",
             "is_draft",
             "short_description",
@@ -391,9 +389,17 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         return serializer.data["type_id"]
 
     def get_number_of_comments(self, obj):
+        # If annotated (via .annotate(comment_count=...)), use it
+        if hasattr(obj, "comment_count") and obj.comment_count is not None:
+            return obj.comment_count
+
         return obj.project_comment.count()
 
     def get_number_of_likes(self, obj):
+        # If annotated (via .annotate(like_count=...)), use it
+        if hasattr(obj, "like_count") and obj.like_count is not None:
+            return obj.like_count
+
         return obj.project_liked.count()
 
     def get_collaborating_organizations(self, obj):
