@@ -10,7 +10,7 @@ LOOKUP_DIR = CURRENT_DIR.parent.parent.parent
 LOOKUP_FILE = str(LOOKUP_DIR / "climateconnect_api" / "management" / "commands" / "osm_type_lookup_tables" / "lookup.csv")
 LOOKUP_OSM_ID_FILE = str(LOOKUP_DIR / "climateconnect_api" / "management" / "commands" / "osm_type_lookup_tables" / "osm_id_lookup.csv")
 
-def safe_int_migration(str):
+def safe_int_conversion(str):
     if str is None:
         return None
     str = str.strip() #remove spaces, tabs, ...
@@ -21,6 +21,26 @@ def safe_int_migration(str):
     except Exception as e:
         print(f"WARNING: '{str}' could not be converted to int")
         return None
+    
+
+def open_csv(file_path: str) -> list[dict]:
+    rows = []
+    try:
+        with open(file_path, mode="r", newline="", encoding="utf-8") as file:
+            # csv.DictReader maps the header row to keys in a dictionary for each data row
+            reader = csv.DictReader(file)
+            if reader.fieldnames:  # clean fieldnames from invisible strings
+                cleaned_fieldnames = [
+                    name.strip().replace('"', "").replace("\ufeff", "")
+                    for name in reader.fieldnames
+                ]
+                reader.fieldnames = cleaned_fieldnames
+            for row in reader:
+                rows.append(row)
+    except FileNotFoundError:
+        print(f"Error: The file '{file_path}' was not found.")
+        exit(1)
+    return rows
 
 
 def fill_osm_type(apps, schema_editor, lookup_file: str = LOOKUP_FILE, lookup_osm_id_file: str = LOOKUP_OSM_ID_FILE):
@@ -31,47 +51,45 @@ def fill_osm_type(apps, schema_editor, lookup_file: str = LOOKUP_FILE, lookup_os
         return {}
 
     #normal lookup
-    try:
-        with open(lookup_path, mode='r', encoding='utf-8') as file:
-            reader = csv.DictReader(file)
-            updated_count = 0
-            for line in reader:
-                osm_id = safe_int_migration(line['osm_id'])
-                if osm_id is None: 
-                    continue
-                updated_count += Location.objects.filter(
-                    osm_id=osm_id
-                ).update(
-                    osm_type=line['osm_type']
-                )
-            print(f"Updated {updated_count} locations with respective osm_type")
-    except Exception as e:
-        print(f"Error: {e}")
+    lookup_data = open_csv(lookup_path)
+    updated_count = 0
+    for line in lookup_data:
+            osm_id = safe_int_conversion(line['osm_id'])
+            if osm_id is None: 
+                continue
+            updated_count += Location.objects.filter(
+                osm_id=osm_id
+            ).update(
+                osm_type=line['osm_type']
+            )
+    print(f"Updated {updated_count} locations with respective osm_type")
     
-    #lookup for locations without osm_ids
+    
+    #lookup for locations without osm_ids or invalid osm_ids
     lookup_osm_id_path = Path(lookup_osm_id_file)
     if not lookup_osm_id_path.exists():
         print(f"Error: lookup_osm_id_file not found at path {lookup_osm_id_path}")
         return {}
 
-    try:
-        with open(lookup_osm_id_path, mode='r', encoding='utf-8') as file:
-            reader = csv.DictReader(file)
-            updated_count = 0
-            for line in reader:
-                place_id = safe_int_migration(line['place_id'])
-                new_osm_id = safe_int_migration(line['osm_id'])
-                if place_id is None:
-                    continue
-                updated_count += Location.objects.filter(
-                    place_id=place_id
-                ).update(
-                    osm_id=new_osm_id,
-                    osm_type=line['osm_type']
-                )
-            print(f"Updated {updated_count} locations with respective osm_id and osm_type")
-    except Exception as e:
-        print(f"Error: {e}")
+    osm_lookup_data = open_csv(lookup_osm_id_path)
+    updated_count = 0
+    for line in osm_lookup_data:
+        place_id = safe_int_conversion(line['place_id'])
+        new_osm_id = safe_int_conversion(line['osm_id'])
+        if place_id is None:
+            continue
+        updated_count += Location.objects.filter(
+            place_id=place_id
+        ).update(
+            osm_id=new_osm_id,
+            osm_type=line['osm_type']
+        )
+        
+        
+        print(f"Updated {updated_count} locations with respective osm_id and osm_type")
+
+  
+    
 
 
 class Migration(migrations.Migration):
