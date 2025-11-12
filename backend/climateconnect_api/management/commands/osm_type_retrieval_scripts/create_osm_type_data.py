@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 
 LOCATIONS_URL = "https://nominatim.openstreetmap.org/lookup"
-HEADERS = {"User-Agent": "DjangoProjekt/1.0 (katharina.auer@climateconnect.earth)"}
+HEADERS = {"User-Agent": "DjangoProjekt/1.0 (<someone>@climateconnect.earth)"}
 
 
 def discover_osm_type(osm_ids: list) -> dict | None:
@@ -15,11 +15,15 @@ def discover_osm_type(osm_ids: list) -> dict | None:
     results = {}
     ids_with_multiple_possible_types = []
 
+    valid_osm_ids = set()
+    invalid_osm_ids = set()
+    #also create list for osm_ids that are totally invalid, no results found
+
     osm_ids_with_types = []
     for osm_id in osm_ids:
         osm_id_str = str(osm_id)
         for type_prefix in "RWN":
-            # here RNW would be better instead of RWN
+            # here RNW would be better instead of RWN (see comment below)
             osm_ids_with_types.append(type_prefix + osm_id_str)
 
     osm_ids_string = ",".join(osm_ids_with_types)
@@ -37,6 +41,8 @@ def discover_osm_type(osm_ids: list) -> dict | None:
                 dup_osm_id = d["osm_id"]
                 ids_with_multiple_possible_types.append(dup_osm_id)
                 continue
+            
+            valid_osm_ids.add(int(d["osm_id"]))
 
             results[d["osm_id"]] = {
                 "osm_type": d["osm_type"][0].upper(),
@@ -44,10 +50,10 @@ def discover_osm_type(osm_ids: list) -> dict | None:
                 "name": d["display_name"],
             }
 
-        if len(ids_with_multiple_possible_types) != 0:
-            print(
-                f"WARNING: osm_ids with multiple possible types found: {ids_with_multiple_possible_types}"
-            )
+        # if len(ids_with_multiple_possible_types) != 0:
+        #     print(
+        #         f"WARNING: osm_ids with multiple possible types found: {ids_with_multiple_possible_types}"
+        #     )
             # here I reviewed every osm_id with multipe possible types manually and compared the name in the database with the 'display_name'
             # this was a lot of work, so maybe think of some automation for future execution of this script (problem:
             #         sometimes the 'name' and 'display_name' are not exactly equal)
@@ -55,7 +61,12 @@ def discover_osm_type(osm_ids: list) -> dict | None:
             # reason: the first match was written to lookup, R was the right type a lot of times compared to N,
             #         and N was the right type most of the times compared to W
 
-        return results
+        #some osm_ids are not valid anymore, find and return them
+        for id in osm_ids:
+            if int(id) not in valid_osm_ids:
+                invalid_osm_ids.add(id)
+
+        return results, invalid_osm_ids
 
     except requests.RequestException as e:
         print(f"Error while discovering osm_type for osm_id {osm_id}: {e}")
@@ -69,6 +80,8 @@ def create_csv_lookup_table(osm_ids: list, outfile: str) -> None:
     outpath = Path(outfile)
     outpath.parent.mkdir(parents=True, exist_ok=True)
 
+    invalid_osm_ids = set()
+
     try:
         with open(outpath, "w", newline="", encoding="utf-8") as csvout:
             writer = csv.DictWriter(csvout, fieldnames=fieldnames)
@@ -77,15 +90,38 @@ def create_csv_lookup_table(osm_ids: list, outfile: str) -> None:
 
             for i in tqdm(range(0, len(osm_ids), 16)):
 
-                entries = discover_osm_type(osm_ids[i : i + 16])
+                entries, invalids = discover_osm_type(osm_ids[i : i + 16])
                 # the limiit of nominatim lookup is 50 per request, hence 16 is the most osm_ids that
                 # can be sent at once (3 osm_types per osm_id are queried)
+
+                invalid_osm_ids.update(invalids)
 
                 for entry in entries.values():
                     writer.writerow(entry)
                     rows_written += 1
 
             print(f"\n Successfully saved {rows_written} entries to {outfile}.")
+
+    except Exception as e:
+        print(f"Error: {e}")
+    
+    write_invalid_osm_ids_to_file(invalid_osm_ids, "path/to/invalid_osm_ids_file.csv")
+
+
+def write_invalid_osm_ids_to_file(invalid_osm_ids: set[str], outfile: str):
+    outpath = Path(outfile)
+    fieldnames = ["osm_id"]
+    try:
+        with open(outpath, "w", newline="", encoding="utf-8") as csvout:
+            writer = csv.DictWriter(csvout, fieldnames=fieldnames)
+            writer.writeheader()
+            rows_written = 0
+
+            for osm_id in tqdm(invalid_osm_ids):
+                    writer.writerow({"osm_id": osm_id})
+                    rows_written += 1
+
+            print(f"\n Successfully saved {rows_written} osm_ids to {outfile}.")
 
     except Exception as e:
         print(f"Error: {e}")
@@ -109,8 +145,11 @@ def extract_osm_ids(csv_path):
             for row in reader:
                 if row["osm_id"]:
                     try:
-                        osm_id_int = int(row["osm_id"].strip())
-                        unique_osm_ids.add(osm_id_int)
+                        osm_id_str = row["osm_id"].strip()
+                        if osm_id_str.isdigit():
+                            unique_osm_ids.add(osm_id_str)
+                        else:
+                            print(f"WARNING: non-string osm_id: {osm_id_str}")
 
                     except ValueError:
                         print(f"Warning: invalid osm_id '{row['osm_id']}' skipped.")
@@ -132,6 +171,6 @@ def extract_osm_ids(csv_path):
 # test_place_ids = all_place_ids[0:10]
 # test_place_ids = [281739181, 88715228, 256856867, 256305646, 82615589, 83293355, 115047027, 297417241, 307525758, 258543476]
 # test_osm_ids = [7444, 8649, 16132]
-test_osm_ids = extract_osm_ids("<path_to_csv_of_database>")
-csv_path = "<path_to_future_lookup_csv_table>"
+test_osm_ids = extract_osm_ids("path/to/database_table.csv")
+csv_path = "path/to/output_lookup.csv"
 create_csv_lookup_table(test_osm_ids, csv_path)
