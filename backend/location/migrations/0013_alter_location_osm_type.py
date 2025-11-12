@@ -86,7 +86,7 @@ def fill_osm_type(apps, schema_editor, lookup_file: str = LOOKUP_FILE, lookup_os
         )
         
         
-        print(f"Updated {updated_count} locations with respective osm_id and osm_type")
+    print(f"Updated {updated_count} locations with respective osm_id and osm_type")
 
   
     
