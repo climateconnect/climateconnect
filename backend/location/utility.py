@@ -16,6 +16,14 @@ import json
 
 logger = logging.getLogger("django")
 
+def _osm_type_char(v):
+    if v is None:
+        return None
+    mapping = {"relation": "R", "way": "W", "node": "N", 
+               "r": "R", "w": "W", "n": "N", 
+               "R": "R", "W": "W", "N": "N"}
+    return mapping.get(str(v).lower())
+
 
 def get_legacy_location(location_object):
     required_params = ["country"]
@@ -96,7 +104,7 @@ def get_location(location_object):
 
     loc = Location.objects.create(
         osm_id=location_object.get("osm_id", None),
-        osm_type=location_object.get("osm_type", None),
+        osm_type=_osm_type_char(location_object.get("osm_type", None)),
         place_id=location_object["place_id"],
         city=location_object["city"],
         state=location_object["state"],
@@ -165,7 +173,7 @@ def format_location(location_string, already_loaded):
         "type": location_object["geojson"]["type"],
         "place_id": location_object["place_id"],
         "osm_id": location_object["osm_id"],
-        "osm_type": location_object["osm_type"],
+        "osm_type": _osm_type_char(location_object["osm_type"]),
         "name": location_name["name"],
         "city": location_name["city"],
         "state": location_name["state"],

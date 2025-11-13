@@ -38,8 +38,7 @@ def open_csv(file_path: str) -> list[dict]:
             for row in reader:
                 rows.append(row)
     except FileNotFoundError:
-        print(f"Error: The file '{file_path}' was not found.")
-        exit(1)
+        raise FileNotFoundError(f"Required migration data file '{file_path}' was not found.")
     return rows
 
 
@@ -47,8 +46,7 @@ def fill_osm_type(apps, schema_editor, lookup_file: str = LOOKUP_FILE, lookup_os
     Location = apps.get_model("location", "Location")
     lookup_path = Path(lookup_file)
     if not lookup_path.exists():
-        print(f"Error: lookup_file not found at path {lookup_path}")
-        return {}
+        raise RuntimeError(f"Error: lookup_file not found at path {lookup_path}")
 
     #normal lookup
     lookup_data = open_csv(lookup_path)

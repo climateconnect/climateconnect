@@ -31,7 +31,7 @@ def discover_osm_type(osm_ids: list) -> dict | None:
     params = {"osm_ids": osm_ids_string, "format": "json", "extratags": 0}
 
     try:
-        response = requests.get(LOCATIONS_URL, params=params, headers=HEADERS)
+        response = requests.get(LOCATIONS_URL, params=params, headers=HEADERS, timeout=20)
 
         response.raise_for_status()
         data = response.json()
@@ -149,7 +149,7 @@ def extract_osm_ids(csv_path):
                         if osm_id_str.isdigit():
                             unique_osm_ids.add(osm_id_str)
                         else:
-                            print(f"WARNING: non-string osm_id: {osm_id_str}")
+                            print(f"WARNING: non-numeric osm_id: {osm_id_str}")
 
                     except ValueError:
                         print(f"Warning: invalid osm_id '{row['osm_id']}' skipped.")

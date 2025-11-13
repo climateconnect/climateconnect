@@ -24,19 +24,20 @@ def discover_osm_id(loc: dict) -> dict | None:
     }
 
     try:
-        response = requests.get(SEARCH_URL, params=params, headers=HEADERS)
+        response = requests.get(SEARCH_URL, params=params, headers=HEADERS, timeout=20)
         response.raise_for_status()
         data = response.json()
         # best match is data[0]
         if not data:
             print(f"Warning: No OSM data found for name: '{name}' (location_id: {loc.id})")
+            return None
         d = data[0]
         result = {
             "loc_id": id,
             "place_id": place_id,
             "name": name,
             "display_name": d.get("display_name", ""),
-            "osm_type": d.get("osm_type")[0].upper(),
+            "osm_type": d.get("osm_type")[0].upper() if d.get("osm_type") else None,
             "osm_id": d.get("osm_id"),
         }
 
@@ -91,8 +92,7 @@ def open_csv(file_path: str):
             for row in reader:
                 rows.append(row)
     except FileNotFoundError:
-        print(f"Error: The file '{file_path}' was not found.")
-        exit(1)
+        raise FileNotFoundError(f"The file '{file_path}' was not found.")
     return rows
 
 
