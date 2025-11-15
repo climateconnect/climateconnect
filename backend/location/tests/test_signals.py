@@ -1,7 +1,10 @@
 from unittest.mock import patch
+
 from django.test import TestCase
+
 from location.models import Location
 from location.tasks import fetch_and_create_location_translations
+
 
 class LocationSignalsTest(TestCase):
 
