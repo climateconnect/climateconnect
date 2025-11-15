@@ -1,10 +1,12 @@
-from celery import shared_task
-from backend import location
-from location.models import Location , LocationTranslation
-import requests
 import logging
-from django.db import IntegrityError, transaction
+
+import requests
+from celery import shared_task
 from django.conf import settings
+from django.db import IntegrityError, transaction
+
+from backend import location
+from location.models import Location, LocationTranslation
 
 logger = logging.getLogger(__name__)
 
