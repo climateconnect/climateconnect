@@ -35,3 +35,5 @@ jobs:
         run: yarn prettier '**/*.{js,jsx,ts,tsx,json,md}' --check
       - name: Typescript Compile frontend
         run: yarn tsc
+      - name: Run frontend tests
+        run: yarn test
