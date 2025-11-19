@@ -28,9 +28,23 @@ const buildLocationName = (firstPart: string, middlePart: string, lastPart: stri
   return parts.join(", ");
 };
 
+type DisplayLocation = {
+  name: string;
+  city: string;
+  state: string;
+  country: string;
+};
+
+const DEFAULT_DISPLAY_LOCATION: DisplayLocation = {
+  name: "",
+  city: "",
+  state: "",
+  country: "",
+};
+
 //This function has an equivalent in backend/location/utility.py -> format_location_name
 //We should consider using the same codebase for these
-export function getNameFromLocation(location) {
+export function getDisplayLocationFromLocation(location): DisplayLocation {
   if (location.added_manually)
     return {
       name: location.name,
@@ -39,8 +53,12 @@ export function getNameFromLocation(location) {
       country: location.country,
     };
   if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true")
-    return location.city + "" + location.country;
-  if (!location.address || !location.address.country) return location.display_name;
+    return {
+      ...DEFAULT_DISPLAY_LOCATION,
+      name: location.city + "" + location.country,
+    };
+  if (!location.address || !location.address.country)
+    return { ...DEFAULT_DISPLAY_LOCATION, name: location.display_name };
   const firstPartOrder = [
     "hamlet",
     "village",
@@ -74,6 +92,7 @@ export function getNameFromLocation(location) {
   ];
   if (isCountry(location)) {
     return {
+      ...DEFAULT_DISPLAY_LOCATION,
       country: location.address.country,
       name: location.display_name,
     };
@@ -134,10 +153,10 @@ const buildCityAndCountryPart = (city: string, country: string, firstPart: strin
   return shouldIncludeCity ? `${city}, ${country}` : country;
 };
 
-export function getNameFromExactLocation(location) {
-  //If the location object is empty, just return an empty string
+export function getDisplayLocationFromExactLocation(location): DisplayLocation {
+  //If the location object is empty, just return empty strings
   if (Object.keys(location).length === 0) {
-    return "";
+    return DEFAULT_DISPLAY_LOCATION;
   }
   const isConcretePlace = isExactLocation(location);
   const firstPart = isConcretePlace ? getPlaceSpecificName(location) : "";
@@ -243,9 +262,9 @@ const getLocationType = (location) => {
 };
 
 export function parseLocation(location, isConcretePlace = false) {
-  const location_object = isConcretePlace
-    ? getNameFromExactLocation(location)
-    : getNameFromLocation(location);
+  const displayLocation = isConcretePlace
+    ? getDisplayLocationFromExactLocation(location)
+    : getDisplayLocationFromLocation(location);
   //don't return anything if in legacy mode
   if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
     return location;
@@ -276,12 +295,12 @@ export function parseLocation(location, isConcretePlace = false) {
     geojson: location.geojson ? location.geojson : generateGeoJson(location),
     place_id: location?.place_id,
     osm_id: location?.osm_id,
-    name: location_object.name,
+    name: displayLocation.name,
     lon: location?.lon,
     lat: location?.lat,
-    city: location_object.city,
-    state: location_object.state,
-    country: location_object.country,
+    city: displayLocation.city,
+    state: displayLocation.state,
+    country: displayLocation.country,
     place_name: placeName,
     exact_address: exactAddress,
     additional_info: location?.additionalInfoText || location?.additionalInfo,

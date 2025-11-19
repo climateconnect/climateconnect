@@ -5,8 +5,8 @@ import axios from "axios";
 import { debounce } from "lodash";
 import React, { useContext, useEffect } from "react";
 import {
-  getNameFromLocation,
-  getNameFromExactLocation,
+  getDisplayLocationFromLocation,
+  getDisplayLocationFromExactLocation,
   isExactLocation,
 } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
@@ -79,8 +79,7 @@ export default function LocationSearchBar({
       return inputValue ? inputValue : "";
     } else if (typeof newValue === "object") {
       if (enableExactLocation) {
-        const nameObj = getNameFromExactLocation(newValue);
-        return nameObj === "" ? nameObj : nameObj.name;
+        return getDisplayLocationFromExactLocation(newValue).name;
       } else {
         return newValue.simple_name ? newValue.simple_name : newValue.name;
       }
@@ -198,16 +197,10 @@ export default function LocationSearchBar({
 
           const getSimpleName = (location, enableExactLocation: boolean = false): string => {
             if (!enableExactLocation) {
-              return getNameFromLocation(location).name;
+              return getDisplayLocationFromLocation(location).name;
             }
 
-            const nameObj = getNameFromExactLocation(location);
-
-            if (nameObj === "") {
-              return "";
-            }
-
-            return nameObj.name;
+            return getDisplayLocationFromExactLocation(location).name;
           };
 
           const options = data.map((option) => ({

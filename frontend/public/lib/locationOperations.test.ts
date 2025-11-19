@@ -1,4 +1,7 @@
-import { getNameFromExactLocation, getNameFromLocation } from "./locationOperations";
+import {
+  getDisplayLocationFromExactLocation,
+  getDisplayLocationFromLocation,
+} from "./locationOperations";
 const GIVEN_HAMLET_TYPE = "hamlet";
 const GIVEN_HAMLET_LOCATION_WITH_TOWN = {
   display_name: "Display-Name-Sample",
@@ -48,7 +51,7 @@ describe("getNameFromExactLocation", () => {
       },
     };
     it("should return exact location", () => {
-      const result = getNameFromExactLocation(given_concrete_place_location);
+      const result = getDisplayLocationFromExactLocation(given_concrete_place_location);
 
       expect(result).toEqual({
         name: "Village-Sample, Town-Sample, Country-Sample",
@@ -80,7 +83,7 @@ describe("getNameFromExactLocation", () => {
       },
     };
     it("should return exact location", () => {
-      const result = getNameFromExactLocation(given_concrete_place_location);
+      const result = getDisplayLocationFromExactLocation(given_concrete_place_location);
 
       expect(result).toEqual({
         name: "Amenity-Sample, Road-Sample House-Number-Sample, Town-Sample, Country-Sample",
@@ -107,7 +110,7 @@ describe("getNameFromExactLocation", () => {
           country: "Country-Sample",
         },
       };
-      const result = getNameFromExactLocation(givenCityLocation);
+      const result = getDisplayLocationFromExactLocation(givenCityLocation);
       expect(result).toEqual({
         name: "City-Sample, Country-Sample",
         city: "City-Sample",
@@ -120,7 +123,7 @@ describe("getNameFromExactLocation", () => {
   describe("given location is a concrete place of type hamlet", () => {
     describe("when town exists", () => {
       it("should return exact location with town", () => {
-        const result = getNameFromExactLocation(GIVEN_HAMLET_LOCATION_WITH_TOWN);
+        const result = getDisplayLocationFromExactLocation(GIVEN_HAMLET_LOCATION_WITH_TOWN);
         expect(result).toEqual({
           name: "Hamlet-Sample, Town-Sample, Country-Sample",
           city: "Town-Sample",
@@ -131,7 +134,7 @@ describe("getNameFromExactLocation", () => {
     });
     describe("when town does not exist", () => {
       it("should return exact location with county", () => {
-        const result = getNameFromExactLocation(GIVEN_HAMLET_LOCATION_WITHOUT_TOWN);
+        const result = getDisplayLocationFromExactLocation(GIVEN_HAMLET_LOCATION_WITHOUT_TOWN);
         expect(result).toEqual({
           city: "County-Sample", // NOT A CITY
           state: "State-Sample",
@@ -153,7 +156,7 @@ describe("getNameFromLocation", () => {
       country: "Sample Country",
     };
 
-    const result = getNameFromLocation(location);
+    const result = getDisplayLocationFromLocation(location);
 
     expect(result).toEqual({
       name: "Custom Location",
@@ -171,9 +174,9 @@ describe("getNameFromLocation", () => {
       country: "Legacy Country",
     };
 
-    const result = getNameFromLocation(location);
+    const result = getDisplayLocationFromLocation(location);
 
-    expect(result).toBe("Legacy CityLegacy Country");
+    expect(result.name).toBe("Legacy CityLegacy Country");
 
     delete process.env.ENABLE_LEGACY_LOCATION_FORMAT;
   });
@@ -184,9 +187,14 @@ describe("getNameFromLocation", () => {
       address: null,
     };
 
-    const result = getNameFromLocation(location);
+    const result = getDisplayLocationFromLocation(location);
 
-    expect(result).toBe("Dummy Location Name");
+    expect(result).toEqual({
+      city: "",
+      country: "",
+      name: "Dummy Location Name",
+      state: "",
+    });
   });
 
   it("should return country and display_name for country locations", () => {
@@ -196,11 +204,13 @@ describe("getNameFromLocation", () => {
       display_name: "India",
     };
 
-    const result = getNameFromLocation(location);
+    const result = getDisplayLocationFromLocation(location);
 
     expect(result).toEqual({
+      city: "",
       country: "India",
       name: "India",
+      state: "",
     });
   });
 
@@ -217,7 +227,7 @@ describe("getNameFromLocation", () => {
       },
     };
 
-    const result = getNameFromLocation(location);
+    const result = getDisplayLocationFromLocation(location);
 
     expect(result).toEqual({
       city: "City-Sample",
@@ -239,13 +249,13 @@ describe("getNameFromLocation", () => {
       },
     };
 
-    const result = getNameFromLocation(location);
+    const result = getDisplayLocationFromLocation(location);
 
     expect(result.name).toBe("Scotland");
   });
   describe("given location type is a hamlet", () => {
     it("should return the city in the middle part in name when it exists", () => {
-      const result = getNameFromLocation(GIVEN_HAMLET_LOCATION_WITH_TOWN);
+      const result = getDisplayLocationFromLocation(GIVEN_HAMLET_LOCATION_WITH_TOWN);
       expect(result).toEqual({
         city: "Hamlet-Sample", // TODO: is this a problem?
         state: "State-Sample",
@@ -254,7 +264,7 @@ describe("getNameFromLocation", () => {
       });
     });
     it("should return the county in the middle part in name when town does not exist", () => {
-      const result = getNameFromLocation(GIVEN_HAMLET_LOCATION_WITHOUT_TOWN);
+      const result = getDisplayLocationFromLocation(GIVEN_HAMLET_LOCATION_WITHOUT_TOWN);
       expect(result).toEqual({
         city: "Hamlet-Sample",
         state: "State-Sample",
