@@ -88,20 +88,29 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     justifyContent: "space-around",
     alignItems: "center",
+    marginRight: "40px",
+    marginLeft: "40px",
   },
   white: {
     color: "white",
   },
 }));
 
+type Props = {
+  hubUrl?: string;
+};
+
 //If we want to reuse this, this has to be translated!
-export default function DonationCampaignInformation() {
+export default function DonationCampaignInformation({ hubUrl }: Props) {
   const classes = useStyles();
   const cookies = new Cookies();
   const [open, setOpen] = React.useState(!cookies.get("hideDonationCampaign"));
   const [expanded, setExpanded] = React.useState(false);
-  const { donationGoal, locale } = useContext(UserContext);
+  const { CUSTOM_HUB_URLS, donationGoals, locale } = useContext(UserContext);
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const texts = getTexts({ page: "donate", locale: locale, classes: classes });
+  const donationGoal =
+    donationGoals?.find((goal) => goal.hub === hubUrl) || donationGoals?.find((goal) => !goal.hub);
 
   const handleClose = () => {
     const expiry = daysInFuture(3);
@@ -113,7 +122,7 @@ export default function DonationCampaignInformation() {
   const handleToggleExpanded = () => {
     setExpanded(!expanded);
   };
-  if (!donationGoal?.goal_amount) return <></>;
+  if ((isCustomHub && !donationGoal?.hub) || !donationGoal?.goal_amount) return <></>;
   return (
     <>
       {open && (
