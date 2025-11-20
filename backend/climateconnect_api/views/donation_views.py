@@ -21,6 +21,7 @@ class GetDonationGoalProgress(APIView):
     Deprecated
     Use getDonationGoalsProgresses instead
     """
+
     permission_classes = [AllowAny]
 
     def get(self, request):
@@ -32,6 +33,7 @@ class GetDonationGoalProgress(APIView):
         serializer = DonationGoalSerializer(goal, many=False)
         return Response(serializer.data)
 
+
 class GetDonationGoalsProgresses(APIView):
     permission_classes = [AllowAny]
 
@@ -40,6 +42,7 @@ class GetDonationGoalsProgresses(APIView):
         goals = DonationGoal.objects.filter(start_date__lte=now, end_date__gte=now)
         serializer = DonationGoalSerializer(goals, many=True)
         return Response(serializer.data)
+
 
 class GetDonorsWithBadges(ListAPIView):
     permission_classes = [AllowAny]

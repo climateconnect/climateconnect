@@ -144,10 +144,10 @@ urls = [
         name="get-donations-this-month",
     ),
     path(
-       "api/donation_goals_progresses/",
-       donation_views.GetDonationGoalsProgresses.as_view(),
-       name="get-donations-this-month",
-   ),
+        "api/donation_goals_progresses/",
+        donation_views.GetDonationGoalsProgresses.as_view(),
+        name="get-donations-this-month",
+    ),
     path(
         "api/translate/",
         translation_views.TranslateTextView.as_view(),
