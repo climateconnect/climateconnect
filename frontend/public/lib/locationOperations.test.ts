@@ -8,7 +8,7 @@ const GIVEN_HAMLET_LOCATION_WITH_TOWN = {
   type: GIVEN_HAMLET_TYPE,
   addresstype: GIVEN_HAMLET_TYPE,
   class: "place",
-  name: "Hamlet-Sample",
+  name: "Name-Sample",
   address: {
     country: "Country-Sample",
     state: "State-Sample",
@@ -23,7 +23,7 @@ const GIVEN_HAMLET_LOCATION_WITHOUT_TOWN = {
   type: GIVEN_HAMLET_TYPE,
   addresstype: GIVEN_HAMLET_TYPE,
   class: "place",
-  name: "Hamlet-Sample",
+  name: "Name-Sample",
   address: {
     country: "Country-Sample",
     state: "State-Sample",

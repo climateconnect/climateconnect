@@ -191,6 +191,7 @@ MAP_STATE_TO_COUNTRY = ["Scotland", "Wales", "England", "Northern Ireland"]
 # We should consider using the same codebase for these
 def format_location_name(location):
     first_part_order = [
+        "hamlet",
         "village",
         "town",
         "city_district",
@@ -210,6 +211,7 @@ def format_location_name(location):
     ]
     middle_part_order = [
         "city_district",
+        "county",
         "district",
         "suburb",
         "borough",
@@ -226,7 +228,7 @@ def format_location_name(location):
             "name": location["display_name"],
         }
 
-    middle_part_suffixes = ["city", "state"]
+    middle_part_suffixes = ["town", "city", "county", "state"]
     first_part = get_first_part(location["address"], first_part_order)
     middle_part = get_middle_part(
         location["address"], middle_part_order, middle_part_suffixes
@@ -236,23 +238,26 @@ def format_location_name(location):
         if location["address"].get("state") in MAP_STATE_TO_COUNTRY
         else location["address"]["country"]
     )
-    show_middle_part = first_part != middle_part and middle_part != last_part
-    name = (
-        first_part
-        + ", "
-        + (middle_part if show_middle_part else "")
-        + (", " if show_middle_part and middle_part and len(middle_part) > 0 else "")
-        + last_part
-    )
+    name = build_location_name(first_part, middle_part, last_part)
+
     # For certain locations our automatic name generation doesn't work. In this case we want to override the name with a custom one
     if name in CUSTOM_NAME_MAPPINGS:
         name = CUSTOM_NAME_MAPPINGS[name]
     return {
         "city": first_part,
-        "state": middle_part,
+        "state": location["address"].get("state") or middle_part,
         "country": location["address"]["country"],
         "name": name,
     }
+
+
+def build_location_name(first_part, middle_part, last_part):
+    name_parts = [first_part]
+    if middle_part and middle_part != first_part and middle_part != last_part:
+        name_parts.append(middle_part)
+    if last_part and last_part != first_part:
+        name_parts.append(last_part)
+    return ", ".join(name_parts)
 
 
 def is_country(location):
