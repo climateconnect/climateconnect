@@ -76,7 +76,7 @@ export function whitenTransparentPixels(canvas) {
   ctx.putImageData(imgd, 0, 0);
 }
 
-export async function getCompressedJPG(file, maxSizeMB): Promise<string> {
+export async function convertToJPGWithAspectRatio(file): Promise<string> {
   const canvas = document.createElement("canvas");
   const image = new Image();
   return new Promise(function (resolve, reject) {
