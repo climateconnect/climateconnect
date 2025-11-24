@@ -5,7 +5,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install Python
         uses: actions/setup-python@v6
         with:
@@ -43,7 +43,7 @@ jobs:
   #         --health-timeout=5s
   #         --health-retries=5
   #   steps:
-  #     - uses: actions/checkout@v4
+  #     - uses: actions/checkout@v6
   #     - name: Wait for DB
   #       run: |
   #         echo "Waiting for PostgreSQL to be ready..."
