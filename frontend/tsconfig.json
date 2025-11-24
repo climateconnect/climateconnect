@@ -24,7 +24,12 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/devlink": ["./devlink"],
+      "@/devlink/*": ["./devlink/*"]
+    }
   },
   "include": [
     "src/*",

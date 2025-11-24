@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import CssBaseline from "@mui/material/CssBaseline";
 import { Theme, StyledEngineProvider } from "@mui/material/styles";
@@ -15,6 +15,7 @@ import theme from "../src/themes/theme";
 import { CcLocale } from "../src/types";
 import * as Sentry from "@sentry/react";
 import { getHubslugFromUrl } from "../public/lib/hubOperations";
+import { DevLinkProvider } from "../devlink/DevLinkProvider";
 
 // Initialize sentry
 Sentry.init({
@@ -34,9 +35,9 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
   const [isLoading, setLoading] = useState(true);
   const [acceptedStatistics, setAcceptedStatistics] = useState(cookies.get("acceptedStatistics"));
   const [acceptedNecessary, setAcceptedNecessary] = useState(cookies.get("acceptedNecessary"));
-  
-  const locale = 'en' as CcLocale; // You'll need to implement locale detection for app router
-  const locales = ['en', 'de'] as CcLocale[]; // Adjust as needed
+
+  const locale = "en" as CcLocale; // You'll need to implement locale detection for app router
+  const locales = ["en", "de"] as CcLocale[]; // Adjust as needed
 
   const updateCookies = () => {
     setAcceptedStatistics(cookies.get("acceptedStatistics"));
@@ -47,8 +48,12 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
   const API_HOST = process.env.NEXT_PUBLIC_API_HOST;
   const ENVIRONMENT = process.env.NEXT_PUBLIC_ENVIRONMENT;
   const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
-  const CUSTOM_HUB_URLS = process.env.NEXT_PUBLIC_CUSTOM_HUB_URLS ? process.env.NEXT_PUBLIC_CUSTOM_HUB_URLS.split(",") : [];
-  const LOCATION_HUBS = process.env.NEXT_PUBLIC_LOCATION_HUBS ? process.env.NEXT_PUBLIC_LOCATION_HUBS.split(",") : [];
+  const CUSTOM_HUB_URLS = process.env.NEXT_PUBLIC_CUSTOM_HUB_URLS
+    ? process.env.NEXT_PUBLIC_CUSTOM_HUB_URLS.split(",")
+    : [];
+  const LOCATION_HUBS = process.env.NEXT_PUBLIC_LOCATION_HUBS
+    ? process.env.NEXT_PUBLIC_LOCATION_HUBS.split(",")
+    : [];
 
   const [state, setState] = useState({
     user: token ? {} : (null as any),
@@ -96,7 +101,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <UserContext.Provider value={contextValues}>
-          {children}
+          <DevLinkProvider>{children}</DevLinkProvider>
         </UserContext.Provider>
       </ThemeProvider>
     </StyledEngineProvider>
