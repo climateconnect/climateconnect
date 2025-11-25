@@ -45,7 +45,7 @@ class TestFormatLocationName(TestCase):
 
     def test_location_with_hamlet(self):
         """
-        Test formatting when the location contains is a hamlet.
+        Test formatting when the location is a hamlet.
         """
         location = {
             "type": "hamlet",
@@ -72,7 +72,7 @@ class TestFormatLocationName(TestCase):
 
     def test_location_with_hamlet_without_town(self):
         """
-        Test formatting when the location contains is a hamlet without town.
+        Test formatting when the location is a hamlet without town.
         """
         location = {
             "type": "hamlet",
@@ -117,9 +117,5 @@ class TestFormatLocationName(TestCase):
             "country": "United Kingdom",
             "name": "Scotland",
         }
-        # Mocking CUSTOM_NAME_MAPPINGS for this test
-        with self.settings(
-            CUSTOM_NAME_MAPPINGS={custom_mapping_key: custom_mapping_key}
-        ):
-            result = format_location_name(location)
-            self.assertEqual(expected_result, result)
+        result = format_location_name(location)
+        self.assertEqual(expected_result, result)

@@ -252,10 +252,12 @@ def format_location_name(location):
 
 
 def build_location_name(first_part, middle_part, last_part):
-    name_parts = [first_part]
+    name_parts = []
+    if first_part:
+        name_parts.append(first_part)
     if middle_part and middle_part != first_part and middle_part != last_part:
         name_parts.append(middle_part)
-    if last_part and last_part != first_part:
+    if last_part and (not first_part or last_part != first_part):
         name_parts.append(last_part)
     return ", ".join(name_parts)
 
