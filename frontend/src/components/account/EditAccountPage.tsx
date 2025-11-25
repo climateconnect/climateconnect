@@ -17,7 +17,7 @@ import Alert from "@mui/material/Alert";
 import React, { useContext, useRef, useState, useEffect } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import {
-  getCompressedJPG,
+  convertToJPGWithAspectRatio,
   getImageDialogHeight,
   whitenTransparentPixels,
 } from "../../../public/lib/imageOperations";
@@ -609,7 +609,7 @@ export default function EditAccountPage({
     try {
       setIsLoading(true);
       handleDialogClickOpen("backgroundDialog");
-      const compressedImage = await getCompressedJPG(file, 1);
+      const compressedImage = await convertToJPGWithAspectRatio(file);
       setTempImages(() => {
         return {
           ...tempImages,
