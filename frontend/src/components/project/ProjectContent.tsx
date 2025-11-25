@@ -267,25 +267,16 @@ export default function ProjectContent({
               </div>
             )}
           </div>
-          {
-            // TODO: update remove
-            project.end_date && project.status.key === "finished" && (
-              <Typography>
-                {texts.finished} <TimeAgo date={new Date(project.end_date)} />.{" "}
-                {texts.total_duration}:{" "}
-                {humanizeDuration(new Date(project.end_date) - new Date(project.start_date), {
-                  largest: 1,
-                  language: locale,
-                })}
-              </Typography>
-            )
-          }
-          {
-            // TODO: update remove
-            project.end_date && project.status.key === "cancelled" && (
-              <Typography>{texts.cancelled} :(</Typography>
-            )
-          }
+          {project.end_date && (
+            <Typography>
+              {texts.finished} <TimeAgo date={new Date(project.end_date)} />. {texts.total_duration}
+              :{" "}
+              {humanizeDuration(new Date(project.end_date) - new Date(project.start_date), {
+                largest: 1,
+                language: locale,
+              })}
+            </Typography>
+          )}
         </div>
       </div>
       <div className={classes.contentBlock}>
