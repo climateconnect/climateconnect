@@ -98,7 +98,7 @@ class TestFormatLocationName(TestCase):
 
     def test_location_with_custom_name_mapping(self):
         """
-        Test formatting when the name is overridden by a custom name mapping.
+        Test formatting when the name is overridden by the CUSTOM_NAME_MAPPINGS in utility.py.
         """
         location = {
             "type": "administrative",
@@ -110,7 +110,6 @@ class TestFormatLocationName(TestCase):
             },
             "display_name": "Scotland, United Kingdom",
         }
-        custom_mapping_key = "OldCity, HistoricState, AncientLand"
         expected_result = {
             "city": "Scotland (state)",
             "state": "Scotland",
