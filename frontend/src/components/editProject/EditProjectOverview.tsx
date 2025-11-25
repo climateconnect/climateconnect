@@ -6,7 +6,7 @@ import React, { useContext } from "react";
 import SelectField from "../general/SelectField";
 // Relative imports
 import {
-  getCompressedJPG,
+  convertToJPGWithAspectRatio,
   getImageDialogHeight,
   getImageUrl,
   getResizedImage,
@@ -482,7 +482,7 @@ const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
     try {
       setIsImgLoading(true);
       setOpen(true);
-      const image = await getCompressedJPG(file, 0.5);
+      const image = await convertToJPGWithAspectRatio(file);
       setTempImage(image);
     } catch (error) {
       console.log(error);

@@ -4,7 +4,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import CloseIcon from "@mui/icons-material/Close";
 import {
-  getCompressedJPG,
+  convertToJPGWithAspectRatio,
   getImageDialogHeight,
   getResizedImage,
   whitenTransparentPixels,
@@ -87,7 +87,7 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
       try {
         setIsLoading(true);
         setDialogStates({ ...dialogStates, uploadOpen: true });
-        const compressedImage = await getCompressedJPG(file, 0.5);
+        const compressedImage = await convertToJPGWithAspectRatio(file);
         setTempImage(() => compressedImage);
       } catch (error) {
         console.error(error);

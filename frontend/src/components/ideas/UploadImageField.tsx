@@ -2,7 +2,7 @@ import { Button, Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useRef, useState } from "react";
 import {
-  getCompressedJPG,
+  convertToJPGWithAspectRatio,
   getImageDialogHeight,
   getResizedImage,
   whitenTransparentPixels,
@@ -89,7 +89,7 @@ export default function UploadImageField({ image, className, updateImages }) {
     try {
       setOpen(true);
       setUploadImageDialogLoading(true);
-      const compressedImage = (await getCompressedJPG(file, 1)) as string;
+      const compressedImage = (await convertToJPGWithAspectRatio(file)) as string;
       setTempImage(compressedImage);
       setUploadImageDialogLoading(false);
     } catch (error) {

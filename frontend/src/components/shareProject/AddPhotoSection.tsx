@@ -7,7 +7,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
 import {
-  getCompressedJPG,
+  convertToJPGWithAspectRatio,
   getResizedImage,
   whitenTransparentPixels,
 } from "./../../../public/lib/imageOperations";
@@ -81,7 +81,7 @@ export default function AddPhotoSection({
     try {
       setIsLoading(true);
       handleDialogClickOpen("avatarDialog");
-      const image = await getCompressedJPG(file, 0.5);
+      const image = await convertToJPGWithAspectRatio(file);
       setTempImage(image);
     } catch (error) {
       console.log(error);
