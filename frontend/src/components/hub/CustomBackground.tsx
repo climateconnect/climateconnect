@@ -1,7 +1,10 @@
+"use client";
+
 import { Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import Image from "next/legacy/image";
+import { usePathname } from "next/navigation";
 
 const PRIO1_SLUG = "prio1";
 const PERTH_SLUG = "perth";
@@ -90,7 +93,7 @@ const isAuthPath = (pathname: string): boolean => {
 export function CustomBackground({ hubUrl }: Props) {
   const classes = useStyles({ hubSlug: hubUrl });
   const mobileScreenSize = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
-  const pathname = window.location.pathname;
+  const pathname = usePathname();
   const isAuthPage = isAuthPath(pathname);
 
   if (!hubUrl) {

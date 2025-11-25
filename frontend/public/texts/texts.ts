@@ -1,3 +1,4 @@
+"use client";
 import { ClassNameMap } from "@mui/styles";
 import { User, CcLocale, Project } from "../../src/types";
 import getAboutTexts from "./about_texts";

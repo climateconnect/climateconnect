@@ -1,3 +1,5 @@
+"use client";
+
 import { Menu } from "@mui/material";
 import withStyles from "@mui/styles/withStyles";
 import React from "react";

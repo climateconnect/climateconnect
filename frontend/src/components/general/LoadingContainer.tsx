@@ -1,3 +1,4 @@
+"use client";
 import { Icon, SvgIcon, Theme, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";

@@ -1,7 +1,9 @@
+"use client";
+
 import { Button, Theme, useMediaQuery, Popper, Paper, MenuList } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import LanguageIcon from "@mui/icons-material/Language";
-import { useRouter } from "next/router";
+import { useRouter, usePathname } from "next/navigation";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { getCookieProps } from "../../../public/lib/cookieOperations";
@@ -72,6 +74,7 @@ export default function LanguageSelect({
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const classes = useStyles({ transparentHeader, isCustomHub, isNarrowScreen, isLandingPage });
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(function () {
     setAnchorEl(buttonRef.current);
@@ -98,12 +101,13 @@ export default function LanguageSelect({
       const expiry = new Date(now.setFullYear(now.getFullYear() + 1));
       const cookieProps = getCookieProps(expiry);
       cookies.set("NEXT_LOCALE", newLocale, cookieProps);
-      const hasHash = router.asPath.split("#").length > 1;
+      const currentPath = pathname;
+      const hasHash = typeof window !== "undefined" && window.location.hash.length > 0;
       if (hasHash) {
-        window.location.href = "/" + newLocale + router.asPath;
+        window.location.href = "/" + newLocale + currentPath + window.location.hash;
         startLoading();
       } else {
-        router.push(router.asPath, router.asPath, { locale: newLocale });
+        router.push("/" + newLocale + currentPath);
       }
     }
   };
@@ -170,13 +174,13 @@ export default function LanguageSelect({
         // For some reason, the StyledMenu component doesn't work as expected on Desktop
         // so we use the Popper and Paper component instead of StyledMenu
         // (on our new home page, we have focus problem with StyledMenu)
-        (<Popper open={open} anchorEl={buttonRef.current} className={classes.popper}>
+        <Popper open={open} anchorEl={buttonRef.current} className={classes.popper}>
           <Paper {...hoverButtonProps} className={classes.paper}>
             <MenuList>
               <MenuItems />
             </MenuList>
           </Paper>
-        </Popper>)
+        </Popper>
       )}
     </>
   );

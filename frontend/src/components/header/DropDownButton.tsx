@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";

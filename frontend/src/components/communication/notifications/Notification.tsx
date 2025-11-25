@@ -1,3 +1,5 @@
+"use client";
+
 import { Link, ListItemText, MenuItem } from "@mui/material";
 import withStyles from "@mui/styles/withStyles";
 import makeStyles from "@mui/styles/makeStyles";

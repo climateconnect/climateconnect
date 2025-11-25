@@ -1,3 +1,4 @@
+"use client";
 import parseHtml from "html-react-parser";
 import Head from "next/head";
 import React, { useContext } from "react";
