@@ -420,19 +420,22 @@ class CreateProjectView(APIView):
         else:
             organization = None
 
-        required_params = [
-            "name",
-            "status",
-            "short_description",
-            "collaborators_welcome",
-            "team_members",
-            "loc",
-            "sectors",
-            "image",
-            "source_language",
-            "translations",
-            "hubName",  # TODO: fix this behavior: 'hubName' has to be set, but can be None
-        ]
+        required_params = ["name"]
+        # If 'is_draft' is not set or is set to a falsy value then run the code in this if block
+        if not request.data.get("is_draft", False):
+            required_params += [
+                "status",
+                "short_description",
+                "collaborators_welcome",
+                "team_members",
+                "project_tags",
+                "loc",
+                "image",
+                "source_language",
+                "translations",
+                "sectors",
+                "hubName",  # TODO: fix this behavior: 'hubName' has to be set, but can be None
+            ]
         for param in required_params:
             if param not in request.data:
                 logger.error(
@@ -505,8 +508,11 @@ class CreateProjectView(APIView):
                             project=project,
                             language=language_object,
                             name_translation=texts["name"],
-                            short_description_translation=texts["short_description"],
                         )
+                        if "short_description" in texts:
+                            translation.short_description_translation = texts[
+                                "short_description"
+                            ]
                         if "description" in texts:
                             translation.description_translation = texts["description"]
                         if "helpful_connections" in texts:

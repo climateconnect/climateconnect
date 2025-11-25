@@ -35,7 +35,6 @@ export default function ProjectNameSection({ projectData, handleSetProjectData }
       name: e.target.value,
     });
   };
-
   const color = getBackgroundContrastColor(theme);
 
   return (

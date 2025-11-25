@@ -119,8 +119,23 @@ export default function ShareProjectRoot({
       hubName
     )
   );
+
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [loadingSubmitDraft, setLoadingSubmitDraft] = useState(false);
+  const [formSaved, setFormSaved] = useState(false);
+
+  //show error message if the user tries to leave the page without saving
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (!formSaved) {
+        event.preventDefault();
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [formSaved]);
 
   const getStep = (stepNumber) => {
     if (stepNumber >= steps.length) return steps[steps.length - 1];
@@ -196,7 +211,9 @@ export default function ShareProjectRoot({
         locale: locale,
       });
       setProject({ ...project, error: false, url_slug: resp.data.url_slug });
+
       setLoadingSubmit(false);
+      setFormSaved(true);
       setFinished(true);
     } catch (error: any) {
       console.log(error?.response?.data);
@@ -212,16 +229,18 @@ export default function ShareProjectRoot({
   const saveAsDraft = async (event) => {
     event.preventDefault();
     setLoadingSubmitDraft(true);
+    const payload = await formatProjectForRequest({ ...project, is_draft: true }, translations);
     apiRequest({
       method: "post",
       url: "/api/create_project/",
-      payload: await formatProjectForRequest({ ...project, is_draft: true }, translations),
+      payload: payload,
       token: token,
       locale: locale,
     })
       .then(function (response) {
         setProject({ ...project, url_slug: response.data.url_slug, is_draft: true });
         setLoadingSubmitDraft(false);
+        setFormSaved(true);
         setFinished(true);
       })
       .catch(function (error) {
@@ -336,6 +355,9 @@ export default function ShareProjectRoot({
               goToPreviousStep={goToPreviousStep}
               skillsOptions={skillsOptions}
               setMessage={setMessage}
+              saveAsDraft={saveAsDraft}
+              loadingSubmit={loadingSubmit}
+              loadingSubmitDraft={loadingSubmitDraft}
             />
           )}
           {curStep.key === "addTeam" && (
@@ -429,9 +451,8 @@ const getDefaultProjectValues = (
 };
 
 const formatProjectForRequest = async (project, translations) => {
-  return {
+  const formattedProject = {
     ...project,
-    loc: parseLocation(project.loc, true),
     status: project.status.id,
     skills: project.skills.map((s) => s.key),
     team_members: project.team_members.map((m) => ({
@@ -444,9 +465,17 @@ const formatProjectForRequest = async (project, translations) => {
     project_tags: project?.project_tags?.map((s) => s.key),
     parent_organization: project?.parent_organization?.id,
     collaborating_organizations: project.collaborating_organizations.map((o) => o.id),
-    image: await blobFromObjectUrl(project.image),
-    thumbnail_image: await blobFromObjectUrl(project.thumbnail_image),
     source_language: project.language,
     translations: translations ? translations : {},
   };
+  if (project.loc && Object.keys(project.loc).length > 0) {
+    formattedProject.loc = parseLocation(project.loc, true);
+  }
+  if (project.image) {
+    formattedProject.image = await blobFromObjectUrl(project.image);
+  }
+  if (project.thumbnail_image) {
+    formattedProject.thumbnail_image = await blobFromObjectUrl(project.thumbnail_image);
+  }
+  return formattedProject;
 };

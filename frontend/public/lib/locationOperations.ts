@@ -229,18 +229,20 @@ export function parseLocation(location, isConcretePlace = false) {
 
   //placeName is the name of the concrete building, e.g. "City Hall"
   let placeName: string = "";
-
-  if (isConcretePlace && (location.address[location.class] || location.address[location.type])) {
-    placeName = location.address[location.class] || location.address[location.type];
-  }
-
-  //For exact locations we also want the address in the format `<streetname> <number>`
   let exactAddress: string = "";
 
-  if (isConcretePlace && location.address.road) {
-    exactAddress =
-      location.address.road +
-      (location.address.house_number ? ` ${location.address.house_number}` : "");
+  if (location !== null && location.address) {
+    if (isConcretePlace && (location.address[location.class] || location.address[location.type])) {
+      placeName = location.address[location.class] || location.address[location.type];
+    }
+
+    //For exact locations we also want the address in the format `<streetname> <number>`
+
+    if (isConcretePlace && location.address.road) {
+      exactAddress =
+        location.address.road +
+        (location.address.house_number ? ` ${location.address.house_number}` : "");
+    }
   }
   return {
     type: getLocationType(location),

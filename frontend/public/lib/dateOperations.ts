@@ -60,11 +60,12 @@ export function durationFromMiliseconds(miliseconds, texts) {
   return str;
 }
 
-export function checkProjectDatesValid(project, texts) {
+export function checkProjectDatesValid(project, texts, isDraft = false) {
   const PROJECT_TYPE_OPTIONS = getProjectTypeDateOptions(texts);
   if (PROJECT_TYPE_OPTIONS[project.project_type.type_id].enableStartDate) {
     //We handle date errors manually because props like 'required' aren't supported by mui-x-date-pickers
-    if (!project.start_date) {
+    // For non-draft mode, start_date is required
+    if (!isDraft && !project.start_date) {
       return {
         valid: false,
         error: {
@@ -74,7 +75,8 @@ export function checkProjectDatesValid(project, texts) {
       };
     }
 
-    if (!dayjs(project.start_date).isValid()) {
+    // If start_date is present, it must be valid (regardless of draft status)
+    if (project.start_date && !dayjs(project.start_date).isValid()) {
       return {
         valid: false,
         error: {
@@ -85,7 +87,8 @@ export function checkProjectDatesValid(project, texts) {
     }
 
     if (PROJECT_TYPE_OPTIONS[project.project_type.type_id].enableEndDate) {
-      if (!dayjs(project.end_date).isValid()) {
+      // If end_date is present, it must be valid (regardless of draft status)
+      if (project.end_date && !dayjs(project.end_date).isValid()) {
         return {
           valid: false,
           error: {
@@ -94,7 +97,12 @@ export function checkProjectDatesValid(project, texts) {
           },
         };
       }
-      if (dayjs(project.end_date) < dayjs(project.start_date)) {
+      // If both dates are present, end_date must be after start_date
+      if (
+        project.start_date &&
+        project.end_date &&
+        dayjs(project.end_date) < dayjs(project.start_date)
+      ) {
         return {
           valid: false,
           error: {
