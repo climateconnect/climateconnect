@@ -416,8 +416,10 @@ export default function Form({
             <></>
           )}
           {bottomLink ? (
-            <Link href={bottomLink.href}>
-              <a className={`${classes.bottomMessages} ${classes.bottomLink}`}>{bottomLink.text}</a>
+            <Link
+              href={bottomLink.href}
+              className={`${classes.bottomMessages} ${classes.bottomLink}`}>
+              {bottomLink.text}
             </Link>
           ) : (
             <></>
