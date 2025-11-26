@@ -28,6 +28,7 @@ from organization.models import (
     Sector,
     ProjectSectorMapping,
     OrganizationSectorMapping,
+    UserProfileSectorMapping,
 )
 
 
@@ -54,6 +55,7 @@ pass_through_models = (
     Sector,
     ProjectSectorMapping,
     OrganizationSectorMapping,
+    UserProfileSectorMapping,
 )
 
 for model in pass_through_models:

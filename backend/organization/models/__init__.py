@@ -35,4 +35,5 @@ from organization.models.sector import (
     Sector,
     ProjectSectorMapping,
     OrganizationSectorMapping,
+    UserProfileSectorMapping,
 )

@@ -35,6 +35,7 @@ export default function EditAccountRoot({
   setErrorMessage,
   availabilityOptions,
   hubUrl,
+  allSectors,
 }) {
   const { locale, locales } = useContext(UserContext);
   const cookies = new Cookies();
@@ -93,13 +94,13 @@ export default function EditAccountRoot({
     editedAccount.language = sourceLanguage;
     const parsedProfile = parseProfileForRequest(editedAccount, availabilityOptions, user);
     const payload = await getProfileWithoutRedundantOptions(user, parsedProfile);
-
     payload.translations = parseTranslationsForRequest(
       getTranslationsWithoutRedundantKeys(
         getTranslationsFromObject(initialTranslations, "user_profile"),
         translations
       )
     );
+
     apiRequest({
       method: "post",
       url: "/api/edit_profile/",
@@ -155,6 +156,8 @@ export default function EditAccountRoot({
             splitName
             /*TODO(unused) type="profile" */
             onClickCheckTranslations={onClickCheckTranslations}
+            allSectors={allSectors}
+            sectorsTitle={texts.area_of_interest}
           />
         ) : (
           <>
@@ -210,6 +213,7 @@ const parseProfileForRequest = (profile, availabilityOptions, user) => {
     availability: availability ? availability.id : user.availability ? user.availability.id : null,
     skills: profile.info.skills.map((s) => s.id),
     website: profile.info.website,
+    sectors: profile.info.sectors.map((s) => s.key),
   };
 };
 
@@ -221,6 +225,7 @@ const getProfileWithoutRedundantOptions = async (user, newProfile) => {
     thumbnail_image: getImageUrl(user.thumbnail_image),
     background_image: getImageUrl(user.background_image),
     availability: user.availability && user.availability.id,
+    sectors: user.sectors.map((s) => s.key),
   };
 
   const finalProfile: any = {};

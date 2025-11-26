@@ -31,7 +31,7 @@ export default function getClimatematchTexts({ location, question }) {
     },
     answer_the_next_four_questions_to_get_suggestions: {
       en:
-        "Just answer 4 questions and we show you which organizations, projects and ideas match with your skills and interests",
+        "Just answer 4 questions and we show you which organisations, projects and ideas match with your skills and interests",
       de:
         "Beantworte einfach die 4 folgenden Fragen und wir zeigen dir, welche Organisationen, Projekte und Ideen am besten zu dir passen.",
     },

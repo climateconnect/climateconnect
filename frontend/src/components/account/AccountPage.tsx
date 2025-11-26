@@ -195,6 +195,7 @@ export default function AccountPage({
   const organizationTexts = isOrganization
     ? getTexts({ page: "organization", organization: account, locale: locale })
     : { not_an_organization: "Not an organization" };
+
   const componentDecorator = (href, text, key) => (
     <Link
       color="primary"
@@ -304,7 +305,6 @@ export default function AccountPage({
       .map((key, index) => {
         if (info[key]) {
           const i = getFullInfoElement(infoMetadata, key, info[key]);
-
           const value = Array.isArray(i.value) ? i.value.join(", ") : i.value;
           const additionalText = i.additionalText ? i.additionalText : "";
           if (key === "parent_organization") {

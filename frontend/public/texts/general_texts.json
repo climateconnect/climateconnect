@@ -120,7 +120,7 @@
     "de": "Projekt"
   },
   "organizations": {
-    "en": "Organizations",
+    "en": "Organisations",
     "de": "Organisationen"
   },
   "members": {
@@ -136,7 +136,7 @@
     "de": "Bitte wähle eine der Optionen für den Ort. Wähle Deinen Standort, wenn der Ort \"Online\" ist."
   },
   "organization_type": {
-    "en": "Organization type",
+    "en": "Organisation type",
     "de": "Organisationsart"
   },
   "click_here_to_send_or_press_ctrl_enter": {
@@ -204,7 +204,7 @@
     "de": "Meine Projekte"
   },
   "my_organizations": {
-    "en": "My Organizations",
+    "en": "My Organisations",
     "de": "Meine Organisationen"
   },
   "settings": {
@@ -300,7 +300,7 @@
     "de": "Nicht alle deine Updates haben funktioniert."
   },
   "organization": {
-    "en": "Organization",
+    "en": "Organisation",
     "de": "Organisation"
   },
   "page": {
@@ -308,7 +308,7 @@
     "de": "Seite"
   },
   "create_an_organization": {
-    "en": "Create an organization",
+    "en": "Create an organisation",
     "de": "Organisation erstellen"
   },
   "you_are": {
@@ -795,13 +795,17 @@
     "en": "Submit",
     "de": "Absenden"
   },
-  "step_1_of_2_sign_up": {
-    "en": "Step 1 of 2: Email and password",
-    "de": "Schritt 1 von 2: E-Mail und Passwort"
+  "step_1_of_3_sign_up": {
+    "en": "Step 1 of 3: Email and password",
+    "de": "Schritt 1 von 3: E-Mail und Passwort"
   },
-  "step_2_of_2_sign_up": {
-    "en": "Step 2 of 2: Basic Info",
-    "de": "Schritt 2 von 2: Grundlegende Informationen"
+  "step_2_of_3_sign_up": {
+    "en": "Step 2 of 3: Basic Info",
+    "de": "Schritt 2 von 3: Grundlegende Informationen"
+  },
+  "step_3_of_3_sign_up": {
+    "en": "Step 3 of 3: Why you join (optional)",
+    "de": "Schritt 3 von 3: Warum du mitmachst (optional)"
   },
   "sectors": {
     "en": "Topics",

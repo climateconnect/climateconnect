@@ -18,7 +18,7 @@ def translate_organization(organization: Organization) -> None:
     try:
         translations = get_translations(texts, {}, "en")
     except ValueError:
-        print("Error getting translation for organization {}".format(organization.name))
+        print("Error getting translation for organisation {}".format(organization.name))
         translations = None
 
     if translations:
