@@ -70,6 +70,7 @@ export default function ProfilePage({
         (profile.info.bio ? " | " + profile.info.bio : "")
       }
       hubUrl={hubUrl}
+      showDonationGoal={true}
       customTheme={customTheme}
       headerBackground={
         customTheme ? customTheme.palette.header.background : theme.palette.background.default

@@ -77,8 +77,7 @@ export async function getServerSideProps(ctx: any) {
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({ hubData, hubUrl }) => {
-  const { locale, donationGoal } = useContext(UserContext);
-  const donationGoalActive = donationGoal && donationGoal.hub === hubUrl;
+  const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "landing_page", locale: locale }) as TextsType;
   const [DevlinkComponent, setDevlinkComponent] = useState<DevlinkComponentType>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -149,7 +148,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ hubData, hubUrl }) => {
       isLocationHub={isLocationHubLikeHub(hubData?.hub_type)}
       isLandingPage={true}
       headerBackground={theme.palette.primary.main}
-      showDonationGoal={donationGoalActive}
+      showDonationGoal={true}
     >
       {DevlinkComponent ? (
         <DevlinkComponent />

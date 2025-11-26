@@ -70,7 +70,9 @@ def sanitize_sector_inputs(inputs: Any) -> Tuple[Any, Optional[Exception]]:
 
 
 def __substitute_sector_in_mapping(
-    mapping: Union[ProjectSectorMapping, OrganizationSectorMapping, UserProfileSectorMapping],
+    mapping: Union[
+        ProjectSectorMapping, OrganizationSectorMapping, UserProfileSectorMapping
+    ],
 ) -> Union[ProjectSectorMapping, OrganizationSectorMapping, UserProfileSectorMapping]:
     """
     Substitute the sector mapping with the related sector if it exists

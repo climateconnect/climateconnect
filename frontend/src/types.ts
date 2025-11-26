@@ -121,3 +121,14 @@ export interface HubData {
   hub_type: string;
   [key: string]: any;
 }
+
+export type DonationGoal = {
+  goal_name: string | undefined;
+  goal_start: string | undefined;
+  goal_end: string | undefined;
+  goal_amount: number | undefined;
+  current_amount: number | undefined;
+  hub: string | undefined;
+  call_to_action_text: string | undefined;
+  call_to_action_link: string | undefined;
+};

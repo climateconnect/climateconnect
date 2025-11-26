@@ -183,7 +183,7 @@ export default function WideLayout({
             </Alert>
           )}
           {subHeader && subHeader}
-          {!fixedHeader && showDonationGoal && <DonationCampaignInformation />}
+          {!fixedHeader && showDonationGoal && <DonationCampaignInformation hubUrl={hubUrl} />}
           {children}
         </Container>
       )}

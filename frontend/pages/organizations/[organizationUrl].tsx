@@ -168,6 +168,7 @@ export default function OrganizationPage({
         customTheme ? customTheme?.palette?.header.background : theme.palette.background.default
       }
       hubUrl={hubUrl}
+      showDonationGoal={true}
     >
       {organization ? (
         <OrganizationLayout
