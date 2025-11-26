@@ -380,14 +380,15 @@ export default function SettingsPage({ settings, setSettings, token, setMessage,
           <Button variant="contained" color="primary" type="submit">
             {texts.change_password}
           </Button>
-          <Link href={getLocalePrefix(locale) + "/resetpassword"}>
-            <a className={`${classes.forgotPasswordLink} ${classes.textColor}`}>
-              {texts.i_forgot_my_password}
-            </a>
+          <Link
+            href={getLocalePrefix(locale) + "/resetpassword"}
+            className={`${classes.forgotPasswordLink} ${classes.textColor}`}>
+
+            {texts.i_forgot_my_password}
+
           </Link>
         </div>
       </form>
-
       <Typography
         className={`${classes.lowerHeaders} ${classes.textColor}`}
         variant="h5"
@@ -519,8 +520,8 @@ export default function SettingsPage({ settings, setSettings, token, setMessage,
         <InfoOutlinedIcon />
         {texts.if_you_wish_to_delete_this_account}
         <div className={classes.spaceStrings} />
-        <Link href="mailto:contact@climateconnect.earth">
-          <a className={classes.textColor}>{emailLink}</a>
+        <Link href="mailto:contact@climateconnect.earth" className={classes.textColor}>
+          {emailLink}
         </Link>
       </Typography>
     </>

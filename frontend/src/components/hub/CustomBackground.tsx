@@ -1,7 +1,7 @@
 import { Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
-import Image from "next/image";
+import Image from "next/legacy/image";
 
 const PRIO1_SLUG = "prio1";
 const PERTH_SLUG = "perth";

@@ -51,7 +51,7 @@ export default function ContactCreatorButtonInfo({
             creatorsRoleInProject
           ) : (
             /* eslint-disable-next-line react/no-unescaped-entities */
-            <Typography className={classes.customMessage}>"{customMessage}"</Typography>
+            (<Typography className={classes.customMessage}>"{customMessage}"</Typography>)
           )
         }
       />
