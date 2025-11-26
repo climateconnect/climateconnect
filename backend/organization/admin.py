@@ -15,7 +15,6 @@ from organization.models import (
     ProjectMember,
     OrganizationMember,
     ProjectParents,
-    ProjectStatus,
     ProjectCollaborators,
     ProjectFollower,
     OrganizationFieldTagging,
@@ -44,7 +43,6 @@ pass_through_models = (
     Comment,
     PostComment,
     ProjectComment,
-    ProjectStatus,
     ProjectCollaborators,
     ProjectFollower,
     OrganizationFieldTagging,
@@ -80,7 +78,6 @@ class ProjectAdmin(admin.ModelAdmin):
         "loc__state",
         "loc__country",
     )
-    list_filter = ("status",)
 
 
 admin.site.register(Project, ProjectAdmin)

@@ -176,8 +176,7 @@ export default function ShareProjectRoot({
     window.scrollTo(0, 0);
   };
 
-  // TODO: save as draft and submit project
-  // share a lot of logic, can be refactored
+  // TODO: save as draft and submit project share a lot of logic. I could be refactored
   const submitProject = async (event) => {
     event.preventDefault();
     setLoadingSubmit(true);

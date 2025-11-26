@@ -57,6 +57,9 @@ class Project(models.Model):
         verbose_name="Project Status",
         related_name="project_status",
         on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        default=1,  # Default, for backwards compatibility during development
     )
 
     project_type = models.CharField(
