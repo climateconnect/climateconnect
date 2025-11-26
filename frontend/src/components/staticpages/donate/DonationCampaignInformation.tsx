@@ -142,14 +142,15 @@ export default function DonationCampaignInformation({ hubUrl }: Props) {
                 />
               )}
               <Typography className={classes.text}>{donationGoal?.call_to_action_text}</Typography>
-              <Button
-                variant="contained"
-                target="_blank"
-                href={donationGoal?.call_to_action_link}
-                className={classes.donateButton}
-              >
-                {texts.donate_now}
-              </Button>
+              {donationGoal?.call_to_action_link && (
+                <Button
+                  variant="contained"
+                  href={donationGoal.call_to_action_link}
+                  className={classes.donateButton}
+                >
+                  {texts.donate_now}
+                </Button>
+              )}
             </div>
           </div>
         </div>
