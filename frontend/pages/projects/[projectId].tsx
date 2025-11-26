@@ -244,6 +244,7 @@ export default function ProjectPage({
       message={message?.message}
       messageType={message?.messageType}
       title={project ? project.name : texts.project + " " + texts.not_found}
+      showDonationGoal={true}
       subHeader={
         !tinyScreen ? (
           <HubsSubHeader
