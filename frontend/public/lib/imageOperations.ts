@@ -105,30 +105,29 @@ export async function convertToJPGWithAspectRatio(file): Promise<string> {
 
 const drawImageOnCanvas = (image, canvas) => {
   const context = canvas.getContext("2d");
+  let imageFinalWidth, imageFinalHeight;
+  const maxWidth = 1200;
+  const maxHeight = 675;
   if (image.width / image.height === 16 / 9) {
-    //image has right proportions already
-    canvas.width = image.width;
-    canvas.height = image.height;
-    context.fillStyle = "#fff";
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    context.drawImage(image, 0, 0);
-  } else if (image.width / image.height > 16 / 9) {
+    //limited the maximum dimensions of images
+    imageFinalWidth = image.width > maxWidth ? maxWidth : image.width;
+    imageFinalHeight = image.height * (imageFinalWidth / image.width);
     //the image is too wide
-    canvas.width = image.width;
-    canvas.height = image.width * (9 / 16);
-    context.fillStyle = "#fff";
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    const heightDifference = canvas.height - image.height;
-    context.drawImage(image, 0, heightDifference / 2);
+  } else if (image.width / image.height > 16 / 9) {
+    imageFinalHeight = image.height > maxHeight ? maxHeight : image.height;
+    imageFinalWidth = image.width * (imageFinalHeight / image.height);
   } else {
     //the image is too tall
-    canvas.width = image.width * (16 / 9);
-    canvas.height = image.height;
-    context.fillStyle = "#fff";
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    const widthDifference = canvas.width - image.width;
-    context.drawImage(image, widthDifference / 2, 0);
+    imageFinalWidth = image.width > maxWidth ? maxWidth : image.width;
+    imageFinalHeight = image.height * (imageFinalWidth / image.width);
   }
+  canvas.width = imageFinalWidth;
+  canvas.height = imageFinalHeight;
+  context.fillStyle = "#fff";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+
+  //This line was causing images with large dimensions to have display issues.
+  context.drawImage(image, 0, 0, canvas.width, canvas.height);
 };
 
 export async function blobFromObjectUrl(objectUrl: string): Promise<string> {
