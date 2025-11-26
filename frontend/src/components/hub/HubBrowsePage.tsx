@@ -160,7 +160,7 @@ export default function HubBrowsePage({
   linkedHubs,
 }: HubBrowsePageProps) {
   // donationGoal was removed in PR #1560?
-  const { locale, CUSTOM_HUB_URLS, donationGoal } = useContext(UserContext);
+  const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const classes = useStyles();
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
@@ -169,7 +169,7 @@ export default function HubBrowsePage({
   const [hubSupporters, setHubSupporters] = useState(null);
   const contentRef = useRef<HTMLDivElement>(null);
   // Do we need this? this line was removed on PR ##1560
-  const donationGoalActive = donationGoal && donationGoal.hub === hubUrl;
+
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
 
   useEffect(() => {
@@ -244,7 +244,7 @@ export default function HubBrowsePage({
       >
         <div className={classes.content}>
           {/* donationGoalActive was removed on PR #1560  */}
-          {donationGoalActive && <DonationCampaignInformation />}
+          <DonationCampaignInformation hubUrl={hubUrl} />
           {!isLocationHub && (
             <NavigationSubHeader
               type={"hub"}
