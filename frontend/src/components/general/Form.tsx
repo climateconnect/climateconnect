@@ -114,6 +114,7 @@ type Props = {
     ref?: any;
     handleSetLocationOptionsOpen?: any;
     locationOptionsOpen?: any;
+    enableExactLocation?: boolean;
   }[];
   select?: { selectValues: { label: string; value: string }[] };
   messages: {
@@ -161,7 +162,6 @@ export default function Form({
       return obj;
     }, {})
   );
-
   function updatePercentage(customValues?) {
     const filledFields =
       customValues && typeof customValues === "object"
@@ -229,7 +229,9 @@ export default function Form({
       <form
         action={formAction && formAction.action}
         method={formAction && formAction.method}
-        onSubmit={() => onSubmit(event, values)}
+        onSubmit={() => {
+          onSubmit(event, values);
+        }}
         autoComplete={autocomplete}
       >
         {errorMessage && (
@@ -353,6 +355,7 @@ export default function Form({
                 handleSetOpen={field.handleSetLocationOptionsOpen}
                 open={field.locationOptionsOpen}
                 className={`${classes.blockElement} ${fieldClassName}`}
+                enableExactLocation={field.enableExactLocation}
               />
             );
           } else if (
