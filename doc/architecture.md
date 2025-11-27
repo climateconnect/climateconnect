@@ -1028,3 +1028,7 @@ Climate Connect employs a modern, scalable architecture with:
 - **Extensible design** with modular Django apps
 
 This architecture supports the platform's mission to connect and empower climate activists worldwide while maintaining performance, security, and developer productivity.
+
+## Version History
+
+- **2025-11-27**: Initial documentation

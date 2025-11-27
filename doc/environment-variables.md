@@ -692,16 +692,14 @@ Frontend environment variables are stored in `.env` file in the `frontend/` dire
 
 ## Additional Resources
 
-- **Backend setup**: `/backend/local-env-setup.md`
-- **Docker setup**: `/doc/devcontainer-done.png`, `/doc/devcontainer-reopen.png`
-- **Architecture**: `/doc/architecture.md`
-- **Domain entities**: `/doc/domain-entities.md`
-- **Django settings**: `/backend/climateconnect_main/settings.py`
-- **Next.js config**: `/frontend/next.config.js`
+- **Backend setup**:[ `/backend/local-env-setup.md`](../backend/local-env-setup.md)
+- **Architecture**: [`/doc/architecture.md`](architecture.md)
+- **Domain entities**: [`/doc/domain-entities.md`](domain-entities.md)
+- **Django settings**: [`/backend/climateconnect_main/settings.py`](../backend/climateconnect_main/settings.py)
+- **Next.js config**: [`/frontend/next.config.js`](../frontend/next.config.js)
 
 ---
 
 ## Version History
 
-- **2024-11**: Initial comprehensive documentation
-- Environment variables accurate as of Climate Connect project state November 2024
+- **2025-11-27**: Initial documentation
