@@ -9,7 +9,6 @@ from location.utility import get_location
 from climateconnect_api.utility.common import create_unique_slug
 
 from organization.models import Project, ProjectMember, Organization
-from organization.models.tags import ProjectTags
 from organization.models.type import ProjectTypesChoices
 from hubs.models.hub import Hub
 from django.contrib.auth.models import User
@@ -138,14 +137,14 @@ def get_project_description(project: Project, language_code: str) -> str:
     return project.description
 
 
-# TODO (Karol): remove ProjectTags
-def get_projecttag_name(tag: ProjectTags, language_code: str) -> str:
-    lang_translation_attr = "name_{}_translation".format(language_code)
-    if hasattr(tag, lang_translation_attr):
-        translation = getattr(tag, lang_translation_attr)
-        if language_code != "en" and translation is not None:
-            return translation
-    return tag.name
+# TODO (Karol): adjust this function for the new sectors model
+# def get_projecttag_name(tag: ProjectTags, language_code: str) -> str:
+#     lang_translation_attr = "name_{}_translation".format(language_code)
+#     if hasattr(tag, lang_translation_attr):
+#         translation = getattr(tag, lang_translation_attr)
+#         if language_code != "en" and translation is not None:
+#             return translation
+#     return tag.name
 
 
 def get_project_translations(data: Dict):
