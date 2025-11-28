@@ -8,9 +8,43 @@ const CUSTOM_NAME_MAPPINGS = {
 //These countries are wrongly categorized as states in Nominatim. We want to show them as countries as this is more clear
 const MAP_STATE_TO_COUNTRY = ["Scotland", "Wales", "England", "Northern Ireland"];
 
+const buildLocationName = (firstPart: string, middlePart: string, lastPart: string): string => {
+  const parts: string[] = [];
+
+  if (firstPart) {
+    parts.push(firstPart);
+  }
+
+  const showMiddlePart = middlePart && middlePart !== firstPart && middlePart !== lastPart;
+
+  if (showMiddlePart) {
+    parts.push(middlePart);
+  }
+
+  if (lastPart && lastPart !== firstPart) {
+    parts.push(lastPart);
+  }
+
+  return parts.join(", ");
+};
+
+type DisplayLocation = {
+  name: string;
+  city: string;
+  state: string;
+  country: string;
+};
+
+const DEFAULT_DISPLAY_LOCATION: DisplayLocation = {
+  name: "",
+  city: "",
+  state: "",
+  country: "",
+};
+
 //This function has an equivalent in backend/location/utility.py -> format_location_name
 //We should consider using the same codebase for these
-export function getNameFromLocation(location) {
+export function getDisplayLocationFromLocation(location): DisplayLocation {
   if (location.added_manually)
     return {
       name: location.name,
@@ -19,9 +53,14 @@ export function getNameFromLocation(location) {
       country: location.country,
     };
   if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true")
-    return location.city + "" + location.country;
-  if (!location.address || !location.address.country) return location.display_name;
+    return {
+      ...DEFAULT_DISPLAY_LOCATION,
+      name: location.city + "" + location.country,
+    };
+  if (!location.address || !location.address.country)
+    return { ...DEFAULT_DISPLAY_LOCATION, name: location.display_name };
   const firstPartOrder = [
+    "hamlet",
     "village",
     "town",
     "city_district",
@@ -42,6 +81,7 @@ export function getNameFromLocation(location) {
   ];
   const middlePartOrder = [
     "city_district",
+    "county",
     "district",
     "suburb",
     "borough",
@@ -52,30 +92,25 @@ export function getNameFromLocation(location) {
   ];
   if (isCountry(location)) {
     return {
+      ...DEFAULT_DISPLAY_LOCATION,
       country: location.address.country,
       name: location.display_name,
     };
   }
-  const middlePartSuffixes = ["city", "state"];
+  const middlePartSuffixes = ["town", "city", "county", "state"];
   const firstPart = getFirstPart(location.address, firstPartOrder);
   const middlePart = getMiddlePart(location.address, middlePartOrder, middlePartSuffixes);
   const lastPart = MAP_STATE_TO_COUNTRY.includes(location?.address?.state)
     ? location.address.state
     : location.address.country;
-  const showMiddlePart = firstPart !== middlePart && middlePart !== lastPart;
-  let name =
-    firstPart +
-    ", " +
-    (showMiddlePart ? middlePart : "") +
-    (showMiddlePart && middlePart?.length > 0 ? ", " : "") +
-    lastPart;
+  let name = buildLocationName(firstPart, middlePart, lastPart);
   //For certain locations our automatic name generation doesn't work. In this case we want to override the name with a custom one
   if (Object.keys(CUSTOM_NAME_MAPPINGS).includes(name)) {
     name = CUSTOM_NAME_MAPPINGS[name];
   }
   return {
     city: firstPart,
-    state: middlePart,
+    state: location.address?.state || middlePart,
     country: location.address.country,
     name: name,
   };
@@ -100,28 +135,40 @@ const getCityOrCountyName = (address) => {
   return getFirstPart(address, cityElementOrder);
 };
 
-export function getNameFromExactLocation(location) {
-  //If the location object is empty, just return an empty string
-  if (Object.keys(location).length === 0) {
+const getPlaceSpecificName = (location): string => {
+  return location.address[location.class] || location.address[location.type] || "";
+};
+
+const buildStreetAddress = (location): string => {
+  if (!location?.address?.road) {
     return "";
   }
+  const road = location.address.road;
+  const houseNumber = location.address.house_number;
+  return houseNumber ? `${road} ${houseNumber}` : road;
+};
+
+const buildCityAndCountryPart = (city: string, country: string, firstPart: string): string => {
+  const shouldIncludeCity = firstPart !== city && city;
+  return shouldIncludeCity ? `${city}, ${country}` : country;
+};
+
+export function getDisplayLocationFromExactLocation(location): DisplayLocation {
+  //If the location object is empty, just return empty strings
+  if (Object.keys(location).length === 0) {
+    return DEFAULT_DISPLAY_LOCATION;
+  }
   const isConcretePlace = isExactLocation(location);
-  const firstPart =
-    isConcretePlace && (location.address[location.class] || location.address[location.type])
-      ? `${location.address[location.class] || location.address[location.type]}, `
-      : "";
-  const middlePart =
-    isConcretePlace && location.address.road
-      ? `${location.address.road}${
-          location.address.house_number ? " " + location.address.house_number : ""
-        }, `
-      : "";
+  const firstPart = isConcretePlace ? getPlaceSpecificName(location) : "";
+  const middlePart = isConcretePlace ? buildStreetAddress(location) : "";
   const city = getCityOrCountyName(location.address);
   const country = MAP_STATE_TO_COUNTRY.includes(location?.address?.state)
     ? location.address.state
     : location.address.country;
-  const cityAndCountry = `${firstPart != city && `${city}, `}${country}`;
-  let name = firstPart + middlePart + cityAndCountry;
+  const cityAndCountry = buildCityAndCountryPart(city, country, firstPart);
+
+  let name = buildLocationName(firstPart, middlePart, cityAndCountry);
+
   //For certain locations our automatic name generation doesn't work. In this case we want to override the name with a custom one
   if (Object.keys(CUSTOM_NAME_MAPPINGS).includes(name)) {
     name = CUSTOM_NAME_MAPPINGS[name];
@@ -215,9 +262,9 @@ const getLocationType = (location) => {
 };
 
 export function parseLocation(location, isConcretePlace = false) {
-  const location_object = isConcretePlace
-    ? getNameFromExactLocation(location)
-    : getNameFromLocation(location);
+  const displayLocation = isConcretePlace
+    ? getDisplayLocationFromExactLocation(location)
+    : getDisplayLocationFromLocation(location);
   //don't return anything if in legacy mode
   if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
     return location;
@@ -248,12 +295,12 @@ export function parseLocation(location, isConcretePlace = false) {
     geojson: location.geojson ? location.geojson : generateGeoJson(location),
     place_id: location?.place_id,
     osm_id: location?.osm_id,
-    name: location_object.name,
+    name: displayLocation.name,
     lon: location?.lon,
     lat: location?.lat,
-    city: location_object.city,
-    state: location_object.state,
-    country: location_object.country,
+    city: displayLocation.city,
+    state: displayLocation.state,
+    country: displayLocation.country,
     place_name: placeName,
     exact_address: exactAddress,
     additional_info: location?.additionalInfoText || location?.additionalInfo,
