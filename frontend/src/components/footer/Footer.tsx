@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, Link, Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import FacebookIcon from "@mui/icons-material/Facebook";

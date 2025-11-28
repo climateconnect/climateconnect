@@ -1,3 +1,4 @@
+"use client";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getStaticPageLinks } from "../../../public/data/getStaticPageLinks";

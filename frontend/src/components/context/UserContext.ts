@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext } from "react";
 import { CcLocale, DonationGoal, User } from "../../types";
 
