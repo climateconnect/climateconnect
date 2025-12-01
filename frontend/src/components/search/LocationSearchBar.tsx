@@ -5,8 +5,8 @@ import axios from "axios";
 import { debounce } from "lodash";
 import React, { useContext, useEffect } from "react";
 import {
-  getNameFromLocation,
-  getNameFromExactLocation,
+  getDisplayLocationFromLocation,
+  getDisplayLocationFromExactLocation,
   isExactLocation,
 } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
@@ -79,10 +79,9 @@ export default function LocationSearchBar({
       return inputValue ? inputValue : "";
     } else if (typeof newValue === "object") {
       if (enableExactLocation) {
-        const nameObj = getNameFromExactLocation(newValue);
-        return nameObj === "" ? nameObj : nameObj.name;
+        return getDisplayLocationFromExactLocation(newValue).name;
       } else {
-        return newValue.name ? newValue.name : newValue.simple_name;
+        return newValue.simple_name ? newValue.simple_name : newValue.name;
       }
     } else {
       return newValue;
@@ -195,18 +194,20 @@ export default function LocationSearchBar({
               data.push(option);
             }
           }
-          const options = data.map((o) => {
-            const nameObj = getNameFromExactLocation(o);
-            return {
-              ...o,
-              simple_name: enableExactLocation
-                ? nameObj === ""
-                  ? nameObj
-                  : nameObj.name
-                : getNameFromLocation(o).name,
-              key: o.place_id,
-            };
-          });
+
+          const getSimpleName = (location, enableExactLocation: boolean = false): string => {
+            if (!enableExactLocation) {
+              return getDisplayLocationFromLocation(location).name;
+            }
+
+            return getDisplayLocationFromExactLocation(location).name;
+          };
+
+          const options = data.map((option) => ({
+            ...option,
+            simple_name: getSimpleName(option, enableExactLocation),
+            key: option.place_id,
+          }));
           setOptions(getOptionsWithoutRedundancies(options));
           setLoading(false);
         }
