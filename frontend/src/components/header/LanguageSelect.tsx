@@ -170,13 +170,13 @@ export default function LanguageSelect({
         // For some reason, the StyledMenu component doesn't work as expected on Desktop
         // so we use the Popper and Paper component instead of StyledMenu
         // (on our new home page, we have focus problem with StyledMenu)
-        (<Popper open={open} anchorEl={buttonRef.current} className={classes.popper}>
+        <Popper open={open} anchorEl={buttonRef.current} className={classes.popper}>
           <Paper {...hoverButtonProps} className={classes.paper}>
             <MenuList>
               <MenuItems />
             </MenuList>
           </Paper>
-        </Popper>)
+        </Popper>
       )}
     </>
   );

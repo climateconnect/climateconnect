@@ -166,7 +166,7 @@ export default function IdeasBoard({
       )}
       {idea && isNarrowScreen && (
         /* display mobile idea */
-        (<MobileIdeaPage
+        <MobileIdeaPage
           idea={idea}
           onIdeaClose={onClose}
           onRatingChange={handleUpdateRating}
@@ -175,7 +175,7 @@ export default function IdeasBoard({
           handleRemoveComment={handleRemoveComment}
           userOrganizations={userOrganizations}
           allHubs={allHubs}
-        />)
+        />
       )}
     </div>
   );

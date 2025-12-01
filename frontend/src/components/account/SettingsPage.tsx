@@ -382,10 +382,9 @@ export default function SettingsPage({ settings, setSettings, token, setMessage,
           </Button>
           <Link
             href={getLocalePrefix(locale) + "/resetpassword"}
-            className={`${classes.forgotPasswordLink} ${classes.textColor}`}>
-
+            className={`${classes.forgotPasswordLink} ${classes.textColor}`}
+          >
             {texts.i_forgot_my_password}
-
           </Link>
         </div>
       </form>
