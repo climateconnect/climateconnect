@@ -102,6 +102,6 @@
     "eslint-watch": "^7.0.0",
     "jest": "^26.6.3",
     "next-compose-plugins": "^2.2.0",
-    "prettier": "2.2.0"
+    "prettier": "3.7.3"
   }
 }
