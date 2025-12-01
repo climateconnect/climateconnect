@@ -4317,7 +4317,7 @@ escodegen@^2.0.0:
   optionalDependencies:
     source-map "~0.6.1"
 
-eslint-config-next@13:
+eslint-config-next@^13.5.11:
   version "13.5.11"
   resolved "https://registry.yarnpkg.com/eslint-config-next/-/eslint-config-next-13.5.11.tgz#fc3053aff9ad29f20daf91d2a833d4c4803d5c23"
   integrity sha512-jImZvfc4htMMsiW3nCY/UOxXrI4DbEI4JrdWOEfSNkMipi4j3ZukUhvv4TGQnP6d6lvPTh6uHisQbMl3Ozga1w==
@@ -6972,7 +6972,7 @@ next-cookies@^2.0.3:
   dependencies:
     universal-cookie "^4.0.2"
 
-next@13:
+next@^13.5.11:
   version "13.5.11"
   resolved "https://registry.yarnpkg.com/next/-/next-13.5.11.tgz#a021e849c5748fb6e2a4447585614e0c0e6c778d"
   integrity sha512-WUPJ6WbAX9tdC86kGTu92qkrRdgRqVrY++nwM+shmWQwmyxt4zhZfR59moXSI4N8GDYCBY3lIAqhzjDd4rTC8Q==
