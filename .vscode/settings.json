@@ -1,22 +1,144 @@
 {
-  "typescript.tsdk": "./frontend/node_modules/typescript/lib",
-  "python.defaultInterpreterPath": "./backend/.venv/bin/python3",
-  "python.formatting.provider": "black",
-  // Most of this config is from https://github.com/VSCodeVim/Vim
-  // Some mappings are from https://github.com/VSCodeVim/Vim/#key-remapping
-  // Another example full config to look at: https://gist.github.com/safinakib/cc081218b73139ee81e5cb96dbc8e5db
-
-  "vim.easymotion": true,
-  "vim.incsearch": true,
-  "vim.useSystemClipboard": true,
-  "vim.useCtrlKeys": false,
-  "vim.hlsearch": true,
-  "vim.handleKeys": {
-    "<C-r>": true,
-    "<C-f>": false
+  // GitHub Copilot Configuration
+  "github.copilot.enable": {
+    "*": true,
+    "yaml": true,
+    "plaintext": false,
+    "markdown": true,
+    "python": true,
+    "javascript": true,
+    "typescript": true,
+    "json": true
   },
-  // To improve performance
-  "extensions.experimental.affinity": {
-    "vscodevim.vim": 1
-  }
+  "github.copilot.editor.enableAutoCompletions": true,
+
+  // Python Configuration
+  "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/bin/python",
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": true,
+  "python.formatting.provider": "black",
+  "python.formatting.blackPath": "${workspaceFolder}/backend/.venv/bin/black",
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    },
+    "editor.rulers": [88]
+  },
+
+  // JavaScript/TypeScript Configuration
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.rulers": [100]
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.rulers": [100]
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // JSON Configuration
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // Markdown Configuration
+  "[markdown]": {
+    "editor.formatOnSave": true,
+    "editor.wordWrap": "on"
+  },
+
+  // Editor Suggestions
+  "editor.inlineSuggest.enabled": true,
+  "editor.suggestSelection": "first",
+  "editor.quickSuggestions": {
+    "other": "on",
+    "comments": "on",
+    "strings": "on"
+  },
+  "editor.acceptSuggestionOnCommitCharacter": true,
+  "editor.tabCompletion": "on",
+
+  // File Associations
+  "files.associations": {
+    "*.py": "python",
+    ".backend_env": "dotenv",
+    ".env.local": "dotenv"
+  },
+
+  // File Exclusions for Search
+  "search.exclude": {
+    "**/.venv": true,
+    "**/node_modules": true,
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/build": true,
+    "**/dist": true,
+    "**/.next": true,
+    "**/coverage": true
+  },
+
+  // Files to Watch
+  "files.watcherExclude": {
+    "**/.venv/**": true,
+    "**/node_modules/**": true,
+    "**/__pycache__/**": true,
+    "**/.next/**": true
+  },
+
+  // Terminal Configuration
+  "terminal.integrated.cwd": "${workspaceFolder}",
+  "terminal.integrated.env.osx": {
+    "PYTHONPATH": "${workspaceFolder}/backend"
+  },
+  "terminal.integrated.env.linux": {
+    "PYTHONPATH": "${workspaceFolder}/backend"
+  },
+
+  // ESLint Configuration
+  "eslint.workingDirectories": [
+    "./frontend"
+  ],
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+
+  // Prettier Configuration
+  "prettier.requireConfig": true,
+
+  // Git Configuration
+  "git.ignoreLimitWarning": true,
+
+  // Recommended Extensions
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.black-formatter",
+    "ms-python.vscode-pylance",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "github.copilot",
+    "github.copilot-chat",
+    "editorconfig.editorconfig",
+    "ms-azuretools.vscode-docker"
+  ]
 }
+
