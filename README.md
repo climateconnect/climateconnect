@@ -2,6 +2,16 @@
 
 The client and server code for the web platform on https://climateconnect.earth.
 
+## Table of Contents
+1. [Development setup](#development-setup)  
+1.1. [One-click setup using VSCode Dev Containers](#one-click-setup-using-vscode-dev-containers)  
+1.2. [Manual Setup](#manual-setup)  
+1.3. [Project Dependencies](#project-dependencies)  
+1.3.1. [Backend](#backend)   
+1.3.2. [Frontend](#frontend)  
+1.4. [Deploy](#deploy)
+2. [Documentation](#documentation)
+
 # Development setup
 
 Climate Connect depends on PostgreSQL/PostGIS and Redis.
@@ -239,3 +249,8 @@ Currently the project is utilizing credits to deploy onto Azure. That deployment
 1. Make sure your `ENVIRONMENT` env variable is set to `production` when deploying to the production server
 2. Follow steps 1-5 of the "Getting started
    locally - backend" (above in this file)
+
+# Documentation
+[Architecture](doc/architecture.md)  
+[Domain Entities](doc/domain-entities.md)  
+[Environent Variables](doc/environment-variables.md)  
