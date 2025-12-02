@@ -64,11 +64,6 @@ export default function EditAccountRoot({
     setStep(STEPS[STEPS.indexOf(step) - 1]);
   };
 
-  const changeTranslationLanguages = ({ newLanguagesObject }) => {
-    if (newLanguagesObject.sourceLanguage) setSourceLanguage(newLanguagesObject.sourceLanguage);
-    if (newLanguagesObject.targetLanguage) setTargetLanguage(newLanguagesObject.targetLanguage);
-  };
-
   const handleChangeTranslations = (locale, newTranslations, isManualChange) => {
     const newTranslationsObject = {
       ...translations,
@@ -184,7 +179,6 @@ export default function EditAccountRoot({
                   showCharacterCounter: true,
                 },
               ]}
-              /*TODO(unused) changeTranslationLanguages={changeTranslationLanguages} */
             />
           </>
         )

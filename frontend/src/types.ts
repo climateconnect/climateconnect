@@ -1,4 +1,5 @@
 import { Dayjs } from "dayjs";
+import type { PaletteColorOptions } from "@mui/material/styles";
 
 export type User = {
   id: string;
@@ -72,18 +73,22 @@ export type CcLocale = "en" | "de";
 
 declare module "@mui/material/styles/createPalette" {
   // augment theme type with climateconnect custom properties
+  // eslint-disable-next-line no-unused-vars
   interface Palette {
     yellow: PaletteColor;
     contrast: PaletteColor;
   }
+  // eslint-disable-next-line no-unused-vars
   interface PaletteOptions {
     yellow: PaletteColorOptions;
     contrast: PaletteColorOptions;
   }
+  // eslint-disable-next-line no-unused-vars
   interface PaletteColor {
     extraLight?: string;
     // lightHover?: string;
   }
+  // eslint-disable-next-line no-unused-vars
   interface SimplePaletteColorOptions {
     lightHover?: string;
     extraLight?: string;

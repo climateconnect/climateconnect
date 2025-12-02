@@ -8,10 +8,12 @@ import ActiveSectorsSelector from "../hub/ActiveSectorsSelector";
 import { Sector } from "../../types";
 
 type AddInterestAreaProps = {
+  // eslint-disable-next-line no-unused-vars
   handleSubmit: (event: React.FormEvent, values: any) => void;
   errorMessage?: string;
   values: any;
-  handleGoBack: (event: any, values: any) => void;
+  // eslint-disable-next-line no-unused-vars
+  handleGoBack: (event?: any, values?: any) => void;
   isSmallScreen: boolean;
   sectorOptions: Sector[];
 };

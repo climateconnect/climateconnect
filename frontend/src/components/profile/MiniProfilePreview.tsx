@@ -53,7 +53,6 @@ export default function MiniProfilePreview({
   onDelete,
   hubUrl,
 }: Props) {
-  const classes = useStyles();
   const { locale } = useContext(UserContext);
   const queryString = hubUrl ? "?hub=" + hubUrl : "";
 

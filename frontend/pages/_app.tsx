@@ -155,11 +155,12 @@ export default function MyApp({ Component, pageProps = {} }) {
       if (jssStyles) {
         jssStyles.parentElement.removeChild(jssStyles);
       }
-      let [fetchedDonationGoals, fetchedUser, fetchedNotifications] = await Promise.all([
+      const [fetchedDonationGoals, fetchedNotifications] = await Promise.all([
         getDonationGoalsData(locale),
-        getLoggedInUser(token, cookies),
         getNotifications(token, locale),
       ]);
+      let fetchedUser = await getLoggedInUser(token, cookies);
+
       if (fetchedUser?.error === "invalid token") {
         const develop = ["develop", "development", "test"].includes(process.env.ENVIRONMENT!);
         const cookieProps: any = {

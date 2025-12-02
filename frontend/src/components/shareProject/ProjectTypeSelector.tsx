@@ -1,7 +1,6 @@
 import { Card, Grid, Radio, RadioGroup, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
-import { getImageUrl } from "../../../public/lib/imageOperations";
 
 const useStyles = makeStyles((theme) => ({
   reset: {
@@ -56,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
 
 const ProjectTypeBox = ({ type, value, onChange, color }) => {
   const classes = useStyles();
-  const handleChangeValue = (e) => {
+  const handleChangeValue = () => {
     onChange(type.type_id);
   };
   return (
@@ -91,7 +90,7 @@ export default function ProjectTypeSelector({ className, value, types, onChange,
       <RadioGroup>
         <Grid container component="ul" spacing={2} className={classes.reset}>
           {types.map((type) => (
-            <Grid item xs={12} sm={6} md={6} lg={6} component="li">
+            <Grid item xs={12} sm={6} md={6} lg={6} component="li" key={type.type_id}>
               <ProjectTypeBox type={type} value={value} onChange={onChange} color={color} />
             </Grid>
           ))}
