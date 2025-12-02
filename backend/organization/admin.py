@@ -1,13 +1,17 @@
 from django.contrib import admin
 
+# TODO: remove this import when the project tags are removed from the project model
+from organization.models.tags import (
+    ProjectTags,
+    ProjectTagging,
+    OrganizationFieldTagging,
+)
 
 from organization.models import (
     Organization,
     OrganizationTags,
     OrganizationTagging,
     Project,
-    ProjectTags,
-    ProjectTagging,
     Post,
     Comment,
     PostComment,
@@ -18,7 +22,6 @@ from organization.models import (
     ProjectStatus,
     ProjectCollaborators,
     ProjectFollower,
-    OrganizationFieldTagging,
     ProjectTranslation,
     OrganizationTranslation,
     PostTranslation,
