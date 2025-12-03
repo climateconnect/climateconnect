@@ -48,6 +48,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
     sectors = serializers.SerializerMethodField()
     types = serializers.SerializerMethodField()
     parent_organization = serializers.SerializerMethodField()
+    child_organizations = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
@@ -68,6 +69,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
             "image",
             "background_image",
             "parent_organization",
+            "child_organizations",
             "location",
             "short_description",
             "organ",
@@ -104,6 +106,14 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
     def get_parent_organization(self, obj):
         serializer = OrganizationStubSerializer(obj.parent_organization)
+        return serializer.data
+
+    def get_child_organizations(self, obj):
+        """Get all child organizations (organizations that have this org as parent)"""
+        child_orgs = Organization.objects.filter(parent_organization=obj).order_by(
+            "name"
+        )
+        serializer = OrganizationStubSerializer(child_orgs, many=True)
         return serializer.data
 
     def get_location(self, obj):
