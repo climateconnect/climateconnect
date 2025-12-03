@@ -105,6 +105,14 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       en: "is a suborganisation of",
       de: "ist eine Unterorganisation von",
     },
+    suborganization_of: {
+      en: "Suborganisation of",
+      de: "Unterorganisation von",
+    },
+    suborganizations_of: {
+      en: "Suborganisations of",
+      de: "Unterorganisationen von",
+    },
     persons_profile: {
       en: `${profile?.name}'s Profile`,
       de: `${profile?.name}'s Profil`,
