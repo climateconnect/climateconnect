@@ -142,7 +142,7 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
         alt={props.alternativeText}
         src={avatarImage.imageUrl}
       />
-      {props.mode === "edit" && <div className={classes.imageOverlay}></div>}
+      {props.mode === "edit" && <div className={classes.imageOverlay} />}
 
       {props.mode === "edit" && (
         <div

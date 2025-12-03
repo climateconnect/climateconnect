@@ -39,7 +39,7 @@ import { retrieveDescriptionFromWebflow } from "../../utils/webflow";
 import { HubDescription } from "./description/HubDescription";
 import { FabShareButton } from "./FabShareButton";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   content: {
     position: "relative",
   },
@@ -72,7 +72,7 @@ export interface HubBrowsePageProps {
 
 export async function getHubBrowseServerSideProps(ctx) {
   let hubUrl = ctx.query.hubUrl;
-  let { subHub } = extractHubUrlsFromContext(ctx);
+  const { subHub } = extractHubUrlsFromContext(ctx);
 
   if (subHub) {
     hubUrl = subHub;
@@ -189,6 +189,7 @@ export default function HubBrowsePage({
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
   //Refs and state for tutorial
+  // eslint-disable-next-line no-unused-vars
   const [requestTabNavigation, tabNavigationRequested] = useState("foo");
 
   const navRequested = (tabKey) => {

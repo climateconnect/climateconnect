@@ -115,7 +115,7 @@ export default function ProjectRequestersDialog({
   );
 }
 
-const ProjectRequesters = ({ initialRequesters, project, onClose }) => {
+const ProjectRequesters = ({ initialRequesters, project }) => {
   const [requesters, setRequesters] = useState(initialRequesters);
   const { locale } = useContext(UserContext);
   const cookies = new Cookies();

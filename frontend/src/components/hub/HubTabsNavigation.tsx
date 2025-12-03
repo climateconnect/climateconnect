@@ -1,5 +1,5 @@
 import { Theme } from "@emotion/react";
-import { Container, Link, Tab, Tabs, Typography, useMediaQuery } from "@mui/material";
+import { Container, Link, Tab, Tabs, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useState } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";

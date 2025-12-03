@@ -132,7 +132,7 @@ function PrioOneBackgroundAuth({ mobileScreenSize, classes }: BackgroundComponen
           className={classes.prioOneAuthIcon}
           src={"/images/custom_hubs/" + PRIO1_SLUG + "_group.svg"}
           layout="fill"
-        ></Image>
+         />
       </div>
     </div>
   );
@@ -177,7 +177,7 @@ export function PrioOneBackgroundBrowse({ isLoggedInUser }: { isLoggedInUser: bo
             height: "11rem",
           }}
         >
-          <Image src={"/images/custom_hubs/" + PRIO1_SLUG + "_group.svg"} layout="fill"></Image>
+          <Image src={"/images/custom_hubs/" + PRIO1_SLUG + "_group.svg"} layout="fill" />
         </div>
       )}
     </div>
@@ -199,6 +199,6 @@ export function PrioOneBackgroundBrowseIcon() {
       src={"/images/custom_hubs/" + PRIO1_SLUG + "_group.svg"}
       width={width}
       height={height}
-    ></Image>
+     />
   );
 }

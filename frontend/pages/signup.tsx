@@ -243,7 +243,7 @@ export default function Signup({ hubUrl, hubThemeData, sectorOptions }) {
             leftGridSizes={{ md: 7 }}
             rightGridSizes={{ md: 5 }}
             image={<CustomAuthImage hubUrl={hubUrl} texts={texts} authStep={curStep} />}
-          ></ContentImageSplitView>
+           />
         </ThemeProvider>
       </Container>
     </WideLayout>

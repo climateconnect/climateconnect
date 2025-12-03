@@ -864,7 +864,7 @@ export default function EditAccountPage({
           <Typography variant="subtitle2" className={classes.deleteMessage}>
             <InfoOutlinedIcon />
             {texts.if_you_wish_to_delete}
-            <div className={classes.spaceStrings}></div>
+            <div className={classes.spaceStrings} />
             <Link href={`mailto:${deleteEmail}`} underline="hover">
               {deleteEmail}
             </Link>

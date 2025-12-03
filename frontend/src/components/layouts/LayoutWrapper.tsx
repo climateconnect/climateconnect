@@ -16,7 +16,7 @@ import LogInAction from "../snackbarActions/LogInAction";
 import { DevLinkProvider } from "../../../devlink/DevLinkProvider";
 
 declare module "@mui/styles/defaultTheme" {
-  // eslint-disable-next-line no-empty-interface
+  // eslint-disable-next-line no-unused-vars
   interface DefaultTheme extends Theme {}
 }
 

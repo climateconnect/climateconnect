@@ -324,7 +324,7 @@ export default function Header({
 
   const onNotificationsClose = () => setAnchorEl(null);
   const getLogo = () => {
-    let imageUrl = "/images";
+    const imageUrl = "/images";
     if (isCustomHub) {
       return `${imageUrl}/hub_logos/ch_${hubUrl}_logo.svg`;
     }
@@ -579,7 +579,6 @@ const LoggedInNormalScreen = ({
   texts,
   localePrefix,
   getLoggedInLinks,
-  isCustomHub,
   hubUrl,
   classes,
 }) => {
@@ -811,6 +810,7 @@ function NarrowScreenLinks({
                 if (link?.showStaticLinksInDropdown && isCustomHub) {
                   return (
                     <NarrowScreenDropdownMenu
+                      key={index}
                       locale={locale}
                       classes={classes}
                       Icon={Icon}
@@ -910,7 +910,6 @@ const NarrowScreenDropdownMenu = ({
   STATIC_PAGE_LINKS,
   closeDrawer,
 }) => {
-  const localePrefix = getLocalePrefix(locale);
   const [openDropdownInMobile, setOpenDropdownInMobile] = useState(false);
   const toggleDropdownInMobile = setOpenDropdownInMobile.bind(null, !openDropdownInMobile);
   return (
@@ -952,7 +951,6 @@ const getLinkButtonProps = ({
   index,
   loggedInUser,
   classes,
-  transparentHeader,
   toggleShowNotifications,
   isNarrowScreen,
   linksOutsideDrawer,

@@ -56,7 +56,11 @@ function isNumber(value: any): boolean {
   return !isNaN(parseFloat(value)) && isFinite(value);
 }
 
-export default function CustomAuthImage({ hubUrl, texts, authStep }: Props): JSX.Element | null {
+export default function CustomAuthImage({
+  hubUrl,
+  texts,
+  authStep,
+}: Props): React.ReactElement | null {
   if (!hubUrl) {
     return <DefaultAuthImage authStep={authStep} />;
   }
@@ -91,7 +95,7 @@ function AuthImage({
   hubSlug: string;
   authStep?: string;
   logoSrc: string;
-}): JSX.Element {
+}): React.ReactElement {
   const classes = useStyles();
   return authStep ? (
     <DefaultAuthImage authStep={authStep} />
@@ -116,7 +120,7 @@ function AuthImage({
   );
 }
 
-function DefaultAuthImage({ authStep }: { authStep?: string }): JSX.Element {
+function DefaultAuthImage({ authStep }: { authStep?: string }): React.ReactElement {
   const finalSrc =
     authStep === "interestAreaInfo"
       ? "/images/sign_up/Questions-pana.svg"

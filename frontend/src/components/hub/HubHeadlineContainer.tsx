@@ -84,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function HubHeadlineContainer({ subHeadline, headline, isLocationHub, hubUrl }) {
+export default function HubHeadlineContainer({ subHeadline, headline, isLocationHub }) {
   const classes = useStyles({ isLocationHub: isLocationHub });
   const { locale, user } = useContext(UserContext);
 

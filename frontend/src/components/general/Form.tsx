@@ -117,19 +117,21 @@ type Props = {
   }[];
   select?: { selectValues: { label: string; value: string }[] };
   messages: {
-    submitMessage: string | JSX.Element;
-    headerMessage?: string | JSX.Element;
-    bottomMessage?: string | JSX.Element;
+    submitMessage: string | React.ReactElement;
+    headerMessage?: string | React.ReactElement;
+    bottomMessage?: string | React.ReactElement;
   };
   bottomLink?: { text: string; href: string };
   formAction?: { href: string; method: string; action?: any };
   usePercentage?: boolean;
   percentage?: number;
+  // eslint-disable-next-line no-unused-vars
   onSubmit: (...args: any[]) => void;
-  errorMessage?: JSX.Element | string | null;
+  errorMessage?: React.ReactElement | string | null;
   className?: string;
   alignButtonsRight?: boolean;
   fieldClassName?: string;
+  // eslint-disable-next-line no-unused-vars
   onGoBack?: (...args: any[]) => void;
   autocomplete?: string;
 };

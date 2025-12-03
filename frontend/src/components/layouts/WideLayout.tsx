@@ -1,7 +1,7 @@
 import { Container, Theme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import Alert from "@mui/material/Alert";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { getParams } from "../../../public/lib/generalOperations";
 import { getMessageFromUrl } from "../../../public/lib/parsingOperations";
 import theme from "../../themes/theme";
