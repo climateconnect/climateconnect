@@ -10,16 +10,16 @@ LOOKUP_DIR = CURRENT_DIR.parent.parent.parent
 LOOKUP_FILE = str(LOOKUP_DIR / "climateconnect_api" / "management" / "commands" / "osm_type_lookup_tables" / "lookup.csv")
 LOOKUP_OSM_ID_FILE = str(LOOKUP_DIR / "climateconnect_api" / "management" / "commands" / "osm_type_lookup_tables" / "osm_id_lookup.csv")
 
-def safe_int_conversion(str):
-    if str is None:
+def safe_int_conversion(string_value):
+    if string_value is None:
         return None
-    str = str.strip() #remove spaces, tabs, ...
-    if not str:
+    string_value = string_value.strip() #remove spaces, tabs, ...
+    if not string_value:
         return None
     try:
-        return int(str)
+        return int(string_value)
     except Exception as e:
-        print(f"WARNING: '{str}' could not be converted to int")
+        print(f"WARNING: '{string_value}' could not be converted to int")
         return None
     
 
