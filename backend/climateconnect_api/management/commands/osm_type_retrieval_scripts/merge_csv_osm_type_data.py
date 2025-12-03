@@ -36,7 +36,7 @@ if __name__ == "__main__":
         output_file = sys.argv[3]
 
     lookup_arr = open_csv(lookup_table_file_path)
-    orginal = open_csv(original_table_file_path)
+    original = open_csv(original_table_file_path)
     lookup_osm_id = open_csv(lookup_osm_id_file_path)
 
     lookup = {}
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     missing_osm_type = []
     osm_ids_not_in_lookup = []
 
-    for org in orginal:
+    for org in original:
         osm_id = org["osm_id"]
         if osm_id is None or len(osm_id) == 0:
             missing_osm.append(org)

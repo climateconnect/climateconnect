@@ -10,7 +10,7 @@ LOCATIONS_URL = "https://nominatim.openstreetmap.org/lookup"
 HEADERS = {"User-Agent": "DjangoProjekt/1.0 (<someone>@climateconnect.earth)"}
 
 
-def discover_osm_type(osm_ids: list) -> dict | None:
+def discover_osm_type(osm_ids: list) -> tuple[dict, set] | None:
     # input list of max 16 osm_ids due to limitation of nominatim requests (see below)
     results = {}
     ids_with_multiple_possible_types = []
@@ -90,7 +90,10 @@ def create_csv_lookup_table(osm_ids: list, outfile: str) -> None:
 
             for i in tqdm(range(0, len(osm_ids), 16)):
 
-                entries, invalids = discover_osm_type(osm_ids[i : i + 16])
+                result = discover_osm_type(osm_ids[i : i + 16])
+                if not result:
+                    continue
+                entries, invalids = result
                 # the limiit of nominatim lookup is 50 per request, hence 16 is the most osm_ids that
                 # can be sent at once (3 osm_types per osm_id are queried)
 
@@ -105,7 +108,8 @@ def create_csv_lookup_table(osm_ids: list, outfile: str) -> None:
     except Exception as e:
         print(f"Error: {e}")
     
-    write_invalid_osm_ids_to_file(invalid_osm_ids, "path/to/invalid_osm_ids_file.csv")
+    invalids_path = outpath.parent / "invalid_osm_ids_file.csv"
+    write_invalid_osm_ids_to_file(invalid_osm_ids, invalids_path)
 
 
 def write_invalid_osm_ids_to_file(invalid_osm_ids: set[str], outfile: str):
