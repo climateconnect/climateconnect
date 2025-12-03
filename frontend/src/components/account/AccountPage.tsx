@@ -318,20 +318,24 @@ export default function AccountPage({
       infoItem.value.length === 1 ? texts.suborganization_of : texts.suborganizations_of;
 
     return (
-      <div key={index} className={`${classes.subtitle} ${classes.subOrgContainer}`}>
+      <div key={index} className={classes.subtitle}>
         <Typography className={classes.isSubOrgText}>
           {subOrgLabel} {account.name}:
         </Typography>
-        {infoItem.value.map((org, orgIndex) => (
-          <React.Fragment key={org.id}>
-            {orgIndex > 0 && <span>,&nbsp;</span>}
-            <MiniOrganizationPreview
-              className={classes.miniOrgPreview}
-              organization={org}
-              size="tiny"
-            />
-          </React.Fragment>
-        ))}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "5px", alignItems: "left" }}>
+          {infoItem.value.map((org, orgIndex) => (
+            <React.Fragment key={org.id}>
+              {orgIndex > 0 && <span style={{ flexShrink: 0 }}>,</span>}
+              <div style={{ flexShrink: 0 }}>
+                <MiniOrganizationPreview
+                  className={classes.miniOrgPreview}
+                  organization={org}
+                  size="tiny"
+                />
+              </div>
+            </React.Fragment>
+          ))}
+        </div>
       </div>
     );
   };
