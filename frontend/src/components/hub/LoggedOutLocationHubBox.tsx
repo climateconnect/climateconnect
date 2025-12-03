@@ -123,7 +123,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function LoggedOutLocationHubBox({ headline, isLocationHub, location, hubUrl }) {
-  const { locale, user } = useContext(UserContext);
+  const { locale } = useContext(UserContext);
   const texts = getTexts({
     page: "dashboard",
     locale: locale,
@@ -189,7 +189,7 @@ export default function LoggedOutLocationHubBox({ headline, isLocationHub, locat
           {!subHub && (
             <div className={classes.advantagesBox}>
               {REASONS_TO_JOIN.map((r) => (
-                <ReasonToJoin reason={r} />
+                <ReasonToJoin reason={r} key={r.text} />
               ))}
             </div>
           )}

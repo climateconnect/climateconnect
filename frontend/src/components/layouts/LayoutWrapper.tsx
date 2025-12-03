@@ -16,7 +16,7 @@ import LogInAction from "../snackbarActions/LogInAction";
 import { DevLinkProvider } from "../../../devlink/DevLinkProvider";
 
 declare module "@mui/styles/defaultTheme" {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  // eslint-disable-next-line no-empty-interface
   interface DefaultTheme extends Theme {}
 }
 
@@ -63,7 +63,6 @@ export default function LayoutWrapper({
   noSpaceForFooter,
   description,
   image,
-  useFloodStdFont,
 }: any) {
   const [snackbarProps, setSnackbarProps] = useState({
     open: false,

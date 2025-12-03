@@ -1,7 +1,7 @@
 import { Container, Theme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import Alert from "@mui/material/Alert";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getParams } from "../../../public/lib/generalOperations";
 import { getMessageFromUrl } from "../../../public/lib/parsingOperations";
 import theme from "../../themes/theme";
@@ -52,7 +52,7 @@ type Props = {
   largeFooter?: boolean;
   description?: string;
   headerBackground?: string;
-  subHeader?: JSX.Element;
+  subHeader?: React.ReactElement;
   image?: string;
   useFloodStdFont?: boolean;
   rootClassName?: string;
@@ -108,8 +108,6 @@ export default function WideLayout({
   const [initialMessageType, setInitialMessageType] = React.useState(null as any);
   const [initialMessage, setInitialMessage] = React.useState("");
   const [alertEl, setAlertEl] = React.useState(null);
-  //Atm this is simply used to slide in the donation campaign banner after a certain timeout
-  const [showDonationBanner, setShowDonationBanner] = useState(false);
   const spaceToTop = ElementSpaceToTop({ el: alertEl });
 
   useEffect(() => {
@@ -119,9 +117,6 @@ export default function WideLayout({
       setInitialMessage(decodeURI(params.errorMessage));
       setInitialMessageType("error");
     }
-    setTimeout(() => {
-      setShowDonationBanner(true);
-    }, 3000);
   }, []);
   useEffect(() => {
     !hideAlert && setAlertOpen(true);
