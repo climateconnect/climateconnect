@@ -55,18 +55,18 @@ export default function MessageContent({ content, renderYoutubeVideos = false, r
       .filter((w) => w.length > 0 && youtubeRegex().test(w))
       .map((line) => {
         const words = line.split(" ");
-        const enrichedLine = words.map((w) => {
+        const enrichedLine = words.map((w, wordIndex) => {
           if (youtubeRegex().test(w)) {
             let video_id = YouTubeGetID(w);
             const ampersandPosition = video_id.indexOf("&");
             if (ampersandPosition !== -1) video_id = video_id.substring(0, ampersandPosition);
             return (
-              <div className={classes.youtubeWrapper}>
+              <div key={wordIndex} className={classes.youtubeWrapper}>
                 <YouTube videoId={video_id} opts={opts as any} />
               </div>
             );
           } else {
-            return <Linkify componentDecorator={componentDecorator}>{w + " "}</Linkify>;
+            return <Linkify key={wordIndex} componentDecorator={componentDecorator}>{w + " "}</Linkify>;
           }
         });
         return {

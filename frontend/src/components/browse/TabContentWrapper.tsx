@@ -108,7 +108,7 @@ export default function TabContentWrapper({
       {!isNarrowScreen && linkedHubs?.length > 0 && (
         <div className={classes.linkedHubsContainer}>
           {linkedHubs.map((linkedHub) => (
-            <HubLinkButton hub={linkedHub} />
+            <HubLinkButton key={linkedHub.url_slug} hub={linkedHub} />
           ))}
         </div>
       )}

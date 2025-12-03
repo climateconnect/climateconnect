@@ -24,6 +24,7 @@ interface UserAvatarProps {
   imageUrl?: string;
   thumbnailImageUrl?: string;
   alternativeText?: string;
+  // eslint-disable-next-line no-unused-vars
   onAvatarChanged?: (image?: AvatarImage) => void;
 }
 
@@ -60,7 +61,7 @@ const useStyles = makeStyles<Theme, { avatarImage?: string }>((theme) => ({
   },
 }));
 
-export function UserAvatar(props: UserAvatarProps): JSX.Element {
+export function UserAvatar(props: UserAvatarProps): React.ReactElement {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));

@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SettingsPage({ settings, setSettings, token, setMessage, hubUrl }) {
+export default function SettingsPage({ settings, setSettings, token, setMessage }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "settings", locale: locale });

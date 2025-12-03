@@ -102,7 +102,7 @@ const getOrganizationsFilters = (filterChoices, texts) => [
   },
 ];
 
-const getProjectsFilters = (filterChoices, texts, english_texts) => [
+const getProjectsFilters = (filterChoices, texts) => [
   ...getLocationFilters(texts),
   getSearchFilter(),
   {

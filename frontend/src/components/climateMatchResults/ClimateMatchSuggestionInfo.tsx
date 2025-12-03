@@ -134,7 +134,8 @@ export default function ClimateMatchSuggestionInfo({
   isInSlider,
 }: any) {
   const classes = useStyles({ displayContactButton: displayContactButton });
-  const suggestionInfoUnderImage = isInSlider || useMediaQuery<Theme>("(max-width:1525px)");
+  const mediaQuery = useMediaQuery<Theme>("(max-width:1525px)");
+  const suggestionInfoUnderImage = isInSlider || mediaQuery;
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   return (
     <div className={classes.wrapper}>

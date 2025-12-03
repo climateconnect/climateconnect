@@ -116,10 +116,10 @@ const useStyles = makeStyles<Theme>((theme) => ({
     padding: "5px",
     left: "0",
   },
-  infoIcon: (props) => ({
+  infoIcon: {
     marginBottom: -4,
     color: theme.palette.background.default_contrastText,
-  }),
+  },
   innerIcon: {
     marginRight: theme.spacing(0.5),
     marginLeft: -theme.spacing(1),

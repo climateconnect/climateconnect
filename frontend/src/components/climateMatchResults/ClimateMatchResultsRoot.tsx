@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
 //TODO: Replace by locationhub select as first step of climatematch if no hub is passed
 const FALLBACK_HUB = "test";
 
-export default function ClimateMatchResultsRoot({}) {
+export default function ClimateMatchResultsRoot() {
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
   const climatematch_token = cookies.get("climatematch_token");
