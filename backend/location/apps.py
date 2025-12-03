@@ -7,4 +7,7 @@ class LocationConfig(AppConfig):
 
     # for usage of signals.py
     def ready(self):
-        import location.signals
+        try:
+            import location.signals
+        except ImportError:
+            pass

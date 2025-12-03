@@ -2,7 +2,6 @@ from django.contrib.gis.db import models
 from climateconnect_api.models.language import Language
 
 
-# Create your models here.
 class Location(models.Model):
     name = models.CharField(
         help_text="Points to the (shortened) name of the location",
@@ -97,6 +96,7 @@ class Location(models.Model):
     class Meta:
         verbose_name = "Location"
         verbose_name_plural = "Location"
+        app_label = "location"
 
     def __str__(self):
         return "%s" % (self.name)
@@ -155,6 +155,7 @@ class LocationTranslation(models.Model):
         verbose_name = "Location translation"
         verbose_name_plural = "Location translations"
         unique_together = [["location", "language"]]
+        app_label = "location"
 
     def __str__(self):
         return "{}: {} of location {}".format(

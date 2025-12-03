@@ -1,8 +1,9 @@
 from celery import shared_task
-from .models import Location , LocationTranslation
+from location.models import Location , LocationTranslation
 import requests
 import logging
 from django.db import IntegrityError
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -32,9 +33,9 @@ def fetch_and_create_location_translations(self, loc_id):
     try:
         instance = Location.objects.get(pk=loc_id)
     except Location.DoesNotExist:
-        logger.error(f"Location mit ID {loc_id} existiert nicht mehr. Task abgebrochen.")
+        logger.error(f"location with ID {loc_id} does not exist anymore. Aborting task.")
         return
-    for language_id, locale in SUPPORTED_LANGUAGES.items():
+    for language_id, locale in enumerate(settings.LOCALES, 1):
         params = {
             'osm_ids': f"{instance.osm_type[0].upper()}{instance.osm_id}",
             'format': 'json',
@@ -42,13 +43,13 @@ def fetch_and_create_location_translations(self, loc_id):
             'addressdetails': 1,
             'accept-language': locale
             }
-        
-        headers = {'User-Agent': CUSTOM_USER_AGENT}
+
+        headers = {'User-Agent': settings.CUSTOM_USER_AGENT}
 
         translation_data = {}
 
         try:
-            response = requests.get(NOMINATIM_DETAILS_URL, params=params, headers=headers, timeout=20)
+            response = requests.get(settings.NOMINATIM_DETAILS_URL, params=params, headers=headers, timeout=20)
             response.raise_for_status()
             data = response.json()
 
