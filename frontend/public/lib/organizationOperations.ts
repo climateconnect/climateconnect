@@ -33,6 +33,7 @@ export function parseOrganization(organization, editMode: boolean = false) {
   if (hasParentOrganization) org.info.parent_organization = organization.parent_organization;
   else org.info.parent_organization = null;
   org.info.has_parent_organization = hasParentOrganization;
+  org.info.child_organizations = organization.child_organizations || [];
   return org;
 }
 
@@ -73,7 +74,7 @@ function getOrganizationInfo(organization, editMode) {
     organization_size: organization.organization_size,
     get_involved: organization.get_involved,
   };
-  /* For organization sizes and involvement we must differ between editing and non editing attribute for this object. 
+  /* For organization sizes and involvement we must differ between editing and non editing attribute for this object.
          When editing, it is required to have the attributes separate in order to use the generic functions to modify the fields in EditAccountPage.js
          When displaying the Org page outside of editing we want to have the info be contained inside the same attribute to display them side by side.
  */

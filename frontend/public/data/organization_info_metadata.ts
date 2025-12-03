@@ -58,10 +58,10 @@ export default function getOrganizationInfoMetadata(locale, organization?, isEdi
   return metaData;
 }
 
-/* 
-moved these down because I initially wanted to reuse the fields 
-twice with a conditional assignment of metaData with different fields based on editing 
-or not but opted for conditional assignment of properties like in organzationOperations.js 
+/*
+moved these down because I initially wanted to reuse the fields
+twice with a conditional assignment of metaData with different fields based on editing
+or not but opted for conditional assignment of properties like in organzationOperations.js
 essentially the goal is to have different meta data if we are just viewing or editing/creating
 */
 
