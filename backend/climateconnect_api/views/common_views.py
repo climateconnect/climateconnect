@@ -49,6 +49,11 @@ class ReceiveFeedback(APIView):
             return Response(
                 {"message": "Message is missing."}, status=status.HTTP_400_BAD_REQUEST
             )
+
+        # Extract context information
+        user_agent = request.META.get("HTTP_USER_AGENT", "")
+        path = request.data.get("path", "")
+
         if "send_response" in request.data and request.data["send_response"] is True:
             if request.user and request.user.is_authenticated:
                 feedback = Feedback.objects.create(
@@ -56,8 +61,16 @@ class ReceiveFeedback(APIView):
                     email=request.user.email,
                     text=request.data["message"],
                     send_response=True,
+                    user_agent=user_agent,
+                    path=path,
                 )
-                send_feedback_email(request.user.email, request.data["message"], True)
+                send_feedback_email(
+                    request.user.email,
+                    request.data["message"],
+                    True,
+                    user_agent=user_agent,
+                    path=path,
+                )
                 feedback.save()
                 return Response(
                     _(
@@ -75,9 +88,15 @@ class ReceiveFeedback(APIView):
                     email=request.data["email_address"],
                     text=request.data["message"],
                     send_response=True,
+                    user_agent=user_agent,
+                    path=path,
                 )
                 send_feedback_email(
-                    request.data["email_address"], request.data["message"], True
+                    request.data["email_address"],
+                    request.data["message"],
+                    True,
+                    user_agent=user_agent,
+                    path=path,
                 )
                 feedback.save()
                 return Response(
@@ -87,8 +106,18 @@ class ReceiveFeedback(APIView):
                     status=status.HTTP_200_OK,
                 )
         else:
-            feedback = Feedback.objects.create(text=request.data["message"])
-            send_feedback_email(None, request.data["message"], False)
+            feedback = Feedback.objects.create(
+                text=request.data["message"],
+                user_agent=user_agent,
+                path=path,
+            )
+            send_feedback_email(
+                None,
+                request.data["message"],
+                False,
+                user_agent=user_agent,
+                path=path,
+            )
             feedback.save()
             return Response(
                 _("Feedback successfully submitted."), status=status.HTTP_200_OK
