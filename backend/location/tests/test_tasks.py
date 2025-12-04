@@ -1,7 +1,7 @@
 from unittest.mock import patch, Mock
 import requests
 from django.test import TestCase, override_settings
-from django.db import IntegrityError, transaction
+from django.db import IntegrityError
 from django.db.models.signals import post_save
 
 from location.models import Location, LocationTranslation
@@ -157,35 +157,33 @@ class LocationTaskTest(TestCase):
 
 
 
-    # @patch('requests.get')
-    # @patch('location.tasks.logger')
-    # def test_fetch_and_create_location_translations_existing_translation(self, mock_logger, mock_get):
-    #     """
-    #     tests if existing translations are handled gracefully (with IntegrityError)
-    #     """
+    @patch('requests.get')
+    @patch('location.tasks.logger')
+    def test_fetch_and_create_location_translations_existing_translation(self, mock_logger, mock_get):
+        """
+        tests if existing translations are handled gracefully (with IntegrityError)
+        """
 
-    #     LocationTranslation.objects.create(
-    #         location=self.location,
-    #         language=self.language_de,
-    #         name_translation="existing",
-    #         city_translation="existing",
-    #         country_translation="existing",
-    #     )
+        LocationTranslation.objects.create(
+            location=self.location,
+            language=self.language_de,
+            name_translation="existing",
+            city_translation="existing",
+            country_translation="existing",
+        )
         
         
-    #     mock_get.return_value.json.side_effect = [
-    #         NOMINATIM_RESPONSE_DATA_EN, # should pass
-    #         NOMINATIM_RESPONSE_DATA_DE  # should fail
-    #     ]
+        mock_get.return_value.json.side_effect = [
+            NOMINATIM_RESPONSE_DATA_EN, # should pass
+            NOMINATIM_RESPONSE_DATA_DE  # should fail
+        ]
 
-    #     try:
-    #         with transaction.atomic():
-    #             fetch_and_create_location_translations(self.loc_id)
-    #     except IntegrityError:
-    #         pass    
+      
+        fetch_and_create_location_translations(self.loc_id)
+   
 
-    #     self.assertEqual(LocationTranslation.objects.count(), 2)
-    #     self.assertTrue(any("already exists" in call[0][0] for call in mock_logger.warning.call_args_list))
+        self.assertEqual(LocationTranslation.objects.count(), 2)
+        self.assertTrue(any("already exists" in call[0][0] for call in mock_logger.warning.call_args_list))
 
     
 
