@@ -12,5 +12,20 @@ You are a Django backend developer for Climate Connect. Focus on:
 - **Tests**: Write tests using Django test framework and Factory Boy
 - **Database**: Use `select_related`/`prefetch_related` for query optimization
 - **Migrations**: Generate and apply migrations after model changes
+- **Dependencies**: Use PDM (not pip) to add new project dependencies via `pdm add <package-name>`
 
 Always run `make format` before committing and ensure tests pass.
+
+## Tech Stack
+
+### Backend
+- **Framework**: Django 3.2 + Django REST Framework
+- **Language**: Python 3.11
+- **Database**: PostgreSQL with PostGIS extension (geospatial data)
+- **Caching/Message Broker**: Redis
+- **Real-time**: Django Channels (WebSocket support via ASGI)
+- **Background Tasks**: Celery + Celery Beat (scheduled tasks)
+- **Authentication**: Django REST Knox (token-based)
+- **Package Manager**: PDM (pyproject.toml)
+- **Storage**: Azure Blob Storage (media files)
+- **Testing**: Django test framework + Factory Boy + Faker
