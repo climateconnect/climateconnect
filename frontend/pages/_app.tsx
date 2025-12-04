@@ -30,7 +30,7 @@ Sentry.init({
 });
 
 declare module "@mui/styles/defaultTheme" {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  // eslint-disable-next-line no-unused-vars
   interface DefaultTheme extends Theme {}
 }
 
@@ -349,7 +349,7 @@ const setNotificationsRead = async (token, notifications, locale) => {
   } else return null;
 };
 
-async function getLoggedInUser(token, cookies) {
+async function getLoggedInUser(token) {
   if (token) {
     try {
       const resp = await apiRequest({

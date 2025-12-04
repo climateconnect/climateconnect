@@ -4,7 +4,7 @@ import { CcLandingpage, EnLandingpageClimateConnect } from "../devlink";
 import UserContext from "../src/components/context/UserContext";
 import WideLayout from "../src/components/layouts/WideLayout";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   container: {
     overflowAnchor: "none",
   },
@@ -17,7 +17,7 @@ export default function Index() {
   //This is a workaround for a bug with tabs in webflow's devlink
   //Without this code the page will always scroll down to the selected tab
   useEffect(() => {
-    const onFirstScroll = (event) => {
+    const onFirstScroll = () => {
       window.scrollTo(0, 0);
       document.removeEventListener("scroll", onFirstScroll);
     };

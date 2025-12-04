@@ -1,7 +1,6 @@
 import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
-import { getParams } from "../public/lib/generalOperations";
 import {
   getLocationValue,
   indicateWrongLocation,

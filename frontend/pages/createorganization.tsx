@@ -89,8 +89,8 @@ export default function CreateOrganization({
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
   const [translations, setTranslations] = useState({});
-  const [sourceLanguage, setSourceLanguage] = useState(locale);
-  const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== locale));
+  const [sourceLanguage] = useState(locale);
+  const [targetLanguage] = useState(locales.find((l) => l !== locale));
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [existingUrlSlug, setExistingUrlSlug] = useState("");
   const [existingName, setExistingName] = useState("");
