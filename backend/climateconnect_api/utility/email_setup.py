@@ -9,6 +9,7 @@ from hubs.models import Hub
 from climateconnect_api.utility.translation import get_user_lang_code, get_user_lang_url
 from django.conf import settings
 from mailjet_rest import Client
+from user_agents import parse as parse_user_agent
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +17,64 @@ mailjet_send_api = Client(
     auth=(settings.MJ_APIKEY_PUBLIC, settings.MJ_APIKEY_PRIVATE), version="v3.1"
 )
 mailjet_api = Client(auth=(settings.MJ_APIKEY_PUBLIC, settings.MJ_APIKEY_PRIVATE))
+
+
+def get_formatted_user_agent_info(user_agent_string):
+    """
+    Parse user agent string and return formatted browser and OS information.
+
+    Args:
+        user_agent_string: Raw user agent string from HTTP headers
+
+    Returns:
+        Dictionary with formatted browser and OS info, or None if parsing fails
+    """
+    if not user_agent_string:
+        return None
+
+    try:
+        user_agent = parse_user_agent(user_agent_string)
+
+        # Build browser info
+        browser_name = user_agent.browser.family
+        browser_version = user_agent.browser.version_string
+        browser_info = (
+            f"{browser_name} {browser_version}" if browser_version else browser_name
+        )
+
+        # Build OS info
+        os_name = user_agent.os.family
+        os_version = user_agent.os.version_string
+        os_info = f"{os_name} {os_version}" if os_version else os_name
+
+        # Build device info
+        device_info = None
+        if user_agent.is_mobile:
+            device_type = "Mobile"
+            if user_agent.device.family and user_agent.device.family != "Other":
+                device_info = f"{device_type} - {user_agent.device.family}"
+            else:
+                device_info = device_type
+        elif user_agent.is_tablet:
+            device_type = "Tablet"
+            if user_agent.device.family and user_agent.device.family != "Other":
+                device_info = f"{device_type} - {user_agent.device.family}"
+            else:
+                device_info = device_type
+        elif user_agent.is_pc:
+            device_info = "Desktop"
+        elif user_agent.is_bot:
+            device_info = "Bot"
+
+        return {
+            "browser": browser_info,
+            "os": os_info,
+            "device": device_info,
+            "raw": user_agent_string,
+        }
+    except Exception as e:
+        logger.warning(f"Failed to parse user agent: {e}")
+        return None
 
 
 def get_template_id(template_key, lang_code):
@@ -214,7 +273,27 @@ def send_password_link(user, password_reset_key, hub_url=None):
     )
 
 
-def send_feedback_email(email, message, send_response):
+def send_feedback_email(email, message, send_response, user_agent=None, path=None):
+    # Parse user agent to get readable browser and OS info
+    user_agent_info = get_formatted_user_agent_info(user_agent) if user_agent else None
+
+    # Build template variables with parsed info
+    variables = {
+        "text": str(message),
+        "sendReply": str(send_response),
+        "email": str(email if email else ""),
+        "path": str(path if path else ""),
+    }
+
+    # Add parsed user agent info if available
+    if user_agent_info:
+        variables["browser"] = user_agent_info["browser"]
+        variables["os"] = user_agent_info["os"]
+        variables["device"] = user_agent_info["device"] or ""
+        variables["userAgent"] = user_agent_info["raw"]  # Keep raw for debugging
+    else:
+        variables["userAgent"] = str(user_agent if user_agent else "")
+
     data = {
         "Messages": [
             {
@@ -231,11 +310,7 @@ def send_feedback_email(email, message, send_response):
                 "TemplateID": int(settings.FEEDBACK_TEMPLATE_ID),
                 "TemplateLanguage": True,
                 "Subject": "Climate Connect User Feedback",
-                "Variables": {
-                    "text": str(message),
-                    "sendReply": str(send_response),
-                    "email": str(email if email else ""),
-                },
+                "Variables": variables,
             }
         ]
     }

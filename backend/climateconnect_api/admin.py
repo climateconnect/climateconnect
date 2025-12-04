@@ -23,7 +23,6 @@ from climateconnect_api.models.content_shares import ContentShares
 pass_through_models = (
     Availability,
     Role,
-    Feedback,
     FaqSection,
     FaqQuestion,
     Notification,
@@ -39,6 +38,37 @@ pass_through_models = (
 
 for model in pass_through_models:
     admin.site.register(model, admin.ModelAdmin)
+
+
+class FeedbackAdmin(admin.ModelAdmin):
+    list_display = [
+        "id",
+        "user",
+        "email",
+        "text_preview",
+        "path",
+        "send_response",
+        "created_at",
+    ]
+    list_filter = ["send_response", "created_at"]
+    search_fields = [
+        "text",
+        "email",
+        "path",
+        "user__email",
+        "user__first_name",
+        "user__last_name",
+    ]
+    readonly_fields = ["user_agent", "path", "created_at", "updated_at"]
+    ordering = ["-created_at"]
+
+    def text_preview(self, obj):
+        return obj.text[:50] + "..." if len(obj.text) > 50 else obj.text
+
+    text_preview.short_description = "Feedback Text"
+
+
+admin.site.register(Feedback, FeedbackAdmin)
 
 
 class UserProfileAdmin(admin.ModelAdmin):

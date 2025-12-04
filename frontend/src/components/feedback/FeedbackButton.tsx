@@ -48,11 +48,16 @@ export default function FeedbackButton({ justLink, children }: any) {
 
   const submitFeedback = async (data) => {
     const token = cookies.get("auth_token");
+    const path = window.location.pathname + window.location.search;
+
     try {
       const response = await apiRequest({
         method: "post",
         url: "/api/feedback/",
-        payload: data,
+        payload: {
+          ...data,
+          path: path,
+        },
         token: token,
         locale: locale,
       });

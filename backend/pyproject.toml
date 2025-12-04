@@ -109,6 +109,7 @@ dependencies = [
     "websockets>=9.1",
     "zope-interface>=5.1.0",
     "gunicorn>=20.1.0",
+    "user-agents>=2.2.0",
 ]
 requires-python = ">=3.11"
 license = { text = "AGPL" }
