@@ -1,8 +1,9 @@
 from celery import shared_task
+from backend import location
 from location.models import Location , LocationTranslation
 import requests
 import logging
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
@@ -73,14 +74,21 @@ def fetch_and_create_location_translations(self, loc_id):
                 translation_data["translated_name"] = instance.name
 
         try:
-            LocationTranslation.objects.create(
-                location=instance,
-                language_id=language_id,
-                name_translation=translation_data["translated_name"],
-                city_translation=translation_data["translated_city"],
-                state_translation=translation_data["translated_state"],
-                country_translation=translation_data["translated_country"],
-            )
+            with transaction.atomic():
+                LocationTranslation.objects.create(
+                    location=instance,
+                    language_id=language_id,
+                    name_translation=translation_data["translated_name"],
+                    city_translation=translation_data["translated_city"],
+                    state_translation=translation_data["translated_state"],
+                    country_translation=translation_data["translated_country"],
+                )
+                logger.info(f"Translation created for {instance.pk} in {locale}.")
         except IntegrityError as e:
             logger.warning(f"Translation for ID {loc_id} and {language_id} already exists: {e}")
             continue
+        except Exception as e:
+                logger.error(f"unknown error while saving translation for {instance.pk}/{language_id}: {e}")
+                continue
+    else:
+        logger.warning(f"no results from nominatim for translating location {instance.pk} into {locale}.")
