@@ -66,7 +66,7 @@ export default function HoverImage({ src, text, className, background }: any) {
     <div className={className}>
       <div className={classes.wrapper}>
         <div className={classes.imageContainer} id="hover-image-container">
-          <img src={src} className={classes.image} />
+          <img src={src} className={classes.image} alt="hover image" />
         </div>
         <div className={classes.backgroundDiv}>
           <div className={classes.textDivInnerWrapper}>

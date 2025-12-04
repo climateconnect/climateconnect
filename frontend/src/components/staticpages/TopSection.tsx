@@ -86,7 +86,11 @@ export default function TopSection({ headline, subHeader, fixedHeight, noMarginB
   return (
     <div className={classes.root}>
       <div className={classes.imageContainer}>
-        <img src="/images/static_page_header.svg" className={classes.image} />
+        <img
+          src="/images/static_page_header.svg"
+          className={classes.image}
+          alt="static page header"
+        />
       </div>
       <Container className={classes.contentContainer}>
         <div className={classes.headersContainer}>
