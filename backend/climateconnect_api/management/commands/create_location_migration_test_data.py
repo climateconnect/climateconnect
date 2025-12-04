@@ -67,7 +67,7 @@ def delete_test_data() -> None:
 
 
 class Command(BaseCommand):
-    help = "Create badges data for users"
+    help = "Create or delete test data for location migration testing"
 
     def add_arguments(self, parser):
         parser.add_argument(

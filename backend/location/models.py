@@ -72,6 +72,7 @@ class Location(models.Model):
         verbose_name="OSM TYPE",
         blank=True,
         null=True,
+        choices=[("N", "node"), ("W", "way"), ("R", "relation")],
         max_length=1,
     )
 
