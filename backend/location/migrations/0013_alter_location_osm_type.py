@@ -67,7 +67,7 @@ def fill_osm_type(apps, schema_editor, lookup_file: str = LOOKUP_FILE, lookup_os
     lookup_osm_id_path = Path(lookup_osm_id_file)
     if not lookup_osm_id_path.exists():
         print(f"Error: lookup_osm_id_file not found at path {lookup_osm_id_path}")
-        return {}
+        return
 
     osm_lookup_data = open_csv(lookup_osm_id_path)
     updated_count = 0
