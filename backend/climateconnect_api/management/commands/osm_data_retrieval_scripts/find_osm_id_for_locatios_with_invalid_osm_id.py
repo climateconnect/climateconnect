@@ -117,8 +117,8 @@ def getLocations(osm_path: str, full_db_path: str) -> list[dict]:
 
 
 
-csv_db = "path/to/full_db_with_location_id.csv"
-csv_in = "path/to/list_of_all_invalid_osm_ids.csv"
-csv_out = "path/to/output_file_for_lookup_table.csv"
-locations = getLocations(csv_in, csv_db)
-create_csv_lookup_table(locations, csv_out)
+# csv_db = "path/to/full_db_with_location_id.csv"
+# csv_in = "path/to/list_of_all_invalid_osm_ids.csv"
+# csv_out = "path/to/output_file_for_lookup_table.csv"
+# locations = getLocations(csv_in, csv_db)
+# create_csv_lookup_table(locations, csv_out)

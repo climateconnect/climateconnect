@@ -91,6 +91,14 @@ class Location(models.Model):
         blank=True,
         null=True,
     )
+    
+    display_name = models.CharField(
+        help_text="Nominatim's full display name of the location",
+        verbose_name="Display Name",
+        max_length=1024,
+        blank=True,
+        null=True,
+    )
 
     exact_address = models.CharField(
         help_text="Points to the exact address the location is on (e.g. 'Silk Road 50')",
@@ -148,6 +156,22 @@ class Location(models.Model):
         null=True,
         choices=[("N", "node"), ("W", "way"), ("R", "relation")],
         max_length=1,
+    )
+
+    osm_class = models.CharField(
+        help_text="The internal class of this location in openstreetmaps",
+        verbose_name="OSM CLASS",
+        blank=True,
+        null=True,
+        max_length=100,
+    )
+
+    osm_class_type = models.CharField(
+        help_text="The internal type specifying the osm_class of this location in openstreetmaps",
+        verbose_name="OSM CLASS TYPE",
+        blank=True,
+        null=True,
+        max_length=100,
     )
 
     place_id = models.BigIntegerField(

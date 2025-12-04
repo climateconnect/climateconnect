@@ -11,8 +11,9 @@ class Migration(migrations.Migration):
             model_name="location",
             name="osm_type",
             field=models.CharField(
-                help_text="specifies the osm_type (node/relation/way) of the location",
+                help_text="The internal osm_type of this location openstreetmaps",
                 verbose_name="OSM TYPE",
+                choices=[('N', 'node'), ('W', 'way'), ('R', 'relation')],
                 blank=True,
                 null=True,
                 max_length=1,
