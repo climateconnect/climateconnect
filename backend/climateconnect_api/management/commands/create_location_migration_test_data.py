@@ -86,7 +86,6 @@ class Command(BaseCommand):
             "--file",
             type=str,
             help="Path to the CSV file containing test data",
-            # required=True,
         )
 
     def handle(self, *args, **options) -> str:
