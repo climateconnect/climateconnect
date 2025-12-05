@@ -65,7 +65,11 @@ const ProjectTypeBox = ({ type, value, onChange, color }) => {
       onClick={handleChangeValue}
     >
       <div className={classes.imageContainer}>
-        <img src={`/images/project_types/${type.type_id}.png`} className={classes.image} />
+        <img
+          src={`/images/project_types/${type.type_id}.png`}
+          alt={type.name}
+          className={classes.image}
+        />
       </div>
       <div className={classes.textBox}>
         <Typography className={classes.headline}>{type.name}</Typography>

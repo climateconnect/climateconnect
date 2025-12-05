@@ -35,6 +35,7 @@ export default function ProjectTypeDisplay({
       <img
         src={`/images/project_types/${projectType.type_id}.png`}
         className={iconClassName ? iconClassName : classes.typeIcon}
+        alt={projectType.name}
       />
       <Typography className={textClassName}>{projectType.name}</Typography>
     </div>

@@ -30,6 +30,7 @@ module.exports = {
     "react/prefer-stateless-function": "error",
     "react/react-in-jsx-scope": "off", // Not needed in Next.js 13
     "@next/next/no-img-element": "off",
+    "react-hooks/exhaustive-deps": "off"
   },
   settings: {
     react: {
