@@ -159,7 +159,7 @@ export default function MyApp({ Component, pageProps = {} }) {
         getDonationGoalsData(locale),
         getNotifications(token, locale),
       ]);
-      let fetchedUser = await getLoggedInUser(token, cookies);
+      let fetchedUser = await getLoggedInUser(token);
 
       if (fetchedUser?.error === "invalid token") {
         const develop = ["develop", "development", "test"].includes(process.env.ENVIRONMENT!);
