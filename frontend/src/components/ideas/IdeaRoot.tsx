@@ -326,7 +326,11 @@ export default function IdeaRoot({
               </div>
               <div className={classes.imageAndShortDescriptionWrapper}>
                 {idea.thumbnail_image && (
-                  <img src={getImageUrl(idea.thumbnail_image)} className={classes.ideaImage} />
+                  <img
+                    src={getImageUrl(idea.thumbnail_image)}
+                    className={classes.ideaImage}
+                    alt={idea.name}
+                  />
                 )}
                 <Typography variant="body1">{idea.short_description}</Typography>
               </div>

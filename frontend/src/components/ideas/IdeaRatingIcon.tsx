@@ -69,6 +69,7 @@ export default function IdeaRatingIcon({ rating, number_of_ratings }) {
           <img
             src={"/images/planet-earth-grey.svg"}
             className={`${classes.heartIcon} ${classes.greyHeartIcon}`}
+            alt="planet grey icon"
           />
         </div>
         <div className={`${classes.heartIconContainer} ${classes.coloredHeartIconContainer}`}>
@@ -76,6 +77,7 @@ export default function IdeaRatingIcon({ rating, number_of_ratings }) {
           <img
             src={"/images/planet-earth-heart.svg"}
             className={`${classes.heartIcon} ${classes.coloredHeartIcon}`}
+            alt="planet heart icon"
           />
         </div>
       </div>

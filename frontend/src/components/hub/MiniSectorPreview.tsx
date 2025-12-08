@@ -104,6 +104,7 @@ export default function MiniSectorPreview({
         <img
           src={createMode ? "/images/mini_hub_preview_background.jpg" : getImageUrl(sector?.image)}
           className={classes.placeholderImage}
+          alt="mini sector preview"
         />
       </div>
       <div className={classes.textContainer}>
@@ -117,7 +118,13 @@ export default function MiniSectorPreview({
           />
         ) : (
           <Typography color="text" className={classes.sectorName}>
-            {sector.icon && <img src={getImageUrl(sector.icon)} className={classes.sectorIcon} />}
+            {sector.icon && (
+              <img
+                src={getImageUrl(sector.icon)}
+                className={classes.sectorIcon}
+                alt="sector icon"
+              />
+            )}
             {sector?.name}
           </Typography>
         )}

@@ -140,6 +140,7 @@ export default function LayoutWrapper({
     <>
       <Head>
         <title>{title ? title + " | Climate Connect" : "Climate Connect"}</title>
+        {/* eslint-disable-next-line @next/next/no-css-tags */}
         <link href="/fonts/openSans.css" rel="stylesheet" />
         <meta
           name="viewport"

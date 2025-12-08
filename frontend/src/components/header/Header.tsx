@@ -849,7 +849,7 @@ function NarrowScreenLinks({
                   };
                   if (link.avatar)
                     return (
-                      <div className={classes.mobileAvatarContainer}>
+                      <div className={classes.mobileAvatarContainer} key={index}>
                         <Link
                           href={localePrefix + "/profiles/" + loggedInUser.url_slug + queryString}
                           underline="hover"

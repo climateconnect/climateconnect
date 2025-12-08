@@ -60,7 +60,7 @@ export async function getServerSideProps(ctx) {
   };
 }
 
-export default function manageOrganizationMembers({
+export default function ManageOrganizationMembersPage({
   organization,
   members,
   availabilityOptions,

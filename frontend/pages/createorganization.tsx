@@ -175,7 +175,7 @@ export default function CreateOrganization({
         return;
       }
       const url = `/api/look_up_organization/?search=${values.organizationname}`;
-      const resp = await apiRequest({
+      await apiRequest({
         method: "get",
         url: url,
         locale: locale,

@@ -3,12 +3,13 @@ module.exports = {
     browser: true,
     es6: true,
     node: true,
+    jest: true,
   },
   extends: [
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
-    "next/core-web-vitals"
+    "next/core-web-vitals",
   ],
   ignorePatterns: ["devlink/"],
   globals: {
@@ -30,7 +31,7 @@ module.exports = {
     "react/prefer-stateless-function": "error",
     "react/react-in-jsx-scope": "off", // Not needed in Next.js 13
     "@next/next/no-img-element": "off",
-    "react-hooks/exhaustive-deps": "off"
+    "react-hooks/exhaustive-deps": "off",
   },
   settings: {
     react: {
