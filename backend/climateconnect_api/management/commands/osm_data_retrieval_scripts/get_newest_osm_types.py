@@ -1,19 +1,15 @@
 import csv
 from pathlib import Path
-import requests
-from tqdm import tqdm
 from create_osm_type_data import create_csv_lookup_table
-from find_osm_id_for_locatios_with_invalid_osm_id import create_csv_lookup_table, getLocations
+#from find_osm_id_for_locatios_with_invalid_osm_id import create_csv_lookup_table as cclt
+from backend.climateconnect_api.management.commands.osm_data_retrieval_scripts.find_osm_id_for_locations_with_invalid_osm_id import getLocations
 
 
 CURRENT_DIR = Path(__file__).resolve()
 LOOKUP_DIR = CURRENT_DIR.parent.parent
 PATH_TO_KNOWN_LOOKUP = str(LOOKUP_DIR / "osm_lookup_tables" / "lookup.csv")
 PATH_TO_KNOWN_LOOKUP_OSM_ID = str(LOOKUP_DIR / "osm_lookup_tables" / "osm_id_lookup.csv")
-PATH_TO_CSV_OF_CURRENT_DATABASE = "/home/kathi/ClimateConnect/Arbeitsdateien/fullCurrentDB.csv"
-
-LOCATIONS_URL = "https://nominatim.openstreetmap.org/lookup"
-HEADERS = {"User-Agent": "DjangoProjekt/1.0 (<someone>@climateconnect.earth)"}
+PATH_TO_CSV_OF_CURRENT_DATABASE = "path/to/fullCurrentDB.csv"
 
 def open_csv(file_path: str) -> list[dict]:
     rows = []
@@ -71,7 +67,9 @@ def extract_osm_ids(csv_path):
 #create_csv_lookup_table(new_osm_ids, "/home/kathi/ClimateConnect/Arbeitsdateien/newLookup.csv")
 
 csv_db = PATH_TO_CSV_OF_CURRENT_DATABASE
-csv_in = "/home/kathi/ClimateConnect/Arbeitsdateien/invalid_osm_ids_file.csv"
-csv_out = "/home/kathi/ClimateConnect/Arbeitsdateien/new_osm_id_lookup.csv"
+csv_in = "path/to/invalid_osm_ids_file.csv"
+csv_out = "path/to/new_osm_id_lookup.csv"
 locations = getLocations(csv_in, csv_db)
 create_csv_lookup_table(locations, csv_out)
+
+#if invalid locations exist, run cclt to create a lookup table for them
