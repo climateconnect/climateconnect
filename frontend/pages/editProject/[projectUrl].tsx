@@ -7,7 +7,6 @@ import { apiRequest, getLocalePrefix, sendToLogin } from "../../public/lib/apiOp
 import {
   getProjectTypeOptions,
   getSkillsOptions,
-  getStatusOptions,
   getSectorOptions,
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
@@ -20,7 +19,7 @@ import Layout from "../../src/components/layouts/layout";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
-import { Project, SectorOptionType } from "../../src/types";
+import { Project, Sector } from "../../src/types";
 import theme from "../../src/themes/theme";
 
 const useStyles = makeStyles((theme) => ({
@@ -47,7 +46,6 @@ export async function getServerSideProps(ctx) {
     members,
     skillsOptions,
     userOrganizations,
-    statusOptions,
     projectTypeOptions,
     hubThemeData,
     sectorOptions,
@@ -56,7 +54,6 @@ export async function getServerSideProps(ctx) {
     getMembersByProject(projectUrl, auth_token, ctx.locale),
     getSkillsOptions(ctx.locale),
     getUserOrganizations(auth_token, ctx.locale),
-    getStatusOptions(ctx.locale),
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
     getSectorOptions(ctx.locale),
@@ -67,7 +64,6 @@ export async function getServerSideProps(ctx) {
       members: members,
       skillsOptions: skillsOptions,
       userOrganizations: userOrganizations,
-      statusOptions: statusOptions,
       projectTypeOptions: projectTypeOptions,
       hubThemeData: hubThemeData,
       hubUrl: hubUrl,
@@ -81,7 +77,6 @@ export default function EditProjectPage({
   members,
   skillsOptions,
   userOrganizations,
-  statusOptions,
   projectTypeOptions,
   hubThemeData,
   hubUrl,
@@ -91,16 +86,14 @@ export default function EditProjectPage({
   members: any[];
   skillsOptions: any[];
   userOrganizations: any[];
-  statusOptions: any[];
   projectTypeOptions: any[];
   hubThemeData: any;
   hubUrl: string;
-  sectorOptions: SectorOptionType[];
+  sectorOptions: Sector[];
 }) {
   const classes = useStyles();
   const [curProject, setCurProject] = React.useState({
     ...project,
-    status: statusOptions.find((s) => s.name === project?.status),
     hubUrl: project?.related_hubs?.length ? project.related_hubs[0] : null,
   });
 
@@ -122,7 +115,6 @@ export default function EditProjectPage({
 
   project = {
     ...project,
-    status: statusOptions.find((s) => s.name === project?.status),
   };
   const [errorMessage, setErrorMessage] = React.useState("");
   const { user, locale } = useContext(UserContext);
@@ -213,11 +205,11 @@ export default function EditProjectPage({
         hubUrl={hubUrl}
       >
         <EditProjectRoot
+          hubUrl={hubUrl}
           oldProject={project}
           project={curProject}
           skillsOptions={skillsOptions}
           userOrganizations={userOrganizations}
-          statusOptions={statusOptions}
           handleSetProject={handleSetProject}
           sectorOptions={sectorOptions}
           user_role={user_role}

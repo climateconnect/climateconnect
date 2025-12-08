@@ -104,7 +104,7 @@
     "de": "Du hast die Teilnehmer*innen dieses Chats erfolgreich aktualisiert!"
   },
   "there_must_be_exactly_one_creator_of_an_organization": {
-    "en": "There must be exactly one Super Admin of an organization.",
+    "en": "There must be exactly one Super Admin of an organisation.",
     "de": "Es muss genau einen Super Admin einer Organisation geben"
   },
   "there_wasnt_a_creator": {

@@ -12,7 +12,7 @@ import { getCookieProps } from "../public/lib/cookieOperations";
 import WebSocketService from "../public/lib/webSockets";
 import UserContext from "../src/components/context/UserContext";
 import theme from "../src/themes/theme";
-import { CcLocale } from "../src/types";
+import { CcLocale, DonationGoal } from "../src/types";
 import * as Sentry from "@sentry/react";
 import "../devlink/global.css";
 import { getHubslugFromUrl } from "../public/lib/hubOperations";
@@ -31,7 +31,7 @@ Sentry.init({
 
 declare module "@mui/styles/defaultTheme" {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme { }
+  interface DefaultTheme extends Theme {}
 }
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
@@ -79,7 +79,7 @@ export default function MyApp({ Component, pageProps = {} }) {
   const [state, setState] = useState({
     user: token ? {} : (null as any),
     notifications: [] as any[],
-    donationGoal: null as any,
+    donationGoals: [] as DonationGoal[],
   });
 
   const [webSocketClient, setWebSocketClient] = useState<WebSocket | null | undefined>(null);
@@ -155,8 +155,8 @@ export default function MyApp({ Component, pageProps = {} }) {
       if (jssStyles) {
         jssStyles.parentElement.removeChild(jssStyles);
       }
-      let [fetchedDonationGoal, fetchedUser, fetchedNotifications] = await Promise.all([
-        getDonationGoalData(locale),
+      let [fetchedDonationGoals, fetchedUser, fetchedNotifications] = await Promise.all([
+        getDonationGoalsData(locale),
         getLoggedInUser(token, cookies),
         getNotifications(token, locale),
       ]);
@@ -175,7 +175,7 @@ export default function MyApp({ Component, pageProps = {} }) {
         ...state,
         user: fetchedUser,
         notifications: fetchedNotifications,
-        donationGoal: fetchedDonationGoal,
+        donationGoals: fetchedDonationGoals,
       });
       setLoading(false);
     })();
@@ -273,7 +273,7 @@ export default function MyApp({ Component, pageProps = {} }) {
     ReactGA: ReactGA,
     updateCookies: updateCookies,
     socketConnectionState: socketConnectionState,
-    donationGoal: state.donationGoal,
+    donationGoals: state.donationGoals,
     acceptedNecessary: acceptedNecessary,
     locale: locale as CcLocale,
     locales: locales as CcLocale[],
@@ -399,26 +399,26 @@ async function getNotifications(token, locale) {
   }
 }
 
-async function getDonationGoalData(locale) {
+async function getDonationGoalsData(locale): Promise<DonationGoal[]> {
   if (process.env.DONATION_CAMPAIGN_RUNNING !== "true") {
-    return null;
+    return [];
   }
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/donation_goal_progress/",
+      url: "/api/donation_goals_progresses/",
       locale: locale,
     });
-    const ret = {
-      goal_name: resp?.data?.name,
-      goal_start: resp?.data?.start_date,
-      goal_end: resp?.data?.end_date,
-      goal_amount: resp?.data?.goal_amount,
-      current_amount: resp?.data?.current_amount,
-      hub: resp?.data?.hub?.url_slug,
-      call_to_action_text: resp?.data?.call_to_action_text,
-      call_to_action_link: resp?.data?.call_to_action_link,
-    };
+    const ret: DonationGoal[] = resp?.data?.map((goal) => ({
+      goal_name: goal?.name,
+      goal_start: goal?.start_date,
+      goal_end: goal?.end_date,
+      goal_amount: goal?.goal_amount,
+      current_amount: goal?.current_amount,
+      hub: goal?.hub?.url_slug,
+      call_to_action_text: goal?.call_to_action_text,
+      call_to_action_link: goal?.call_to_action_link,
+    }));
     console.log(ret);
     return ret;
   } catch (err: any) {
@@ -426,6 +426,6 @@ async function getDonationGoalData(locale) {
     if (err.response && err.response.data) {
       console.log(err.response.data);
     } else console.log(err);
-    return null;
+    return [];
   }
 }

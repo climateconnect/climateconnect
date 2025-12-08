@@ -331,7 +331,10 @@ class ListProjectsView(ListAPIView):
                 .order_by("distance")
             )
 
-        if "country" and "city" in self.request.query_params:
+        if (
+            "country" in self.request.query_params
+            and "city" in self.request.query_params
+        ):
             location_ids = Location.objects.filter(
                 country=self.request.query_params.get("country"),
                 city=self.request.query_params.get("city"),
@@ -412,6 +415,11 @@ class CreateProjectView(APIView):
 
     @transaction.atomic()
     def post(self, request):
+        # Temporary fix: there is no project status anymore within the frontend
+        # therefore we "overwrite" the status to published until project status
+        # is fully removed from the backend, too.
+        request.data["status"] = 2  # ProjectStatus.DEFAULT_TYPE
+
         if "parent_organization" in request.data:
             organization = check_organization(int(request.data["parent_organization"]))
         else:

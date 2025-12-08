@@ -22,6 +22,7 @@ import theme from "../../src/themes/theme";
 import { NOTIFICATION_TYPES } from "../../src/components/communication/notifications/Notification";
 import { getProjectTypeOptions } from "../../public/lib/getOptions";
 import BrowseContext from "../../src/components/context/BrowseContext";
+import { parseData } from "../../public/lib/parsingOperations";
 
 type StyleProps = {
   showSimilarProjects: boolean;
@@ -75,7 +76,6 @@ const parseComments = (comments) => {
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const projectUrl = encodeURI(ctx?.query?.projectId);
-
   // Updated to ensure `hubUrl` is only encoded if `ctx.query.hub` is defined and not null.
   // This prevents `encodeURI` from converting `undefined` or `null` into the string "undefined" or "null".
   const hubUrl = ctx?.query?.hub ? encodeURI(ctx.query.hub) : null;
@@ -244,6 +244,7 @@ export default function ProjectPage({
       message={message?.message}
       messageType={message?.messageType}
       title={project ? project.name : texts.project + " " + texts.not_found}
+      showDonationGoal={true}
       subHeader={
         !tinyScreen ? (
           <HubsSubHeader
@@ -418,7 +419,7 @@ async function getSimilarProjects(projectUrl, locale, hubUrl?: string | null) {
     });
     if (resp.data.results.length === 0) return null;
     else {
-      return resp.data.results;
+      return parseData({ type: "projects", data: resp.data.results });
     }
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
@@ -444,13 +445,14 @@ const getHubSupporters = async (url_slug, locale) => {
     return null;
   }
 };
+
+// TODO duplicated code? manage project members also has this function
 function parseProject(project) {
   return {
     name: project.name,
     id: project.id,
     url_slug: project.url_slug,
     image: project.image,
-    status: project.status,
     location: project.location,
     description: project.description,
     short_description: project.short_description,

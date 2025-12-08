@@ -14,6 +14,7 @@ import UserContext from "./../../src/components/context/UserContext";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 import theme from "../../src/themes/theme";
+import { parseProjectStubs } from "../../public/lib/parsingOperations";
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
@@ -69,6 +70,7 @@ export default function ProfilePage({
         (profile.info.bio ? " | " + profile.info.bio : "")
       }
       hubUrl={hubUrl}
+      showDonationGoal={true}
       customTheme={customTheme}
       headerBackground={
         customTheme ? customTheme.palette.header.background : theme.palette.background.default
@@ -104,6 +106,7 @@ async function getProfileByUrlIfExists(profileUrl, token, locale) {
       token: token,
       locale: locale,
     });
+
     return parseProfile(resp.data, false);
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
@@ -168,16 +171,6 @@ async function getOrganizationsByUser(profileUrl, token, locale) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
-}
-
-function parseProjectStubs(projects) {
-  return projects.map((p) => {
-    const project = p.project;
-    return {
-      ...project,
-      location: project.location,
-    };
-  });
 }
 
 function parseOrganizationStubs(organizations) {

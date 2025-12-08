@@ -195,6 +195,7 @@ export default function AccountPage({
   const organizationTexts = isOrganization
     ? getTexts({ page: "organization", organization: account, locale: locale })
     : { not_an_organization: "Not an organization" };
+
   const componentDecorator = (href, text, key) => (
     <Link
       color="primary"
@@ -294,6 +295,51 @@ export default function AccountPage({
     toggleShowFollowers();
   }); // end of follow organizations codeblock
 
+  const renderParentOrganization = (value: any, index: number) => {
+    if (!value.name) return null;
+    return (
+      <div key={index} className={`${classes.subtitle} ${classes.subOrgContainer}`}>
+        <Typography className={classes.isSubOrgText}>
+          {account.name} {texts.is_a_suborganization_of}{" "}
+        </Typography>
+        <MiniOrganizationPreview
+          className={classes.miniOrgPreview}
+          organization={value}
+          size="tiny"
+        />
+      </div>
+    );
+  };
+
+  const renderChildOrganizations = (infoItem: any, index: number) => {
+    if (!Array.isArray(infoItem.value) || infoItem.value.length === 0) return null;
+
+    const subOrgLabel =
+      infoItem.value.length === 1 ? texts.suborganization_of : texts.suborganizations_of;
+
+    return (
+      <div key={index} className={classes.subtitle}>
+        <Typography className={classes.isSubOrgText}>
+          {subOrgLabel} {account.name}:
+        </Typography>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "5px", alignItems: "left" }}>
+          {infoItem.value.map((org, orgIndex) => (
+            <React.Fragment key={org.id}>
+              {orgIndex > 0 && <span style={{ flexShrink: 0 }}>,</span>}
+              <div style={{ flexShrink: 0 }}>
+                <MiniOrganizationPreview
+                  className={classes.miniOrgPreview}
+                  organization={org}
+                  size="tiny"
+                />
+              </div>
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   const displayAccountInfo = (info) =>
     Object.keys(info)
       .sort((a, b) => {
@@ -302,96 +348,108 @@ export default function AccountPage({
         return b?.weight - a?.weight;
       })
       .map((key, index) => {
-        if (info[key]) {
-          const i = getFullInfoElement(infoMetadata, key, info[key]);
+        if (!info[key]) return null;
 
-          const value = Array.isArray(i.value) ? i.value.join(", ") : i.value;
-          const additionalText = i.additionalText ? i.additionalText : "";
-          if (key === "parent_organization") {
-            if (value.name)
-              return (
-                <div key={index} className={`${classes.subtitle} ${classes.subOrgContainer}`}>
-                  <Typography className={classes.isSubOrgText}>
-                    {account.name} {texts.is_a_suborganization_of}{" "}
-                  </Typography>
-                  <MiniOrganizationPreview
-                    className={classes.miniOrgPreview}
-                    organization={value}
-                    size="tiny"
-                  />
-                </div>
-              );
-          } else if (i.type === "selectwithtext" && value) {
-            return <SelectWithText types={account.types} info={i} key={index} />;
-          } else if (i.type === "array" && i?.value?.length > 0) {
-            return (
-              <div key={index}>
-                <div className={classes.subtitle}>{i.name}:</div>
-                <div className={classes.marginBottom}>
-                  {i && i.value && i.value.length > 0
-                    ? i.value.map((entry) => (
-                        <Chip
-                          size="medium"
-                          color="secondary"
-                          label={entry}
-                          key={entry}
-                          className={classes.chip}
-                        />
-                      ))
-                    : i.missingMessage && <div className={classes.content}>{i.missingMessage}</div>}
-                </div>
+        const infoElement = getFullInfoElement(infoMetadata, key, info[key]);
+        const value = Array.isArray(infoElement.value)
+          ? infoElement.value.join(", ")
+          : infoElement.value;
+        const additionalText = infoElement.additionalText ? infoElement.additionalText : "";
+        if (key === "parent_organization") {
+          return renderParentOrganization(value, index);
+        }
+        if (key === "child_organizations") {
+          return renderChildOrganizations(infoElement, index);
+        }
+        if (infoElement.type === "selectwithtext" && value) {
+          return <SelectWithText types={account.types} info={infoElement} key={index} />;
+        }
+        if (infoElement.type === "array" && infoElement?.value?.length > 0) {
+          return (
+            <div key={index}>
+              <div className={classes.subtitle}>{infoElement.name}:</div>
+              <div className={classes.marginBottom}>
+                {infoElement && infoElement.value && infoElement.value.length > 0
+                  ? infoElement.value.map((entry) => (
+                      <Chip
+                        size="medium"
+                        color="secondary"
+                        label={entry}
+                        key={entry}
+                        className={classes.chip}
+                      />
+                    ))
+                  : infoElement.missingMessage && (
+                      <div className={classes.content}>{infoElement.missingMessage}</div>
+                    )}
               </div>
-            );
-          } else if (i.linkify && value) {
-            return (
-              <>
-                <div className={classes.subtitle}>{i.name}:</div>
-                <Linkify componentDecorator={componentDecorator} key={index}>
-                  <div className={classes.content}>{value}</div>
-                </Linkify>
-              </>
-            );
-          } else if (i.type === "bio" && value) {
-            return (
-              <div key={index} className={classes.content}>
-                <MessageContent content={value ? value + additionalText : i.missingMessage} />
-              </div>
-            );
-          } else if (i.type === "sectors") {
-            return (
-              <>
-                {i.value.length > 0 && <div className={classes.subtitle}>{i.name}:</div>}
+            </div>
+          );
+        }
 
-                <SectorsPreview sectors={i.value} />
-              </>
-            );
-          } else if (i.type === "select" && value) {
-            const textValue = i.options ? i.options.find((o) => o?.key === value).name : value;
-            return (
-              <div key={index}>
-                <SubTitleWithContent
-                  subtitle={i.name + ":"}
-                  content={textValue ? textValue + additionalText : i.missingMessage}
-                />
-              </div>
-            );
-          } else if (
-            value &&
-            !["detailled_description", "location", "checkbox"].includes(i.type) &&
-            !isOrganization
-          ) {
-            return (
-              <div key={index}>
-                <SubTitleWithContent
-                  subtitle={i.name + ":"}
-                  content={value ? value + additionalText : i.missingMessage}
-                />
-              </div>
-            );
-          }
+        if (infoElement.linkify && value) {
+          return (
+            <>
+              <div className={classes.subtitle}>{infoElement.name}:</div>
+              <Linkify componentDecorator={componentDecorator} key={index}>
+                <div className={classes.content}>{value}</div>
+              </Linkify>
+            </>
+          );
+        }
+
+        if (infoElement.type === "bio" && value) {
+          return (
+            <div key={index} className={classes.content}>
+              <MessageContent
+                content={value ? value + additionalText : infoElement.missingMessage}
+              />
+            </div>
+          );
+        }
+
+        if (infoElement.type === "sectors") {
+          return (
+            <>
+              {infoElement.value.length > 0 && (
+                <div className={classes.subtitle}>{infoElement.name}:</div>
+              )}
+
+              <SectorsPreview sectors={infoElement.value} />
+            </>
+          );
+        }
+
+        if (infoElement.type === "select" && value) {
+          const textValue = infoElement.options
+            ? infoElement.options.find((o) => o?.key === value).name
+            : value;
+          return (
+            <div key={index}>
+              <SubTitleWithContent
+                subtitle={infoElement.name + ":"}
+                content={textValue ? textValue + additionalText : infoElement.missingMessage}
+              />
+            </div>
+          );
+        }
+
+        if (
+          value &&
+          !["detailled_description", "location", "checkbox"].includes(infoElement.type) &&
+          !isOrganization
+        ) {
+          return (
+            <div key={index}>
+              <SubTitleWithContent
+                subtitle={infoElement.name + ":"}
+                content={value ? value + additionalText : infoElement.missingMessage}
+              />
+            </div>
+          );
         }
       });
-  const getDetailledDescription = () => {
+  const getDetailedDescription = () => {
     const detailled_description_obj = Object.keys(account.info).filter((i) => {
       const el = getFullInfoElement(infoMetadata, i, account.info[i]);
       return el.type === "detailled_description";
@@ -401,7 +459,7 @@ export default function AccountPage({
       return getFullInfoElement(infoMetadata, key, account.info[key]);
     } else return null;
   };
-  const detailledDescription = getDetailledDescription();
+  const detailedDescription = getDetailedDescription();
   const locationKeys = Object.keys(account.info).filter((key) => {
     const infoElement = getFullInfoElement(infoMetadata, key, account.info[key]);
     return infoElement.type === "location";
@@ -535,11 +593,11 @@ export default function AccountPage({
         cancelText={organizationTexts.no}
       />
       <Divider className={classes.marginTop} />
-      {detailledDescription?.value && (
+      {detailedDescription?.value && (
         <Container>
           <DetailledDescription
-            title={detailledDescription.name}
-            value={detailledDescription.value}
+            title={detailedDescription.name}
+            value={detailedDescription.value}
             className={classes.detailledDescription}
           />
         </Container>

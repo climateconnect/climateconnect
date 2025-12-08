@@ -27,7 +27,6 @@ export type SkillType = {
 
 export type Project = {
   collaborators_welcome: boolean;
-  status: string;
   skills: any[];
   helpful_connections: any[];
   collaborating_organizations: any[];
@@ -56,7 +55,7 @@ export type Project = {
   related_hubs?: any[];
   hubUrl?: string;
   thumbnail_image?: string;
-  sectors?: SectorOptionType[];
+  sectors?: Sector[];
 };
 
 export type BrowseTab = "projects" | "organizations" | "members" | "events";
@@ -99,14 +98,15 @@ export type Supporter = {
   organization_url_slug: string;
 };
 
-export type SectorOptionType = {
-  icon?: string;
+export type Sector = {
   id: number;
   name: string;
   key: string;
+  icon?: string;
   original_name?: string;
-  thumbnail_image?: string;
+  image?: string;
 };
+
 export type LinkedHub = {
   hubName: string;
   hubUrl: string;
@@ -121,3 +121,14 @@ export interface HubData {
   hub_type: string;
   [key: string]: any;
 }
+
+export type DonationGoal = {
+  goal_name: string | undefined;
+  goal_start: string | undefined;
+  goal_end: string | undefined;
+  goal_amount: number | undefined;
+  current_amount: number | undefined;
+  hub: string | undefined;
+  call_to_action_text: string | undefined;
+  call_to_action_link: string | undefined;
+};

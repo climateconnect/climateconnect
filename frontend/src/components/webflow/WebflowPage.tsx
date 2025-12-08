@@ -14,6 +14,7 @@ export default function WebflowPage({
   noHeader,
   title,
   description,
+  showDonationGoal = true,
 }: any) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
@@ -28,6 +29,7 @@ export default function WebflowPage({
         noSpaceBottom
         hideFooter={hideFooter}
         noHeader={noHeader}
+        showDonationGoal={showDonationGoal}
       >
         <div dangerouslySetInnerHTML={{ __html: bodyContent }} />
       </WideLayout>

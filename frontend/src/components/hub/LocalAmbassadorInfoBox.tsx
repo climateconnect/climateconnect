@@ -66,9 +66,7 @@ export default function LocalAmbassadorInfoBox({ hubAmbassador, hubData, hubSupp
 
     if (!user) {
       return redirect("/signup", {
-        redirect: window.location.pathname + window.location.search,
         errorMessage: texts.please_create_an_account_or_log_in_to_contact_the_ambassador,
-        hub: hubData.url_slug,
       });
     }
 
@@ -76,15 +74,13 @@ export default function LocalAmbassadorInfoBox({ hubAmbassador, hubData, hubSupp
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
 
-  console.log(hubData)
-
   const parseTextWithCustomVariables = (m) => {
     return m.replaceAll("${ambassador.first_name}", hubAmbassador?.user?.first_name);
   };
 
   function getAmbassadorBoxText() {
     if (hubAmbassador?.custom_ambassador_box_text) {
-      return parseTextWithCustomVariables(hubAmbassador.custom_ambassador_box_text)
+      return parseTextWithCustomVariables(hubAmbassador.custom_ambassador_box_text);
     } else {
       return texts.local_ambassador_is_there_for_you;
     }

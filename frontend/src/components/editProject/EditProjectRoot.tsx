@@ -18,7 +18,7 @@ import {
   getTranslationsWithoutRedundantKeys,
 } from "../../../public/lib/translationOperations";
 import getTexts from "../../../public/texts/texts";
-import { Project, Role, SectorOptionType } from "../../types";
+import { Project, Role, Sector } from "../../types";
 import UserContext from "../context/UserContext";
 import NavigationButtons from "../general/NavigationButtons";
 import TranslateTexts from "../general/TranslateTexts";
@@ -47,7 +47,6 @@ type Props = {
   project: Project;
   skillsOptions: any;
   userOrganizations: any;
-  statusOptions: any;
   handleSetProject: any;
   oldProject: Project;
   user_role: Role;
@@ -55,7 +54,7 @@ type Props = {
   initialTranslations: any;
   projectTypeOptions: any;
   hubUrl: string;
-  sectorOptions?: SectorOptionType[];
+  sectorOptions?: Sector[];
 };
 
 export default function EditProjectRoot({
@@ -349,7 +348,7 @@ export default function EditProjectRoot({
             locationOptionsOpen={locationOptionsOpen}
             handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
             locationInputRef={locationInputRef}
-            sectorOptions={sectorOptions}
+            sectorOptions={sectorOptions ?? []}
           />
           <EditProjectContent
             project={project}
@@ -420,7 +419,6 @@ const parseProjectForRequest = async (project, translationChanges) => {
   if (project.skills) ret.skills = project.skills.map((s) => s.id);
   if (project.tags) ret.project_tags = project.tags.map((t) => t.id);
   if (project.sectors) ret.sectors = ret.sectors.map((s) => s.key);
-  if (project.status) ret.status = project.status.id;
   if (project.project_parents && project.project_parents.parent_organization)
     ret.parent_organization = project.project_parents.parent_organization.id;
   return ret;

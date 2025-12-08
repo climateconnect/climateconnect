@@ -5,8 +5,8 @@ import axios from "axios";
 import { debounce } from "lodash";
 import React, { useContext, useEffect } from "react";
 import {
-  getNameFromLocation,
-  getNameFromExactLocation,
+  getDisplayLocationFromLocation,
+  getDisplayLocationFromExactLocation,
   isExactLocation,
 } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
@@ -47,7 +47,6 @@ type Props = {
   color?: TextFieldProps["color"];
 };
 
-
 export default function LocationSearchBar({
   label,
   required,
@@ -80,10 +79,9 @@ export default function LocationSearchBar({
       return inputValue ? inputValue : "";
     } else if (typeof newValue === "object") {
       if (enableExactLocation) {
-        const nameObj = getNameFromExactLocation(newValue);
-        return nameObj === "" ? nameObj : nameObj.name;
+        return getDisplayLocationFromExactLocation(newValue).name;
       } else {
-        return newValue.name ? newValue.name : newValue.simple_name;
+        return newValue.simple_name ? newValue.simple_name : newValue.name;
       }
     } else {
       return newValue;
@@ -107,14 +105,13 @@ export default function LocationSearchBar({
   );
   const [loading, setLoading] = React.useState(false);
   const HUB_COUNTRY_RESTRICTIONS = {
-    "perth": "gb"
-  }
-  //For some locations the official name differs from the "word of mouth name". 
+    perth: "gb",
+  };
+  //For some locations the official name differs from the "word of mouth name".
   //If people type in the "word of mouth name" we will instead look for the official name
   const ALIAS_FOR_SEARCH = {
-    "perthshire": "Perth and Kinross",
-  }
-
+    perthshire: "Perth and Kinross",
+  };
 
   React.useEffect(() => {
     let active = true;
@@ -126,15 +123,14 @@ export default function LocationSearchBar({
           mode: "no-cors",
           referrerPolicy: "origin",
         };
-        const searchParam = ALIAS_FOR_SEARCH[searchValue.toLowerCase()] ? ALIAS_FOR_SEARCH[searchValue.toLowerCase()] : searchValue
-        let url = `https://nominatim.openstreetmap.org/search?q=${searchParam}&format=json&addressdetails=1&polygon_geojson=1&polygon_threshold=0.001&accept-language=en-US,en;q=0.9`
+        const searchParam = ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
+          ? ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
+          : searchValue;
+        let url = `https://nominatim.openstreetmap.org/search?q=${searchParam}&format=json&addressdetails=1&polygon_geojson=1&polygon_threshold=0.001&accept-language=en-US,en;q=0.9`;
         if (Object.keys(HUB_COUNTRY_RESTRICTIONS).includes(hubUrl)) {
           url += "&countrycodes=" + HUB_COUNTRY_RESTRICTIONS[hubUrl];
         }
-        const response = await axios(
-          url,
-          config as any
-        );
+        const response = await axios(url, config as any);
         const bannedClasses = [
           "tourism",
           "railway",
@@ -187,29 +183,31 @@ export default function LocationSearchBar({
             filteredData.length > 0
               ? filteredData
               : response.data.slice(0, 2).filter((o) => {
-                if (filterMode && o.type === "postcode") {
-                  return false;
-                } else {
-                  return enableExactLocation || !bannedClasses.includes(o.class);
-                }
-              });
+                  if (filterMode && o.type === "postcode") {
+                    return false;
+                  } else {
+                    return enableExactLocation || !bannedClasses.includes(o.class);
+                  }
+                });
           for (const option of additionalOptions) {
             if (option.simple_name.toLowerCase().includes(searchValue.toLowerCase())) {
               data.push(option);
             }
           }
-          const options = data.map((o) => {
-            const nameObj = getNameFromExactLocation(o);
-            return {
-              ...o,
-              simple_name: enableExactLocation
-                ? nameObj === ""
-                  ? nameObj
-                  : nameObj.name
-                : getNameFromLocation(o).name,
-              key: o.place_id,
-            };
-          });
+
+          const getSimpleName = (location, enableExactLocation: boolean = false): string => {
+            if (!enableExactLocation) {
+              return getDisplayLocationFromLocation(location).name;
+            }
+
+            return getDisplayLocationFromExactLocation(location).name;
+          };
+
+          const options = data.map((option) => ({
+            ...option,
+            simple_name: getSimpleName(option, enableExactLocation),
+            key: option.place_id,
+          }));
           setOptions(getOptionsWithoutRedundancies(options));
           setLoading(false);
         }

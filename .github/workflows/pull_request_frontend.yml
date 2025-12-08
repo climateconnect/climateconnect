@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     environment: "pull_request"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Check out Git repository
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
-          node-version: 16
+          node-version: '20.x'
           cache: yarn
           cache-dependency-path: frontend/yarn.lock
 
@@ -35,3 +35,5 @@ jobs:
         run: yarn prettier '**/*.{js,jsx,ts,tsx,json,md}' --check
       - name: Typescript Compile frontend
         run: yarn tsc
+      - name: Run frontend tests
+        run: yarn test

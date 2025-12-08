@@ -63,8 +63,9 @@ def translate(text, target_lang):
     if target_lang == "de":
         payload["formality"] = "less"
 
-    url = "https://api.deepl.com/v2/translate?auth_key=" + settings.DEEPL_API_KEY
-    translation = requests.post(url, payload)
+    url = "https://api.deepl.com/v2/translate"
+    headers = {"Authorization": f"DeepL-Auth-Key {settings.DEEPL_API_KEY}"}
+    translation = requests.post(url, data=payload, headers=headers)
     return json.loads(translation.content)["translations"][0]
 
 
