@@ -15,14 +15,16 @@ HEADERS = {"User-Agent": "DjangoProjekt/1.0 (<someone>@climateconnect.earth)"}
 
 
 def discover_osm_class(osm_ids: list) -> tuple[dict, set] | None:
-    #max 50 osm_ids
+    # max 50 osm_ids
     results = {}
     osm_ids_string = ",".join(osm_ids)
 
     params = {"osm_ids": osm_ids_string, "format": "json", "extratags": 0}
 
     try:
-        response = requests.get(LOCATIONS_URL, params=params, headers=HEADERS, timeout=20)
+        response = requests.get(
+            LOCATIONS_URL, params=params, headers=HEADERS, timeout=20
+        )
 
         response.raise_for_status()
         data = response.json()
@@ -46,7 +48,7 @@ def discover_osm_class(osm_ids: list) -> tuple[dict, set] | None:
 
 def create_csv_lookup_table(osm_ids: list, outfile: str) -> None:
 
-    fieldnames = ["osm_type", "osm_id",  "osm_class", "osm_class_type", "display_name"]
+    fieldnames = ["osm_type", "osm_id", "osm_class", "osm_class_type", "display_name"]
     outpath = Path(outfile)
     outpath.parent.mkdir(parents=True, exist_ok=True)
 
@@ -72,8 +74,6 @@ def create_csv_lookup_table(osm_ids: list, outfile: str) -> None:
 
     except Exception as e:
         print(f"Error: {e}")
-    
-
 
 
 def extract_osm_ids(csv_path):
@@ -97,7 +97,9 @@ def extract_osm_ids(csv_path):
                         osm_id_str = row["osm_type"] + row["osm_id"].strip()
                         unique_osm_ids.add(osm_id_str)
                     except ValueError:
-                        print(f"Warning: invalid osm_id '{row['osm_type']}{row['osm_id']}' skipped.")
+                        print(
+                            f"Warning: invalid osm_id '{row['osm_type']}{row['osm_id']}' skipped."
+                        )
                         continue
 
         print(
@@ -117,7 +119,15 @@ def extract_osm_ids(csv_path):
 # test_place_ids = [281739181, 88715228, 256856867, 256305646, 82615589, 83293355, 115047027, 297417241, 307525758, 258543476]
 # test_osm_ids = [7444, 8649, 16132]
 test_osm_ids = []
-test_osm_ids.extend(extract_osm_ids("/home/kathi/ClimateConnect/climateconnect_env/climateconnect/backend/climateconnect_api/management/commands/osm_lookup_tables/osm_id_lookup.csv"))
-test_osm_ids.extend(extract_osm_ids("/home/kathi/ClimateConnect/climateconnect_env/climateconnect/backend/climateconnect_api/management/commands/osm_lookup_tables/lookup.csv"))
+test_osm_ids.extend(
+    extract_osm_ids(
+        "/home/kathi/ClimateConnect/climateconnect_env/climateconnect/backend/climateconnect_api/management/commands/osm_lookup_tables/osm_id_lookup.csv"
+    )
+)
+test_osm_ids.extend(
+    extract_osm_ids(
+        "/home/kathi/ClimateConnect/climateconnect_env/climateconnect/backend/climateconnect_api/management/commands/osm_lookup_tables/lookup.csv"
+    )
+)
 csv_path = "/home/kathi/ClimateConnect/Arbeitsdateien/class_lookup.csv"
 create_csv_lookup_table(test_osm_ids, csv_path)
