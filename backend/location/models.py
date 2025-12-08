@@ -17,7 +17,7 @@ class Location(models.Model):
         blank=True,
         null=True,
     )
-    
+
     display_name = models.CharField(
         help_text="Nominatim's full display name of the location",
         verbose_name="Display Name",

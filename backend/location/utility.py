@@ -16,11 +16,11 @@ import json
 
 logger = logging.getLogger("django")
 
+
 def _osm_type_char(v):
     if v is None:
         return None
-    mapping = {"relation": "R", "way": "W", "node": "N", 
-               "r": "R", "w": "W", "n": "N"}
+    mapping = {"relation": "R", "way": "W", "node": "N", "r": "R", "w": "W", "n": "N"}
     return mapping.get(str(v).lower())
 
 
@@ -179,8 +179,8 @@ def format_location(location_string, already_loaded):
         "place_id": location_object["place_id"],
         "osm_id": location_object["osm_id"],
         "osm_type": _osm_type_char(location_object["osm_type"]),
-        "osm_class": location_object["class"], 
-        "osm_class_type": location_object["type"],  
+        "osm_class": location_object["class"],
+        "osm_class_type": location_object["type"],
         "name": location_name["name"],
         "display_name": location_object["display_name"],
         "city": location_name["city"],

@@ -61,9 +61,9 @@ class TestGetLocation(TestCase):
         location = get_location(self.valid_location_object)
 
         self.assertEqual(location.osm_id, 62422)
-        self.assertEqual(location.osm_type, "R")  
+        self.assertEqual(location.osm_type, "R")
         self.assertEqual(location.osm_class, "boundary")
-        self.assertEqual(location.osm_class_type, "Point")  
+        self.assertEqual(location.osm_class_type, "Point")
         self.assertEqual(location.display_name, "Berlin, Germany")
 
     @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
