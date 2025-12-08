@@ -139,8 +139,7 @@ export default function MyApp({ Component, pageProps = {} }) {
 
     cookies.set("auth_token", token, cookieProps);
     const user = await getLoggedInUser(
-      cookies.get("auth_token") ? cookies.get("auth_token") : token,
-      cookies
+      cookies.get("auth_token") ? cookies.get("auth_token") : token
     );
     setState({
       ...state,

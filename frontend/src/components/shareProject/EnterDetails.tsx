@@ -227,7 +227,7 @@ export default function EnterDetails({
                 </IconButton>
               </Tooltip>
             </Typography>
-            <ProjectDescriptionHelp project_type={projectData.project_type} />
+            <ProjectDescriptionHelp />
             <TextField
               variant="outlined"
               color={backgroundContrastColor}
