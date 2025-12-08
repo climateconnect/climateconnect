@@ -302,7 +302,6 @@ export function parseLocation(location, isConcretePlace = false) {
     osm_class: location?.class,
     osm_class_type: location?.type,
     display_name: location?.display_name,
-    name: location_object.name,
     name: displayLocation.name,
     lon: location?.lon,
     lat: location?.lat,
