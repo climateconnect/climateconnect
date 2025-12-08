@@ -20,8 +20,7 @@ def _osm_type_char(v):
     if v is None:
         return None
     mapping = {"relation": "R", "way": "W", "node": "N", 
-               "r": "R", "w": "W", "n": "N", 
-               "R": "R", "W": "W", "N": "N"}
+               "r": "R", "w": "W", "n": "N"}
     return mapping.get(str(v).lower())
 
 
@@ -61,6 +60,9 @@ def get_location(location_object):
         "lat",
         "osm_id",
         "osm_type",
+        "osm_class",
+        "osm_class_type",
+        "display_name",
     ]
     for param in required_params:
         if param not in location_object:
@@ -103,12 +105,15 @@ def get_location(location_object):
         raise Exception("Unsupported location type")
 
     loc = Location.objects.create(
-        osm_id=location_object.get("osm_id", None),
-        osm_type=_osm_type_char(location_object.get("osm_type", None)),
+        osm_id=location_object["osm_id"],
+        osm_type=_osm_type_char(location_object["osm_type"]),
+        osm_class=location_object["osm_class"],
+        osm_class_type=location_object["osm_class_type"],
         place_id=location_object["place_id"],
         city=location_object["city"],
         state=location_object["state"],
         place_name=location_object["place_name"],
+        display_name=location_object["display_name"],
         exact_address=location_object["exact_address"],
         country=location_object["country"],
         name=location_object["name"],
@@ -174,7 +179,10 @@ def format_location(location_string, already_loaded):
         "place_id": location_object["place_id"],
         "osm_id": location_object["osm_id"],
         "osm_type": _osm_type_char(location_object["osm_type"]),
+        "osm_class": location_object["class"], 
+        "osm_class_type": location_object["type"],  
         "name": location_name["name"],
+        "display_name": location_object["display_name"],
         "city": location_name["city"],
         "state": location_name["state"],
         "country": location_name["country"],
