@@ -243,10 +243,12 @@ export function parseLocation(location, isConcretePlace = false) {
     geojson: location.geojson ? location.geojson : generateGeoJson(location),
     place_id: location?.place_id,
     osm_id: location?.osm_id,
-    osm_type: typeof location?.osm_type === "string" ? 
-      location?.osm_type.charAt(0).toUpperCase() : undefined,
-    osm_class: location?.class, 
-    osm_class_type: location?.type,  
+    osm_type:
+      typeof location?.osm_type === "string"
+        ? location?.osm_type.charAt(0).toUpperCase()
+        : undefined,
+    osm_class: location?.class,
+    osm_class_type: location?.type,
     display_name: location?.display_name,
     name: location_object.name,
     lon: location?.lon,

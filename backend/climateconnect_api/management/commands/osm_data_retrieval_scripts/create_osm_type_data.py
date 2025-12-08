@@ -17,7 +17,7 @@ def discover_osm_type(osm_ids: list) -> tuple[dict, set] | None:
 
     valid_osm_ids = set()
     invalid_osm_ids = set()
-    #also create list for osm_ids that are totally invalid, no results found
+    # also create list for osm_ids that are totally invalid, no results found
 
     osm_ids_with_types = []
     for osm_id in osm_ids:
@@ -31,7 +31,9 @@ def discover_osm_type(osm_ids: list) -> tuple[dict, set] | None:
     params = {"osm_ids": osm_ids_string, "format": "json", "extratags": 0}
 
     try:
-        response = requests.get(LOCATIONS_URL, params=params, headers=HEADERS, timeout=20)
+        response = requests.get(
+            LOCATIONS_URL, params=params, headers=HEADERS, timeout=20
+        )
 
         response.raise_for_status()
         data = response.json()
@@ -41,7 +43,7 @@ def discover_osm_type(osm_ids: list) -> tuple[dict, set] | None:
                 dup_osm_id = d["osm_id"]
                 ids_with_multiple_possible_types.append(dup_osm_id)
                 continue
-            
+
             valid_osm_ids.add(int(d["osm_id"]))
 
             results[d["osm_id"]] = {
@@ -54,14 +56,16 @@ def discover_osm_type(osm_ids: list) -> tuple[dict, set] | None:
         #     print(
         #         f"WARNING: osm_ids with multiple possible types found: {ids_with_multiple_possible_types}"
         #     )
-            # here I reviewed every osm_id with multipe possible types manually and compared the name in the database with the 'display_name'
-            # this was a lot of work, so maybe think of some automation for future execution of this script (problem:
-            #         sometimes the 'name' and 'display_name' are not exactly equal)
-            # the order RNW is suggested instead of RWN
-            # reason: the first match was written to lookup, R was the right type a lot of times compared to N,
-            #         and N was the right type most of the times compared to W
 
-        #some osm_ids are not valid anymore, find and return them
+        # Commentor: Kathi
+        # here I reviewed every osm_id with multipe possible types manually and compared the name in the database with the 'display_name'
+        # this was a lot of work, so maybe think of some automation for future execution of this script (problem:
+        #         sometimes the 'name' and 'display_name' are not exactly equal)
+        # the order RNW is suggested instead of RWN
+        # reason: the first match was written to lookup, R was the right type a lot of times compared to N,
+        #         and N was the right type most of the times compared to W
+
+        # some osm_ids are not valid anymore, find and return them
         for id in osm_ids:
             if int(id) not in valid_osm_ids:
                 invalid_osm_ids.add(id)
@@ -107,7 +111,7 @@ def create_csv_lookup_table(osm_ids: list, outfile: str) -> None:
 
     except Exception as e:
         print(f"Error: {e}")
-    
+
     invalids_path = outpath.parent / "invalid_osm_ids_file.csv"
     write_invalid_osm_ids_to_file(invalid_osm_ids, invalids_path)
 
@@ -122,8 +126,8 @@ def write_invalid_osm_ids_to_file(invalid_osm_ids: set[str], outfile: str):
             rows_written = 0
 
             for osm_id in tqdm(invalid_osm_ids):
-                    writer.writerow({"osm_id": osm_id})
-                    rows_written += 1
+                writer.writerow({"osm_id": osm_id})
+                rows_written += 1
 
             print(f"\n Successfully saved {rows_written} osm_ids to {outfile}.")
 

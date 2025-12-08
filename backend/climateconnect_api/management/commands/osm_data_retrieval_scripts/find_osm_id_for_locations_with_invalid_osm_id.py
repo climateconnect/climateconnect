@@ -2,10 +2,11 @@ import requests
 import csv
 from pathlib import Path
 from tqdm import tqdm
-#usage of dictionarries because Location moule can't be imported
+
+# usage of dictionarries because Location moule can't be imported
 
 SEARCH_URL = "https://nominatim.openstreetmap.org/search"
-#search only allows 1 request per second, no batch requests
+# search only allows 1 request per second, no batch requests
 HEADERS = {"User-Agent": "DjangoProjekt/1.0 (<someone>@climateconnect.earth)"}
 
 
@@ -14,13 +15,13 @@ def discover_osm_id(loc: dict) -> dict | None:
     name = loc.get("name", "").strip()
     id = loc.get("id")
     place_id = loc.get("place_id")
-    
+
     params = {
-        'q': name, 
-        'format': 'json',
-        'limit': 1, 
-        'addressdetails': 0,
-        'extratags': 0,
+        "q": name,
+        "format": "json",
+        "limit": 1,
+        "addressdetails": 0,
+        "extratags": 0,
     }
 
     try:
@@ -29,7 +30,9 @@ def discover_osm_id(loc: dict) -> dict | None:
         data = response.json()
         # best match is data[0]
         if not data:
-            print(f"Warning: No OSM data found for name: '{name}' (location_id: {loc.id})")
+            print(
+                f"Warning: No OSM data found for name: '{name}' (location_id: {loc.id})"
+            )
             return None
         d = data[0]
         result = {
@@ -41,7 +44,6 @@ def discover_osm_id(loc: dict) -> dict | None:
             "osm_id": d.get("osm_id"),
         }
 
-        
         return result
 
     except requests.RequestException as e:
@@ -97,7 +99,7 @@ def open_csv(file_path: str):
 
 
 def getLocations(osm_path: str, full_db_path: str) -> list[dict]:
-    
+
     osm_id_rows = open_csv(osm_path)
     full_db_rows = open_csv(full_db_path)
     locations = []
@@ -112,9 +114,8 @@ def getLocations(osm_path: str, full_db_path: str) -> list[dict]:
                     "name": location["name"],
                 }
                 locations.append(loc)
-    
-    return locations
 
+    return locations
 
 
 # csv_db = "path/to/full_db_with_location_id.csv"
