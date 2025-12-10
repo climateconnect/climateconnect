@@ -110,7 +110,7 @@
            DEBUG: "true"
            ALLOWED_HOSTS: "localhost,127.0.0.1"
          run: |
-           pdm run python manage.py test --noinput --parallel
+           python3 manage.py test --keepdb
 
        - name: Upload coverage reports
          if: always()
