@@ -66,7 +66,11 @@ export default function MessageContent({ content, renderYoutubeVideos = false, r
               </div>
             );
           } else {
-            return <Linkify key={wordIndex} componentDecorator={componentDecorator}>{w + " "}</Linkify>;
+            return (
+              <Linkify key={wordIndex} componentDecorator={componentDecorator}>
+                {w + " "}
+              </Linkify>
+            );
           }
         });
         return {
