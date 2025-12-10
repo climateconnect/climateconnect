@@ -183,7 +183,11 @@ const SmallFooter = ({
         {!isNarrowScreen && (
           <Box component="span" className={classes.centerText}>
             {customFooterImage ? (
-              <img src={customFooterImage} className={classes.customFooterImage} />
+              <img
+                src={customFooterImage}
+                className={classes.customFooterImage}
+                alt="custom footer"
+              />
             ) : (
               <MadeWithLoveForEarthSign />
             )}

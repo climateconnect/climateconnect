@@ -1,7 +1,6 @@
 import Grid from "@mui/material/Unstable_Grid2";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
-import InfiniteScroll from "react-infinite-scroller";
 import NoItemsFound from "../browse/NoItemsFound";
 import InfiniteScrollGrid from "../general/InfiniteScrollGrid";
 import LoadingSpinner from "../general/LoadingSpinner";

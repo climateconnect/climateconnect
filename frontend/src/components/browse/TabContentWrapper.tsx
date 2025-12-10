@@ -76,7 +76,6 @@ export default function TabContentWrapper({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
-
   return (
     <TabContent
       value={tabValue}
@@ -108,7 +107,7 @@ export default function TabContentWrapper({
       {!isNarrowScreen && linkedHubs?.length > 0 && (
         <div className={classes.linkedHubsContainer}>
           {linkedHubs.map((linkedHub) => (
-            <HubLinkButton hub={linkedHub} />
+            <HubLinkButton key={linkedHub.hubUrl} hub={linkedHub} />
           ))}
         </div>
       )}

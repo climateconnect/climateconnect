@@ -140,9 +140,17 @@ export default function WelcomeToClimateMatch({
       </Container>
       <div className={classes.imageContainer} ref={bottomRef}>
         <div className={classes.questionsGraphicContainer}>
-          <img src="/images/questions_pana.svg" className={classes.questionsGraphic} />
+          <img
+            src="/images/questions_pana.svg"
+            className={classes.questionsGraphic}
+            alt="questions"
+          />
         </div>
-        <img src="/images/erlangen_climatematch.jpg" className={classes.image} />
+        <img
+          src="/images/erlangen_climatematch.jpg"
+          className={classes.image}
+          alt="erlangen climate match"
+        />
       </div>
       <Container className={`${classes.buttonBar} ${!unfixButtonBar && classes.fixedOnMobile}`}>
         <div className={classes.buttonBarLeft}>

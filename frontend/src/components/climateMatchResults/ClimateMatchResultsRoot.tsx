@@ -15,6 +15,8 @@ import ClimateMatchResult from "./ClimateMatchResult";
 import ClimateMatchResultsOverviewBar from "./ClimateMatchResultsOverviewBar";
 import { getParams } from "../../../public/lib/generalOperations";
 
+const InfiniteScrollComponent = InfiniteScroll as any;
+
 const useStyles = makeStyles((theme) => ({
   headerContainer: {
     background: theme.palette.primary.main,
@@ -66,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
 //TODO: Replace by locationhub select as first step of climatematch if no hub is passed
 const FALLBACK_HUB = "test";
 
-export default function ClimateMatchResultsRoot({}) {
+export default function ClimateMatchResultsRoot() {
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
   const climatematch_token = cookies.get("climatematch_token");
@@ -183,7 +185,7 @@ export default function ClimateMatchResultsRoot({}) {
             {!screenIsSmallerThanMd && (
               <ClimateMatchResultsOverviewBar suggestions={suggestions?.matched_resources} />
             )}
-            <InfiniteScroll
+            <InfiniteScrollComponent
               className={classes.resultsContainer}
               //TODO(unused) component="div"
               //TODO(unused) container
@@ -197,7 +199,7 @@ export default function ClimateMatchResultsRoot({}) {
                 <ClimateMatchResult key={index} suggestion={suggestion} pos={index} />
               ))}
               {isFetchingMore && <LoadingSpinner isLoading key="project-previews-spinner" />}
-            </InfiniteScroll>
+            </InfiniteScrollComponent>
           </Container>
         </div>
       )}

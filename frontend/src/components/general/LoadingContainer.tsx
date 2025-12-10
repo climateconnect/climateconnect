@@ -1,9 +1,8 @@
-import { Icon, SvgIcon, Theme, Typography } from "@mui/material";
+import { Theme, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { Box } from "@mui/system";
 
 const useStyles = makeStyles<Theme, { subtractedHeight?: string }>(() => ({

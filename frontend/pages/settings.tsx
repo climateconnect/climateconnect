@@ -50,7 +50,6 @@ export default function Settings({ settings, hubThemeData, hubUrl }) {
           setSettings={setCurrentSettings}
           token={token}
           setMessage={setMessage}
-          hubUrl={hubUrl}
         />
       </Layout>
     );

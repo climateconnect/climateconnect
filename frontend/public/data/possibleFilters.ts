@@ -5,13 +5,12 @@ import getTexts from "../texts/texts";
 
 export default function getFilters({ key, filterChoices, locale }) {
   const texts = getTexts({ page: "filter_and_search", locale: locale });
-  const english_texts = getTexts({ page: "filter_and_search", locale: "en" });
   if (!filterChoices) {
     throw new Error("No filter choices supplied");
   }
 
   if (key === "projects") {
-    return getProjectsFilters(filterChoices, texts, english_texts);
+    return getProjectsFilters(filterChoices, texts);
   } else if (key === "organizations") {
     return getOrganizationsFilters(filterChoices, texts);
   } else if (key === "members") {
@@ -19,7 +18,7 @@ export default function getFilters({ key, filterChoices, locale }) {
   } else if (key === "ideas") {
     return getIdeasFilters(filterChoices, texts);
   } else if (key === "all") {
-    const projectsFilters = getProjectsFilters(filterChoices, texts, english_texts);
+    const projectsFilters = getProjectsFilters(filterChoices, texts);
     const organizationsFilters = getOrganizationsFilters(filterChoices, texts);
     const membersFilters = getMembersFilters(filterChoices, texts);
     return [
@@ -102,7 +101,7 @@ const getOrganizationsFilters = (filterChoices, texts) => [
   },
 ];
 
-const getProjectsFilters = (filterChoices, texts, english_texts) => [
+const getProjectsFilters = (filterChoices, texts) => [
   ...getLocationFilters(texts),
   getSearchFilter(),
   {
