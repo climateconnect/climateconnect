@@ -1,5 +1,6 @@
-from location.models import Location, LocationTranslation
 from django.contrib import admin
+
+from location.models import Location, LocationTranslation
 
 # Register your models here.
 
@@ -16,6 +17,8 @@ class LocationAdmin(admin.ModelAdmin):
         "name",
         "osm_type",
         "osm_id",
+        "osm_class",
+        "osm_class_type",
         "place_id",
     )
 
