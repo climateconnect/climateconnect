@@ -154,11 +154,12 @@ export default function MyApp({ Component, pageProps = {} }) {
       if (jssStyles) {
         jssStyles.parentElement.removeChild(jssStyles);
       }
-      const [fetchedDonationGoals, fetchedNotifications] = await Promise.all([
+      const [fetchedDonationGoals, userResult, fetchedNotifications] = await Promise.all([
         getDonationGoalsData(locale),
+        getLoggedInUser(token),
         getNotifications(token, locale),
       ]);
-      let fetchedUser = await getLoggedInUser(token);
+      let fetchedUser = userResult;
 
       if (fetchedUser?.error === "invalid token") {
         const develop = ["develop", "development", "test"].includes(process.env.ENVIRONMENT!);
