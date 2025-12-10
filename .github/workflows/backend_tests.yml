@@ -83,8 +83,11 @@
          working-directory: backend
          env:
            ENVIRONMENT: test
-           DATABASE_NAME: "climateconnect_test"
-           DATABASE_URL: "postgresql://climateconnect:password@localhost:5432/climateconnect_test"
+           DATABASE_NAME: climateconnect_test
+           DATABASE_USER: climateconnect
+           DATABASE_PASSWORD: password
+           DATABASE_HOST: localhost
+           DATABASE_PORT: 5432
            REDIS_URL: "redis://localhost:6379/0"
            SECRET_KEY: "test-secret-key-for-ci"
            DEBUG: "true"
@@ -96,8 +99,11 @@
          working-directory: backend
          env:
            ENVIRONMENT: test
-           DATABASE_NAME: "climateconnect_test"
-           DATABASE_URL: "postgresql://climateconnect:password@localhost:5432/climateconnect_test"
+           DATABASE_NAME: climateconnect_test
+           DATABASE_USER: climateconnect
+           DATABASE_PASSWORD: password
+           DATABASE_HOST: localhost
+           DATABASE_PORT: 5432
            REDIS_URL: "redis://localhost:6379/0"
            SECRET_KEY: "test-secret-key-for-ci"
            DEBUG: "true"
