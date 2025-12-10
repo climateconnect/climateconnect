@@ -1,0 +1,106 @@
+ name: Backend Tests
+
+ on:
+   push:
+     branches:
+       - master
+     paths:
+       - 'backend/**'
+       - '.github/workflows/backend_tests.yml'
+   pull_request:
+     paths:
+       - 'backend/**'
+       - '.github/workflows/backend_tests.yml'
+
+ jobs:
+   test:
+     name: Run Django Tests
+     runs-on: ubuntu-latest
+
+     services:
+       postgres:
+         image: postgis/postgis:16-3.4
+         ports:
+           - 5432:5432
+         env:
+           POSTGRES_DB: climateconnect_test
+           POSTGRES_USER: climateconnect
+           POSTGRES_PASSWORD: password
+         options: >-
+           --health-cmd="pg_isready -U climateconnect"
+           --health-interval=10s
+           --health-timeout=5s
+           --health-retries=5
+
+       redis:
+         image: redis:7-alpine
+         ports:
+           - 6379:6379
+         options: >-
+           --health-cmd="redis-cli ping"
+           --health-interval=10s
+           --health-timeout=5s
+           --health-retries=5
+
+     steps:
+       - name: Checkout code
+         uses: actions/checkout@v4
+
+       - name: Set up Python
+         uses: actions/setup-python@v5
+         with:
+           python-version: "3.11"
+           cache: 'pip'
+
+       - name: Install PDM
+         run: |
+           python -m pip install --upgrade pip
+           pip install pdm
+
+       - name: Install dependencies
+         working-directory: backend
+         run: |
+           pdm install --prod
+
+       - name: Wait for PostgreSQL
+         run: |
+           echo "Waiting for PostgreSQL to be ready..."
+           until pg_isready -h localhost -p 5432 -U climateconnect; do
+             echo "Waiting for postgres..."
+             sleep 2
+           done
+           echo "PostgreSQL is ready!"
+
+       - name: Verify PostGIS extension
+         run: |
+           PGPASSWORD=password psql -h localhost -U climateconnect -d climateconnect_test -c "SELECT PostGIS_version();"
+
+       - name: Run migrations
+         working-directory: backend
+         env:
+           DATABASE_URL: "postgresql://climateconnect:password@localhost:5432/climateconnect_test"
+           REDIS_URL: "redis://localhost:6379/0"
+           SECRET_KEY: "test-secret-key-for-ci"
+           DEBUG: "true"
+           ALLOWED_HOSTS: "localhost,127.0.0.1"
+         run: |
+           pdm run python manage.py migrate --noinput
+
+       - name: Run tests
+         working-directory: backend
+         env:
+           DATABASE_URL: "postgresql://climateconnect:password@localhost:5432/climateconnect_test"
+           REDIS_URL: "redis://localhost:6379/0"
+           SECRET_KEY: "test-secret-key-for-ci"
+           DEBUG: "true"
+           ALLOWED_HOSTS: "localhost,127.0.0.1"
+         run: |
+           pdm run python manage.py test --noinput --parallel
+
+       - name: Upload coverage reports
+         if: always()
+         uses: actions/upload-artifact@v4
+         with:
+           name: test-results
+           path: backend/test-results/
+           if-no-files-found: ignore
