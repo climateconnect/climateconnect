@@ -119,6 +119,7 @@ class OrganizationTagging(models.Model):
         return "%s => %s" % (self.organization_tag.name, self.organization.name)
 
 
+# TODO: remove
 class ProjectTags(models.Model):
     name = models.CharField(
         help_text="Points to name of the project tag",
@@ -180,6 +181,7 @@ def create_project_tag_key(sender, instance, **kwargs):
         instance.key = instance.name.replace(" ", "").lower()
 
 
+# TODO: remove
 class ProjectTagging(models.Model):
     project = models.ForeignKey(
         Project,
@@ -226,6 +228,7 @@ class ProjectTagging(models.Model):
         return "Tag %s => Project %s" % (self.project_tag.name, self.project.name)
 
 
+# TODO: remove
 class OrganizationFieldTagging(models.Model):
     organization = models.ForeignKey(
         Organization,

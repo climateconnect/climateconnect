@@ -55,8 +55,6 @@ from organization.models import (
     ProjectMember,
     ProjectParents,
     ProjectStatus,
-    ProjectTagging,
-    ProjectTags,
     ProjectLike,
     OrganizationFollower,
     Sector,
@@ -94,7 +92,6 @@ from organization.serializers.project import (
     ProjectLikeSerializer,
 )
 from organization.serializers.status import ProjectStatusSerializer
-from organization.serializers.tags import ProjectTagsSerializer
 from organization.utility.notification import (
     create_comment_mention_notification,
     create_organization_project_published_notification,
@@ -183,7 +180,6 @@ class ListProjectsView(ListAPIView):
             .select_related("loc", "language", "status")
             .prefetch_related(
                 "skills",
-                "tag_project",  # TODO: remove after updating frontend to use sectors
                 Prefetch(
                     "project_comment",
                     queryset=ProjectComment.objects.select_related("comment_ptr"),
@@ -267,16 +263,6 @@ class ListProjectsView(ListAPIView):
                 projects = projects.filter(collaborators_welcome=True)
             if collaborators_welcome == "no":
                 projects = projects.filter(collaborators_welcome=False)
-
-        if "category" in self.request.query_params:
-            project_category = self.request.query_params.get("category").split(",")
-            project_tags = ProjectTags.objects.filter(name__in=project_category)
-            # Use .distinct to dedupe selected rows.
-            # https://docs.djangoproject.com/en/dev/ref/models/querysets/#django.db.models.query.QuerySet.distinct
-            # We then sort by rating, to show most relevant results
-            projects = projects.filter(
-                tag_project__project_tag__in=project_tags, is_active=True
-            ).distinct()
 
         if "status" in self.request.query_params:
             statuses = self.request.query_params.get("status").split(",")
@@ -596,28 +582,6 @@ class CreateProjectView(APIView):
                 ]
             )
 
-        # TODO (Karol): Change this to sectors
-        if "project_tags" in request.data:
-            order = len(request.data["project_tags"])
-            for project_tag_id in request.data["project_tags"]:
-                try:
-                    project_tag = ProjectTags.objects.get(id=int(project_tag_id))
-                except ProjectTags.DoesNotExist:
-                    logger.error(
-                        "Passed project tag ID {} does not exists".format(
-                            project_tag_id
-                        )
-                    )
-                    continue
-                if project_tag:
-                    ProjectTagging.objects.create(
-                        project=project, project_tag=project_tag, order=order
-                    )
-                    order = order - 1
-                    logger.info(
-                        "Project tagging created for project {}".format(project.id)
-                    )
-
         # TODO: completely remove availability
         for member in team_members:
             user_role = roles.filter(id=int(member["role"])).first()
@@ -732,34 +696,6 @@ class ProjectAPIView(APIView):
                     project.skills.add(skill)
                 except Skill.DoesNotExist:
                     logger.error("Passed skill id {} does not exists")
-
-        # TODO: remove the project_taggings
-        old_project_taggings = ProjectTagging.objects.filter(project=project)
-        old_project_tags = old_project_taggings.values("project_tag")
-        if "project_tags" in request.data:
-            order = len(request.data["project_tags"])
-            for tag in old_project_tags:
-                if tag["project_tag"] not in request.data["project_tags"]:
-                    tag_to_delete = ProjectTags.objects.get(id=tag["project_tag"])
-                    ProjectTagging.objects.filter(
-                        project=project, project_tag=tag_to_delete
-                    ).delete()
-            for tag_id in request.data["project_tags"]:
-                old_taggings = old_project_taggings.filter(project_tag=tag_id)
-                if not old_taggings.exists():
-                    try:
-                        tag = ProjectTags.objects.get(id=tag_id)
-                        ProjectTagging.objects.create(
-                            project_tag=tag, project=project, order=order
-                        )
-                    except ProjectTags.DoesNotExist:
-                        logger.error("Passed proj tag id {} does not exists")
-                else:
-                    old_tagging = old_taggings[0]
-                    if not old_tagging.order == order:
-                        old_tagging.order = int(order)
-                        old_tagging.save()
-                order = order - 1
 
         if "sectors" in request.data:
             _sector_keys = request.data["sectors"]
@@ -1097,32 +1033,6 @@ class ListProjectMembersView(ListAPIView):
         project = Project.objects.get(url_slug=self.kwargs["url_slug"])
 
         return project.project_member_project.filter(is_active=True)
-
-
-# TODO (Karol): remove this view, as project tags are being replaced by sectors
-class ListProjectTags(ListAPIView):
-    permission_classes = [AllowAny]
-    serializer_class = ProjectTagsSerializer
-
-    def get_queryset(self):
-        if "hub" in self.request.query_params:
-            try:
-                hub = Hub.objects.get(url_slug=self.request.query_params["hub"])
-                if hub.hub_type == Hub.SECTOR_HUB_TYPE:
-                    parent_tag = hub.filter_parent_tags.all()[0]
-                    return ProjectTags.objects.filter(parent_tag=parent_tag)
-                if hub.hub_type == Hub.LOCATION_HUB_TYPE:
-                    return ProjectTags.objects.all()
-                if hub.hub_type == Hub.CUSTOM_HUB_TYPE:
-                    return ProjectTags.objects.all()
-
-                # TODO(Karol): is this default needed, just in case?
-                return ProjectTags.objects.all()
-
-            except Hub.DoesNotExist:
-                return ProjectTags.objects.all()
-        else:
-            return ProjectTags.objects.all()
 
 
 class ListProjectStatus(ListAPIView):
