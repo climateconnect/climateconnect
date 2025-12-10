@@ -297,6 +297,7 @@ export default function Form({
           } else if (field.type === "checkbox") {
             return (
               <div className={classes.checkbox} key={field.key}>
+                
                 <Checkbox
                   id={"checkbox" + field.key}
                   checked={values[field.key]}
