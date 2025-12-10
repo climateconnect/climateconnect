@@ -1,20 +1,8 @@
-import {
-  Button,
-  Collapse,
-  Container,
-  IconButton,
-  Link,
-  Theme,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Button, IconButton, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
-import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getCookieProps } from "../../../../public/lib/cookieOperations";
 import getTexts from "../../../../public/texts/texts";
 import theme from "../../../themes/theme";
@@ -46,9 +34,6 @@ const useStyles = makeStyles((theme) => ({
       fontSize: 15,
     },
   },
-  linkText: {
-    fontSize: 20,
-  },
   showMoreButton: {
     color: "white",
     width: "100%",
@@ -65,9 +50,6 @@ const useStyles = makeStyles((theme) => ({
   donationGoal: {
     marginBottom: theme.spacing(3),
   },
-  link: {
-    color: "white",
-  },
   textBlock: {
     marginBottom: theme.spacing(1),
     fontWeight: 600,
@@ -77,12 +59,21 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   donateButton: {
-    marginTop: theme.spacing(4),
-    marginBottom: theme.spacing(1),
-    background: "white",
+    marginTop: theme.spacing(1),
+    borderRadius: "4px",
+    backgroundColor: "hsla(176.25, 66.67%, 90.59%, 1.00)",
+    color: theme.palette.primary.main,
+    fontFamily: "'Open Sans', sans-serif",
+    fontWeight: 600,
+    textDecoration: "none",
+    textTransform: "uppercase",
+    transition: "opacity 200ms ease",
+    "&:hover": {
+      backgroundColor: "hsla(176.25, 66.67%, 85%, 1.00)",
+      opacity: 0.9,
+    },
     [theme.breakpoints.down("sm")]: {
-      marginTop: theme.spacing(-2),
-      marginBottom: theme.spacing(1),
+      marginTop: theme.spacing(1),
     },
   },
   flexWrapper: {
@@ -97,20 +88,29 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     justifyContent: "space-around",
     alignItems: "center",
+    marginRight: "40px",
+    marginLeft: "40px",
   },
   white: {
     color: "white",
   },
 }));
 
+type Props = {
+  hubUrl?: string;
+};
+
 //If we want to reuse this, this has to be translated!
-export default function DonationCampaignInformation() {
+export default function DonationCampaignInformation({ hubUrl }: Props) {
   const classes = useStyles();
   const cookies = new Cookies();
   const [open, setOpen] = React.useState(!cookies.get("hideDonationCampaign"));
   const [expanded, setExpanded] = React.useState(false);
-  const { donationGoal, locale } = useContext(UserContext);
+  const { CUSTOM_HUB_URLS, donationGoals, locale } = useContext(UserContext);
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const texts = getTexts({ page: "donate", locale: locale, classes: classes });
+  const donationGoal =
+    donationGoals?.find((goal) => goal.hub === hubUrl) || donationGoals?.find((goal) => !goal.hub);
 
   const handleClose = () => {
     const expiry = daysInFuture(3);
@@ -122,7 +122,7 @@ export default function DonationCampaignInformation() {
   const handleToggleExpanded = () => {
     setExpanded(!expanded);
   };
-  if (!donationGoal?.goal_amount) return <></>;
+  if ((isCustomHub && !donationGoal?.hub) || !donationGoal?.goal_amount) return <></>;
   return (
     <>
       {open && (
@@ -142,14 +142,15 @@ export default function DonationCampaignInformation() {
                 />
               )}
               <Typography className={classes.text}>{donationGoal?.call_to_action_text}</Typography>
-              <Link
-                color="white"
-                className={`${classes.linkText} ${classes.text}`}
-                href={donationGoal?.call_to_action_link}
-                target="_blank"
-              >
-                {texts.donate_now}
-              </Link>
+              {donationGoal?.call_to_action_link && (
+                <Button
+                  variant="contained"
+                  href={donationGoal.call_to_action_link}
+                  className={classes.donateButton}
+                >
+                  {texts.donate_now}
+                </Button>
+              )}
             </div>
           </div>
         </div>

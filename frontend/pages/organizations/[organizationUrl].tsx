@@ -168,6 +168,7 @@ export default function OrganizationPage({
         customTheme ? customTheme?.palette?.header.background : theme.palette.background.default
       }
       hubUrl={hubUrl}
+      showDonationGoal={true}
     >
       {organization ? (
         <OrganizationLayout
@@ -380,6 +381,7 @@ async function getOrganizationByUrlIfExists(organizationUrl, token, locale, hubU
       token: token,
       locale: locale,
     });
+
     return parseOrganization(resp.data);
   } catch (err) {
     console.log(err);

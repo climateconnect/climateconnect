@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 from organization.models.sector import OrganizationSectorMapping
 from organization.utility.sector import get_sector_name
-from organization.models import Sector, ProjectSectorMapping
+from organization.models import Sector, ProjectSectorMapping, UserProfileSectorMapping
 
 
 class SectorSerializer(serializers.ModelSerializer):
@@ -40,6 +40,18 @@ class OrganizationSectorMappingSerializer(serializers.ModelSerializer):
     # project = serializers.SerializerMethodField()
     class Meta:
         model = OrganizationSectorMapping
+        fields = ("sector", "order")
+
+    def get_sector(self, obj):
+        serializer = SectorSerializer(obj.sector)
+        return serializer.data
+
+
+class UserProfileSectorMappingSerializer(serializers.ModelSerializer):
+    sector = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserProfileSectorMapping
         fields = ("sector", "order")
 
     def get_sector(self, obj):

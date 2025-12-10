@@ -244,6 +244,7 @@ export default function ProjectPage({
       message={message?.message}
       messageType={message?.messageType}
       title={project ? project.name : texts.project + " " + texts.not_found}
+      showDonationGoal={true}
       subHeader={
         !tinyScreen ? (
           <HubsSubHeader
@@ -444,13 +445,14 @@ const getHubSupporters = async (url_slug, locale) => {
     return null;
   }
 };
+
+// TODO duplicated code? manage project members also has this function
 function parseProject(project) {
   return {
     name: project.name,
     id: project.id,
     url_slug: project.url_slug,
     image: project.image,
-    status: project.status,
     location: project.location,
     description: project.description,
     short_description: project.short_description,

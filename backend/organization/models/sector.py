@@ -2,6 +2,7 @@ from django.db import models
 
 from organization.models import Organization
 from organization.models.project import Project
+from climateconnect_api.models import UserProfile
 
 
 def sector_image_path(instance, filename):
@@ -188,3 +189,42 @@ class OrganizationSectorMapping(models.Model):
 
     def __str__(self):
         return f"{self.sector.name}--{self.organization.name}"
+
+
+class UserProfileSectorMapping(models.Model):
+    sector = models.ForeignKey(
+        Sector, on_delete=models.CASCADE, related_name="user_profile_sector_mapping"
+    )
+    user_profile = models.ForeignKey(
+        UserProfile,
+        on_delete=models.CASCADE,
+        related_name="user_profile_sector_mapping",
+    )
+
+    created_at = models.DateTimeField(
+        help_text="Time when mapping was created",
+        verbose_name="Created At",
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        help_text="Time when mapping was updated",
+        verbose_name="Updated At",
+        auto_now=True,
+    )
+
+    order = models.PositiveSmallIntegerField(
+        help_text="The bigger the number, the more to the top this sector will be displayed",
+        verbose_name="Position of tag",
+        default=0,
+    )
+
+    class Meta:
+        app_label = "climateconnect_api"
+        verbose_name = "UserProfile Sector Mapping"
+        ordering = ["id"]
+        unique_together = ("sector", "user_profile")
+
+    #
+    def __str__(self):
+        return f"{self.sector.name}--{self.user_profile.name}"
