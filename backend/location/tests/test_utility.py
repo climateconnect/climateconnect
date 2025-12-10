@@ -2,8 +2,9 @@ import unittest
 
 from django.test import TestCase, override_settings
 
-from location.utility import _osm_type_char, get_location, format_location_name
 from location.models import Location
+from location.utility import _osm_type_char, format_location_name, get_location
+
 
 class TestFormatLocationName(TestCase):
     def test_country_location(self):
@@ -152,7 +153,6 @@ class TestOsmTypeChar(unittest.TestCase):
         self.assertIsNone(_osm_type_char("unknown"))
 
 
-@unittest.skip("Skipped until migration 0013 has been applied to production DB")
 class TestGetLocation(TestCase):
     """Tests for the get_location function with OSM data."""
 
@@ -180,7 +180,7 @@ class TestGetLocation(TestCase):
         self.assertEqual(location.osm_id, 62422)
         self.assertEqual(location.osm_type, "R")
         self.assertEqual(location.osm_class, "boundary")
-        self.assertEqual(location.osm_class_type, "Point")
+        self.assertEqual(location.osm_class_type, "administrative")
         self.assertEqual(location.display_name, "Berlin, Germany")
 
     @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
@@ -232,3 +232,15 @@ class TestGetLocation(TestCase):
         self.assertEqual(location.state, "")
         self.assertEqual(location.place_name, "")
         self.assertEqual(location.exact_address, "")
+
+    @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="True")
+    def test_legacy_location_format(self):
+        """Test that legacy format still works."""
+        legacy_location = {
+            "city": "Berlin",
+            "country": "Germany"
+        }
+        location = get_location(legacy_location)
+        
+        self.assertEqual(location.city, "Berlin")
+        self.assertEqual(location.country, "Germany")

@@ -1,3 +1,6 @@
+import json
+import logging
+
 import requests
 from django.conf import settings
 from django.contrib.gis.geos import (
@@ -11,8 +14,6 @@ from django.contrib.gis.measure import D
 from rest_framework.exceptions import ValidationError
 
 from location.models import Location
-import logging
-import json
 
 logger = logging.getLogger("django")
 
@@ -118,11 +119,10 @@ def get_location(location_object):
         country=location_object["country"],
         name=location_object["name"],
         centre_point=centre_point,
-        multipolygon=multipolygon,
+        multi_polygon=multipolygon,
         is_formatted=True,
     )
 
-    loc.save()
     return loc
 
 
