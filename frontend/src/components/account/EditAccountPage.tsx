@@ -218,14 +218,6 @@ export default function EditAccountPage({
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles(editedAccount);
-
-  // Move skills dialog state to component level
-  const [skillsDialogOpen, setSkillsDialogOpen] = React.useState(false);
-  const [selectedItems, setSelectedItems] = React.useState(
-    editedAccount.info.skills ? [...editedAccount.info.skills] : []
-  );
-
-  //used for previewing images in UploadImageDialog
   const [tempImages, setTempImages] = React.useState({
     background_image: editedAccount.background_image
       ? editedAccount.background_image
@@ -295,7 +287,13 @@ export default function EditAccountPage({
     });
   };
 
-  const displayInfoArrayData = (key, infoEl) => {
+  // Refactored into a proper component
+  const InfoArrayDisplay = ({ infoKey, infoEl }) => {
+    const [skillsDialogOpen, setSkillsDialogOpen] = React.useState(false);
+    const [selectedItems, setSelectedItems] = React.useState(
+      editedAccount.info.skills ? [...editedAccount.info.skills] : []
+    );
+
     const handleSkillsDialogClose = (skills) => {
       setSkillsDialogOpen(false);
       if (skills)
@@ -305,15 +303,15 @@ export default function EditAccountPage({
         });
     };
 
-    const handleDeleteFromInfoArray = (key, entry) => {
-      deleteFromInfoArray(key, entry);
+    const handleDeleteFromInfoArray = (entry) => {
+      deleteFromInfoArray(infoKey, entry);
       setSelectedItems([...selectedItems.filter((item) => item !== entry)]);
     };
 
     const handleSkillsDialogClickOpen = () => setSkillsDialogOpen(true);
 
     return (
-      <div key={key} className={classes.infoElement}>
+      <div className={classes.infoElement}>
         <div className={classes.subtitle}>{infoEl.name}:</div>
         <div className={classes.chipArray}>
           {selectedItems.map((entry) => (
@@ -323,10 +321,10 @@ export default function EditAccountPage({
               label={entry.name}
               key={entry.key}
               className={classes.chip}
-              onDelete={() => handleDeleteFromInfoArray(key, entry)}
+              onDelete={() => handleDeleteFromInfoArray(entry)}
             />
           ))}
-          {editedAccount.info[key].length < infoEl.maxEntries && (
+          {editedAccount.info[infoKey].length < infoEl.maxEntries && (
             <Chip
               label={texts.add}
               icon={<ControlPointIcon />}
@@ -415,7 +413,7 @@ export default function EditAccountPage({
       };
       //Iterate through potential types of info and display the corresponding input
       if (i.type === "array") {
-        return displayInfoArrayData(key, i);
+        return <InfoArrayDisplay key={key} infoKey={key} infoEl={i} />;
       } else if (i.type === "select") {
         return (
           <div key={key} className={classes.infoElement}>
