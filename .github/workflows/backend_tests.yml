@@ -65,7 +65,7 @@
          working-directory: backend
          run: |
            pdm install --prod
-           pdm venv activate
+           $(pdm venv activate)
 
        - name: Wait for PostgreSQL
          run: |
@@ -110,7 +110,7 @@
            DEBUG: "true"
            ALLOWED_HOSTS: "localhost,127.0.0.1"
          run: |
-           python3 manage.py test --keepdb
+           pdm run python manage.py test --keepdb
 
        - name: Upload coverage reports
          if: always()
