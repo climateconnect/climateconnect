@@ -241,6 +241,6 @@ class TestGetLocation(TestCase):
             "country": "Germany"
         }
         location = get_location(legacy_location)
-        
+
         self.assertEqual(location.city, "Berlin")
         self.assertEqual(location.country, "Germany")

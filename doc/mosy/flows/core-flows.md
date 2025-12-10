@@ -1,7 +1,7 @@
 # Core Functional Flows
 
 ## 1. User Onboarding Flow
-- **Actor**: Visitor / New User
+- **Actor**: Guest
 - **Trigger**: User clicks "Sign Up"
 - **Actions**:
   1.  User submits registration form (Email/Password).
@@ -11,7 +11,7 @@
   5.  User completes profile setup.
 
 ## 2. Project/Event/Idea Creation Flow
-- **Actor**: Verified User
+- **Actor**: Member, Organization
 - **Trigger**: User clicks "Share"
 - **Actions**:
   1. User selects a type of project (Event, Idea, etc.). 
@@ -21,7 +21,7 @@
   5. System notifies followers (if applicable).
 
 ## 3. Organization Creation Flow
-- **Actor**: Verified User
+- **Actor**: Member
 - **Trigger**: User clicks "Create Organization" on profile page
 - **Actions**:
    1. User inputs organization details (Name, Description, Location).
@@ -29,7 +29,7 @@
    3. System saves Organization.
 
 ## 4. Search & Discovery Flow
-- **Actor**: User
+- **Actor**: Member
 - **Trigger**: User searches for projects/events/organizations
 - **Actions**:
   1.  User enters keywords or selects location hub.
