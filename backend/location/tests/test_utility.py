@@ -1,4 +1,4 @@
-from backend.location.utility import format_location_name
+from location.utility import format_location_name
 from django.test import TestCase
 
 

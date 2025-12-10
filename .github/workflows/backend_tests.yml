@@ -61,10 +61,11 @@
            python -m pip install --upgrade pip
            pip install pdm
 
-       - name: Install dependencies
+       - name: Install dependencies and create venv
          working-directory: backend
          run: |
            pdm install --prod
+           $(pdm venv activate)
 
        - name: Wait for PostgreSQL
          run: |
@@ -83,7 +84,11 @@
          working-directory: backend
          env:
            ENVIRONMENT: test
-           DATABASE_URL: "postgresql://climateconnect:password@localhost:5432/climateconnect_test"
+           DATABASE_NAME: climateconnect_test
+           DATABASE_USER: climateconnect
+           DATABASE_PASSWORD: password
+           DATABASE_HOST: localhost
+           DATABASE_PORT: 5432
            REDIS_URL: "redis://localhost:6379/0"
            SECRET_KEY: "test-secret-key-for-ci"
            DEBUG: "true"
@@ -95,18 +100,22 @@
          working-directory: backend
          env:
            ENVIRONMENT: test
-           DATABASE_URL: "postgresql://climateconnect:password@localhost:5432/climateconnect_test"
+           DATABASE_NAME: climateconnect_test
+           DATABASE_USER: climateconnect
+           DATABASE_PASSWORD: password
+           DATABASE_HOST: localhost
+           DATABASE_PORT: 5432
            REDIS_URL: "redis://localhost:6379/0"
            SECRET_KEY: "test-secret-key-for-ci"
            DEBUG: "true"
            ALLOWED_HOSTS: "localhost,127.0.0.1"
          run: |
-           pdm run python manage.py test --noinput --parallel
+           pdm run python manage.py test --keepdb
 
-       - name: Upload coverage reports
-         if: always()
-         uses: actions/upload-artifact@v4
-         with:
-           name: test-results
-           path: backend/test-results/
-           if-no-files-found: ignore
+#       - name: Upload coverage reports
+#         if: always()
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: test-results
+#           path: backend/test-results/
+#           if-no-files-found: ignore
