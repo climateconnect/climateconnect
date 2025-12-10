@@ -183,6 +183,21 @@ class ListOrganizationsAPIView(ListAPIView):
                 elif current_hub.hub_type == Hub.CUSTOM_HUB_TYPE:
                     organizations = organizations.filter(related_hubs=current_hub)
 
+        if "sectors" in self.request.query_params:
+            _sector_keys = self.request.query_params.get("sectors").split(",")
+            sector_keys, err = sanitize_sector_inputs(_sector_keys)
+            if err:
+                logger.error(
+                    "Passed sectors are not in list format: 'error':'{}','sector_keys':{}".format(
+                        err, _sector_keys
+                    )
+                )
+                # TODO: should I "crash" with 400, or what should I ommit the sectors
+            else:
+                organizations = organizations.filter(
+                    organization_sector_mapping__sector__key__in=sector_keys
+                ).distinct()
+
         # TODO: rename oragnizationTag to OrganizationType
         if "organization_type" in self.request.query_params:
             organization_type_names = self.request.query_params.get(
