@@ -295,6 +295,13 @@ export function parseLocation(location, isConcretePlace = false) {
     geojson: location.geojson ? location.geojson : generateGeoJson(location),
     place_id: location?.place_id,
     osm_id: location?.osm_id,
+    osm_type:
+      typeof location?.osm_type === "string"
+        ? location?.osm_type.charAt(0).toUpperCase()
+        : undefined,
+    osm_class: location?.class,
+    osm_class_type: location?.type,
+    display_name: location?.display_name,
     name: displayLocation.name,
     lon: location?.lon,
     lat: location?.lat,
@@ -313,6 +320,11 @@ const props = [
   "coordinates",
   "geojson",
   "place_id",
+  "osm_id",
+  "osm_type",
+  "osm_class",
+  "osm_class_type",
+  "display_name",
   "name",
   "city",
   "state",

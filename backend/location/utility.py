@@ -1,3 +1,6 @@
+import json
+import logging
+
 import requests
 from django.conf import settings
 from django.contrib.gis.geos import (
@@ -11,10 +14,15 @@ from django.contrib.gis.measure import D
 from rest_framework.exceptions import ValidationError
 
 from location.models import Location
-import logging
-import json
 
 logger = logging.getLogger("django")
+
+
+def _osm_type_char(v):
+    if v is None:
+        return None
+    mapping = {"relation": "R", "way": "W", "node": "N", "r": "R", "w": "W", "n": "N"}
+    return mapping.get(str(v).lower())
 
 
 def get_legacy_location(location_object):
@@ -43,79 +51,79 @@ def get_legacy_location(location_object):
 def get_location(location_object):
     if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
         return get_legacy_location(location_object)
-    required_params = ["place_id", "country", "name", "type", "lon", "lat"]
+
+    required_params = [
+        "place_id",
+        "country",
+        "name",
+        "type",
+        "lon",
+        "lat",
+        "osm_id",
+        "osm_type",
+        "osm_class",
+        "osm_class_type",
+        "display_name",
+    ]
     for param in required_params:
         if param not in location_object:
             raise ValidationError("Required parameter is missing:" + param)
+
     loc = Location.objects.filter(place_id=location_object["place_id"])
     optional_attribute_names = ["city", "state", "place_name", "exact_address"]
-    optional_attributes = {}
+
     for attr in optional_attribute_names:
-        if attr in location_object:
-            optional_attributes[attr] = location_object[attr]
-        else:
-            optional_attributes[attr] = ""
+        location_object[attr] = location_object.get(attr, "")
 
     if loc.exists():
         return loc[0]
-    elif location_object["type"] == "Point":
+
+    if location_object["type"] == "global":
+        loc = get_global_location()
+        return loc
+
+    centre_point = None
+    multipolygon = None
+    if location_object["type"] == "Point":
         point = GEOSGeometry(str(location_object["geojson"]))
         coords = list(point)
-        switched_point = Point(coords[1], coords[0])
-        loc = Location.objects.create(
-            place_id=location_object["place_id"],
-            city=optional_attributes["city"],
-            state=optional_attributes["state"],
-            place_name=optional_attributes["place_name"],
-            exact_address=optional_attributes["exact_address"],
-            country=location_object["country"],
-            name=location_object["name"],
-            centre_point=switched_point,
-            is_formatted=True,
-        )
-        # Postcode location do not have an osm_id
-        if "osm_id" in location_object:
-            loc.osm_id = location_object["osm_id"]
-        loc.save()
-        return loc
+        centre_point = Point(coords[1], coords[0])
+
     elif location_object["type"] == "LineString":
         centre_point = Point(
             float(location_object["lat"]), float(location_object["lon"])
         )
-        loc = Location.objects.create(
-            place_id=location_object["place_id"],
-            city=optional_attributes["city"],
-            state=optional_attributes["state"],
-            place_name=optional_attributes["place_name"],
-            exact_address=optional_attributes["exact_address"],
-            country=location_object["country"],
-            name=location_object["name"],
-            centre_point=centre_point,
-            is_formatted=True,
-        )
-        return loc
-    elif location_object["type"] == "global":
-        loc = get_global_location()
-        return loc
-    else:
+
+    elif (
+        location_object["type"] == "Polygon"
+        or location_object["type"] == "MultiPolygon"
+    ):
         multipolygon = get_multipolygon_from_geojson(location_object["geojson"])
         centre_point = Point(
             float(location_object["lat"]), float(location_object["lon"])
         )
-        loc = Location.objects.create(
-            osm_id=location_object["osm_id"],
-            place_id=location_object["place_id"],
-            city=optional_attributes["city"],
-            state=optional_attributes["state"],
-            place_name=optional_attributes["place_name"],
-            exact_address=optional_attributes["exact_address"],
-            country=location_object["country"],
-            name=location_object["name"],
-            multi_polygon=multipolygon,
-            is_formatted=True,
-            centre_point=centre_point,
-        )
-        return loc
+    else:
+        raise Exception("Unsupported location type")
+
+    loc = Location.objects.create(
+        osm_id=location_object["osm_id"],
+        osm_type=_osm_type_char(location_object["osm_type"]),
+        osm_class=location_object["osm_class"],
+        osm_class_type=location_object["osm_class_type"],
+        place_id=location_object["place_id"],
+        city=location_object["city"],
+        state=location_object["state"],
+        place_name=location_object["place_name"],
+        display_name=location_object["display_name"],
+        exact_address=location_object["exact_address"],
+        country=location_object["country"],
+        name=location_object["name"],
+        centre_point=centre_point,
+        multi_polygon=multipolygon,
+        is_formatted=True,
+    )
+
+    return loc
 
 
 def get_multipolygon_from_geojson(geojson):
@@ -170,7 +178,11 @@ def format_location(location_string, already_loaded):
         "type": location_object["geojson"]["type"],
         "place_id": location_object["place_id"],
         "osm_id": location_object["osm_id"],
+        "osm_type": _osm_type_char(location_object["osm_type"]),
+        "osm_class": location_object["class"],
+        "osm_class_type": location_object["type"],
         "name": location_name["name"],
+        "display_name": location_object["display_name"],
         "city": location_name["city"],
         "state": location_name["state"],
         "country": location_name["country"],
@@ -304,7 +316,9 @@ def get_location_with_range(query_params):
         osm_id_param = query_params.get("loc_type")[0].upper() + query_params.get("osm")
         params = "&format=json&addressdetails=1&polygon_geojson=1&accept-language=en-US,en;q=0.9&polygon_threshold=0.001"
         url = url_root + osm_id_param + params
-        response = requests.get(url)
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             location_object = json.loads(response.text)[0]
         else:
