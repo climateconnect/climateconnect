@@ -78,6 +78,7 @@
        - name: Run migrations
          working-directory: backend
          env:
+           ENVIRONMENT: test
            DATABASE_URL: "postgresql://climateconnect:password@localhost:5432/climateconnect_test"
            REDIS_URL: "redis://localhost:6379/0"
            SECRET_KEY: "test-secret-key-for-ci"
@@ -89,6 +90,7 @@
        - name: Run tests
          working-directory: backend
          env:
+           ENVIRONMENT: test
            DATABASE_URL: "postgresql://climateconnect:password@localhost:5432/climateconnect_test"
            REDIS_URL: "redis://localhost:6379/0"
            SECRET_KEY: "test-secret-key-for-ci"
