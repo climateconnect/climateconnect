@@ -1,5 +1,3 @@
-import unittest
-
 from django.test import TestCase, override_settings
 
 from location.models import Location
@@ -124,7 +122,7 @@ class TestFormatLocationName(TestCase):
         self.assertEqual(expected_result, result)
 
 
-class TestOsmTypeChar(unittest.TestCase):
+class TestOsmTypeChar(TestCase):
     """Tests for the _osm_type_char function."""
 
     def test_relation_lowercase(self):
