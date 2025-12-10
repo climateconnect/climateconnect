@@ -4,7 +4,8 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import SettingsBackupRestoreIcon from "@mui/icons-material/SettingsBackupRestore";
 import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import InfiniteScroll from "react-infinite-scroller";
+import InfiniteScrollGrid from "../general/InfiniteScrollGrid";
+
 import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -183,7 +184,7 @@ export default function ClimateMatchResultsRoot() {
             {!screenIsSmallerThanMd && (
               <ClimateMatchResultsOverviewBar suggestions={suggestions?.matched_resources} />
             )}
-            <InfiniteScroll
+            <InfiniteScrollGrid
               className={classes.resultsContainer}
               //TODO(unused) component="div"
               //TODO(unused) container
@@ -197,7 +198,7 @@ export default function ClimateMatchResultsRoot() {
                 <ClimateMatchResult key={index} suggestion={suggestion} pos={index} />
               ))}
               {isFetchingMore && <LoadingSpinner isLoading key="project-previews-spinner" />}
-            </InfiniteScroll>
+            </InfiniteScrollGrid>
           </Container>
         </div>
       )}

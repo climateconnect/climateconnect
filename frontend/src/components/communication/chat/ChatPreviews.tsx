@@ -11,7 +11,7 @@ import {
 import makeStyles from "@mui/styles/makeStyles";
 import PropTypes from "prop-types";
 import React, { useContext } from "react";
-import InfiniteScroll from "react-infinite-scroller";
+import InfiniteScrollGrid from "../../general/InfiniteScrollGrid";
 import Truncate from "react-truncate";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getDateTime } from "../../../../public/lib/dateOperations";
@@ -70,6 +70,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabl
   const texts = getTexts({ page: "chat", locale: locale });
   const [isLoading, setIsLoading] = React.useState(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+
   const loadMore = async () => {
     //sometimes InfiniteScroll calls loadMore twice really fast. Therefore we're using isLoading to make sure it doesn't catch 2 pages at once
     if (!isLoading) {
@@ -99,7 +100,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabl
     );
 
   return (
-    <InfiniteScroll
+    <InfiniteScrollGrid
       pageStart={1}
       loadMore={loadMore}
       hasMore={hasMore && !isLoading}
@@ -115,7 +116,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabl
         />
       ))}
       <LoadingSpinner />
-    </InfiniteScroll>
+    </InfiniteScrollGrid>
   );
 }
 
