@@ -572,7 +572,6 @@ export default function EditAccountPage({
                 <TextField
                   required={i.required}
                   label={i.name}
-                  color="contrast"
                   fullWidth
                   inputProps={{ maxLength: i.maxLength }}
                   value={i.value}
@@ -769,7 +768,6 @@ export default function EditAccountPage({
               <>
                 <TextField
                   className={classes.name}
-                  color="contrast"
                   fullWidth
                   value={editedAccount.first_name}
                   onChange={(event) => handleTextFieldChange("first_name", event.target.value)}
@@ -779,7 +777,6 @@ export default function EditAccountPage({
                 />
                 <TextField
                   className={classes.name}
-                  color="contrast"
                   fullWidth
                   value={editedAccount.last_name}
                   onChange={(event) => handleTextFieldChange("last_name", event.target.value)}
@@ -791,7 +788,6 @@ export default function EditAccountPage({
             ) : (
               <TextField
                 className={classes.name}
-                color="contrast"
                 fullWidth
                 value={editedAccount.name}
                 onChange={(event) => handleTextFieldChange("name", event.target.value)}
