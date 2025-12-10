@@ -1,8 +1,7 @@
 import withStyles from "@mui/styles/withStyles";
 import PropTypes from "prop-types";
 import React from "react";
-import InfiniteScrollGrid from "../../general/InfiniteScrollGrid";
-
+import InfiniteScroll from "react-infinite-scroller";
 import Message from "./Message";
 
 const styles = (theme) => {
@@ -105,7 +104,7 @@ class Messages extends React.Component {
     };
     const sortByNewestFirst = (a, b) => new Date(a.sent_at) - new Date(b.sent_at);
     return (
-      <InfiniteScrollGrid
+      <InfiniteScroll
         pageStart={0}
         loadMore={loadMore}
         hasMore={this.props.hasMore && !this.state.isLoading}
@@ -158,7 +157,7 @@ class Messages extends React.Component {
             <p>{this.props.texts.write_a_message_to_get_the_conversation_started}</p>
           </div>
         )}
-      </InfiniteScrollGrid>
+      </InfiniteScroll>
     );
   }
 }

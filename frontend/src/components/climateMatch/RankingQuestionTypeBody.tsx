@@ -2,7 +2,6 @@ import { Chip, Theme, Typography, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useContext } from "react";
-// TODO: Remove react-beautiful-dnd -----> depricated, replace with MUI drag and drop,
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import climateMatchStyles from "../../../public/styles/climateMatchStyles";
 import getTexts from "../../../public/texts/texts";
@@ -213,13 +212,8 @@ export default function RankingQuestionTypeBody({
     }
   };
 
-  // Type cast to bypass React 18 JSX type checking for deprecated library
-  const DndContext = DragDropContext as any;
-  const DndDroppable = Droppable as any;
-  const DndDraggable = Draggable as any;
-
   return (
-    <DndContext onDragEnd={onDragEnd}>
+    <DragDropContext onDragEnd={onDragEnd}>
       <div className={classes.root}>
         <div className={`${classes.container} ${classes.questionAndSelectedAnswersContainer}`}>
           <ClimateMatchHeadline
@@ -228,7 +222,7 @@ export default function RankingQuestionTypeBody({
           >
             {question.text}
           </ClimateMatchHeadline>
-          <DndDroppable droppableId="selectedAnswers">
+          <Droppable droppableId="selectedAnswers">
             {(provided) => (
               <div
                 {...provided.droppableProps}
@@ -239,7 +233,7 @@ export default function RankingQuestionTypeBody({
                   <div key={i} className={classes.selectedAnswerContainer}>
                     <span className={classes.choiceRankText}>{i + 1}.</span>
                     {userAnswer?.length >= i + 1 ? (
-                      <DndDraggable key={i} draggableId={"draggable_choice" + i} index={i}>
+                      <Draggable key={i} draggableId={"draggable_choice" + i} index={i}>
                         {(provided) => (
                           <>
                             <Chip
@@ -257,7 +251,7 @@ export default function RankingQuestionTypeBody({
                             />
                           </>
                         )}
-                      </DndDraggable>
+                      </Draggable>
                     ) : (
                       <Chip className={classes.selectedAnswerChip} color="secondary" />
                     )}
@@ -266,7 +260,7 @@ export default function RankingQuestionTypeBody({
                 {provided.placeholder}
               </div>
             )}
-          </DndDroppable>
+          </Droppable>
           <QuestionButtonBar onForwardClick={onForwardClick} onBackClick={onBackClick} />
         </div>
         {isMobileScreen && (
@@ -280,7 +274,7 @@ export default function RankingQuestionTypeBody({
               </Typography>
             ))}
           </div>
-          <DndDroppable droppableId="possibleAnswers" isDropDisabled>
+          <Droppable droppableId="possibleAnswers" isDropDisabled>
             {(provided) => (
               <div
                 className={`${classes.container} ${classes.answerOptions}`}
@@ -289,7 +283,7 @@ export default function RankingQuestionTypeBody({
               >
                 {answers.map((a, index) => (
                   <div key={a.id} className={classes.possibleAnswerContainer}>
-                    <DndDraggable
+                    <Draggable
                       key={a.id}
                       draggableId={"draggable" + a.id}
                       index={index}
@@ -308,13 +302,13 @@ export default function RankingQuestionTypeBody({
                           />
                         );
                       }}
-                    </DndDraggable>
+                    </Draggable>
                   </div>
                 ))}
                 {provided.placeholder}
               </div>
             )}
-          </DndDroppable>
+          </Droppable>
         </div>
         <ClimateMatchHeadline
           size={isSmallerThanMd ? "tiny" : isSmallerThanLg ? "small" : "medium"}
@@ -323,6 +317,6 @@ export default function RankingQuestionTypeBody({
           {question.text}
         </ClimateMatchHeadline>
       </div>
-    </DndContext>
+    </DragDropContext>
   );
 }
