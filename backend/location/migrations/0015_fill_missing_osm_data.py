@@ -37,9 +37,9 @@ def open_csv(file_path: str) -> list[dict]:
     return rows
 
 
-def fill_missing_osm_data(apps, schema_editor, lookup_osm_class_file: str = LOOKUP_OSM_CLASS_FILE):
+def fill_missing_osm_data(apps, schema_editor, lookup_osm_data_file: str = LOOKUP_OSM_DATA_FILE):
     Location = apps.get_model("location", "Location")
-    lookup_path = Path(lookup_osm_class_file)
+    lookup_path = Path(lookup_osm_data_file)
     if not lookup_path.exists():
         raise RuntimeError(f"Error: lookup_file not found at path {lookup_path}")
 
