@@ -2,13 +2,12 @@
 # Run this script after getting the osm_type, because it uses the osm_type to find the osm_class#
 #################################################################################################
 
-import requests
-
 # import time
 import csv
 from pathlib import Path
-from tqdm import tqdm
 
+import requests
+from tqdm import tqdm
 
 LOCATIONS_URL = "https://nominatim.openstreetmap.org/lookup"
 HEADERS = {"User-Agent": "DjangoProjekt/1.0 (<someone>@climateconnect.earth)"}
@@ -119,15 +118,14 @@ def extract_osm_ids(csv_path):
 # test_place_ids = [281739181, 88715228, 256856867, 256305646, 82615589, 83293355, 115047027, 297417241, 307525758, 258543476]
 # test_osm_ids = [7444, 8649, 16132]
 test_osm_ids = []
-test_osm_ids.extend(
-    extract_osm_ids(
-        "/home/kathi/ClimateConnect/climateconnect_env/climateconnect/backend/climateconnect_api/management/commands/osm_lookup_tables/osm_id_lookup.csv"
+test_osm_ids.extend(extract_osm_ids(
+        "path/to/locations_gone_wrong.csv"
     )
 )
 test_osm_ids.extend(
     extract_osm_ids(
-        "/home/kathi/ClimateConnect/climateconnect_env/climateconnect/backend/climateconnect_api/management/commands/osm_lookup_tables/lookup.csv"
+        "path/to/locations_gone_wrong_class.csv"
     )
 )
-csv_path = "/home/kathi/ClimateConnect/Arbeitsdateien/class_lookup.csv"
+csv_path = "path/to/class_lookup_final_ones.csv"
 create_csv_lookup_table(test_osm_ids, csv_path)
