@@ -251,6 +251,7 @@ export default function Form({
                 <SelectField
                   controlledValue={{ name: values[field.key] }}
                   controlled
+                  // @ts-ignore - contrast is a custom color defined in theme
                   color="contrast"
                   required={field.required}
                   options={options}
@@ -297,7 +298,6 @@ export default function Form({
           } else if (field.type === "checkbox") {
             return (
               <div className={classes.checkbox} key={field.key}>
-                
                 <Checkbox
                   id={"checkbox" + field.key}
                   checked={values[field.key]}
@@ -306,6 +306,7 @@ export default function Form({
                   size="small"
                   onBlur={handleBlur}
                   onChange={(event) => handleValueChange(event, field.key, field.type)}
+                  // @ts-ignore - contrast is a custom color defined in theme
                   color="contrast"
                 />
                 <label className={classes.checkboxLabel} htmlFor={"checkbox" + field.key}>
@@ -328,6 +329,7 @@ export default function Form({
                   id={"checkbox" + field.key}
                   checked={values[field.key]}
                   required={field.required}
+                  // @ts-ignore - contrast is a custom color defined in theme
                   color="contrast"
                   name="checkedA"
                   inputProps={{ "aria-label": "secondary checkbox" }}
@@ -394,6 +396,7 @@ export default function Form({
                   className={`${classes.blockElement} ${fieldClassName}`}
                   onBlur={handleBlur}
                   onChange={() => handleValueChange(event, field.key, field.type)}
+                  // @ts-ignore - contrast is a custom color defined in theme
                   color="contrast"
                 />
                 {field.bottomLink && field.bottomLink}

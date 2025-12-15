@@ -352,11 +352,14 @@ function SelectedList({
 
     moveItem(result.source.index, result.destination.index);
   };
+  const DragDropContextComponent = DragDropContext as any;
+  const DroppableComponent = Droppable as any;
+  const DraggableComponent = Draggable as any;
 
   if (dragAble) {
     return (
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="droppable">
+      <DragDropContextComponent onDragEnd={onDragEnd}>
+        <DroppableComponent droppableId="droppable">
           {(provided) => (
             <List
               {...provided.droppableProps}
@@ -365,7 +368,11 @@ function SelectedList({
             >
               {selected?.map((item, index) => {
                 return (
-                  <Draggable key={item.id} draggableId={"draggable" + item.id} index={index}>
+                  <DraggableComponent
+                    key={item.id}
+                    draggableId={"draggable" + item.id}
+                    index={index}
+                  >
                     {(provided) => {
                       return (
                         <ListItem
@@ -390,14 +397,14 @@ function SelectedList({
                         </ListItem>
                       );
                     }}
-                  </Draggable>
+                  </DraggableComponent>
                 );
               })}
               {provided.placeholder}
             </List>
           )}
-        </Droppable>
-      </DragDropContext>
+        </DroppableComponent>
+      </DragDropContextComponent>
     );
   }
 

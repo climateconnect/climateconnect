@@ -1,5 +1,6 @@
 import { alpha, createTheme } from "@mui/material/styles";
 import { grey } from "@mui/material/colors";
+import "../types.ts";
 
 declare module "@mui/material" {
   // eslint-disable-next-line no-unused-vars
@@ -14,6 +15,7 @@ declare module "@mui/material/Button" {
   // eslint-disable-next-line no-unused-vars
   interface ButtonPropsColorOverrides {
     grey: true;
+    contrast: true;
   }
 }
 

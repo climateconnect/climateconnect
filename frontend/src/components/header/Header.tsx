@@ -553,7 +553,6 @@ function NormalScreenLinks({
           texts={texts}
           localePrefix={localePrefix}
           getLoggedInLinks={getLoggedInLinks}
-          isCustomHub={isCustomHub}
           hubUrl={hubUrl}
           classes={classes}
         />
