@@ -539,7 +539,7 @@ export default function EditAccountPage({
           });
         };
         return (
-          <React.Fragment key={i.type}>
+          <React.Fragment key={i.key}>
             <ActiveSectorsSelector
               //TODO(unused) info={i}
               selectedSectors={editedAccount.info.sectors}
