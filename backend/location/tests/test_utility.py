@@ -234,10 +234,7 @@ class TestGetLocation(TestCase):
     @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="True")
     def test_legacy_location_format(self):
         """Test that legacy format still works."""
-        legacy_location = {
-            "city": "Berlin",
-            "country": "Germany"
-        }
+        legacy_location = {"city": "Berlin", "country": "Germany"}
         location = get_location(legacy_location)
 
         self.assertEqual(location.city, "Berlin")
