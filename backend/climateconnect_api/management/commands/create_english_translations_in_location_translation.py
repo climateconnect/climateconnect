@@ -16,34 +16,35 @@ def create_english_translations_from_locations(limit: int = None) -> None:
         query = Location.objects.all().values("id", "name", "city", "state", "country")
         if limit is not None:
             query = query[:limit]
-        locations_data = list(query)    
+        locations_data = list(query)
     except Exception as e:
         print(f"error while querying data from Location: {e}")
-        return 
-    
+        return
+
     for location in locations_data:
         loc_translation = LocationTranslation(
-            name_translation = location['name'],
-            city_translation = location['city'],
-            state_translation = location['state'],
-            country_translation = location['country'],
-            language_id = 2, #because english has the id=2 and there are only english entries in location_location
-            location_id = location['id'],
+            name_translation=location["name"],
+            city_translation=location["city"],
+            state_translation=location["state"],
+            country_translation=location["country"],
+            language_id=2,  # because english has the id=2 and there are only english entries in location_location
+            location_id=location["id"],
         )
         translations.append(loc_translation)
 
     if translations:
-        try: 
+        try:
             LocationTranslation.objects.bulk_create(translations)
             print(f"created {len(translations)} translations")
         except Exception as e:
             print(f"Error: {e}")
 
 
-
 def delete_translations(lang_id: int) -> None:
     deleted_count, _ = LocationTranslation.objects.filter(language_id=lang_id).delete()
-    print(f"successfully deleted {deleted_count} translations with language_id={lang_id}.")
+    print(
+        f"successfully deleted {deleted_count} translations with language_id={lang_id}."
+    )
 
 
 class Command(BaseCommand):
@@ -72,7 +73,6 @@ class Command(BaseCommand):
             action="store_true",
             help="create english translations in LocationTranslation'",
         )
-        
 
     def handle(self, *args, **options) -> str:
 
@@ -81,8 +81,9 @@ class Command(BaseCommand):
 
         if options.get("delete"):
             delete_translations(language_id)
-        elif options.get("create"): 
+        elif options.get("create"):
             create_english_translations_from_locations(limit)
         else:
-            self.stdout.write(self.style.ERROR("no mode chosen, use --delete or --create"))
-
+            self.stdout.write(
+                self.style.ERROR("no mode chosen, use --delete or --create")
+            )

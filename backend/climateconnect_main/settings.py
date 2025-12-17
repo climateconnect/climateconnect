@@ -295,10 +295,13 @@ CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 if env("ENVIRONMENT") == "production":
     CELERY_BROKER_USE_SSL = {"ssl_cert_reqs": ssl.CERT_REQUIRED}
 CELERY_TIMEZONE = "UTC"
-LOCALES = ["de", "en"] #order must be similar to climateconnect_api_language table (1-based)
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
+LOCALES = [
+    "de",
+    "en",
+]  # order must be similar to climateconnect_api_language table (1-based)
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
 NOMINATIM_DETAILS_URL = "https://nominatim.openstreetmap.org/details"
 CUSTOM_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
 

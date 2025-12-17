@@ -10,50 +10,64 @@ from location.tasks import create_name_from_translation_data
 
 logger = logging.getLogger(__name__)
 
+
 class LocationManager(models.Manager):
     @transaction.atomic
     def create_location_with_translations(self, **kwargs):
         osm_id = kwargs.get("osm_id")
         osm_type = kwargs.get("osm_type")
         osm = f"{osm_type[0].upper()}{osm_id}"
-        
+
         location = super().create(**kwargs)
 
-        #request translation data from nominatim for all configured locales
+        # request translation data from nominatim for all configured locales
         for language_id, locale in enumerate(settings.LOCALES, 1):
             params = {
-                'osm_ids': osm,
-                'format': 'json',
-                'extratags': 1, 
-                'addressdetails': 1,
-                'accept-language': locale
-                }
+                "osm_ids": osm,
+                "format": "json",
+                "extratags": 1,
+                "addressdetails": 1,
+                "accept-language": locale,
+            }
 
-            headers = {'User-Agent': settings.CUSTOM_USER_AGENT}
+            headers = {"User-Agent": settings.CUSTOM_USER_AGENT}
 
             translation_data = {}
 
             try:
-                response = requests.get(settings.NOMINATIM_DETAILS_URL, params=params, headers=headers, timeout=20)
+                response = requests.get(
+                    settings.NOMINATIM_DETAILS_URL,
+                    params=params,
+                    headers=headers,
+                    timeout=20,
+                )
                 response.raise_for_status()
                 data = response.json()
 
                 if not data or not data[0]:
-                    logger.warning(f"No Nominatim-Translation-Data found for location ID: {location.id} ({locale}).")
+                    logger.warning(
+                        f"No Nominatim-Translation-Data found for location ID: {location.id} ({locale})."
+                    )
                     continue
 
-                address = data[0].get('address', {})
-                translation_data["translated_city"] = address.get('city') or address.get('town') or address.get('village')
-                translation_data["translated_state"] = address.get('state')
-                translation_data["translated_country"] = address.get('country')
-                translation_data["translated_name"] = data[0].get('localname')
+                address = data[0].get("address", {})
+                translation_data["translated_city"] = (
+                    address.get("city") or address.get("town") or address.get("village")
+                )
+                translation_data["translated_state"] = address.get("state")
+                translation_data["translated_country"] = address.get("country")
+                translation_data["translated_name"] = data[0].get("localname")
 
             except requests.exceptions.RequestException as e:
-                logger.error(f"error while retrieving translation data from nominatim for osm {osm}: {e}")
+                logger.error(
+                    f"error while retrieving translation data from nominatim for osm {osm}: {e}"
+                )
                 continue
 
             if not translation_data.get("translated_name"):
-                translation_data["translated_name"] = create_name_from_translation_data(location, translation_data)
+                translation_data["translated_name"] = create_name_from_translation_data(
+                    location, translation_data
+                )
                 if not translation_data["translated_name"]:
                     translation_data["translated_name"] = location.name
 
@@ -67,16 +81,13 @@ class LocationManager(models.Manager):
                     country_translation=translation_data["translated_country"],
                 )
             except IntegrityError as e:
-                logger.warning(f"Translation for ID {location.id} and '{locale}' already exists: {e}")
+                logger.warning(
+                    f"Translation for ID {location.id} and '{locale}' already exists: {e}"
+                )
                 continue
 
         return location
 
-
-    
-
-        
-    
 
 class Location(models.Model):
     name = models.CharField(
@@ -201,8 +212,6 @@ class Location(models.Model):
 
     def __str__(self):
         return "%s" % (self.name)
-   
-
 
 
 class LocationTranslation(models.Model):

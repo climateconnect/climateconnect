@@ -13,8 +13,6 @@ import django
 django.setup()
 
 
-
-
 def create_mapping_table(outfile: str):
     """
     Creates a CSV mapping table that links unique OSM type-id-class-class_type
@@ -25,17 +23,16 @@ def create_mapping_table(outfile: str):
     outpath.parent.mkdir(parents=True, exist_ok=True)
 
     osm_unique_locations = set()
-    locations_with_osm = Location.objects.filter(
-        osm_id__isnull=False,
-        osm_type__isnull=False,
-        osm_class__isnull=False,
-        osm_class_type__isnull=False
-    ).exclude(
-        osm_type=""
-    ).exclude(
-        osm_class=""
-    ).exclude(
-        osm_class_type=""
+    locations_with_osm = (
+        Location.objects.filter(
+            osm_id__isnull=False,
+            osm_type__isnull=False,
+            osm_class__isnull=False,
+            osm_class_type__isnull=False,
+        )
+        .exclude(osm_type="")
+        .exclude(osm_class="")
+        .exclude(osm_class_type="")
     )
 
     for loc in locations_with_osm:
@@ -62,13 +59,17 @@ def create_mapping_table(outfile: str):
                     osm_class_type=osm_class_type,
                 ).values_list("id", flat=True)
 
-                writer.writerow({
-                    "osm_combination": osm_key,
-                    "location_ids": ",".join(map(str, location_ids))
-                })
+                writer.writerow(
+                    {
+                        "osm_combination": osm_key,
+                        "location_ids": ",".join(map(str, location_ids)),
+                    }
+                )
                 rows_written += 1
 
-            print(f"\nSuccessfully saved {rows_written} entries to {outpath.resolve()}.")
+            print(
+                f"\nSuccessfully saved {rows_written} entries to {outpath.resolve()}."
+            )
 
     except Exception as e:
         print(f"Error: {e}")
