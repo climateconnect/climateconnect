@@ -1,14 +1,18 @@
-from unittest.mock import patch, Mock
+from unittest.mock import Mock, patch
+
 import requests
-from django.test import TestCase, override_settings
+from celery.exceptions import Retry
 from django.db import IntegrityError
 from django.db.models.signals import post_save
+from django.test import TestCase, override_settings
 
+from climateconnect_api.models.language import Language
 from location.models import Location, LocationTranslation
-from location.tasks import fetch_and_create_location_translations, create_name_from_translation_data
-from climateconnect_api.models.language import Language 
-from location.signals import find_location_translations 
-from celery.exceptions import Retry
+from location.signals import find_location_translations
+from location.tasks import (
+    create_name_from_translation_data,
+    fetch_and_create_location_translations,
+)
 
 # Mock-Data for Nominatim API responses
 NOMINATIM_RESPONSE_DATA_EN = [{
@@ -116,44 +120,39 @@ class LocationTaskTest(TestCase):
         )
         self.assertEqual(LocationTranslation.objects.count(), 0)
 
-    # @patch('requests.get')
-    # def test_fetch_and_create_location_translations_api_failure_retries(self, mock_get):
-    #     """tests that the task retries on API failure (HTTP 500)."""
+    @patch('location.tasks.logger')
+    @patch('requests.get')
+    def test_fetch_and_create_location_translations_api_failure_retries(self, mock_get, mock_logger):
+        """tests that the task retries on API failure (HTTP 500)."""
         
-    #     mock_response = Mock()
-    #     mock_response.status_code = 500
-    #     mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError("500 Server Error")
-    #     mock_get.return_value = mock_response
+        mock_response = Mock()
+        mock_response.status_code = 500
+        mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError("500 Server Error")
+        mock_get.return_value = mock_response
 
-    #     mock_celery_self = Mock()
-    #     mock_celery_self.retry.side_effect = Retry()
+        # Bei bind=True Tasks muss man den Task selbst mocken
+        with patch.object(fetch_and_create_location_translations, 'retry', side_effect=Retry()) as mock_retry:
+            with self.assertRaises(Retry):
+                fetch_and_create_location_translations(self.loc_id)
 
-    #     with self.assertRaises(Retry):
-    #         fetch_and_create_location_translations.run(mock_celery_self, self.loc_id)
-
-    #     mock_celery_self.retry.assert_called_once()
+            mock_retry.assert_called_once()
         
 
+    @patch('location.tasks.logger')
+    def test_fetch_and_create_location_translations_api_resolution_error_retries(self, mock_logger):
+        """
+        tests that a real NameResolutionError (ConnectionError) triggers a Celery retry
+        """
+        with patch('requests.get') as mock_get:
+            mock_get.side_effect = requests.exceptions.ConnectionError('Simulated resolution failure')
 
-    # def test_fetch_and_create_location_translations_api_resolution_error_retries(self):
-    #     """
-    #     tests that a real NameResolutionError (ConnectionError) triggers a Celery retry
-    #     """
-    #     with patch('requests.get') as mock_get:
-        
-    #         mock_get.side_effect = requests.exceptions.ConnectionError('Simulated resolution failure')
+            with patch.object(fetch_and_create_location_translations, 'retry', side_effect=Retry()) as mock_retry:
+                with self.assertRaises(Retry):
+                    fetch_and_create_location_translations(self.loc_id)
 
-    #         mock_self = Mock()
-    #         mock_self.request.retries = 0
-            
-    #         with self.assertRaises(Retry) as cm:
-    #             fetch_and_create_location_translations.run(mock_self, self.loc_id)
-            
+                mock_retry.assert_called_once()
 
-    #         self.assertIn('ConnectionError', str(cm.exception))
-    #         mock_self.retry.assert_called_once()
-
-    #         self.assertEqual(LocationTranslation.objects.count(), 0)
+            self.assertEqual(LocationTranslation.objects.count(), 0)
 
 
 
@@ -247,3 +246,63 @@ class LocationTaskTest(TestCase):
         expected_name = "Silk Road 50, City, Country"
         result = create_name_from_translation_data(self.location, translation_data)
         self.assertEqual(result, expected_name)
+
+    @patch('requests.get')
+    @patch('location.tasks.logger')
+    def test_fetch_and_create_location_translations_empty_nominatim_response(self, mock_logger, mock_get):
+        """
+        tests that empty Nominatim responses are handled gracefully
+        """
+        mock_get.return_value.json.return_value = MOCK_NOMINATIM_NOT_FOUND_RESPONSE
+        
+        fetch_and_create_location_translations(self.loc_id)
+        
+        
+        self.assertEqual(LocationTranslation.objects.count(), 0)
+        
+        warning_calls = [call[0][0] for call in mock_logger.warning.call_args_list]
+        self.assertTrue(any("No Nominatim-Data found" in msg for msg in warning_calls))
+
+    @patch('location.tasks.logger')
+    @patch('requests.get')
+    def test_fetch_and_create_location_translations_fallback_name(self, mock_get, mock_logger):
+        """
+        tests that name is built from translation_data when localname is missing
+        """
+        
+        response_without_localname = [{
+            'address': {
+                'city': 'TestCity',
+                'state': 'TestState',
+                'country': 'TestCountry'
+            },
+            'localname': None  
+        }]
+        
+        mock_get.return_value.json.return_value = response_without_localname
+        
+        fetch_and_create_location_translations(self.loc_id)
+
+        self.assertEqual(LocationTranslation.objects.count(), 2)
+        
+        translation = LocationTranslation.objects.first()
+        self.assertIsNotNone(translation)
+        
+        self.assertIn('TestCity', translation.name_translation)
+        self.assertIn('TestCountry', translation.name_translation)
+
+    def test_create_name_from_translation_data_empty(self):
+        """
+        tests name creation when all fields are empty/None
+        """
+        self.location.place_name = None
+        self.location.exact_address = None
+
+        translation_data = {
+            'translated_city': None,
+            'translated_state': None,
+            'translated_country': None
+        }
+        
+        result = create_name_from_translation_data(self.location, translation_data)
+        self.assertEqual(result, "")

@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+
 from location.models import Location, LocationTranslation
 
 
@@ -26,7 +27,7 @@ def create_english_translations_from_locations(limit: int = None) -> None:
             city_translation = location['city'],
             state_translation = location['state'],
             country_translation = location['country'],
-            language_id = 2, #because english has the id=1 and there are only english entries in location_location
+            language_id = 2, #because english has the id=2 and there are only english entries in location_location
             location_id = location['id'],
         )
         translations.append(loc_translation)

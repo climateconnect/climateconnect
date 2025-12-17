@@ -38,6 +38,11 @@ def fetch_and_create_location_translations(self, loc_id):
     except Location.DoesNotExist:
         logger.error(f"location with ID {loc_id} does not exist anymore. Aborting task.")
         return
+    
+    if not instance.osm_id or not instance.osm_type:
+        logger.warning(f"Location {loc_id} has no osm_id or osm_type. Skipping translation.")
+        return
+    
     for language_id, locale in enumerate(settings.LOCALES, 1):
         params = {
             'osm_ids': f"{instance.osm_type[0].upper()}{instance.osm_id}",
@@ -92,5 +97,3 @@ def fetch_and_create_location_translations(self, loc_id):
         except Exception as e:
                 logger.error(f"unknown error while saving translation for {instance.pk}/{language_id}: {e}")
                 continue
-    else:
-        logger.warning(f"no results from nominatim for translating location {instance.pk} into {locale}.")
