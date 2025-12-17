@@ -1,10 +1,8 @@
 import requests
 from tqdm import tqdm
 
-
-
 NOMINATIM_DETAILS_URL = "https://nominatim.openstreetmap.org/lookup"
-CUSTOM_USER_AGENT = "DjangoProjekt/1.0 (katharina.auer@climateconnect.earth)"
+CUSTOM_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
 
 class MockLocation:
     def __init__(self, id, name, osm_id, osm_type, place_name=None, exact_address=None, state=None, country=None, city=None):

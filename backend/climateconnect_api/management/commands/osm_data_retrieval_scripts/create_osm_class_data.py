@@ -2,16 +2,15 @@
 # Run this script after getting the osm_type, because it uses the osm_type to find the osm_class#
 #################################################################################################
 
-import requests
-
 # import time
 import csv
 from pathlib import Path
+
+import requests
 from tqdm import tqdm
 
-
 LOCATIONS_URL = "https://nominatim.openstreetmap.org/lookup"
-HEADERS = {"User-Agent": "DjangoProjekt/1.0 (<someone>@climateconnect.earth)"}
+HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
 
 
 def discover_osm_class(osm_ids: list) -> tuple[dict, set] | None:

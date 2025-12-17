@@ -1,15 +1,15 @@
-from django.core.management.base import BaseCommand
-#from django.db import transaction
-from location.models import Location, LocationTranslation
-from climateconnect_api.models.language import Language
 import requests
+from django.core.management.base import BaseCommand
 from django.db.models import QuerySet
 from tqdm import tqdm
 
+from climateconnect_api.models.language import Language
 
+#from django.db import transaction
+from location.models import Location, LocationTranslation
 
 NOMINATIM_DETAILS_URL = "https://nominatim.openstreetmap.org/lookup"
-CUSTOM_USER_AGENT = "DjangoProjekt/1.0 (katharina.auer@climateconnect.earth)"
+CUSTOM_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
 
 def create_name_from_translation_data(original_location: Location, translation_data: dict) -> str:
         
