@@ -3,14 +3,14 @@ import os
 import sys
 from pathlib import Path
 
-from location.models import Location
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "climateconnect_main.settings")
 
-import django
+import django  # noqa: E402
 
 django.setup()
+
+from location.models import Location  # noqa: E402
 
 
 def create_mapping_table(outfile: str):

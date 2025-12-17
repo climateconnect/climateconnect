@@ -7,4 +7,4 @@ class LocationConfig(AppConfig):
 
     # for usage of signals.py
     def ready(self):
-        import location.signals
+        import location.signals  # noqa: F401

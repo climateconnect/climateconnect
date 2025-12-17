@@ -1,5 +1,3 @@
-import unittest
-
 from django.test import TestCase, override_settings
 
 from location.models import Location
