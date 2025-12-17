@@ -3,6 +3,7 @@ import logging
 import requests
 from django.conf import settings
 from django.contrib.gis.db import models
+from django.db import IntegrityError, transaction
 
 from climateconnect_api.models.language import Language
 from location.tasks import create_name_from_translation_data
