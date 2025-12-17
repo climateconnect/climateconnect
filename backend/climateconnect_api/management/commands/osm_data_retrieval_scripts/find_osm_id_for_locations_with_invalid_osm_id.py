@@ -1,7 +1,6 @@
+import requests
 import csv
 from pathlib import Path
-
-import requests
 from tqdm import tqdm
 
 # usage of dictionarries because Location moule can't be imported

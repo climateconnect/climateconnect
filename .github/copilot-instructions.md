@@ -88,13 +88,15 @@ Climate Connect (climateconnect.earth) is a full-stack climate action platform c
 ### Key Domain Entities
 - **UserProfile**: Extended user profiles with skills, availability, location
 - **Organization**: Climate organizations with membership management
-- **Project**: Climate action projects with status tracking, members, skills
+- **Project**: Climate action projects with status tracking, members, skills. . A project can also be an event or an idea. 
 - **Hub**: Geographic/sector-based communities with custom branding
-- **Idea**: Early-stage climate action ideas
 - **Chat**: Real-time messaging (user-to-user and group)
 - **Notification**: Multi-channel notification system (in-app + email)
 - **Badge**: Gamification system for achievements
 - **Donation**: Fundraising campaigns and contribution tracking
+
+### Architecture documentation
+- [Architecture overview](../doc/mosy/architecture_overview.md)
 
 ## Code Style & Best Practices
 

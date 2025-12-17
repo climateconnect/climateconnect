@@ -118,15 +118,7 @@ def extract_osm_ids(csv_path):
 # test_place_ids = [281739181, 88715228, 256856867, 256305646, 82615589, 83293355, 115047027, 297417241, 307525758, 258543476]
 # test_osm_ids = [7444, 8649, 16132]
 test_osm_ids = []
-test_osm_ids.extend(
-    extract_osm_ids(
-        "/home/kathi/ClimateConnect/climateconnect_env/climateconnect/backend/climateconnect_api/management/commands/osm_lookup_tables/osm_id_lookup.csv"
-    )
-)
-test_osm_ids.extend(
-    extract_osm_ids(
-        "/home/kathi/ClimateConnect/climateconnect_env/climateconnect/backend/climateconnect_api/management/commands/osm_lookup_tables/lookup.csv"
-    )
-)
-csv_path = "/home/kathi/ClimateConnect/Arbeitsdateien/class_lookup.csv"
+test_osm_ids.extend(extract_osm_ids("path/to/locations_gone_wrong.csv"))
+test_osm_ids.extend(extract_osm_ids("path/to/locations_gone_wrong_class.csv"))
+csv_path = "path/to/class_lookup_final_ones.csv"
 create_csv_lookup_table(test_osm_ids, csv_path)

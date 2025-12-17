@@ -22,22 +22,20 @@
 
 ## System Overview
 
-Climate Connect is a full-stack climate action platform that connects activists, organizations, and projects to facilitate collaboration on climate solutions. The platform enables users to discover projects, join organizations, share ideas, communicate in real-time, and participate in climate-focused communities organized by geography and sector.
+Climate Connect is a full-stack online climate action platform that connects activists, organizations, and projects to facilitate collaboration on climate solutions. The platform enables users to discover and share projects, join organizations, communicate in real-time, and participate in climate-focused communities organized by geography and sector.
 
 ### Key Capabilities
 
 - **User Profiles**: Extended profiles with skills, availability, location, and climate interests
-- **Project Management**: Create, discover, and manage climate action projects with status tracking
+- **Project Management**: Create, discover, and manage climate action projects. A project can also be an event or an idea. 
 - **Organization Management**: Register and manage climate organizations with membership and permissions
 - **Community Hubs**: Geographic and sector-based communities with custom branding
-- **Real-Time Messaging**: WebSocket-based chat for user-to-user and group communication
-- **Idea Sharing**: Propose and discuss early-stage climate action ideas
+- **Real-Time Messaging**: Chat for user-to-user and group communication
 - **Climate Matching**: Intelligent questionnaire-based matching of users to projects and organizations
 - **Social Features**: Follow, like, comment, and share functionality
 - **Gamification**: Badge system for recognizing contributions and achievements
 - **Donations**: Fundraising campaigns and contribution tracking
 - **Multilingual Support**: English and German with extensible i18n framework
-
 ---
 
 ## High-Level Architecture

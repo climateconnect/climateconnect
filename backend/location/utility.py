@@ -316,7 +316,10 @@ def get_location_with_range(query_params):
         osm_id_param = query_params.get("loc_type")[0].upper() + query_params.get("osm")
         params = "&format=json&addressdetails=1&polygon_geojson=1&accept-language=en-US,en;q=0.9&polygon_threshold=0.001"
         url = url_root + osm_id_param + params
-        response = requests.get(url)
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+        }
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             location_object = json.loads(response.text)[0]
         else:
