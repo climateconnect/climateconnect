@@ -5,16 +5,13 @@ from celery import shared_task
 from django.conf import settings
 from django.db import IntegrityError, transaction
 
-from backend import location
-from location.models import Location, LocationTranslation
-
 logger = logging.getLogger(__name__)
 
 SUPPORTED_LANGUAGES = {1: "de", 2: "en"}
 NOMINATIM_DETAILS_URL = "https://nominatim.openstreetmap.org/lookup"
 CUSTOM_USER_AGENT = "DjangoProjekt/1.0 (someone@climateconnect.earth)"
 
-def create_name_from_translation_data(original_location: Location, translation_data: dict) -> str:
+def create_name_from_translation_data(original_location, translation_data: dict) -> str:
         
     name = []
     if original_location.place_name:
@@ -33,6 +30,9 @@ def create_name_from_translation_data(original_location: Location, translation_d
 
 @shared_task(bind=True, max_retries=5)
 def fetch_and_create_location_translations(self, loc_id):
+    # Lazy import to avoid Circular Import
+    from location.models import Location, LocationTranslation
+    
     try:
         instance = Location.objects.get(pk=loc_id)
     except Location.DoesNotExist:
