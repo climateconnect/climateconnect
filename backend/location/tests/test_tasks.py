@@ -2,7 +2,6 @@ from unittest.mock import Mock, patch
 
 import requests
 from celery.exceptions import Retry
-from django.db import IntegrityError
 from django.db.models.signals import post_save
 from django.test import TestCase, override_settings
 
