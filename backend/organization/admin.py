@@ -1,38 +1,35 @@
 from django.contrib import admin
 
-
 from organization.models import (
-    Organization,
-    OrganizationTags,
-    OrganizationTagging,
-    Project,
-    ProjectTags,
-    ProjectTagging,
-    Post,
     Comment,
-    PostComment,
-    ProjectComment,
-    ProjectMember,
-    OrganizationMember,
-    ProjectParents,
-    ProjectStatus,
-    ProjectCollaborators,
-    ProjectFollower,
-    OrganizationFieldTagging,
-    ProjectTranslation,
-    OrganizationTranslation,
-    PostTranslation,
     CommentTranslation,
-    ProjectLike,
+    Organization,
+    OrganizationFieldTagging,
     OrganizationFollower,
-    OrgProjectPublished,
-    Sector,
-    ProjectSectorMapping,
+    OrganizationMember,
     OrganizationSectorMapping,
+    OrganizationTagging,
+    OrganizationTags,
+    OrganizationTranslation,
+    OrgProjectPublished,
+    Post,
+    PostComment,
+    PostTranslation,
+    Project,
+    ProjectCollaborators,
+    ProjectComment,
+    ProjectFollower,
+    ProjectLike,
+    ProjectMember,
+    ProjectParents,
+    ProjectSectorMapping,
+    ProjectStatus,
+    ProjectTagging,
+    ProjectTags,
+    ProjectTranslation,
+    Sector,
     UserProfileSectorMapping,
 )
-
-
 from organization.models.members import MembershipRequests
 
 pass_through_models = (
@@ -65,7 +62,7 @@ for model in pass_through_models:
 
 
 class OrganizationAdmin(admin.ModelAdmin):
-    search_fields = ("name", "country", "state", "city", "url-slug")
+    search_fields = ("name", "country", "state", "city", "url_slug")
 
 
 admin.site.register(Organization, OrganizationAdmin)

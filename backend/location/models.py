@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+
 from climateconnect_api.models.language import Language
 
 
@@ -13,6 +14,14 @@ class Location(models.Model):
     place_name = models.CharField(
         help_text="If it is a specific place (e.g. city hall) this contains the name of the place",
         verbose_name="Place Name",
+        max_length=1024,
+        blank=True,
+        null=True,
+    )
+
+    display_name = models.CharField(
+        help_text="Nominatim's full display name of the location",
+        verbose_name="Display Name",
         max_length=1024,
         blank=True,
         null=True,
@@ -62,9 +71,34 @@ class Location(models.Model):
 
     osm_id = models.BigIntegerField(
         help_text="The internal id of this location openstreetmaps",
-        verbose_name="OSM ID",
+        verbose_name="Osm ID",
         blank=True,
         null=True,
+    )
+
+    osm_type = models.CharField(
+        help_text="The internal type of this location openstreetmaps",
+        verbose_name="Osm Type",
+        blank=True,
+        null=True,
+        choices=[("N", "node"), ("W", "way"), ("R", "relation")],
+        max_length=1,
+    )
+
+    osm_class = models.CharField(
+        help_text="The internal class of this location in openstreetmaps",
+        verbose_name="Osm Class",
+        blank=True,
+        null=True,
+        max_length=100,
+    )
+
+    osm_class_type = models.CharField(
+        help_text="The internal type specifying the osm_class of this location in openstreetmaps",
+        verbose_name="Osm Class Type",
+        blank=True,
+        null=True,
+        max_length=100,
     )
 
     place_id = models.BigIntegerField(

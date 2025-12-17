@@ -124,6 +124,8 @@ export default function HubTabsNavigation({
   }
   const hubTabLink = getCustomHubData({ hubUrl, texts })?.hubTabLinkNarrowScreen;
 
+  const isEmmendingenHub = hubUrl === "em";
+
   return (
     <div className={`${className} ${classes.root}`}>
       <Container maxWidth="lg" className={classes.container}>
@@ -156,8 +158,16 @@ export default function HubTabsNavigation({
                 })}
             </Tabs>
           )}
-
-          {!isCustomHub && (
+          {isEmmendingenHub && (
+            <Link
+              className={classes.climateMatchLink}
+              href="https://climatehub.earth/burgerenergie-em"
+              underline="hover"
+            >
+              {texts.emmerdingen_buergerenergie}
+            </Link>
+          )}
+          {!isCustomHub && !isEmmendingenHub && (
             <div className={classes.climateMatchLinkContainer}>
               <Link
                 className={classes.climateMatchLink}
