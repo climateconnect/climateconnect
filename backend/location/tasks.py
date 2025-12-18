@@ -7,10 +7,6 @@ from django.db import IntegrityError, transaction
 
 logger = logging.getLogger(__name__)
 
-SUPPORTED_LANGUAGES = {1: "de", 2: "en"}
-NOMINATIM_DETAILS_URL = "https://nominatim.openstreetmap.org/lookup"
-CUSTOM_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-
 
 def create_name_from_translation_data(original_location, translation_data: dict) -> str:
 
@@ -63,7 +59,7 @@ def fetch_and_create_location_translations(self, loc_id):
 
         try:
             response = requests.get(
-                settings.NOMINATIM_DETAILS_URL,
+                settings.NOMINATIM_LOOKUP_URL,
                 params=params,
                 headers=headers,
                 timeout=20,

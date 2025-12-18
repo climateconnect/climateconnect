@@ -302,7 +302,7 @@ LOCALES = [
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
-NOMINATIM_DETAILS_URL = "https://nominatim.openstreetmap.org/details"
+NOMINATIM_LOOKUP_URL = "https://nominatim.openstreetmap.org/lookup"
 CUSTOM_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
 
 LOCALE_PATHS = [

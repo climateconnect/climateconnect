@@ -36,7 +36,7 @@ class LocationManager(models.Manager):
 
             try:
                 response = requests.get(
-                    settings.NOMINATIM_DETAILS_URL,
+                    settings.NOMINATIM_LOOKUP_URL,
                     params=params,
                     headers=headers,
                     timeout=20,

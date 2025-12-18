@@ -1,3 +1,11 @@
+########################################################################################
+# IMPORTANT: when adding a new translation language (locale), this locale must also    #
+# be added to the LOCALES list in climateconnect_main/settings.py                      #
+# so that in the future, translations into the new locale                              #
+# will be saved into our database when creating a new location                         #
+########################################################################################
+
+
 import csv
 import time
 from pathlib import Path
@@ -278,6 +286,9 @@ class Command(BaseCommand):
             created_count = translate_locations(locations_list, locale, osm_mapping)
             self.stdout.write(
                 self.style.SUCCESS(f"created {created_count} translations.")
+            )
+            self.stdout.write(
+                self.style.WARNING("IMPORTANT NOTE: make sure to also update the LOCALES list in climateconnect_main/settings.py")
             )
 
         except Exception as e:
