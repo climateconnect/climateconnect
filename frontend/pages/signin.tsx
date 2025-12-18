@@ -90,7 +90,7 @@ export default function Signin({ hubSlug, hubThemeData, message, message_type })
     href: `${getLocalePrefix(locale)}/resetpassword${hubSlug ? `?hub=${hubSlug}` : ""}`,
   };
 
-  const [errorMessage, setErrorMessage] = React.useState<JSX.Element | null>(
+  const [errorMessage, setErrorMessage] = React.useState<React.ReactElement | null>(
     message_type !== "success" && message
   );
   const [isLoading, setIsLoading] = React.useState(false);

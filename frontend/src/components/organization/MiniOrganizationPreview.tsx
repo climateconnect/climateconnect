@@ -6,7 +6,6 @@ import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
-import Truncate from "react-truncate";
 
 const useStyles = makeStyles<Theme, { showBorder: boolean }>((theme) => ({
   orgName: {

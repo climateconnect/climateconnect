@@ -87,7 +87,7 @@ export default function Share({
     handleSetProjectData({ project_type: projectTypeOptions.find((t) => t.type_id === newValue) });
   };
 
-  const onClickNextStep = (e) => {
+  const onClickNextStep = () => {
     goToNextStep();
   };
 

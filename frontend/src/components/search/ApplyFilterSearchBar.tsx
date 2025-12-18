@@ -1,5 +1,4 @@
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
+import { TextField, Autocomplete } from "@mui/material";
 import throttle from "lodash/throttle";
 import React, { useContext } from "react";
 

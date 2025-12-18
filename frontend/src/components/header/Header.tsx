@@ -324,7 +324,7 @@ export default function Header({
 
   const onNotificationsClose = () => setAnchorEl(null);
   const getLogo = () => {
-    let imageUrl = "/images";
+    const imageUrl = "/images";
     if (isCustomHub) {
       return `${imageUrl}/hub_logos/ch_${hubUrl}_logo.svg`;
     }
@@ -553,7 +553,6 @@ function NormalScreenLinks({
           texts={texts}
           localePrefix={localePrefix}
           getLoggedInLinks={getLoggedInLinks}
-          isCustomHub={isCustomHub}
           hubUrl={hubUrl}
           classes={classes}
         />
@@ -579,7 +578,6 @@ const LoggedInNormalScreen = ({
   texts,
   localePrefix,
   getLoggedInLinks,
-  isCustomHub,
   hubUrl,
   classes,
 }) => {
@@ -811,6 +809,7 @@ function NarrowScreenLinks({
                 if (link?.showStaticLinksInDropdown && isCustomHub) {
                   return (
                     <NarrowScreenDropdownMenu
+                      key={index}
                       locale={locale}
                       classes={classes}
                       Icon={Icon}
@@ -849,7 +848,7 @@ function NarrowScreenLinks({
                   };
                   if (link.avatar)
                     return (
-                      <div className={classes.mobileAvatarContainer}>
+                      <div className={classes.mobileAvatarContainer} key={index}>
                         <Link
                           href={localePrefix + "/profiles/" + loggedInUser.url_slug + queryString}
                           underline="hover"
@@ -910,7 +909,6 @@ const NarrowScreenDropdownMenu = ({
   STATIC_PAGE_LINKS,
   closeDrawer,
 }) => {
-  const localePrefix = getLocalePrefix(locale);
   const [openDropdownInMobile, setOpenDropdownInMobile] = useState(false);
   const toggleDropdownInMobile = setOpenDropdownInMobile.bind(null, !openDropdownInMobile);
   return (
@@ -952,7 +950,6 @@ const getLinkButtonProps = ({
   index,
   loggedInUser,
   classes,
-  transparentHeader,
   toggleShowNotifications,
   isNarrowScreen,
   linksOutsideDrawer,

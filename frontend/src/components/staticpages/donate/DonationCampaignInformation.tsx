@@ -105,7 +105,6 @@ export default function DonationCampaignInformation({ hubUrl }: Props) {
   const classes = useStyles();
   const cookies = new Cookies();
   const [open, setOpen] = React.useState(!cookies.get("hideDonationCampaign"));
-  const [expanded, setExpanded] = React.useState(false);
   const { CUSTOM_HUB_URLS, donationGoals, locale } = useContext(UserContext);
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const texts = getTexts({ page: "donate", locale: locale, classes: classes });
@@ -119,9 +118,6 @@ export default function DonationCampaignInformation({ hubUrl }: Props) {
     setOpen(false);
   };
 
-  const handleToggleExpanded = () => {
-    setExpanded(!expanded);
-  };
   if ((isCustomHub && !donationGoal?.hub) || !donationGoal?.goal_amount) return <></>;
   return (
     <>
@@ -132,7 +128,7 @@ export default function DonationCampaignInformation({ hubUrl }: Props) {
           </IconButton>
           <div>
             <div className={classes.textAndBarContainer}>
-              {!expanded && donationGoal && (
+              {donationGoal && (
                 <DonationGoal
                   current={donationGoal?.current_amount}
                   goal={donationGoal?.goal_amount}

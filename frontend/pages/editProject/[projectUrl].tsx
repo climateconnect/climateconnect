@@ -205,7 +205,6 @@ export default function EditProjectPage({
         hubUrl={hubUrl}
       >
         <EditProjectRoot
-          hubUrl={hubUrl}
           oldProject={project}
           project={curProject}
           skillsOptions={skillsOptions}

@@ -11,8 +11,10 @@ import {
 import makeStyles from "@mui/styles/makeStyles";
 import PropTypes from "prop-types";
 import React, { useContext } from "react";
+//TODO depricated libraries react-infinite-scroller and react-truncate
 import InfiniteScroll from "react-infinite-scroller";
 import Truncate from "react-truncate";
+
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getDateTime } from "../../../../public/lib/dateOperations";
 import getTexts from "../../../../public/texts/texts";
@@ -98,8 +100,10 @@ export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabl
       </>
     );
 
+  const InfiniteScrollComponent = InfiniteScroll as any;
+
   return (
-    <InfiniteScroll
+    <InfiniteScrollComponent
       pageStart={1}
       loadMore={loadMore}
       hasMore={hasMore && !isLoading}
@@ -115,7 +119,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabl
         />
       ))}
       <LoadingSpinner />
-    </InfiniteScroll>
+    </InfiniteScrollComponent>
   );
 }
 
@@ -123,6 +127,8 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
   const lastAction = chat.last_message ? chat.last_message.sent_at : chat.created_at;
   if (!lastAction) console.log(chat);
   const classes = useStyles();
+  const TruncateComponent = Truncate as any;
+
   if (isNarrowScreen) return <MobileChatPreview chat={chat} isFirstChat={isFirstChat} />;
   else
     return (
@@ -153,7 +159,7 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
           <ListItemText
             secondary={
               <>
-                <Truncate
+                <TruncateComponent
                   lines={1}
                   className={`${"" /*TODO(undefined) classes.contentPreview*/} ${
                     chat.unread_count ? classes.unreadPreview : ""
@@ -161,7 +167,7 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
                   ellipsis={"..."}
                 >
                   {chat.content}
-                </Truncate>
+                </TruncateComponent>
                 <span className={classes.badgeAndTimeContainer}>
                   <span>
                     <span /*TODO(undefined) className={classes.time}*/>

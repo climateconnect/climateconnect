@@ -51,7 +51,7 @@ export async function getSectorOptions(locale, hubUrl?: string) {
     });
     if (resp?.data?.results.length === 0) return null;
     else {
-      let sectorOptions = parseSectorOptions(resp.data.results);
+      const sectorOptions = parseSectorOptions(resp.data.results);
       return sectorOptions;
     }
   } catch (err: any) {
