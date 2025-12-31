@@ -3,9 +3,9 @@ import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-import InfiniteScrollGrid from "../general/InfiniteScrollGrid";
 import LoadingSpinner from "../general/LoadingSpinner";
 import ProfilePreview from "./ProfilePreview";
+import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
 
 const useStyles = makeStyles({
   reset: {
@@ -23,6 +23,7 @@ export default function ProfilePreviews({
   profiles,
   showAdditionalInfo,
   hubUrl,
+  isLoading = false,
 }: any) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -38,62 +39,66 @@ export default function ProfilePreviews({
     ));
 
   const [gridItems, setGridItems] = React.useState(toProfilePreviews(profiles));
-  const [isFetchingMore, setIsFetchingMore] = React.useState(false);
 
-  if (!loadFunc) {
-    hasMore = false;
-  }
-
-  const loadMore = async (page) => {
-    // Sometimes InfiniteScroll calls loadMore twice really fast. Therefore
-    // to improve performance, we aim to guard against subsequent
-    // fetches to the API by maintaining a local state flag.
-    if (!isFetchingMore) {
-      setIsFetchingMore(true);
-      const newProfiles = await loadFunc(page);
+  const loadMore = async () => {
+    if (loadFunc) {
+      const newProfiles = await loadFunc();
       if (!parentHandlesGridItems) {
         setGridItems([...gridItems, ...toProfilePreviews(newProfiles)]);
       }
-      setIsFetchingMore(false);
     }
   };
 
-  // TODO: use `profile.id` instead of index when using real profiles
+  const { lastElementRef } = useInfiniteScroll({
+    hasMore: hasMore || false,
+    isLoading: isLoading,
+    onLoadMore: loadMore,
+  });
+
+  const displayedProfiles = parentHandlesGridItems ? profiles : gridItems;
+
+  if (!displayedProfiles || displayedProfiles.length === 0) {
+    return <div>{texts.no_members_found}</div>;
+  }
+
   return (
     <>
-      <InfiniteScrollGrid
-        className={`${classes.reset} ${/*TODO(undefined) classes.root*/ ""}`}
+      <Grid
+        className={classes.reset}
         component="ul"
         container
-        element={Grid}
-        // We block subsequent invocations from InfinteScroll until we update local state
-        hasMore={hasMore && !isFetchingMore}
-        loadMore={loadMore}
-        pageStart={0}
-        // spacing={2}
+        spacing={1}
       >
-        {parentHandlesGridItems
-          ? profiles && profiles.length > 0
-            ? toProfilePreviews(profiles)
-            : texts.no_members_found
-          : gridItems}
-        {isFetchingMore && <LoadingSpinner isLoading key="profile-previews-spinner" />}
-      </InfiniteScrollGrid>
+        {displayedProfiles.map((profile, index) => {
+          const isLastElement = index === displayedProfiles.length - 1;
+          return (
+            <Grid
+              key={profile.props?.profile?.url_slug || profile.url_slug}
+              xs={12}
+              sm={6}
+              md={4}
+              lg={3}
+              component="li"
+              ref={isLastElement ? lastElementRef : null}
+            >
+              {profile.props ? (
+                profile
+              ) : (
+                <ProfilePreview 
+                  profile={profile} 
+                  showAdditionalInfo={showAdditionalInfo} 
+                  hubUrl={hubUrl} 
+                />
+              )}
+            </Grid>
+          );
+        })}
+      </Grid>
+      {isLoading && <LoadingSpinner isLoading />}
     </>
   );
 }
 
 function GridItem({ profile, showAdditionalInfo, hubUrl }) {
-  const classes = makeStyles({
-    gridElement: {
-      display: "flex",
-      justifyContent: "space-around",
-    },
-  })();
-
-  return (
-    <Grid xs={12} sm={6} md={4} lg={3} component="li" className={classes.gridElement}>
-      <ProfilePreview profile={profile} showAdditionalInfo={showAdditionalInfo} hubUrl={hubUrl} />
-    </Grid>
-  );
+  return <ProfilePreview profile={profile} showAdditionalInfo={showAdditionalInfo} hubUrl={hubUrl} />;
 }
