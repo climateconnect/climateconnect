@@ -11,8 +11,7 @@ import {
 import makeStyles from "@mui/styles/makeStyles";
 import PropTypes from "prop-types";
 import React, { useContext } from "react";
-//TODO depricated libraries react-infinite-scroller and react-truncate
-import InfiniteScroll from "react-infinite-scroller";
+//TODO depricated libraries react-truncate
 import Truncate from "react-truncate";
 
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
@@ -23,6 +22,7 @@ import LoadingSpinner from "../../general/LoadingSpinner";
 import MiniProfilePreview from "../../profile/MiniProfilePreview";
 import ChatTitle from "./ChatTitle";
 import MobileChatPreview from "./MobileChatPreview";
+import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -66,20 +66,29 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabled }) {
+export default function ChatPreviews({
+  chats,
+  loadFunc,
+  hasMore,
+  chatSearchEnabled,
+  isLoading = false,
+}) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "chat", locale: locale });
-  const [isLoading, setIsLoading] = React.useState(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+
   const loadMore = async () => {
-    //sometimes InfiniteScroll calls loadMore twice really fast. Therefore we're using isLoading to make sure it doesn't catch 2 pages at once
-    if (!isLoading) {
-      setIsLoading(true);
+    if (loadFunc) {
       await loadFunc();
-      setIsLoading(false);
     }
   };
+
+  const { lastElementRef } = useInfiniteScroll({
+    hasMore: hasMore || false,
+    isLoading: isLoading,
+    onLoadMore: loadMore,
+  });
 
   if (chats.length === 0 && !chatSearchEnabled)
     return (
@@ -100,30 +109,29 @@ export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabl
       </>
     );
 
-  const InfiniteScrollComponent = InfiniteScroll as any;
-
   return (
-    <InfiniteScrollComponent
-      pageStart={1}
-      loadMore={loadMore}
-      hasMore={hasMore && !isLoading}
-      element={List as any}
-    >
-      {chats.map((chat, index) => (
-        <ChatPreview
-          key={index}
-          isFirstChat={index === 0}
-          isNarrowScreen={isNarrowScreen}
-          chat={chat}
-          locale={locale}
-        />
-      ))}
-      <LoadingSpinner />
-    </InfiniteScrollComponent>
+    <>
+      <List>
+        {chats.map((chat, index) => {
+          const isLastElement = index === chats.length - 1;
+          return (
+            <ChatPreview
+              key={index}
+              isFirstChat={index === 0}
+              isNarrowScreen={isNarrowScreen}
+              chat={chat}
+              locale={locale}
+              forwardedRef={isLastElement ? lastElementRef : null}
+            />
+          );
+        })}
+      </List>
+      {isLoading && <LoadingSpinner isLoading />}
+    </>
   );
 }
 
-const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
+const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale, forwardedRef }) => {
   const lastAction = chat.last_message ? chat.last_message.sent_at : chat.created_at;
   if (!lastAction) console.log(chat);
   const classes = useStyles();
@@ -135,6 +143,7 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
       <React.Fragment>
         {isFirstChat && <Divider component="li" />}
         <ListItem
+          ref={forwardedRef}
           button
           component="a"
           href={getLocalePrefix(locale) + "/chat/" + chat.chat_uuid}
