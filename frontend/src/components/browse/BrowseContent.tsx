@@ -358,7 +358,7 @@ export default function BrowseContent({
 
   const handleLoadMoreData = async (type) => {
     if (isFetchingMoreData) return; // Prevent multiple simultaneous requests
-    
+
     try {
       setIsFetchingMoreData(true);
       const res = await loadMoreData({

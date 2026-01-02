@@ -63,12 +63,7 @@ export default function ProfilePreviews({
 
   return (
     <>
-      <Grid
-        className={classes.reset}
-        component="ul"
-        container
-        spacing={1}
-      >
+      <Grid className={classes.reset} component="ul" container spacing={1}>
         {displayedProfiles.map((profile, index) => {
           const isLastElement = index === displayedProfiles.length - 1;
           return (
@@ -84,10 +79,10 @@ export default function ProfilePreviews({
               {profile.props ? (
                 profile
               ) : (
-                <ProfilePreview 
-                  profile={profile} 
-                  showAdditionalInfo={showAdditionalInfo} 
-                  hubUrl={hubUrl} 
+                <ProfilePreview
+                  profile={profile}
+                  showAdditionalInfo={showAdditionalInfo}
+                  hubUrl={hubUrl}
                 />
               )}
             </Grid>
@@ -100,5 +95,7 @@ export default function ProfilePreviews({
 }
 
 function GridItem({ profile, showAdditionalInfo, hubUrl }) {
-  return <ProfilePreview profile={profile} showAdditionalInfo={showAdditionalInfo} hubUrl={hubUrl} />;
+  return (
+    <ProfilePreview profile={profile} showAdditionalInfo={showAdditionalInfo} hubUrl={hubUrl} />
+  );
 }

@@ -55,12 +55,7 @@ export default function OrganizationPreviews({
 
   return (
     <>
-      <Grid
-        className={`${classes.reset}`}
-        component="ul"
-        container
-        spacing={2}
-      >
+      <Grid className={`${classes.reset}`} component="ul" container spacing={2}>
         {displayedOrganizations.map((organization, index) => {
           const isLastElement = index === displayedOrganizations.length - 1;
           return (

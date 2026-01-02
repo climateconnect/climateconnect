@@ -100,6 +100,6 @@ export default function ProjectPreviews({
   );
 }
 
-function GridItem({ project, hubUrl, displayOnePreviewInRow }) {
+function GridItem({ project, hubUrl }) {
   return <ProjectPreview project={project} hubUrl={hubUrl} />;
 }
