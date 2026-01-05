@@ -291,7 +291,7 @@ export default function EditProjectContent({
           />
         </div>
         <div className={classes.block}>
-          <ProjectDescriptionHelp project_type={project.project_type} />
+          <ProjectDescriptionHelp />
           <div className={classes.spacer} />
           <TextField
             variant="outlined"

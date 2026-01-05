@@ -1,8 +1,8 @@
-import { Button, Container, Link, Tooltip, Typography, useTheme } from "@mui/material";
+import { Button, Container, Link, Tooltip, Typography } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import Linkify from "react-linkify";
-import React, { MouseEventHandler, RefObject, useContext, useEffect, useState } from "react";
+import React, { MouseEventHandler, useContext, useEffect, useState } from "react";
 
 //icons
 import ExploreIcon from "@mui/icons-material/Explore";

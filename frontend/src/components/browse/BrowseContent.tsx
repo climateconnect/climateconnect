@@ -139,7 +139,6 @@ export default function BrowseContent({
 
   const token = new Cookies().get("auth_token");
   const isLocationHubFlag = isLocationHub || isLocationHubLikeHub(hubData?.hub_type);
-
   const {
     filters,
     handleUpdateFilterValues,

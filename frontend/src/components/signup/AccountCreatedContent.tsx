@@ -73,6 +73,6 @@ export default function AccountCreatedContent({ isSmallScreen, hubUrl }) {
         </Card>
       }
       image={<AccountCreatedIcon className={classes.icon} />}
-    ></ContentImageSplitView>
+    />
   );
 }

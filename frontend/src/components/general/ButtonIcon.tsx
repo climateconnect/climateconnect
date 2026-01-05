@@ -23,14 +23,14 @@ export default function ButtonIcon({ icon, color, size }) {
 
   if (icon === "like") {
     return color === "earth" ? (
-      <img className={classes.icon} src={"/images/like-planet-earth.svg"} />
+      <img className={classes.icon} src={"/images/like-planet-earth.svg"} alt="like planet" />
     ) : (
       <FavoriteIcon className={`${classes.icon} ${classes.color}`} />
     );
   }
   if (icon === "follow") {
     return color === "earth" ? (
-      <img className={classes.icon} src={"/images/follow-planet-earth.svg"} />
+      <img className={classes.icon} src={"/images/follow-planet-earth.svg"} alt="follow planet" />
     ) : (
       <PersonIcon className={`${classes.icon} ${classes.color}`} />
     );

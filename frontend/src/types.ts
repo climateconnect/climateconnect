@@ -1,4 +1,5 @@
 import { Dayjs } from "dayjs";
+import type { PaletteColorOptions } from "@mui/material/styles";
 
 export type User = {
   id: string;
@@ -72,21 +73,62 @@ export type CcLocale = "en" | "de";
 
 declare module "@mui/material/styles/createPalette" {
   // augment theme type with climateconnect custom properties
+  // eslint-disable-next-line no-unused-vars
   interface Palette {
     yellow: PaletteColor;
-    contrast: PaletteColor;
+    contrast: {
+      main: string;
+      contrastText: string;
+    };
   }
+  // eslint-disable-next-line no-unused-vars
   interface PaletteOptions {
     yellow: PaletteColorOptions;
-    contrast: PaletteColorOptions;
+    contrast: ContrastColor;
   }
+  // eslint-disable-next-line no-unused-vars
   interface PaletteColor {
     extraLight?: string;
     // lightHover?: string;
   }
+  // eslint-disable-next-line no-unused-vars
   interface SimplePaletteColorOptions {
     lightHover?: string;
     extraLight?: string;
+  }
+
+  interface ContrastColor {
+    main: string;
+    contrastText: string;
+  }
+}
+
+declare module "@mui/material/TextField" {
+  // eslint-disable-next-line no-unused-vars
+  interface TextFieldPropsColorOverrides {
+    contrast: true;
+  }
+}
+
+declare module "@mui/material/Button" {
+  // eslint-disable-next-line no-unused-vars
+  interface ButtonPropsColorOverrides {
+    grey: true;
+    contrast: true;
+  }
+}
+
+declare module "@mui/material/Checkbox" {
+  // eslint-disable-next-line no-unused-vars
+  interface CheckboxPropsColorOverrides {
+    contrast: true;
+  }
+}
+
+declare module "@mui/material/Switch" {
+  // eslint-disable-next-line no-unused-vars
+  interface SwitchPropsColorOverrides {
+    contrast: true;
   }
 }
 

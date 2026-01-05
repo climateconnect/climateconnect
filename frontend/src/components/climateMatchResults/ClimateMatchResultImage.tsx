@@ -26,7 +26,7 @@ export default function ClimateMatchResultImage({
         <OrganizationAvatar organization={suggestion} inlineVersionOnMobile />
       ) : (
         ["project", "idea"].includes(suggestion.ressource_type) && (
-          <img src={imageUrl} className={classes.projectOrIdeaImage} />
+          <img src={imageUrl} className={classes.projectOrIdeaImage} alt="project and idea image" />
         )
       )}
     </div>

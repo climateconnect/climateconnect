@@ -22,7 +22,7 @@ const useStyles = makeStyles<Theme, { horizontal?: boolean }>((theme) => ({
 
 type Props = PropsWithChildren<{
   icon?: string;
-  text: string | JSX.Element;
+  text: string | React.ReactElement;
   alt?: string;
   horizontal?: boolean;
 }>;

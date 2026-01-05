@@ -58,11 +58,13 @@ export default function ProfileBadge({ className, badge, children, size, content
 
 const BadgeContent = ({ badge, size, className, withLink }: any) => {
   const { locale } = useContext(UserContext);
+  const enableDonorforestLinkForNow = false;
   return (
     <Tooltip title={badge.name}>
       <div>
         {/* disabled Link to donorforest for now */}
-        {withLink && false ? (
+        {/* eslint-disable-next-line no-constant-condition */}
+        {withLink && enableDonorforestLinkForNow ? (
           <Link href={`${getLocalePrefix(locale)}/donorforest`} target="_blank" underline="hover">
             <Content badge={badge} size={size} className={className} />
           </Link>

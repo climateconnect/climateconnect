@@ -30,7 +30,7 @@ Sentry.init({
 });
 
 declare module "@mui/styles/defaultTheme" {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  // eslint-disable-next-line no-unused-vars
   interface DefaultTheme extends Theme {}
 }
 
@@ -139,8 +139,7 @@ export default function MyApp({ Component, pageProps = {} }) {
 
     cookies.set("auth_token", token, cookieProps);
     const user = await getLoggedInUser(
-      cookies.get("auth_token") ? cookies.get("auth_token") : token,
-      cookies
+      cookies.get("auth_token") ? cookies.get("auth_token") : token
     );
     setState({
       ...state,
@@ -155,11 +154,13 @@ export default function MyApp({ Component, pageProps = {} }) {
       if (jssStyles) {
         jssStyles.parentElement.removeChild(jssStyles);
       }
-      let [fetchedDonationGoals, fetchedUser, fetchedNotifications] = await Promise.all([
+      const [fetchedDonationGoals, userResult, fetchedNotifications] = await Promise.all([
         getDonationGoalsData(locale),
-        getLoggedInUser(token, cookies),
+        getLoggedInUser(token),
         getNotifications(token, locale),
       ]);
+      let fetchedUser = userResult;
+
       if (fetchedUser?.error === "invalid token") {
         const develop = ["develop", "development", "test"].includes(process.env.ENVIRONMENT!);
         const cookieProps: any = {
@@ -348,7 +349,7 @@ const setNotificationsRead = async (token, notifications, locale) => {
   } else return null;
 };
 
-async function getLoggedInUser(token, cookies) {
+async function getLoggedInUser(token) {
   if (token) {
     try {
       const resp = await apiRequest({

@@ -1,5 +1,5 @@
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
+import { Autocomplete, TextField } from "@mui/material";
+
 import throttle from "lodash/throttle";
 import React, { useContext } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";

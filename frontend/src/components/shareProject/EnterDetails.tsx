@@ -1,6 +1,5 @@
-import { Container, IconButton, TextField, Tooltip, Typography } from "@mui/material";
+import { Container, IconButton, TextField, Tooltip, Typography, Switch } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import Switch from "@mui/material/Switch";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import getCollaborationTexts from "../../../public/data/collaborationTexts";
@@ -227,7 +226,7 @@ export default function EnterDetails({
                 </IconButton>
               </Tooltip>
             </Typography>
-            <ProjectDescriptionHelp project_type={projectData.project_type} />
+            <ProjectDescriptionHelp />
             <TextField
               variant="outlined"
               color={backgroundContrastColor}

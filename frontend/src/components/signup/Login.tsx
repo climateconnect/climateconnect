@@ -35,8 +35,6 @@ export default function Login({
       <Typography variant="h1" className={classes.title}>
         {texts.log_in}
       </Typography>
-      <Typography color="primary" variant="h3"></Typography>
-
       <Form
         fields={fields}
         messages={messages}
@@ -65,7 +63,7 @@ export default function Login({
           leftGridSizes={{ md: 7 }}
           rightGridSizes={{ md: 5 }}
           image={<CustomAuthImage hubUrl={hubUrl} texts={texts} />}
-        ></ContentImageSplitView>
+        />
       )}
     </>
   );

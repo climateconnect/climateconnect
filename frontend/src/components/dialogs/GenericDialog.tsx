@@ -70,6 +70,7 @@ type Props = PropsWithChildren<{
   fullScreen?: boolean;
   maxWidth?: "sm" | "lg";
   onApply?: () => void;
+  // eslint-disable-next-line no-unused-vars
   onClose: (arg: false | React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   open: boolean;
   title: string;

@@ -14,7 +14,7 @@ import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Alert from "@mui/material/Alert";
-import React, { useContext, useRef, useState, useEffect } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import {
   convertToJPGWithAspectRatio,
@@ -218,7 +218,6 @@ export default function EditAccountPage({
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles(editedAccount);
-  //used for previewing images in UploadImageDialog
   const [tempImages, setTempImages] = React.useState({
     background_image: editedAccount.background_image
       ? editedAccount.background_image
@@ -288,9 +287,9 @@ export default function EditAccountPage({
     });
   };
 
-  const displayInfoArrayData = (key, infoEl) => {
+  // Refactored into a proper component
+  const InfoArrayDisplay = ({ infoKey, infoEl }) => {
     const [skillsDialogOpen, setSkillsDialogOpen] = React.useState(false);
-
     const [selectedItems, setSelectedItems] = React.useState(
       editedAccount.info.skills ? [...editedAccount.info.skills] : []
     );
@@ -304,15 +303,15 @@ export default function EditAccountPage({
         });
     };
 
-    const handleDeleteFromInfoArray = (key, entry) => {
-      deleteFromInfoArray(key, entry);
+    const handleDeleteFromInfoArray = (entry) => {
+      deleteFromInfoArray(infoKey, entry);
       setSelectedItems([...selectedItems.filter((item) => item !== entry)]);
     };
 
     const handleSkillsDialogClickOpen = () => setSkillsDialogOpen(true);
 
     return (
-      <div key={key} className={classes.infoElement}>
+      <div className={classes.infoElement}>
         <div className={classes.subtitle}>{infoEl.name}:</div>
         <div className={classes.chipArray}>
           {selectedItems.map((entry) => (
@@ -322,10 +321,10 @@ export default function EditAccountPage({
               label={entry.name}
               key={entry.key}
               className={classes.chip}
-              onDelete={() => handleDeleteFromInfoArray(key, entry)}
+              onDelete={() => handleDeleteFromInfoArray(entry)}
             />
           ))}
-          {editedAccount.info[key].length < infoEl.maxEntries && (
+          {editedAccount.info[infoKey].length < infoEl.maxEntries && (
             <Chip
               label={texts.add}
               icon={<ControlPointIcon />}
@@ -357,7 +356,6 @@ export default function EditAccountPage({
     //For each info object we want to return the correct input so users can change this info
     return Object.keys(info).map((key) => {
       const i = getFullInfoElement(infoMetadata, key, info[key]);
-
       const handleChange = (event) => {
         let newValue = event.target.value;
 
@@ -415,7 +413,7 @@ export default function EditAccountPage({
       };
       //Iterate through potential types of info and display the corresponding input
       if (i.type === "array") {
-        return displayInfoArrayData(key, i);
+        return <InfoArrayDisplay key={key} infoKey={key} infoEl={i} />;
       } else if (i.type === "select") {
         return (
           <div key={key} className={classes.infoElement}>
@@ -449,7 +447,7 @@ export default function EditAccountPage({
       ) {
         const renderSearchOption = (props, option) => <li {...props}>{option.name}</li>;
         return (
-          <div className={classes.infoElement}>
+          <div className={classes.infoElement} key={i.key}>
             {i.value && (
               <>
                 <Typography className={`${classes.subtitle} ${classes.infoElement}`}>
@@ -541,18 +539,20 @@ export default function EditAccountPage({
           });
         };
         return (
-          <ActiveSectorsSelector
-            //TODO(unused) info={i}
-            selectedSectors={editedAccount.info.sectors}
-            sectorsToSelectFrom={allSectors.filter(
-              (s) =>
-                editedAccount?.info?.sectors.filter((addedSectors) => addedSectors.key === s.key)
-                  .length === 0
-            )}
-            onSelectNewSector={onSelectNewSector}
-            onClickRemoveSector={onClickRemoveSector}
-            title={sectorsTitle}
-          />
+          <React.Fragment key={i.key}>
+            <ActiveSectorsSelector
+              //TODO(unused) info={i}
+              selectedSectors={editedAccount.info.sectors}
+              sectorsToSelectFrom={allSectors.filter(
+                (s) =>
+                  editedAccount?.info?.sectors.filter((addedSectors) => addedSectors.key === s.key)
+                    .length === 0
+              )}
+              onSelectNewSector={onSelectNewSector}
+              onClickRemoveSector={onClickRemoveSector}
+              title={sectorsTitle}
+            />
+          </React.Fragment>
         );
         //This is the fallback for normal textfields
       } else if (key != "parent_organization" && ["text", "bio"].includes(i.type)) {
@@ -572,6 +572,7 @@ export default function EditAccountPage({
                 <TextField
                   required={i.required}
                   label={i.name}
+                  // @ts-ignore - contrast is a custom color defined in theme
                   color="contrast"
                   fullWidth
                   inputProps={{ maxLength: i.maxLength }}
@@ -769,6 +770,7 @@ export default function EditAccountPage({
               <>
                 <TextField
                   className={classes.name}
+                  // @ts-ignore - contrast is a custom color defined in theme
                   color="contrast"
                   fullWidth
                   value={editedAccount.first_name}
@@ -779,6 +781,7 @@ export default function EditAccountPage({
                 />
                 <TextField
                   className={classes.name}
+                  // @ts-ignore - contrast is a custom color defined in theme
                   color="contrast"
                   fullWidth
                   value={editedAccount.last_name}
@@ -791,6 +794,7 @@ export default function EditAccountPage({
             ) : (
               <TextField
                 className={classes.name}
+                // @ts-ignore - contrast is a custom color defined in theme
                 color="contrast"
                 fullWidth
                 value={editedAccount.name}
@@ -864,7 +868,7 @@ export default function EditAccountPage({
           <Typography variant="subtitle2" className={classes.deleteMessage}>
             <InfoOutlinedIcon />
             {texts.if_you_wish_to_delete}
-            <div className={classes.spaceStrings}></div>
+            <div className={classes.spaceStrings} />
             <Link href={`mailto:${deleteEmail}`} underline="hover">
               {deleteEmail}
             </Link>

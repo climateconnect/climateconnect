@@ -110,7 +110,7 @@ export default function UploadImageDialog({
       : height * ratio + 100;
 
   const backgroundContrastColor = getBackgroundContrastColor(theme);
-
+  const AvatarEditorComponent = AvatarEditor as any;
   return (
     <GenericDialog
       /*TODO(undefined) className={classes.dialog} */
@@ -134,7 +134,7 @@ export default function UploadImageDialog({
         </>
       ) : (
         <div /*TODO(undefined) className={classes.dialogContent} */>
-          <AvatarEditor
+          <AvatarEditorComponent
             className={classes.avatarEditor}
             image={imageUrl}
             ref={setEditorRef}

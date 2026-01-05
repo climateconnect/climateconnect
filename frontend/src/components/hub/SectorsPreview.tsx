@@ -2,7 +2,6 @@ import Grid from "@mui/material/Unstable_Grid2";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import MiniSectorPreview from "./MiniSectorPreview";
-import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 
 const useStyles = makeStyles((theme) => ({
   reset: {

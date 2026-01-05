@@ -78,6 +78,7 @@ type ShareProjectRootProps = {
   rolesOptions: Role[];
   user: any;
   token: string;
+  // eslint-disable-next-line no-unused-vars
   setMessage: (message: string) => void;
   projectTypeOptions: any[];
   hubName?: string;

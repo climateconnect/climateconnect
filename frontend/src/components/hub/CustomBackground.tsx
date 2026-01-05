@@ -1,7 +1,7 @@
 import { Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
-import Image from "next/image";
+import Image from "next/legacy/image";
 
 const PRIO1_SLUG = "prio1";
 const PERTH_SLUG = "perth";
@@ -132,7 +132,8 @@ function PrioOneBackgroundAuth({ mobileScreenSize, classes }: BackgroundComponen
           className={classes.prioOneAuthIcon}
           src={"/images/custom_hubs/" + PRIO1_SLUG + "_group.svg"}
           layout="fill"
-        ></Image>
+          alt="prio one group"
+        />
       </div>
     </div>
   );
@@ -177,7 +178,11 @@ export function PrioOneBackgroundBrowse({ isLoggedInUser }: { isLoggedInUser: bo
             height: "11rem",
           }}
         >
-          <Image src={"/images/custom_hubs/" + PRIO1_SLUG + "_group.svg"} layout="fill"></Image>
+          <Image
+            src={"/images/custom_hubs/" + PRIO1_SLUG + "_group.svg"}
+            layout="fill"
+            alt="prio one group"
+          />
         </div>
       )}
     </div>
@@ -199,6 +204,7 @@ export function PrioOneBackgroundBrowseIcon() {
       src={"/images/custom_hubs/" + PRIO1_SLUG + "_group.svg"}
       width={width}
       height={height}
-    ></Image>
+      alt="prio one group"
+    />
   );
 }

@@ -1,15 +1,28 @@
 import { createTheme, darken } from "@mui/material";
 import defaultTheme from "./hubTheme";
+import "../types.ts";
 
 declare module "@mui/material/styles" {
+  // eslint-disable-next-line no-unused-vars
   interface Palette {
     header: {
       background: string;
+      light: string;
+      extraLight: string;
+      contrastText: string;
+    };
+    contrast: {
+      main: string;
+      contrastText: string;
     };
   }
+  // eslint-disable-next-line no-unused-vars
   interface PaletteOptions {
     header?: {
       background: string;
+      light: string;
+      extraLight: string;
+      contrastText: string;
     };
   }
 }

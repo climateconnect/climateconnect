@@ -69,14 +69,14 @@ const useStyles = makeStyles((theme) => ({
     margin: 0,
     wordBreak: "break-word",
   },
-  supporterSubtitle: (containerClass) => ({
+  supporterSubtitle: {
     margin: 0,
     fontSize: "12px",
     fontWeight: "normal",
     color: "#484848",
     overflow: "hidden",
     wordBreak: "break-word",
-  }),
+  },
   carouselEntry: {
     padding: " 8px",
     display: "flex",
