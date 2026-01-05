@@ -44,7 +44,7 @@ jobs:
         run: |
           cd frontend
           yarn --production
-          npx webflow devlink sync
+          npx webflow devlink sync --no-input
           yarn build
         env:
           API_HOST: ${{ secrets.API_HOST }}
