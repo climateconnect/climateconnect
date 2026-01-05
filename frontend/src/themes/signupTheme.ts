@@ -70,4 +70,7 @@ export const themeSignUp = createTheme(coreTheme, {
   },
 });
 
-export default { themeSignUp };
+// assign object to a variable before default export
+const signupTheme = { themeSignUp };
+
+export default signupTheme;

@@ -46,8 +46,10 @@ const config: AxiosRequestConfig = {
 
 export const resendEmail = async <T = any>(
   email: string,
+  /* eslint-disable no-unused-vars */
   onSuccess: (resp: AxiosResponse<T>) => void,
   onError: (err: AxiosError) => void
+  /* eslint-enable no-unused-vars */
 ) => {
   axios
     .post<T>(process.env.API_URL + "/api/resend_verification_email/", { email }, config)

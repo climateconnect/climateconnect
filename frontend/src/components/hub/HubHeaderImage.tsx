@@ -57,7 +57,7 @@ export default function HubHeaderImage({ image, source, fullWidth, isLocationHub
   return (
     <>
       <div className={classes.imageContainer}>
-        <img src={image} className={classes.img} />
+        <img src={image} className={classes.img} alt="hub header" />
       </div>
       {source && (
         <Typography className={classes.attribution}>

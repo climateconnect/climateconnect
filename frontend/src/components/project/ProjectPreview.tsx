@@ -171,16 +171,16 @@ export default function ProjectPreview({ project, projectRef, hubUrl, className 
     </Link>
   );
 }
-
+const TruncateComponent = Truncate as any;
 const CardContentWithoutDescription = ({ project, hovering }) => {
   const classes = useStyles();
   return (
     <CardContent className={classes.cardContent}>
       <div className={classes.projectNameWrapper}>
         <Typography component="h2">
-          <Truncate lines={2} className={classes.projectName}>
+          <TruncateComponent lines={2} className={classes.projectName}>
             {project.name}
-          </Truncate>
+          </TruncateComponent>
         </Typography>
       </div>
       <ProjectMetaData project={project} hovering={hovering} />
@@ -195,9 +195,9 @@ const CardContentWithDescription = ({ project, hovering }) => {
     <CardContent className={`${classes.cardContentWithDescription} ${classes.cardContent}`}>
       <div className={classes.projectNameWrapper}>
         <Typography component="h2">
-          <Truncate lines={2} className={classes.projectName}>
+          <TruncateComponent lines={2} className={classes.projectName}>
             {project.name}
-          </Truncate>
+          </TruncateComponent>
         </Typography>
       </div>
       <ProjectMetaData project={project} hovering={hovering} withDescription />

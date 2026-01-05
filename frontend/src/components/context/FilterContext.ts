@@ -4,9 +4,11 @@ interface FilterContextType {
   filters: any;
   tabsWhereFiltersWereApplied: any[];
   errorMessage: string;
+  /* eslint-disable no-unused-vars */
   handleSetErrorMessage: (newMessage: any) => void;
   handleAddFilters: (newFilters: any) => void;
   handleSetTabsWhereFiltersWereApplied: (tabs: any) => void;
+  /* eslint-disable no-unused-vars */
   handleApplyNewFilters: ({
     type,
     newFilters,
@@ -20,7 +22,8 @@ interface FilterContextType {
     filteredItemsObject: any;
     newUrlEnding: string;
   } | null>;
+  // eslint-disable-next-line no-unused-vars
   handleUpdateFilterValues: (valuesToUpdate: any) => void;
 }
 
-export const FilterContext = createContext<FilterContextType>(null!); // it will break directly if not provided
+export const FilterContext = createContext<FilterContextType>(null!);

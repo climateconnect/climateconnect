@@ -31,7 +31,7 @@ const getFragmentsWithMentions = (content: string, linkify: boolean, locale: any
   // this one only matches at the beginning of the string
   const g = /^@@@__([^^]*)\^\^__([^@]*)@@@\^\^\^/g;
 
-  const fragments: (string | JSX.Element)[] = [];
+  const fragments: (string | React.ReactElement)[] = [];
   for (let i = 0; i < content.length; i++) {
     const m = content.substring(i);
     const greedyMatch = [...m.matchAll(g)];

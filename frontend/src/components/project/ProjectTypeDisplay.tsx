@@ -1,4 +1,4 @@
-import { Typography, Theme } from "@mui/material";
+import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 
@@ -35,6 +35,7 @@ export default function ProjectTypeDisplay({
       <img
         src={`/images/project_types/${projectType.type_id}.png`}
         className={iconClassName ? iconClassName : classes.typeIcon}
+        alt={projectType.name}
       />
       <Typography className={textClassName}>{projectType.name}</Typography>
     </div>

@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme) => {
 
 export default function OrganizationPreviewHeader({ organization }) {
   const classes = useStyles();
+  const TruncateComponent = Truncate as any;
 
   return (
     <div>
@@ -65,7 +66,7 @@ export default function OrganizationPreviewHeader({ organization }) {
       )}
       <Box className={classes.headerWrapper}>
         <Typography variant="h6" component="h2" className={classes.header}>
-          <Truncate lines={2}>{organization.name}</Truncate>
+          <TruncateComponent lines={2}>{organization.name}</TruncateComponent>
         </Typography>
       </Box>
     </div>

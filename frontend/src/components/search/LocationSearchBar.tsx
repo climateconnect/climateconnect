@@ -333,6 +333,7 @@ export default function LocationSearchBar({
             helperText={helperText}
             size={smallInput && "small"}
             inputRef={locationInputRef}
+            // @ts-ignore - contrast is a custom color defined in theme
             color={color || "contrast"}
             InputProps={{
               ...params.InputProps,
@@ -350,6 +351,7 @@ export default function LocationSearchBar({
       {enableAdditionalInfo && (
         <TextField
           label={texts.additional_infos_for_location}
+          // @ts-ignore - contrast is a custom color defined in theme
           color={color || "contrast"}
           className={classes.additionalInfos}
           value={additionalInfoText}

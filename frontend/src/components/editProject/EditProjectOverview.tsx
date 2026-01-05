@@ -83,10 +83,12 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
 
 type Args = {
   project: Project;
+  // eslint-disable-next-line no-unused-vars
   handleSetProject: (project: Project) => void;
   smallScreen: boolean;
   overviewInputsRef: any;
   locationOptionsOpen: boolean;
+  // eslint-disable-next-line no-unused-vars
   handleSetLocationOptionsOpen: (open: boolean) => void;
   locationInputRef: any;
   sectorOptions: Sector[];
@@ -143,13 +145,15 @@ export default function EditProjectOverview({
 
 type ScreenOverviewProps = {
   project: Project;
+  /* eslint-disable no-unused-vars */
   handleChangeProject: (newValue: any, key: string) => void;
   handleChangeImage: (newImage: any, newThumbnailImage: any) => void;
-  overviewInputsRef: React.RefObject<HTMLInputElement>;
   handleSetProject: (project: Project) => void;
+  handleSetLocationOptionsOpen: (open: boolean) => void;
+  /* eslint-disable no-unused-vars */
+  overviewInputsRef: React.RefObject<HTMLInputElement>;
   locationInputRef: React.RefObject<HTMLInputElement>;
   locationOptionsOpen: boolean;
-  handleSetLocationOptionsOpen: (open: boolean) => void;
   texts: Record<string, string>;
   sectorOptions: Sector[];
 };

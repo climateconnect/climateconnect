@@ -33,7 +33,6 @@ export default function DropDownList({
   open,
   loadOnClick,
   popperRef,
-  target,
 }: any) {
   const classes = useStyles();
   const { locale, startLoading } = useContext(UserContext);

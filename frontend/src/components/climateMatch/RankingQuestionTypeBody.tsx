@@ -2,6 +2,7 @@ import { Chip, Theme, Typography, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useContext } from "react";
+// TODO: Remove react-beautiful-dnd -----> deprecated, replace with MUI drag and drop
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import climateMatchStyles from "../../../public/styles/climateMatchStyles";
 import getTexts from "../../../public/texts/texts";
@@ -10,6 +11,11 @@ import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
 import ClimateMatchHeadline from "./ClimateMatchHeadline";
 import QuestionButtonBar from "./QuestionButtonBar";
+
+// Type-cast to bypass React 18 JSX type checking for deprecated library
+const DndContext = DragDropContext as any;
+const DndDroppable = Droppable as any;
+const DndDraggable = Draggable as any;
 
 const useStyles = makeStyles((theme) => ({
   ...climateMatchStyles(theme),
@@ -213,7 +219,7 @@ export default function RankingQuestionTypeBody({
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
+    <DndContext onDragEnd={onDragEnd}>
       <div className={classes.root}>
         <div className={`${classes.container} ${classes.questionAndSelectedAnswersContainer}`}>
           <ClimateMatchHeadline
@@ -222,7 +228,7 @@ export default function RankingQuestionTypeBody({
           >
             {question.text}
           </ClimateMatchHeadline>
-          <Droppable droppableId="selectedAnswers">
+          <DndDroppable droppableId="selectedAnswers">
             {(provided) => (
               <div
                 {...provided.droppableProps}
@@ -233,7 +239,7 @@ export default function RankingQuestionTypeBody({
                   <div key={i} className={classes.selectedAnswerContainer}>
                     <span className={classes.choiceRankText}>{i + 1}.</span>
                     {userAnswer?.length >= i + 1 ? (
-                      <Draggable key={i} draggableId={"draggable_choice" + i} index={i}>
+                      <DndDraggable key={i} draggableId={"draggable_choice" + i} index={i}>
                         {(provided) => (
                           <>
                             <Chip
@@ -251,7 +257,7 @@ export default function RankingQuestionTypeBody({
                             />
                           </>
                         )}
-                      </Draggable>
+                      </DndDraggable>
                     ) : (
                       <Chip className={classes.selectedAnswerChip} color="secondary" />
                     )}
@@ -260,7 +266,7 @@ export default function RankingQuestionTypeBody({
                 {provided.placeholder}
               </div>
             )}
-          </Droppable>
+          </DndDroppable>
           <QuestionButtonBar onForwardClick={onForwardClick} onBackClick={onBackClick} />
         </div>
         {isMobileScreen && (
@@ -274,7 +280,7 @@ export default function RankingQuestionTypeBody({
               </Typography>
             ))}
           </div>
-          <Droppable droppableId="possibleAnswers" isDropDisabled>
+          <DndDroppable droppableId="possibleAnswers" isDropDisabled>
             {(provided) => (
               <div
                 className={`${classes.container} ${classes.answerOptions}`}
@@ -283,7 +289,7 @@ export default function RankingQuestionTypeBody({
               >
                 {answers.map((a, index) => (
                   <div key={a.id} className={classes.possibleAnswerContainer}>
-                    <Draggable
+                    <DndDraggable
                       key={a.id}
                       draggableId={"draggable" + a.id}
                       index={index}
@@ -302,13 +308,13 @@ export default function RankingQuestionTypeBody({
                           />
                         );
                       }}
-                    </Draggable>
+                    </DndDraggable>
                   </div>
                 ))}
                 {provided.placeholder}
               </div>
             )}
-          </Droppable>
+          </DndDroppable>
         </div>
         <ClimateMatchHeadline
           size={isSmallerThanMd ? "tiny" : isSmallerThanLg ? "small" : "medium"}
@@ -317,6 +323,6 @@ export default function RankingQuestionTypeBody({
           {question.text}
         </ClimateMatchHeadline>
       </div>
-    </DragDropContext>
+    </DndContext>
   );
 }

@@ -7,7 +7,6 @@ import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
 import AccountPage from "../account/AccountPage";
 import LoginNudge from "../general/LoginNudge";
-import IdeaPreviews from "../ideas/IdeaPreviews";
 import OrganizationPreviews from "../organization/OrganizationPreviews";
 import ProjectPreviews from "../project/ProjectPreviews";
 import ControlPointSharpIcon from "@mui/icons-material/ControlPointSharp";
@@ -93,7 +92,6 @@ export default function ProfileRoot({
   profile,
   projects,
   organizations,
-  ideas,
   infoMetadata,
   user,
   token,
@@ -196,24 +194,6 @@ export default function ProfileRoot({
           </Typography>
         )}
       </Container>
-      {(isOwnAccount || (ideas && ideas.length > 0)) && (
-        <Container className={classes.container} ref={ideasRef}>
-          <div className={classes.sectionHeadlineWithButtonContainer}>
-            <h2 className={classes.title}>
-              {isOwnAccount ? texts.your_ideas : texts.this_users_ideas}
-            </h2>
-          </div>
-          {ideas && ideas.length ? (
-            <IdeaPreviews ideas={ideas} noCreateCard sendToIdeaPageOnClick />
-          ) : (
-            <Typography>
-              {(isOwnAccount ? texts.you_are : texts.user_name_is) +
-                " " +
-                texts.not_involved_in_any_ideas_yet}
-            </Typography>
-          )}
-        </Container>
-      )}
       <Container className={classes.container} ref={organizationsRef}>
         <div className={classes.sectionHeadlineWithButtonContainer}>
           <h2 className={classes.title}>

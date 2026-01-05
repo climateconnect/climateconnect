@@ -66,8 +66,8 @@ export default function EditOrganizationRoot({
   const [translations, setTranslations] = useState(
     initialTranslations ? getTranslationsFromObject(initialTranslations, "organization") : {}
   );
-  const [sourceLanguage, setSourceLanguage] = useState(organization.language);
-  const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== sourceLanguage));
+  const [sourceLanguage] = useState(organization.language);
+  const [targetLanguage] = useState(locales.find((l) => l !== sourceLanguage));
 
   const handleSetEditedOrganization = (newOrganizationData) => {
     setEditedOrganization({ ...editedOrganization, ...newOrganizationData });

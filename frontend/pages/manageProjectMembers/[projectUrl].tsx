@@ -54,7 +54,7 @@ export async function getServerSideProps(ctx) {
   };
 }
 
-export default function manageProjectMembers({
+export default function ManageProjectMembersPage({
   project,
   members,
   availabilityOptions,

@@ -44,7 +44,7 @@ export default function TextBox({
       {!isNarrowScreen && <IconWrapper src={icon} />}
       <div>
         <Typography component="h1" className={headlineClass}>
-          {isNarrowScreen && <img src={icon} className={classes.icon} />}
+          {isNarrowScreen && <img src={icon} className={classes.icon} alt="icon" />}
           {headline}
         </Typography>
         {children}
