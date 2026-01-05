@@ -34,14 +34,7 @@ export default function ProjectPreviews({
   const texts = getTexts({ page: "project", locale: locale });
 
   const toProjectPreviews = (projects) =>
-    (projects || []).map((p) => (
-      <GridItem
-        key={p.url_slug}
-        project={p}
-        hubUrl={hubUrl}
-        displayOnePreviewInRow={displayOnePreviewInRow}
-      />
-    ));
+    (projects || []).map((p) => <GridItem key={p.url_slug} project={p} hubUrl={hubUrl} />);
 
   const [gridItems, setGridItems] = useState(toProjectPreviews(projects));
 
