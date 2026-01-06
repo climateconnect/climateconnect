@@ -4,7 +4,6 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import SettingsBackupRestoreIcon from "@mui/icons-material/SettingsBackupRestore";
 import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import InfiniteScroll from "react-infinite-scroller";
 import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -14,8 +13,7 @@ import LoadingSpinner from "../general/LoadingSpinner";
 import ClimateMatchResult from "./ClimateMatchResult";
 import ClimateMatchResultsOverviewBar from "./ClimateMatchResultsOverviewBar";
 import { getParams } from "../../../public/lib/generalOperations";
-
-const InfiniteScrollComponent = InfiniteScroll as any;
+import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
 
 const useStyles = makeStyles((theme) => ({
   headerContainer: {
@@ -124,28 +122,28 @@ export default function ClimateMatchResultsRoot() {
     })();
   }, []);
   const loadMore = async () => {
-    // Sometimes InfiniteScroll calls loadMore twice really fast. Therefore
-    // to improve performance, we aim to guard against subsequent
-    // fetches to the API by maintaining a local state flag.
-    if (!isFetchingMore) {
-      setIsFetchingMore(true);
-      const newRessources = await getSuggestions({
-        token: token,
-        climatematch_token: climatematch_token,
-        page: page,
-        //TODO(unused) texts: texts,
-        locale: locale,
-        hubUrl: fromHub,
-      });
-      setPage(page + 1);
-      setSuggestions({
-        ...suggestions,
-        hasMore: newRessources.has_more,
-        matched_resources: [...suggestions.matched_resources, ...newRessources.matched_resources],
-      });
-      setIsFetchingMore(false);
-    }
+    setIsFetchingMore(true);
+    const newRessources = await getSuggestions({
+      token: token,
+      climatematch_token: climatematch_token,
+      page: page,
+      locale: locale,
+      hubUrl: fromHub,
+    });
+    setPage(page + 1);
+    setSuggestions({
+      ...suggestions,
+      hasMore: newRessources.has_more,
+      matched_resources: [...suggestions.matched_resources, ...newRessources.matched_resources],
+    });
+    setIsFetchingMore(false);
   };
+
+  const loadMoreRef = useInfiniteScroll({
+    hasMore: suggestions.hasMore,
+    isLoading: isFetchingMore || loading,
+    onLoadMore: loadMore,
+  });
 
   return (
     <div className={classes.root}>
@@ -185,21 +183,13 @@ export default function ClimateMatchResultsRoot() {
             {!screenIsSmallerThanMd && (
               <ClimateMatchResultsOverviewBar suggestions={suggestions?.matched_resources} />
             )}
-            <InfiniteScrollComponent
-              className={classes.resultsContainer}
-              //TODO(unused) component="div"
-              //TODO(unused) container
-              // We block subsequent invocations from InfinteScroll until we update local state
-              hasMore={suggestions.hasMore && !isFetchingMore && !loading}
-              loadMore={loadMore}
-              pageStart={1}
-              //TODO(unused) spacing={2}
-            >
+            <div className={classes.resultsContainer}>
               {suggestions?.matched_resources?.map((suggestion, index) => (
                 <ClimateMatchResult key={index} suggestion={suggestion} pos={index} />
               ))}
               {isFetchingMore && <LoadingSpinner isLoading key="project-previews-spinner" />}
-            </InfiniteScrollComponent>
+              <div ref={loadMoreRef} style={{ height: "1px" }} />
+            </div>
           </Container>
         </div>
       )}
