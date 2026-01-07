@@ -30,13 +30,12 @@ export default function DateDisplay({ date, className, short = false }) {
   };
   const formatter = buildFormatter(formatters[locale]);
   const olderThanOneWeek = new Date().getTime() - date > ONE_WEEK_IN_MILLISECONDS;
-  const TimeAgoComponent = TimeAgo as any;
   return (
     <span className={className ? className : {}}>
       {olderThanOneWeek ? (
         new Intl.DateTimeFormat(locale).format(date)
       ) : (
-        <TimeAgoComponent date={date} formatter={formatter} />
+        <TimeAgo date={date} formatter={formatter} />
       )}
     </span>
   );
