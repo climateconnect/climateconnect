@@ -1,7 +1,6 @@
 import { Card, CardContent, CardMedia, Link, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
-import Truncate from "react-truncate";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -50,10 +49,11 @@ const useStyles = makeStyles((theme) => {
       lineHeight: 1.5,
       fontSize: 15,
       color: "rgba(0, 0, 0, 0.87)",
-      ["&span"]: {
-        whiteSpace: "nowrap",
-      },
       wordBreak: "break-word",
+      display: "-webkit-box",
+      WebkitLineClamp: 2,
+      // @ts-ignore - WebkitBoxOrient is deprecated but still required for line-clamp to work
+      WebkitBoxOrient: "vertical",
     },
     button: {
       marginTop: theme.spacing(1),
@@ -171,16 +171,14 @@ export default function ProjectPreview({ project, projectRef, hubUrl, className 
     </Link>
   );
 }
-const TruncateComponent = Truncate as any;
+
 const CardContentWithoutDescription = ({ project, hovering }) => {
   const classes = useStyles();
   return (
     <CardContent className={classes.cardContent}>
       <div className={classes.projectNameWrapper}>
-        <Typography component="h2">
-          <TruncateComponent lines={2} className={classes.projectName}>
-            {project.name}
-          </TruncateComponent>
+        <Typography component="h2" className={classes.projectName}>
+          {project.name}
         </Typography>
       </div>
       <ProjectMetaData project={project} hovering={hovering} />
@@ -194,10 +192,8 @@ const CardContentWithDescription = ({ project, hovering }) => {
   return (
     <CardContent className={`${classes.cardContentWithDescription} ${classes.cardContent}`}>
       <div className={classes.projectNameWrapper}>
-        <Typography component="h2">
-          <TruncateComponent lines={2} className={classes.projectName}>
-            {project.name}
-          </TruncateComponent>
+        <Typography component="h2" className={classes.projectName}>
+          {project.name}
         </Typography>
       </div>
       <ProjectMetaData project={project} hovering={hovering} withDescription />
