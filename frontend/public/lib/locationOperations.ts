@@ -350,7 +350,7 @@ export function getLocationValue(values, locationKey) {
 }
 
 /**
- * When filtering by location, the url only holds the place_id, osm_id and loc_type, but not the name. This is used to retrieve the whole location object
+ * When filtering by location, the url only holds the osm_id, osm_type and osm_class, but not the name. This is used to retrieve the whole location object
  */
 export async function getLocationFilteredBy(query) {
   const required_params = getLocationFilterKeys(true);
@@ -363,17 +363,17 @@ export async function getLocationFilteredBy(query) {
   }
   const url = `/api/get_location/`;
   const payload = {
-    place: query.place,
-    osm: query.osm,
-    loc_type: query.loc_type,
+    osm_id: query.osm_id,
+    osm_type: query.osm_type,
+    osm_class: query.osm_class,
   };
   try {
     const res = await apiRequest({ method: "post", url: url, payload: payload });
     const full_location = {
       ...res.data,
-      place_id: query.place,
-      osm_id: query.osm,
-      osm_type: query.loc_type,
+      osm_id: query.osm_id,
+      osm_type: query.osm_type,
+      osm_class: query.osm_class,
     };
     return full_location;
   } catch (e) {

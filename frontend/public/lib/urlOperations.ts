@@ -120,7 +120,7 @@ const encodeQueryParamsFromFilters = ({ filters, infoMetadata, filterChoices, lo
 
       if (type === "location") {
         if (typeof filters[filterKey] === "object") {
-          const encodedFragment = `place=${filters[filterKey].place_id}&osm=${filters[filterKey].osm_id}&loc_type=${filters[filterKey].osm_type}&`;
+          const encodedFragment = `osm_id=${filters[filterKey].osm_id}&osm_type=${filters[filterKey].osm_type}&osm_class=${filters[filterKey].osm_class}&`;
           queryParamFragment += encodedFragment;
         }
       } else if (
