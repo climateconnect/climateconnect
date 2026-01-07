@@ -1,10 +1,12 @@
-import withStyles from "@mui/styles/withStyles";
+import makeStyles from "@mui/styles/makeStyles";
 import PropTypes from "prop-types";
-import React from "react";
-import InfiniteScroll from "react-infinite-scroller";
+import React, { useRef, useState, useEffect } from "react";
+import { Box } from "@mui/material";
+import { useChatScroll } from "../../hooks/useChatScroll";
+import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
 import Message from "./Message";
 
-const styles = (theme) => {
+const useStyles = makeStyles((theme) => {
   return {
     receivedContainer: {
       textAlign: "left",
@@ -43,127 +45,135 @@ const styles = (theme) => {
       textAlign: "center",
       fontStyle: "italic",
     },
+    scrollContainer: {
+      overflowY: "auto",
+      display: "flex",
+      flexDirection: "column",
+    },
+    messagesList: {
+      listStyle: "none",
+      padding: 0,
+      margin: 0,
+    },
+    sentinel: {
+      height: "1px",
+      width: "100%",
+    },
   };
-};
+});
 
-//Using a class component in order to access this.myRef, so that we can control the scroll position of the container
-class Messages extends React.Component {
-  constructor(props) {
-    super(props);
-    this.myRef = React.createRef();
-    this.state = {
-      isLoading: true,
-      scrollComponentHeight: 0,
-    };
-  }
+const Messages = ({
+  messages,
+  chatting_partner,
+  className,
+  loadFunc,
+  hasMore,
+  title,
+  isPrivateChat,
+  texts,
+  relatedIdea,
+}) => {
+  const classes = useStyles();
+  const [isLoading, setIsLoading] = useState(false);
+  const [scrollComponentHeight, setScrollComponentHeight] = useState(0);
 
-  //scroll down when the component is mounted
-  componentDidMount() {
-    const messageContainer = this.myRef.current;
-    messageContainer.scrollComponent.scrollTop = messageContainer.scrollComponent.scrollHeight;
-    this.setState({
-      isLoading: false,
-      scrollComponentHeight: messageContainer.scrollComponent.clientHeight,
-    });
-  }
+  const loadMore = async (page) => {
+    setIsLoading(true);
+    await loadFunc(page);
+    setIsLoading(false);
+  };
 
-  //scroll down when ...
-  // -  the clientHeight changes (because the user types a message) and the scrollbar was at the bottom
-  // -  a new message is rendered
-  componentDidUpdate(prevProps) {
-    const messageContainer = this.myRef.current.scrollComponent;
-    if (this.state.scrollComponentHeight !== messageContainer.clientHeight) {
-      if (
-        messageContainer.scrollTop ===
-        messageContainer.scrollHeight - this.state.scrollComponentHeight
-      ) {
-        messageContainer.scrollTop =
-          messageContainer.scrollTop +
-          (this.state.scrollComponentHeight - messageContainer.clientHeight);
-      }
-      this.setState({
-        scrollComponentHeight: messageContainer.clientHeight,
-      });
+  const { scrollRef, sentinelRef } = useChatScroll({
+    hasMore: hasMore,
+    isLoading,
+    loadMore,
+  });
+
+  // Scroll down when the component is mounted
+  useEffect(() => {
+    const messageContainer = scrollRef.current;
+    if (messageContainer) {
+      messageContainer.scrollTop = messageContainer.scrollHeight;
+      setScrollComponentHeight(messageContainer.clientHeight);
+      setIsLoading(false);
     }
-    if (prevProps.messages != this.props.messages) {
+  }, []);
+
+  // Scroll down when the clientHeight changes or new messages arrive
+  useEffect(() => {
+    const messageContainer = scrollRef.current;
+    if (!messageContainer) return;
+
+    // Handle height changes (user typing)
+    if (scrollComponentHeight !== messageContainer.clientHeight) {
+      if (messageContainer.scrollTop === messageContainer.scrollHeight - scrollComponentHeight) {
+        messageContainer.scrollTop =
+          messageContainer.scrollTop + (scrollComponentHeight - messageContainer.clientHeight);
+      }
+      setScrollComponentHeight(messageContainer.clientHeight);
+    }
+  }, [scrollComponentHeight]);
+
+  // Scroll to bottom when new messages arrive
+  useEffect(() => {
+    const messageContainer = scrollRef.current;
+    if (messageContainer) {
       messageContainer.scrollTop = messageContainer.scrollHeight;
     }
-  }
+  }, [messages]);
 
-  render() {
-    const loadMore = async (page) => {
-      if (!this.state.isLoading) {
-        this.setState({
-          isLoading: true,
-        });
-        await this.props.loadFunc(page);
-        this.setState({
-          isLoading: false,
-        });
-      }
-    };
-    const sortByNewestFirst = (a, b) => new Date(a.sent_at) - new Date(b.sent_at);
-    return (
-      <InfiniteScroll
-        pageStart={0}
-        loadMore={loadMore}
-        hasMore={this.props.hasMore && !this.state.isLoading}
-        loader={
-          <div className={this.props.classes.loader} key={0}>
-            Loading ...
-          </div>
-        }
-        component="ul"
-        spacing={2}
-        isReverse
-        className={this.props.className}
-        ref={this.myRef}
-      >
-        {this.props.messages && this.props.messages.length > 0 ? (
-          this.props.messages.sort(sortByNewestFirst).map((message, index) => {
+  const sortByNewestFirst = (a, b) => new Date(a.sent_at) - new Date(b.sent_at);
+
+  return (
+    <Box ref={scrollRef} className={`${classes.scrollContainer} ${className}`}>
+      <ul className={classes.messagesList}>
+        {/* Sentinel div for IntersectionObserver - placed at the top */}
+        <div ref={sentinelRef} className={classes.sentinel} />
+
+        {isLoading && <div className={classes.loader}>Loading ...</div>}
+
+        {messages && messages.length > 0 ? (
+          messages.sort(sortByNewestFirst).map((message, index) => {
             return (
               <Message
                 message={message}
                 key={index}
-                classes={this.props.classes}
-                isPrivateChat={this.props.isPrivateChat}
+                classes={classes}
+                isPrivateChat={isPrivateChat}
               />
             );
           })
-        ) : this.props.relatedIdea ? (
-          <div className={this.props.classes.noHistoryText}>
+        ) : relatedIdea ? (
+          <div className={classes.noHistoryText}>
             <p>
-              {this.props.texts.here_you_can_discuss + ' "' + this.props.relatedIdea.name + '"'}
+              {texts.here_you_can_discuss + ' "' + relatedIdea.name + '"'}
               .<br />
-              {this.props.texts.everybody_who_clicked_join_is_in_this_group}.
+              {texts.everybody_who_clicked_join_is_in_this_group}.
             </p>
-            <p>{this.props.texts.write_a_message_to_get_the_conversation_started}</p>
+            <p>{texts.write_a_message_to_get_the_conversation_started}</p>
           </div>
-        ) : this.props.isPrivateChat ? (
-          <div className={this.props.classes.noHistoryText}>
+        ) : isPrivateChat ? (
+          <div className={classes.noHistoryText}>
             <p>
-              {this.props.texts.this_is_the_very_beginning_of_your_conversation_with}{" "}
-              {this.props.chatting_partner.first_name + " " + this.props.chatting_partner.last_name}
-              .
+              {texts.this_is_the_very_beginning_of_your_conversation_with}{" "}
+              {chatting_partner.first_name + " " + chatting_partner.last_name}.
             </p>
-            <p>{this.props.texts.write_a_message_to_get_the_conversation_started}</p>
+            <p>{texts.write_a_message_to_get_the_conversation_started}</p>
           </div>
         ) : (
-          <div className={this.props.classes.noHistoryText}>
+          <div className={classes.noHistoryText}>
             <p>
-              {this.props.texts.this_is_the_very_beginning_of_your_conversation_in}{" "}
-              {this.props.title}
+              {texts.this_is_the_very_beginning_of_your_conversation_in} {title}
             </p>
-            <p>{this.props.texts.write_a_message_to_get_the_conversation_started}</p>
+            <p>{texts.write_a_message_to_get_the_conversation_started}</p>
           </div>
         )}
-      </InfiniteScroll>
-    );
-  }
-}
+      </ul>
+    </Box>
+  );
+};
 
 Messages.propTypes = {
-  classes: PropTypes.object.isRequired,
   messages: PropTypes.array.isRequired,
   chatting_partner: PropTypes.object,
   className: PropTypes.string.isRequired,
@@ -171,6 +181,8 @@ Messages.propTypes = {
   hasMore: PropTypes.bool.isRequired,
   title: PropTypes.string,
   isPrivateChat: PropTypes.bool.isRequired,
+  texts: PropTypes.object,
+  relatedIdea: PropTypes.object,
 };
 
-export default withStyles(styles)(Messages);
+export default Messages;
