@@ -46,7 +46,7 @@
     "html-react-parser": "^4.0.0",
     "humanize-duration": "^3.22.0",
     "lodash": "^4.17.21",
-    "next": "^13.5.11",
+    "next": "^16.0.10",
     "next-cookies": "^2.0.3",
     "object-path": "^0.11.8",
     "prop-types": "^15.7.2",
