@@ -2,6 +2,25 @@ import logging
 import uuid
 from datetime import datetime, timedelta
 
+from django.conf import settings
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+from django.contrib.gis.db.models.functions import Distance
+from django.db.models import Count, Q
+from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext as _
+from django.views.decorators.cache import cache_page
+from django_filters.rest_framework import DjangoFilterBackend
+from knox.views import LoginView as KnoxLoginView
+from rest_framework import status
+from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.filters import SearchFilter
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from climateconnect_api.models import Availability, Skill, UserProfile
 from climateconnect_api.models.language import Language
 from climateconnect_api.pagination import MembersPagination, MembersSitemapPagination
@@ -14,44 +33,24 @@ from climateconnect_api.serializers.user import (
     UserProfileSitemapEntrySerializer,
     UserProfileStubSerializer,
 )
+from climateconnect_api.utility.common import create_unique_slug
 from climateconnect_api.utility.email_setup import (
     send_password_link,
     send_user_verification_email,
 )
 from climateconnect_api.utility.translation import edit_translations
-from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.utility.user import get_user_profile_hub_slug
-from django.conf import settings
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
-from django.contrib.gis.db.models.functions import Distance
-from django.db.models import Count, Q
-from django.utils import timezone
-from django.utils.decorators import method_decorator
-from django.utils.translation import gettext as _
-from climateconnect_api.utility.common import create_unique_slug
-
-from django.views.decorators.cache import cache_page
-from django_filters.rest_framework import DjangoFilterBackend
+from climateconnect_main.utility.general import get_image_from_data_url
 from hubs.models.hub import Hub
 from ideas.models.support import IdeaSupporter
 from ideas.serializers.idea import IdeaFromIdeaSupporterSerializer
-from knox.views import LoginView as KnoxLoginView
 from location.models import Location
 from location.utility import get_location, get_location_with_range
+from organization.models import Sector, UserProfileSectorMapping
 from organization.models.members import OrganizationMember, ProjectMember
 from organization.serializers.organization import OrganizationsFromOrganizationMember
 from organization.serializers.project import ProjectFromProjectMemberSerializer
-from rest_framework import status
-from rest_framework.exceptions import NotFound, ValidationError
-from rest_framework.filters import SearchFilter
-from rest_framework.generics import ListAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from organization.models import Sector
 from organization.utility.sector import sanitize_sector_inputs
-from organization.models import UserProfileSectorMapping
 
 logger = logging.getLogger(__name__)
 
@@ -558,7 +557,7 @@ class EditUserProfile(APIView):
                                 )
                             )
 
-                pass
+                
 
         user_profile.save()
 

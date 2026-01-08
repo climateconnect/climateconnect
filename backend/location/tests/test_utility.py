@@ -170,7 +170,9 @@ class TestGetLocation(TestCase):
             "geojson": {"type": "Point", "coordinates": [13.405, 52.52]},
         }
 
-    @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
+    @override_settings(
+        ENABLE_LEGACY_LOCATION_FORMAT="False", CELERY_TASK_ALWAYS_EAGER=True
+    )
     def test_osm_fields_saved_correctly(self):
         """Test that osm_id, osm_type, osm_class, osm_class_type and display_name are saved."""
         location = get_location(self.valid_location_object)
@@ -181,7 +183,9 @@ class TestGetLocation(TestCase):
         self.assertEqual(location.osm_class_type, "administrative")
         self.assertEqual(location.display_name, "Berlin, Germany")
 
-    @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
+    @override_settings(
+        ENABLE_LEGACY_LOCATION_FORMAT="False", CELERY_TASK_ALWAYS_EAGER=True
+    )
     def test_osm_type_mapping_way(self):
         """Test that osm_type 'way' is correctly mapped to 'W'."""
         self.valid_location_object["osm_type"] = "way"
@@ -189,7 +193,9 @@ class TestGetLocation(TestCase):
 
         self.assertEqual(location.osm_type, "W")
 
-    @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
+    @override_settings(
+        ENABLE_LEGACY_LOCATION_FORMAT="False", CELERY_TASK_ALWAYS_EAGER=True
+    )
     def test_osm_type_mapping_node(self):
         """Test that osm_type 'node' is correctly mapped to 'N'."""
         self.valid_location_object["osm_type"] = "node"
@@ -197,7 +203,9 @@ class TestGetLocation(TestCase):
 
         self.assertEqual(location.osm_type, "N")
 
-    @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
+    @override_settings(
+        ENABLE_LEGACY_LOCATION_FORMAT="False", CELERY_TASK_ALWAYS_EAGER=True
+    )
     def test_osm_type_mapping_relation(self):
         """Test that osm_type 'relation' is correctly mapped to 'R'."""
         self.valid_location_object["osm_type"] = "relation"
@@ -205,7 +213,9 @@ class TestGetLocation(TestCase):
 
         self.assertEqual(location.osm_type, "R")
 
-    @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
+    @override_settings(
+        ENABLE_LEGACY_LOCATION_FORMAT="False", CELERY_TASK_ALWAYS_EAGER=True
+    )
     def test_existing_location_returned(self):
         """Test that existing location is returned instead of creating a new one."""
         # Create first location
@@ -217,7 +227,9 @@ class TestGetLocation(TestCase):
         self.assertEqual(location1.id, location2.id)
         self.assertEqual(Location.objects.filter(place_id=12345).count(), 1)
 
-    @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
+    @override_settings(
+        ENABLE_LEGACY_LOCATION_FORMAT="False", CELERY_TASK_ALWAYS_EAGER=True
+    )
     def test_optional_fields_default_to_empty_string(self):
         """Test that optional fields default to empty strings when not provided."""
         # Remove optional fields
@@ -231,7 +243,9 @@ class TestGetLocation(TestCase):
         self.assertEqual(location.place_name, "")
         self.assertEqual(location.exact_address, "")
 
-    @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="True")
+    @override_settings(
+        ENABLE_LEGACY_LOCATION_FORMAT="True", CELERY_TASK_ALWAYS_EAGER=True
+    )
     def test_legacy_location_format(self):
         """Test that legacy format still works."""
         legacy_location = {"city": "Berlin", "country": "Germany"}
