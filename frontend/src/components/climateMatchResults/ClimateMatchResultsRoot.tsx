@@ -139,7 +139,7 @@ export default function ClimateMatchResultsRoot() {
     setIsFetchingMore(false);
   };
 
-  const loadMoreRef = useInfiniteScroll({
+  const { lastElementRef } = useInfiniteScroll({
     hasMore: suggestions.hasMore,
     isLoading: isFetchingMore || loading,
     onLoadMore: loadMore,
@@ -184,11 +184,15 @@ export default function ClimateMatchResultsRoot() {
               <ClimateMatchResultsOverviewBar suggestions={suggestions?.matched_resources} />
             )}
             <div className={classes.resultsContainer}>
-              {suggestions?.matched_resources?.map((suggestion, index) => (
-                <ClimateMatchResult key={index} suggestion={suggestion} pos={index} />
-              ))}
+              {suggestions?.matched_resources?.map((suggestion, index) => {
+                const isLastElement = index === suggestions.matched_resources.length - 1;
+                return (
+                  <div key={index} ref={isLastElement ? lastElementRef : null}>
+                    <ClimateMatchResult suggestion={suggestion} pos={index} />
+                  </div>
+                );
+              })}
               {isFetchingMore && <LoadingSpinner isLoading key="project-previews-spinner" />}
-              <div ref={loadMoreRef} style={{ height: "1px" }} />
             </div>
           </Container>
         </div>

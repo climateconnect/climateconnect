@@ -1,9 +1,8 @@
 import makeStyles from "@mui/styles/makeStyles";
 import PropTypes from "prop-types";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Box } from "@mui/material";
 import { useChatScroll } from "../../hooks/useChatScroll";
-import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
 import Message from "./Message";
 
 const useStyles = makeStyles((theme) => {

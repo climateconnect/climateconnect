@@ -3,6 +3,7 @@ import { useEffect, useRef, useCallback } from "react";
 interface UseChatScrollOptions {
   hasMore: boolean;
   isLoading: boolean;
+  // eslint-disable-next-line no-unused-vars
   loadMore: (page: number) => Promise<void>;
   rootMargin?: string;
 }
