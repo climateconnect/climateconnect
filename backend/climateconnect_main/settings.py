@@ -318,6 +318,9 @@ LOGGING = {
     "loggers": {"django": {"handlers": ["console"], "level": "INFO"}},
 }
 
+# Custom test runner to set up global test data
+TEST_RUNNER = 'climateconnect_main.test_runner.ClimateConnectTestRunner'
+
 # Setting up cache
 CACHES = {
     "default": {

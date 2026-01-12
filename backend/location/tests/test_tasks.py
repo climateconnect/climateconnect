@@ -43,12 +43,9 @@ class LocationTaskTest(TestCase):
     def setUp(self):
         post_save.disconnect(find_location_translations, sender=Location)
 
-        self.language_en = Language.objects.create(
-            pk=1, name="English", language_code="en"
-        )
-        self.language_de = Language.objects.create(
-            pk=2, name="Deutsch", language_code="de"
-        )
+        # Use languages created by test_runner
+        self.language_en = Language.objects.get(id=1)
+        self.language_de = Language.objects.get(id=2)
         self.location = Location.objects.create(
             id=5,
             name="Original Location Name",
