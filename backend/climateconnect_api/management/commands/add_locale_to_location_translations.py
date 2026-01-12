@@ -288,7 +288,9 @@ class Command(BaseCommand):
                 self.style.SUCCESS(f"created {created_count} translations.")
             )
             self.stdout.write(
-                self.style.WARNING("IMPORTANT NOTE: make sure to also update the LOCALES list in climateconnect_main/settings.py")
+                self.style.WARNING(
+                    "IMPORTANT NOTE: make sure to also update the LOCALES list in climateconnect_main/settings.py"
+                )
             )
 
         except Exception as e:
