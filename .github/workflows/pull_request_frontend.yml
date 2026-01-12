@@ -24,7 +24,7 @@ jobs:
         run: yarn --immutable
 
       - name: Run webflow devlink sync
-        run: npx webflow devlink sync
+        run: npx webflow devlink sync --no-input
         env:
           WEBFLOW_API_TOKEN: ${{ secrets.WEBFLOW_API_TOKEN }}
           WEBFLOW_SITE_ID: ${{ secrets.WEBFLOW_SITE_ID }}
