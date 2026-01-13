@@ -3158,13 +3158,6 @@
   resolved "https://registry.yarnpkg.com/@types/react-transition-group/-/react-transition-group-4.4.12.tgz#b5d76568485b02a307238270bfe96cb51ee2a044"
   integrity sha512-8TV6R3h2j7a91c+1DXdJi3Syo69zzIZbz7Lg5tORM5LEJG7X/E6a1V3drRyBRZq7/utz7A+c4OgYLiLcYGHG6w==
 
-"@types/react-truncate@^2.3.4":
-  version "2.3.7"
-  resolved "https://registry.yarnpkg.com/@types/react-truncate/-/react-truncate-2.3.7.tgz#8b394aa2548b5a5a6ee234972403a844451e8a4d"
-  integrity sha512-gWfw503eLA3Ewx+Imfq7ye1FAllkIhuor4hFQGuE4G3ZHUoc6CITqZerHN8VPBnc26O/MiaDhJKDW4WmBZovZA==
-  dependencies:
-    "@types/react" "*"
-
 "@types/react@*":
   version "19.2.7"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-19.2.7.tgz#84e62c0f23e8e4e5ac2cadcea1ffeacccae7f62f"
@@ -5779,7 +5772,7 @@ eslint-module-utils@^2.12.1:
   dependencies:
     debug "^3.2.7"
 
-eslint-plugin-import@^2.28.1:
+eslint-plugin-import@^2.28.1, eslint-plugin-import@^2.32.0:
   version "2.32.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-import/-/eslint-plugin-import-2.32.0.tgz#602b55faa6e4caeaa5e970c198b5c00a37708980"
   integrity sha512-whOE1HFo/qJDyX4SnXzP4N6zOWn79WhnCUY/iDR0mPfQZO8wcYE4JClzI2oZrhBnnMUCBCHZhO6VQyoBU95mZA==

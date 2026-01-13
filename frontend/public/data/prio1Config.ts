@@ -1,4 +1,4 @@
-import { Link } from "./types";
+import { Link } from "./customHubtypes";
 import { COMMON_LINKS } from "../lib/headerLinks";
 import InfoIcon from "@mui/icons-material/Info";
 import { DePrio1Willkommen, EnPrio1Welcome } from "../../devlink";

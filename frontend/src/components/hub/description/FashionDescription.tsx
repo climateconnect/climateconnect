@@ -2,7 +2,7 @@ import { Link, Theme, Typography, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { ThemeProvider } from "@mui/material/styles";
 import React, { useContext } from "react";
-import Chart from "react-google-charts";
+import { Chart } from "react-google-charts";
 import getTexts from "../../../../public/texts/texts";
 import hubTheme from "../../../themes/hubTheme";
 import theme from "../../../themes/theme";

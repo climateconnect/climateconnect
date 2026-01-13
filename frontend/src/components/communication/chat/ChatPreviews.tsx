@@ -11,9 +11,8 @@ import {
 import makeStyles from "@mui/styles/makeStyles";
 import PropTypes from "prop-types";
 import React, { useContext } from "react";
-//TODO depricated libraries react-infinite-scroller and react-truncate
+//TODO depricated libraries react-infinite-scroller
 import InfiniteScroll from "react-infinite-scroller";
-import Truncate from "react-truncate";
 
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getDateTime } from "../../../../public/lib/dateOperations";
@@ -45,6 +44,12 @@ const useStyles = makeStyles((theme) => {
     },
     unreadPreview: {
       fontWeight: "bold",
+    },
+    contentPreview: {
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+      display: "block",
     },
     badgeAndTimeContainer: {
       float: "right",
@@ -127,7 +132,6 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
   const lastAction = chat.last_message ? chat.last_message.sent_at : chat.created_at;
   if (!lastAction) console.log(chat);
   const classes = useStyles();
-  const TruncateComponent = Truncate as any;
 
   if (isNarrowScreen) return <MobileChatPreview chat={chat} isFirstChat={isFirstChat} />;
   else
@@ -159,18 +163,16 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
           <ListItemText
             secondary={
               <>
-                <TruncateComponent
-                  lines={1}
-                  className={`${"" /*TODO(undefined) classes.contentPreview*/} ${
+                <span
+                  className={`${classes.contentPreview} ${
                     chat.unread_count ? classes.unreadPreview : ""
                   }`}
-                  ellipsis={"..."}
                 >
                   {chat.content}
-                </TruncateComponent>
+                </span>
                 <span className={classes.badgeAndTimeContainer}>
                   <span>
-                    <span /*TODO(undefined) className={classes.time}*/>
+                    <span>
                       {getDateTime(lastAction)}
                     </span>
                   </span>
