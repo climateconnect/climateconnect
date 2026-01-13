@@ -33,17 +33,23 @@ module.exports = {
     "react/react-in-jsx-scope": "off", // Not needed in Next.js 13
     "@next/next/no-img-element": "off",
     "react-hooks/exhaustive-deps": "off",
-    "no-unused-vars": ["error", {
-      "vars": "all",
-      "args": "after-used",
-      "ignoreRestSiblings": true,
-      "argsIgnorePattern": "^_"
-    }],
-    "import/no-unresolved": ["error", {
-      // Only check for completely missing packages, not type-only imports
-      "caseSensitive": true,
-      "caseSensitiveStrict": false
-    }],
+    "no-unused-vars": [
+      "error",
+      {
+        vars: "all",
+        args: "after-used",
+        ignoreRestSiblings: true,
+        argsIgnorePattern: "^_",
+      },
+    ],
+    "import/no-unresolved": [
+      "error",
+      {
+        // Only check for completely missing packages, not type-only imports
+        caseSensitive: true,
+        caseSensitiveStrict: false,
+      },
+    ],
     "import/named": "off", // Disable named import checking - can cause false positives with TypeScript
     "import/namespace": "off", // Disable namespace checking - not needed for our use case
   },

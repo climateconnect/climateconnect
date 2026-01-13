@@ -172,9 +172,7 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
                 </span>
                 <span className={classes.badgeAndTimeContainer}>
                   <span>
-                    <span>
-                      {getDateTime(lastAction)}
-                    </span>
+                    <span>{getDateTime(lastAction)}</span>
                   </span>
                   {chat.unread_count > 0 && (
                     <span>

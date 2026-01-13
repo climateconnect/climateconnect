@@ -2,7 +2,8 @@ import { Button, IconButton, Theme, Tooltip, Typography, useMediaQuery } from "@
 import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import React, { useContext } from "react";
-import { getImageDialogHeight ,
+import {
+  getImageDialogHeight,
   convertToJPGWithAspectRatio,
   getResizedImage,
   whitenTransparentPixels,

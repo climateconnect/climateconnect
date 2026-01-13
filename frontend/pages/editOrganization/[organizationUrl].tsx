@@ -2,7 +2,7 @@ import NextCookies from "next-cookies";
 import React, { useContext, useRef, useState } from "react";
 import getOrganizationInfoMetadata from "../../public/data/organization_info_metadata";
 import { apiRequest, sendToLogin } from "../../public/lib/apiOperations";
-import { getSectorOptions , getOrganizationTagsOptions } from "../../public/lib/getOptions";
+import { getSectorOptions, getOrganizationTagsOptions } from "../../public/lib/getOptions";
 
 import { parseOrganization } from "../../public/lib/organizationOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
