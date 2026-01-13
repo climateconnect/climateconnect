@@ -42,7 +42,6 @@ export async function getServerSideProps(ctx) {
     props: nullifyUndefinedValues({
       filterChoices: {
         organization_types: organization_types,
-        skills: skills,
         sectors: sectorOptions,
       },
       hideInfo: hideInfo === "true",

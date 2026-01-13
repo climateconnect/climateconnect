@@ -124,14 +124,4 @@ const getProjectsFilters = (filterChoices, texts) => [
     key: "sectors",
     tooltipText: texts.sectors_tooltip,
   },
-  {
-    icon: CreateIcon,
-    iconName: "CreateIcon",
-    title: texts.skills,
-    type: "openMultiSelectDialogButton",
-    key: "skills",
-    itemType: "skills",
-    options: filterChoices?.skills?.map((s) => ({ ...s, key: s.id })),
-    tooltipText: texts.skills_tooltip,
-  },
 ];
