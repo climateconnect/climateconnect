@@ -2,15 +2,15 @@ import { Button, IconButton, Theme, Tooltip, Typography, useMediaQuery } from "@
 import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import React, { useContext } from "react";
-import { getImageDialogHeight } from "../../../public/lib/imageOperations";
-import getTexts from "../../../public/texts/texts";
-import UserContext from "../context/UserContext";
-import UploadImageDialog from "../dialogs/UploadImageDialog";
 import {
+  getImageDialogHeight,
   convertToJPGWithAspectRatio,
   getResizedImage,
   whitenTransparentPixels,
-} from "./../../../public/lib/imageOperations";
+} from "../../../public/lib/imageOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import UploadImageDialog from "../dialogs/UploadImageDialog";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
 const useStyles = makeStyles<Theme, { image?: string }>((theme) => {
