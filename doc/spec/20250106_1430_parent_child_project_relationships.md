@@ -1,11 +1,11 @@
 # Parent/Child Project Relationships (Tech Enabler)
 
-**Status**: IMPLEMENTATION 
-**Type**: Feature
-**Date and time created**: 2026-01-06 14:30
-**Date Completed**: 2026-01-13 
-**Related GitHub Issue**: #1635 - [USER STORY] Tech Enabler: Parent/Child Project Relationships  
-**Related Epic**: Main Event feature page with multiple events
+**Status**: IMPLEMENTATION  
+**Type**: Feature  
+**Date and time created**: 2026-01-06 14:30  
+**Date Completed**: 2026-01-13   
+**Related GitHub Issue**: #1635 - [USER STORY] Tech Enabler: Parent/Child Project Relationships   
+**Related Epic**: Main Event feature page with multiple events  
 
 ## Problem Statement
 
