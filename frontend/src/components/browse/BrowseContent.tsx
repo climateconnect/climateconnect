@@ -1,7 +1,7 @@
 import makeStyles from "@mui/styles/makeStyles";
 import { Container, Divider, Tab, Tabs, Theme, useMediaQuery } from "@mui/material";
 import _ from "lodash";
-import React, { Suspense, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { Suspense, lazy, useContext, useEffect, useMemo, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import getFilters from "../../../public/data/possibleFilters";
 import { splitFiltersFromQueryObject } from "../../../public/lib/filterOperations";
@@ -29,11 +29,11 @@ import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 import { BrowseTab, LinkedHub } from "../../types";
 import { FilterContext } from "../context/FilterContext";
 import HubLinkButton from "../hub/HubLinkButton";
-const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
-const OrganizationPreviews = React.lazy(() => import("../organization/OrganizationPreviews"));
-const ProfilePreviews = React.lazy(() => import("../profile/ProfilePreviews"));
-const ProjectPreviews = React.lazy(() => import("../project/ProjectPreviews"));
-const TabContentWrapper = React.lazy(() => import("./TabContentWrapper"));
+const FilterSection = lazy(() => import("../indexPage/FilterSection"));
+const OrganizationPreviews = lazy(() => import("../organization/OrganizationPreviews"));
+const ProfilePreviews = lazy(() => import("../profile/ProfilePreviews"));
+const ProjectPreviews = lazy(() => import("../project/ProjectPreviews"));
+const TabContentWrapper = lazy(() => import("./TabContentWrapper"));
 
 const useStyles = makeStyles((theme) => {
   return {

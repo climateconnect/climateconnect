@@ -1,5 +1,5 @@
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext } from "react";
+import React, { ChangeEvent, FormEvent, useContext, useState } from "react";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -9,7 +9,7 @@ import { Sector } from "../../types";
 
 type AddInterestAreaProps = {
   // eslint-disable-next-line no-unused-vars
-  handleSubmit: (event: React.FormEvent, values: any) => void;
+  handleSubmit: (event: FormEvent, values: any) => void;
   errorMessage?: string;
   values: any;
   // eslint-disable-next-line no-unused-vars
@@ -91,18 +91,14 @@ export default function AddInterestArea({
     return [];
   };
 
-  const [selectedSectors, setSelectedSectors] = React.useState<Sector[]>(
-    getInitialSelectedSectors()
-  );
+  const [selectedSectors, setSelectedSectors] = useState<Sector[]>(getInitialSelectedSectors());
 
-  const [formValues, setFormValues] = React.useState({
+  const [formValues, setFormValues] = useState({
     ...values,
     sectors: values.sectors || [],
   });
 
-  const handleSectorSelection = (
-    event: React.ChangeEvent<HTMLSelectElement | { value: string }>
-  ) => {
+  const handleSectorSelection = (event: ChangeEvent<HTMLSelectElement | { value: string }>) => {
     event.preventDefault();
     const sectorName = event.target.value;
     const selectedSector = sectorOptions.find((s) => s.name === sectorName);

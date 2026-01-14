@@ -75,7 +75,7 @@ export default function EditProjectRoot({
   const { locale, locales, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
-  const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
+  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
   const draftReqiredProperties = {
     name: texts.project_name,
     loc: texts.location,

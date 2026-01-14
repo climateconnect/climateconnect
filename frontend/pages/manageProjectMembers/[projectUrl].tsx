@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import Cookies from "next-cookies";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, sendToLogin } from "../../public/lib/apiOperations";
@@ -66,7 +66,7 @@ export default function ManageProjectMembersPage({
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const classes = useStyles();
-  const [currentMembers, setCurrentMembers] = React.useState(
+  const [currentMembers, setCurrentMembers] = useState(
     members ? [...members.sort((a, b) => b.role.role_type - a.role.role_type)] : []
   );
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
