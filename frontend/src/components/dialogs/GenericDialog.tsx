@@ -10,7 +10,7 @@ import {
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
 import PropTypes from "prop-types";
-import React, { MouseEvent, PropsWithChildren } from "react";
+import React, { PropsWithChildren } from "react";
 import theme from "../../themes/theme";
 
 const useStyles = makeStyles<
