@@ -14,7 +14,7 @@ import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Alert from "@mui/material/Alert";
-import React, { useContext, useRef, useState } from "react";
+import React, { Fragment, useContext, useRef, useState } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import {
   convertToJPGWithAspectRatio,
@@ -213,12 +213,12 @@ export default function EditAccountPage({
   const organizationTexts = getTexts({ page: "organization", locale: locale });
   const imageInputFileRef = useRef<HTMLInputElement | null>(null);
   const closeIconRef = useRef<SVGSVGElement | null>(null);
-  const [editedAccount, setEditedAccount] = React.useState({ ...account });
+  const [editedAccount, setEditedAccount] = useState({ ...account });
   const isOrganization = type === "organization";
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles(editedAccount);
-  const [tempImages, setTempImages] = React.useState({
+  const [tempImages, setTempImages] = useState({
     background_image: editedAccount.background_image
       ? editedAccount.background_image
       : DEFAULT_BACKGROUND_IMAGE,
@@ -289,8 +289,8 @@ export default function EditAccountPage({
 
   // Refactored into a proper component
   const InfoArrayDisplay = ({ infoKey, infoEl }) => {
-    const [skillsDialogOpen, setSkillsDialogOpen] = React.useState(false);
-    const [selectedItems, setSelectedItems] = React.useState(
+    const [skillsDialogOpen, setSkillsDialogOpen] = useState(false);
+    const [selectedItems, setSelectedItems] = useState(
       editedAccount.info.skills ? [...editedAccount.info.skills] : []
     );
 
@@ -539,7 +539,7 @@ export default function EditAccountPage({
           });
         };
         return (
-          <React.Fragment key={i.key}>
+          <Fragment key={i.key}>
             <ActiveSectorsSelector
               //TODO(unused) info={i}
               selectedSectors={editedAccount.info.sectors}
@@ -552,7 +552,7 @@ export default function EditAccountPage({
               onClickRemoveSector={onClickRemoveSector}
               title={sectorsTitle}
             />
-          </React.Fragment>
+          </Fragment>
         );
         //This is the fallback for normal textfields
       } else if (key != "parent_organization" && ["text", "bio"].includes(i.type)) {

@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import PropTypes from "prop-types";
-import React, { useContext } from "react";
+import React, { Fragment, useContext, useState } from "react";
 //TODO depricated libraries react-infinite-scroller
 import InfiniteScroll from "react-infinite-scroller";
 
@@ -75,7 +75,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore, chatSearchEnabl
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "chat", locale: locale });
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const loadMore = async () => {
     //sometimes InfiniteScroll calls loadMore twice really fast. Therefore we're using isLoading to make sure it doesn't catch 2 pages at once
@@ -136,7 +136,7 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
   if (isNarrowScreen) return <MobileChatPreview chat={chat} isFirstChat={isFirstChat} />;
   else
     return (
-      <React.Fragment>
+      <Fragment>
         {isFirstChat && <Divider component="li" />}
         <ListItem
           button
@@ -189,7 +189,7 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
           />
         </ListItem>
         <Divider component="li" />
-      </React.Fragment>
+      </Fragment>
     );
 };
 

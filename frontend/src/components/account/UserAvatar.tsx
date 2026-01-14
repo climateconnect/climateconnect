@@ -1,5 +1,5 @@
 import { Avatar, Theme, useMediaQuery } from "@mui/material";
-import React, { useContext, useRef, useState } from "react";
+import React, { ReactElement, useContext, useRef, useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import CloseIcon from "@mui/icons-material/Close";
@@ -61,7 +61,7 @@ const useStyles = makeStyles<Theme, { avatarImage?: string }>((theme) => ({
   },
 }));
 
-export function UserAvatar(props: UserAvatarProps): React.ReactElement {
+export function UserAvatar(props: UserAvatarProps): ReactElement {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));

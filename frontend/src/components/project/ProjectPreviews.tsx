@@ -39,7 +39,7 @@ export default function ProjectPreviews({
     ));
 
   const [gridItems, setGridItems] = useState(toProjectPreviews(projects));
-  const [isFetchingMore, setIsFetchingMore] = React.useState(false);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   if (!loadFunc) {
     hasMore = false;

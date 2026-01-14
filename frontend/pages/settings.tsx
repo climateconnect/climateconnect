@@ -1,5 +1,5 @@
 import NextCookies from "next-cookies";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
@@ -30,8 +30,8 @@ export async function getServerSideProps(ctx) {
 export default function Settings({ settings, hubThemeData, hubUrl }) {
   const token = new Cookies().get("auth_token");
   const { user } = useContext(UserContext);
-  const [message, setMessage] = React.useState("");
-  const [currentSettings, setCurrentSettings] = React.useState(settings);
+  const [message, setMessage] = useState("");
+  const [currentSettings, setCurrentSettings] = useState(settings);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "settings", locale: locale });
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;

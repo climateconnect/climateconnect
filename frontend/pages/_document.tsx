@@ -1,6 +1,6 @@
 import ServerStyleSheets from "@mui/styles/ServerStyleSheets";
 import Document, { Head, Html, Main, NextScript } from "next/document";
-import React from "react";
+import React, { Children } from "react";
 import theme from "../src/themes/theme";
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_document.js.
@@ -36,6 +36,6 @@ MyDocument.getInitialProps = async (ctx) => {
 
   return {
     ...initialProps,
-    styles: [...React.Children.toArray(initialProps.styles), sheets.getStyleElement()],
+    styles: [...Children.toArray(initialProps.styles), sheets.getStyleElement()],
   };
 };

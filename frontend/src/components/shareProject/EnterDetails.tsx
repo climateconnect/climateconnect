@@ -95,7 +95,7 @@ export default function EnterDetails({
     end_date: "",
   });
   const locationInputRef = useRef(null);
-  const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
+  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
   const classes = useStyles(projectData);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: projectData });

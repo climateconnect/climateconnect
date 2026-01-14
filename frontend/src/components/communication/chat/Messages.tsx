@@ -1,6 +1,6 @@
 import withStyles from "@mui/styles/withStyles";
 import PropTypes from "prop-types";
-import React from "react";
+import React, { Component, createRef } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import Message from "./Message";
 
@@ -47,10 +47,10 @@ const styles = (theme) => {
 };
 
 //Using a class component in order to access this.myRef, so that we can control the scroll position of the container
-class Messages extends React.Component {
+class Messages extends Component {
   constructor(props) {
     super(props);
-    this.myRef = React.createRef();
+    this.myRef = createRef();
     this.state = {
       isLoading: true,
       scrollComponentHeight: 0,

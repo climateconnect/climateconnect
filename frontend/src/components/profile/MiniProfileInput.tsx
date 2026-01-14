@@ -2,7 +2,7 @@ import { Avatar, Button, IconButton, TextField, Tooltip, Typography } from "@mui
 import makeStyles from "@mui/styles/makeStyles";
 import DeleteIcon from "@mui/icons-material/Delete";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import ROLE_TYPES from "../../../public/data/role_types";
 import { getImageUrl } from "../../../public/lib/imageOperations";
@@ -74,7 +74,7 @@ export default function MiniProfileInput({
   dontPickRole,
 }: any) {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, profile: profile });
   const theme = useTheme();
@@ -92,7 +92,7 @@ export default function MiniProfileInput({
     }
   });
 
-  const [options, setOptions] = React.useState(
+  const [options, setOptions] = useState(
     profile.role.role_type === ROLE_TYPES.all_type
       ? fullRolesOptions.map((r) => ({ ...r, key: r.id }))
       : rolesOptions
