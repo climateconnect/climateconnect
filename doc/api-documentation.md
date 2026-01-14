@@ -26,7 +26,7 @@ The ClimateConnect API is built with Django REST Framework and provides endpoint
 
 **Base URLs:**
 - **Local Development**: `http://localhost:8000`
-- **Production**: `https://climateconnect.earth`
+- **Production**: `https://api.climateconnect.earth`
 
 **API Documentation:**
 - **Local Swagger UI**: http://localhost:8000/api/docs/
