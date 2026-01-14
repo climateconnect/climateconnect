@@ -7,6 +7,7 @@ strategy = []
 lock_version = "4.5.0"
 content_hash = "sha256:05f400f565bd32f3e942cad736997f46c25a57a86a98cdc1c36f32bfce494aa3"
 
+
 [[metadata.targets]]
 requires_python = ">=3.11"
 
