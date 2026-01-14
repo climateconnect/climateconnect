@@ -104,16 +104,16 @@ Climate Connect is a full-stack online climate action platform that connects act
 
 ### Technology Stack Summary
 
-| Layer | Technologies |
-|-------|-------------|
-| **Frontend** | Next.js 12, React 17, Material-UI v5, TypeScript, Emotion, Axios |
-| **Backend** | Django 3.2, Django REST Framework, Django Channels, Python 3.x |
-| **Database** | PostgreSQL 13+, PostGIS extension |
-| **Caching & Queue** | Redis |
-| **Task Queue** | Celery + Celery Beat |
-| **Storage** | Azure Blob Storage |
-| **Web Server** | Uvicorn (ASGI), Gunicorn (WSGI) |
-| **Package Management** | PDM (backend), Yarn (frontend) |
+| Layer | Technologies                                                     |
+|-------|------------------------------------------------------------------|
+| **Frontend** | Next.js 13, React 18, Material-UI v5, TypeScript, Emotion, Axios |
+| **Backend** | Django 3.2, Django REST Framework, Django Channels, Python 3.x   |
+| **Database** | PostgreSQL 13+, PostGIS extension                                |
+| **Caching & Queue** | Redis                                                            |
+| **Task Queue** | Celery + Celery Beat                                             |
+| **Storage** | Azure Blob Storage                                               |
+| **Web Server** | Uvicorn (ASGI), Gunicorn (WSGI)                                  |
+| **Package Management** | PDM (backend), Yarn (frontend)                                   |
 
 ---
 
