@@ -10,7 +10,7 @@ import {
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
 import PropTypes from "prop-types";
-import React, { PropsWithChildren } from "react";
+import React, { MouseEvent, PropsWithChildren } from "react";
 import theme from "../../themes/theme";
 
 const useStyles = makeStyles<
@@ -71,7 +71,7 @@ type Props = PropsWithChildren<{
   maxWidth?: "sm" | "lg";
   onApply?: () => void;
   // eslint-disable-next-line no-unused-vars
-  onClose: (arg: false | React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  onClose: (arg: false | MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   open: boolean;
   title: string;
   topBarFixed?: boolean;

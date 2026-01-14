@@ -1,7 +1,7 @@
 import { Button, Chip, Container, Divider, Link, Theme, Tooltip, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import PlaceIcon from "@mui/icons-material/Place";
-import React, { useContext, useEffect, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import Linkify from "react-linkify";
 import Cookies from "universal-cookie";
 import FeedbackContext from "../context/FeedbackContext";
@@ -324,7 +324,7 @@ export default function AccountPage({
         </Typography>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "5px", alignItems: "left" }}>
           {infoItem.value.map((org, orgIndex) => (
-            <React.Fragment key={org.id}>
+            <Fragment key={org.id}>
               {orgIndex > 0 && <span style={{ flexShrink: 0 }}>,</span>}
               <div style={{ flexShrink: 0 }}>
                 <MiniOrganizationPreview
@@ -333,7 +333,7 @@ export default function AccountPage({
                   size="tiny"
                 />
               </div>
-            </React.Fragment>
+            </Fragment>
           ))}
         </div>
       </div>

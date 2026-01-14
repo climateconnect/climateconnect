@@ -1,7 +1,7 @@
 import { Button, TextField } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import PropTypes from "prop-types";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -40,8 +40,8 @@ export default function SelectDialog({
   className,
 }) {
   const classes = useStyles();
-  const [element, setElement] = React.useState<any>(null);
-  const [additionalInfo, setAdditionalInfo] = React.useState<any[]>([]);
+  const [element, setElement] = useState<any>(null);
+  const [additionalInfo, setAdditionalInfo] = useState<any[]>([]);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
 

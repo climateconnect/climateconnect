@@ -1,6 +1,6 @@
 import { Card, CardContent, CardMedia, Link, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -107,7 +107,7 @@ const useStyles = makeStyles((theme) => {
 });
 
 export default function ProjectPreview({ project, projectRef, hubUrl, className }: any) {
-  const [hovering, setHovering] = React.useState(false);
+  const [hovering, setHovering] = useState(false);
   const { locale } = useContext(UserContext);
   const { projectTypes } = useContext(BrowseContext);
   const projectType =

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import { makeStyles } from "@mui/styles";
 import Image from "next/legacy/image";
 import { Theme } from "@mui/material/styles";
@@ -60,7 +60,7 @@ export default function CustomAuthImage({
   hubUrl,
   texts,
   authStep,
-}: Props): React.ReactElement | null {
+}: Props): ReactElement | null {
   if (!hubUrl) {
     return <DefaultAuthImage authStep={authStep} />;
   }
@@ -95,7 +95,7 @@ function AuthImage({
   hubSlug: string;
   authStep?: string;
   logoSrc: string;
-}): React.ReactElement {
+}): ReactElement {
   const classes = useStyles();
   return authStep ? (
     <DefaultAuthImage authStep={authStep} />
@@ -120,7 +120,7 @@ function AuthImage({
   );
 }
 
-function DefaultAuthImage({ authStep }: { authStep?: string }): React.ReactElement {
+function DefaultAuthImage({ authStep }: { authStep?: string }): ReactElement {
   const finalSrc =
     authStep === "interestAreaInfo"
       ? "/images/sign_up/Questions-pana.svg"

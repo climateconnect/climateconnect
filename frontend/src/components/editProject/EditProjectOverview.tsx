@@ -2,7 +2,7 @@ import { Button, Chip, Container, List, TextField, Grid } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
-import React, { useContext } from "react";
+import React, { RefObject, useContext, useRef, useState } from "react";
 import SelectField from "../general/SelectField";
 // Relative imports
 import {
@@ -151,8 +151,8 @@ type ScreenOverviewProps = {
   handleSetProject: (project: Project) => void;
   handleSetLocationOptionsOpen: (open: boolean) => void;
   /* eslint-disable no-unused-vars */
-  overviewInputsRef: React.RefObject<HTMLInputElement>;
-  locationInputRef: React.RefObject<HTMLInputElement>;
+  overviewInputsRef: RefObject<HTMLInputElement>;
+  locationInputRef: RefObject<HTMLInputElement>;
   locationOptionsOpen: boolean;
   texts: Record<string, string>;
   sectorOptions: Sector[];
@@ -471,12 +471,12 @@ const InputName = ({ project, screenSize, handleChangeProject, texts }: InputNam
 const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
   const classes = useStyles(project);
 
-  const inputFileRef = React.useRef(null as HTMLInputElement | null);
-  const [open, setOpen] = React.useState(false);
-  const [tempImage, setTempImage] = React.useState(
+  const inputFileRef = useRef(null as HTMLInputElement | null);
+  const [open, setOpen] = useState(false);
+  const [tempImage, setTempImage] = useState(
     project.image ? getImageUrl(project.image) : null
   );
-  const [isImgLoading, setIsImgLoading] = React.useState(false);
+  const [isImgLoading, setIsImgLoading] = useState(false);
   const onImageChange = async (event) => {
     const file = event.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type)) {
