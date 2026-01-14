@@ -121,9 +121,9 @@ build-backend = "pdm.backend"
 
 [tool.ruff]
 extend-exclude = ['*/migrations']
-# not sure why, but the pipline does not recognize lint.igore, 
+# not sure why, but the pipline does not recognize lint.igore,
 # might be due to different ruff versions
-# lint.ignore = [ 
+# lint.ignore = [
 ignore = [
     'E501', # since black does not format all long lines (e.g. comments, disable this lint)
     'F541', # f-strings without placeholder
@@ -150,3 +150,8 @@ dev = [
     "ruff>=0.0.271",
     "django-debug-toolbar>=3.5.0",
 ]
+
+[tool.pdm]
+# Disable inherit_metadata to ensure cross-platform lock files
+# This prevents platform-specific markers and exact Python version locks
+strategy = ["no_inherit_metadata"]
