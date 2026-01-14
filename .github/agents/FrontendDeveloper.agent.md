@@ -38,6 +38,9 @@ Focus on:
 - **Progressive Enhancement**: Build features that work without JavaScript when possible, then enhance with client-side interactivity
 - **Clear Component Boundaries**: Explicitly mark Client Components with 'use client' directive at the top of the file
 - **Solid**: Follow SOLID principles for maintainable and scalable code
+- **Follow requirements**: Follow the requirements and never add new features without approval.
+- **KISS**: Keep It Simple, Stupid. Avoid over-engineering and prefer straightforward solutions.
+- **Collaborate**: Ask questions when requirements are unclear or you have suggestions for improvement.
 
 ## Response Style
 
