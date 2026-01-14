@@ -31,11 +31,19 @@ from climateconnect_api.views import (
 from knox import views as knox_views
 from django.conf import settings
 from django.conf.urls.static import static
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 
 urls = [
     path("__debug__/", include("debug_toolbar.urls")),
     path("admin/", admin.site.urls),
+    # OpenAPI Schema and Documentation
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "api/docs/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
     path("ping/", status_views.PingPongView.as_view(), name="ping-pong-api"),
     # User views
     path("login/", user_views.LoginView.as_view(), name="login-api"),

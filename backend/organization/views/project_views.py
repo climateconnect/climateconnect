@@ -143,6 +143,18 @@ class ProjectsOrderingFilter(OrderingFilter):
                 queryset = queryset.order_by("id")
         return queryset
 
+    def get_schema_operation_parameters(self, view):
+        """Return schema parameters for OpenAPI documentation."""
+        return [
+            {
+                "name": "sort_by",
+                "required": False,
+                "in": "query",
+                "description": "Sort projects by newest or oldest",
+                "schema": {"type": "string", "enum": ["newest", "oldest"]},
+            }
+        ]
+
 
 class ListProjectsView(ListAPIView):
     permission_classes = [AllowAny]

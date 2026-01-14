@@ -253,4 +253,8 @@ Currently the project is utilizing credits to deploy onto Azure. That deployment
 # Documentation
 [Architecture](doc/architecture.md)  
 [Domain Entities](doc/domain-entities.md)  
-[Environent Variables](doc/environment-variables.md)  
+[Environment Variables](doc/environment-variables.md)  
+[API Documentation](http://localhost:8000/api/docs/) - Interactive OpenAPI/Swagger documentation (local development)
+
+## Production API Documentation
+For production environment, visit: `https://climateconnect.earth/api/docs/`  
