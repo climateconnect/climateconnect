@@ -71,7 +71,7 @@ type Props = PropsWithChildren<{
   maxWidth?: "sm" | "lg";
   onApply?: () => void;
   // eslint-disable-next-line no-unused-vars
-  onClose: (arg: false | MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  onClose: ((arg: false) => void) | (() => void);
   open: boolean;
   title: string;
   topBarFixed?: boolean;
@@ -141,7 +141,7 @@ export default function GenericDialog({
           <IconButton
             aria-label="close"
             className={classes.closeButtonLeft}
-            onClick={onClose}
+            onClick={() => onClose(false)}
             size={closeButtonSmall ? "small" : undefined}
           >
             <CloseIcon />
@@ -172,7 +172,7 @@ export default function GenericDialog({
           <IconButton
             aria-label="close"
             className={`classes.closeButtonRight ${closeButtonRightStyle}`}
-            onClick={onClose}
+            onClick={() => onClose(false)}
             size={closeButtonSmall ? "small" : undefined}
           >
             <CloseIcon />
