@@ -56,11 +56,7 @@ function isNumber(value: any): boolean {
   return !isNaN(parseFloat(value)) && isFinite(value);
 }
 
-export default function CustomAuthImage({
-  hubUrl,
-  texts,
-  authStep,
-}: Props): ReactElement | null {
+export default function CustomAuthImage({ hubUrl, texts, authStep }: Props): ReactElement | null {
   if (!hubUrl) {
     return <DefaultAuthImage authStep={authStep} />;
   }

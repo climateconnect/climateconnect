@@ -91,18 +91,14 @@ export default function AddInterestArea({
     return [];
   };
 
-  const [selectedSectors, setSelectedSectors] = useState<Sector[]>(
-    getInitialSelectedSectors()
-  );
+  const [selectedSectors, setSelectedSectors] = useState<Sector[]>(getInitialSelectedSectors());
 
   const [formValues, setFormValues] = useState({
     ...values,
     sectors: values.sectors || [],
   });
 
-  const handleSectorSelection = (
-    event: ChangeEvent<HTMLSelectElement | { value: string }>
-  ) => {
+  const handleSectorSelection = (event: ChangeEvent<HTMLSelectElement | { value: string }>) => {
     event.preventDefault();
     const sectorName = event.target.value;
     const selectedSector = sectorOptions.find((s) => s.name === sectorName);

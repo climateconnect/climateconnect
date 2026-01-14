@@ -473,9 +473,7 @@ const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
 
   const inputFileRef = useRef(null as HTMLInputElement | null);
   const [open, setOpen] = useState(false);
-  const [tempImage, setTempImage] = useState(
-    project.image ? getImageUrl(project.image) : null
-  );
+  const [tempImage, setTempImage] = useState(project.image ? getImageUrl(project.image) : null);
   const [isImgLoading, setIsImgLoading] = useState(false);
   const onImageChange = async (event) => {
     const file = event.target.files[0];

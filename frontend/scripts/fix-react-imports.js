@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const { execSync } = require('child_process');
+const fs = require("fs");
+const { execSync } = require("child_process");
 
 // Get all files with React.* usage warnings from ESLint
-const eslintOutput = execSync('yarn lint 2>&1', { encoding: 'utf-8', cwd: __dirname + '/..' });
+const eslintOutput = execSync("yarn lint 2>&1", { encoding: "utf-8", cwd: __dirname + "/.." });
 
 // Parse ESLint output to get files and what React members they use
 const fileIssues = {};
-const lines = eslintOutput.split('\n');
+const lines = eslintOutput.split("\n");
 
 let currentFile = null;
-lines.forEach(line => {
+lines.forEach((line) => {
   // Match file paths
   const fileMatch = line.match(/^(.+\.(tsx?|jsx?))$/);
   if (fileMatch) {
@@ -29,15 +29,18 @@ lines.forEach(line => {
   }
 
   // Match Router issues
-  if (line.includes("Using exported name 'Router' as identifier for default import") && currentFile) {
-    fileIssues[currentFile].add('Router');
+  if (
+    line.includes("Using exported name 'Router' as identifier for default import") &&
+    currentFile
+  ) {
+    fileIssues[currentFile].add("Router");
   }
 
   // Match PropTypes issues
   const propTypesMatch = line.match(/`PropTypes` also has a named export `(\w+)`/);
   if (propTypesMatch && currentFile) {
-    if (!fileIssues[currentFile].has('PropTypes')) {
-      fileIssues[currentFile].add('PropTypes');
+    if (!fileIssues[currentFile].has("PropTypes")) {
+      fileIssues[currentFile].add("PropTypes");
     }
   }
 });
@@ -45,14 +48,14 @@ lines.forEach(line => {
 // Process each file
 let filesModified = 0;
 Object.entries(fileIssues).forEach(([filePath, members]) => {
-  if (members.has('Router')) {
+  if (members.has("Router")) {
     fixRouterImport(filePath);
-    members.delete('Router');
+    members.delete("Router");
   }
 
-  if (members.has('PropTypes')) {
+  if (members.has("PropTypes")) {
     // PropTypes issues are trickier, skip for now
-    members.delete('PropTypes');
+    members.delete("PropTypes");
   }
 
   if (members.size > 0) {
@@ -62,7 +65,7 @@ Object.entries(fileIssues).forEach(([filePath, members]) => {
 
 function fixRouterImport(filePath) {
   try {
-    let content = fs.readFileSync(filePath, 'utf-8');
+    let content = fs.readFileSync(filePath, "utf-8");
 
     // Replace: import Router from "next/router"
     // With: import { useRouter } from "next/router"
@@ -70,7 +73,7 @@ function fixRouterImport(filePath) {
     if (routerPattern.test(content)) {
       content = content.replace(routerPattern, 'import { useRouter } from "next/router"');
       // Note: This may require more manual fixes for Router usage
-      fs.writeFileSync(filePath, content, 'utf-8');
+      fs.writeFileSync(filePath, content, "utf-8");
       console.log(`Fixed Router import in: ${filePath}`);
       filesModified++;
     }
@@ -81,7 +84,7 @@ function fixRouterImport(filePath) {
 
 function fixReactImports(filePath, members) {
   try {
-    let content = fs.readFileSync(filePath, 'utf-8');
+    let content = fs.readFileSync(filePath, "utf-8");
     let modified = false;
 
     // Find the React import line
@@ -95,7 +98,10 @@ function fixReactImports(filePath, members) {
 
     // Get existing named imports
     const existingImports = match[1]
-      ? match[1].split(',').map(s => s.trim()).filter(Boolean)
+      ? match[1]
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean)
       : [];
 
     // Add new imports that aren't already imported
@@ -104,7 +110,7 @@ function fixReactImports(filePath, members) {
     // Build new import statement
     let newImport;
     if (allImports.length > 0) {
-      newImport = `import React, { ${allImports.join(', ')} } from "react";`;
+      newImport = `import React, { ${allImports.join(", ")} } from "react";`;
     } else {
       newImport = `import React, { member } from "react";`;
     }
@@ -113,8 +119,8 @@ function fixReactImports(filePath, members) {
     modified = true;
 
     // Replace member with member
-    members.forEach(member => {
-      const pattern = new RegExp(`React\\.${member}\\b`, 'g');
+    members.forEach((member) => {
+      const pattern = new RegExp(`React\\.${member}\\b`, "g");
       if (pattern.test(content)) {
         content = content.replace(pattern, member);
         modified = true;
@@ -122,7 +128,7 @@ function fixReactImports(filePath, members) {
     });
 
     if (modified) {
-      fs.writeFileSync(filePath, content, 'utf-8');
+      fs.writeFileSync(filePath, content, "utf-8");
       console.log(`Fixed React imports in: ${filePath}`);
       filesModified++;
     }
@@ -133,4 +139,3 @@ function fixReactImports(filePath, members) {
 
 console.log(`\n✅ Modified ${filesModified} files`);
 console.log('\nRun "yarn lint" again to verify fixes.');
-

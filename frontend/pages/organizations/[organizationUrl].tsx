@@ -124,9 +124,7 @@ export default function OrganizationPage({
   const infoMetadata = getOrganizationInfoMetadata(locale, organization, false);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   // l. 105-137 handles following Organizations
-  const [numberOfFollowers, setNumberOfFollowers] = useState(
-    organization?.number_of_followers
-  );
+  const [numberOfFollowers, setNumberOfFollowers] = useState(organization?.number_of_followers);
   const [isUserFollowing, setIsUserFollowing] = useState(following);
   const [followingChangePending, setFollowingChangePending] = useState(false);
 
