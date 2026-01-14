@@ -88,7 +88,7 @@ export default function HubHeadlineContainer({ subHeadline, headline, isLocation
   const classes = useStyles({ isLocationHub: isLocationHub });
   const { locale, user } = useContext(UserContext);
 
-  const texts = getTexts({ page: "climatematch", locale: locale });
+  const texts = getTexts({ page: "general", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
   return (

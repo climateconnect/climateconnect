@@ -167,17 +167,6 @@ export default function HubTabsNavigation({
               {texts.emmerdingen_buergerenergie}
             </Link>
           )}
-          {!isCustomHub && !isEmmendingenHub && (
-            <div className={classes.climateMatchLinkContainer}>
-              <Link
-                className={classes.climateMatchLink}
-                href={`${getLocalePrefix(locale)}/climatematch?from_hub=${hubUrl}`}
-                underline="hover"
-              >
-                ClimateMatch
-              </Link>
-            </div>
-          )}
           {isNarrowScreen && (
             <>
               {hubTabLink && (

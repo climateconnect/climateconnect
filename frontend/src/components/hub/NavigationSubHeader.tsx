@@ -76,19 +76,6 @@ export default function NavigationSubHeader({ hubName, allHubs, isLocationHub }:
               )}
             </>
           )}
-          {isLocationHub && isSmallMediumScreen && (
-            <Badge badgeContent={texts.new} color="error">
-              <Button
-                href={`${getLocalePrefix(locale)}/climatematch?from_hub=erlangen`}
-                variant="contained"
-                color="primary"
-                size="small"
-                className={classes.climateMatchButton}
-              >
-                {texts.get_active}
-              </Button>
-            </Badge>
-          )}
         </Typography>
         <Typography component="div" className={classes.rightSideContainer}>
           <HubLinks
