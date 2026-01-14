@@ -1,6 +1,6 @@
 # OpenAPI Specs for ClimateConnect API
 
-**Status**: DRAFT  
+**Status**: IMPLEMENTATION  
 **Type**: Documentation / Feature  
 **Date and time created**: 2026-01-14 14:50 UTC  
 **Date Completed**: -  
@@ -123,17 +123,16 @@ SPECTACULAR_SETTINGS = {
 - Configure in Django settings
 - Add URL routes for schema and documentation
 
-**Customization Needed:**
-- Add docstrings to ViewSets/APIViews for better descriptions
-- Add `@extend_schema` decorators for complex endpoints
-- Document authentication flow (token acquisition)
-- Document pagination and filtering parameters
+**Customization Needed (Scope for This Task):**
+- Install and configure drf-spectacular
+- Add basic Swagger UI interface
+- Ensure schema generation works for existing endpoints (automatic via DRF)
+- **Note**: Detailed endpoint documentation (docstrings, `@extend_schema` decorators) is considered a follow-up enhancement task
 
 **Files to Modify:**
 - `backend/pyproject.toml` - Add drf-spectacular dependency
 - `backend/climateconnect_main/settings.py` - Add configuration
 - `backend/climateconnect_main/urls.py` - Add schema endpoints
-- Various ViewSets - Add docstrings and schema annotations (iterative improvement)
 
 ### Frontend
 
@@ -174,63 +173,30 @@ This is a documentation/tooling feature only.
    - Add `drf_spectacular` to `INSTALLED_APPS`
    - Configure `REST_FRAMEWORK['DEFAULT_SCHEMA_CLASS']`
    - Add `SPECTACULAR_SETTINGS` configuration
+   - **Environment**: Available in all environments (dev, staging, production) - open source project
 
 3. **Add URL Routes**
    ```python
    # climateconnect_main/urls.py
-   from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+   from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
    
    urlpatterns = [
        # ... existing patterns ...
        path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
        path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-       path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
    ]
    ```
 
-4. **Enhance Endpoint Documentation** (iterative)
-   - Add docstrings to ViewSets and APIViews
-   - Use `@extend_schema` decorator for complex cases
-   - Document request/response examples
-   - Document authentication requirements
-
-5. **Test and Validate**
+4. **Test and Validate**
    - Generate schema: visit `/api/schema/`
-   - View interactive docs: visit `/api/docs/` or `/api/redoc/`
+   - View interactive docs: visit `/api/docs/`
    - Download and import into Postman
-   - Verify completeness across all apps
+   - Verify schema generation works across all apps
 
-6. **Update Documentation**
+5. **Update Documentation**
    - Add API docs link to README
-   - Create developer guide
-   - Update contributor documentation
+   - Note: Detailed endpoint documentation enhancement is a separate follow-up task
 
-### Example Enhancement
-
-```python
-from drf_spectacular.utils import extend_schema, OpenApiParameter
-from rest_framework import viewsets
-
-class ProjectViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet for managing climate action projects.
-    
-    Projects are the core entities representing climate initiatives,
-    events, or ideas on the Climate Connect platform.
-    """
-    
-    @extend_schema(
-        summary="List all projects",
-        description="Retrieve a paginated list of projects with optional filtering",
-        parameters=[
-            OpenApiParameter(name='hub', description='Filter by hub URL slug', type=str),
-            OpenApiParameter(name='search', description='Search projects by name', type=str),
-        ],
-        responses={200: ProjectSerializer(many=True)}
-    )
-    def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
-```
 
 ## Definition of Done
 
@@ -258,6 +224,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
 ## Task Log
 
 **2026-01-14 14:50 UTC** - Task created by Taskie based on GitHub issue #1736 created by @HaraldWalker
+
+**2026-01-14 15:00 UTC** - Scope clarified with user:
+- Basic schema generation only (detailed endpoint docs as follow-up)
+- Include Swagger UI for interactive exploration
+- Available in all environments (open source project)
+- Status transitioned to IMPLEMENTATION
 
 ---
 
