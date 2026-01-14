@@ -1,6 +1,6 @@
 import { Button, Link } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function FeedbackButton({ justLink, children }: any) {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const cookies = new Cookies();
   const { locale } = useContext(UserContext);
   const { showFeedbackMessage } = useContext(FeedbackContext);

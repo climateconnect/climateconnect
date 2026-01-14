@@ -25,7 +25,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import MenuIcon from "@mui/icons-material/Menu";
 import noop from "lodash/noop";
-import React, { useContext, useState } from "react";
+import React, { Fragment, useContext, useRef, useState } from "react";
 import { getStaticPageLinks } from "../../../public/data/getStaticPageLinks"; // Relative imports
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
@@ -481,7 +481,7 @@ function NormalScreenLinks({
           !(isStaticPage && link.hideOnStaticPages)
         )
           return (
-            <React.Fragment key={index}>
+            <Fragment key={index}>
               <span>
                 {link.type === "languageSelect" ? (
                   <LanguageSelect
@@ -542,7 +542,7 @@ function NormalScreenLinks({
                   </Button>
                 )}
               </span>
-            </React.Fragment>
+            </Fragment>
           );
       })}
       {loggedInUser && (
@@ -581,8 +581,8 @@ const LoggedInNormalScreen = ({
   hubUrl,
   classes,
 }) => {
-  const [menuOpen, setMenuOpen] = React.useState(false);
-  const anchorRef = React.useRef(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const anchorRef = useRef(null);
 
   const handleToggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -710,7 +710,7 @@ function NarrowScreenLinks({
             buttonProps.className = classes.marginRight;
           }
           return (
-            <React.Fragment key={index}>
+            <Fragment key={index}>
               {link.onlyShowIconOnMobile ? (
                 <>
                   <IconButton
@@ -766,7 +766,7 @@ function NarrowScreenLinks({
                   )}
                 </span>
               )}
-            </React.Fragment>
+            </Fragment>
           );
         })}
         <span>

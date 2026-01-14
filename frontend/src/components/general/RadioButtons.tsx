@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { RadioGroup, Radio, FormControlLabel } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 
@@ -60,7 +60,7 @@ function StyledRadio(props) {
 
 // TODO: dead code?
 export default function RadioButtons({ values, defaultValue, value, className, onChange }: any) {
-  const [checkedValue, setCheckedValue] = React.useState(value ? value : defaultValue);
+  const [checkedValue, setCheckedValue] = useState(value ? value : defaultValue);
 
   const handleCheckedValueChange = (event) => {
     setCheckedValue(event.target.value);

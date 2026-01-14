@@ -14,7 +14,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import CloseIcon from "@mui/icons-material/Close";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import React, { useContext } from "react";
+import React, { Fragment, useContext, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import FilterSearchBar from "../filter/FilterSearchBar";
@@ -176,7 +176,7 @@ export default function MultiLevelSelector({
   selected,
   setSelected,
 }: any) {
-  const [expanded, setExpanded] = React.useState(null);
+  const [expanded, setExpanded] = useState(null);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const useStylesProps = {
@@ -270,7 +270,7 @@ function ListToChooseWrapper({
   const classes = useStyles({});
 
   // The first section should be the initial tab value
-  const [searchValue, setSearchValue] = React.useState("");
+  const [searchValue, setSearchValue] = useState("");
   const handleSearchBarChange = (event) => setSearchValue(event?.target?.value);
 
   function filteredLists({ searchValue, itemsToSelectFrom }) {
@@ -437,7 +437,7 @@ function ListToChooseFrom({
             ).length === 1;
 
           return (
-            <React.Fragment key={item.key}>
+            <Fragment key={item.key}>
               <ListItem
                 button
                 disabled={isDisabled}
@@ -522,7 +522,7 @@ function ListToChooseFrom({
               ) : (
                 <></>
               )}
-            </React.Fragment>
+            </Fragment>
           );
         })}
       </List>
