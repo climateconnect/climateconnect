@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { ChangeEvent, ElementType, useContext } from "react";
 import { Checkbox, IconButton, Tooltip, Typography } from "@mui/material";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -16,7 +16,7 @@ type Props = {
   currentHubName: string;
   // eslint-disable-next-line no-unused-vars
   handleUpdateSelectedHub: (hubName: string) => void;
-  ToolTipIcon?: React.ElementType;
+  ToolTipIcon?: ElementType;
 };
 
 export default function CustomHubSelection({
@@ -35,7 +35,7 @@ export default function CustomHubSelection({
   const label = { inputProps: { "aria-label": "PRIO1 project checkbox" } };
   const prio1Project = currentHubName == "prio1";
 
-  function handlePrio1ProjectCheckbox(event: React.ChangeEvent<HTMLInputElement>) {
+  function handlePrio1ProjectCheckbox(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.checked) {
       handleUpdateSelectedHub("prio1");
     } else {

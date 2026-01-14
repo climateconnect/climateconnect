@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { ReactElement, useContext, useEffect, useState } from "react";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
 import { redirectOnLogin } from "../public/lib/profileOperations";
@@ -90,13 +90,13 @@ export default function Signin({ hubSlug, hubThemeData, message, message_type })
     href: `${getLocalePrefix(locale)}/resetpassword${hubSlug ? `?hub=${hubSlug}` : ""}`,
   };
 
-  const [errorMessage, setErrorMessage] = React.useState<React.ReactElement | null>(
+  const [errorMessage, setErrorMessage] = useState<ReactElement | null>(
     message_type !== "success" && message
   );
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [initialized, setInitialized] = React.useState(false);
-  const [redirectUrl, setRedirectUrl] = React.useState<string | undefined>();
+  const [initialized, setInitialized] = useState(false);
+  const [redirectUrl, setRedirectUrl] = useState<string | undefined>();
   useEffect(function () {
     if (!initialized) {
       const params = getParams(window.location.href);

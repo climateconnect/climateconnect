@@ -73,10 +73,10 @@ export default function LayoutWrapper({
     success: undefined as any,
   });
   const classes = useStyles();
-  const [initialized, setInitialized] = React.useState(false);
+  const [initialized, setInitialized] = useState(false);
   const isSmallerThanMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
-  const [loading, setLoading] = React.useState(true);
-  const [bannerOpen, setBannerOpen] = React.useState(true);
+  const [loading, setLoading] = useState(true);
+  const [bannerOpen, setBannerOpen] = useState(true);
   const { acceptedNecessary, locale, isLoading } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
 

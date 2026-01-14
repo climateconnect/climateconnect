@@ -2,7 +2,7 @@ import { Button, Container, Link, Tooltip, Typography } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import Linkify from "react-linkify";
-import React, { MouseEventHandler, useContext, useEffect, useState } from "react";
+import React, { MouseEventHandler, RefObject, useContext, useEffect, useState } from "react";
 
 //icons
 import ExploreIcon from "@mui/icons-material/Explore";
@@ -124,7 +124,7 @@ const componentDecorator = (href, text, key) => (
 );
 
 type Props = {
-  contactProjectCreatorButtonRef?: React.RefObject<typeof Button>;
+  contactProjectCreatorButtonRef?: RefObject<typeof Button>;
   followers: object; //merge like & follow?
   followingChangePending: boolean; //merge like & follow?
   handleClickContact: Function; //--> Call external function?

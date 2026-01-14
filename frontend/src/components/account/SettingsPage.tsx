@@ -10,7 +10,7 @@ import {
 import makeStyles from "@mui/styles/makeStyles";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Link from "next/link";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix, redirect } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -120,7 +120,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       text: texts.accepted_statistics_text,
     },
   ];
-  const [errors, setErrors] = React.useState({
+  const [errors, setErrors] = useState({
     passworderror: "",
     newemailerror: "",
     /*profileurlerror: "",*/
@@ -128,28 +128,28 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
     cookiepreferencesserror: "",
   });
 
-  const [passwordInputs, setPasswordInputs] = React.useState({
+  const [passwordInputs, setPasswordInputs] = useState({
     oldpassword: "",
     newpassword: "",
     confirmnewpassword: "",
     /*profileurlerror: ""*/
   });
-  const [newEmail, setNewEmail] = React.useState("");
+  const [newEmail, setNewEmail] = useState("");
   const cookies = new Cookies();
-  const [cookiePreferences, setCookiePreferences] = React.useState(
+  const [cookiePreferences, setCookiePreferences] = useState(
     possibleCookiePreferences.reduce((obj, p) => {
       obj[p.key] = !!cookies.get(p.key);
       return obj;
     }, {})
   );
 
-  const [emailPreferences, setEmailPreferences] = React.useState(
+  const [emailPreferences, setEmailPreferences] = useState(
     possibleEmailPreferences.reduce((obj, p) => {
       obj[p.key] = settings[p.key];
       return obj;
     }, {})
   );
-  /*const [newProfileUrl, setNewProfileUrl] = React.useState("");*/
+  /*const [newProfileUrl, setNewProfileUrl] = useState("");*/
 
   const handleNewEmailChange = (event) => {
     setNewEmail(event.target.value);
@@ -253,7 +253,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         });
     }
   };
-  const [emailPreferencesLoading, setEmailPreferencesLoading] = React.useState(false);
+  const [emailPreferencesLoading, setEmailPreferencesLoading] = useState(false);
   const changeEmailPreferences = async () => {
     if (
       hasChanges(

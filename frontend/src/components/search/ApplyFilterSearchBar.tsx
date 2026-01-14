@@ -1,6 +1,6 @@
 import { TextField, Autocomplete } from "@mui/material";
 import throttle from "lodash/throttle";
-import React, { useContext } from "react";
+import React, { Fragment, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -18,13 +18,13 @@ export default function ApplyFilterSearchBar({
 }: any) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "filter_and_search", locale: locale });
-  const [open, setOpen] = React.useState(false);
-  const [options, setOptions] = React.useState([]);
-  const [searchValue, setSearchValue] = React.useState("");
-  const [inputValue, setInputValue] = React.useState("");
-  const isMounted = React.useRef(false);
+  const [open, setOpen] = useState(false);
+  const [options, setOptions] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
+  const [inputValue, setInputValue] = useState("");
+  const isMounted = useRef(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isMounted.current) {
       applyFilterToChats(searchValue);
     } else {
@@ -32,7 +32,7 @@ export default function ApplyFilterSearchBar({
     }
   }, [searchValue]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!open) {
       setOptions([]);
     }
@@ -44,7 +44,7 @@ export default function ApplyFilterSearchBar({
     if (onUnselect) onUnselect();
   };
 
-  const setSearchValueThrottled = React.useMemo(
+  const setSearchValueThrottled = useMemo(
     () =>
       throttle((value) => {
         setSearchValue(value);
@@ -92,7 +92,7 @@ export default function ApplyFilterSearchBar({
           helperText={helperText}
           InputProps={{
             ...params.InputProps,
-            endAdornment: <React.Fragment>{params.InputProps.endAdornment}</React.Fragment>,
+            endAdornment: <Fragment>{params.InputProps.endAdornment}</Fragment>,
           }}
         />
       )}

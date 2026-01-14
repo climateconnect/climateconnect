@@ -5,7 +5,7 @@ import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import NextCookies from "next-cookies";
 import Router from "next/router";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getLocalePrefix, getRolesOptions } from "../../public/lib/apiOperations";
@@ -124,11 +124,9 @@ export default function OrganizationPage({
   const infoMetadata = getOrganizationInfoMetadata(locale, organization, false);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   // l. 105-137 handles following Organizations
-  const [numberOfFollowers, setNumberOfFollowers] = React.useState(
-    organization?.number_of_followers
-  );
-  const [isUserFollowing, setIsUserFollowing] = React.useState(following);
-  const [followingChangePending, setFollowingChangePending] = React.useState(false);
+  const [numberOfFollowers, setNumberOfFollowers] = useState(organization?.number_of_followers);
+  const [isUserFollowing, setIsUserFollowing] = useState(following);
+  const [followingChangePending, setFollowingChangePending] = useState(false);
 
   const handleWindowClose = (e) => {
     if (followingChangePending) {
@@ -149,7 +147,7 @@ export default function OrganizationPage({
     setFollowingChangePending(pending);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     window.addEventListener("beforeunload", handleWindowClose);
 
     return () => {
