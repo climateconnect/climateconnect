@@ -41,7 +41,7 @@ class CleanupStats(NamedTuple):
 
 class LocationCleanup:
     """
-    Handles cleanup of duplicate and unused Location records.
+    Handles cleanup of duplicate and unused Locations.
 
     Duplicates are identified by matching (osm_id, osm_type, osm_class) tuples.
     The newest record (highest id) is retained, and all references are redirected.
@@ -81,7 +81,7 @@ class LocationCleanup:
 
     def find_duplicate_groups(self) -> dict:
         """
-        Find all Location records with identical OSM identifiers.
+        Find all Locations with identical OSM identifiers.
 
         Returns a dict mapping (osm_type, osm_id, osm_class) -> list of Location IDs
         """
@@ -122,7 +122,7 @@ class LocationCleanup:
             field = fk_config["field"]
             count = model.objects.filter(**{field: location_id}).count()
             if count > 0:
-                references[f"{model.__name__}.{field}"] = count
+                references[f"{model.__name__}.{field} (FK)"] = count
 
         for m2m_config in self.M2M_MODELS:
             model = m2m_config["model"]
@@ -289,6 +289,7 @@ class LocationCleanup:
                 self.log(f"Total duplicate groups found: {len(duplicate_groups)}")
 
                 if duplicate_groups:
+                    self.log("Merging duplicate locations...")
                     self.merge_duplicates(duplicate_groups)
                 else:
                     self.log("No duplicate locations found.")
@@ -299,6 +300,7 @@ class LocationCleanup:
                 self.log(f"Total unused locations found: {len(unused_ids)}")
 
                 if unused_ids:
+                    self.log("Deleting unused locations...")
                     self.delete_unused_locations(unused_ids)
                 else:
                     self.log("No unused locations found.")
