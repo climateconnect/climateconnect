@@ -128,8 +128,10 @@ curl http://localhost:8000/api/projects/workshop/ | jq '.parent_project_slug'
 # Should return: "summit-b"
 ```
 
-**Note**: A bug was found and fixed here - previously the old parent's `has_children` 
-was not being cleared when a child was moved. This is now working correctly.
+**Note**: An automated test `test_has_children_flag_on_parent_change` was written for this scenario.
+The test initially FAILED, catching a bug in the signal code where the old parent's `has_children`
+was not being cleared. The bug was fixed by using a pre_save signal to track the old parent value.
+This demonstrates the value of comprehensive test coverage - the test caught the bug before production!
 
 ---
 
