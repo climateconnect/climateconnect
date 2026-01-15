@@ -1,6 +1,6 @@
 import Grid from "@mui/material/Unstable_Grid2";
 import makeStyles from "@mui/styles/makeStyles";
-import React from "react";
+import React, { useState } from "react";
 import NoItemsFound from "../browse/NoItemsFound";
 import InfiniteScrollGrid from "../general/InfiniteScrollGrid";
 import LoadingSpinner from "../general/LoadingSpinner";
@@ -58,7 +58,7 @@ export default function IdeaPreviews({
   hubUrl,
 }: any) {
   const classes = useStyles();
-  const [gridItems, setGridItems] = React.useState(
+  const [gridItems, setGridItems] = useState(
     toIdeaPreviews({
       ideas: ideas,
       onClickIdea: onClickIdea,
@@ -67,7 +67,7 @@ export default function IdeaPreviews({
     })
   );
 
-  const [isFetchingMore, setIsFetchingMore] = React.useState(false);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   if (!loadFunc) {
     hasMore = false;

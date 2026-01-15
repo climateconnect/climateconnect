@@ -1,4 +1,4 @@
-import React, { useContext, useCallback } from "react";
+import React, { ReactNode, useCallback, useContext } from "react";
 import TimeAgo from "react-timeago";
 import UserContext from "../context/UserContext";
 
@@ -15,7 +15,7 @@ export default function LocalizedTimeAgo({ date, ...props }: LocalizedTimeAgoPro
 
   // Formatter function that handles locale-specific formatting
   const formatter = useCallback(
-    (value: number, unit: Unit, suffix: Suffix, epochMilliseconds: number): React.ReactNode => {
+    (value: number, unit: Unit, suffix: Suffix, epochMilliseconds: number): ReactNode => {
       const units_de = {
         year: {
           singular: "Jahr",

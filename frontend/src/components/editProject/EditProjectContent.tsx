@@ -9,7 +9,7 @@ import {
   Theme,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext, useState } from "react";
+import React, { RefObject, useContext, useState } from "react";
 import getCollaborationTexts from "../../../public/data/collaborationTexts";
 import ROLE_TYPES from "../../../public/data/role_types";
 import getTexts from "../../../public/texts/texts";
@@ -99,7 +99,7 @@ type Args = {
   skillsOptions: any;
   deleteProject: Function;
   errors: any;
-  contentRef?: React.RefObject<any>;
+  contentRef?: RefObject<any>;
   projectTypeOptions?: any;
 };
 

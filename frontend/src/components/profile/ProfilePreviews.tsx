@@ -1,6 +1,6 @@
 import Grid from "@mui/material/Unstable_Grid2";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import InfiniteScrollGrid from "../general/InfiniteScrollGrid";
@@ -37,8 +37,8 @@ export default function ProfilePreviews({
       />
     ));
 
-  const [gridItems, setGridItems] = React.useState(toProfilePreviews(profiles));
-  const [isFetchingMore, setIsFetchingMore] = React.useState(false);
+  const [gridItems, setGridItems] = useState(toProfilePreviews(profiles));
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   if (!loadFunc) {
     hasMore = false;

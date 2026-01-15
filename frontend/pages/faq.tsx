@@ -1,7 +1,7 @@
 import { Container, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import Cookies from "next-cookies";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 
 import { apiRequest } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
@@ -103,7 +103,7 @@ export async function getServerSideProps(ctx) {
 export default function Faq({ questionsBySection, questions }) {
   const classes = useStyles();
   // The first section should be the initial tab value
-  const [searchValue, setSearchValue] = React.useState("");
+  const [searchValue, setSearchValue] = useState("");
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "faq", locale: locale });
 

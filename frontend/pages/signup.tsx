@@ -41,7 +41,7 @@ export async function getServerSideProps(ctx) {
 
 export default function Signup({ hubUrl, hubThemeData, sectorOptions }) {
   const { ReactGA } = useContext(UserContext);
-  const [userInfo, setUserInfo] = React.useState({
+  const [userInfo, setUserInfo] = useState({
     email: "",
     password: "",
     repeatpassword: "",

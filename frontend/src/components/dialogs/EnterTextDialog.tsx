@@ -1,7 +1,7 @@
 import { TextField } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import PropTypes from "prop-types";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import GenericDialog from "./GenericDialog";
@@ -36,7 +36,7 @@ export default function EnterTextDialog({
   className,
 }: Props) {
   const classes = useStyles();
-  const [element, setElement] = React.useState(null);
+  const [element, setElement] = useState(null);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
   const theme = useTheme();

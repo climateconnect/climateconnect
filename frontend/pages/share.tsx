@@ -1,5 +1,5 @@
 import NextCookies from "next-cookies";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest, sendToLogin } from "../public/lib/apiOperations";
 import { getProjectTypeOptions, getSectorOptions } from "../public/lib/getOptions";
@@ -67,7 +67,7 @@ export default function Share({
   const token = new Cookies().get("auth_token");
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
-  const [errorMessage, setErrorMessage] = React.useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSetErrorMessage = (newMessage) => setErrorMessage(newMessage);
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;

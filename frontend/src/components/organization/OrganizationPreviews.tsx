@@ -1,6 +1,6 @@
 import Grid from "@mui/material/Unstable_Grid2";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import InfiniteScrollGrid from "../general/InfiniteScrollGrid";
@@ -29,8 +29,8 @@ export default function OrganizationPreviews({
   const toOrganizationPreviews = (organizations) =>
     organizations.map((o) => <GridItem key={o.url_slug} organization={o} hubUrl={hubUrl} />);
 
-  const [gridItems, setGridItems] = React.useState(toOrganizationPreviews(organizations));
-  const [isFetchingMore, setIsFetchingMore] = React.useState(false);
+  const [gridItems, setGridItems] = useState(toOrganizationPreviews(organizations));
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   if (!loadFunc) {
     hasMore = false;

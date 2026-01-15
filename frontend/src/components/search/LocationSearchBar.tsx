@@ -3,7 +3,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import makeStyles from "@mui/styles/makeStyles";
 import axios from "axios";
 import { debounce } from "lodash";
-import React, { useContext, useEffect } from "react";
+import React, { Fragment, useContext, useEffect, useMemo, useState } from "react";
 import {
   getDisplayLocationFromLocation,
   getDisplayLocationFromExactLocation,
@@ -88,11 +88,11 @@ export default function LocationSearchBar({
     }
   };
 
-  const [options, setOptions] = React.useState<{ simple_name: string }[]>([]);
+  const [options, setOptions] = useState<{ simple_name: string }[]>([]);
   // If no 'open' prop is passed to the component, the component handles its 'open' state with this internal state
-  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
-  const [searchValue, setSearchValue] = React.useState("");
-  const [inputValue, setInputValue] = React.useState(getValue(value ? value : initialValue, ""));
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [inputValue, setInputValue] = useState(getValue(value ? value : initialValue, ""));
   useEffect(
     function () {
       if (inputValue?.length > 0 && value?.length === 0) {
@@ -103,7 +103,7 @@ export default function LocationSearchBar({
     },
     [value]
   );
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = useState(false);
   const HUB_COUNTRY_RESTRICTIONS = {
     perth: "gb",
   };
@@ -113,7 +113,7 @@ export default function LocationSearchBar({
     perthshire: "Perth and Kinross",
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     let active = true;
 
     (async () => {
@@ -274,7 +274,7 @@ export default function LocationSearchBar({
     setSearchValueThrottled(event.target.value);
   };
 
-  const setSearchValueThrottled = React.useMemo(
+  const setSearchValueThrottled = useMemo(
     () =>
       debounce((value) => {
         setSearchValue(value);
@@ -337,7 +337,7 @@ export default function LocationSearchBar({
             color={color || "contrast"}
             InputProps={{
               ...params.InputProps,
-              endAdornment: <React.Fragment>{params.InputProps.endAdornment}</React.Fragment>,
+              endAdornment: <Fragment>{params.InputProps.endAdornment}</Fragment>,
               className: `${textFieldClassName}`,
             }}
             FormHelperTextProps={{
