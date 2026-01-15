@@ -68,10 +68,6 @@ const useStyles = makeStyles((theme) => ({
   allProjectsLink: {
     marginRight: theme.spacing(1.5),
   },
-  climateMatchLinkContainer: {
-    display: "flex",
-    alignItems: "center",
-  },
   climateMatchLink: {
     color: theme.palette.primary.contrastText,
     fontWeight: 600,

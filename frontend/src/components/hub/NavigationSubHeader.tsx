@@ -34,10 +34,6 @@ const useStyles = makeStyles((theme) => ({
   allProjectsLink: {
     marginRight: theme.spacing(1.5),
   },
-  climateMatchButton: {
-    background: theme.palette.primary.light,
-    color: "black",
-  },
 }));
 
 export default function NavigationSubHeader({ hubName, allHubs, isLocationHub }: any) {

@@ -57,13 +57,6 @@ const useStyles = makeStyles((theme) => ({
   highlighted: {
     color: theme.palette.yellow.main,
   },
-  climateMatchButtonContainer: {
-    display: "flex",
-    justifyContent: "right",
-    height: 38,
-    marginTop: theme.spacing(1),
-  },
-
   subHeadLineText: {
     fontWeight: 600,
   },
