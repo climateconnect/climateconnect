@@ -219,8 +219,9 @@ class ListProjectsView(ListAPIView):
 
         # Conditionally select_related parent_project for detail views or when filtering by parent
         # This avoids unnecessary JOINs in list views
+        # Check if self.action exists (ViewSets) or if we're filtering by parent (APIViews)
         if (
-            self.action == 'retrieve' or  # Detail view
+            (hasattr(self, 'action') and self.action == 'retrieve') or  # Detail view in ViewSet
             'parent_project' in self.request.query_params or
             'parent_project_slug' in self.request.query_params
         ):
