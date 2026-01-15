@@ -24,9 +24,7 @@ class Command(BaseCommand):
             nargs="+",
             type=int,
             default=[26574, 26793, 27265, 27866, 28788, 29018, 29252, 30059],
-            
             help="Location IDs to create references for",
-
         )
 
     def handle(self, *args, **options):
@@ -118,7 +116,9 @@ class Command(BaseCommand):
             if i == 1:
                 # Create a test organization (use loc_id for unique names)
                 org_name = f"{DELETE_PREFIX}Org {loc_id} {loc_name}"
-                if not Organization.objects.filter(url_slug=f"test-org-{loc_id}").exists():
+                if not Organization.objects.filter(
+                    url_slug=f"test-org-{loc_id}"
+                ).exists():
                     Organization.objects.create(
                         name=org_name,
                         url_slug=f"test-org-{loc_id}",
@@ -130,7 +130,9 @@ class Command(BaseCommand):
             if False:
                 # Create a test project (use loc_id for unique names)
                 project_name = f"{DELETE_PREFIX}Project {loc_id} {loc_name}"
-                if not Project.objects.filter(url_slug=f"test-project-{loc_id}").exists():
+                if not Project.objects.filter(
+                    url_slug=f"test-project-{loc_id}"
+                ).exists():
                     Project.objects.create(
                         name=project_name,
                         url_slug=f"test-project-{loc_id}",

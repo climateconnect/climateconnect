@@ -90,9 +90,7 @@ class LocationCleanup:
             osm_id__isnull=False,
             osm_type__isnull=False,
             osm_class__isnull=False,
-        ).exclude(
-            Q(osm_type="") | Q(osm_class="")
-        )
+        ).exclude(Q(osm_type="") | Q(osm_class=""))
 
         # Group by OSM tuple
         osm_groups = defaultdict(list)
@@ -190,7 +188,9 @@ class LocationCleanup:
             try:
                 Location.objects.filter(id=location_id).delete()
             except Exception as e:
-                self.stats["errors"].append(f"Failed to delete location {location_id}: {e}")
+                self.stats["errors"].append(
+                    f"Failed to delete location {location_id}: {e}"
+                )
                 logger.error(f"Failed to delete location {location_id}: {e}")
 
     def merge_duplicates(self, duplicate_groups: dict):
@@ -365,8 +365,9 @@ class Command(BaseCommand):
 
         if stats["errors"]:
             self.stderr.write(
-                self.style.ERROR(f"Cleanup completed with {len(stats['errors'])} errors")
+                self.style.ERROR(
+                    f"Cleanup completed with {len(stats['errors'])} errors"
+                )
             )
         else:
             self.stdout.write(self.style.SUCCESS("Cleanup completed successfully"))
-
