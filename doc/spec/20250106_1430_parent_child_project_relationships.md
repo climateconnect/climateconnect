@@ -779,11 +779,32 @@ def test_filter_by_has_children():
   - Created comprehensive test suite: model validation, signals, management command, API (pending)
   - Applied migration successfully to development database
   - Committed initial implementation: `1240e087`
-  - Next steps: Fix test fixture issues, implement API serializers and views, run full test suite
+
+**2026-01-15 08:15** - **API layer completed**
+  - Updated ProjectSerializer (detail view) with parent/child relationship fields
+  - Updated ProjectStubSerializer (list view) with lightweight parent/child fields
+  - Added `get_parent_project_name()` and `get_child_projects_count()` serializer methods
+  - Implemented API filtering: `parent_project`, `parent_project_slug`, `has_children`
+  - Optimized queryset with conditional `select_related('parent_project')` for detail views
+  - Enhanced Django admin: added search fields, list filters, list_display columns, raw_id_fields
+  - Made `has_children` read-only in admin (managed by signals)
+  - All tests passing (model, signals, management command)
+  - Committed API layer: `6d8fe6ed`
+  - Next steps: Run full test suite, test API endpoints manually, update documentation
 
 ## Acceptance Criteria
 
-- [ ] Database migration created with `parent_project` and `has_children` fields, indexes, and proper constraints
+- [x] Database migration created with `parent_project` and `has_children` fields, indexes, and proper constraints
+- [x] Model validation prevents self-reference, circular references, and enforces max depth = 1
+- [x] Django signals keep `has_children` synchronized with actual child projects
+- [x] Management command `reconcile_has_children` with `--dry-run` support for safety net
+- [x] API serializers distinguish between list view (lightweight) and detail view (full info)
+- [x] API filtering by parent ID, parent slug, and `has_children` flag
+- [x] Performance optimizations: indexes, conditional `select_related`, no N+1 queries
+- [x] Django admin configuration with search, filters, and display columns
+- [ ] API endpoint tests verify filtering and serialization (next step)
+- [ ] Frontend integration (separate ticket/phase)
+- [ ] Documentation updated with API examples and use cases
 - [ ] Migration includes data population function for `has_children` field
 - [ ] Migration tested locally and on staging without data loss
 - [ ] **Migration is backward compatible** (all existing tests pass without modification)
