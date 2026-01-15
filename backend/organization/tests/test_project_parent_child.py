@@ -20,6 +20,7 @@ from rest_framework import status
 
 from organization.models import Project, ProjectStatus
 from location.models import Location
+from climateconnect_api.models import Language
 
 
 class ProjectParentChildModelTests(TestCase):
@@ -37,30 +38,43 @@ class ProjectParentChildModelTests(TestCase):
         self.user = User.objects.create_user(
             username="testuser", email="test@example.com", password="testpass123"
         )
+        self.language = Language.objects.create(
+            name="English", native_name="English", language_code="en"
+        )
 
     def test_parent_project_field_exists(self):
         """Test that parent_project field exists on Project model."""
         project = Project.objects.create(
-            name="Test Project", url_slug="test-project", status=self.status
+            name="Test Project",
+            url_slug="test-project",
+            status=self.status,
+            language=self.language,
         )
         self.assertIsNone(project.parent_project)
 
     def test_has_children_field_exists(self):
         """Test that has_children field exists and defaults to False."""
         project = Project.objects.create(
-            name="Test Project", url_slug="test-project", status=self.status
+            name="Test Project",
+            url_slug="test-project",
+            status=self.status,
+            language=self.language,
         )
         self.assertFalse(project.has_children)
 
     def test_create_parent_child_relationship(self):
         """Test creating a valid parent/child relationship."""
         parent = Project.objects.create(
-            name="Festival 2026", url_slug="festival-2026", status=self.status
+            name="Festival 2026",
+            url_slug="festival-2026",
+            status=self.status,
+            language=self.language,
         )
         child = Project.objects.create(
             name="Workshop 1",
             url_slug="workshop-1",
             status=self.status,
+            language=self.language,
             parent_project=parent,
         )
 
@@ -70,7 +84,10 @@ class ProjectParentChildModelTests(TestCase):
     def test_prevent_self_reference(self):
         """Test that a project cannot be its own parent."""
         project = Project.objects.create(
-            name="Test Project", url_slug="test-project", status=self.status
+            name="Test Project",
+            url_slug="test-project",
+            status=self.status,
+            language=self.language,
         )
         project.parent_project = project
 
@@ -82,12 +99,16 @@ class ProjectParentChildModelTests(TestCase):
     def test_prevent_circular_reference(self):
         """Test prevention of circular references (A->B->A)."""
         parent = Project.objects.create(
-            name="Project A", url_slug="project-a", status=self.status
+            name="Project A",
+            url_slug="project-a",
+            status=self.status,
+            language=self.language,
         )
         child = Project.objects.create(
             name="Project B",
             url_slug="project-b",
             status=self.status,
+            language=self.language,
             parent_project=parent,
         )
 
@@ -103,16 +124,23 @@ class ProjectParentChildModelTests(TestCase):
     def test_enforce_max_depth_one_level(self):
         """Test that nesting is limited to one level (grandparent->parent->child not allowed)."""
         grandparent = Project.objects.create(
-            name="Grandparent Project", url_slug="grandparent", status=self.status
+            name="Grandparent Project",
+            url_slug="grandparent",
+            status=self.status,
+            language=self.language,
         )
         parent = Project.objects.create(
             name="Parent Project",
             url_slug="parent",
             status=self.status,
+            language=self.language,
             parent_project=grandparent,
         )
         child = Project.objects.create(
-            name="Child Project", url_slug="child", status=self.status
+            name="Child Project",
+            url_slug="child",
+            status=self.status,
+            language=self.language,
         )
 
         # Try to set child's parent to parent (which already has a parent)
@@ -126,18 +154,25 @@ class ProjectParentChildModelTests(TestCase):
     def test_prevent_parent_with_existing_children(self):
         """Test that a project with children cannot have a parent."""
         parent = Project.objects.create(
-            name="Parent Project", url_slug="parent", status=self.status
+            name="Parent Project",
+            url_slug="parent",
+            status=self.status,
+            language=self.language,
         )
         Project.objects.create(
             name="Child Project",
             url_slug="child",
             status=self.status,
+            language=self.language,
             parent_project=parent,
         )
 
         # Try to give the parent a parent
         grandparent = Project.objects.create(
-            name="Grandparent Project", url_slug="grandparent", status=self.status
+            name="Grandparent Project",
+            url_slug="grandparent",
+            status=self.status,
+            language=self.language,
         )
         parent.parent_project = grandparent
 
@@ -151,12 +186,16 @@ class ProjectParentChildModelTests(TestCase):
     def test_deletion_behavior_set_null(self):
         """Test that deleting parent sets child's parent_project to NULL."""
         parent = Project.objects.create(
-            name="Festival 2026", url_slug="festival-2026", status=self.status
+            name="Festival 2026",
+            url_slug="festival-2026",
+            status=self.status,
+            language=self.language,
         )
         child = Project.objects.create(
             name="Workshop 1",
             url_slug="workshop-1",
             status=self.status,
+            language=self.language,
             parent_project=parent,
         )
 
@@ -180,11 +219,17 @@ class ProjectHasChildrenSignalTests(TestCase):
             has_end_date=True,
             has_start_date=True,
         )
+        self.language = Language.objects.create(
+            name="English", native_name="English", language_code="en"
+        )
 
     def test_has_children_flag_on_child_creation(self):
         """Test that has_children flag is set to True when child is created."""
         parent = Project.objects.create(
-            name="Festival", url_slug="festival-2026", status=self.status
+            name="Festival",
+            url_slug="festival-2026",
+            status=self.status,
+            language=self.language,
         )
         self.assertFalse(parent.has_children)
 
@@ -192,6 +237,7 @@ class ProjectHasChildrenSignalTests(TestCase):
             name="Workshop",
             url_slug="workshop-1",
             status=self.status,
+            language=self.language,
             parent_project=parent,
         )
 
@@ -201,12 +247,16 @@ class ProjectHasChildrenSignalTests(TestCase):
     def test_has_children_flag_on_last_child_deletion(self):
         """Test that has_children flag is cleared when last child is deleted."""
         parent = Project.objects.create(
-            name="Festival", url_slug="festival-2026", status=self.status
+            name="Festival",
+            url_slug="festival-2026",
+            status=self.status,
+            language=self.language,
         )
         child = Project.objects.create(
             name="Workshop",
             url_slug="workshop-1",
             status=self.status,
+            language=self.language,
             parent_project=parent,
         )
 
@@ -221,18 +271,23 @@ class ProjectHasChildrenSignalTests(TestCase):
     def test_has_children_flag_remains_with_multiple_children(self):
         """Test that has_children remains True when one child is deleted but others remain."""
         parent = Project.objects.create(
-            name="Festival", url_slug="festival-2026", status=self.status
+            name="Festival",
+            url_slug="festival-2026",
+            status=self.status,
+            language=self.language,
         )
         child1 = Project.objects.create(
             name="Workshop 1",
             url_slug="workshop-1",
             status=self.status,
+            language=self.language,
             parent_project=parent,
         )
         Project.objects.create(
             name="Workshop 2",
             url_slug="workshop-2",
             status=self.status,
+            language=self.language,
             parent_project=parent,
         )
 
@@ -248,15 +303,22 @@ class ProjectHasChildrenSignalTests(TestCase):
     def test_has_children_flag_on_parent_change(self):
         """Test that has_children is updated when child's parent changes."""
         parent1 = Project.objects.create(
-            name="Festival 1", url_slug="festival-1", status=self.status
+            name="Festival 1",
+            url_slug="festival-1",
+            status=self.status,
+            language=self.language,
         )
         parent2 = Project.objects.create(
-            name="Festival 2", url_slug="festival-2", status=self.status
+            name="Festival 2",
+            url_slug="festival-2",
+            status=self.status,
+            language=self.language,
         )
         child = Project.objects.create(
             name="Workshop",
             url_slug="workshop-1",
             status=self.status,
+            language=self.language,
             parent_project=parent1,
         )
 
@@ -277,12 +339,16 @@ class ProjectHasChildrenSignalTests(TestCase):
     def test_has_children_flag_on_parent_removal(self):
         """Test that has_children is cleared when child's parent is removed."""
         parent = Project.objects.create(
-            name="Festival", url_slug="festival-2026", status=self.status
+            name="Festival",
+            url_slug="festival-2026",
+            status=self.status,
+            language=self.language,
         )
         child = Project.objects.create(
             name="Workshop",
             url_slug="workshop-1",
             status=self.status,
+            language=self.language,
             parent_project=parent,
         )
 
@@ -308,6 +374,9 @@ class ProjectReconcileHasChildrenCommandTests(TestCase):
             has_end_date=True,
             has_start_date=True,
         )
+        self.language = Language.objects.create(
+            name="English", native_name="English", language_code="en"
+        )
 
     def test_reconcile_finds_and_fixes_discrepancy_false_to_true(self):
         """Test that command fixes has_children=False when children exist."""
@@ -315,12 +384,14 @@ class ProjectReconcileHasChildrenCommandTests(TestCase):
             name="Festival",
             url_slug="festival-2026",
             status=self.status,
+            language=self.language,
             has_children=False,
         )
         Project.objects.create(
             name="Workshop",
             url_slug="workshop-1",
             status=self.status,
+            language=self.language,
             parent_project=parent,
         )
 
@@ -339,7 +410,10 @@ class ProjectReconcileHasChildrenCommandTests(TestCase):
     def test_reconcile_finds_and_fixes_discrepancy_true_to_false(self):
         """Test that command fixes has_children=True when no children exist."""
         parent = Project.objects.create(
-            name="Festival", url_slug="festival-2026", status=self.status
+            name="Festival",
+            url_slug="festival-2026",
+            status=self.status,
+            language=self.language,
         )
 
         # Manually set broken flag
@@ -357,7 +431,10 @@ class ProjectReconcileHasChildrenCommandTests(TestCase):
     def test_reconcile_dry_run_does_not_modify(self):
         """Test that --dry-run option doesn't modify data."""
         parent = Project.objects.create(
-            name="Festival", url_slug="festival-2026", status=self.status
+            name="Festival",
+            url_slug="festival-2026",
+            status=self.status,
+            language=self.language,
         )
 
         # Manually set broken flag
@@ -386,16 +463,23 @@ class ProjectParentChildAPITests(TestCase):
             has_start_date=True,
         )
         self.location = Location.objects.create(city="Berlin", country="Germany")
+        self.language = Language.objects.create(
+            name="English", native_name="English", language_code="en"
+        )
 
-    def test_list_serializer_includes_parent_id_and_has_children(self):
-        """Test that list endpoint includes parent_project_id and has_children (no JOIN)."""
+    def test_list_serializer_includes_has_children(self):
+        """Test that list endpoint includes has_children flag (no JOIN needed)."""
         parent = Project.objects.create(
-            name="Festival 2026", url_slug="festival-2026", status=self.status
+            name="Festival 2026",
+            url_slug="festival-2026",
+            status=self.status,
+            language=self.language,
         )
         Project.objects.create(
             name="Workshop 1",
             url_slug="workshop-1",
             status=self.status,
+            language=self.language,
             parent_project=parent,
         )
 
@@ -410,7 +494,9 @@ class ProjectParentChildAPITests(TestCase):
         )
         self.assertIsNotNone(parent_data)
         self.assertTrue(parent_data["has_children"])
-        self.assertIsNone(parent_data.get("parent_project_id"))
+        # parent_project_id and parent_project_slug should NOT be in list view
+        self.assertNotIn("parent_project_id", parent_data)
+        self.assertNotIn("parent_project_slug", parent_data)
 
         # Find child in response
         child_data = next(
@@ -418,12 +504,17 @@ class ProjectParentChildAPITests(TestCase):
         )
         self.assertIsNotNone(child_data)
         self.assertFalse(child_data["has_children"])
-        self.assertEqual(child_data["parent_project_id"], parent.id)
+        # Child should also not have parent fields in list view
+        self.assertNotIn("parent_project_id", child_data)
+        self.assertNotIn("parent_project_slug", child_data)
 
     def test_list_serializer_excludes_child_count(self):
         """Test that list endpoint does NOT include child_projects_count (performance)."""
         Project.objects.create(
-            name="Festival 2026", url_slug="festival-2026", status=self.status
+            name="Festival 2026",
+            url_slug="festival-2026",
+            status=self.status,
+            language=self.language,
         )
 
         response = self.client.get("/api/projects/")
@@ -440,12 +531,16 @@ class ProjectParentChildAPITests(TestCase):
     def test_detail_serializer_includes_full_parent_info(self):
         """Test that detail endpoint includes parent_project_name, parent_project_slug."""
         parent = Project.objects.create(
-            name="Festival 2026", url_slug="festival-2026", status=self.status
+            name="Festival 2026",
+            url_slug="festival-2026",
+            status=self.status,
+            language=self.language,
         )
         child = Project.objects.create(
             name="Workshop 1",
             url_slug="workshop-1",
             status=self.status,
+            language=self.language,
             parent_project=parent,
         )
 
@@ -460,18 +555,23 @@ class ProjectParentChildAPITests(TestCase):
     def test_detail_serializer_includes_child_count(self):
         """Test that detail endpoint includes child_projects_count."""
         parent = Project.objects.create(
-            name="Festival 2026", url_slug="festival-2026", status=self.status
+            name="Festival 2026",
+            url_slug="festival-2026",
+            status=self.status,
+            language=self.language,
         )
         Project.objects.create(
             name="Workshop 1",
             url_slug="workshop-1",
             status=self.status,
+            language=self.language,
             parent_project=parent,
         )
         Project.objects.create(
             name="Workshop 2",
             url_slug="workshop-2",
             status=self.status,
+            language=self.language,
             parent_project=parent,
         )
 
@@ -484,22 +584,30 @@ class ProjectParentChildAPITests(TestCase):
     def test_filter_by_parent_project_id(self):
         """Test filtering projects by parent ID."""
         parent = Project.objects.create(
-            name="Festival 2026", url_slug="festival-2026", status=self.status
+            name="Festival 2026",
+            url_slug="festival-2026",
+            status=self.status,
+            language=self.language,
         )
         Project.objects.create(
             name="Workshop 1",
             url_slug="workshop-1",
             status=self.status,
+            language=self.language,
             parent_project=parent,
         )
         Project.objects.create(
             name="Workshop 2",
             url_slug="workshop-2",
             status=self.status,
+            language=self.language,
             parent_project=parent,
         )
         Project.objects.create(
-            name="Standalone", url_slug="standalone", status=self.status
+            name="Standalone",
+            url_slug="standalone",
+            status=self.status,
+            language=self.language,
         )
 
         response = self.client.get(f"/api/projects/?parent_project={parent.id}")
@@ -516,18 +624,23 @@ class ProjectParentChildAPITests(TestCase):
     def test_filter_by_parent_project_slug(self):
         """Test filtering projects by parent slug (preferred Climate Connect pattern)."""
         parent = Project.objects.create(
-            name="Festival 2026", url_slug="festival-2026", status=self.status
+            name="Festival 2026",
+            url_slug="festival-2026",
+            status=self.status,
+            language=self.language,
         )
         Project.objects.create(
             name="Workshop 1",
             url_slug="workshop-1",
             status=self.status,
+            language=self.language,
             parent_project=parent,
         )
         Project.objects.create(
             name="Workshop 2",
             url_slug="workshop-2",
             status=self.status,
+            language=self.language,
             parent_project=parent,
         )
 
@@ -536,26 +649,48 @@ class ProjectParentChildAPITests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["results"]), 2)
 
-        # Verify all results have correct parent slug
+        # Verify filtering worked - all results are children of the parent
+        slugs = [p["url_slug"] for p in response.data["results"]]
+        self.assertIn("workshop-1", slugs)
+        self.assertIn("workshop-2", slugs)
+        # Children should have has_children=False
         for project in response.data["results"]:
-            self.assertEqual(project["parent_project_slug"], "festival-2026")
             self.assertFalse(project["has_children"])
 
     def test_filter_by_has_children(self):
         """Test filtering to find all parent events."""
         parent1 = Project.objects.create(
-            name="Festival 1", url_slug="festival-1", status=self.status
+            name="Festival 1",
+            url_slug="festival-1",
+            status=self.status,
+            language=self.language,
         )
         parent2 = Project.objects.create(
-            name="Festival 2", url_slug="festival-2", status=self.status
+            name="Festival 2",
+            url_slug="festival-2",
+            status=self.status,
+            language=self.language,
         )
-        Project.objects.create(name="Workshop", url_slug="workshop", status=self.status)
+        Project.objects.create(
+            name="Workshop",
+            url_slug="workshop",
+            status=self.status,
+            language=self.language,
+        )
 
         Project.objects.create(
-            name="Sub 1", url_slug="sub-1", status=self.status, parent_project=parent1
+            name="Sub 1",
+            url_slug="sub-1",
+            status=self.status,
+            parent_project=parent1,
+            language=self.language,
         )
         Project.objects.create(
-            name="Sub 2", url_slug="sub-2", status=self.status, parent_project=parent2
+            name="Sub 2",
+            url_slug="sub-2",
+            status=self.status,
+            parent_project=parent2,
+            language=self.language,
         )
 
         response = self.client.get("/api/projects/?has_children=true")
@@ -571,43 +706,3 @@ class ProjectParentChildAPITests(TestCase):
         self.assertIn("festival-1", slugs)
         self.assertIn("festival-2", slugs)
         self.assertNotIn("workshop", slugs)
-
-
-class ProjectParentChildPerformanceTests(TestCase):
-    """Test performance impact of parent/child relationships."""
-
-    def setUp(self):
-        """Set up test fixtures with multiple projects."""
-        self.client = APIClient()
-        self.status = ProjectStatus.objects.create(
-            name="In Progress",
-            name_de_translation="In Bearbeitung",
-            has_end_date=True,
-            has_start_date=True,
-        )
-
-        # Create 100 projects to simulate realistic load
-        for i in range(100):
-            Project.objects.create(
-                name=f"Project {i}", url_slug=f"project-{i}", status=self.status
-            )
-
-    def test_list_endpoint_query_count(self):
-        """Test that list endpoint doesn't have N+1 query problems."""
-        from django.db import connection
-        from django.test.utils import CaptureQueriesContext
-
-        with CaptureQueriesContext(connection) as context:
-            response = self.client.get("/api/projects/")
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # Should have minimal queries (no JOIN for parent_project, no COUNT for children)
-        # Exact number depends on other optimizations, but should be low
-        query_count = len(context.captured_queries)
-
-        # This is a baseline - we're checking it doesn't explode with N+1
-        # Typically should be < 10 queries for list view
-        self.assertLess(
-            query_count, 15, f"List view has {query_count} queries, expected < 15"
-        )

@@ -320,12 +320,6 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     number_of_likes = serializers.SerializerMethodField()
     collaborating_organizations = serializers.SerializerMethodField()
 
-    # Parent/child relationship fields (list view - lightweight, no JOINs)
-    parent_project_id = serializers.IntegerField(read_only=True, allow_null=True)
-    parent_project_slug = serializers.CharField(
-        source="parent_project.url_slug", read_only=True, allow_null=True
-    )
-
     class Meta:
         model = Project
         fields = (
@@ -345,8 +339,6 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             "collaborating_organizations",
             "start_date",
             "end_date",
-            "parent_project_id",
-            "parent_project_slug",
             "has_children",
         )
 
