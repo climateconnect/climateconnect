@@ -1,4 +1,4 @@
-import { Badge, Button, Container, Link, Theme, Typography, useMediaQuery } from "@mui/material";
+import { Container, Link, Theme, Typography, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
