@@ -205,6 +205,22 @@ class Project(models.Model):
         "hubs.Hub", related_name="projects_related_hubs", blank=True
     )
 
+    parent_project = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="child_projects",
+        help_text="Parent project for multi-event structures (e.g., festival with sub-events)",
+        db_index=True,
+    )
+
+    has_children = models.BooleanField(
+        default=False,
+        help_text="Flag indicating if this project has child projects (events).",
+        db_index=True,
+    )
+
     @property
     def cached_ranking(self) -> int:
         """Carful with this property, it might trigger an N+1 query problem"""
@@ -228,6 +244,31 @@ class Project(models.Model):
             end_date=self.end_date,
             created_at=self.created_at,
         )
+
+    def clean(self):
+        """Validate parent/child relationships."""
+        super().clean()
+
+        if self.parent_project:
+            # Prevent self-reference
+            if self.parent_project == self:
+                from django.core.exceptions import ValidationError
+
+                raise ValidationError("A project cannot be its own parent")
+
+            # Prevent nesting beyond one level
+            if self.parent_project.parent_project is not None:
+                from django.core.exceptions import ValidationError
+
+                raise ValidationError("Projects can only be nested one level deep")
+
+            # Prevent making a parent if already has children
+            if self.pk and self.child_projects.exists():
+                from django.core.exceptions import ValidationError
+
+                raise ValidationError(
+                    "A project with child projects cannot have a parent"
+                )
 
     class Meta:
         app_label = "organization"
