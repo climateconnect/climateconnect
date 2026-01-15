@@ -68,10 +68,6 @@ const useStyles = makeStyles((theme) => ({
   allProjectsLink: {
     marginRight: theme.spacing(1.5),
   },
-  climateMatchLinkContainer: {
-    display: "flex",
-    alignItems: "center",
-  },
   climateMatchLink: {
     color: theme.palette.primary.contrastText,
     fontWeight: 600,
@@ -166,17 +162,6 @@ export default function HubTabsNavigation({
             >
               {texts.emmerdingen_buergerenergie}
             </Link>
-          )}
-          {!isCustomHub && !isEmmendingenHub && (
-            <div className={classes.climateMatchLinkContainer}>
-              <Link
-                className={classes.climateMatchLink}
-                href={`${getLocalePrefix(locale)}/climatematch?from_hub=${hubUrl}`}
-                underline="hover"
-              >
-                ClimateMatch
-              </Link>
-            </div>
           )}
           {isNarrowScreen && (
             <>
