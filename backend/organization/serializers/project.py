@@ -63,6 +63,12 @@ class ProjectSerializer(serializers.ModelSerializer):
     language = serializers.SerializerMethodField()
     project_type = serializers.SerializerMethodField()
 
+    # Parent/child relationship fields (detail view)
+    parent_project_id = serializers.IntegerField(source='parent_project.id', read_only=True, allow_null=True)
+    parent_project_name = serializers.SerializerMethodField()
+    parent_project_slug = serializers.CharField(source='parent_project.url_slug', read_only=True, allow_null=True)
+    child_projects_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Project
         fields = (
@@ -92,6 +98,11 @@ class ProjectSerializer(serializers.ModelSerializer):
             "language",
             "project_type",
             "additional_loc_info",
+            "parent_project_id",
+            "parent_project_name",
+            "parent_project_slug",
+            "has_children",
+            "child_projects_count",
         )
         read_only_fields = ["url_slug"]
 
@@ -168,6 +179,18 @@ class ProjectSerializer(serializers.ModelSerializer):
         )
         serializer = ProjectTypesSerializer(project_type, many=False)
         return serializer.data
+
+    def get_parent_project_name(self, obj):
+        """Get parent project name with translation support."""
+        if obj.parent_project:
+            return get_project_name(obj.parent_project, get_language())
+        return None
+
+    def get_child_projects_count(self, obj):
+        """Get count of child projects (only in detail view)."""
+        if hasattr(obj, 'child_projects'):
+            return obj.child_projects.count()
+        return 0
 
 
 class EditProjectSerializer(ProjectSerializer):
@@ -293,6 +316,10 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     number_of_likes = serializers.SerializerMethodField()
     collaborating_organizations = serializers.SerializerMethodField()
 
+    # Parent/child relationship fields (list view - lightweight, no JOINs)
+    parent_project_id = serializers.IntegerField(source='parent_project_id', read_only=True, allow_null=True)
+    parent_project_slug = serializers.CharField(source='parent_project.url_slug', read_only=True, allow_null=True)
+
     class Meta:
         model = Project
         fields = (
@@ -312,6 +339,9 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             "collaborating_organizations",
             "start_date",
             "end_date",
+            "parent_project_id",
+            "parent_project_slug",
+            "has_children",
         )
 
     def get_name(self, obj):
