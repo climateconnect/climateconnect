@@ -14,11 +14,15 @@ This feature adds support for one-level parent/child relationships between proje
 - Conference with workshops/sessions
 - Campaign with local initiatives
 
+**Primary Management Interface**: Django Admin (backend staff interface)  
+**API**: Read-only access via REST API for frontend consumption
+
 **Design Constraints**:
 - Maximum depth: 1 level (parent → child, no grandchildren)
 - Projects with children cannot themselves be children
 - Deleting parent sets child's `parent_project` to NULL (keeps orphaned projects)
 - Performance-optimized for browse page (no JOINs) and detail page (conditional loading)
+- Relationships managed via Django Admin only (no frontend editing interface in Phase 1)
 
 ---
 
@@ -233,6 +237,438 @@ if (
 ```
 
 **Benefit**: Avoids unnecessary JOIN on list/browse pages, only loads parent when needed
+
+---
+
+## Testing Guide (Django Admin + API Verification)
+
+### Setup Test Environment
+
+1. **Start Django development server**:
+   ```bash
+   cd backend
+   python manage.py runserver
+   ```
+
+2. **Access Django Admin**:
+   - URL: `http://localhost:8000/admin/`
+   - Login with superuser credentials
+
+3. **Navigate to Projects**:
+   - Go to: `http://localhost:8000/admin/organization/project/`
+
+---
+
+### Test Case 1: Create Parent/Child Relationship via Admin
+
+**Objective**: Verify that setting a parent project works and signals update `has_children` automatically.
+
+**Steps**:
+
+1. **Create Parent Project**:
+   - Click "Add Project +" in Django Admin
+   - Fill in required fields:
+     - Name: "Climate Festival 2026"
+     - URL slug: "climate-festival-2026"
+     - Status: Select any status
+     - Short description: "Annual climate festival"
+     - Project type: "Event" (EV)
+   - Leave "Parent project" empty
+   - Save
+
+2. **Verify Parent State**:
+   - In project list, find "Climate Festival 2026"
+   - Check "Has children" column → Should show ❌ (False)
+   - Note the project ID (e.g., 42)
+
+3. **Create Child Project**:
+   - Click "Add Project +" again
+   - Fill in required fields:
+     - Name: "Solar Workshop"
+     - URL slug: "solar-workshop"
+     - Status: Select any status
+     - Short description: "Workshop on solar energy"
+     - Project type: "Event" (EV)
+   - In "Parent project" field:
+     - Click the magnifying glass icon (search)
+     - Search for "Climate Festival 2026"
+     - Select it
+   - Save
+
+4. **Verify Child State**:
+   - Child project should show:
+     - Parent project: "Climate Festival 2026" (clickable link)
+     - Has children: ❌ (False)
+
+5. **Verify Parent Updated Automatically** ⭐:
+   - Go back to project list
+   - Find "Climate Festival 2026"
+   - Check "Has children" column → Should now show ✅ (True)
+   - **This verifies the signal is working!**
+
+**API Verification**:
+```bash
+# Get parent project details (should show child_projects_count: 1)
+curl http://localhost:8000/api/projects/climate-festival-2026/
+
+# Get children of festival (should return solar-workshop)
+curl http://localhost:8000/api/projects/?parent_project_slug=climate-festival-2026
+
+# Filter all projects with children (should include festival)
+curl http://localhost:8000/api/projects/?has_children=true
+```
+
+---
+
+### Test Case 2: Add Multiple Children
+
+**Objective**: Verify that multiple children work and count is accurate.
+
+**Steps**:
+
+1. **Create Second Child**:
+   - Add Project: "Policy Panel"
+   - URL slug: "policy-panel"
+   - Parent project: "Climate Festival 2026"
+   - Save
+
+2. **Create Third Child**:
+   - Add Project: "Networking Session"
+   - URL slug: "networking-session"
+   - Parent project: "Climate Festival 2026"
+   - Save
+
+3. **Verify Parent Still Shows has_children=True**:
+   - Parent "Has children" should still be ✅ (True)
+
+**API Verification**:
+```bash
+# Should return child_projects_count: 3
+curl http://localhost:8000/api/projects/climate-festival-2026/ | jq '.child_projects_count'
+
+# Should return 3 projects
+curl http://localhost:8000/api/projects/?parent_project_slug=climate-festival-2026 | jq '.count'
+```
+
+---
+
+### Test Case 3: Delete Child and Verify Signal
+
+**Objective**: Verify that `has_children` is cleared when last child is deleted.
+
+**Steps**:
+
+1. **Delete All But One Child**:
+   - In admin, open "Policy Panel"
+   - Click "Delete" at bottom
+   - Confirm deletion
+   - Repeat for "Networking Session"
+
+2. **Verify Parent Still has_children=True**:
+   - Parent should still show ✅ (True) because "Solar Workshop" remains
+
+3. **Delete Last Child**:
+   - Delete "Solar Workshop"
+   - Confirm deletion
+
+4. **Verify Parent Now has_children=False** ⭐:
+   - Go back to project list
+   - Find "Climate Festival 2026"
+   - "Has children" should now show ❌ (False)
+   - **This verifies the delete signal is working!**
+
+**API Verification**:
+```bash
+# Should return child_projects_count: 0
+curl http://localhost:8000/api/projects/climate-festival-2026/ | jq '.child_projects_count'
+
+# Should return empty results
+curl http://localhost:8000/api/projects/?parent_project_slug=climate-festival-2026
+```
+
+---
+
+### Test Case 4: Model Validation - Prevent Self-Reference
+
+**Objective**: Verify that a project cannot be its own parent.
+
+**Steps**:
+
+1. **Open Existing Project**:
+   - Edit "Climate Festival 2026"
+
+2. **Try to Set Self as Parent**:
+   - In "Parent project" field, search and select "Climate Festival 2026" (itself)
+   - Click "Save"
+
+3. **Expected Result** ⭐:
+   - Django should show validation error: "A project cannot be its own parent"
+   - Project should not be saved
+
+---
+
+### Test Case 5: Model Validation - Prevent Depth > 1
+
+**Objective**: Verify that grandchildren are not allowed (max depth = 1).
+
+**Steps**:
+
+1. **Setup**:
+   - Create parent: "Festival 2026"
+   - Create child: "Workshop A" (parent: Festival 2026)
+
+2. **Try to Create Grandchild**:
+   - Create new project: "Sub-Workshop"
+   - Try to set "Parent project" to "Workshop A"
+   - Click "Save"
+
+3. **Expected Result** ⭐:
+   - Django should show validation error: "Projects can only be nested one level deep"
+   - Project should not be saved
+
+---
+
+### Test Case 6: Model Validation - Prevent Parent with Children
+
+**Objective**: Verify that a project with children cannot have a parent.
+
+**Steps**:
+
+1. **Setup**:
+   - Parent: "Festival 2026" (has_children=True)
+   - Child: "Workshop A"
+
+2. **Try to Give Parent a Parent**:
+   - Edit "Festival 2026"
+   - Try to set another project as its parent
+   - Click "Save"
+
+3. **Expected Result** ⭐:
+   - Django should show validation error: "A project with child projects cannot have a parent"
+   - Project should not be saved
+
+---
+
+### Test Case 7: Deletion Behavior (SET_NULL)
+
+**Objective**: Verify that deleting a parent orphans children but doesn't delete them.
+
+**Steps**:
+
+1. **Setup**:
+   - Parent: "Festival 2026"
+   - Child: "Workshop A" (parent: Festival 2026)
+   - Note child's ID/slug
+
+2. **Delete Parent**:
+   - Delete "Festival 2026"
+   - Confirm deletion
+
+3. **Verify Child Still Exists** ⭐:
+   - Go to project list
+   - "Workshop A" should still exist
+   - "Workshop A" parent_project should be empty (NULL)
+   - "Workshop A" has_children should be ❌ (False)
+
+**API Verification**:
+```bash
+# Workshop should exist with null parent
+curl http://localhost:8000/api/projects/workshop-a/ | jq '.parent_project_id'
+# Should return: null
+```
+
+---
+
+### Test Case 8: Move Child to Different Parent
+
+**Objective**: Verify that changing a child's parent updates both old and new parent flags.
+
+**Steps**:
+
+1. **Setup**:
+   - Parent A: "Festival 2026" (has_children=True)
+   - Parent B: "Summit 2026" (has_children=False)
+   - Child: "Workshop A" (parent: Festival 2026)
+
+2. **Move Child**:
+   - Edit "Workshop A"
+   - Change "Parent project" from "Festival 2026" to "Summit 2026"
+   - Save
+
+3. **Verify Old Parent Updated** ⭐:
+   - "Festival 2026" has_children → ❌ (False) if it was the only child
+
+4. **Verify New Parent Updated** ⭐:
+   - "Summit 2026" has_children → ✅ (True)
+
+**API Verification**:
+```bash
+# Festival should show 0 children
+curl http://localhost:8000/api/projects/festival-2026/ | jq '.child_projects_count'
+
+# Summit should show 1 child
+curl http://localhost:8000/api/projects/summit-2026/ | jq '.child_projects_count'
+
+# Workshop should show new parent
+curl http://localhost:8000/api/projects/workshop-a/ | jq '.parent_project_slug'
+# Should return: "summit-2026"
+```
+
+---
+
+### Test Case 9: Management Command - Reconciliation
+
+**Objective**: Test the safety net command for fixing discrepancies.
+
+**Steps**:
+
+1. **Create Intentional Discrepancy** (via Django shell):
+   ```python
+   python manage.py shell
+   
+   from organization.models import Project
+   
+   # Get a parent project
+   parent = Project.objects.get(url_slug="festival-2026")
+   
+   # Manually break the flag (bypassing signals)
+   Project.objects.filter(pk=parent.pk).update(has_children=False)
+   
+   # Verify it's broken
+   parent.refresh_from_db()
+   print(f"has_children: {parent.has_children}")  # False
+   print(f"actual children: {parent.child_projects.count()}")  # > 0
+   exit()
+   ```
+
+2. **Run Dry-Run**:
+   ```bash
+   python manage.py reconcile_has_children --dry-run
+   ```
+
+3. **Expected Output** ⭐:
+   ```
+   DRY RUN MODE - No changes will be made
+   Would set has_children=True for 1 projects
+     Projects:
+       - Festival 2026 (ID: 42, 1 children)
+   Would set has_children=False for 0 projects
+   ```
+
+4. **Run Actual Fix**:
+   ```bash
+   python manage.py reconcile_has_children
+   ```
+
+5. **Expected Output**:
+   ```
+   Updated 1 projects to has_children=True
+   ```
+
+6. **Verify in Admin**:
+   - "Festival 2026" has_children → ✅ (True) again
+
+---
+
+### Test Case 10: Admin List Filters
+
+**Objective**: Verify Django admin filtering works.
+
+**Steps**:
+
+1. **Filter by "Has children"**:
+   - In project list, use right sidebar filter
+   - Click "Has children: Yes"
+   - Should show only parent projects
+
+2. **Filter by Project Type**:
+   - Filter by "Event" (EV)
+   - Should show only events
+
+3. **Combine Filters**:
+   - Has children: Yes + Project type: Event
+   - Should show only parent events (festivals, conferences)
+
+4. **Search by Parent Project**:
+   - In search box, type parent project name
+   - Should find child projects
+
+---
+
+### Test Case 11: Admin Search Functionality
+
+**Objective**: Verify enhanced search works.
+
+**Steps**:
+
+1. **Search by Child's Parent Name**:
+   - Search for: "Festival 2026"
+   - Results should include:
+     - "Festival 2026" (direct match)
+     - "Workshop A" (has Festival 2026 as parent)
+
+2. **Search by Parent Slug**:
+   - Search for: "festival-2026"
+   - Should return same results
+
+---
+
+### API Comprehensive Verification
+
+After all admin tests, verify the API returns correct data:
+
+```bash
+# 1. List all projects (should include parent/child fields)
+curl http://localhost:8000/api/projects/ | jq '.results[] | {name, parent_project_id, has_children}'
+
+# 2. Get parent project detail
+curl http://localhost:8000/api/projects/festival-2026/ | jq '{
+  name,
+  parent_project_id,
+  parent_project_name,
+  parent_project_slug,
+  has_children,
+  child_projects_count
+}'
+
+# 3. Get child project detail
+curl http://localhost:8000/api/projects/workshop-a/ | jq '{
+  name,
+  parent_project_id,
+  parent_project_name,
+  parent_project_slug,
+  has_children,
+  child_projects_count
+}'
+
+# 4. Filter by parent ID (if you know the ID)
+curl http://localhost:8000/api/projects/?parent_project=42
+
+# 5. Filter by parent slug
+curl http://localhost:8000/api/projects/?parent_project_slug=festival-2026
+
+# 6. Filter by has_children
+curl http://localhost:8000/api/projects/?has_children=true
+
+# 7. Combine filters
+curl "http://localhost:8000/api/projects/?has_children=true&project_type=EV"
+```
+
+---
+
+### Success Criteria Summary
+
+✅ **All tests pass if**:
+
+1. Setting parent in admin updates `has_children` automatically (signals work)
+2. Deleting children updates parent's `has_children` (delete signal works)
+3. Moving children updates both old and new parent (update signal works)
+4. Validation prevents self-reference, depth > 1, and parent-with-children
+5. Deleting parent orphans children (SET_NULL works)
+6. Admin filters and search work correctly
+7. Management command finds and fixes discrepancies
+8. API returns correct parent/child data in all endpoints
+9. Performance is acceptable (no N+1 queries on list view)
 
 ---
 
@@ -452,29 +888,37 @@ GET /api/projects/?has_children=true&project_type=EV
 
 ## Rollout Plan
 
-### Phase 1: Backend (Current - COMPLETE)
+### Phase 1: Backend (Current - COMPLETE) ✅
 - ✅ Database schema
 - ✅ Model validation
 - ✅ Signals
 - ✅ Management command
-- ✅ API serializers
+- ✅ API serializers (read-only)
 - ✅ API filters
-- ✅ Django admin
+- ✅ Django admin (primary management interface)
 - ✅ Backend tests
 
-### Phase 2: Frontend (Next)
-- [ ] UI for creating parent/child relationships
-- [ ] Browse page: Show parent events filter
-- [ ] Detail page: Show children list
-- [ ] Create project: Option to select parent
-- [ ] Visual indicators (badges, icons)
+### Phase 2: Frontend Display (Next)
+- [ ] Detail page: Show parent project link
+- [ ] Detail page: Show children list for parent events
+- [ ] Browse page: Visual indicators for parent events (badge/icon)
+- [ ] Browse page: Option to filter by parent events
+- [ ] Project card: Show "Part of [Festival Name]" for children
+- [ ] Calendar/schedule view for multi-day events with children
 
-### Phase 3: Polish
-- [ ] Documentation
-- [ ] User guide
+### Phase 3: Frontend Management (Optional/Future)
+- [ ] UI for creating parent/child relationships (admin-only users)
+- [ ] Create project form: Option to select parent
+- [ ] Bulk operations for staff users
+- [ ] Drag-and-drop child reordering
+
+### Phase 4: Polish
+- [ ] User-facing documentation
 - [ ] Migration guide for existing projects
 - [ ] Performance monitoring
-- [ ] A/B testing
+- [ ] Analytics tracking
+
+**Note**: Parent/child relationships are managed via Django Admin. The frontend primarily **displays** these relationships in a user-friendly way. Only backend staff need to manage relationships.
 
 ---
 
