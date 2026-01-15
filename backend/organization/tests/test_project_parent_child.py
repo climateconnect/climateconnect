@@ -596,7 +596,6 @@ class ProjectParentChildPerformanceTests(TestCase):
 
     def test_list_endpoint_query_count(self):
         """Test that list endpoint doesn't have N+1 query problems."""
-        from django.test.utils import override_settings
         from django.db import connection
         from django.test.utils import CaptureQueriesContext
 
