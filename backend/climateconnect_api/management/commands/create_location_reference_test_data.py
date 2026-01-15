@@ -23,8 +23,10 @@ class Command(BaseCommand):
             "--location-ids",
             nargs="+",
             type=int,
-            default=[15009, 15228, 15700, 16301, 17223, 17453, 17687, 18494],
+            default=[26574, 26793, 27265, 27866, 28788, 29018, 29252, 30059],
+            
             help="Location IDs to create references for",
+
         )
 
     def handle(self, *args, **options):
@@ -80,7 +82,7 @@ class Command(BaseCommand):
         created_hubs = 0
         created_ideas = 0
 
-        for loc_id in location_ids:
+        for i, loc_id in enumerate(location_ids):
             try:
                 location = Location.objects.get(id=loc_id)
             except Location.DoesNotExist:
@@ -91,76 +93,81 @@ class Command(BaseCommand):
 
             loc_name = location.city or location.name or f"loc{loc_id}"
 
-            # Create a test user with profile
-            username = f"{DELETE_PREFIX.lower()}user-{loc_id}"
-            user = None
-            if not User.objects.filter(username=username).exists():
-                user = User.objects.create_user(
-                    username=username,
-                    email=f"test-{loc_id}@example.com",
-                    password="testpassword123",
-                    first_name="Test",
-                    last_name=f"User {loc_id}",
-                )
-                # Create the UserProfile (no auto-creation signal exists)
-                UserProfile.objects.create(
-                    user=user,
-                    location=location,
-                    name=f"Test User {loc_name}",
-                )
-                created_users += 1
-            else:
-                user = User.objects.get(username=username)
+            if i == 3:
+                # Create a test user with profile
+                username = f"{DELETE_PREFIX.lower()}user-{loc_id}"
+                user = None
+                if not User.objects.filter(username=username).exists():
+                    user = User.objects.create_user(
+                        username=username,
+                        email=f"test-{loc_id}@example.com",
+                        password="testpassword123",
+                        first_name="Test",
+                        last_name=f"User {loc_id}",
+                    )
+                    # Create the UserProfile (no auto-creation signal exists)
+                    UserProfile.objects.create(
+                        user=user,
+                        location=location,
+                        name=f"Test User {loc_name}",
+                    )
+                    created_users += 1
+                else:
+                    user = User.objects.get(username=username)
 
-            # Create a test organization (use loc_id for unique names)
-            org_name = f"{DELETE_PREFIX}Org {loc_id} {loc_name}"
-            if not Organization.objects.filter(url_slug=f"test-org-{loc_id}").exists():
-                Organization.objects.create(
-                    name=org_name,
-                    url_slug=f"test-org-{loc_id}",
-                    location=location,
-                    short_description=f"Test organization in {loc_name}",
-                )
-                created_orgs += 1
+            if i == 1:
+                # Create a test organization (use loc_id for unique names)
+                org_name = f"{DELETE_PREFIX}Org {loc_id} {loc_name}"
+                if not Organization.objects.filter(url_slug=f"test-org-{loc_id}").exists():
+                    Organization.objects.create(
+                        name=org_name,
+                        url_slug=f"test-org-{loc_id}",
+                        location=location,
+                        short_description=f"Test organization in {loc_name}",
+                    )
+                    created_orgs += 1
 
-            # Create a test project (use loc_id for unique names)
-            project_name = f"{DELETE_PREFIX}Project {loc_id} {loc_name}"
-            if not Project.objects.filter(url_slug=f"test-project-{loc_id}").exists():
-                Project.objects.create(
-                    name=project_name,
-                    url_slug=f"test-project-{loc_id}",
-                    loc=location,
-                    status=status,
-                    short_description=f"Test project in {loc_name}",
-                    is_draft=False,
-                )
-                created_projects += 1
+            if False:
+                # Create a test project (use loc_id for unique names)
+                project_name = f"{DELETE_PREFIX}Project {loc_id} {loc_name}"
+                if not Project.objects.filter(url_slug=f"test-project-{loc_id}").exists():
+                    Project.objects.create(
+                        name=project_name,
+                        url_slug=f"test-project-{loc_id}",
+                        loc=location,
+                        status=status,
+                        short_description=f"Test project in {loc_name}",
+                        is_draft=False,
+                    )
+                    created_projects += 1
 
-            # Create a test hub (use loc_id for unique names, ManyToMany location)
-            hub_name = f"{DELETE_PREFIX}Hub {loc_id} {loc_name}"
-            if not Hub.objects.filter(url_slug=f"test-hub-{loc_id}").exists():
-                hub = Hub.objects.create(
-                    name=hub_name,
-                    url_slug=f"test-hub-{loc_id}",
-                    headline=f"Test Hub for {loc_name}",
-                    hub_type=Hub.LOCATION_HUB_TYPE,
-                    segway_text=f"Test segway text for {loc_name}",
-                    quick_info=f"Quick info about test hub in {loc_name}",
-                )
-                hub.location.add(location)
-                created_hubs += 1
+            if i == 1:
+                # Create a test hub (use loc_id for unique names, ManyToMany location)
+                hub_name = f"{DELETE_PREFIX}Hub {loc_id} {loc_name}"
+                if not Hub.objects.filter(url_slug=f"test-hub-{loc_id}").exists():
+                    hub = Hub.objects.create(
+                        name=hub_name,
+                        url_slug=f"test-hub-{loc_id}",
+                        headline=f"Test Hub for {loc_name}",
+                        hub_type=Hub.LOCATION_HUB_TYPE,
+                        segway_text=f"Test segway text for {loc_name}",
+                        quick_info=f"Quick info about test hub in {loc_name}",
+                    )
+                    hub.location.add(location)
+                    created_hubs += 1
 
-            # Create a test idea (use loc_id for unique names)
-            idea_name = f"{DELETE_PREFIX}Idea {loc_id} {loc_name}"
-            if not Idea.objects.filter(url_slug=f"test-idea-{loc_id}").exists():
-                Idea.objects.create(
-                    name=idea_name,
-                    url_slug=f"test-idea-{loc_id}",
-                    short_description=f"Test idea in {loc_name}",
-                    location=location,
-                    user=user,
-                )
-                created_ideas += 1
+            if False:
+                # Create a test idea (use loc_id for unique names)
+                idea_name = f"{DELETE_PREFIX}Idea {loc_id} {loc_name}"
+                if not Idea.objects.filter(url_slug=f"test-idea-{loc_id}").exists():
+                    Idea.objects.create(
+                        name=idea_name,
+                        url_slug=f"test-idea-{loc_id}",
+                        short_description=f"Test idea in {loc_name}",
+                        location=location,
+                        user=user,
+                    )
+                    created_ideas += 1
 
         self.stdout.write(
             self.style.SUCCESS(
