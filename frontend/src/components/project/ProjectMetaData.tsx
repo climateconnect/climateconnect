@@ -278,6 +278,7 @@ const AdditionalPreviewInfo = ({ project }) => {
           projectType={projectType}
           iconClassName={classes.typeIcon}
           textClassName={classes.metadataText}
+          hasChildren={project.has_children}
         />
       </Box>
     </Box>

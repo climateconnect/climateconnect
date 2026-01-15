@@ -252,11 +252,27 @@ function ShortProjectInfo({ project }) {
   const classes = useStyles({});
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
+  const { getLocalePrefix } = require("./../../../public/lib/apiOperations");
+
   return (
     <>
       <Typography component="div" className={classes.shortDescription}>
         <MessageContent content={project.short_description} />
       </Typography>
+      {project.parent_project_id && project.parent_project_name && (
+        <div className={classes.projectInfoEl}>
+          <Typography>
+            {texts.this_event_is_part_of}{" "}
+            <Link
+              href={`${getLocalePrefix(locale)}/projects/${project.parent_project_slug}`}
+              color="primary"
+              underline="hover"
+            >
+              {project.parent_project_name}
+            </Link>
+          </Typography>
+        </div>
+      )}
       <div className={classes.projectInfoEl}>
         <Typography>
           <Tooltip title={texts.location}>
