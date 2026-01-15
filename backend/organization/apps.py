@@ -8,4 +8,3 @@ class OrganizationConfig(AppConfig):
     def ready(self):
         """Import signals when app is ready."""
         import organization.signals  # noqa
-

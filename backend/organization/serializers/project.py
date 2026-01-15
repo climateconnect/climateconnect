@@ -64,9 +64,13 @@ class ProjectSerializer(serializers.ModelSerializer):
     project_type = serializers.SerializerMethodField()
 
     # Parent/child relationship fields (detail view)
-    parent_project_id = serializers.IntegerField(source='parent_project.id', read_only=True, allow_null=True)
+    parent_project_id = serializers.IntegerField(
+        source="parent_project.id", read_only=True, allow_null=True
+    )
     parent_project_name = serializers.SerializerMethodField()
-    parent_project_slug = serializers.CharField(source='parent_project.url_slug', read_only=True, allow_null=True)
+    parent_project_slug = serializers.CharField(
+        source="parent_project.url_slug", read_only=True, allow_null=True
+    )
     child_projects_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -188,7 +192,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def get_child_projects_count(self, obj):
         """Get count of child projects (only in detail view)."""
-        if hasattr(obj, 'child_projects'):
+        if hasattr(obj, "child_projects"):
             return obj.child_projects.count()
         return 0
 
@@ -318,7 +322,9 @@ class ProjectStubSerializer(serializers.ModelSerializer):
 
     # Parent/child relationship fields (list view - lightweight, no JOINs)
     parent_project_id = serializers.IntegerField(read_only=True, allow_null=True)
-    parent_project_slug = serializers.CharField(source='parent_project.url_slug', read_only=True, allow_null=True)
+    parent_project_slug = serializers.CharField(
+        source="parent_project.url_slug", read_only=True, allow_null=True
+    )
 
     class Meta:
         model = Project

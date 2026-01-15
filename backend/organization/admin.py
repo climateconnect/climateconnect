@@ -80,9 +80,19 @@ class ProjectAdmin(admin.ModelAdmin):
         "parent_project__url_slug",
     )
     list_filter = ("status", "has_children", "project_type")
-    list_display = ("name", "url_slug", "status", "parent_project", "has_children", "project_type", "created_at")
+    list_display = (
+        "name",
+        "url_slug",
+        "status",
+        "parent_project",
+        "has_children",
+        "project_type",
+        "created_at",
+    )
     raw_id_fields = ("parent_project",)  # Better UX for selecting parent project
-    readonly_fields = ("has_children",)  # Managed by signals, should not be manually edited
+    readonly_fields = (
+        "has_children",
+    )  # Managed by signals, should not be manually edited
 
 
 admin.site.register(Project, ProjectAdmin)

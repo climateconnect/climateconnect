@@ -221,11 +221,13 @@ class ListProjectsView(ListAPIView):
         # This avoids unnecessary JOINs in list views
         # Check if self.action exists (ViewSets) or if we're filtering by parent (APIViews)
         if (
-            (hasattr(self, 'action') and self.action == 'retrieve') or  # Detail view in ViewSet
-            'parent_project' in self.request.query_params or
-            'parent_project_slug' in self.request.query_params
+            (
+                hasattr(self, "action") and self.action == "retrieve"
+            )  # Detail view in ViewSet
+            or "parent_project" in self.request.query_params
+            or "parent_project_slug" in self.request.query_params
         ):
-            projects = projects.select_related('parent_project')
+            projects = projects.select_related("parent_project")
 
         # maybe use .annotate() to calculate ranking/counts of coments etc.
 

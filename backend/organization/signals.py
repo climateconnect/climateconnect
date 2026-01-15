@@ -9,7 +9,7 @@ from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 
 
-@receiver(pre_save, sender='organization.Project')
+@receiver(pre_save, sender="organization.Project")
 def track_old_parent_before_save(sender, instance, **kwargs):
     """
     Track the old parent_project value before save.
@@ -28,7 +28,7 @@ def track_old_parent_before_save(sender, instance, **kwargs):
         instance._old_parent_project = None
 
 
-@receiver(post_save, sender='organization.Project')
+@receiver(post_save, sender="organization.Project")
 def update_parent_has_children_on_save(sender, instance, created, **kwargs):
     """
     Update parent's has_children flag when a child is created or modified.
@@ -47,7 +47,7 @@ def update_parent_has_children_on_save(sender, instance, created, **kwargs):
             )
 
     # Update old parent's has_children flag if parent changed
-    if hasattr(instance, '_old_parent_project'):
+    if hasattr(instance, "_old_parent_project"):
         old_parent = instance._old_parent_project
 
         # If there was an old parent and it's different from the new parent
@@ -62,7 +62,7 @@ def update_parent_has_children_on_save(sender, instance, created, **kwargs):
                 )
 
 
-@receiver(pre_delete, sender='organization.Project')
+@receiver(pre_delete, sender="organization.Project")
 def update_parent_has_children_on_delete(sender, instance, **kwargs):
     """
     Update parent's has_children flag when a child is deleted.
@@ -81,4 +81,3 @@ def update_parent_has_children_on_delete(sender, instance, **kwargs):
             sender.objects.filter(pk=instance.parent_project.pk).update(
                 has_children=remaining_children
             )
-

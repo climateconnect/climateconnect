@@ -206,19 +206,19 @@ class Project(models.Model):
     )
 
     parent_project = models.ForeignKey(
-        'self',
+        "self",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='child_projects',
-        help_text='Parent project for multi-event structures (e.g., festival with sub-events)',
-        db_index=True
+        related_name="child_projects",
+        help_text="Parent project for multi-event structures (e.g., festival with sub-events)",
+        db_index=True,
     )
 
     has_children = models.BooleanField(
         default=False,
-        help_text='Flag indicating if this project has child projects (events).',
-        db_index=True
+        help_text="Flag indicating if this project has child projects (events).",
+        db_index=True,
     )
 
     @property
@@ -253,17 +253,22 @@ class Project(models.Model):
             # Prevent self-reference
             if self.parent_project == self:
                 from django.core.exceptions import ValidationError
+
                 raise ValidationError("A project cannot be its own parent")
 
             # Prevent nesting beyond one level
             if self.parent_project.parent_project is not None:
                 from django.core.exceptions import ValidationError
+
                 raise ValidationError("Projects can only be nested one level deep")
 
             # Prevent making a parent if already has children
             if self.pk and self.child_projects.exists():
                 from django.core.exceptions import ValidationError
-                raise ValidationError("A project with child projects cannot have a parent")
+
+                raise ValidationError(
+                    "A project with child projects cannot have a parent"
+                )
 
     class Meta:
         app_label = "organization"
