@@ -128,7 +128,7 @@ class ProjectParentChildModelTests(TestCase):
         parent = Project.objects.create(
             name="Parent Project", url_slug="parent", status=self.status
         )
-        child = Project.objects.create(
+        Project.objects.create(
             name="Child Project",
             url_slug="child",
             status=self.status,
@@ -188,7 +188,7 @@ class ProjectHasChildrenSignalTests(TestCase):
         )
         self.assertFalse(parent.has_children)
 
-        child = Project.objects.create(
+        Project.objects.create(
             name="Workshop",
             url_slug="workshop-1",
             status=self.status,
@@ -229,7 +229,7 @@ class ProjectHasChildrenSignalTests(TestCase):
             status=self.status,
             parent_project=parent,
         )
-        child2 = Project.objects.create(
+        Project.objects.create(
             name="Workshop 2",
             url_slug="workshop-2",
             status=self.status,
@@ -317,7 +317,7 @@ class ProjectReconcileHasChildrenCommandTests(TestCase):
             status=self.status,
             has_children=False,
         )
-        child = Project.objects.create(
+        Project.objects.create(
             name="Workshop",
             url_slug="workshop-1",
             status=self.status,
@@ -392,7 +392,7 @@ class ProjectParentChildAPITests(TestCase):
         parent = Project.objects.create(
             name="Festival 2026", url_slug="festival-2026", status=self.status
         )
-        child = Project.objects.create(
+        Project.objects.create(
             name="Workshop 1",
             url_slug="workshop-1",
             status=self.status,
@@ -422,7 +422,7 @@ class ProjectParentChildAPITests(TestCase):
 
     def test_list_serializer_excludes_child_count(self):
         """Test that list endpoint does NOT include child_projects_count (performance)."""
-        parent = Project.objects.create(
+        Project.objects.create(
             name="Festival 2026", url_slug="festival-2026", status=self.status
         )
 
@@ -486,19 +486,19 @@ class ProjectParentChildAPITests(TestCase):
         parent = Project.objects.create(
             name="Festival 2026", url_slug="festival-2026", status=self.status
         )
-        child1 = Project.objects.create(
+        Project.objects.create(
             name="Workshop 1",
             url_slug="workshop-1",
             status=self.status,
             parent_project=parent,
         )
-        child2 = Project.objects.create(
+        Project.objects.create(
             name="Workshop 2",
             url_slug="workshop-2",
             status=self.status,
             parent_project=parent,
         )
-        standalone = Project.objects.create(
+        Project.objects.create(
             name="Standalone", url_slug="standalone", status=self.status
         )
 
@@ -518,13 +518,13 @@ class ProjectParentChildAPITests(TestCase):
         parent = Project.objects.create(
             name="Festival 2026", url_slug="festival-2026", status=self.status
         )
-        child1 = Project.objects.create(
+        Project.objects.create(
             name="Workshop 1",
             url_slug="workshop-1",
             status=self.status,
             parent_project=parent,
         )
-        child2 = Project.objects.create(
+        Project.objects.create(
             name="Workshop 2",
             url_slug="workshop-2",
             status=self.status,
@@ -549,9 +549,7 @@ class ProjectParentChildAPITests(TestCase):
         parent2 = Project.objects.create(
             name="Festival 2", url_slug="festival-2", status=self.status
         )
-        standalone = Project.objects.create(
-            name="Workshop", url_slug="workshop", status=self.status
-        )
+        Project.objects.create(name="Workshop", url_slug="workshop", status=self.status)
 
         Project.objects.create(
             name="Sub 1", url_slug="sub-1", status=self.status, parent_project=parent1
