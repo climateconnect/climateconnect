@@ -147,6 +147,8 @@ type Props = {
   toggleShowFollowers: Function; //merge like & follow?
   toggleShowLikes: Function; //merge like & follow?
   hubUrl?: string;
+  parentProjectName?: string; // Name of the parent project
+  parentProjectSlug?: string; // Slug of the parent project
 };
 
 export default function ProjectOverview({
@@ -259,20 +261,6 @@ function ShortProjectInfo({ project }) {
       <Typography component="div" className={classes.shortDescription}>
         <MessageContent content={project.short_description} />
       </Typography>
-      {project.parent_project_id && project.parent_project_name && (
-        <div className={classes.projectInfoEl}>
-          <Typography>
-            {texts.this_event_is_part_of}{" "}
-            <Link
-              href={`${getLocalePrefix(locale)}/projects/${project.parent_project_slug}`}
-              color="primary"
-              underline="hover"
-            >
-              {project.parent_project_name}
-            </Link>
-          </Typography>
-        </div>
-      )}
       <div className={classes.projectInfoEl}>
         <Typography>
           <Tooltip title={texts.location}>

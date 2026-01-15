@@ -476,6 +476,9 @@ function parseProject(project) {
     number_of_likes: project.number_of_likes,
     project_type: project.project_type,
     additional_loc_info: project.additional_loc_info,
+    parent_project_id: project.parent_project_id,
+    parent_project_name: project.parent_project_name,
+    parent_project_slug: project.parent_project_slug,
   };
 }
 

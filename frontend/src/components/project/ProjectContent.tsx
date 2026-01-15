@@ -258,6 +258,21 @@ export default function ProjectContent({
                 ))}
               </div>
             )}
+            {project.parent_project_id && (
+              <Typography>
+                {texts.this_event_is_part_of || "This event belongs to"}{" "}
+                {project.parent_project_name && project.parent_project_slug ? (
+                  <a
+                    href={`/projects/${project.parent_project_slug}`}
+                    style={{ color: theme.palette.primary.main, textDecoration: "none" }}
+                  >
+                    {project.parent_project_name}
+                  </a>
+                ) : (
+                  <span>{texts.a_project_series || "a project series"}</span>
+                )}
+              </Typography>
+            )}
           </div>
           {project.end_date && (
             <Typography>
