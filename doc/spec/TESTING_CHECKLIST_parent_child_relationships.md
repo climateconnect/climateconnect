@@ -128,6 +128,9 @@ curl http://localhost:8000/api/projects/workshop/ | jq '.parent_project_slug'
 # Should return: "summit-b"
 ```
 
+**Note**: A bug was found and fixed here - previously the old parent's `has_children` 
+was not being cleared when a child was moved. This is now working correctly.
+
 ---
 
 ### ✅ 9. Management Command
