@@ -203,7 +203,7 @@ class Project(models.Model):
     
     has_children = models.BooleanField(
         default=False,
-        help_text='Denormalized flag indicating if this project has child projects. Kept in sync via signals.',
+        help_text='Flag indicating if this project has child projects (events).',
         db_index=True  # Enable efficient filtering for parent events
     )
     
@@ -792,68 +792,6 @@ def test_filter_by_has_children():
   - Committed API layer: `6d8fe6ed`
   - Next steps: Run full test suite, test API endpoints manually, update documentation
 
-## Acceptance Criteria
-
-- [x] Database migration created with `parent_project` and `has_children` fields, indexes, and proper constraints
-- [x] Model validation prevents self-reference, circular references, and enforces max depth = 1
-- [x] Django signals keep `has_children` synchronized with actual child projects
-- [x] Management command `reconcile_has_children` with `--dry-run` support for safety net
-- [x] API serializers distinguish between list view (lightweight) and detail view (full info)
-- [x] API filtering by parent ID, parent slug, and `has_children` flag
-- [x] Performance optimizations: indexes, conditional `select_related`, no N+1 queries
-- [x] Django admin configuration with search, filters, and display columns
-- [ ] API endpoint tests verify filtering and serialization (next step)
-- [ ] Frontend integration (separate ticket/phase)
-- [ ] Documentation updated with API examples and use cases
-- [ ] Migration includes data population function for `has_children` field
-- [ ] Migration tested locally and on staging without data loss
-- [ ] **Migration is backward compatible** (all existing tests pass without modification)
-- [ ] **Rollback tested** (can safely drop columns with zero data loss)
-- [ ] Model validation prevents circular references (raises ValidationError)
-- [ ] Model validation enforces max nesting depth of 1 (raises ValidationError)
-- [ ] **Django signals implemented to keep `has_children` in sync** (post_save, pre_delete)
-- [ ] **Signals registered in apps.py ready() method**
-- [ ] **Management command `reconcile_has_children` created with --dry-run support**
-- [ ] Django admin displays parent project in list view
-- [ ] Django admin allows setting parent via dropdown in edit form
-- [ ] Django admin shows inline child projects (read-only)
-- [ ] **API list endpoint includes ONLY `parent_project_id` and `has_children`** (no JOIN - optimal performance)
-- [ ] **API detail endpoint includes `parent_project_id`, `parent_project_name`, `parent_project_slug`, `has_children`, `child_projects_count`** (full info)
-- [ ] **API supports filtering by parent ID**: `/api/projects/?parent_project={id}` returns child projects
-- [ ] **API supports filtering by parent slug**: `/api/projects/?parent_project_slug={slug}` returns child projects
-- [ ] **API supports filtering by `has_children`**: `/api/projects/?has_children=true` returns parent events
-- [ ] **API responses are backward compatible** (existing clients ignore new fields)
-- [ ] **All existing API tests pass without modification** (new fields are purely additive)
-- [ ] **Browse/list page performance remains within 5% of baseline** (critical - no COUNT overhead, no JOIN)
-- [ ] **Detail page performance acceptable with child count** (< 50ms increase)
-- [ ] **Unit tests for `has_children` flag on child creation** (verify signal works)
-- [ ] **Unit tests for `has_children` flag on child deletion** (verify signal works)
-- [ ] **Unit tests for `has_children` flag on parent_project change** (verify signal works)
-- [ ] **Unit tests for signal edge cases** (bulk operations, direct DB updates)
-- [ ] **Integration tests for management command reconciliation** (dry-run and actual)
-- [ ] Unit tests written for all validation logic (100% coverage of edge cases)
-- [ ] Integration tests verify API serialization works correctly
-- [ ] **Integration tests verify list endpoint excludes child_projects_count**
-- [ ] **Integration tests verify detail endpoint includes child_projects_count**
-- [ ] **Integration tests verify filtering by both parent_project ID and slug**
-- [ ] **Integration tests verify filtering by `has_children` flag**
-- [ ] **Integration tests verify `has_children` field present in all API responses**
-- [ ] Performance benchmarks document before/after metrics for both list and detail
-- [ ] Admin documentation created for managing parent/child relationships
-- [ ] **Admin documentation includes management command usage** (weekly reconciliation recommended)
-- [ ] API documentation updated with serializer differences (list vs detail)
-- [ ] **API documentation explains `has_children` flag usage**
-- [ ] Code review completed and approved
-- [ ] Migration deployed to staging and validated
-- [ ] **Verify existing projects in staging remain unchanged** (all parent_project=NULL, has_children=False)
-- [ ] At least 1 test parent/child project pair created in staging
-- [ ] **Verify `has_children` flag updates automatically in staging**
-- [ ] **Run management command in staging to verify reconciliation works**
-- [ ] **Verify list endpoint performance with 1000+ projects (no degradation)**
-- [ ] **Verify can fetch child projects via API using both ID and slug filters**
-- [ ] All tests pass (unit, integration, end-to-end)
-- [ ] Security review passed (SQL injection, data integrity)
-- [ ] Ready for production deployment
 
 ---
 

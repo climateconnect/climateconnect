@@ -217,7 +217,7 @@ class Project(models.Model):
 
     has_children = models.BooleanField(
         default=False,
-        help_text='Denormalized flag indicating if this project has child projects. Kept in sync via signals.',
+        help_text='Flag indicating if this project has child projects (events).',
         db_index=True
     )
 
