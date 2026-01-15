@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext, useState, useEffect, useRef } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -54,6 +54,7 @@ export default function EditOrganizationRoot({
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
   const { locale, locales } = useContext(UserContext);
+  const router = useRouter();
   const STEPS = ["edit_organization", "edit_translations"];
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const [editedOrganization, setEditedOrganization] = useState({ ...organization });
@@ -133,7 +134,7 @@ export default function EditOrganizationRoot({
         locale: locale,
       })
         .then(function () {
-          Router.push({
+          router.push({
             pathname: "/organizations/" + organization.url_slug,
             query: {
               message: texts.successfully_edited_organization,
@@ -153,7 +154,7 @@ export default function EditOrganizationRoot({
     }
   };
   const handleCancel = () => {
-    Router.push("/organizations/" + organization.url_slug);
+    router.push("/organizations/" + organization.url_slug);
   };
 
   const handleGoToPreviousStep = () => {

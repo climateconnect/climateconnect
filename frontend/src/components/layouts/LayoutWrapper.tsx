@@ -3,7 +3,7 @@ import { Snackbar, SnackbarContent, Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { ThemeProvider } from "@mui/material/styles";
 import Head from "next/head";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import FeedbackContext from "../context/FeedbackContext";
@@ -79,7 +79,7 @@ export default function LayoutWrapper({
   const [bannerOpen, setBannerOpen] = useState(true);
   const { acceptedNecessary, locale, isLoading } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
-
+  const router = useRouter();
   const handleUpdateHash = (newHash) => {
     setSnackbarProps({ ...snackbarProps, hash: newHash });
   };
@@ -92,13 +92,13 @@ export default function LayoutWrapper({
   };
 
   const closeBanner = () => setBannerOpen(false);
-  Router.events.on("routeChangeStart", () => {
+  router.events.on("routeChangeStart", () => {
     setLoading(true);
   });
-  Router.events.on("routeChangeComplete", () => {
+  router.events.on("routeChangeComplete", () => {
     setLoading(false);
   });
-  Router.events.on("routeChangeError", () => {
+  router.events.on("routeChangeError", () => {
     setLoading(false);
   });
 
