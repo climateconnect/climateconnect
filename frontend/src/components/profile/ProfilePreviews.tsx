@@ -1,6 +1,6 @@
 import Grid from "@mui/material/Unstable_Grid2";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import LoadingSpinner from "../general/LoadingSpinner";
@@ -38,7 +38,7 @@ export default function ProfilePreviews({
       />
     ));
 
-  const [gridItems, setGridItems] = React.useState(toProfilePreviews(profiles));
+  const [gridItems, setGridItems] = useState(toProfilePreviews(profiles));
 
   const loadMore = async () => {
     if (loadFunc) {

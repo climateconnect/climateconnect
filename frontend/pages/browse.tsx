@@ -6,7 +6,6 @@ import Cookies from "universal-cookie";
 import {
   getOrganizationTagsOptions,
   getProjectTypeOptions,
-  getSkillsOptions,
   getSectorOptions,
 } from "../public/lib/getOptions";
 import { getAllHubs } from "../public/lib/hubOperations";
@@ -25,14 +24,12 @@ export async function getServerSideProps(ctx) {
   const { hideInfo } = NextCookies(ctx);
   const [
     organization_types,
-    skills,
     hubs,
     location_filtered_by,
     projectTypes,
     sectorOptions,
   ] = await Promise.all([
     getOrganizationTagsOptions(ctx.locale),
-    getSkillsOptions(ctx.locale),
     getAllHubs(ctx.locale),
     getLocationFilteredBy(ctx.query),
     getProjectTypeOptions(ctx.locale),
@@ -42,7 +39,6 @@ export async function getServerSideProps(ctx) {
     props: nullifyUndefinedValues({
       filterChoices: {
         organization_types: organization_types,
-        skills: skills,
         sectors: sectorOptions,
       },
       hideInfo: hideInfo === "true",

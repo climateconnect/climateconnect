@@ -7,6 +7,10 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 require("dotenv").config();
 
 module.exports = withBundleAnalyzer({
+  // Disable ESLint during build - it's already run separately in CI
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   // Read set variables from `.env` file
   //For CUSTOM_HUB_URLS use a string of urls split by commas, e.g. CUSTOM_HUB_URLS=url1,url2,url3
   env: pick(process.env, [

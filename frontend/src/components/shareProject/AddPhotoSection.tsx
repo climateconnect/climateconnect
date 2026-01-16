@@ -1,16 +1,16 @@
 import { Button, IconButton, Theme, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
-import React, { useContext } from "react";
-import { getImageDialogHeight } from "../../../public/lib/imageOperations";
-import getTexts from "../../../public/texts/texts";
-import UserContext from "../context/UserContext";
-import UploadImageDialog from "../dialogs/UploadImageDialog";
+import React, { useContext, useRef, useState } from "react";
 import {
+  getImageDialogHeight,
   convertToJPGWithAspectRatio,
   getResizedImage,
   whitenTransparentPixels,
-} from "./../../../public/lib/imageOperations";
+} from "../../../public/lib/imageOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import UploadImageDialog from "../dialogs/UploadImageDialog";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
 const useStyles = makeStyles<Theme, { image?: string }>((theme) => {
@@ -63,9 +63,9 @@ export default function AddPhotoSection({
   const classes = useStyles(projectData);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
-  const [tempImage, setTempImage] = React.useState(projectData.image);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const inputFileRef = React.useRef(null as HTMLInputElement | null);
+  const [tempImage, setTempImage] = useState(projectData.image);
+  const [isLoading, setIsLoading] = useState(false);
+  const inputFileRef = useRef(null as HTMLInputElement | null);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
 
   const handleDialogClickOpen = (dialogName) => {

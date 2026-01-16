@@ -1,6 +1,6 @@
 import { Button, Container, TextField, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getProjectTexts from "../../../public/texts/project_texts";
 import getTexts from "../../../public/texts/texts";
@@ -58,7 +58,7 @@ export default function TranslateProject({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
-  const [waitingForTranslation, setWaitingForTranslation] = React.useState(false);
+  const [waitingForTranslation, setWaitingForTranslation] = useState(false);
 
   if (translations[targetLanguage]) console.log(translations[targetLanguage]);
 

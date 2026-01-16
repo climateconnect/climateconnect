@@ -1,6 +1,6 @@
 import { Button, Checkbox, Container, Theme, Typography, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -72,7 +72,7 @@ export default function CookieBanner({ closeBanner }) {
   const classes = useStyles();
   const { updateCookies, locale } = useContext(UserContext);
   const texts = getTexts({ page: "cookie", locale: locale });
-  const [checked, setChecked] = React.useState({ necessary: true, statistics: false });
+  const [checked, setChecked] = useState({ necessary: true, statistics: false });
   const cookies = new Cookies();
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const onStatisticsChange = () => {

@@ -14,8 +14,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import CloseIcon from "@mui/icons-material/Close";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import React, { useContext } from "react";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import React, { Fragment, useContext, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import FilterSearchBar from "../filter/FilterSearchBar";
@@ -170,7 +169,6 @@ const useStyles = makeStyles<
 });
 
 export default function MultiLevelSelector({
-  dragAble,
   isInPopup,
   itemNamePlural,
   itemsToSelectFrom,
@@ -178,7 +176,7 @@ export default function MultiLevelSelector({
   selected,
   setSelected,
 }: any) {
-  const [expanded, setExpanded] = React.useState(null);
+  const [expanded, setExpanded] = useState(null);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const useStylesProps = {
@@ -212,13 +210,6 @@ export default function MultiLevelSelector({
     );
   };
 
-  const moveItem = (sourcePosition, destinationPosition) => {
-    const ret = selected;
-    const [removed] = ret.splice(sourcePosition, 1);
-    ret.splice(destinationPosition, 0, removed);
-    setSelected(ret);
-  };
-
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   return (
     <>
@@ -233,8 +224,6 @@ export default function MultiLevelSelector({
               className={`${classes.selectedWrapper} ${
                 (isNarrowScreen || isInPopup) && classes.narrowScreenSelectedWrapper
               }`}
-              dragAble={dragAble}
-              moveItem={moveItem}
               texts={texts}
             />
             {selected.length > 0 && <Divider className={classes.divider} />}
@@ -260,8 +249,6 @@ export default function MultiLevelSelector({
             maxSelections={maxSelections}
             onClickUnselect={onClickUnselect}
             className={classes.selectedWrapper}
-            dragAble={dragAble}
-            moveItem={moveItem}
             texts={texts}
           />
         )}
@@ -283,7 +270,7 @@ function ListToChooseWrapper({
   const classes = useStyles({});
 
   // The first section should be the initial tab value
-  const [searchValue, setSearchValue] = React.useState("");
+  const [searchValue, setSearchValue] = useState("");
   const handleSearchBarChange = (event) => setSearchValue(event?.target?.value);
 
   function filteredLists({ searchValue, itemsToSelectFrom }) {
@@ -336,77 +323,13 @@ function ListToChooseWrapper({
 
 function SelectedList({
   className,
-  dragAble,
   itemNamePlural,
   maxSelections,
-  moveItem,
   onClickUnselect,
   selected,
   texts,
 }) {
   const classes = useStyles({});
-
-  const onDragEnd = (result) => {
-    // dropped outside the list
-    if (!result.destination) return;
-
-    moveItem(result.source.index, result.destination.index);
-  };
-  const DragDropContextComponent = DragDropContext as any;
-  const DroppableComponent = Droppable as any;
-  const DraggableComponent = Draggable as any;
-
-  if (dragAble) {
-    return (
-      <DragDropContextComponent onDragEnd={onDragEnd}>
-        <DroppableComponent droppableId="droppable">
-          {(provided) => (
-            <List
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              className={classes.selectedList}
-            >
-              {selected?.map((item, index) => {
-                return (
-                  <DraggableComponent
-                    key={item.id}
-                    draggableId={"draggable" + item.id}
-                    index={index}
-                  >
-                    {(provided) => {
-                      return (
-                        <ListItem
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          key={index}
-                          button
-                          className={`
-                            ${classes.listItem}
-                            ${index == 0 && classes.firstItem}
-                            ${classes.selectedItem}
-                            ${index == 0 && classes.firstSelectedItem}
-                          `}
-                          onClick={() => onClickUnselect(item)}
-                          disableRipple
-                        >
-                          <ListItemText>{item.name}</ListItemText>
-                          <ListItemIcon className={classes.selectedItemIcon}>
-                            <CloseIcon />
-                          </ListItemIcon>
-                        </ListItem>
-                      );
-                    }}
-                  </DraggableComponent>
-                );
-              })}
-              {provided.placeholder}
-            </List>
-          )}
-        </DroppableComponent>
-      </DragDropContextComponent>
-    );
-  }
 
   return (
     <div className={className}>
@@ -514,7 +437,7 @@ function ListToChooseFrom({
             ).length === 1;
 
           return (
-            <React.Fragment key={item.key}>
+            <Fragment key={item.key}>
               <ListItem
                 button
                 disabled={isDisabled}
@@ -599,7 +522,7 @@ function ListToChooseFrom({
               ) : (
                 <></>
               )}
-            </React.Fragment>
+            </Fragment>
           );
         })}
       </List>
