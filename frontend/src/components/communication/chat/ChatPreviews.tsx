@@ -137,7 +137,8 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale, forwardedRef }
   const classes = useStyles();
   const TruncateComponent = Truncate as any;
 
-  if (isNarrowScreen) return <MobileChatPreview chat={chat} isFirstChat={isFirstChat} />;
+  if (isNarrowScreen)
+    return <MobileChatPreview chat={chat} isFirstChat={isFirstChat} forwardedRef={forwardedRef} />;
   else
     return (
       <React.Fragment>
