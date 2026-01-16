@@ -1,11 +1,11 @@
-import Grid from "@mui/material/Unstable_Grid2";
-import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useState } from "react";
+import { Grid } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import LoadingSpinner from "../general/LoadingSpinner";
 import ProjectPreview from "./ProjectPreview";
-import InfiniteScrollGrid from "../general/InfiniteScrollGrid";
+import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
 
 const useStyles = makeStyles({
   reset: {
@@ -14,83 +14,50 @@ const useStyles = makeStyles({
     listStyleType: "none",
     width: "100%",
   },
+  items: {
+    padding: "8px",
+  },
 });
 
 // This component is to display projects with the option to infinitely scroll to get more projects
 export default function ProjectPreviews({
-  hasMore,
-  loadFunc,
-  parentHandlesGridItems,
   projects,
+  loadFunc,
+  hasMore,
   hubUrl,
+  isLoading = false,
   displayOnePreviewInRow,
+  parentHandlesGridItems,
 }: any) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
+
   const toProjectPreviews = (projects) =>
-    (projects || []).map((p) => (
-      <GridItem
-        key={p.url_slug}
-        project={p}
-        hubUrl={hubUrl}
-        displayOnePreviewInRow={displayOnePreviewInRow}
-      />
-    ));
+    (projects || []).map((p) => <GridItem key={p.url_slug} project={p} hubUrl={hubUrl} />);
 
   const [gridItems, setGridItems] = useState(toProjectPreviews(projects));
-  const [isFetchingMore, setIsFetchingMore] = useState(false);
-
-  if (!loadFunc) {
-    hasMore = false;
-  }
 
   const loadMore = async () => {
-    // Sometimes InfiniteScroll calls loadMore twice really fast. Therefore,
-    // to improve performance, we aim to guard against subsequent
-    // fetches to the API by maintaining a local state flag.
-    if (!isFetchingMore) {
-      setIsFetchingMore(true);
+    if (loadFunc) {
       const newProjects = await loadFunc();
-
       if (!parentHandlesGridItems) {
         setGridItems([...gridItems, ...toProjectPreviews(newProjects)]);
       }
-      setIsFetchingMore(false);
     }
   };
 
-  // TODO: use `project.id` instead of index when using real projects
-  return (
-    <>
-      <InfiniteScrollGrid
-        className={classes.reset}
-        component="ul"
-        container
-        // TODO: fix this: InfiniteScroll is throwing a React error:
-        // Failed prop type: Invalid prop `element` supplied to `InfiniteScroll`, expected a ReactNode.
-        element={Grid}
-        // We block subsequent invocations from InfinteScroll until we update local state
-        hasMore={hasMore && !isFetchingMore}
-        loadMore={loadMore}
-        pageStart={1}
-        spacing={2}
-      >
-        {parentHandlesGridItems
-          ? projects && projects.length > 0
-            ? toProjectPreviews(projects)
-            : texts.no_projects_found
-          : gridItems}
-        {isFetchingMore && <LoadingSpinner isLoading key="project-previews-spinner" />}
-      </InfiniteScrollGrid>
-    </>
-  );
-}
+  const { lastElementRef } = useInfiniteScroll({
+    hasMore: hasMore || false,
+    isLoading: isLoading,
+    onLoadMore: loadMore,
+  });
 
-function GridItem({ project, hubUrl, displayOnePreviewInRow }) {
-  const projectPreviewProps = {
-    project: project,
-  } as any;
+  const displayedProjects = parentHandlesGridItems ? projects : gridItems;
+
+  if (!displayedProjects || displayedProjects.length === 0) {
+    return <div>{texts.no_projects_found}</div>;
+  }
 
   const columnValuesFromBreakpoint = {
     xsValue: 12,
@@ -100,15 +67,32 @@ function GridItem({ project, hubUrl, displayOnePreviewInRow }) {
   } as const;
 
   return (
-    <Grid
-      key={project.url_slug}
-      xs={columnValuesFromBreakpoint.xsValue}
-      sm={columnValuesFromBreakpoint.smValue}
-      md={columnValuesFromBreakpoint.mdValue}
-      lg={columnValuesFromBreakpoint.lgValue}
-      component="li"
-    >
-      <ProjectPreview {...projectPreviewProps} hubUrl={hubUrl} />
-    </Grid>
+    <>
+      <Grid container spacing={1} className={classes.reset} component="ul">
+        {displayedProjects.map((project, index) => {
+          const isLastElement = index === displayedProjects.length - 1;
+          return (
+            <Grid
+              item
+              xs={columnValuesFromBreakpoint.xsValue}
+              sm={columnValuesFromBreakpoint.smValue}
+              md={columnValuesFromBreakpoint.mdValue}
+              lg={columnValuesFromBreakpoint.lgValue}
+              key={project.props?.project?.url_slug || project.url_slug}
+              component="li"
+              ref={isLastElement ? lastElementRef : null}
+              className={classes.items}
+            >
+              {project.props ? project : <ProjectPreview project={project} hubUrl={hubUrl} />}
+            </Grid>
+          );
+        })}
+      </Grid>
+      {isLoading && <LoadingSpinner isLoading />}
+    </>
   );
+}
+
+function GridItem({ project, hubUrl }) {
+  return <ProjectPreview project={project} hubUrl={hubUrl} />;
 }
