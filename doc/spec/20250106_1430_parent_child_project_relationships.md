@@ -792,6 +792,17 @@ def test_filter_by_has_children():
   - Committed API layer: `6d8fe6ed`
   - Next steps: Run full test suite, test API endpoints manually, update documentation
 
+**2026-01-19 [TIME]** - **Django admin search and display enhancement**
+  - Extended ProjectAdmin search_fields to enable finding projects by owner (user or organization)
+  - Added search by parent user: username, email, user profile name
+  - Added search by parent organization: organization name
+  - Uses ProjectParents relationship traversal: `project_parent__parent_user__*` and `project_parent__parent_organization__name`
+  - Added `get_owner()` custom method to display owner in list view
+  - Owner column shows either organization name or user profile name (fallback to username)
+  - Added "Owner" column to list_display (positioned after status, before parent_project)
+  - Enables admins to quickly find all projects owned by a specific user or organization
+  - Enables admins to see at a glance who owns each project in the list view
+
 
 ---
 
