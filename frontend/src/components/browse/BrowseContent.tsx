@@ -357,6 +357,8 @@ export default function BrowseContent({
   };
 
   const handleLoadMoreData = async (type) => {
+    if (isFetchingMoreData) return; // Prevent multiple simultaneous requests
+
     try {
       setIsFetchingMoreData(true);
       const res = await loadMoreData({
@@ -368,8 +370,6 @@ export default function BrowseContent({
         hubUrl: hubData?.url_slug,
       });
 
-      // TODO: these setState and hooks calls should likely be memoized and combined
-      setIsFetchingMoreData(false);
       setState({
         ...state,
         nextPages: {
@@ -391,6 +391,8 @@ export default function BrowseContent({
         ...state,
         hasMore: { ...state.hasMore, [type]: false },
       });
+    } finally {
+      setIsFetchingMoreData(false);
     }
   };
 
@@ -434,7 +436,6 @@ export default function BrowseContent({
       if (isNarrowScreen) setFiltersExpandedOnMobile(false);
       else setFiltersExpanded(false);
     }
-
     if (res?.filteredItemsObject) {
       setState({
         ...state,
@@ -503,6 +504,7 @@ export default function BrowseContent({
     hubName: hubName || "",
     nonFilterParams: nonFilterParams,
     linkedHubs: linkedHubs || [],
+    isFetchingMoreData: isFetchingMoreData,
   };
   return (
     <LoadingContext.Provider
@@ -584,12 +586,12 @@ export default function BrowseContent({
               </div>
             )}
             <ProjectPreviews
-              //TODO(unused) className={classes.itemsContainer}
               hasMore={state.hasMore.projects}
               loadFunc={() => handleLoadMoreData("projects")}
               parentHandlesGridItems
               projects={state.items.projects}
               hubUrl={hubUrl}
+              isLoading={isFetchingMoreData}
             />
           </TabContentWrapper>
           <TabContentWrapper type={"organizations"} {...tabContentWrapperProps}>
@@ -604,6 +606,7 @@ export default function BrowseContent({
               organizations={state.items.organizations}
               hubUrl={hubUrl}
               parentHandlesGridItems
+              isLoading={isFetchingMoreData}
             />
           </TabContentWrapper>
           {!hideMembers && (
@@ -620,6 +623,7 @@ export default function BrowseContent({
                 profiles={state.items.members}
                 hubUrl={hubUrl}
                 showAdditionalInfo
+                isLoading={isFetchingMoreData}
               />
             </TabContentWrapper>
           )}
