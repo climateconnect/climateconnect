@@ -15,8 +15,13 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "incremental": true,
     "moduleResolution": "node",
-    "isolatedModules": true
+    "isolatedModules": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
-  "include": ["src/*", "pages/*", "public/*"],
+  "include": ["src/*", "pages/*", "public/*", "app/*", ".next/types/**/*.ts"],
   "exclude": ["node_modules", "**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"]
 }
