@@ -1,4 +1,4 @@
-import { Badge, Button, Container, Link, Theme, Typography, useMediaQuery } from "@mui/material";
+import { Container, Link, Theme, Typography, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -33,10 +33,6 @@ const useStyles = makeStyles((theme) => ({
   },
   allProjectsLink: {
     marginRight: theme.spacing(1.5),
-  },
-  climateMatchButton: {
-    background: theme.palette.primary.light,
-    color: "black",
   },
 }));
 
@@ -75,19 +71,6 @@ export default function NavigationSubHeader({ hubName, allHubs, isLocationHub }:
                 </>
               )}
             </>
-          )}
-          {isLocationHub && isSmallMediumScreen && (
-            <Badge badgeContent={texts.new} color="error">
-              <Button
-                href={`${getLocalePrefix(locale)}/climatematch?from_hub=erlangen`}
-                variant="contained"
-                color="primary"
-                size="small"
-                className={classes.climateMatchButton}
-              >
-                {texts.get_active}
-              </Button>
-            </Badge>
           )}
         </Typography>
         <Typography component="div" className={classes.rightSideContainer}>
