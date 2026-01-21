@@ -206,7 +206,6 @@ export default function HubTabsNavigation({
             hubs={allHubs}
             locale={locale}
             isNarrowScreen={isNarrowScreen}
-            // onlyShowDropDown={onlyShowDropDown}
           />
         )}
       </Container>
