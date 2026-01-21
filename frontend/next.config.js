@@ -29,7 +29,7 @@ module.exports = withBundleAnalyzer({
     "SOCKET_URL",
     "WEBFLOW_API_TOKEN",
     "WEBFLOW_SITE_ID",
-    "SENTRY_DSN",
+    "FRONTEND_SENTRY_DSN",
     "SENTRY_AUTH_TOKEN",
   ]),
   i18n: {

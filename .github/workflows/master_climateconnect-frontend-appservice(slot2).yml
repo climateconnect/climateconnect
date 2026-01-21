@@ -61,7 +61,7 @@ jobs:
           SOCKET_URL: ${{ secrets.SOCKET_URL }}
           WEBFLOW_API_TOKEN: ${{ secrets.WEBFLOW_API_TOKEN }}
           WEBFLOW_SITE_ID: ${{ secrets.WEBFLOW_SITE_ID}}
-          NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+          FRONTEND_SENTRY_DSN: ${{ secrets.FRONTEND_SENTRY_DSN }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           
       - name: Zip artifact for deployment
