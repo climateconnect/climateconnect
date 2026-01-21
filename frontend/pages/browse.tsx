@@ -14,7 +14,6 @@ import { nullifyUndefinedValues } from "../public/lib/profileOperations";
 import BrowseContent from "../src/components/browse/BrowseContent";
 import UserContext from "../src/components/context/UserContext";
 import TopOfPage from "../src/components/hooks/TopOfPage";
-import HubsSubHeader from "../src/components/indexPage/hubsSubHeader/HubsSubHeader";
 import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingContainerMobile";
 import WideLayout from "../src/components/layouts/WideLayout";
 import BrowseContext from "../src/components/context/BrowseContext";
@@ -67,11 +66,7 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter, pro
 
   return (
     <>
-      <WideLayout
-        showOnScrollUp={showOnScrollUp}
-        showDonationGoal={true}
-        subHeader={<HubsSubHeader hubs={hubs} />}
-      >
+      <WideLayout showOnScrollUp={showOnScrollUp} showDonationGoal={true}>
         <BrowseContext.Provider value={contextValues}>
           <MainHeadingContainerMobile />
           <FilterProvider
@@ -80,7 +75,7 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter, pro
             locale={locale}
             token={token}
           >
-            <BrowseContent filterChoices={filterChoices} />
+            <BrowseContent filterChoices={filterChoices} allHubs={hubs} fromPage="browse" />
           </FilterProvider>
         </BrowseContext.Provider>
       </WideLayout>

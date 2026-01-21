@@ -96,6 +96,7 @@ type BrowseContentProps = {
   hubSupporters?: any;
   isLocationHub?: boolean;
   linkedHubs?: LinkedHub[];
+  fromPage?: "hub" | "browse";
 };
 
 export default function BrowseContent({
@@ -116,6 +117,7 @@ export default function BrowseContent({
   hubSupporters,
   isLocationHub,
   linkedHubs,
+  fromPage,
 }: BrowseContentProps) {
   const initialState = {
     items: {
@@ -176,7 +178,6 @@ export default function BrowseContent({
     members: useRef(null),
     ideas: useRef(null),
   };
-
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
   const handleSetLocationOptionsOpen = (bool) => {
     setLocationOptionsOpen(bool);
@@ -512,17 +513,16 @@ export default function BrowseContent({
         spinning: isFetchingMoreData || isFiltering,
       }}
     >
-      {isLocationHubFlag && (
-        <HubTabsNavigation
-          TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
-          tabValue={tabValue}
-          handleTabChange={handleTabChange}
-          type_names={type_names}
-          hubUrl={hubUrl}
-          className={classes.hubsTabNavigation}
-          allHubs={allHubs}
-        />
-      )}
+      <HubTabsNavigation
+        TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
+        tabValue={tabValue}
+        handleTabChange={handleTabChange}
+        type_names={type_names}
+        hubUrl={hubUrl}
+        className={classes.hubsTabNavigation}
+        allHubs={allHubs}
+        fromPage={fromPage}
+      />
       <Container maxWidth="lg" className={classes.contentRefContainer}>
         {isNarrowScreen && hubSupporters && hubName && (
           <HubSupporters supportersList={hubSupporters} hubName={hubName} />
@@ -549,24 +549,6 @@ export default function BrowseContent({
 
         {/* Desktop screens: show tabs under the search bar */}
         {/* Mobile screens: show tabs fixed to the bottom of the screen */}
-        {!isNarrowScreen && !isLocationHubFlag && (
-          <Tabs
-            variant={isNarrowScreen ? "fullWidth" : "standard"}
-            value={tabValue}
-            onChange={handleTabChange}
-            indicatorColor="primary"
-            textColor="primary"
-            centered={true}
-          >
-            {TYPES_BY_TAB_VALUE.map((t, index) => {
-              const tabProps: any = {
-                label: type_names[t],
-                className: classes.tab,
-              };
-              return <Tab {...tabProps} key={index} />;
-            })}
-          </Tabs>
-        )}
         {isNarrowScreen && (
           <MobileBottomMenu
             tabValue={tabValue}
