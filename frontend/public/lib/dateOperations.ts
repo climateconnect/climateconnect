@@ -1,5 +1,4 @@
-import { format, isThisYear, isToday } from "date-fns";
-import { de, enUS } from "date-fns/locale";
+import { format, isThisYear, isToday , de, enUS } from "date-fns";
 import dayjs from "dayjs";
 import { getProjectTypeDateOptions } from "../data/projectTypeOptions";
 
