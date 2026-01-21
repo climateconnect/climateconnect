@@ -45,7 +45,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function WasseraktionswochenPage({ locale, projects }: WasseraktionswochenPageProps) {
+export default function WasseraktionswochenPage({
+  locale,
+  projects,
+}: WasseraktionswochenPageProps) {
   const isGerman = locale === "de";
 
   return (
