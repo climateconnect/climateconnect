@@ -39,6 +39,7 @@ const useStyles = makeStyles((theme) => {
     headline: {
       textAlign: "center",
       marginTop: theme.spacing(4),
+      color: theme.palette.background.default_contrastText,
     },
   };
 });
