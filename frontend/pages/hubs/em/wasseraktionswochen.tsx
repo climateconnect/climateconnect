@@ -54,9 +54,7 @@ export default function WasseraktionswochenPage({ locale, projects }: Wasserakti
       hideAlert
       isHubPage
       hubUrl="em"
-      isLandingPage
-      // headerBackground={theme.palette.background.default}
-      headerBackground={theme.palette.primary.main}
+      headerBackground={theme.palette.background.default}
     >
       <Container maxWidth="lg">
         <Box sx={{ py: 4 }}>
