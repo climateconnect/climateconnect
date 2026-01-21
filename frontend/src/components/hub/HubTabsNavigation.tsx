@@ -201,12 +201,21 @@ export default function HubTabsNavigation({
           />
         )}
         {allHubs && !isCustomHub && fromPage === "browse" && (
-          <HubLinks
-            linkClassName={classes.link}
-            hubs={allHubs}
-            locale={locale}
-            isNarrowScreen={isNarrowScreen}
-          />
+          <div className={classes.rightSideContainer}>
+            <Link
+              className={classes.link}
+              href={getLocalePrefix(locale) + "/hubs"}
+              underline="hover"
+            >
+              {texts.all_hubs}
+            </Link>
+            <HubLinks
+              linkClassName={classes.link}
+              hubs={allHubs}
+              locale={locale}
+              isNarrowScreen={isNarrowScreen}
+            />
+          </div>
         )}
       </Container>
     </div>
