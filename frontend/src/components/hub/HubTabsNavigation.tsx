@@ -107,9 +107,10 @@ export default function HubTabsNavigation({
   const isHubPage = fromPage === "hub";
   const isBrowsePage = fromPage === "browse";
 
-  const locationHubs = useMemo(() => allHubs.filter((h) => isLocationHubLikeHub(h.hub_type)), [
-    allHubs,
-  ]);
+  const locationHubs = useMemo(
+    () => (allHubs || []).filter((h) => isLocationHubLikeHub(h.hub_type)),
+    [allHubs]
+  );
 
   const hubTabLink = useMemo(() => getCustomHubData({ hubUrl, texts })?.hubTabLinkNarrowScreen, [
     hubUrl,

@@ -28,7 +28,7 @@ export default function HubLinks({
   onlyShowDropDown,
 }: any) {
   const classes = useStyles();
-  const [open, setOpen] = useState({ sectorHubs: false, climateHubs: false });
+  const [open, setOpen] = useState({ climateHubs: false });
   const texts = getTexts({ page: "navigation", locale: locale });
   const locationHubs = hubs?.filter((h) => isLocationHubLikeHub(h.hub_type));
   const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
