@@ -1,7 +1,7 @@
 import { Theme } from "@emotion/react";
 import { Container, Link, Tab, Tabs, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
@@ -101,61 +101,140 @@ export default function HubTabsNavigation({
 }) {
   const { locale, user, CUSTOM_HUB_URLS } = useContext(UserContext);
   const classes = useStyles();
-
-  const locationHubs = allHubs.filter((h) => isLocationHubLikeHub(h.hub_type));
-  const texts = getTexts({ page: "navigation", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const handleOpen = () => {
-    setDropdownOpen(true);
-  };
-  const handleClose = () => {
-    setDropdownOpen(false);
-  };
-  const handleToggleOpen = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
-  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
-  //Don't show the HubTabsNavigation if we're logged out on mobile
-  if (!user && isNarrowScreen) {
-    return <></>;
-  }
-  const hubTabLink = getCustomHubData({ hubUrl, texts })?.hubTabLinkNarrowScreen;
 
+  // Computed values
+  const texts = getTexts({ page: "navigation", locale: locale });
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const isEmmendingenHub = hubUrl === "em";
+  const isHubPage = fromPage === "hub";
+  const isBrowsePage = fromPage === "browse";
+
+  const locationHubs = useMemo(() => allHubs.filter((h) => isLocationHubLikeHub(h.hub_type)), [
+    allHubs,
+  ]);
+
+  const hubTabLink = useMemo(() => getCustomHubData({ hubUrl, texts })?.hubTabLinkNarrowScreen, [
+    hubUrl,
+    texts,
+  ]);
+
+  // Don't show navigation if logged out on mobile
+  if (!user && isNarrowScreen) {
+    return null;
+  }
+
+  // Dropdown handlers
+  const handleOpen = () => setDropdownOpen(true);
+  const handleClose = () => setDropdownOpen(false);
+  const handleToggleOpen = () => setDropdownOpen(!dropdownOpen);
+
+  // Render helpers
+  const renderTabs = () => {
+    if (isNarrowScreen) return null;
+
+    return (
+      <Tabs
+        variant="standard"
+        value={tabValue}
+        onChange={handleTabChange}
+        indicatorColor="primary"
+        textColor="primary"
+        className={classes.tabs}
+      >
+        {TYPES_BY_TAB_VALUE.map((type, index) => (
+          <Tab
+            key={index}
+            disableRipple
+            classes={{
+              root: classes.tab,
+              indicator: classes.tabIndicator,
+            }}
+            label={<div className="tabLabel">{type_names[type]}</div>}
+          />
+        ))}
+      </Tabs>
+    );
+  };
+
+  const renderNarrowScreenLinks = () => {
+    if (!isNarrowScreen) return null;
+
+    return (
+      <>
+        {hubTabLink && (
+          <Link
+            className={classes.climateMatchLink}
+            href={hubTabLink.href}
+            target="_blank"
+            underline="hover"
+          >
+            {hubTabLink.text}
+          </Link>
+        )}
+        {isHubPage && (
+          <Link
+            className={classes.climateMatchLink}
+            href={`${getLocalePrefix(locale)}/browse`}
+            underline="hover"
+          >
+            {texts.projects_worldwide}
+          </Link>
+        )}
+      </>
+    );
+  };
+
+  const renderRightSection = () => {
+    // Show dropdown on hub page for non-custom hubs
+    if (!isCustomHub && isHubPage) {
+      return (
+        <HubsDropDown
+          hubs={locationHubs}
+          label={texts.all_hubs}
+          isNarrowScreen={isNarrowScreen}
+          onToggleOpen={handleToggleOpen}
+          open={dropdownOpen}
+          onOpen={handleOpen}
+          onClose={handleClose}
+          addLocationHubExplainerLink
+          height={48}
+        />
+      );
+    }
+
+    // Show hub links on browse page for non-custom hubs
+    if (allHubs && !isCustomHub && isBrowsePage) {
+      return (
+        <div className={classes.rightSideContainer}>
+          {!isNarrowScreen && (
+            <Link
+              className={classes.link}
+              href={`${getLocalePrefix(locale)}/hubs`}
+              underline="hover"
+            >
+              {texts.all_hubs}
+            </Link>
+          )}
+          <HubLinks
+            linkClassName={classes.link}
+            hubs={allHubs}
+            locale={locale}
+            isNarrowScreen={isNarrowScreen}
+          />
+        </div>
+      );
+    }
+
+    return null;
+  };
 
   return (
     <div className={`${className} ${classes.root}`}>
       <Container maxWidth="lg" className={classes.container}>
         <div className={classes.linksAndTabsWrapper}>
-          {!isNarrowScreen && (
-            <Tabs
-              variant={isNarrowScreen ? "fullWidth" : "standard"}
-              value={tabValue}
-              onChange={handleTabChange}
-              indicatorColor="primary"
-              textColor="primary"
-              className={classes.tabs}
-            >
-              {!isNarrowScreen &&
-                TYPES_BY_TAB_VALUE.map((t, index) => {
-                  const tabProps: any = {
-                    classes: {
-                      root: classes.tab,
-                      indicator: classes.tabIndicator,
-                    },
-                  };
-                  return (
-                    <Tab
-                      {...tabProps}
-                      disableRipple
-                      key={index}
-                      label={<div className="tabLabel">{type_names[t]}</div>}
-                    />
-                  );
-                })}
-            </Tabs>
-          )}
+          {renderTabs()}
           {isEmmendingenHub && (
             <Link
               className={classes.climateMatchLink}
@@ -165,58 +244,9 @@ export default function HubTabsNavigation({
               {texts.emmerdingen_buergerenergie}
             </Link>
           )}
-          {isNarrowScreen && (
-            <>
-              {hubTabLink && (
-                <Link
-                  className={classes.climateMatchLink}
-                  href={hubTabLink.href}
-                  target="_blank"
-                  underline="hover"
-                >
-                  {hubTabLink.text}
-                </Link>
-              )}
-              <Link
-                className={classes.climateMatchLink}
-                href={`${getLocalePrefix(locale)}/browse`}
-                underline="hover"
-              >
-                {texts.projects_worldwide}
-              </Link>
-            </>
-          )}
+          {renderNarrowScreenLinks()}
         </div>
-        {!isCustomHub && fromPage === "hub" && (
-          <HubsDropDown
-            hubs={locationHubs}
-            label={texts.all_hubs}
-            isNarrowScreen={isNarrowScreen}
-            onToggleOpen={handleToggleOpen}
-            open={dropdownOpen}
-            onOpen={handleOpen}
-            onClose={handleClose}
-            addLocationHubExplainerLink
-            height={48}
-          />
-        )}
-        {allHubs && !isCustomHub && fromPage === "browse" && (
-          <div className={classes.rightSideContainer}>
-            <Link
-              className={classes.link}
-              href={getLocalePrefix(locale) + "/hubs"}
-              underline="hover"
-            >
-              {texts.all_hubs}
-            </Link>
-            <HubLinks
-              linkClassName={classes.link}
-              hubs={allHubs}
-              locale={locale}
-              isNarrowScreen={isNarrowScreen}
-            />
-          </div>
-        )}
+        {renderRightSection()}
       </Container>
     </div>
   );
