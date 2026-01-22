@@ -42,10 +42,6 @@ const useStyles = makeStyles((theme) => ({
       textDecoration: "underline",
     },
   },
-  tabIndicator: {
-    background: "white",
-    color: "white",
-  },
   path: {
     color: "white",
     fontWeight: 600,
@@ -149,7 +145,6 @@ export default function HubTabsNavigation({
             disableRipple
             classes={{
               root: classes.tab,
-              indicator: classes.tabIndicator,
             }}
             label={<div className="tabLabel">{type_names[type]}</div>}
           />
