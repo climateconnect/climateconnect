@@ -27,6 +27,7 @@ from climateconnect_api.views import (
     notifications_views,
     donation_views,
     translation_views,
+    search_view
 )
 from knox import views as knox_views
 from django.conf import settings
@@ -175,6 +176,11 @@ urls = [
         "api/donor_badges/",
         badge_views.getDonorBadges.as_view(),
         name="get-possible-donor-badges",
+    ),
+    path(
+        "api/cross_search",
+        search_view.CrossSearchView.as_view(),
+        name="cross-search-objects",
     ),
     # Organization views
     path("api/", include("organization.urls")),
