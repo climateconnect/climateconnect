@@ -1,5 +1,5 @@
 import makeStyles from "@mui/styles/makeStyles";
-import { Container, Divider, Theme, useMediaQuery } from "@mui/material";
+import { Container, Theme, useMediaQuery } from "@mui/material";
 import _ from "lodash";
 import React, { Suspense, lazy, useContext, useEffect, useMemo, useRef, useState } from "react";
 import Cookies from "universal-cookie";
