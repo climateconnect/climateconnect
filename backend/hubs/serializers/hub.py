@@ -1,22 +1,23 @@
-from climateconnect_api.utility.translation import get_attribute_in_correct_language
-from location.serializers import LocationSerializer
 from django.utils.translation import get_language
+from rest_framework import serializers
+
+from climateconnect_api.models import UserProfile
+from climateconnect_api.serializers.user import UserProfileStubSerializer
+from climateconnect_api.utility.translation import get_attribute_in_correct_language
+from hubs.models import (
+    Hub,
+    HubAmbassador,
+    HubStat,
+    HubSupporter,
+    HubTheme,
+    HubThemeColor,
+)
 from hubs.utility.hub import (
     get_hub_attribute,
     get_hub_stat_attribute,
     get_hub_supporter_attribute,
 )
-from rest_framework import serializers
-from hubs.models import (
-    Hub,
-    HubStat,
-    HubAmbassador,
-    HubSupporter,
-    HubThemeColor,
-    HubTheme,
-)
-from climateconnect_api.serializers.user import UserProfileStubSerializer
-from climateconnect_api.models import UserProfile
+from location.serializers import LocationSerializer
 
 
 class HubSerializer(serializers.ModelSerializer):
@@ -212,7 +213,7 @@ class HubSupporterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = HubSupporter
-        fields = ("name", "subtitle", "logo", "importance", "organization_url_slug")
+        fields = ("name", "subtitle", "logo", "importance", "organization_url_slug", "image_only", "standalone_image")
 
     def get_name(self, obj):
         return get_hub_supporter_attribute(obj, "name", get_language())
