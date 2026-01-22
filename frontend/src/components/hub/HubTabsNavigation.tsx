@@ -201,25 +201,14 @@ export default function HubTabsNavigation({
     }
 
     // Show hub links on browse page for non-custom hubs
-    if (allHubs && !isCustomHub && isBrowsePage) {
+    if (allHubs && !isCustomHub) {
       return (
-        <div className={classes.rightSideContainer}>
-          {!isNarrowScreen && (
-            <Link
-              className={classes.link}
-              href={`${getLocalePrefix(locale)}/hubs`}
-              underline="hover"
-            >
-              {texts.all_hubs}
-            </Link>
-          )}
-          <HubLinks
-            linkClassName={classes.link}
-            hubs={allHubs}
-            locale={locale}
-            isNarrowScreen={isNarrowScreen}
-          />
-        </div>
+        <HubLinks
+          linkClassName={classes.link}
+          hubs={allHubs}
+          locale={locale}
+          isNarrowScreen={isNarrowScreen}
+        />
       );
     }
 
