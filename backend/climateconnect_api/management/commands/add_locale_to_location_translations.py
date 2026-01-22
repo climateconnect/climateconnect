@@ -19,6 +19,39 @@ from climateconnect_api.models.language import Language
 
 # from django.db import transaction
 from location.models import Location, LocationTranslation
+from location.utility import format_location_name
+
+
+def location_obj_to_dict(location, translation_data) -> dict:
+    """
+    Converts a Django Location ORM object to a dict compatible with format_location_name utility.
+    Uses translated city/state/country if available in translation_data, otherwise falls back to Location fields.
+    """
+    address = {}
+    # Prefer translated values if present, else fallback to original
+    city = translation_data.get("city_translation") 
+    state = translation_data.get("state_translation") 
+    country = translation_data.get("country_translation") 
+    if city:
+        address["city"] = city
+    if state:
+        address["state"] = state
+    if country:
+        address["country"] = country
+    if location.display_name:
+        display_name = location.display_name
+    else:
+        display_name = location.name
+    
+    # 'type' für format_location_name: bevorzugt location.type, sonst fallback 'administrative'
+    loc_type = getattr(location, "type", None)
+    if not loc_type:
+        loc_type = "administrative"
+    return {
+        "address": address,
+        "display_name": display_name,
+        "type": loc_type,
+    }
 
 NOMINATIM_DETAILS_URL = "https://nominatim.openstreetmap.org/lookup"
 CUSTOM_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
@@ -77,9 +110,7 @@ def get_language_id(locale: str) -> int:
         return None
 
 
-def translate_locations(
-    locs: list["Location"], locale: str, osm_mapping: dict[str, list[int]]
-):
+def translate_locations(locs: list["Location"], locale: str):
 
     if not locs:
         return 0
@@ -97,12 +128,12 @@ def translate_locations(
 
         for loc in batch_locations:
             if loc.osm_id and loc.osm_type:
-                osm_type_letter = loc.osm_type[0].upper()
-                if osm_type_letter is None:
+                osm_type = loc.osm_type[0].upper()
+                if osm_type is None:
                     print(f"invalid osm_type: {loc.osm_type}")
                     continue
 
-                osm_string = f"{osm_type_letter}{loc.osm_id}"
+                osm_string = f"{osm_type}{loc.osm_id}"
                 osm_ids.add(osm_string)
             elif not loc.osm_id:
                 print(f"warning: location '{loc.name}' does not have osm_id")
@@ -154,20 +185,19 @@ def translate_locations(
         time.sleep(1)
 
         for result in data:
-            osm_type_letter = (
+            osm_type = (
                 result.get("osm_type", "")[0].upper() if result.get("osm_type") else ""
             )
             osm_id = result.get("osm_id")
-            osm_class = result.get("class", "")
-            osm_class_type = result.get("type", "")
 
-            osm_combination = f"{osm_type_letter}{osm_id}-{osm_class}:{osm_class_type}"
-
-            location_ids = osm_mapping.get(osm_combination, [])
-
-            if not location_ids:
+            # Direct DB lookup for all matching locations
+            matching_locations = Location.objects.filter(
+                osm_id=osm_id,
+                osm_type=osm_type,
+            )
+            if not matching_locations.exists():
                 print(
-                    f"warning: no mapping found for osm_combination: {osm_combination}"
+                    f"warning: no Location found for OSM identifiers: type={osm_type}, id={osm_id}"
                 )
                 continue
 
@@ -181,21 +211,18 @@ def translate_locations(
                 "country_translation": address.get("country"),
             }
 
-            for loc_id in location_ids:
+            for loc in matching_locations:
                 name = translation_data["name_translation"]
                 if not name:
-                    try:
-                        loc = Location.objects.get(id=loc_id)
-                        name = create_name_from_translation_data(loc, translation_data)
-                        if not name:
-                            name = loc.name
-                    except Location.DoesNotExist:
-                        continue
+                    loc_dict = location_obj_to_dict(loc, translation_data)
+                    name = format_location_name(loc_dict)["name"]
+                    if not name:
+                        name = loc.name
 
-                unique_key = (loc_id, language_id)
+                unique_key = (loc.id, language_id)
                 if unique_key not in unique_translations:
                     unique_translations[unique_key] = LocationTranslation(
-                        location_id=loc_id,
+                        location_id=loc.id,
                         language_id=language_id,
                         name_translation=name,
                         city_translation=translation_data.get("city_translation"),
@@ -222,13 +249,11 @@ class Command(BaseCommand):
     help = "add translations of name into <locale> to LocationTranslation table"
 
     def add_arguments(self, parser):
-
         parser.add_argument(
             "locale",
             type=str,
             help="locale of the language that should be added to the LocationTranslation table",
         )
-
         parser.add_argument(
             "-n",
             "--number",
@@ -248,18 +273,6 @@ class Command(BaseCommand):
                 self.style.ERROR(f"language '{locale}' not found in database")
             )
             return
-
-        # Load OSM Mapping-Table
-        self.stdout.write(f"Loading OSM mapping table from {MAPPING_TABLE_PATH}...")
-        osm_mapping = load_osm_mapping()
-        if not osm_mapping:
-            self.stdout.write(
-                self.style.ERROR(
-                    "OSM mapping table is empty or not found. Run map_type_id_class_to_location_id.py first."
-                )
-            )
-            return
-        self.stdout.write(f"Loaded {len(osm_mapping)} OSM combinations.")
 
         locations_to_translate: QuerySet[Location] = Location.objects.exclude(
             translate_location__language_id=language_id
@@ -283,14 +296,9 @@ class Command(BaseCommand):
 
         # start translation job
         try:
-            created_count = translate_locations(locations_list, locale, osm_mapping)
+            created_count = translate_locations(locations_list, locale)
             self.stdout.write(
                 self.style.SUCCESS(f"created {created_count} translations.")
-            )
-            self.stdout.write(
-                self.style.WARNING(
-                    "IMPORTANT NOTE: make sure to also update the LOCALES list in climateconnect_main/settings.py"
-                )
             )
 
         except Exception as e:
