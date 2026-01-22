@@ -554,7 +554,6 @@ export default function BrowseContent({
             hubUrl={hubUrl}
           />
         )}
-        {!isLocationHubFlag && <Divider className={classes.mainContentDivider} />}
         <Suspense fallback={<LoadingSpinner isLoading />}>
           <TabContentWrapper type={"projects"} {...tabContentWrapperProps}>
             {hubData?.parent_hub && (
