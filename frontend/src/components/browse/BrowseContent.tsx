@@ -48,11 +48,6 @@ const useStyles = makeStyles((theme) => {
       position: "absolute",
       top: -90,
     },
-    tab: {
-      width: 200,
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(2),
-    },
     mainContentDivider: {
       marginBottom: theme.spacing(3),
     },
@@ -96,7 +91,7 @@ type BrowseContentProps = {
   hubSupporters?: any;
   isLocationHub?: boolean;
   linkedHubs?: LinkedHub[];
-  fromPage?: "hub" | "browse";
+  fromPage?: "hub";
 };
 
 export default function BrowseContent({

@@ -75,7 +75,7 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter, pro
             locale={locale}
             token={token}
           >
-            <BrowseContent filterChoices={filterChoices} allHubs={hubs} fromPage="browse" />
+            <BrowseContent filterChoices={filterChoices} allHubs={hubs} />
           </FilterProvider>
         </BrowseContext.Provider>
       </WideLayout>

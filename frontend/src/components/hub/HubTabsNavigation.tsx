@@ -105,7 +105,6 @@ export default function HubTabsNavigation({
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const isEmmendingenHub = hubUrl === "em";
   const isHubPage = fromPage === "hub";
-  const isBrowsePage = fromPage === "browse";
 
   const locationHubs = useMemo(
     () => (allHubs || []).filter((h) => isLocationHubLikeHub(h.hub_type)),
