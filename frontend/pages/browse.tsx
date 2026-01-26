@@ -14,7 +14,6 @@ import { nullifyUndefinedValues } from "../public/lib/profileOperations";
 import BrowseContent from "../src/components/browse/BrowseContent";
 import UserContext from "../src/components/context/UserContext";
 import TopOfPage from "../src/components/hooks/TopOfPage";
-import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingContainerMobile";
 import WideLayout from "../src/components/layouts/WideLayout";
 import BrowseContext from "../src/components/context/BrowseContext";
 import { FilterProvider } from "../src/components/provider/FilterProvider";
@@ -68,7 +67,6 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter, pro
     <>
       <WideLayout showOnScrollUp={showOnScrollUp} showDonationGoal={true}>
         <BrowseContext.Provider value={contextValues}>
-          <MainHeadingContainerMobile />
           <FilterProvider
             filterChoices={filterChoices}
             initialLocationFilter={initialLocationFilter}
