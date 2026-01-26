@@ -423,7 +423,7 @@ const StyledContainer = styled(Box)(({ theme }) => ({
 - `API_URL` - Backend API URL (http://localhost:8000 for dev)
 - `NEXT_PUBLIC_API_URL` - Public API URL for client-side
 - `GOOGLE_MAPS_API_KEY` - Google Maps JavaScript API key
-- `SENTRY_DSN` - Sentry error tracking DSN
+- `FRONTEND_SENTRY_DSN` - Sentry error tracking DSN
 
 ---
 
