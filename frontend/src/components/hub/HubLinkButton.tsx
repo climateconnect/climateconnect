@@ -94,7 +94,7 @@ export default function HubLinkButton({ hub }: { hub: LinkedHub }) {
   };
   const linkUrl = getLinkUrl();
   return (
-    <Link href={linkUrl} className={`btn btn-primary ${classes.linkedHubsContainer}`}>
+    <Link href={linkUrl} className={classes.linkedHubsContainer}>
       <div className={classes.iconContainer}>
         <img className={classes.icon} src={hub.icon} alt="hub icon" />
       </div>
