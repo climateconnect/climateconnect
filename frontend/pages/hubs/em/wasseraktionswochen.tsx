@@ -21,7 +21,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: `/api/projects/?parent_project_slug=${PARENT_SLUG}`,
+      url: `/api/projects/?parent_project_slug=${PARENT_SLUG}&page_size=100`,
       token: auth_token,
       locale,
     });
