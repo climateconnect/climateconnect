@@ -473,13 +473,9 @@ class HubSupporter(models.Model):
         null=True,
         blank=True,
     )
-    image_only = models.BooleanField(
-        help_text="If true, only the standalone_image will be shown without name. It will stretch through the whole supporters box",
-        verbose_name="Image only",
-        default=False,
-    )
+
     standalone_image = models.ImageField(
-        help_text="If image_only is set to true you can add a standalone image here that will stretch through the whole supporters box. Logo will just be used for the supporters preview on mobile",
+        help_text="If you add a standalone image, it will be shown stretching through the whole supporters box. Logo will just be used for the supporters preview on mobile",
         verbose_name="Standalone Image",
         null=True,
         blank=True,

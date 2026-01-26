@@ -181,7 +181,7 @@ export default HubSupporters;
 const CarouselItem = ({ supporter, classes, locale }) => {
   return (
     <div className={classes.carouselEntry} key={supporter.name}>
-      {(supporter?.standalone_image && supporter.image_only) ? (
+      {supporter?.standalone_image ? (
         <div className={classes.supporterImgStandaloneContainer}>
           <img
             src={getImageUrl(supporter?.standalone_image)}

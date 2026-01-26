@@ -103,7 +103,7 @@ const HubSupportersDialog = ({ supporters, open, onClose, hubName }: HubSupporte
 
   const HubSupporterCarouselEntry = ({ supporter }) => (
     <div className={classes.carouselEntry} key={supporter.name}>
-      {(supporter.image_only && supporter?.standalone_image) ? (
+      {supporter?.standalone_image ? (
         <div className={classes.supporterImgStandaloneContainer}>
           <img
             src={getImageUrl(supporter.standalone_image)}
