@@ -56,6 +56,7 @@ export default function WasseraktionswochenPage({
       title={isGerman ? "Wasseraktionswochen" : "Water Action Weeks"}
       hideAlert
       isHubPage
+      hasHubLandingPage={true}
       hubUrl="em"
       headerBackground={theme.palette.background.default}
     >
