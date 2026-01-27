@@ -23,7 +23,6 @@ from sentry_sdk.integrations.redis import RedisIntegration
 from sentry_sdk.integrations.celery import CeleryIntegration
 import django.conf
 
-
 load_dotenv(find_dotenv(".backend_env"))
 
 
