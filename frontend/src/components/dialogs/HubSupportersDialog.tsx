@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    overflow: "hidden"
+    overflow: "hidden",
   },
   supporterImgStandalone: {
     maxWidth: "100%",
@@ -109,7 +109,7 @@ const HubSupportersDialog = ({ supporters, open, onClose, hubName }: HubSupporte
             src={getImageUrl(supporter.standalone_image)}
             alt={supporter.name}
             className={classes.supporterImgStandalone}
-          />  
+          />
         </div>
       ) : (
         <div className={classes.itemContainer}>

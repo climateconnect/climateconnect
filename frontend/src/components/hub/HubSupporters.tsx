@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    overflow: "hidden"
+    overflow: "hidden",
   },
   supporterImgStandalone: {
     maxWidth: "100%",
@@ -187,7 +187,7 @@ const CarouselItem = ({ supporter, classes, locale }) => {
             src={getImageUrl(supporter?.standalone_image)}
             alt={supporter.name}
             className={classes.supporterImgStandalone}
-          />  
+          />
         </div>
       ) : (
         <div className={classes.itemContainer}>
