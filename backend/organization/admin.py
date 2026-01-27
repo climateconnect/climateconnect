@@ -108,12 +108,16 @@ class ProjectAdmin(admin.ModelAdmin):
                     return project_parent.parent_organization.name
                 elif project_parent.parent_user:
                     # Try to get the user's profile name, fallback to username
-                    if hasattr(project_parent.parent_user, 'user_profile') and project_parent.parent_user.user_profile:
+                    if (
+                        hasattr(project_parent.parent_user, "user_profile")
+                        and project_parent.parent_user.user_profile
+                    ):
                         return project_parent.parent_user.user_profile.name
                     return project_parent.parent_user.username
         except Exception:
             pass
         return "-"
+
     get_owner.short_description = "Owner"
 
 
