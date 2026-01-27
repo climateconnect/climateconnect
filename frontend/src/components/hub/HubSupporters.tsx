@@ -62,6 +62,19 @@ const useStyles = makeStyles((theme) => ({
   supporterImg: {
     borderRadius: "50%",
   },
+  supporterImgStandaloneContainer: {
+    width: 310,
+    height: 92,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+  },
+  supporterImgStandalone: {
+    maxWidth: "100%",
+    maxHeight: "100%",
+    objectFit: "contain",
+  },
   supporterName: {
     fontSize: "17px",
     fontWeight: "600",
@@ -168,33 +181,43 @@ export default HubSupporters;
 const CarouselItem = ({ supporter, classes, locale }) => {
   return (
     <div className={classes.carouselEntry} key={supporter.name}>
-      <div className={classes.itemContainer}>
-        <img
-          src={getImageUrl(supporter?.logo)}
-          width={76}
-          height={76}
-          alt={supporter.name}
-          className={classes.supporterImg}
-        />
-        <div>
-          <p className={classes.supporterName}>
-            {supporter?.organization_url_slug ? (
-              <Link
-                href={
-                  getLocalePrefix(locale) + "/organizations/" + supporter?.organization_url_slug
-                }
-                underline="none"
-                className={classes.supporterName}
-              >
-                {supporter?.name}
-              </Link>
-            ) : (
-              supporter?.name
-            )}
-          </p>
-          <p className={classes.supporterSubtitle}>{supporter.subtitle}</p>
+      {supporter?.standalone_image ? (
+        <div className={classes.supporterImgStandaloneContainer}>
+          <img
+            src={getImageUrl(supporter?.standalone_image)}
+            alt={supporter.name}
+            className={classes.supporterImgStandalone}
+          />
         </div>
-      </div>
+      ) : (
+        <div className={classes.itemContainer}>
+          <img
+            src={getImageUrl(supporter?.logo)}
+            width={76}
+            height={76}
+            alt={supporter.name}
+            className={classes.supporterImg}
+          />
+          <div>
+            <p className={classes.supporterName}>
+              {supporter?.organization_url_slug ? (
+                <Link
+                  href={
+                    getLocalePrefix(locale) + "/organizations/" + supporter?.organization_url_slug
+                  }
+                  underline="none"
+                  className={classes.supporterName}
+                >
+                  {supporter?.name}
+                </Link>
+              ) : (
+                supporter?.name
+              )}
+            </p>
+            <p className={classes.supporterSubtitle}>{supporter.subtitle}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
