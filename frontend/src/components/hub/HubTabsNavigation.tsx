@@ -71,6 +71,27 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
   },
+  wasseraktionsButton: {
+    backgroundColor: "#D5F1FF",
+    color: theme.palette.primary.main,
+    borderRadius: theme.spacing(3),
+    padding: theme.spacing(0.75, 2),
+    fontWeight: 600,
+    marginLeft: theme.spacing(1.5),
+    textDecoration: "none",
+    display: "inline-flex",
+    alignItems: "center",
+    columnGap: theme.spacing(1),
+    "&:hover": {
+      backgroundColor: "#C0E6FF",
+      textDecoration: "none",
+    },
+  },
+  wasseraktionsIcon: {
+    width: 20,
+    height: 20,
+    flexShrink: 0,
+  },
   linksAndTabsWrapper: {
     display: "flex",
     alignItems: "center",
@@ -105,6 +126,8 @@ export default function HubTabsNavigation({
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const isEmmendingenHub = hubUrl === "em";
   const isHubPage = fromPage === "hub";
+  const wasseraktionswochenUrl = `${getLocalePrefix(locale)}/hubs/em/wasseraktionswochen`;
+  const showWasseraktionswochen = process.env.WASSERAKTIONSWOCHEN_FEATURE === "true";
 
   const locationHubs = useMemo(
     () => (allHubs || []).filter((h) => isLocationHubLikeHub(h.hub_type)),
@@ -220,13 +243,31 @@ export default function HubTabsNavigation({
         <div className={classes.linksAndTabsWrapper}>
           {renderTabs()}
           {isEmmendingenHub && (
-            <Link
-              className={classes.climateMatchLink}
-              href="https://climatehub.earth/burgerenergie-em"
-              underline="hover"
-            >
-              {texts.emmerdingen_buergerenergie}
-            </Link>
+            <>
+              <Link
+                className={classes.climateMatchLink}
+                href="https://climatehub.earth/burgerenergie-em"
+                underline="hover"
+              >
+                {texts.emmerdingen_buergerenergie}
+              </Link>
+              {showWasseraktionswochen && (
+                <Link
+                  className={`${classes.climateMatchLink} ${classes.wasseraktionsButton}`}
+                  href={wasseraktionswochenUrl}
+                  underline="none"
+                  aria-label="Wasseraktionswochen campaign"
+                >
+                  <img
+                    src="/icons/actionswochenlogo-icon.png"
+                    alt=""
+                    role="presentation"
+                    className={classes.wasseraktionsIcon}
+                  />
+                  Wasseraktionswochen
+                </Link>
+              )}
+            </>
           )}
           {renderNarrowScreenLinks()}
         </div>
