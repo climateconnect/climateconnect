@@ -213,7 +213,14 @@ class HubSupporterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = HubSupporter
-        fields = ("name", "subtitle", "logo", "importance", "organization_url_slug", "standalone_image")
+        fields = (
+            "name",
+            "subtitle",
+            "logo",
+            "importance",
+            "organization_url_slug",
+            "standalone_image",
+        )
 
     def get_name(self, obj):
         return get_hub_supporter_attribute(obj, "name", get_language())

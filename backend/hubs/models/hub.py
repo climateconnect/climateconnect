@@ -21,6 +21,7 @@ def hub_footer_image_path(instance, filename):
 def hub_supporter_logo_path(instance, filename):
     return "hub_supporter_logo/{}/{}".format(instance.id, filename)
 
+
 def hub_supporter_standalone_image_path(instance, filename):
     return "hub_supporter_standalone_image/{}/{}".format(instance.id, filename)
 
