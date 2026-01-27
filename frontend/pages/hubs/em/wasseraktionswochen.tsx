@@ -1,9 +1,8 @@
 import { Box, Container, Typography } from "@mui/material";
-import NextCookies from "next-cookies";
 import { GetServerSideProps } from "next";
 import WideLayout from "../../../src/components/layouts/WideLayout";
 import { apiRequest } from "../../../public/lib/apiOperations";
-import ProjectPreviews from "../../../src/components/project/ProjectPreviews";
+import WasseraktionswochenEvents from "../../../src/components/hub/WasseraktionswochenEvents";
 import theme from "../../../src/themes/theme";
 
 interface WasseraktionswochenPageProps {
@@ -15,14 +14,12 @@ const PARENT_SLUG = "wasseraktionswochen-143-2932026";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const locale = context.locale || "en";
-  const { auth_token } = NextCookies(context);
 
   let projects: any[] = [];
   try {
     const resp = await apiRequest({
       method: "get",
       url: `/api/projects/?parent_project_slug=${PARENT_SLUG}&page_size=100`,
-      token: auth_token,
       locale,
     });
 
@@ -90,13 +87,7 @@ export default function WasseraktionswochenPage({
                 : "Webflow content will be integrated here"}
             </Typography>
           </Box>
-
-          <Box sx={{ mt: 4 }}>
-            <Typography variant="h5" gutterBottom>
-              {isGerman ? "Veranstaltungen" : "Events"}
-            </Typography>
-            <ProjectPreviews projects={projects} hubUrl="em" displayOnePreviewInRow={false} />
-          </Box>
+          <WasseraktionswochenEvents projects={projects} isGerman={isGerman} />
         </Box>
       </Container>
     </WideLayout>
