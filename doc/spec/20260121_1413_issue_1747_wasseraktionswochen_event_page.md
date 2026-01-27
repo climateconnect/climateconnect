@@ -190,3 +190,5 @@ Create a dedicated event page for Wasseraktionswochen within the Emmendingen Cli
 - 2026-01-21 14:25 UTC — Problem statement & requirements approved; ready for Archie system impact analysis (Taskie).
 - 2026-01-26 - Implemented custom navigation for page and refactored header links.
 - 2026-01-27 - Extracted component and added sorting logic.
+- 2026-01-27 - Added navigation button for Wasseraktionswochen in hub nav.
+- 2026-01-27 - Added feature toggle and redirect logic.
