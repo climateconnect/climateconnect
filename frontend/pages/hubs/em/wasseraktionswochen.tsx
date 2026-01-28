@@ -1,9 +1,10 @@
-import { Box, Container, Typography } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import { GetServerSideProps } from "next";
 import WideLayout from "../../../src/components/layouts/WideLayout";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import WasseraktionswochenEvents from "../../../src/components/hub/WasseraktionswochenEvents";
 import theme from "../../../src/themes/theme";
+import { Wasseraktionswochen } from "../../../devlink";
 
 interface WasseraktionswochenPageProps {
   locale: string;
@@ -59,34 +60,7 @@ export default function WasseraktionswochenPage({
     >
       <Container maxWidth="lg">
         <Box sx={{ py: 4 }}>
-          <Typography variant="h3" component="h1" gutterBottom>
-            {isGerman ? "Wasseraktionswochen" : "Water Action Weeks"}
-          </Typography>
-
-          <Typography variant="body1" sx={{ mb: 4 }}>
-            {isGerman ? "Landkreis Emmendingen" : "Emmendingen District"}
-          </Typography>
-
-          <Box
-            sx={{
-              p: 4,
-              border: "2px dashed #ccc",
-              borderRadius: 2,
-              textAlign: "center",
-              backgroundColor: "#f5f5f5",
-            }}
-          >
-            <Typography variant="h6" gutterBottom>
-              {isGerman
-                ? "Platzhalter für Webflow-Komponente"
-                : "Placeholder for Webflow Component"}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {isGerman
-                ? "Webflow-Inhalte werden hier integriert"
-                : "Webflow content will be integrated here"}
-            </Typography>
-          </Box>
+          <Wasseraktionswochen />
           <WasseraktionswochenEvents projects={projects} isGerman={isGerman} />
         </Box>
       </Container>
