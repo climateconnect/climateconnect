@@ -13,7 +13,7 @@ Usage:
 
 import logging
 from collections import defaultdict
-from typing import NamedTuple
+from typing import TypedDict
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
@@ -29,13 +29,14 @@ from organization.models import Organization, Project
 logger = logging.getLogger(__name__)
 
 
-class CleanupStats(NamedTuple):
-    """Statistics for the cleanup operation."""
+class CleanupStats(TypedDict):
+    """Statistics for the cleanup operation (mutable)."""
 
     duplicate_groups_found: int
     duplicates_removed: int
     unused_locations_deleted: int
     fk_updates: dict
+    m2m_updates: dict
     errors: list
 
 
