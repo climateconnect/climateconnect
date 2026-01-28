@@ -11,7 +11,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { getLocalePrefix } from "./apiOperations";
 import { getCustomHubData } from "../data/customHubData";
-import {CustomHubConfig} from "../data/customHubtypes";
+import { CustomHubConfig } from "../data/customHubtypes";
 
 const ERLANGEN_SLUG = "erlangen";
 const ERLANGEN_DONATE = "https://www.climatehub.earth/300";
@@ -152,12 +152,7 @@ const buildDonateLink = ({ texts, hubUrl }) => ({
   className: "btnColor buttonMarginLeft",
 });
 
-const getWasseraktionswochenLinks = ({
-  path_to_redirect,
-  texts,
-  hubUrl,
-  hasHubLandingPage,
-}) => [
+const getWasseraktionswochenLinks = ({ path_to_redirect, texts, hubUrl, hasHubLandingPage }) => [
   buildAboutLink({
     texts,
     isLocationHub: true,
@@ -207,7 +202,7 @@ const getLinks = (
   isLocationHub: boolean | undefined,
   isCustomHub: boolean | undefined,
   hasHubLandingPage: boolean | undefined,
-  hubUrl?: any,
+  hubUrl?: any
 ) => {
   if (isWasseraktionswochenPage(path_to_redirect)) {
     return getWasseraktionswochenLinks({

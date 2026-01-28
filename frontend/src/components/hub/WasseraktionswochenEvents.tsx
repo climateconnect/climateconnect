@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import ProjectPreviews from "../project/ProjectPreviews";
 
 interface WasseraktionswochenEventsProps {
@@ -19,9 +19,6 @@ const WasseraktionswochenEvents: React.FC<WasseraktionswochenEventsProps> = ({
 
   return (
     <Box sx={{ mt: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        {isGerman ? "Veranstaltungen" : "Events"}
-      </Typography>
       <ProjectPreviews
         projects={sortedProjects}
         hubUrl={hubUrl}

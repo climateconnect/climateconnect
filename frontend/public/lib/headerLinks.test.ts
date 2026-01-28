@@ -82,14 +82,7 @@ describe("getLinks", () => {
 
   it("uses custom navigation on the Wasseraktionswochen page", () => {
     const texts = buildTexts();
-    const links = getLinks(
-      "/hubs/em/wasseraktionswochen",
-      texts,
-      true,
-      false,
-      true,
-      "em"
-    );
+    const links = getLinks("/hubs/em/wasseraktionswochen", texts, true, false, true, "em");
 
     expect(links).toHaveLength(6);
     expect(links[0]).toMatchObject({ href: "/hubs/em/", text: texts.about_climatehub });
