@@ -74,7 +74,6 @@ const useStyles = makeStyles((theme) => ({
   linksAndTabsWrapper: {
     display: "flex",
     alignItems: "center",
-    height: theme.spacing(6),
     [theme.breakpoints.down("md")]: {
       justifyContent: "space-between",
     },
