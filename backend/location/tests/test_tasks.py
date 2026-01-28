@@ -41,12 +41,8 @@ class LocationTaskTest(TestCase):
         post_save.disconnect(find_location_translations, sender=Location)
 
         # Use or create languages by code to avoid IntegrityError
-        self.language_en, _ = Language.objects.get_or_create(
-            language_code="en"
-        )
-        self.language_de, _ = Language.objects.get_or_create(
-            language_code="de"
-        )
+        self.language_en, _ = Language.objects.get_or_create(language_code="en")
+        self.language_de, _ = Language.objects.get_or_create(language_code="de")
         self.location = Location.objects.create(
             id=5,
             name="Original Location Name",
@@ -194,4 +190,3 @@ class LocationTaskTest(TestCase):
                 for call in mock_logger.warning.call_args_list
             )
         )
-
