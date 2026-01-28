@@ -3,7 +3,7 @@ import { useTheme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import PropTypes from "prop-types";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 //Package AvatarEditor returns an object {default: defaultFunction} instead of a function which triggers a warning. This is why we use <AvatarEditor.default> in the exported function.
 import AvatarEditor from "react-avatar-editor";
 import getTexts from "../../../public/texts/texts";
@@ -69,8 +69,8 @@ export default function UploadImageDialog({
   const mediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const smallScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
 
-  const [scale, setScale] = React.useState(1);
-  const [editor, setEditor] = React.useState<any>(null);
+  const [scale, setScale] = useState(1);
+  const [editor, setEditor] = useState<any>(null);
 
   const handleClose = () => {
     setScale(1);
@@ -110,7 +110,7 @@ export default function UploadImageDialog({
       : height * ratio + 100;
 
   const backgroundContrastColor = getBackgroundContrastColor(theme);
-
+  const AvatarEditorComponent = AvatarEditor as any;
   return (
     <GenericDialog
       /*TODO(undefined) className={classes.dialog} */
@@ -134,7 +134,7 @@ export default function UploadImageDialog({
         </>
       ) : (
         <div /*TODO(undefined) className={classes.dialogContent} */>
-          <AvatarEditor
+          <AvatarEditorComponent
             className={classes.avatarEditor}
             image={imageUrl}
             ref={setEditorRef}

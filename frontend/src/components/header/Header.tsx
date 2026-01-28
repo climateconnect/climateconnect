@@ -25,7 +25,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import MenuIcon from "@mui/icons-material/Menu";
 import noop from "lodash/noop";
-import React, { useContext, useState } from "react";
+import React, { Fragment, useContext, useRef, useState } from "react";
 import { getStaticPageLinks } from "../../../public/data/getStaticPageLinks"; // Relative imports
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
@@ -324,7 +324,7 @@ export default function Header({
 
   const onNotificationsClose = () => setAnchorEl(null);
   const getLogo = () => {
-    let imageUrl = "/images";
+    const imageUrl = "/images";
     if (isCustomHub) {
       return `${imageUrl}/hub_logos/ch_${hubUrl}_logo.svg`;
     }
@@ -481,7 +481,7 @@ function NormalScreenLinks({
           !(isStaticPage && link.hideOnStaticPages)
         )
           return (
-            <React.Fragment key={index}>
+            <Fragment key={index}>
               <span>
                 {link.type === "languageSelect" ? (
                   <LanguageSelect
@@ -542,7 +542,7 @@ function NormalScreenLinks({
                   </Button>
                 )}
               </span>
-            </React.Fragment>
+            </Fragment>
           );
       })}
       {loggedInUser && (
@@ -553,7 +553,6 @@ function NormalScreenLinks({
           texts={texts}
           localePrefix={localePrefix}
           getLoggedInLinks={getLoggedInLinks}
-          isCustomHub={isCustomHub}
           hubUrl={hubUrl}
           classes={classes}
         />
@@ -579,12 +578,11 @@ const LoggedInNormalScreen = ({
   texts,
   localePrefix,
   getLoggedInLinks,
-  isCustomHub,
   hubUrl,
   classes,
 }) => {
-  const [menuOpen, setMenuOpen] = React.useState(false);
-  const anchorRef = React.useRef(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const anchorRef = useRef(null);
 
   const handleToggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -712,7 +710,7 @@ function NarrowScreenLinks({
             buttonProps.className = classes.marginRight;
           }
           return (
-            <React.Fragment key={index}>
+            <Fragment key={index}>
               {link.onlyShowIconOnMobile ? (
                 <>
                   <IconButton
@@ -768,7 +766,7 @@ function NarrowScreenLinks({
                   )}
                 </span>
               )}
-            </React.Fragment>
+            </Fragment>
           );
         })}
         <span>
@@ -811,6 +809,7 @@ function NarrowScreenLinks({
                 if (link?.showStaticLinksInDropdown && isCustomHub) {
                   return (
                     <NarrowScreenDropdownMenu
+                      key={index}
                       locale={locale}
                       classes={classes}
                       Icon={Icon}
@@ -849,7 +848,7 @@ function NarrowScreenLinks({
                   };
                   if (link.avatar)
                     return (
-                      <div className={classes.mobileAvatarContainer}>
+                      <div className={classes.mobileAvatarContainer} key={index}>
                         <Link
                           href={localePrefix + "/profiles/" + loggedInUser.url_slug + queryString}
                           underline="hover"
@@ -910,7 +909,6 @@ const NarrowScreenDropdownMenu = ({
   STATIC_PAGE_LINKS,
   closeDrawer,
 }) => {
-  const localePrefix = getLocalePrefix(locale);
   const [openDropdownInMobile, setOpenDropdownInMobile] = useState(false);
   const toggleDropdownInMobile = setOpenDropdownInMobile.bind(null, !openDropdownInMobile);
   return (
@@ -952,7 +950,6 @@ const getLinkButtonProps = ({
   index,
   loggedInUser,
   classes,
-  transparentHeader,
   toggleShowNotifications,
   isNarrowScreen,
   linksOutsideDrawer,

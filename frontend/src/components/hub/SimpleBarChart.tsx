@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { Typography } from "@mui/material";
 
 import makeStyles from "@mui/styles/makeStyles";
@@ -71,14 +71,14 @@ export default function SimpleBarChart({ config, className, labelsOutSideBar, ti
         <div className={classes.bars}>
           {data.map((dp, index) => {
             return (
-              <React.Fragment key={index}>
+              <Fragment key={index}>
                 <Bar
                   value={dp.value}
                   unit={config.unit}
                   maxValue={maxValue}
                   labelsOutSideBar={labelsOutSideBar}
                 />
-              </React.Fragment>
+              </Fragment>
             );
           })}
         </div>

@@ -2,7 +2,6 @@ import React from "react";
 import { Theme, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { string } from "prop-types";
 
 const useStyles = makeStyles<Theme, { background?: string; image?: string }>((theme) => ({
   wrapper: {
@@ -67,7 +66,7 @@ export default function HoverImage({ src, text, className, background }: any) {
     <div className={className}>
       <div className={classes.wrapper}>
         <div className={classes.imageContainer} id="hover-image-container">
-          <img src={src} className={classes.image} />
+          <img src={src} className={classes.image} alt="hover image" />
         </div>
         <div className={classes.backgroundDiv}>
           <div className={classes.textDivInnerWrapper}>

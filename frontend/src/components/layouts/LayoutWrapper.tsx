@@ -16,7 +16,7 @@ import LogInAction from "../snackbarActions/LogInAction";
 import { DevLinkProvider } from "../../../devlink/DevLinkProvider";
 
 declare module "@mui/styles/defaultTheme" {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  // eslint-disable-next-line no-unused-vars
   interface DefaultTheme extends Theme {}
 }
 
@@ -63,7 +63,6 @@ export default function LayoutWrapper({
   noSpaceForFooter,
   description,
   image,
-  useFloodStdFont,
 }: any) {
   const [snackbarProps, setSnackbarProps] = useState({
     open: false,
@@ -74,10 +73,10 @@ export default function LayoutWrapper({
     success: undefined as any,
   });
   const classes = useStyles();
-  const [initialized, setInitialized] = React.useState(false);
+  const [initialized, setInitialized] = useState(false);
   const isSmallerThanMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
-  const [loading, setLoading] = React.useState(true);
-  const [bannerOpen, setBannerOpen] = React.useState(true);
+  const [loading, setLoading] = useState(true);
+  const [bannerOpen, setBannerOpen] = useState(true);
   const { acceptedNecessary, locale, isLoading } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
 
@@ -141,6 +140,7 @@ export default function LayoutWrapper({
     <>
       <Head>
         <title>{title ? title + " | Climate Connect" : "Climate Connect"}</title>
+        {/* eslint-disable-next-line @next/next/no-css-tags */}
         <link href="/fonts/openSans.css" rel="stylesheet" />
         <meta
           name="viewport"

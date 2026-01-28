@@ -2,7 +2,7 @@ import { Button, Chip, Container, List, TextField, Grid } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
-import React, { useContext } from "react";
+import React, { RefObject, useContext, useRef, useState } from "react";
 import SelectField from "../general/SelectField";
 // Relative imports
 import {
@@ -83,10 +83,12 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
 
 type Args = {
   project: Project;
+  // eslint-disable-next-line no-unused-vars
   handleSetProject: (project: Project) => void;
   smallScreen: boolean;
   overviewInputsRef: any;
   locationOptionsOpen: boolean;
+  // eslint-disable-next-line no-unused-vars
   handleSetLocationOptionsOpen: (open: boolean) => void;
   locationInputRef: any;
   sectorOptions: Sector[];
@@ -143,13 +145,15 @@ export default function EditProjectOverview({
 
 type ScreenOverviewProps = {
   project: Project;
+  /* eslint-disable no-unused-vars */
   handleChangeProject: (newValue: any, key: string) => void;
   handleChangeImage: (newImage: any, newThumbnailImage: any) => void;
-  overviewInputsRef: React.RefObject<HTMLInputElement>;
   handleSetProject: (project: Project) => void;
-  locationInputRef: React.RefObject<HTMLInputElement>;
-  locationOptionsOpen: boolean;
   handleSetLocationOptionsOpen: (open: boolean) => void;
+  /* eslint-disable no-unused-vars */
+  overviewInputsRef: RefObject<HTMLInputElement>;
+  locationInputRef: RefObject<HTMLInputElement>;
+  locationOptionsOpen: boolean;
   texts: Record<string, string>;
   sectorOptions: Sector[];
 };
@@ -467,12 +471,10 @@ const InputName = ({ project, screenSize, handleChangeProject, texts }: InputNam
 const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
   const classes = useStyles(project);
 
-  const inputFileRef = React.useRef(null as HTMLInputElement | null);
-  const [open, setOpen] = React.useState(false);
-  const [tempImage, setTempImage] = React.useState(
-    project.image ? getImageUrl(project.image) : null
-  );
-  const [isImgLoading, setIsImgLoading] = React.useState(false);
+  const inputFileRef = useRef(null as HTMLInputElement | null);
+  const [open, setOpen] = useState(false);
+  const [tempImage, setTempImage] = useState(project.image ? getImageUrl(project.image) : null);
+  const [isImgLoading, setIsImgLoading] = useState(false);
   const onImageChange = async (event) => {
     const file = event.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type)) {

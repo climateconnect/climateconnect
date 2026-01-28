@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { ComponentType, FC, useContext, useEffect, useState } from "react";
 import UserContext from "../../../src/components/context/UserContext";
 import DevlinkPage from "../../../src/components/devlink/DevlinkPage";
 import WideLayout from "../../../src/components/layouts/WideLayout";
@@ -11,7 +11,7 @@ import { HubData } from "../../../src/types";
 import { getHubData } from "../../../public/lib/getHubData";
 
 //Types
-type DevlinkComponentType = React.ComponentType<any> | null;
+type DevlinkComponentType = ComponentType<any> | null;
 
 interface TextsType {
   [key: string]: string;
@@ -28,7 +28,7 @@ interface LandingPageProps {
   hubUrl?: string;
 }
 
-const NotFoundPage: React.FC<NotFoundPageProps> = ({ texts, link, showHeader }) => {
+const NotFoundPage: FC<NotFoundPageProps> = ({ texts, link, showHeader }) => {
   return (
     <>
       {showHeader ? (
@@ -76,7 +76,7 @@ export async function getServerSideProps(ctx: any) {
   };
 }
 
-const LandingPage: React.FC<LandingPageProps> = ({ hubData, hubUrl }) => {
+const LandingPage: FC<LandingPageProps> = ({ hubData, hubUrl }) => {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "landing_page", locale: locale }) as TextsType;
   const [DevlinkComponent, setDevlinkComponent] = useState<DevlinkComponentType>(null);

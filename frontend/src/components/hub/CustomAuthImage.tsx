@@ -1,6 +1,6 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import { makeStyles } from "@mui/styles";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { Theme } from "@mui/material/styles";
 
 type Props = { hubUrl: string | undefined; texts: any | null; authStep?: string };
@@ -56,7 +56,7 @@ function isNumber(value: any): boolean {
   return !isNaN(parseFloat(value)) && isFinite(value);
 }
 
-export default function CustomAuthImage({ hubUrl, texts, authStep }: Props): JSX.Element | null {
+export default function CustomAuthImage({ hubUrl, texts, authStep }: Props): ReactElement | null {
   if (!hubUrl) {
     return <DefaultAuthImage authStep={authStep} />;
   }
@@ -91,7 +91,7 @@ function AuthImage({
   hubSlug: string;
   authStep?: string;
   logoSrc: string;
-}): JSX.Element {
+}): ReactElement {
   const classes = useStyles();
   return authStep ? (
     <DefaultAuthImage authStep={authStep} />
@@ -116,7 +116,7 @@ function AuthImage({
   );
 }
 
-function DefaultAuthImage({ authStep }: { authStep?: string }): JSX.Element {
+function DefaultAuthImage({ authStep }: { authStep?: string }): ReactElement {
   const finalSrc =
     authStep === "interestAreaInfo"
       ? "/images/sign_up/Questions-pana.svg"

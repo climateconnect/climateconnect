@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import AutoCompleteSearchBar from "../../../../src/components/search/AutoCompleteSearchBar";
 import getTexts from "../../../../public/texts/texts";
@@ -38,10 +38,10 @@ const useStyles = makeStyles((theme) => {
 export default function UserSearchField({ cancelUserSearch, setErrorMessage }) {
   const classes = useStyles();
   const token = new Cookies().get("auth_token");
-  const { user, locale } = React.useContext(UserContext);
+  const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "chat", locale: locale });
-  const [newChatMembers, setNewChatMembers] = React.useState<any[]>([]);
-  const [groupName, setGroupName] = React.useState("");
+  const [newChatMembers, setNewChatMembers] = useState<any[]>([]);
+  const [groupName, setGroupName] = useState("");
 
   const handleAddNewChatMember = (member) => {
     setNewChatMembers([...newChatMembers, member]);

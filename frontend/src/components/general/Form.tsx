@@ -11,7 +11,7 @@ import {
 import makeStyles from "@mui/styles/makeStyles";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import Link from "next/link";
-import React from "react";
+import React, { Fragment, ReactElement, useState } from "react";
 
 // Relative imports
 import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
@@ -117,19 +117,21 @@ type Props = {
   }[];
   select?: { selectValues: { label: string; value: string }[] };
   messages: {
-    submitMessage: string | JSX.Element;
-    headerMessage?: string | JSX.Element;
-    bottomMessage?: string | JSX.Element;
+    submitMessage: string | ReactElement;
+    headerMessage?: string | ReactElement;
+    bottomMessage?: string | ReactElement;
   };
   bottomLink?: { text: string; href: string };
   formAction?: { href: string; method: string; action?: any };
   usePercentage?: boolean;
   percentage?: number;
+  // eslint-disable-next-line no-unused-vars
   onSubmit: (...args: any[]) => void;
-  errorMessage?: JSX.Element | string | null;
+  errorMessage?: ReactElement | string | null;
   className?: string;
   alignButtonsRight?: boolean;
   fieldClassName?: string;
+  // eslint-disable-next-line no-unused-vars
   onGoBack?: (...args: any[]) => void;
   autocomplete?: string;
 };
@@ -149,8 +151,8 @@ export default function Form({
   autocomplete,
 }: Props) {
   const classes = useStyles();
-  const [curPercentage, setCurPercentage] = React.useState(percentage);
-  const [values, setValues] = React.useState(
+  const [curPercentage, setCurPercentage] = useState(percentage);
+  const [values, setValues] = useState(
     fields.reduce((obj, field) => {
       if (field.select) obj[field.key] = field.select.defaultValue ? field.select.defaultValue : "";
       else if (field.multiselect) obj[field.key] = field.selectedValues ? field.selectedValues : [];
@@ -245,10 +247,11 @@ export default function Form({
             let options = field.select.values;
             if (field.select.addEmptyValue) options = ["", ...options];
             return (
-              <React.Fragment key={field.key}>
+              <Fragment key={field.key}>
                 <SelectField
                   controlledValue={{ name: values[field.key] }}
                   controlled
+                  // @ts-ignore - contrast is a custom color defined in theme
                   color="contrast"
                   required={field.required}
                   options={options}
@@ -258,12 +261,12 @@ export default function Form({
                   onChange={() => handleValueChange(event, field.key, field.type, true)}
                 />
                 {field.bottomLink && field.bottomLink}
-              </React.Fragment>
+              </Fragment>
             );
           } else if (field.multiselect) {
             const options = field.multiselect.values;
             return (
-              <React.Fragment key={field.key}>
+              <Fragment key={field.key}>
                 <SelectField
                   disabled={field.selectedValues.length === field.maxOptions}
                   multiple={field.multiple}
@@ -290,7 +293,7 @@ export default function Form({
                   values={field.selectedValues}
                 />
                 {field.bottomLink && field.bottomLink}
-              </React.Fragment>
+              </Fragment>
             );
           } else if (field.type === "checkbox") {
             return (
@@ -303,6 +306,7 @@ export default function Form({
                   size="small"
                   onBlur={handleBlur}
                   onChange={(event) => handleValueChange(event, field.key, field.type)}
+                  // @ts-ignore - contrast is a custom color defined in theme
                   color="contrast"
                 />
                 <label className={classes.checkboxLabel} htmlFor={"checkbox" + field.key}>
@@ -325,6 +329,7 @@ export default function Form({
                   id={"checkbox" + field.key}
                   checked={values[field.key]}
                   required={field.required}
+                  // @ts-ignore - contrast is a custom color defined in theme
                   color="contrast"
                   name="checkedA"
                   inputProps={{ "aria-label": "secondary checkbox" }}
@@ -379,7 +384,7 @@ export default function Form({
             );
           } else if (!field.onlyShowIfChecked || values[field.onlyShowIfChecked] === true) {
             return (
-              <React.Fragment key={field.key}>
+              <Fragment key={field.key}>
                 <TextField
                   required={field.required}
                   fullWidth
@@ -391,10 +396,11 @@ export default function Form({
                   className={`${classes.blockElement} ${fieldClassName}`}
                   onBlur={handleBlur}
                   onChange={() => handleValueChange(event, field.key, field.type)}
+                  // @ts-ignore - contrast is a custom color defined in theme
                   color="contrast"
                 />
                 {field.bottomLink && field.bottomLink}
-              </React.Fragment>
+              </Fragment>
             );
           }
         })}
@@ -416,8 +422,11 @@ export default function Form({
             <></>
           )}
           {bottomLink ? (
-            <Link href={bottomLink.href}>
-              <a className={`${classes.bottomMessages} ${classes.bottomLink}`}>{bottomLink.text}</a>
+            <Link
+              href={bottomLink.href}
+              className={`${classes.bottomMessages} ${classes.bottomLink}`}
+            >
+              {bottomLink.text}
             </Link>
           ) : (
             <></>

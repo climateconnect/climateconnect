@@ -1,8 +1,6 @@
 import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
-import { getParams } from "../public/lib/generalOperations";
 import {
   getLocationValue,
   indicateWrongLocation,
@@ -43,7 +41,7 @@ export async function getServerSideProps(ctx) {
 
 export default function Signup({ hubUrl, hubThemeData, sectorOptions }) {
   const { ReactGA } = useContext(UserContext);
-  const [userInfo, setUserInfo] = React.useState({
+  const [userInfo, setUserInfo] = useState({
     email: "",
     password: "",
     repeatpassword: "",
@@ -98,7 +96,6 @@ export default function Signup({ hubUrl, hubThemeData, sectorOptions }) {
 
   const handleAddInfoSubmit = (event, values) => {
     event.preventDefault();
-    const params = getParams(window?.location?.href);
     if (!isLocationValid(values.location)) {
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage, texts);
       return;
@@ -243,7 +240,7 @@ export default function Signup({ hubUrl, hubThemeData, sectorOptions }) {
             leftGridSizes={{ md: 7 }}
             rightGridSizes={{ md: 5 }}
             image={<CustomAuthImage hubUrl={hubUrl} texts={texts} authStep={curStep} />}
-          ></ContentImageSplitView>
+          />
         </ThemeProvider>
       </Container>
     </WideLayout>

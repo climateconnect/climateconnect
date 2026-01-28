@@ -1,5 +1,5 @@
 import { Link } from "@mui/material";
-import React from "react";
+import React, { JSXElementConstructor, ReactElement, ReactFragment, ReactPortal } from "react";
 import { getLocalePrefix } from "../../public/lib/apiOperations";
 
 const displayedMention = (
@@ -9,9 +9,9 @@ const displayedMention = (
     | string
     | number
     | boolean
-    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
-    | React.ReactFragment
-    | React.ReactPortal
+    | ReactElement<any, string | JSXElementConstructor<any>>
+    | ReactFragment
+    | ReactPortal
     | null
     | undefined
 ) => (
@@ -31,7 +31,7 @@ const getFragmentsWithMentions = (content: string, linkify: boolean, locale: any
   // this one only matches at the beginning of the string
   const g = /^@@@__([^^]*)\^\^__([^@]*)@@@\^\^\^/g;
 
-  const fragments: (string | JSX.Element)[] = [];
+  const fragments: (string | ReactElement)[] = [];
   for (let i = 0; i < content.length; i++) {
     const m = content.substring(i);
     const greedyMatch = [...m.matchAll(g)];

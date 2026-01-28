@@ -7,6 +7,14 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - 'doc/**'
+      - '.github/agents/**'
+      - '*.md'
+      - 'CONTRIBUTING.md'
+      - 'README.md'
+      - 'GLOSSARY.md'
+      - 'AGENTS.md'
   workflow_dispatch:
 
 jobs:
@@ -36,7 +44,7 @@ jobs:
         run: |
           cd frontend
           yarn --production
-          npx webflow devlink sync
+          npx webflow devlink sync --no-input
           yarn build
         env:
           API_HOST: ${{ secrets.API_HOST }}
@@ -82,7 +90,7 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
-      
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -97,4 +105,3 @@ jobs:
           app-name: 'climateconnect-frontend-appservice'
           slot-name: 'slot2'
           package: .
-          

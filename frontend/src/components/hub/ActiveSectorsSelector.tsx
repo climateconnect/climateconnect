@@ -19,7 +19,9 @@ type ActiveSectorsSelectorProps = {
   selectedSectors: selectedSector[];
   sectorsToSelectFrom: selectedSector[];
   maxSelectedNumber?: number;
+  // eslint-disable-next-line no-unused-vars
   onSelectNewSector: (event: any) => void;
+  // eslint-disable-next-line no-unused-vars
   onClickRemoveSector: (sector: selectedSector) => void;
   hideTitle?: boolean;
   title?: string;

@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from "react";
+import React, { PropsWithChildren, ReactElement } from "react";
 import { Typography, Theme } from "@mui/material";
 
 import makeStyles from "@mui/styles/makeStyles";
@@ -22,7 +22,7 @@ const useStyles = makeStyles<Theme, { horizontal?: boolean }>((theme) => ({
 
 type Props = PropsWithChildren<{
   icon?: string;
-  text: string | JSX.Element;
+  text: string | ReactElement;
   alt?: string;
   horizontal?: boolean;
 }>;

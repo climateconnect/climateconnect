@@ -1,4 +1,3 @@
-import { HPlusMobiledata } from "@mui/icons-material";
 import { Avatar, Button, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { redirect } from "../../../public/lib/apiOperations";

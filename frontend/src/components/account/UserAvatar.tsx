@@ -1,5 +1,5 @@
 import { Avatar, Theme, useMediaQuery } from "@mui/material";
-import React, { useContext, useRef, useState } from "react";
+import React, { ReactElement, useContext, useRef, useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import CloseIcon from "@mui/icons-material/Close";
@@ -24,6 +24,7 @@ interface UserAvatarProps {
   imageUrl?: string;
   thumbnailImageUrl?: string;
   alternativeText?: string;
+  // eslint-disable-next-line no-unused-vars
   onAvatarChanged?: (image?: AvatarImage) => void;
 }
 
@@ -60,7 +61,7 @@ const useStyles = makeStyles<Theme, { avatarImage?: string }>((theme) => ({
   },
 }));
 
-export function UserAvatar(props: UserAvatarProps): JSX.Element {
+export function UserAvatar(props: UserAvatarProps): ReactElement {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
@@ -142,7 +143,7 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
         alt={props.alternativeText}
         src={avatarImage.imageUrl}
       />
-      {props.mode === "edit" && <div className={classes.imageOverlay}></div>}
+      {props.mode === "edit" && <div className={classes.imageOverlay} />}
 
       {props.mode === "edit" && (
         <div

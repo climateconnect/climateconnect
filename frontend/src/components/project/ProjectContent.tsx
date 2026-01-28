@@ -4,13 +4,12 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import humanizeDuration from "humanize-duration";
 import React, { useState, useContext } from "react";
-import TimeAgo from "react-timeago";
 import youtubeRegex from "youtube-regex";
 import { Theme } from "@mui/material/styles";
 
 // Relative imports
-import { germanYearAndDayFormatter, yearAndDayFormatter } from "../../utils/formatting";
 import DateDisplay from "./../general/DateDisplay";
+import LocalizedTimeAgo from "./../general/LocalizedTimeAgo";
 import DiscussionPreview from "./DiscussionPreview";
 import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
@@ -216,11 +215,7 @@ export default function ProjectContent({
                 ) : (
                   <>
                     {texts.started + " "}
-                    <TimeAgo
-                      date={new Date(project.start_date)}
-                      formatter={locale === "de" ? germanYearAndDayFormatter : yearAndDayFormatter}
-                    />{" "}
-                    {texts.by}
+                    <LocalizedTimeAgo date={new Date(project.start_date)} /> {texts.by}
                   </>
                 )}
                 {project.isPersonalProject ? (
@@ -244,10 +239,7 @@ export default function ProjectContent({
             {project.project_type.type_id === "project" && project.end_date && (
               <Typography>
                 {texts.finished + " "}
-                <TimeAgo
-                  date={new Date(project.end_date)}
-                  formatter={locale === "de" ? germanYearAndDayFormatter : yearAndDayFormatter}
-                />{" "}
+                <LocalizedTimeAgo date={new Date(project.end_date)} />{" "}
               </Typography>
             )}
 
@@ -269,8 +261,8 @@ export default function ProjectContent({
           </div>
           {project.end_date && (
             <Typography>
-              {texts.finished} <TimeAgo date={new Date(project.end_date)} />. {texts.total_duration}
-              :{" "}
+              {texts.finished} <LocalizedTimeAgo date={new Date(project.end_date)} />.{" "}
+              {texts.total_duration}:{" "}
               {humanizeDuration(new Date(project.end_date) - new Date(project.start_date), {
                 largest: 1,
                 language: locale,

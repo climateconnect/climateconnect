@@ -1,10 +1,10 @@
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { CcLandingpage, EnLandingpageClimateConnect } from "../devlink";
 import UserContext from "../src/components/context/UserContext";
 import WideLayout from "../src/components/layouts/WideLayout";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   container: {
     overflowAnchor: "none",
   },
@@ -13,11 +13,11 @@ const useStyles = makeStyles((theme) => ({
 export default function Index() {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const [previousLocale, setPreviousLocale] = React.useState(locale);
+  const [previousLocale, setPreviousLocale] = useState(locale);
   //This is a workaround for a bug with tabs in webflow's devlink
   //Without this code the page will always scroll down to the selected tab
   useEffect(() => {
-    const onFirstScroll = (event) => {
+    const onFirstScroll = () => {
       window.scrollTo(0, 0);
       document.removeEventListener("scroll", onFirstScroll);
     };

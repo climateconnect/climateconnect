@@ -124,9 +124,9 @@ export default function ProjectPageRoot({
   const screenSize = {
     belowTiny: useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm")),
     belowSmall: useMediaQuery<Theme>((theme) => theme.breakpoints.down("md")),
-    belowMedium: showSimilarProjects
-      ? useMediaQuery<Theme>("(max-width:1300px)")
-      : useMediaQuery<Theme>("(max-width:1100px)"),
+    belowMedium: useMediaQuery<Theme>(
+      showSimilarProjects ? "(max-width:1300px)" : "(max-width:1100px)"
+    ),
     // need refactor to change the names. this one should be 'belowLarge'
     betweenTinyAndLarg: useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg")),
     // And 'belowLarge' should be 'belowXLarge'

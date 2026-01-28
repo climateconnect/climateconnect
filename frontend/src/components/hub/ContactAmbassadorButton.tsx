@@ -50,7 +50,7 @@ export default function ContactAmbassadorButton({ hubAmbassador, mobile, hubUrl 
     const queryString = hubUrl ? `?hub=${hubUrl}` : "";
 
     if (!user) {
-      let queryString: any = {
+      const queryString: any = {
         errorMessage: texts.please_create_an_account_or_log_in_to_contact_the_ambassador,
       };
       return redirect("/signup", queryString);

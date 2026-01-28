@@ -1,7 +1,7 @@
 import { Link, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import NextCookies from "next-cookies";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getLocalePrefix, sendToLogin } from "../../public/lib/apiOperations";
 import {
@@ -92,7 +92,7 @@ export default function EditProjectPage({
   sectorOptions: Sector[];
 }) {
   const classes = useStyles();
-  const [curProject, setCurProject] = React.useState({
+  const [curProject, setCurProject] = useState({
     ...project,
     hubUrl: project?.related_hubs?.length ? project.related_hubs[0] : null,
   });
@@ -116,7 +116,7 @@ export default function EditProjectPage({
   project = {
     ...project,
   };
-  const [errorMessage, setErrorMessage] = React.useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
 
@@ -205,7 +205,6 @@ export default function EditProjectPage({
         hubUrl={hubUrl}
       >
         <EditProjectRoot
-          hubUrl={hubUrl}
           oldProject={project}
           project={curProject}
           skillsOptions={skillsOptions}

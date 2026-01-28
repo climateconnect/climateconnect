@@ -44,8 +44,8 @@ export default function EditAccountRoot({
   const [translations, setTranslations] = useState(
     initialTranslations ? getTranslationsFromObject(initialTranslations, "user_profile") : {}
   );
-  const [sourceLanguage, setSourceLanguage] = useState(profile.language);
-  const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== sourceLanguage)!);
+  const [sourceLanguage] = useState(profile.language);
+  const [targetLanguage] = useState(locales.find((l) => l !== sourceLanguage)!);
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const [editedProfile, setEditedProfile] = useState({ ...profile });
   const STEPS = ["edit_profile", "edit_translations"];
@@ -62,11 +62,6 @@ export default function EditAccountRoot({
 
   const handleGoToPreviousStep = () => {
     setStep(STEPS[STEPS.indexOf(step) - 1]);
-  };
-
-  const changeTranslationLanguages = ({ newLanguagesObject }) => {
-    if (newLanguagesObject.sourceLanguage) setSourceLanguage(newLanguagesObject.sourceLanguage);
-    if (newLanguagesObject.targetLanguage) setTargetLanguage(newLanguagesObject.targetLanguage);
   };
 
   const handleChangeTranslations = (locale, newTranslations, isManualChange) => {
@@ -184,7 +179,6 @@ export default function EditAccountRoot({
                   showCharacterCounter: true,
                 },
               ]}
-              /*TODO(unused) changeTranslationLanguages={changeTranslationLanguages} */
             />
           </>
         )

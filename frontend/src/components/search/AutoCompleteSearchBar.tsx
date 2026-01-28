@@ -1,7 +1,7 @@
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
+import { Autocomplete, TextField } from "@mui/material";
+
 import throttle from "lodash/throttle";
-import React, { useContext } from "react";
+import React, { Fragment, useContext, useEffect, useMemo, useState } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -36,12 +36,12 @@ export default function AutoCompleteSearchBar({
 }: Props) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "filter_and_search", locale: locale });
-  const [open, setOpen] = React.useState(false);
-  const [options, setOptions] = React.useState([]);
-  const [searchValue, setSearchValue] = React.useState("");
-  const [inputValue, setInputValue] = React.useState("");
+  const [open, setOpen] = useState(false);
+  const [options, setOptions] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
+  const [inputValue, setInputValue] = useState("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     let active = true;
 
     (async () => {
@@ -74,7 +74,7 @@ export default function AutoCompleteSearchBar({
     };
   }, [searchValue]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!open) {
       setOptions([]);
     }
@@ -86,7 +86,7 @@ export default function AutoCompleteSearchBar({
     if (onUnselect) onUnselect();
   };
 
-  const setSearchValueThrottled = React.useMemo(
+  const setSearchValueThrottled = useMemo(
     () =>
       throttle((value) => {
         setSearchValue(value);
@@ -137,7 +137,7 @@ export default function AutoCompleteSearchBar({
           color={color}
           InputProps={{
             ...params.InputProps,
-            endAdornment: <React.Fragment>{params.InputProps.endAdornment}</React.Fragment>,
+            endAdornment: <Fragment>{params.InputProps.endAdornment}</Fragment>,
           }}
         />
       )}

@@ -4,7 +4,6 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import InstagramIcon from "@mui/icons-material/Instagram";
-import TwitterIcon from "@mui/icons-material/Twitter";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -135,12 +134,6 @@ const SmallFooter = ({
       isFooterIcon: true,
     },
     {
-      href: "https://twitter.com/ConnectClimate",
-      icon: TwitterIcon,
-      altText: "Twitter",
-      isFooterIcon: true,
-    },
-    {
       href: "https://www.instagram.com/climate_connect.earth/",
       icon: InstagramIcon,
       altText: "Instagram",
@@ -183,7 +176,11 @@ const SmallFooter = ({
         {!isNarrowScreen && (
           <Box component="span" className={classes.centerText}>
             {customFooterImage ? (
-              <img src={customFooterImage} className={classes.customFooterImage} />
+              <img
+                src={customFooterImage}
+                className={classes.customFooterImage}
+                alt="custom footer"
+              />
             ) : (
               <MadeWithLoveForEarthSign />
             )}

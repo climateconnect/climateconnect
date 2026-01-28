@@ -78,6 +78,7 @@ type ShareProjectRootProps = {
   rolesOptions: Role[];
   user: any;
   token: string;
+  // eslint-disable-next-line no-unused-vars
   setMessage: (message: string) => void;
   projectTypeOptions: any[];
   hubName?: string;
@@ -101,7 +102,7 @@ export default function ShareProjectRoot({
   const texts = getTexts({ page: "project", locale: locale });
   const steps = getSteps(texts);
 
-  const [project, setProject] = React.useState(
+  const [project, setProject] = useState(
     getDefaultProjectValues(
       {
         ...user,
@@ -125,9 +126,9 @@ export default function ShareProjectRoot({
   const [errorDialogOpen, setErrorDialogOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const targetLanguage = locales.find((l) => l !== locale);
-  const [translations, setTranslations] = React.useState({});
-  const [curStep, setCurStep] = React.useState(getStep(0));
-  const [finished, setFinished] = React.useState(false);
+  const [translations, setTranslations] = useState({});
+  const [curStep, setCurStep] = useState(getStep(0));
+  const [finished, setFinished] = useState(false);
 
   // TODO: Allow changing sourceLanguage, targetLanguage
 

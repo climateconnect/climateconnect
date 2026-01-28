@@ -1,7 +1,7 @@
 import { Button, IconButton, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";
 import { getCookieProps } from "../../../../public/lib/cookieOperations";
 import getTexts from "../../../../public/texts/texts";
@@ -104,8 +104,7 @@ type Props = {
 export default function DonationCampaignInformation({ hubUrl }: Props) {
   const classes = useStyles();
   const cookies = new Cookies();
-  const [open, setOpen] = React.useState(!cookies.get("hideDonationCampaign"));
-  const [expanded, setExpanded] = React.useState(false);
+  const [open, setOpen] = useState(!cookies.get("hideDonationCampaign"));
   const { CUSTOM_HUB_URLS, donationGoals, locale } = useContext(UserContext);
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const texts = getTexts({ page: "donate", locale: locale, classes: classes });
@@ -119,9 +118,6 @@ export default function DonationCampaignInformation({ hubUrl }: Props) {
     setOpen(false);
   };
 
-  const handleToggleExpanded = () => {
-    setExpanded(!expanded);
-  };
   if ((isCustomHub && !donationGoal?.hub) || !donationGoal?.goal_amount) return <></>;
   return (
     <>
@@ -132,7 +128,7 @@ export default function DonationCampaignInformation({ hubUrl }: Props) {
           </IconButton>
           <div>
             <div className={classes.textAndBarContainer}>
-              {!expanded && donationGoal && (
+              {donationGoal && (
                 <DonationGoal
                   current={donationGoal?.current_amount}
                   goal={donationGoal?.goal_amount}

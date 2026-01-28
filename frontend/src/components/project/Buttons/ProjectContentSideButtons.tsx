@@ -145,7 +145,7 @@ export default function ProjectContentSideButtons({
     }
   };
 
-  const EditProjectButton = ({ isCustomHub }) => {
+  const EditProjectButton = () => {
     if (isNarrowScreen) {
       return (
         <IconButton

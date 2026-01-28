@@ -2,7 +2,7 @@ import { Button } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SaveIcon from "@mui/icons-material/Save";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import ROLE_TYPES from "../../../../public/data/role_types";
 import { apiRequest } from "../../../../public/lib/apiOperations";
 import { getAllChangedMembers, hasGreaterRole } from "../../../../public/lib/manageMembers";
@@ -42,7 +42,7 @@ export default function ChatMemberManagementOverlay({
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "chat", locale: locale });
-  const [state, setState] = React.useState({
+  const [state, setState] = useState({
     curParticipants: participants,
     curUserRole: user_role,
   });
