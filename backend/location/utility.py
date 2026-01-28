@@ -252,7 +252,7 @@ def format_location_name(location):
     )
     name = build_location_name(first_part, middle_part, last_part)
 
-    # For certain locations our automatic name generation doesn't work. In this case we 
+    # For certain locations our automatic name generation doesn't work. In this case we
     # want to override the name with a custom one
     if name in CUSTOM_NAME_MAPPINGS:
         name = CUSTOM_NAME_MAPPINGS[name]

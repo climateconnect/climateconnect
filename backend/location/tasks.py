@@ -10,6 +10,7 @@ from climateconnect_api.models.language import Language
 
 logger = logging.getLogger(__name__)
 
+
 @shared_task(bind=True, max_retries=5)
 def fetch_and_create_location_translations(self, loc_id):
     # Lazy import to avoid Circular Import

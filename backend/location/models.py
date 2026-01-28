@@ -5,6 +5,7 @@ from climateconnect_api.models.language import Language
 
 logger = logging.getLogger(__name__)
 
+
 class Location(models.Model):
     name = models.CharField(
         help_text="Points to the (shortened) name of the location",

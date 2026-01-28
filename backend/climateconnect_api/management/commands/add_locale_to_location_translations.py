@@ -29,9 +29,9 @@ def location_obj_to_dict(location, translation_data) -> dict:
     """
     address = {}
     # Prefer translated values if present, else fallback to original
-    city = translation_data.get("city_translation") 
-    state = translation_data.get("state_translation") 
-    country = translation_data.get("country_translation") 
+    city = translation_data.get("city_translation")
+    state = translation_data.get("state_translation")
+    country = translation_data.get("country_translation")
     address["city"] = city if city else ""
     address["state"] = state if state else ""
     address["country"] = country if country else ""
@@ -39,7 +39,7 @@ def location_obj_to_dict(location, translation_data) -> dict:
         display_name = location.display_name
     else:
         display_name = location.name
-    
+
     # 'type' für format_location_name: bevorzugt location.type, sonst fallback 'administrative'
     loc_type = getattr(location, "type", None)
     if not loc_type:
@@ -49,6 +49,7 @@ def location_obj_to_dict(location, translation_data) -> dict:
         "display_name": display_name,
         "type": loc_type,
     }
+
 
 NOMINATIM_DETAILS_URL = "https://nominatim.openstreetmap.org/lookup"
 CUSTOM_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
@@ -175,9 +176,25 @@ def translate_locations(locs: list["Location"], locale: str):
                     )
                     continue
 
-        if data is None:
+        if not data:
             tqdm.write(f"no data came back from nominatim")
             continue
+
+        # Check response for osm_ids that did not return any result from nominatim
+        requested_osm_ids = set(osm_ids)
+        returned_osm_ids = set()
+        for result in data:
+            osm_type = (
+                result.get("osm_type", "")[0].upper() if result.get("osm_type") else ""
+            )
+            osm_id = result.get("osm_id")
+            if osm_type and osm_id:
+                returned_osm_ids.add(f"{osm_type}{osm_id}")
+        missing_osm_ids = requested_osm_ids - returned_osm_ids
+        if missing_osm_ids:
+            tqdm.write(
+                f"warning: no Nominatim result for osm_ids: {', '.join(missing_osm_ids)}"
+            )
 
         time.sleep(1)
 
@@ -210,16 +227,14 @@ def translate_locations(locs: list["Location"], locale: str):
 
             for loc in matching_locations:
                 name = translation_data["name_translation"]
-                try:
+                if not name:
+                    loc_dict = location_obj_to_dict(loc, translation_data)
+                    name = format_location_name(loc_dict)["name"]
                     if not name:
-                        loc_dict = location_obj_to_dict(loc, translation_data)
-                        name = format_location_name(loc_dict)["name"]
-                        if not name:
-                            print(f"warning: could not generate name for location '{loc.name}' with id {loc.id}")
-                            continue
-                except Exception as e:
-                    print(f"warning: reason=Name generation/mapping error: {e} for location id {loc.id} with name '{loc.name}'")
-                    continue
+                        print(
+                            f"warning: could not generate name for location '{loc.name}' with id {loc.id}"
+                        )
+                        continue
 
                 unique_key = (loc.id, language_id)
                 if unique_key not in unique_translations:
@@ -296,11 +311,15 @@ class Command(BaseCommand):
             f"Translating {len(locations_list)} locations into '{locale}'..."
         )
 
-        count_before = LocationTranslation.objects.filter(language_id=language_id).count()
+        count_before = LocationTranslation.objects.filter(
+            language_id=language_id
+        ).count()
         # start translation job
         try:
             _ = translate_locations(locations_list, locale)
-            count_after = LocationTranslation.objects.filter(language_id=language_id).count()
+            count_after = LocationTranslation.objects.filter(
+                language_id=language_id
+            ).count()
             created_count = count_after - count_before
             self.stdout.write(
                 self.style.SUCCESS(f"created {created_count} new translations.")
