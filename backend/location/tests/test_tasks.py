@@ -9,7 +9,6 @@ from climateconnect_api.models.language import Language
 from location.models import Location, LocationTranslation
 from location.signals import find_location_translations
 from location.tasks import fetch_and_create_location_translations
-from location.utility import format_location_name
 
 # Mock-Data for Nominatim API responses
 NOMINATIM_RESPONSE_DATA_EN = [
