@@ -9,6 +9,7 @@ import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import SelectField from "../general/SelectField";
 import LocationSearchBar from "../search/LocationSearchBar";
 import FilterSearchBar from "../filter/FilterSearchBar";
+import LocationSearchingIcon from "@mui/icons-material/LocationSearching";
 
 const useStyles = makeStyles<Theme, { justifyContent: any }>((theme) => {
   return {
@@ -17,7 +18,6 @@ const useStyles = makeStyles<Theme, { justifyContent: any }>((theme) => {
       flexWrap: "wrap",
       columnGap: theme.spacing(2),
       rowGap: theme.spacing(1),
-      paddingInline: theme.spacing(2),
       justifyContent: props.justifyContent,
       marginBottom: theme.spacing(1),
     }),
@@ -49,9 +49,6 @@ const useStyles = makeStyles<Theme, { justifyContent: any }>((theme) => {
     },
     overlayLocationField: {
       flexGrow: 1,
-    },
-    radiusField: {
-      width: 125,
     },
     radiusInput: {
       borderTopLeftRadius: 0,
@@ -217,7 +214,7 @@ const LocationFilter = ({
       />
       <SelectField
         className={classes.radiusField}
-        label={texts.radius_km}
+        label={<LocationSearchingIcon fontSize="inherit" />}
         options={radiusFilterOptions}
         controlled
         controlledValue={{ name: radiusValue }}
@@ -226,6 +223,14 @@ const LocationFilter = ({
         InputProps={{
           classes: {
             root: classes.radiusInput,
+          },
+        }}
+        sx={{
+          "& .MuiSelect-select": {
+            paddingRight: "10px !important",
+          },
+          "& .MuiNativeSelect-select": {
+            paddingRight: "10px !important",
           },
         }}
       />
