@@ -1,6 +1,8 @@
 import React, { useMemo } from "react";
-import { Box } from "@mui/material";
+import {Box, Typography, useTheme} from "@mui/material";
 import ProjectPreviews from "../project/ProjectPreviews";
+import makeStyles from "@mui/styles/makeStyles";
+import {Theme} from "@mui/material/styles";
 
 interface WasseraktionswochenEventsProps {
   projects?: any[];
@@ -10,23 +12,86 @@ interface WasseraktionswochenEventsProps {
 
 const DEFAULT_HUB_SLUG = "em";
 
+const useStyles = makeStyles((theme: Theme) => ({
+  subHeader: {
+    fontWeight: "bold",
+    paddingBottom: theme.spacing(1),
+  },
+}));
+
+
 const WasseraktionswochenEvents: React.FC<WasseraktionswochenEventsProps> = ({
   projects = [],
   hubUrl = DEFAULT_HUB_SLUG,
   isGerman = false,
 }) => {
-  const sortedProjects = useMemo(() => sortProjectsByStartDate(projects), [projects]);
+  const { upcoming, past } = useMemo(() => {
+    const todayStartMs = getStartOfTodayMs();
+    const upcomingProjects: any[] = [];
+    const pastProjects: any[] = [];
+
+    projects.forEach((project) => {
+      const timestamp = toTimestamp(project?.start_date);
+      if (timestamp === null || timestamp >= todayStartMs) {
+        upcomingProjects.push(project);
+      } else {
+        pastProjects.push(project);
+      }
+    });
+
+    return {
+      upcoming: upcomingProjects.sort(compareByStartDate),
+      past: pastProjects.sort(compareByStartDate),
+    };
+  }, [projects]);
+
+  const classes = useStyles();
+
+   const theme = useTheme();
 
   return (
     <Box sx={{ mt: 4 }}>
-      <ProjectPreviews
-        projects={sortedProjects}
-        hubUrl={hubUrl}
-        hasMore={false}
-        isLoading={false}
-        displayOnePreviewInRow={false}
-        parentHandlesGridItems
-      />
+      {upcoming.length > 0 && (
+        <Box sx={{ mb: 6 }}>
+          <Typography
+          component="h2"
+          variant="h6"
+          color={theme.palette.background.default_contrastText}
+          className={classes.subHeader}
+        >
+            {isGerman ? "Diese Events erwarten Euch" : "Upcoming Events"}
+          </Typography>
+          <ProjectPreviews
+            projects={upcoming}
+            hubUrl={hubUrl}
+            hasMore={false}
+            isLoading={false}
+            displayOnePreviewInRow={false}
+            parentHandlesGridItems
+          />
+        </Box>
+      )}
+
+      {past.length > 0 && (
+        <Box>
+         <Typography
+          component="h2"
+          variant="h6"
+          color={theme.palette.background.default_contrastText}
+          className={classes.subHeader}
+        >
+            {isGerman ? "Vergangene Veranstaltungen" : "Past Events"}
+          </Typography>
+          <ProjectPreviews
+            projects={past}
+            hubUrl={hubUrl}
+            hasMore={false}
+            isLoading={false}
+            displayOnePreviewInRow={false}
+            parentHandlesGridItems
+          />
+        </Box>
+      )}
     </Box>
   );
 };
