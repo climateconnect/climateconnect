@@ -32,12 +32,9 @@ def location_obj_to_dict(location, translation_data) -> dict:
     city = translation_data.get("city_translation") 
     state = translation_data.get("state_translation") 
     country = translation_data.get("country_translation") 
-    if city:
-        address["city"] = city
-    if state:
-        address["state"] = state
-    if country:
-        address["country"] = country
+    address["city"] = city if city else ""
+    address["state"] = state if state else ""
+    address["country"] = country if country else ""
     if location.display_name:
         display_name = location.display_name
     else:
@@ -213,11 +210,16 @@ def translate_locations(locs: list["Location"], locale: str):
 
             for loc in matching_locations:
                 name = translation_data["name_translation"]
-                if not name:
-                    loc_dict = location_obj_to_dict(loc, translation_data)
-                    name = format_location_name(loc_dict)["name"]
+                try:
                     if not name:
-                        name = loc.name
+                        loc_dict = location_obj_to_dict(loc, translation_data)
+                        name = format_location_name(loc_dict)["name"]
+                        if not name:
+                            print(f"warning: could not generate name for location '{loc.name}' with id {loc.id}")
+                            continue
+                except Exception as e:
+                    print(f"warning: reason=Name generation/mapping error: {e} for location id {loc.id} with name '{loc.name}'")
+                    continue
 
                 unique_key = (loc.id, language_id)
                 if unique_key not in unique_translations:
@@ -294,11 +296,14 @@ class Command(BaseCommand):
             f"Translating {len(locations_list)} locations into '{locale}'..."
         )
 
+        count_before = LocationTranslation.objects.filter(language_id=language_id).count()
         # start translation job
         try:
-            created_count = translate_locations(locations_list, locale)
+            _ = translate_locations(locations_list, locale)
+            count_after = LocationTranslation.objects.filter(language_id=language_id).count()
+            created_count = count_after - count_before
             self.stdout.write(
-                self.style.SUCCESS(f"created {created_count} translations.")
+                self.style.SUCCESS(f"created {created_count} new translations.")
             )
 
         except Exception as e:
