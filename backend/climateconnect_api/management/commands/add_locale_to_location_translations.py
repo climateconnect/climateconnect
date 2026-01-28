@@ -1,8 +1,6 @@
 ########################################################################################
 # IMPORTANT: when adding a new translation language (locale), this locale must also    #
-# be added to the LOCALES list in climateconnect_main/settings.py                      #
-# so that in the future, translations into the new locale                              #
-# will be saved into our database when creating a new location                         #
+# be added to the languages table in our database                                      #
 ########################################################################################
 
 
