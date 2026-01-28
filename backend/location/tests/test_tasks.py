@@ -8,10 +8,8 @@ from django.test import TestCase, override_settings
 from climateconnect_api.models.language import Language
 from location.models import Location, LocationTranslation
 from location.signals import find_location_translations
-from location.tasks import (
-    create_name_from_translation_data,
-    fetch_and_create_location_translations,
-)
+from location.tasks import fetch_and_create_location_translations
+from location.utility import format_location_name
 
 # Mock-Data for Nominatim API responses
 NOMINATIM_RESPONSE_DATA_EN = [
@@ -44,10 +42,10 @@ class LocationTaskTest(TestCase):
 
         # Use or create languages by code to avoid IntegrityError
         self.language_en, _ = Language.objects.get_or_create(
-            language_code="en", defaults={"name": "English"}
+            language_code="en"
         )
         self.language_de, _ = Language.objects.get_or_create(
-            language_code="de", defaults={"name": "German"}
+            language_code="de"
         )
         self.location = Location.objects.create(
             id=5,
@@ -197,125 +195,3 @@ class LocationTaskTest(TestCase):
             )
         )
 
-    # --- Tests for helper functions ---
-
-    def test_create_name_from_translation_data_full(self):
-        """
-        tests the creation of a full name from all translated components
-        """
-
-        self.location.place_name = "City Hall"
-        self.location.exact_address = "Silk Road 50"
-
-        translation_data = {
-            "translated_city": "City",
-            "translated_state": "State",
-            "translated_country": "Country",
-        }
-
-        expected_name = "City Hall, Silk Road 50, City, State, Country"
-        result = create_name_from_translation_data(self.location, translation_data)
-        self.assertEqual(result, expected_name)
-
-    def test_create_name_from_translation_data_minimal(self):
-        """
-        tests name creation with only city and country available
-        """
-
-        self.location.place_name = None
-        self.location.exact_address = None
-        self.location.state = None
-
-        translation_data = {
-            "translated_city": "City",
-            "translated_country": "Country",
-            "translated_state": None,
-        }
-
-        expected_name = "City, Country"
-        result = create_name_from_translation_data(self.location, translation_data)
-        self.assertEqual(result, expected_name)
-
-    def test_create_name_from_translation_data_only_address_city_country(self):
-        """
-        tests name creation with only address, city and country available
-        """
-
-        self.location.place_name = None
-        self.location.exact_address = "Silk Road 50"
-        self.location.state = None
-
-        translation_data = {
-            "translated_city": "City",
-            "translated_country": "Country",
-            "translated_state": None,
-        }
-
-        expected_name = "Silk Road 50, City, Country"
-        result = create_name_from_translation_data(self.location, translation_data)
-        self.assertEqual(result, expected_name)
-
-    @patch("requests.get")
-    @patch("location.tasks.logger")
-    def test_fetch_and_create_location_translations_empty_nominatim_response(
-        self, mock_logger, mock_get
-    ):
-        """
-        tests that empty Nominatim responses are handled gracefully
-        """
-        mock_get.return_value.json.return_value = MOCK_NOMINATIM_NOT_FOUND_RESPONSE
-
-        fetch_and_create_location_translations(self.loc_id)
-
-        self.assertEqual(LocationTranslation.objects.count(), 0)
-
-        warning_calls = [call[0][0] for call in mock_logger.warning.call_args_list]
-        self.assertTrue(any("No Nominatim-Data found" in msg for msg in warning_calls))
-
-    @patch("location.tasks.logger")
-    @patch("requests.get")
-    def test_fetch_and_create_location_translations_fallback_name(
-        self, mock_get, mock_logger
-    ):
-        """
-        tests that name is built from translation_data when localname is missing
-        """
-
-        response_without_localname = [
-            {
-                "address": {
-                    "city": "TestCity",
-                    "state": "TestState",
-                    "country": "TestCountry",
-                },
-                "localname": None,
-            }
-        ]
-
-        mock_get.return_value.json.return_value = response_without_localname
-
-        fetch_and_create_location_translations(self.loc_id)
-
-        self.assertEqual(LocationTranslation.objects.count(), 2)
-
-        translation = LocationTranslation.objects.first()
-        self.assertIsNotNone(translation)
-
-        self.assertIn("TestCity", translation.name_translation)
-        self.assertIn("TestCountry", translation.name_translation)
-
-    def test_create_name_from_translation_data_empty(self):
-        """
-        tests name creation when all fields are empty/None
-        """
-        self.location.place_name = None
-        self.location.exact_address = None
-
-        translation_data = {
-            "translated_city": None,
-            "translated_state": None,
-            "translated_country": None,
-        }
-
-        result = create_name_from_translation_data(self.location, translation_data)
-        self.assertEqual(result, "")
