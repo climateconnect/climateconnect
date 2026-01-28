@@ -32,7 +32,6 @@ MOCK_NOMINATIM_NOT_FOUND_RESPONSE = []
 
 
 @override_settings(
-    LOCALES=["en", "de"],
     NOMINATIM_DETAILS_URL="http://mock.nominatim.test/lookup",
     CUSTOM_USER_AGENT="Test-Agent",
     CELERY_TASK_ALWAYS_EAGER=True,
@@ -43,9 +42,13 @@ class LocationTaskTest(TestCase):
     def setUp(self):
         post_save.disconnect(find_location_translations, sender=Location)
 
-        # Use languages created by test_runner
-        self.language_en = Language.objects.get(id=1)
-        self.language_de = Language.objects.get(id=2)
+        # Use or create languages by code to avoid IntegrityError
+        self.language_en, _ = Language.objects.get_or_create(
+            language_code="en", defaults={"name": "English"}
+        )
+        self.language_de, _ = Language.objects.get_or_create(
+            language_code="de", defaults={"name": "German"}
+        )
         self.location = Location.objects.create(
             id=5,
             name="Original Location Name",
