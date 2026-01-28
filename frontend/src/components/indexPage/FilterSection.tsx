@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, useMediaQuery, Theme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import TuneIcon from "@mui/icons-material/Tune";
@@ -56,9 +56,9 @@ type Props = {
   onSubmit: Function;
   setFiltersExpanded: Function;
   type: BrowseTab;
-  customSearchBarLabels: any;
-  hideFilterButton: boolean;
-  applyBackgroundColor: boolean;
+  customSearchBarLabels?: Record<BrowseTab, string>;
+  applyBackgroundColor?: boolean;
+  isNarrowScreen: boolean;
 };
 
 export default function FilterSection({
@@ -67,8 +67,7 @@ export default function FilterSection({
   setFiltersExpanded,
   type,
   customSearchBarLabels,
-  hideFilterButton,
-  applyBackgroundColor,
+  applyBackgroundColor = false,
 }: Props) {
   const classes = useStyles({
     applyBackgroundColor: applyBackgroundColor,
@@ -76,20 +75,24 @@ export default function FilterSection({
   const { locale } = useContext(UserContext);
   const { filters } = useContext(FilterContext);
   const [value, setValue] = useState(filters.search || "");
-
+  // Get localized texts
   const texts = getTexts({ page: "filter_and_search", locale: locale });
-  const searchBarLabels = {
+
+  // Default search bar labels by type
+  const defaultSearchBarLabels: Record<BrowseTab, string> = {
     projects: texts.search_projects,
     organizations: texts.search_organizations,
     members: texts.search_active_people,
   };
+
+  const searchBarLabel = customSearchBarLabels?.[type] ?? defaultSearchBarLabels[type];
 
   const InputLabelClasses = {
     root: classes.inputLabel,
     notchedOutline: classes.inputLabel,
   };
 
-  const onClickExpandFilters = () => {
+  const handleToggleFilters = () => {
     setFiltersExpanded(!filtersExpanded);
   };
 
@@ -97,6 +100,8 @@ export default function FilterSection({
     e.preventDefault();
     setValue(e.target.value);
   };
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+  const FilterIcon = filtersExpanded ? HighlightOffIcon : TuneIcon;
 
   return (
     <>
@@ -105,7 +110,7 @@ export default function FilterSection({
           <FilterSearchBar
             className={classes.filterSearchbar}
             InputLabelClasses={InputLabelClasses}
-            label={customSearchBarLabels ? customSearchBarLabels[type] : searchBarLabels[type]}
+            label={searchBarLabel}
             // Pass submit handler through to
             // the underlying search bar.
             onSubmit={onSubmit}
@@ -114,19 +119,13 @@ export default function FilterSection({
             onChange={handleChangeValue}
           />
         </div>
-        {!hideFilterButton && (
+        {isNarrowScreen && (
           <Button
             variant="outlined"
             color="grey"
             className={classes.filterButton}
-            onClick={onClickExpandFilters}
-            startIcon={
-              filtersExpanded ? (
-                <HighlightOffIcon className={classes.icon} />
-              ) : (
-                <TuneIcon className={classes.icon} />
-              )
-            }
+            onClick={handleToggleFilters}
+            startIcon={<FilterIcon className={classes.icon} />}
           >
             Filter
           </Button>

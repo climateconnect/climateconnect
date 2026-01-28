@@ -56,6 +56,9 @@ type TabContentWrapperProps = {
   hubName: string;
   linkedHubs: LinkedHub[];
   children: ReactNode;
+
+  // Search handler
+  handleSearchSubmit: (searchTerm: string) => void;
 };
 
 export default function TabContentWrapper({
@@ -81,6 +84,7 @@ export default function TabContentWrapper({
   hubName,
   linkedHubs,
   children,
+  handleSearchSubmit,
 }: TabContentWrapperProps) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -122,9 +126,9 @@ export default function TabContentWrapper({
           unexpandFilters={effectiveUnexpandFilters}
           initialLocationFilter={initialLocationFilter}
           nonFilterParams={nonFilterParams}
+          searchSubmit={handleSearchSubmit}
         />
       )}
-
       {shouldShowLinkedHubs && (
         <div className={classes.linkedHubsContainer}>
           {linkedHubs.map((linkedHub) => (
