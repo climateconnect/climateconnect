@@ -8,12 +8,14 @@ import { Wasseraktionswochen } from "../../../devlink";
 import makeStyles from "@mui/styles/makeStyles";
 import LocalAmbassadorInfoBox from "../../../src/components/hub/LocalAmbassadorInfoBox";
 import { getHubAmbassadorData, getHubData } from "../../../public/lib/getHubData";
+import { getImageUrl } from "../../../public/lib/imageOperations";
 
 interface WasseraktionswochenPageProps {
   locale: string;
   projects: any[];
   hubAmbassador: any;
   hubData: any;
+  parentProject: any;
 }
 
 const PARENT_SLUG = "wasseraktionswochen-143-2932026";
@@ -25,23 +27,36 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   let projects: any[] = [];
   let hubAmbassador = null;
   let hubData = null;
+  let parentProject = null;
 
   try {
-    const resp = await apiRequest({
-      method: "get",
-      url: `/api/projects/?parent_project_slug=${PARENT_SLUG}&page_size=100`,
-      locale,
-    });
+    // Fetch child projects and parent project in parallel
+    const [childResp, parentResp] = await Promise.all([
+      apiRequest({
+        method: "get",
+        url: `/api/projects/?parent_project_slug=${PARENT_SLUG}&page_size=100`,
+        locale,
+      }),
+      apiRequest({
+        method: "get",
+        url: `/api/projects/${PARENT_SLUG}/`,
+        locale,
+      }),
+    ]);
 
-    const results = resp?.data?.results || [];
+    // Process child projects
+    const results = childResp?.data?.results || [];
     projects = results.map((project) => ({
       ...project,
       sectors: (project.sectors || [])
         .sort((a: any, b: any) => (a?.order || 0) - (b?.order || 0))
         .map((s: any) => s.sector),
     }));
+
+    // Store parent project
+    parentProject = parentResp?.data || null;
   } catch (err) {
-    console.log("Failed to load child events", err?.response?.data || err);
+    console.log("Failed to load project data", err?.response?.data || err);
   }
 
   // Fetch hub data and ambassador
@@ -58,6 +73,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       projects,
       hubAmbassador,
       hubData,
+      parentProject,
     },
   };
 };
@@ -79,13 +95,25 @@ export default function WasseraktionswochenPage({
   projects,
   hubAmbassador,
   hubData,
+  parentProject,
 }: WasseraktionswochenPageProps) {
   const isGerman = locale === "de";
   const classes = useStyles();
 
+  // Get SEO metadata from parent project
+  const pageTitle = parentProject?.name || (isGerman ? "Wasseraktionswochen" : "Water Action Weeks");
+  const pageDescription =
+    parentProject?.short_description ||
+    (isGerman
+      ? "Entdecke alle Veranstaltungen der Wasseraktionswochen im Landkreis Emmendingen"
+      : "Discover all events of the Water Action Weeks in Emmendingen District");
+  const pageImage = parentProject?.image ? getImageUrl(parentProject.image) : undefined;
+
   return (
     <WideLayout
-      title={isGerman ? "Wasseraktionswochen" : "Water Action Weeks"}
+      title={pageTitle}
+      description={pageDescription}
+      image={pageImage}
       hideAlert
       isHubPage
       hasHubLandingPage={true}

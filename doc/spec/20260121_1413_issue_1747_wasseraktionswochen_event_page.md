@@ -184,6 +184,9 @@ Create a dedicated event page for Wasseraktionswochen within the Emmendingen Cli
   - Confirm redirect removal when toggle false (no stale Next.js cache).
   - Validate responsive layout (mobile, tablet, desktop) still respects `wideLayout`.
 
+## Known issues / future work
+- Mobile layout
+
 ## Log
 
 - 2026-01-21 14:13 UTC — Initial draft created (Taskie).
@@ -194,3 +197,4 @@ Create a dedicated event page for Wasseraktionswochen within the Emmendingen Cli
 - 2026-01-27 - Added feature toggle and redirect logic.
 - 2026-01-28 - Added actual Webflow component.
 - 2026-01-28 - Added climate networker box and split the events grid into two parts. 
+- 2026-01-29 - Added meta-data for SEO
