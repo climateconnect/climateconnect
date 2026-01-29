@@ -1,4 +1,4 @@
-import { Box, Container } from "@mui/material";
+import { Container } from "@mui/material";
 import { GetServerSideProps } from "next";
 import WideLayout from "../../../src/components/layouts/WideLayout";
 import { apiRequest } from "../../../public/lib/apiOperations";
@@ -101,12 +101,13 @@ export default function WasseraktionswochenPage({
   const classes = useStyles();
 
   // Get SEO metadata from parent project
-  const pageTitle = parentProject?.name || (isGerman ? "Wasseraktionswochen" : "Water Action Weeks");
+  const pageTitle =
+    parentProject?.name || (isGerman ? "Wasseraktionswochen" : "Water Action Weeks");
   const pageDescription =
     parentProject?.short_description ||
     (isGerman
       ? "Entdecke alle Veranstaltungen der Wasseraktionswochen im Landkreis Emmendingen"
-      : "Discover all events of the Water Action Weeks in Emmendingen District");
+      : "Discover all events of the Water Action Weeks in the Emmendingen District");
   const pageImage = parentProject?.image ? getImageUrl(parentProject.image) : undefined;
 
   return (

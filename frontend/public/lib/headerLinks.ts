@@ -11,7 +11,6 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { getLocalePrefix } from "./apiOperations";
 import { getCustomHubData } from "../data/customHubData";
-import { CustomHubConfig } from "../data/customHubtypes";
 
 const ERLANGEN_SLUG = "erlangen";
 const ERLANGEN_DONATE = "https://www.climatehub.earth/300";

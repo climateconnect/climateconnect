@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
-import {Box, Typography, useTheme} from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 import ProjectPreviews from "../project/ProjectPreviews";
 import makeStyles from "@mui/styles/makeStyles";
-import {Theme} from "@mui/material/styles";
+import { Theme } from "@mui/material/styles";
 
 interface WasseraktionswochenEventsProps {
   projects?: any[];
@@ -18,7 +18,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     paddingBottom: theme.spacing(1),
   },
 }));
-
 
 const WasseraktionswochenEvents: React.FC<WasseraktionswochenEventsProps> = ({
   projects = [],
@@ -47,18 +46,18 @@ const WasseraktionswochenEvents: React.FC<WasseraktionswochenEventsProps> = ({
 
   const classes = useStyles();
 
-   const theme = useTheme();
+  const theme = useTheme();
 
   return (
     <Box sx={{ mt: 4 }}>
       {upcoming.length > 0 && (
         <Box sx={{ mb: 6 }}>
           <Typography
-          component="h2"
-          variant="h6"
-          color={theme.palette.background.default_contrastText}
-          className={classes.subHeader}
-        >
+            component="h2"
+            variant="h6"
+            color={theme.palette.background.default_contrastText}
+            className={classes.subHeader}
+          >
             {isGerman ? "Diese Events erwarten Euch" : "Upcoming Events"}
           </Typography>
           <ProjectPreviews
@@ -74,12 +73,12 @@ const WasseraktionswochenEvents: React.FC<WasseraktionswochenEventsProps> = ({
 
       {past.length > 0 && (
         <Box>
-         <Typography
-          component="h2"
-          variant="h6"
-          color={theme.palette.background.default_contrastText}
-          className={classes.subHeader}
-        >
+          <Typography
+            component="h2"
+            variant="h6"
+            color={theme.palette.background.default_contrastText}
+            className={classes.subHeader}
+          >
             {isGerman ? "Vergangene Veranstaltungen" : "Past Events"}
           </Typography>
           <ProjectPreviews
