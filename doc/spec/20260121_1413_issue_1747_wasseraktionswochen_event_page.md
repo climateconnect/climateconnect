@@ -193,3 +193,4 @@ Create a dedicated event page for Wasseraktionswochen within the Emmendingen Cli
 - 2026-01-27 - Added navigation button for Wasseraktionswochen in hub nav.
 - 2026-01-27 - Added feature toggle and redirect logic.
 - 2026-01-28 - Added actual Webflow component.
+- 2026-01-28 - Added climate networker box and split the events grid into two parts. 
