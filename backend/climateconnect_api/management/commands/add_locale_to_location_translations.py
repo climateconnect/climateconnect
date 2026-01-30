@@ -18,35 +18,7 @@ from climateconnect_api.models.language import Language
 # from django.db import transaction
 from location.models import Location, LocationTranslation
 from location.utility import format_location_name
-
-
-def location_obj_to_dict(location, translation_data) -> dict:
-    """
-    Converts a Django Location ORM object to a dict compatible with format_location_name utility.
-    Uses translated city/state/country if available in translation_data, otherwise falls back to Location fields.
-    """
-    address = {}
-    # Prefer translated values if present, else fallback to original
-    city = translation_data.get("city_translation")
-    state = translation_data.get("state_translation")
-    country = translation_data.get("country_translation")
-    address["city"] = city if city else ""
-    address["state"] = state if state else ""
-    address["country"] = country if country else ""
-    if location.display_name:
-        display_name = location.display_name
-    else:
-        display_name = location.name
-
-    # 'type' für format_location_name: bevorzugt location.type, sonst fallback 'administrative'
-    loc_type = getattr(location, "type", None)
-    if not loc_type:
-        loc_type = "administrative"
-    return {
-        "address": address,
-        "display_name": display_name,
-        "type": loc_type,
-    }
+from location.utility import format_translation_data
 
 
 NOMINATIM_DETAILS_URL = "https://nominatim.openstreetmap.org/lookup"
@@ -226,8 +198,8 @@ def translate_locations(locs: list["Location"], locale: str):
             for loc in matching_locations:
                 name = translation_data["name_translation"]
                 if not name:
-                    loc_dict = location_obj_to_dict(loc, translation_data)
-                    name = format_location_name(loc_dict)["name"]
+                    formatted_translation = format_translation_data(translation_data)
+                    name = format_location_name(formatted_translation)
                     if not name:
                         print(
                             f"warning: could not generate name for location '{loc.name}' with id {loc.id}"

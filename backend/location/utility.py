@@ -18,6 +18,38 @@ from location.models import Location
 logger = logging.getLogger("django")
 
 
+# Adapter: Converts a Django Location instance to a dict compatible with format_location_name
+def location_obj_to_dict(location):
+    """
+    Converts a Django Location model instance to a dict with the structure expected by format_location_name.
+    """
+    # Compose a fake Nominatim-like dict
+    address = {
+        "city": location.city or "",
+        "state": location.state or "",
+        "country": location.country or "",
+    }
+    # Add more address fields if needed
+    display_name = location.display_name if hasattr(location, "display_name") and location.display_name else location.name
+    type = getattr(location, "type", "administrative")
+    return {
+        "type": type, 
+        "address": address,
+        "display_name": display_name,
+    }
+
+def format_translation_data(translation_data: dict) -> dict:
+    formatted_data = {}
+    formatted_data["address"] = {
+        "city": translation_data.get("city_translation") or "",
+        "state": translation_data.get("state_translation") or "",
+        "country": translation_data.get("country_translation") or "",
+    }
+    
+    formatted_data["display_name"] = translation_data.get("name_translation") or ""
+
+    return formatted_data
+
 def _osm_type_char(v):
     if v is None:
         return None
@@ -276,8 +308,8 @@ def build_location_name(first_part, middle_part, last_part):
 
 
 def is_country(location):
-    if location["type"] != "administrative":
-        return False
+    if location.get("type") == "administrative":
+        return True
     # short circuit if the address contains any information other than country and country code
     for key in location["address"].keys():
         if key not in ["country", "country_code"]:
