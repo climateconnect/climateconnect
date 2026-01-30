@@ -94,7 +94,7 @@ export default function HubTabsNavigation({
   allHubs,
   fromPage,
 }) {
-  const { locale, user, CUSTOM_HUB_URLS } = useContext(UserContext);
+  const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -114,11 +114,6 @@ export default function HubTabsNavigation({
     hubUrl,
     texts,
   ]);
-
-  // Don't show navigation if logged out on mobile
-  if (!user && isNarrowScreen) {
-    return null;
-  }
 
   // Dropdown handlers
   const handleOpen = () => setDropdownOpen(true);

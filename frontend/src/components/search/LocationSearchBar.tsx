@@ -118,11 +118,6 @@ export default function LocationSearchBar({
 
     (async () => {
       if (searchValue) {
-        const config = {
-          method: "GET",
-          mode: "no-cors",
-          referrerPolicy: "origin",
-        };
         const searchParam = ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
           ? ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
           : searchValue;
@@ -130,7 +125,7 @@ export default function LocationSearchBar({
         if (Object.keys(HUB_COUNTRY_RESTRICTIONS).includes(hubUrl)) {
           url += "&countrycodes=" + HUB_COUNTRY_RESTRICTIONS[hubUrl];
         }
-        const response = await axios(url, config as any);
+        const response = await axios.get(url);
         const bannedClasses = [
           "tourism",
           "railway",
