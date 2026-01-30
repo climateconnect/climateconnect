@@ -13,6 +13,7 @@ const useStyles = makeStyles((theme) => ({
   tabContent: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
+    paddingLeft: theme.spacing(1),
   },
   linkedHubsContainer: {
     display: "flex",

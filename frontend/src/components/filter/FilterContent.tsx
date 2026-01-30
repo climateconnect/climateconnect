@@ -254,6 +254,7 @@ export default function FilterContent({
       });
     }
   };
+  const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.between("md", 1187));
 
   return (
     <div className={className}>
@@ -286,7 +287,7 @@ export default function FilterContent({
           handleClickDialogOpen={handleClickDialogOpen}
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           handleValueChange={handleValueChange}
-          justifyContent={"start"}
+          justifyContent={!isMediumScreen ? "start" : "center"}
           locationInputRef={locationInputRef}
           locationOptionsOpen={locationOptionsOpen}
           open={open}

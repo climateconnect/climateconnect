@@ -1,6 +1,6 @@
 import { Button, TextField, Theme, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, Fragment } from "react";
 import getRadiusFilterOptions from "../../../public/data/radiusFilterOptions";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -16,10 +16,12 @@ const useStyles = makeStyles<Theme, { justifyContent: any }>((theme) => {
     flexContainer: (props) => ({
       display: "flex",
       flexWrap: "wrap",
-      columnGap: theme.spacing(2),
-      rowGap: theme.spacing(1),
+      // columnGap: theme.spacing(2),
+      gap: theme.spacing(1),
       justifyContent: props.justifyContent,
-      marginBottom: theme.spacing(1),
+      // marginBottom: theme.spacing(1),
+      // paddingInline: theme.spacing(2),
+      alignItems: "start",
     }),
     verticalFlexContainer: {
       flexDirection: "column",
@@ -40,7 +42,6 @@ const useStyles = makeStyles<Theme, { justifyContent: any }>((theme) => {
     locationFieldWrapper: {
       display: "flex",
       borderRadius: 0,
-      marginRight: theme.spacing(1),
     },
     locationField: {
       borderTopRightRadius: 0,
@@ -72,6 +73,20 @@ const useStyles = makeStyles<Theme, { justifyContent: any }>((theme) => {
     },
     openMultiSelectButton: {
       border: `1px solid ${theme.palette.grey[500]} !important`,
+    },
+    filterSectionFirstLine: {
+      display: "flex",
+      marginBottom: theme.spacing(0.5),
+      maxWidth: 650,
+      // margin: "0 auto",
+      justifyContent: "center",
+      // flex: "1 0 100%",
+      // flexGrow: 3,
+    },
+    filterSearch: {
+      display: "flex",
+      marginBottom: theme.spacing(2),
+      maxWidth: 650,
     },
   };
 });
@@ -240,20 +255,22 @@ const LocationFilter = ({
 
 const SearchSectionFilter = ({ label, onSubmit, value, onChange }) => {
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
-
+  const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.between("md", 1187));
+  const classes = useStyles({});
   // Don't render on narrow screens
   if (isNarrowScreen) {
     return null;
   }
-
   return (
-    <FilterSearchBar
-      label={label}
-      onSubmit={onSubmit}
-      type={label}
-      value={value}
-      onChange={onChange}
-    />
+    <div className={`${isMediumScreen ? classes.filterSectionFirstLine : classes.filterSearch}`}>
+      <FilterSearchBar
+        label={label}
+        onSubmit={onSubmit}
+        type={label}
+        value={value}
+        onChange={onChange}
+      />
+    </div>
   );
 };
 // Main component
@@ -378,7 +395,7 @@ export default function Filters({
       );
     }
 
-    return <div key={filter.key}>{component}</div>;
+    return <Fragment key={filter.key}>{component}</Fragment>;
   };
 
   return (
