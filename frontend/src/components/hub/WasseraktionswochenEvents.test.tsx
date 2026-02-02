@@ -1,6 +1,8 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "../../themes/theme";
 import WasseraktionswochenEvents, { sortProjectsByStartDate } from "./WasseraktionswochenEvents";
 
 const projectPreviewsMock = jest.fn(({ projects }: { projects: any[] }) => (
@@ -17,6 +19,11 @@ jest.mock("../project/ProjectPreviews", () => ({
   __esModule: true,
   default: (props: any) => projectPreviewsMock(props),
 }));
+
+// Helper to render components with theme
+const renderWithTheme = (ui: React.ReactElement) => {
+  return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>);
+};
 
 beforeAll(() => {
   jest.useFakeTimers();
@@ -64,7 +71,7 @@ describe("WasseraktionswochenEvents", () => {
       { url_slug: "upcoming", start_date: "2024-01-11T00:00:00Z" },
     ];
 
-    render(<WasseraktionswochenEvents projects={projects} isGerman />);
+    renderWithTheme(<WasseraktionswochenEvents projects={projects} isGerman />);
 
     // Check for German headings
     expect(screen.getByText("Diese Events erwarten Euch")).toBeInTheDocument();
@@ -88,7 +95,7 @@ describe("WasseraktionswochenEvents", () => {
       { url_slug: "upcoming", start_date: "2024-01-11T00:00:00Z" },
     ];
 
-    render(<WasseraktionswochenEvents projects={projects} isGerman={false} />);
+    renderWithTheme(<WasseraktionswochenEvents projects={projects} isGerman={false} />);
 
     // Check for English headings
     expect(screen.getByText("Upcoming Events")).toBeInTheDocument();
@@ -101,7 +108,7 @@ describe("WasseraktionswochenEvents", () => {
       { url_slug: "upcoming-2", start_date: "2024-01-12T00:00:00Z" },
     ];
 
-    render(<WasseraktionswochenEvents projects={projects} isGerman />);
+    renderWithTheme(<WasseraktionswochenEvents projects={projects} isGerman />);
 
     expect(screen.getByText("Diese Events erwarten Euch")).toBeInTheDocument();
     expect(screen.queryByText("Vergangene Veranstaltungen")).not.toBeInTheDocument();
@@ -116,7 +123,7 @@ describe("WasseraktionswochenEvents", () => {
       { url_slug: "past-2", start_date: "2024-01-09T00:00:00Z" },
     ];
 
-    render(<WasseraktionswochenEvents projects={projects} isGerman />);
+    renderWithTheme(<WasseraktionswochenEvents projects={projects} isGerman />);
 
     expect(screen.queryByText("Diese Events erwarten Euch")).not.toBeInTheDocument();
     expect(screen.getByText("Vergangene Veranstaltungen")).toBeInTheDocument();
@@ -126,7 +133,7 @@ describe("WasseraktionswochenEvents", () => {
   });
 
   it("renders nothing when there are no events", () => {
-    render(<WasseraktionswochenEvents projects={[]} isGerman />);
+    renderWithTheme(<WasseraktionswochenEvents projects={[]} isGerman />);
 
     expect(screen.queryByText("Diese Events erwarten Euch")).not.toBeInTheDocument();
     expect(screen.queryByText("Vergangene Veranstaltungen")).not.toBeInTheDocument();
