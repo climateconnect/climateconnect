@@ -17,7 +17,7 @@ Enhance the project/event detail page to properly support parent-child event ser
 **Core Requirements (User/Stakeholder Stated):**
 
 1. **Enhanced Back Navigation**
-   - The '← Back' button should attempt to take the user to the previous page in their browser history. If no history is available, it should fall back to a sensible default (the parent's special event page or the browse page).
+   - The '← Back' button should attempt to take the user to the previous page in their browser history. If no history is available, it should fall back to a sensible default: the parent's special event page if available, otherwise the browse page (preserving the `hub` query parameter if present).
    - The button's text should be context-aware. If the user came from the parent's special event page, display '← Back to [parent name]'. Otherwise, display the generic '← Back'.
    - This will be implemented using `router.back()` with a fallback, and checking `document.referrer` on the client-side.
 
@@ -72,7 +72,7 @@ Enhance the project/event detail page to properly support parent-child event ser
    - Use `router.back()` to ensure the user is always taken to their previous page.
    - On the client-side, check `document.referrer` to determine if the user came from the parent's special event page.
    - If so, update the back button's text to '← Back to [parent name]'.
-   - If there is no browser history, `router.back()` will not work. In this case, we should provide a fallback link to the parent's special event page if it exists, otherwise to the browse page.
+   - If there is no browser history, `router.back()` will not work. In this case, we should provide a fallback link to the parent's special event page if it exists, otherwise to the browse page (preserving the `hub` query parameter).
    - This avoids complex routing logic and provides a more intuitive user experience.
 
 2. **Sibling Events Display**:
@@ -86,23 +86,15 @@ Enhance the project/event detail page to properly support parent-child event ser
    - Need to enhance it with proper link to parent detail page
    - Automatic redirect (already implemented) will handle routing to special page when applicable
    - Text pattern should be flexible for different project types (event, project, idea)
-   - Consider making the text more prominent visually (icon, border, or highlighted box)
 
 4. **Feature Toggle Coordination**:
    - The `WASSERAKTIONSWOCHEN_FEATURE` toggle already exists
-   - Need to ensure all three features (back nav, sidebar, parent context) respect this toggle
-   - When toggle is off, fall back to standard behavior (browse page, parent detail page)
+   - Need to ensure the back nav and sidebar features respect this toggle
+   - When toggle is off, fall back to standard behavior (browse page, selection of projects in sidebar)
 
 5. **Data Requirements**:
-   - Need to fetch sibling events - may require new API endpoint or filter
-   - Could use existing `/api/projects?parent_project_slug=...` filter
+   - Need to fetch sibling events - new API endpoint exists, see frontend/pages/hubs/em/wasseraktionswochen.tsx
    - Parent project data is already available, no additional fetch needed for basic display
-
-6. **Edge Cases**:
-   - What if parent has no special page but has many children?
-   - What if child event has no siblings (only child of parent)?
-   - What if parent project is deleted but children remain?
-   - What if special page path changes or is misconfigured?
 
 ## System impact
 
@@ -357,7 +349,9 @@ import { useEffect, useState } from 'react';
 
 const router = useRouter();
 const [backText, setBackText] = useState(texts.back);
-const [fallbackUrl, setFallbackUrl] = useState('/browse');
+const [fallbackUrl, setFallbackUrl] = useState(
+  router.query.hub ? `/browse?hub=${router.query.hub}` : '/browse'
+);
 
 useEffect(() => {
   const specialEventPagePath = getSpecialEventPagePath(project.parent_project_slug);
