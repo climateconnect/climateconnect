@@ -460,4 +460,19 @@ this_event_is_part_of: "Diese {project_type} ist Teil von ",
 
 - 2026-02-02 15:30 UTC - Task created, awaiting user review of problem statement
 - 2026-02-02 16:00 UTC - Simplified spec to remove centralized special page URL logic for this pilot case.
+- 2026-02-02 [Session 1] - **Feature #1: Enhanced Back Navigation** - MOSTLY COMPLETE
+  - ✅ Implemented smart back navigation using `router.back()` with fallback logic
+  - ✅ Added context-aware button text that shows "← Back to {parent_name}" when coming from special event page
+  - ✅ Detection logic simplified: checks `document.referrer` to determine if user came from special event page (no need for feature toggle on client side)
+  - ✅ Works on both desktop (via `HubsSubHeader`) and mobile (via `ProjectOverview`)
+  - ✅ Added translations for `back_to_parent` in English and German
+  - ✅ Fallback hierarchy: special event page → hub browse page → general browse page
+  - ⚠️ **Known Issue**: Language switch creates history entry - when user switches language on project page, clicking back goes to previous language instead of skipping to actual previous page
+  - **TODO**: Fix language switch navigation - `window.history.go(-2)` doesn't work as expected, needs investigation
+  - **Files Modified**:
+    - `frontend/src/components/project/Buttons/GoBackFromProjectPageButton.tsx` - Main logic
+    - `frontend/src/components/project/ProjectOverview.tsx` - Pass project prop
+    - `frontend/src/components/indexPage/hubsSubHeader/HubsSubHeader.tsx` - Pass project prop for desktop
+    - `frontend/pages/projects/[projectId].tsx` - Pass project to HubsSubHeader
+    - `frontend/public/texts/general_texts.json` - Add `back_to_parent` translation
 

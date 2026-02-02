@@ -252,6 +252,7 @@ export default function ProjectPage({
             onlyShowDropDown={true}
             isCustomHub={isCustomHub}
             hubSlug={hubUrl}
+            project={project}
           />
         ) : (
           <></>

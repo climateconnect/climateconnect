@@ -254,7 +254,6 @@ function ShortProjectInfo({ project }) {
   const classes = useStyles({});
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
-  const { getLocalePrefix } = require("./../../../public/lib/apiOperations");
 
   return (
     <>
@@ -319,6 +318,7 @@ function SmallScreenOverview({ screenSize, project, projectAdmin, hubUrl }) {
             texts={texts}
             tinyScreen={screenSize.belowTiny}
             locale={locale}
+            project={project}
           />
         )}
         <ProjectSocialMediaShareButton
