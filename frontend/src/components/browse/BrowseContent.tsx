@@ -538,7 +538,7 @@ export default function BrowseContent({
           <>
             <Suspense fallback={null}>
               <FilterSection
-                filtersExpanded={isNarrowScreen ? filtersExandedOnMobile : filtersExpanded}
+                filtersExpanded={filtersExandedOnMobile}
                 onSubmit={handleSearchSubmit}
                 setFiltersExpanded={
                   isNarrowScreen ? setFiltersExpandedOnMobile : setFiltersExpanded

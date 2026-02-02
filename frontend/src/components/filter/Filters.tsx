@@ -11,17 +11,14 @@ import LocationSearchBar from "../search/LocationSearchBar";
 import FilterSearchBar from "../filter/FilterSearchBar";
 import LocationSearchingIcon from "@mui/icons-material/LocationSearching";
 
-const useStyles = makeStyles<Theme, { justifyContent: any }>((theme) => {
+const useStyles = makeStyles<Theme, { justifyContent: any; isNarrowScreen: boolean }>((theme) => {
   return {
     flexContainer: (props) => ({
       display: "flex",
       flexWrap: "wrap",
-      // columnGap: theme.spacing(2),
       gap: theme.spacing(1),
       justifyContent: props.justifyContent,
-      // marginBottom: theme.spacing(1),
-      // paddingInline: theme.spacing(2),
-      alignItems: "start",
+      alignItems: props.isNarrowScreen ? "center" : "start",
     }),
     verticalFlexContainer: {
       flexDirection: "column",
@@ -206,7 +203,6 @@ const LocationFilter = ({
   locationInputRef,
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
-  texts,
 }) => {
   const radiusFilterOptions = getRadiusFilterOptions();
 
@@ -253,10 +249,9 @@ const LocationFilter = ({
   );
 };
 
-const SearchSectionFilter = ({ label, onSubmit, value, onChange }) => {
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+const SearchSectionFilter = ({ label, onSubmit, value, onChange, isNarrowScreen }) => {
   const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.between("md", 1187));
-  const classes = useStyles({});
+  const classes = useStyles({ justifyContent: "space-around" });
   // Don't render on narrow screens
   if (isNarrowScreen) {
     return null;
@@ -293,10 +288,12 @@ export default function Filters({
   searchSubmit,
 }: any) {
   const { locale } = useContext(UserContext);
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const { filters: currentFilters } = useContext(FilterContext);
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const classes = useStyles({
-    justifyContent: justifyContent || "space-around",
+    justifyContent: justifyContent || "space-around" || "flex-start",
+    isNarrowScreen: isNarrowScreen,
   });
   const [searchValue, setSearchValue] = useState(currentFilters.search || "");
   const shouldShowFilter = (filter) => {
@@ -369,7 +366,6 @@ export default function Filters({
             locationInputRef={locationInputRef}
             locationOptionsOpen={locationOptionsOpen}
             handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-            texts={texts}
           />
         );
         break;
@@ -380,6 +376,7 @@ export default function Filters({
             onSubmit={searchSubmit}
             value={searchValue}
             onChange={handleSearchValueChange}
+            isNarrowScreen={isNarrowScreen}
           />
         );
         break;

@@ -58,7 +58,6 @@ type Props = {
   type: BrowseTab;
   customSearchBarLabels?: Record<BrowseTab, string>;
   applyBackgroundColor?: boolean;
-  isNarrowScreen: boolean;
 };
 
 export default function FilterSection({
@@ -69,15 +68,15 @@ export default function FilterSection({
   customSearchBarLabels,
   applyBackgroundColor = false,
 }: Props) {
-  const classes = useStyles({
-    applyBackgroundColor: applyBackgroundColor,
-  });
   const { locale } = useContext(UserContext);
   const { filters } = useContext(FilterContext);
   const [value, setValue] = useState(filters.search || "");
   // Get localized texts
   const texts = getTexts({ page: "filter_and_search", locale: locale });
-
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+  const classes = useStyles({
+    applyBackgroundColor: applyBackgroundColor,
+  });
   // Default search bar labels by type
   const defaultSearchBarLabels: Record<BrowseTab, string> = {
     projects: texts.search_projects,
@@ -100,7 +99,6 @@ export default function FilterSection({
     e.preventDefault();
     setValue(e.target.value);
   };
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const FilterIcon = filtersExpanded ? HighlightOffIcon : TuneIcon;
 
   return (

@@ -9,12 +9,12 @@ import NoItemsFound from "./NoItemsFound";
 import HubLinkButton from "../hub/HubLinkButton";
 import { LinkedHub } from "../../types";
 
-const useStyles = makeStyles((theme) => ({
-  tabContent: {
+const useStyles = makeStyles<Theme, { is600to718breakpoint: any }>((theme) => ({
+  tabContent: (props) => ({
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
-    paddingLeft: theme.spacing(1),
-  },
+    paddingLeft: props.is600to718breakpoint ? 0 : theme.spacing(1),
+  }),
   linkedHubsContainer: {
     display: "flex",
     flexDirection: "row",
@@ -38,14 +38,14 @@ type TabContentWrapperProps = {
   initialLocationFilter: any;
   nonFilterParams: any;
   handleApplyNewFilters: () => void;
-  handleUpdateFilterValues: (filters: any) => void;
+  handleUpdateFilterValues: (_filters: any) => void;
   unexpandFilters: () => void;
   unexpandFiltersOnMobile: () => void;
 
   // Location handling
   locationInputRefs: any;
   locationOptionsOpen: boolean;
-  handleSetLocationOptionsOpen: (isOpen: boolean) => void;
+  handleSetLocationOptionsOpen: (_isOpen: boolean) => void;
 
   // Content state
   isFiltering: boolean;
@@ -59,7 +59,7 @@ type TabContentWrapperProps = {
   children: ReactNode;
 
   // Search handler
-  handleSearchSubmit: (searchTerm: string) => void;
+  handleSearchSubmit: (_searchTerm: string) => void;
 };
 
 export default function TabContentWrapper({
@@ -87,7 +87,8 @@ export default function TabContentWrapper({
   children,
   handleSearchSubmit,
 }: TabContentWrapperProps) {
-  const classes = useStyles();
+  const is600to718breakpoint = useMediaQuery("(min-width:600px) and (max-width:718px)");
+  const classes = useStyles({ is600to718breakpoint: is600to718breakpoint });
   const { locale } = useContext(UserContext);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
 

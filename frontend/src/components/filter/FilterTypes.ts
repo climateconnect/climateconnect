@@ -1,3 +1,5 @@
+import React from "react";
+
 export type FilterType =
   | "text"
   | "select"
@@ -47,11 +49,11 @@ export type Filter = TextFilter | SelectFilter | MultiSelectDialogFilter | Locat
 
 export interface FiltersProps {
   errorMessage?: string;
-  handleClickDialogClose: (key: string) => void;
-  handleClickDialogOpen: (key: string) => void;
-  handleClickDialogSave: (key: string, items: any[]) => void;
-  handleSetLocationOptionsOpen: (open: boolean) => void;
-  handleValueChange: (key: string, value: any) => void;
+  handleClickDialogClose: (_key: string) => void;
+  handleClickDialogOpen: (_key: string) => void;
+  handleClickDialogSave: (_key: string, _items: any[]) => void;
+  handleSetLocationOptionsOpen: (_open: boolean) => void;
+  handleValueChange: (_key: string, _value: any) => void;
   isInOverlay?: boolean;
   justifyContent?: string;
   locationInputRef: React.RefObject<any>;
@@ -59,5 +61,5 @@ export interface FiltersProps {
   open: Record<string, boolean>;
   possibleFilters: Filter[];
   selectedItems: Record<string, any[]>;
-  setSelectedItems: (items: Record<string, any[]>) => void;
+  setSelectedItems: (_items: Record<string, any[]>) => void;
 }
