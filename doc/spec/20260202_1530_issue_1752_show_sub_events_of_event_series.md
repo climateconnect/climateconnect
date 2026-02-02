@@ -22,9 +22,9 @@ Enhance the project/event detail page to properly support parent-child event ser
    - This will be implemented using `router.back()` with a fallback, and checking `document.referrer` on the client-side.
 
 2. **Show Sibling Events in Sidebar**
-   - On the right sidebar, display other projects/events from the same event series
-   - Show sibling events (children of the same parent)
-   - "Show all" button at the end should link to the special event page if one exists for this parent
+   - When the parent event's feature toggle is active, replace the "similar projects" section in the sidebar with a list of sibling events (other children of the same parent).
+   - Display a maximum of 4 sibling events, sorted by date.
+   - The "Show all" button at the end should link to the parent's special event page.
 
 3. **Parent Event Context in Main Content**
    - Below the text showing who organizes the project, add information about the parent event
@@ -77,7 +77,7 @@ Enhance the project/event detail page to properly support parent-child event ser
 
 2. **Sibling Events Display**:
    - Reuse existing `ProjectPreviews` or similar component for consistency
-   - Consider limiting initial display (e.g., 3-5 siblings) with "Show all" button
+   - Limit the initial display to 4 sibling events.
    - Sort siblings by date (same logic as special event page: upcoming first, then past)
    - Exclude the current event from the sibling list to avoid confusion
 
@@ -90,7 +90,7 @@ Enhance the project/event detail page to properly support parent-child event ser
 4. **Feature Toggle Coordination**:
    - The `WASSERAKTIONSWOCHEN_FEATURE` toggle already exists
    - Need to ensure the back nav and sidebar features respect this toggle
-   - When toggle is off, fall back to standard behavior (browse page, selection of projects in sidebar)
+   - When toggle is off, the sidebar should fall back to showing similar projects.
 
 5. **Data Requirements**:
    - Need to fetch sibling events - new API endpoint exists, see frontend/pages/hubs/em/wasseraktionswochen.tsx
@@ -222,9 +222,9 @@ Enhance the project/event detail page to properly support parent-child event ser
    - Use client-side loading state
 
 3. **Sibling Events Display Limit**:
-   - Show max 5 sibling events in sidebar
+   - Show max 4 sibling events in sidebar
    - Sort by start_date (upcoming first, then past - same logic as special page)
-   - "Show all" button when more than 5 siblings
+   - "Show all" button when more than 4 siblings
 
 4. **Back Navigation**:
    - Use `router.back()` for navigation.
@@ -296,10 +296,10 @@ const fetchSiblingEvents = async () => {
     const response = await axios.get(
       `${process.env.API_URL}/api/projects/?parent_project_slug=${project.parent_project_slug}`
     );
-    // Filter out current project and limit to 5
+    // Filter out current project and limit to 4
     const siblings = response.data.results
       .filter(p => p.url_slug !== project.url_slug)
-      .slice(0, 5);
+      .slice(0, 4);
     setSiblingEvents(siblings);
   } catch (error) {
     console.error('Error fetching sibling events:', error);
@@ -321,13 +321,12 @@ const fetchSiblingEvents = async () => {
       isLoading={loadingSiblings}
       displayOnePreviewInRow={true}
     />
-    {siblingEvents.length >= 5 && (
+    {response.data.count > 5 && (
       <Button
         variant="outlined"
         fullWidth
         href={
-          getSpecialEventPagePath(project.parent_project_slug) ||
-          `/browse?parent=${project.parent_project_slug}`
+          getSpecialEventPagePath(project.parent_project_slug)
         }
       >
         {texts.show_all_events}
