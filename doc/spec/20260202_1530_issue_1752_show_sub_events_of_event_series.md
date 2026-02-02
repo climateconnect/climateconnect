@@ -61,7 +61,7 @@ Enhance the project/event detail page to properly support parent-child event ser
 
 5. **Maintainability**:
    - Code should be reusable for future event series beyond Wasseraktionswochen
-   - Logic for determining special page URLs should be centralized and testable
+   - Logic for determining the special page URL can be specific for this pilot case and does not need to be centralized yet.
    - Should leverage existing components where possible
 
 ### AI Agent Insights and Additions
@@ -70,9 +70,7 @@ Enhance the project/event detail page to properly support parent-child event ser
 
 1. **Smart Back Navigation Logic**:
    - Need to determine if a parent has a special event page programmatically
-   - Could use a mapping of parent slugs to special page paths (e.g., `wasseraktionswochen-143-2932026` → `/hubs/em/wasseraktionswochen`)
-   - This mapping should respect the `WASSERAKTIONSWOCHEN_FEATURE` toggle
-   - Consider storing this mapping in a central configuration file for maintainability
+   - Could use a hardcoded mapping of the parent slug to the special page path for this pilot case.
 
 2. **Sibling Events Display**:
    - Reuse existing `ProjectPreviews` or similar component for consistency
@@ -169,33 +167,8 @@ Enhance the project/event detail page to properly support parent-child event ser
 
 ## Software Architecture
 
-### Special Page Mapping Configuration
 
-Create a centralized configuration that maps parent project slugs to their special event pages:
 
-```typescript
-// frontend/public/lib/specialEventPages.ts
-export const SPECIAL_EVENT_PAGES = {
-  'wasseraktionswochen-143-2932026': {
-    path: '/hubs/em/wasseraktionswochen',
-    featureToggle: 'WASSERAKTIONSWOCHEN_FEATURE',
-    hubUrl: 'em',
-  },
-  // Future special event pages can be added here
-};
-
-export const getSpecialEventPagePath = (parentSlug: string): string | null => {
-  const config = SPECIAL_EVENT_PAGES[parentSlug];
-  if (!config) return null;
-  
-  // Check feature toggle if specified
-  if (config.featureToggle && process.env[config.featureToggle] !== 'true') {
-    return null;
-  }
-  
-  return config.path;
-};
-```
 
 ### Component Architecture
 
@@ -246,10 +219,7 @@ export const getSpecialEventPagePath = (parentSlug: string): string | null => {
 
 ### Technical Decisions
 
-1. **Special Page Mapping Location**: 
-   - Create new file `frontend/public/lib/specialEventPages.ts`
-   - Export configuration object and helper function
-   - Include feature toggle checking in helper
+
 
 2. **Sibling Events Fetching**:
    - Use existing API endpoint with parent_project_slug filter
@@ -276,42 +246,7 @@ export const getSpecialEventPagePath = (parentSlug: string): string | null => {
 
 ## Technical Solution
 
-### 1. Create Special Page Mapping Configuration
 
-File: `frontend/public/lib/specialEventPages.ts`
-
-```typescript
-export interface SpecialEventPageConfig {
-  path: string;
-  featureToggle?: string;
-  hubUrl?: string;
-}
-
-export const SPECIAL_EVENT_PAGES: Record<string, SpecialEventPageConfig> = {
-  'wasseraktionswochen-143-2932026': {
-    path: '/hubs/em/wasseraktionswochen',
-    featureToggle: 'WASSERAKTIONSWOCHEN_FEATURE',
-    hubUrl: 'em',
-  },
-};
-
-export const getSpecialEventPagePath = (parentSlug: string | undefined | null): string | null => {
-  if (!parentSlug) return null;
-  
-  const config = SPECIAL_EVENT_PAGES[parentSlug];
-  if (!config) return null;
-  
-  if (config.featureToggle && process.env[config.featureToggle] !== 'true') {
-    return null;
-  }
-  
-  return config.path;
-};
-
-export const hasSpecialEventPage = (parentSlug: string | undefined | null): boolean => {
-  return getSpecialEventPagePath(parentSlug) !== null;
-};
-```
 
 ### 2. Enhance ProjectContent Component
 
@@ -462,11 +397,7 @@ this_event_is_part_of: "Diese {project_type} ist Teil von ",
 
 ### Unit Tests
 
-1. **Test specialEventPages.ts**:
-   - Test `getSpecialEventPagePath()` with valid parent slug
-   - Test with invalid parent slug (returns null)
-   - Test with feature toggle enabled/disabled
-   - Test `hasSpecialEventPage()` helper
+
 
 2. **Test ProjectContent**:
    - Test parent context display with special page
@@ -506,7 +437,7 @@ this_event_is_part_of: "Diese {project_type} ist Teil von ",
 
 ## Definition of Done
 
-- [ ] Special page mapping configuration created and tested
+
 - [ ] Parent context display enhanced with special page linking
 - [ ] Sibling events section added to sidebar
 - [ ] Smart back navigation implemented
@@ -523,5 +454,5 @@ this_event_is_part_of: "Diese {project_type} ist Teil von ",
 ## Log
 
 - 2026-02-02 15:30 UTC - Task created, awaiting user review of problem statement
-- 2026-02-02 15:45 UTC - Updated spec to clarify that automatic redirect to special event page is already implemented; parent name linking only needs to point to parent detail page
+- 2026-02-02 16:00 UTC - Simplified spec to remove centralized special page URL logic for this pilot case.
 
