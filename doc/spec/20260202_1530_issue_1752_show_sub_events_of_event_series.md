@@ -17,9 +17,9 @@ Enhance the project/event detail page to properly support parent-child event ser
 **Core Requirements (User/Stakeholder Stated):**
 
 1. **Enhanced Back Navigation**
-   - The '← Back' button should always take the user to the previous page in their browser history.
+   - The '← Back' button should attempt to take the user to the previous page in their browser history. If no history is available, it should fall back to a sensible default (the parent's special event page or the browse page).
    - The button's text should be context-aware. If the user came from the parent's special event page, display '← Back to [parent name]'. Otherwise, display the generic '← Back'.
-   - This will be implemented using `router.back()` and checking `document.referrer` on the client-side.
+   - This will be implemented using `router.back()` with a fallback, and checking `document.referrer` on the client-side.
 
 2. **Show Sibling Events in Sidebar**
    - On the right sidebar, display other projects/events from the same event series
@@ -72,6 +72,7 @@ Enhance the project/event detail page to properly support parent-child event ser
    - Use `router.back()` to ensure the user is always taken to their previous page.
    - On the client-side, check `document.referrer` to determine if the user came from the parent's special event page.
    - If so, update the back button's text to '← Back to [parent name]'.
+   - If there is no browser history, `router.back()` will not work. In this case, we should provide a fallback link to the parent's special event page if it exists, otherwise to the browse page.
    - This avoids complex routing logic and provides a more intuitive user experience.
 
 2. **Sibling Events Display**:
@@ -356,16 +357,28 @@ import { useEffect, useState } from 'react';
 
 const router = useRouter();
 const [backText, setBackText] = useState(texts.back);
+const [fallbackUrl, setFallbackUrl] = useState('/browse');
 
 useEffect(() => {
   const specialEventPagePath = getSpecialEventPagePath(project.parent_project_slug);
   if (document.referrer.includes(specialEventPagePath)) {
     setBackText(texts.back_to_parent.replace('{parent_name}', project.parent_project_name));
   }
+  if (specialEventPagePath) {
+    setFallbackUrl(specialEventPagePath);
+  }
 }, [project.parent_project_slug, project.parent_project_name]);
 
+const handleBack = () => {
+  if (window.history.length > 1) {
+    router.back();
+  } else {
+    router.push(fallbackUrl);
+  }
+};
+
 // Render back button
-<Button onClick={() => router.back()}>
+<Button onClick={handleBack}>
   {backText}
 </Button>
 ```
