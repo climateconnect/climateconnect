@@ -5,7 +5,8 @@ export type FilterType =
   | "select"
   | "multiselect"
   | "openMultiSelectDialogButton"
-  | "location";
+  | "location"
+  | "search";
 
 export interface FilterOption {
   name: string;

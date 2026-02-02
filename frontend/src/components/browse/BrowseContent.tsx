@@ -545,7 +545,6 @@ export default function BrowseContent({
                 }
                 type={TYPES_BY_TAB_VALUE[tabValue]}
                 customSearchBarLabels={customSearchBarLabels}
-                hideFilterButton={false}
                 applyBackgroundColor={isLocationHubFlag}
               />
             </Suspense>

@@ -74,10 +74,7 @@ const useStyles = makeStyles<Theme, { justifyContent: any; isMobileScreen: boole
       display: "flex",
       marginBottom: theme.spacing(0.5),
       maxWidth: 650,
-      // margin: "0 auto",
       justifyContent: "center",
-      // flex: "1 0 100%",
-      // flexGrow: 3,
     },
     filterSearch: {
       display: "flex",
@@ -251,9 +248,16 @@ const LocationFilter = ({
   );
 };
 
-const SearchSectionFilter = ({ label, onSubmit, value, onChange, isNarrowScreen }) => {
+const SearchSectionFilter = ({
+  label,
+  onSubmit,
+  value,
+  onChange,
+  isNarrowScreen,
+  justifyContent = "space-around",
+}) => {
   const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.between("md", 1187));
-  const classes = useStyles({ justifyContent: "space-around" });
+  const classes = useStyles({ justifyContent });
   // Don't render on narrow screens
   if (isNarrowScreen) {
     return null;
