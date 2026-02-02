@@ -27,6 +27,7 @@ module.exports = withBundleAnalyzer({
     "LOCATION_HUBS",
     "LETS_ENCRYPT_FILE_CONTENT",
     "SOCKET_URL",
+    "WASSERAKTIONSWOCHEN_FEATURE",
     "WEBFLOW_API_TOKEN",
     "WEBFLOW_SITE_ID",
   ]),
@@ -38,7 +39,7 @@ module.exports = withBundleAnalyzer({
     return defaultPathMap;
   },
   async redirects() {
-    return [
+    const redirects = [
       {
         source: "/",
         destination: "/browse",
@@ -84,6 +85,17 @@ module.exports = withBundleAnalyzer({
         permanent: false,
       },
     ];
+
+    // Conditionally add Wasseraktionswochen redirect
+    if (process.env.WASSERAKTIONSWOCHEN_FEATURE === "true") {
+      redirects.push({
+        source: "/projects/wasseraktionswochen-143-2932026",
+        destination: "/hubs/em/wasseraktionswochen",
+        permanent: false,
+      });
+    }
+
+    return redirects;
   },
   webpack(config) {
     config.module.rules.push({

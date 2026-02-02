@@ -67,6 +67,19 @@ const useStyles = makeStyles((theme) => ({
     overflow: "hidden",
     textOverflow: "ellipsis",
   }),
+  supporterImgStandaloneContainer: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+  },
+  supporterImgStandalone: {
+    maxWidth: "100%",
+    maxHeight: "100%",
+    objectFit: "contain",
+  },
   donate: {
     color: theme.palette.background.default_contrastText,
     fontWeight: "600",
@@ -90,19 +103,29 @@ const HubSupportersDialog = ({ supporters, open, onClose, hubName }: HubSupporte
 
   const HubSupporterCarouselEntry = ({ supporter }) => (
     <div className={classes.carouselEntry} key={supporter.name}>
-      <div className={classes.itemContainer}>
-        <img
-          src={getImageUrl(supporter?.logo)}
-          width={76}
-          height={76}
-          alt={supporter.name}
-          className={classes.supporterImg}
-        />
-        <div>
-          <p className={classes.supporterName}>{supporter?.name}</p>
-          <p className={classes.supporterSubtitle}>{supporter.subtitle}</p>
+      {supporter?.standalone_image ? (
+        <div className={classes.supporterImgStandaloneContainer}>
+          <img
+            src={getImageUrl(supporter.standalone_image)}
+            alt={supporter.name}
+            className={classes.supporterImgStandalone}
+          />
         </div>
-      </div>
+      ) : (
+        <div className={classes.itemContainer}>
+          <img
+            src={getImageUrl(supporter?.logo)}
+            width={76}
+            height={76}
+            alt={supporter.name}
+            className={classes.supporterImg}
+          />
+          <div>
+            <p className={classes.supporterName}>{supporter?.name}</p>
+            <p className={classes.supporterSubtitle}>{supporter.subtitle}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 

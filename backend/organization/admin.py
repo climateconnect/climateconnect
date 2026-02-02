@@ -78,12 +78,17 @@ class ProjectAdmin(admin.ModelAdmin):
         "loc__country",
         "parent_project__name",
         "parent_project__url_slug",
+        "project_parent__parent_user__username",
+        "project_parent__parent_user__email",
+        "project_parent__parent_user__user_profile__name",
+        "project_parent__parent_organization__name",
     )
     list_filter = ("status", "has_children", "project_type")
     list_display = (
         "name",
         "url_slug",
         "status",
+        "get_owner",
         "parent_project",
         "has_children",
         "project_type",
@@ -93,6 +98,27 @@ class ProjectAdmin(admin.ModelAdmin):
     readonly_fields = (
         "has_children",
     )  # Managed by signals, should not be manually edited
+
+    def get_owner(self, obj):
+        """Display the project owner (organization or user)."""
+        try:
+            project_parent = obj.project_parent.first()
+            if project_parent:
+                if project_parent.parent_organization:
+                    return project_parent.parent_organization.name
+                elif project_parent.parent_user:
+                    # Try to get the user's profile name, fallback to username
+                    if (
+                        hasattr(project_parent.parent_user, "user_profile")
+                        and project_parent.parent_user.user_profile
+                    ):
+                        return project_parent.parent_user.user_profile.name
+                    return project_parent.parent_user.username
+        except Exception:
+            pass
+        return "-"
+
+    get_owner.short_description = "Owner"
 
 
 admin.site.register(Project, ProjectAdmin)

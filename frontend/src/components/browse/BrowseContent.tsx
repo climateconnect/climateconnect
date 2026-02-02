@@ -1,5 +1,5 @@
 import makeStyles from "@mui/styles/makeStyles";
-import { Container, Divider, Tab, Tabs, Theme, useMediaQuery } from "@mui/material";
+import { Container, Theme, useMediaQuery } from "@mui/material";
 import _ from "lodash";
 import React, { Suspense, lazy, useContext, useEffect, useMemo, useRef, useState } from "react";
 import Cookies from "universal-cookie";
@@ -48,11 +48,6 @@ const useStyles = makeStyles((theme) => {
       position: "absolute",
       top: -90,
     },
-    tab: {
-      width: 200,
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(2),
-    },
     mainContentDivider: {
       marginBottom: theme.spacing(3),
     },
@@ -96,6 +91,7 @@ type BrowseContentProps = {
   hubSupporters?: any;
   isLocationHub?: boolean;
   linkedHubs?: LinkedHub[];
+  fromPage?: "hub";
 };
 
 export default function BrowseContent({
@@ -116,6 +112,7 @@ export default function BrowseContent({
   hubSupporters,
   isLocationHub,
   linkedHubs,
+  fromPage,
 }: BrowseContentProps) {
   const initialState = {
     items: {
@@ -176,7 +173,6 @@ export default function BrowseContent({
     members: useRef(null),
     ideas: useRef(null),
   };
-
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
   const handleSetLocationOptionsOpen = (bool) => {
     setLocationOptionsOpen(bool);
@@ -357,6 +353,8 @@ export default function BrowseContent({
   };
 
   const handleLoadMoreData = async (type) => {
+    if (isFetchingMoreData) return; // Prevent multiple simultaneous requests
+
     try {
       setIsFetchingMoreData(true);
       const res = await loadMoreData({
@@ -368,8 +366,6 @@ export default function BrowseContent({
         hubUrl: hubData?.url_slug,
       });
 
-      // TODO: these setState and hooks calls should likely be memoized and combined
-      setIsFetchingMoreData(false);
       setState({
         ...state,
         nextPages: {
@@ -391,6 +387,8 @@ export default function BrowseContent({
         ...state,
         hasMore: { ...state.hasMore, [type]: false },
       });
+    } finally {
+      setIsFetchingMoreData(false);
     }
   };
 
@@ -434,7 +432,6 @@ export default function BrowseContent({
       if (isNarrowScreen) setFiltersExpandedOnMobile(false);
       else setFiltersExpanded(false);
     }
-
     if (res?.filteredItemsObject) {
       setState({
         ...state,
@@ -503,6 +500,7 @@ export default function BrowseContent({
     hubName: hubName || "",
     nonFilterParams: nonFilterParams,
     linkedHubs: linkedHubs || [],
+    isFetchingMoreData: isFetchingMoreData,
   };
   return (
     <LoadingContext.Provider
@@ -510,17 +508,16 @@ export default function BrowseContent({
         spinning: isFetchingMoreData || isFiltering,
       }}
     >
-      {isLocationHubFlag && (
-        <HubTabsNavigation
-          TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
-          tabValue={tabValue}
-          handleTabChange={handleTabChange}
-          type_names={type_names}
-          hubUrl={hubUrl}
-          className={classes.hubsTabNavigation}
-          allHubs={allHubs}
-        />
-      )}
+      <HubTabsNavigation
+        TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
+        tabValue={tabValue}
+        handleTabChange={handleTabChange}
+        type_names={type_names}
+        hubUrl={hubUrl}
+        className={classes.hubsTabNavigation}
+        allHubs={allHubs}
+        fromPage={fromPage}
+      />
       <Container maxWidth="lg" className={classes.contentRefContainer}>
         {isNarrowScreen && hubSupporters && hubName && (
           <HubSupporters supportersList={hubSupporters} hubName={hubName} />
@@ -547,24 +544,6 @@ export default function BrowseContent({
 
         {/* Desktop screens: show tabs under the search bar */}
         {/* Mobile screens: show tabs fixed to the bottom of the screen */}
-        {!isNarrowScreen && !isLocationHubFlag && (
-          <Tabs
-            variant={isNarrowScreen ? "fullWidth" : "standard"}
-            value={tabValue}
-            onChange={handleTabChange}
-            indicatorColor="primary"
-            textColor="primary"
-            centered={true}
-          >
-            {TYPES_BY_TAB_VALUE.map((t, index) => {
-              const tabProps: any = {
-                label: type_names[t],
-                className: classes.tab,
-              };
-              return <Tab {...tabProps} key={index} />;
-            })}
-          </Tabs>
-        )}
         {isNarrowScreen && (
           <MobileBottomMenu
             tabValue={tabValue}
@@ -575,7 +554,6 @@ export default function BrowseContent({
             hubUrl={hubUrl}
           />
         )}
-        {!isLocationHubFlag && <Divider className={classes.mainContentDivider} />}
         <Suspense fallback={<LoadingSpinner isLoading />}>
           <TabContentWrapper type={"projects"} {...tabContentWrapperProps}>
             {hubData?.parent_hub && (
@@ -584,12 +562,12 @@ export default function BrowseContent({
               </div>
             )}
             <ProjectPreviews
-              //TODO(unused) className={classes.itemsContainer}
               hasMore={state.hasMore.projects}
               loadFunc={() => handleLoadMoreData("projects")}
               parentHandlesGridItems
               projects={state.items.projects}
               hubUrl={hubUrl}
+              isLoading={isFetchingMoreData}
             />
           </TabContentWrapper>
           <TabContentWrapper type={"organizations"} {...tabContentWrapperProps}>
@@ -604,6 +582,7 @@ export default function BrowseContent({
               organizations={state.items.organizations}
               hubUrl={hubUrl}
               parentHandlesGridItems
+              isLoading={isFetchingMoreData}
             />
           </TabContentWrapper>
           {!hideMembers && (
@@ -620,6 +599,7 @@ export default function BrowseContent({
                 profiles={state.items.members}
                 hubUrl={hubUrl}
                 showAdditionalInfo
+                isLoading={isFetchingMoreData}
               />
             </TabContentWrapper>
           )}
