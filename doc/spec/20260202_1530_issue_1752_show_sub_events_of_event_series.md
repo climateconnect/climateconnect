@@ -29,9 +29,8 @@ Enhance the project/event detail page to properly support parent-child event ser
 3. **Parent Event Context in Main Content**
    - Below the text showing who organizes the project, add information about the parent event
    - Display text like: "This [project type] is part of [parent name]"
-   - Link the parent name to either:
-     - The special event page (if one exists and feature toggle is enabled)
-     - The parent project detail page (default)
+   - Link the parent name to the parent project detail page
+   - Note: Automatic redirect already handles routing to special event page when applicable, so simple link to parent detail is sufficient
 
 **Additional Context from Issue:**
 - This feature is part of an epic to support event series with special pages
@@ -83,7 +82,8 @@ Enhance the project/event detail page to properly support parent-child event ser
 
 3. **Parent Event Context Integration**:
    - The text is already partially implemented in `ProjectContent.tsx` 
-   - Need to enhance it to link to special page when appropriate
+   - Need to enhance it with proper link to parent detail page
+   - Automatic redirect (already implemented) will handle routing to special page when applicable
    - Text pattern should be flexible for different project types (event, project, idea)
    - Consider making the text more prominent visually (icon, border, or highlighted box)
 
@@ -139,9 +139,9 @@ Enhance the project/event detail page to properly support parent-child event ser
 4. **ParentContextDisplayFlow (enhanced)**
    - Trigger: Project detail page loads with parent_project_id present
    - Current: Basic text "This event is part of [parent]" (already implemented in PoC)
-   - Enhancement: Make it link to special page when available and toggle enabled
-   - Technical components: `ProjectContent`, special page mapping
-   - Entities: Project (parent), FeatureToggle
+   - Enhancement: Link to parent detail page; automatic redirect (already implemented) handles special page routing
+   - Technical components: `ProjectContent`
+   - Entities: Project (parent)
 
 **Entity changes needed**
 - No database schema changes required
@@ -201,7 +201,7 @@ export const getSpecialEventPagePath = (parentSlug: string): string | null => {
 
 1. **ProjectContent Enhancement** (`frontend/src/components/project/ProjectContent.tsx`)
    - Enhance existing parent event display
-   - Use `getSpecialEventPagePath()` to determine link destination
+   - Link to parent project detail page (automatic redirect handles special page routing)
    - Make the parent context more visually prominent
 
 2. **ProjectSideBar Enhancement** (`frontend/src/components/project/ProjectSideBar.tsx`)
@@ -226,7 +226,7 @@ export const getSpecialEventPagePath = (parentSlug: string): string | null => {
 **Phase 1: Parent Context Link Enhancement**
 - Enhance existing parent display in ProjectContent
 - Add special page mapping configuration
-- Link to special page when available, fallback to parent detail
+- Link to parent detail page (automatic redirect already handles special page routing)
 
 **Phase 2: Sibling Events Sidebar**
 - Add sibling events section to ProjectSideBar
@@ -328,10 +328,7 @@ Enhance the existing parent event display (already started in PoC):
         .replace('{parent_name}', '')}
       {project.parent_project_name && project.parent_project_slug ? (
         <Link
-          href={
-            getSpecialEventPagePath(project.parent_project_slug) ||
-            `/projects/${project.parent_project_slug}`
-          }
+          href={`/projects/${project.parent_project_slug}`}
           sx={{ color: 'primary.main', fontWeight: 'bold', textDecoration: 'none' }}
         >
           {project.parent_project_name}
@@ -343,6 +340,8 @@ Enhance the existing parent event display (already started in PoC):
   </Box>
 )}
 ```
+
+Note: The link points to the parent project detail page. Automatic redirect (already implemented) will route to the special event page when the feature toggle is enabled.
 
 ### 3. Add Sibling Events to ProjectSideBar
 
@@ -524,4 +523,5 @@ this_event_is_part_of: "Diese {project_type} ist Teil von ",
 ## Log
 
 - 2026-02-02 15:30 UTC - Task created, awaiting user review of problem statement
+- 2026-02-02 15:45 UTC - Updated spec to clarify that automatic redirect to special event page is already implemented; parent name linking only needs to point to parent detail page
 
