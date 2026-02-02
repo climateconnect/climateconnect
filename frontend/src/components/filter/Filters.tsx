@@ -11,14 +11,13 @@ import LocationSearchBar from "../search/LocationSearchBar";
 import FilterSearchBar from "../filter/FilterSearchBar";
 import LocationSearchingIcon from "@mui/icons-material/LocationSearching";
 
-const useStyles = makeStyles<Theme, { justifyContent: any; isNarrowScreen: boolean }>((theme) => {
+const useStyles = makeStyles<Theme, { justifyContent: any; isMobileScreen: boolean }>((theme) => {
   return {
     flexContainer: (props) => ({
       display: "flex",
       flexWrap: "wrap",
       gap: theme.spacing(1),
       justifyContent: props.justifyContent,
-      alignItems: props.isNarrowScreen ? "center" : "start",
     }),
     verticalFlexContainer: {
       flexDirection: "column",
@@ -85,6 +84,9 @@ const useStyles = makeStyles<Theme, { justifyContent: any; isNarrowScreen: boole
       marginBottom: theme.spacing(2),
       maxWidth: 650,
     },
+    radiusField: (props) => ({
+      width: props.isMobileScreen ? 125 : "",
+    }),
   };
 });
 
@@ -289,11 +291,13 @@ export default function Filters({
 }: any) {
   const { locale } = useContext(UserContext);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+  const isMobileScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+
   const { filters: currentFilters } = useContext(FilterContext);
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const classes = useStyles({
     justifyContent: justifyContent || "space-around" || "flex-start",
-    isNarrowScreen: isNarrowScreen,
+    isMobileScreen: isMobileScreen,
   });
   const [searchValue, setSearchValue] = useState(currentFilters.search || "");
   const shouldShowFilter = (filter) => {
