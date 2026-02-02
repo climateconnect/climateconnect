@@ -17,9 +17,9 @@ Enhance the project/event detail page to properly support parent-child event ser
 **Core Requirements (User/Stakeholder Stated):**
 
 1. **Enhanced Back Navigation**
-   - If the parent event has a special event page (like Wasseraktionswochen), the '← Back' button should take the user back to that special page instead of the general browse page
-   - Bonus: Display '← Back to [parent name]' instead of generic '← Back' text
-   - The parent name is already available in the project data
+   - The '← Back' button should always take the user to the previous page in their browser history.
+   - The button's text should be context-aware. If the user came from the parent's special event page, display '← Back to [parent name]'. Otherwise, display the generic '← Back'.
+   - This will be implemented using `router.back()` and checking `document.referrer` on the client-side.
 
 2. **Show Sibling Events in Sidebar**
    - On the right sidebar, display other projects/events from the same event series
@@ -69,8 +69,10 @@ Enhance the project/event detail page to properly support parent-child event ser
 **Additional Considerations:**
 
 1. **Smart Back Navigation Logic**:
-   - Need to determine if a parent has a special event page programmatically
-   - Could use a hardcoded mapping of the parent slug to the special page path for this pilot case.
+   - Use `router.back()` to ensure the user is always taken to their previous page.
+   - On the client-side, check `document.referrer` to determine if the user came from the parent's special event page.
+   - If so, update the back button's text to '← Back to [parent name]'.
+   - This avoids complex routing logic and provides a more intuitive user experience.
 
 2. **Sibling Events Display**:
    - Reuse existing `ProjectPreviews` or similar component for consistency
@@ -232,9 +234,9 @@ Enhance the project/event detail page to properly support parent-child event ser
    - "Show all" button when more than 5 siblings
 
 4. **Back Navigation**:
-   - Priority: Special page > Parent detail > Browse page
-   - Check special page mapping and feature toggle
-   - Preserve query params (like ?hub=em) when navigating
+   - Use `router.back()` for navigation.
+   - Use `document.referrer` to determine the previous page and set the button text accordingly.
+   - This is a client-side only enhancement.
 
 5. **Translations**:
    - Add new translation keys:
@@ -344,31 +346,28 @@ const fetchSiblingEvents = async () => {
 
 ### 4. Enhance Back Navigation
 
-Need to locate where the back button is rendered in the header and enhance it:
+In the header component where the back button is rendered:
 
 ```tsx
-// Determine back destination
-const getBackDestination = () => {
-  if (project.parent_project_slug) {
-    const specialPage = getSpecialEventPagePath(project.parent_project_slug);
-    if (specialPage) {
-      return specialPage;
-    }
-  }
-  return '/browse'; // default
-};
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 
-const getBackText = () => {
-  if (project.parent_project_slug && project.parent_project_name) {
-    return texts.back_to_parent.replace('{parent_name}', project.parent_project_name);
+// ...
+
+const router = useRouter();
+const [backText, setBackText] = useState(texts.back);
+
+useEffect(() => {
+  const specialEventPagePath = getSpecialEventPagePath(project.parent_project_slug);
+  if (document.referrer.includes(specialEventPagePath)) {
+    setBackText(texts.back_to_parent.replace('{parent_name}', project.parent_project_name));
   }
-  return texts.back;
-};
+}, [project.parent_project_slug, project.parent_project_name]);
 
 // Render back button
-<Link href={getBackDestination()}>
-  {getBackText()}
-</Link>
+<Button onClick={() => router.back()}>
+  {backText}
+</Button>
 ```
 
 ### 5. Add Required Translations
