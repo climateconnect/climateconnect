@@ -72,47 +72,22 @@ export default function GoBackFromProjectPageButton({
     const urlParams = new URLSearchParams(window.location.search);
     const hubPage = urlParams.get("hub");
 
-    // Check if we should use router.back() or fallback to a specific URL
-    if (typeof window !== "undefined" && window.history.length > 1) {
-      const referrer = document.referrer;
+    let backUrl;
 
-      // Check if referrer is a language switch (same project page, different language)
-      // by checking if the referrer contains the same project slug
-      const isLanguageSwitch = referrer &&
-        project?.url_slug &&
-        referrer.includes(`/projects/${project.url_slug}`);
-
-      if (isLanguageSwitch && window.history.length > 2) {
-        // Go back 2 steps to skip the language switch
-        window.history.go(-2);
-      } else if (isLanguageSwitch) {
-        // Only one page in history before language switch, use fallback
-        navigateToFallback(specialEventPagePath, hubPage);
-      } else {
-        // Normal back navigation
-        router.back();
-      }
-    } else {
-      // No history, use fallback
-      navigateToFallback(specialEventPagePath, hubPage);
+    // Priority 1: If user came from special event page, go back there
+    if (specialEventPagePath) {
+      backUrl = specialEventPagePath;
     }
-  };
-
-  const navigateToFallback = (specialPagePath: string | null, hubPage: string | null) => {
-    let fallbackUrl;
-
-    if (specialPagePath) {
-      // Fallback to special event page if available
-      fallbackUrl = specialPagePath;
-    } else if (hubPage) {
-      // Fallback to hub browse page
-      fallbackUrl = "/" + locale + "/hubs/" + hubPage + "/browse";
-    } else {
-      // Fallback to general browse page
-      fallbackUrl = "/" + locale + "/browse";
+    // Priority 2: If hub parameter exists, go to hub browse page
+    else if (hubPage) {
+      backUrl = "/" + locale + "/hubs/" + hubPage + "/browse";
+    }
+    // Priority 3: Default to general browse page
+    else {
+      backUrl = "/" + locale + "/browse";
     }
 
-    router.push(fallbackUrl);
+    router.push(backUrl);
   };
 
   if (tinyScreen)
