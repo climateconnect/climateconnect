@@ -14,20 +14,8 @@ const isWasseraktionswochenEnabled = () => {
   return process.env.WASSERAKTIONSWOCHEN_FEATURE === "true";
 };
 
-/**
- * Get the special event page path for Wasseraktionswochen
- * Returns the path if the parent slug matches, null otherwise
- */
-const getWasseraktionswochenPath = (parentProjectSlug) => {
-  if (parentProjectSlug === WASSERAKTIONSWOCHEN_PARENT_SLUG) {
-    return WASSERAKTIONSWOCHEN_PATH;
-  }
-  return null;
-};
-
 module.exports = {
   WASSERAKTIONSWOCHEN_PARENT_SLUG,
   WASSERAKTIONSWOCHEN_PATH,
   isWasseraktionswochenEnabled,
-  getWasseraktionswochenPath,
 };

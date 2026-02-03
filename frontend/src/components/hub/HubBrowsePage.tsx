@@ -38,7 +38,7 @@ import {
 import { retrieveDescriptionFromWebflow } from "../../utils/webflow";
 import { HubDescription } from "./description/HubDescription";
 import { FabShareButton } from "./FabShareButton";
-import { isWasseraktionswochenEnabled } from "../../../public/data/specialEventPages.js";
+import { isWasseraktionswochenEnabled } from "../../../public/data/wasseraktionswochen_config.js";
 
 const useStyles = makeStyles(() => ({
   content: {

@@ -9,7 +9,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import LocalAmbassadorInfoBox from "../../../src/components/hub/LocalAmbassadorInfoBox";
 import { getHubAmbassadorData, getHubData } from "../../../public/lib/getHubData";
 import { getImageUrl } from "../../../public/lib/imageOperations";
-import { WASSERAKTIONSWOCHEN_PARENT_SLUG } from "../../../public/data/specialEventPages.js";
+import { WASSERAKTIONSWOCHEN_PARENT_SLUG } from "../../../public/data/wasseraktionswochen_config.js";
 
 interface WasseraktionswochenPageProps {
   locale: string;

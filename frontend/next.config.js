@@ -10,7 +10,7 @@ const {
   isWasseraktionswochenEnabled,
   WASSERAKTIONSWOCHEN_PATH,
   WASSERAKTIONSWOCHEN_PARENT_SLUG,
-} = require("./public/data/specialEventPages");
+} = require("./public/data/wasseraktionswochen_config");
 
 module.exports = withBundleAnalyzer({
   // Disable ESLint during build - it's already run separately in CI

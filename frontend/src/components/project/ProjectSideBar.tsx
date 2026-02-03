@@ -8,7 +8,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
 import HubSupporters from "../hub/HubSupporters";
-import { getWasseraktionswochenPath } from "../../../public/data/specialEventPages.js";
+import { WASSERAKTIONSWOCHEN_PATH } from "../../../public/data/wasseraktionswochen_config.js";
 
 type useStylesProps = {
   isSmallScreen: boolean;
@@ -91,9 +91,7 @@ export default function ProjectSideBar({
     : texts.you_may_also_like_these_projects;
 
   // For Wasseraktionswochen events, link to the special event page
-  const specialEventPagePath = getWasseraktionswochenPath(project?.parent_project_slug);
-  const showAllLink =
-    showingSiblings && specialEventPagePath ? getLocalePrefix(locale) + specialEventPagePath : link;
+  const showAllLink = showingSiblings ? getLocalePrefix(locale) + WASSERAKTIONSWOCHEN_PATH : link;
   const showAllText = showingSiblings ? texts.show_all_events : texts.view_all_projects;
 
   return (

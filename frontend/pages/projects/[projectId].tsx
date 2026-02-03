@@ -26,7 +26,7 @@ import { parseData } from "../../public/lib/parsingOperations";
 import {
   WASSERAKTIONSWOCHEN_PARENT_SLUG,
   isWasseraktionswochenEnabled,
-} from "../../public/data/specialEventPages.js";
+} from "../../public/data/wasseraktionswochen_config.js";
 
 type StyleProps = {
   showSimilarProjects: boolean;

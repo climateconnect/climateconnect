@@ -17,7 +17,7 @@ import TopOfPage from "../src/components/hooks/TopOfPage";
 import WideLayout from "../src/components/layouts/WideLayout";
 import BrowseContext from "../src/components/context/BrowseContext";
 import { FilterProvider } from "../src/components/provider/FilterProvider";
-import { isWasseraktionswochenEnabled } from "../public/data/specialEventPages.js";
+import { isWasseraktionswochenEnabled } from "../public/data/wasseraktionswochen_config.js";
 
 export async function getServerSideProps(ctx) {
   const { hideInfo } = NextCookies(ctx);
