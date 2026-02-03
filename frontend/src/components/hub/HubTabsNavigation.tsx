@@ -10,6 +10,7 @@ import HubsDropDown from "../indexPage/hubsSubHeader/HubsDropDown";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 import { getCustomHubData } from "../../../public/data/customHubData";
 import HubLinks from "../indexPage/hubsSubHeader/HubLinks";
+import { getWasseraktionswochenUrl } from "../../../public/data/wasseraktionswochen_config.js";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -126,7 +127,7 @@ export default function HubTabsNavigation({
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const isEmmendingenHub = hubUrl === "em";
   const isHubPage = fromPage === "hub";
-  const wasseraktionswochenUrl = `${getLocalePrefix(locale)}/hubs/em/wasseraktionswochen`;
+  const wasseraktionswochenUrl = getWasseraktionswochenUrl(locale);
 
   const locationHubs = useMemo(
     () => (allHubs || []).filter((h) => isLocationHubLikeHub(h.hub_type)),

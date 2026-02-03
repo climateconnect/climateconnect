@@ -4,7 +4,11 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { WASSERAKTIONSWOCHEN_PATH } from "../../../../public/data/wasseraktionswochen_config.js";
+import {
+  WASSERAKTIONSWOCHEN_PATH,
+  getWasseraktionswochenUrl,
+} from "../../../../public/data/wasseraktionswochen_config.js";
+import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 
 type StyleProps = {
   hubSlug?: string;
@@ -60,7 +64,7 @@ export default function GoBackFromProjectPageButton({
         texts.back_to_parent?.replace("{parent_name}", project.parent_project_name || "") ||
         texts.go_back;
       setBackButtonText(backText);
-      setSpecialEventPagePath(`/${locale}${WASSERAKTIONSWOCHEN_PATH}`);
+      setSpecialEventPagePath(getWasseraktionswochenUrl(locale));
     }
   }, [project?.parent_project_slug, project?.parent_project_name, texts, locale]);
 
