@@ -258,19 +258,20 @@ export default function ProjectContent({
                 ))}
               </div>
             )}
-            {project.parent_project_id && (
+            {project.parent_project_id && project.parent_project_name && project.parent_project_slug && (
               <Typography>
-                {texts.this_event_is_part_of || "This event belongs to"}{" "}
-                {project.parent_project_name && project.parent_project_slug ? (
-                  <a
-                    href={`/projects/${project.parent_project_slug}`}
-                    style={{ color: theme.palette.primary.main, textDecoration: "none" }}
-                  >
-                    {project.parent_project_name}
-                  </a>
-                ) : (
-                  <span>{texts.a_project_series || "a project series"}</span>
-                )}
+                {(() => {
+                  const type = project.project_type?.type_id;
+                  if (type === "event") return texts.this_event_is_part_of;
+                  if (type === "idea") return texts.this_idea_is_part_of;
+                  return texts.this_project_is_part_of;
+                })()}{" "}
+                <a
+                  href={`/projects/${project.parent_project_slug}`}
+                  style={{ color: theme.palette.primary.main, textDecoration: "none" }}
+                >
+                  {project.parent_project_name}
+                </a>
               </Typography>
             )}
           </div>

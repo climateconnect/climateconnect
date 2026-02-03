@@ -260,6 +260,18 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Total duration",
       de: "Gesamte Laufzeit",
     },
+    this_event_is_part_of: {
+      en: "This event is part of",
+      de: "Dieses Event ist Teil von",
+    },
+    this_idea_is_part_of: {
+      en: "This idea is part of",
+      de: "Diese Idee ist Teil von",
+    },
+    this_project_is_part_of: {
+      en: "This project is part of",
+      de: "Dieses Projekt ist Teil von",
+    },
     project_description: {
       en: `${project?.project_type?.name ? project.project_type.name : "Project"} Description`,
       de: `${project?.project_type?.name ? project.project_type.name : "Projekt"}beschreibung`,
