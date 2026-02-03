@@ -38,6 +38,7 @@ import {
 import { retrieveDescriptionFromWebflow } from "../../utils/webflow";
 import { HubDescription } from "./description/HubDescription";
 import { FabShareButton } from "./FabShareButton";
+import { isWasseraktionswochenEnabled } from "../../../public/data/specialEventPages.js";
 
 const useStyles = makeStyles(() => ({
   content: {
@@ -68,6 +69,7 @@ export interface HubBrowsePageProps {
   projectTypes: any[];
   hubThemeData: any;
   linkedHubs: any[];
+  showWasseraktionswochen: boolean;
 }
 
 export async function getHubBrowseServerSideProps(ctx) {
@@ -131,6 +133,7 @@ export async function getHubBrowseServerSideProps(ctx) {
       projectTypes: projectTypes,
       hubThemeData: hubThemeData,
       linkedHubs: linkedHubs || [],
+      showWasseraktionswochen: isWasseraktionswochenEnabled(),
     },
   };
 }
@@ -158,6 +161,7 @@ export default function HubBrowsePage({
   projectTypes,
   hubThemeData,
   linkedHubs,
+  showWasseraktionswochen,
 }: HubBrowsePageProps) {
   // donationGoal was removed in PR #1560?
   const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
@@ -314,6 +318,7 @@ export default function HubBrowsePage({
                 linkedHubs={linkedHubs}
                 isLocationHub={isLocationHub}
                 fromPage="hub"
+                showWasseraktionswochen={showWasseraktionswochen}
               />
             </FilterProvider>
           </BrowseContext.Provider>

@@ -115,7 +115,7 @@ export default function HubTabsNavigation({
   className,
   allHubs,
   fromPage,
-  showWasseraktionswochen = false,
+  showWasseraktionswochen,
 }) {
   const { locale, user, CUSTOM_HUB_URLS } = useContext(UserContext);
   const classes = useStyles();
