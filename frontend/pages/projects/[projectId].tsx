@@ -23,7 +23,10 @@ import { NOTIFICATION_TYPES } from "../../src/components/communication/notificat
 import { getProjectTypeOptions } from "../../public/lib/getOptions";
 import BrowseContext from "../../src/components/context/BrowseContext";
 import { parseData } from "../../public/lib/parsingOperations";
-import { WASSERAKTIONSWOCHEN_PARENT_SLUG, isWasseraktionswochenEnabled } from "../../public/data/specialEventPages.js";
+import {
+  WASSERAKTIONSWOCHEN_PARENT_SLUG,
+  isWasseraktionswochenEnabled,
+} from "../../public/data/specialEventPages.js";
 
 type StyleProps = {
   showSimilarProjects: boolean;
@@ -105,8 +108,15 @@ export async function getServerSideProps(ctx) {
   // Fetch sibling events if this is a Wasseraktionswochen event
   let siblingProjects = null;
 
-  if (isWasseraktionswochenEnabled() && project?.parent_project_slug === WASSERAKTIONSWOCHEN_PARENT_SLUG) {
-    siblingProjects = await getSiblingProjects(project.parent_project_slug, project.url_slug, ctx.locale);
+  if (
+    isWasseraktionswochenEnabled() &&
+    project?.parent_project_slug === WASSERAKTIONSWOCHEN_PARENT_SLUG
+  ) {
+    siblingProjects = await getSiblingProjects(
+      project.parent_project_slug,
+      project.url_slug,
+      ctx.locale
+    );
   }
 
   return {
@@ -459,7 +469,7 @@ async function getSiblingProjects(parentProjectSlug, currentProjectSlug, locale)
 
     // Filter out current project, sort by date, and limit to 4
     const siblings = allSiblings
-      .filter(p => p.url_slug !== currentProjectSlug)
+      .filter((p) => p.url_slug !== currentProjectSlug)
       .sort((a, b) => {
         const dateA = new Date(a.start_date || a.created_at);
         const dateB = new Date(b.start_date || b.created_at);

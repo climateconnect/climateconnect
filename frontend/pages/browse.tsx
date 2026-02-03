@@ -49,7 +49,13 @@ export async function getServerSideProps(ctx) {
   };
 }
 
-export default function Browse({ filterChoices, hubs, initialLocationFilter, projectTypes, showWasseraktionswochen }) {
+export default function Browse({
+  filterChoices,
+  hubs,
+  initialLocationFilter,
+  projectTypes,
+  showWasseraktionswochen,
+}) {
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
   const { locale } = useContext(UserContext);
@@ -75,7 +81,11 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter, pro
             locale={locale}
             token={token}
           >
-            <BrowseContent filterChoices={filterChoices} allHubs={hubs} showWasseraktionswochen={showWasseraktionswochen} />
+            <BrowseContent
+              filterChoices={filterChoices}
+              allHubs={hubs}
+              showWasseraktionswochen={showWasseraktionswochen}
+            />
           </FilterProvider>
         </BrowseContext.Provider>
       </WideLayout>

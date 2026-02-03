@@ -86,13 +86,14 @@ export default function ProjectSideBar({
   // Determine what to show: siblings or similar projects
   const showingSiblings = showSiblingProjects && siblingProjects && siblingProjects.length > 0;
   const projectsToDisplay = showingSiblings ? siblingProjects : similarProjects;
-  const headerText = showingSiblings ? texts.events_in_this_series : texts.you_may_also_like_these_projects;
+  const headerText = showingSiblings
+    ? texts.events_in_this_series
+    : texts.you_may_also_like_these_projects;
 
   // For Wasseraktionswochen events, link to the special event page
   const specialEventPagePath = getWasseraktionswochenPath(project?.parent_project_slug);
-  const showAllLink = showingSiblings && specialEventPagePath
-    ? getLocalePrefix(locale) + specialEventPagePath
-    : link;
+  const showAllLink =
+    showingSiblings && specialEventPagePath ? getLocalePrefix(locale) + specialEventPagePath : link;
   const showAllText = showingSiblings ? texts.show_all_events : texts.view_all_projects;
 
   return (

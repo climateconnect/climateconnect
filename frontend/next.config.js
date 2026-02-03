@@ -6,7 +6,11 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 
 require("dotenv").config();
 
-const { isWasseraktionswochenEnabled, WASSERAKTIONSWOCHEN_PATH, WASSERAKTIONSWOCHEN_PARENT_SLUG } = require("./public/data/specialEventPages");
+const {
+  isWasseraktionswochenEnabled,
+  WASSERAKTIONSWOCHEN_PATH,
+  WASSERAKTIONSWOCHEN_PARENT_SLUG,
+} = require("./public/data/specialEventPages");
 
 module.exports = withBundleAnalyzer({
   // Disable ESLint during build - it's already run separately in CI

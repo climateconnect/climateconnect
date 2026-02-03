@@ -258,22 +258,24 @@ export default function ProjectContent({
                 ))}
               </div>
             )}
-            {project.parent_project_id && project.parent_project_name && project.parent_project_slug && (
-              <Typography>
-                {(() => {
-                  const type = project.project_type?.type_id;
-                  if (type === "event") return texts.this_event_is_part_of;
-                  if (type === "idea") return texts.this_idea_is_part_of;
-                  return texts.this_project_is_part_of;
-                })()}{" "}
-                <a
-                  href={`/projects/${project.parent_project_slug}`}
-                  style={{ color: theme.palette.primary.main, textDecoration: "none" }}
-                >
-                  {project.parent_project_name}
-                </a>
-              </Typography>
-            )}
+            {project.parent_project_id &&
+              project.parent_project_name &&
+              project.parent_project_slug && (
+                <Typography>
+                  {(() => {
+                    const type = project.project_type?.type_id;
+                    if (type === "event") return texts.this_event_is_part_of;
+                    if (type === "idea") return texts.this_idea_is_part_of;
+                    return texts.this_project_is_part_of;
+                  })()}{" "}
+                  <a
+                    href={`/projects/${project.parent_project_slug}`}
+                    style={{ color: theme.palette.primary.main, textDecoration: "none" }}
+                  >
+                    {project.parent_project_name}
+                  </a>
+                </Typography>
+              )}
           </div>
           {project.end_date && (
             <Typography>
