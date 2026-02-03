@@ -571,7 +571,6 @@ export default function ProjectPageRoot({
         {screenSize.betweenTinyAndLarg && (
           <>
             <ProjectSideBar
-              project={project}
               showSimilarProjects={showSimilarProjects}
               isSmallScreen
               texts={texts}

@@ -8,7 +8,6 @@ import {
   WASSERAKTIONSWOCHEN_PATH,
   getWasseraktionswochenUrl,
 } from "../../../../public/data/wasseraktionswochen_config.js";
-import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 
 type StyleProps = {
   hubSlug?: string;

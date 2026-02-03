@@ -19,7 +19,6 @@ interface WasseraktionswochenPageProps {
   parentProject: any;
 }
 
-const PARENT_SLUG = "wasseraktionswochen-143-2932026";
 const HUB_URL = "em";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

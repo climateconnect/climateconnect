@@ -72,7 +72,6 @@ export default function ProjectSideBar({
   isSmallScreen,
   hubSupporters,
   hubName,
-  project,
   siblingProjects,
   showSiblingProjects,
 }) {

@@ -325,7 +325,6 @@ export default function ProjectPage({
             <div className={classes.secondaryContent}>
               {!smallScreenSize && (
                 <ProjectSideBar
-                  project={project}
                   similarProjects={similarProjects}
                   siblingProjects={siblingProjects}
                   showSiblingProjects={showSiblingProjects}
