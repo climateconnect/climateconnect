@@ -4,12 +4,12 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { getWasseraktionswochenPath } from "../../../../public/data/specialEventPages.js";
 
 type StyleProps = {
   hubSlug?: string;
 };
 const PRIO1_SLUG = "prio1";
-const WASSERAKTIONSWOCHEN_PARENT_SLUG = "wasseraktionswochen-143-2932026";
 
 const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => ({
   button: (props) => ({
@@ -53,18 +53,15 @@ export default function GoBackFromProjectPageButton({
     }
 
     const referrer = document.referrer;
+    const specialPagePath = getWasseraktionswochenPath(project.parent_project_slug);
 
-    // Check if user came from the Wasseraktionswochen special page
-    if (
-      project.parent_project_slug === WASSERAKTIONSWOCHEN_PARENT_SLUG &&
-      referrer.includes("/hubs/em/wasseraktionswochen")
-    ) {
-      // If they came from the special page, it means the feature is active
+    // Check if user came from a special event page
+    if (specialPagePath && referrer.includes(specialPagePath)) {
       const backText =
         texts.back_to_parent?.replace("{parent_name}", project.parent_project_name || "") ||
         texts.go_back;
       setBackButtonText(backText);
-      setSpecialEventPagePath(`/${locale}/hubs/em/wasseraktionswochen`);
+      setSpecialEventPagePath(`/${locale}${specialPagePath}`);
     }
   }, [project?.parent_project_slug, project?.parent_project_name, texts, locale]);
 

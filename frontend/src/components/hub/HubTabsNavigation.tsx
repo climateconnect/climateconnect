@@ -115,6 +115,7 @@ export default function HubTabsNavigation({
   className,
   allHubs,
   fromPage,
+  showWasseraktionswochen = false,
 }) {
   const { locale, user, CUSTOM_HUB_URLS } = useContext(UserContext);
   const classes = useStyles();
@@ -127,7 +128,6 @@ export default function HubTabsNavigation({
   const isEmmendingenHub = hubUrl === "em";
   const isHubPage = fromPage === "hub";
   const wasseraktionswochenUrl = `${getLocalePrefix(locale)}/hubs/em/wasseraktionswochen`;
-  const showWasseraktionswochen = process.env.WASSERAKTIONSWOCHEN_FEATURE === "true";
 
   const locationHubs = useMemo(
     () => (allHubs || []).filter((h) => isLocationHubLikeHub(h.hub_type)),

@@ -8,6 +8,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
 import HubSupporters from "../hub/HubSupporters";
+import { getWasseraktionswochenPath } from "../../../public/data/specialEventPages.js";
 
 type useStylesProps = {
   isSmallScreen: boolean;
@@ -71,6 +72,9 @@ export default function ProjectSideBar({
   isSmallScreen,
   hubSupporters,
   hubName,
+  project,
+  siblingProjects,
+  showSiblingProjects,
 }) {
   const classes = useStyles({
     isSmallScreen: isSmallScreen,
@@ -78,6 +82,18 @@ export default function ProjectSideBar({
 
   const link = getLocalePrefix(locale) + "/browse";
   const shouldDisplayOneProjectInRow = !isSmallScreen;
+
+  // Determine what to show: siblings or similar projects
+  const showingSiblings = showSiblingProjects && siblingProjects && siblingProjects.length > 0;
+  const projectsToDisplay = showingSiblings ? siblingProjects : similarProjects;
+  const headerText = showingSiblings ? texts.events_in_this_series : texts.you_may_also_like_these_projects;
+
+  // For Wasseraktionswochen events, link to the special event page
+  const specialEventPagePath = getWasseraktionswochenPath(project?.parent_project_slug);
+  const showAllLink = showingSiblings && specialEventPagePath
+    ? getLocalePrefix(locale) + specialEventPagePath
+    : link;
+  const showAllText = showingSiblings ? texts.show_all_events : texts.view_all_projects;
 
   return (
     <>
@@ -90,7 +106,7 @@ export default function ProjectSideBar({
             color="background.default_contrastText"
             className={classes.subHeader}
           >
-            {texts.you_may_also_like_these_projects}
+            {headerText}
           </Typography>
         </>
       ) : (
@@ -124,12 +140,12 @@ export default function ProjectSideBar({
             )}
             <ProjectPreviews
               displayOnePreviewInRow={shouldDisplayOneProjectInRow}
-              projects={similarProjects}
+              projects={projectsToDisplay}
               hubUrl={hubName}
             />
-            <Button variant="outlined" className={classes.showAllProjectsButton} href={link}>
+            <Button variant="outlined" className={classes.showAllProjectsButton} href={showAllLink}>
               <SearchIcon />
-              {texts.view_all_projects}
+              {showAllText}
             </Button>
           </>
         )}

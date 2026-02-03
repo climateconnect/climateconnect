@@ -175,12 +175,11 @@ Enhance the project/event detail page to properly support parent-child event ser
 2. **ProjectSideBar Enhancement** (`frontend/src/components/project/ProjectSideBar.tsx`)
    - Add new section for "Events in this series" or "Related Events"
    - Fetch sibling events using parent_project_slug filter
-   - Display using `ProjectPreviews` component (limit to 3-5 events)
+   - Display using `ProjectPreviews` component (limit to 4 events)
    - "Show all" button links to special page if available
 
 3. **Header Back Navigation** (location TBD - need to find where back button is rendered)
    - Add logic to detect if current project has parent
-   - Use `getSpecialEventPagePath()` to determine back destination
    - Update back button text: "← Back to [parent_name]" when applicable
    - Fallback to standard browse page when no special page exists
 
@@ -241,35 +240,11 @@ Enhance the project/event detail page to properly support parent-child event ser
 
 ## Technical Solution
 
-
-
 ### 2. Enhance ProjectContent Component
 
 File: `frontend/src/components/project/ProjectContent.tsx`
 
-Enhance the existing parent event display (already started in PoC):
-
-```tsx
-{project.parent_project_id && (
-  <Box sx={{ mt: 2, p: 2, bgcolor: 'primary.extraLight', borderRadius: 1 }}>
-    <Typography>
-      {texts.this_event_is_part_of
-        .replace('{project_type}', projectTypeName)
-        .replace('{parent_name}', '')}
-      {project.parent_project_name && project.parent_project_slug ? (
-        <Link
-          href={`/projects/${project.parent_project_slug}`}
-          sx={{ color: 'primary.main', fontWeight: 'bold', textDecoration: 'none' }}
-        >
-          {project.parent_project_name}
-        </Link>
-      ) : (
-        <span>{texts.a_project_series}</span>
-      )}
-    </Typography>
-  </Box>
-)}
-```
+Enhance the existing parent event display (already started in PoC)
 
 Note: The link points to the parent project detail page. Automatic redirect (already implemented) will route to the special event page when the feature toggle is enabled.
 
@@ -277,104 +252,8 @@ Note: The link points to the parent project detail page. Automatic redirect (alr
 
 File: `frontend/src/components/project/ProjectSideBar.tsx`
 
-Add new section for sibling events:
-
-```tsx
-// Add state and effect for fetching siblings
-const [siblingEvents, setSiblingEvents] = useState([]);
-const [loadingSiblings, setLoadingSiblings] = useState(false);
-
-useEffect(() => {
-  if (project.parent_project_slug) {
-    fetchSiblingEvents();
-  }
-}, [project.parent_project_slug]);
-
-const fetchSiblingEvents = async () => {
-  setLoadingSiblings(true);
-  try {
-    const response = await axios.get(
-      `${process.env.API_URL}/api/projects/?parent_project_slug=${project.parent_project_slug}`
-    );
-    // Filter out current project and limit to 4
-    const siblings = response.data.results
-      .filter(p => p.url_slug !== project.url_slug)
-      .slice(0, 4);
-    setSiblingEvents(siblings);
-  } catch (error) {
-    console.error('Error fetching sibling events:', error);
-  } finally {
-    setLoadingSiblings(false);
-  }
-};
-
-// Render sibling events section
-{project.parent_project_id && siblingEvents.length > 0 && (
-  <>
-    <Typography variant="h6" className={classes.subHeader}>
-      {texts.events_in_this_series}
-    </Typography>
-    <ProjectPreviews
-      projects={siblingEvents}
-      hubUrl={hubUrl}
-      hasMore={false}
-      isLoading={loadingSiblings}
-      displayOnePreviewInRow={true}
-    />
-    {response.data.count > 5 && (
-      <Button
-        variant="outlined"
-        fullWidth
-        href={
-          getSpecialEventPagePath(project.parent_project_slug)
-        }
-      >
-        {texts.show_all_events}
-      </Button>
-    )}
-  </>
-)}
-```
-
 ### 4. Enhance Back Navigation
 
-In the header component where the back button is rendered:
-
-```tsx
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-
-// ...
-
-const router = useRouter();
-const [backText, setBackText] = useState(texts.back);
-const [fallbackUrl, setFallbackUrl] = useState(
-  router.query.hub ? `/browse?hub=${router.query.hub}` : '/browse'
-);
-
-useEffect(() => {
-  const specialEventPagePath = getSpecialEventPagePath(project.parent_project_slug);
-  if (document.referrer.includes(specialEventPagePath)) {
-    setBackText(texts.back_to_parent.replace('{parent_name}', project.parent_project_name));
-  }
-  if (specialEventPagePath) {
-    setFallbackUrl(specialEventPagePath);
-  }
-}, [project.parent_project_slug, project.parent_project_name]);
-
-const handleBack = () => {
-  if (window.history.length > 1) {
-    router.back();
-  } else {
-    router.push(fallbackUrl);
-  }
-};
-
-// Render back button
-<Button onClick={handleBack}>
-  {backText}
-</Button>
-```
 
 ### 5. Add Required Translations
 
@@ -382,7 +261,7 @@ Add to translation files:
 
 **English:**
 ```typescript
-back_to_parent: "← Back to {parent_name}",
+back_to_parent: "Back to {parent_name}",
 events_in_this_series: "Events in this series",
 related_events: "Related events",
 show_all_events: "Show all events",
@@ -391,7 +270,7 @@ this_event_is_part_of: "This {project_type} is part of ",
 
 **German:**
 ```typescript
-back_to_parent: "← Zurück zu {parent_name}",
+back_to_parent: "Zurück zu {parent_name}",
 events_in_this_series: "Veranstaltungen in dieser Reihe",
 related_events: "Verwandte Veranstaltungen",
 show_all_events: "Alle Veranstaltungen anzeigen",
@@ -482,4 +361,53 @@ this_event_is_part_of: "Diese {project_type} ist Teil von ",
     - `frontend/src/components/indexPage/hubsSubHeader/HubsSubHeader.tsx` - Pass project prop for desktop
     - `frontend/pages/projects/[projectId].tsx` - Pass project to HubsSubHeader
     - `frontend/public/texts/general_texts.json` - Add `back_to_parent` translation
+
+- 2026-02-03 [Session 3] - **Feature #2: Show Sibling Events in Sidebar** - ✅ COMPLETE
+  - ✅ Implemented server-side fetching of sibling events in `getServerSideProps`
+  - ✅ Added feature toggle using environment variable: `process.env.WASSERAKTIONSWOCHEN_FEATURE === "true"`
+  - ✅ Created `getSiblingProjects()` function that:
+    - Fetches all child projects of the parent using `/api/projects/?parent_project_slug=...`
+    - Filters out the current project
+    - Sorts by date (upcoming events first, then past events)
+    - Limits to 4 sibling events
+  - ✅ Enhanced `ProjectSideBar` to:
+    - Accept `siblingProjects` and `showSiblingProjects` props from server
+    - Display sibling events when available, otherwise show similar projects
+    - Use dynamic header text: "Events in this series" vs "You may also like these projects!"
+    - Use dynamic button: "Show all events" (links to `/hubs/em/wasseraktionswochen`) vs "View all projects" (links to browse)
+  - ✅ Added translations for `events_in_this_series` and `show_all_events` in English and German
+  - **Design Decision**: Server-side fetching instead of client-side to improve performance and SEO, following existing patterns in the codebase (similar to how `similarProjects` is handled)
+  - **Design Decision**: Simplified implementation without generic utility files - hardcoded Wasseraktionswochen constants directly where needed for this pilot feature
+  - **Files Modified**:
+    - `frontend/pages/projects/[projectId].tsx` - Added `getSiblingProjects()`, feature toggle check, and server-side props
+    - `frontend/src/components/project/ProjectSideBar.tsx` - Added sibling events display logic
+    - `frontend/src/components/project/ProjectPageRoot.tsx` - Pass sibling props to sidebar
+    - `frontend/public/texts/project_texts.tsx` - Add `events_in_this_series` and `show_all_events` translations
+
+- 2026-02-03 [Session 3 - Refactoring] - **Code Quality: Centralized Special Event Pages Configuration** - ✅ COMPLETE
+  - ✅ Created centralized configuration file for special event pages: `frontend/public/data/specialEventPages.ts`
+  - ✅ Eliminated duplication of constants across multiple files:
+    - Parent slug constant (`WASSERAKTIONSWOCHEN_SLUG`)
+    - Special page path (`/hubs/em/wasseraktionswochen`)
+    - Feature toggle check logic
+  - ✅ Created utility functions:
+    - `isFeatureEnabled(featureEnvVar)` - Check if environment variable is "true"
+    - `getSpecialEventPageConfig(parentSlug)` - Get full config for a parent slug
+    - `getSpecialEventPagePath(parentSlug)` - Get just the path (most common use case)
+  - ✅ Refactored all files to use centralized configuration:
+    - `frontend/pages/projects/[projectId].tsx` - Uses `getSpecialEventPageConfig()`
+    - `frontend/src/components/project/ProjectSideBar.tsx` - Uses `getSpecialEventPagePath()`
+    - `frontend/src/components/project/Buttons/GoBackFromProjectPageButton.tsx` - Uses `getSpecialEventPagePath()`
+  - **Benefits**:
+    - Single source of truth for special event page configuration
+    - Easy to add new special event pages in the future
+    - Reduced code duplication and maintenance burden
+    - Type-safe configuration with TypeScript
+  - **Design Decision**: Configuration stored in `public/data/` following existing pattern for static configuration data (like `role_types.ts`, `getStaticPageLinks.ts`)
+  - **Files Created**:
+    - `frontend/public/data/specialEventPages.ts` - Central configuration
+  - **Files Modified**:
+    - `frontend/pages/projects/[projectId].tsx` - Import and use centralized config
+    - `frontend/src/components/project/ProjectSideBar.tsx` - Import and use centralized config
+    - `frontend/src/components/project/Buttons/GoBackFromProjectPageButton.tsx` - Import and use centralized config
 

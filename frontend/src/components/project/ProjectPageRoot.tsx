@@ -103,6 +103,8 @@ export default function ProjectPageRoot({
   handleJoinRequest,
   hubSupporters,
   hubPage,
+  siblingProjects,
+  showSiblingProjects,
 }) {
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
@@ -569,6 +571,7 @@ export default function ProjectPageRoot({
         {screenSize.betweenTinyAndLarg && (
           <>
             <ProjectSideBar
+              project={project}
               showSimilarProjects={showSimilarProjects}
               isSmallScreen
               texts={texts}
@@ -577,6 +580,8 @@ export default function ProjectPageRoot({
               locale={locale}
               hubSupporters={hubSupporters}
               hubName={hubPage}
+              siblingProjects={siblingProjects}
+              showSiblingProjects={showSiblingProjects}
             />
           </>
         )}

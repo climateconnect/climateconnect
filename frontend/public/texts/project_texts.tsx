@@ -550,6 +550,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Show all projects",
       de: "Alle Projekte anzeigen",
     },
+    events_in_this_series: {
+      en: "Events in this series",
+      de: "Events in dieser Reihe",
+    },
+    show_all_events: {
+      en: "Show all events",
+      de: "Alle Events anzeigen",
+    },
     please_touch_on_the_following_points_in_your_project_description: {
       en: "Please touch on the following points in your project description",
       de: "Bitte gehe in deiner Projektbeschreibung auf die folgenden Punkte ein",

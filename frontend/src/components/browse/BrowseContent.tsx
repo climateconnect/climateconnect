@@ -92,6 +92,7 @@ type BrowseContentProps = {
   isLocationHub?: boolean;
   linkedHubs?: LinkedHub[];
   fromPage?: "hub";
+  showWasseraktionswochen?: boolean;
 };
 
 export default function BrowseContent({
@@ -113,6 +114,7 @@ export default function BrowseContent({
   isLocationHub,
   linkedHubs,
   fromPage,
+  showWasseraktionswochen,
 }: BrowseContentProps) {
   const initialState = {
     items: {
@@ -517,6 +519,7 @@ export default function BrowseContent({
         className={classes.hubsTabNavigation}
         allHubs={allHubs}
         fromPage={fromPage}
+        showWasseraktionswochen={showWasseraktionswochen}
       />
       <Container maxWidth="lg" className={classes.contentRefContainer}>
         {isNarrowScreen && hubSupporters && hubName && (
