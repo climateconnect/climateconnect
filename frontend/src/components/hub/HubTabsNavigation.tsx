@@ -119,6 +119,7 @@ export default function HubTabsNavigation({
   const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
+  const isMediumScreen = useMediaQuery("(max-width:1040px)");
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Computed values
@@ -228,7 +229,7 @@ export default function HubTabsNavigation({
           {renderTabs()}
           {isEmmendingenHub && (
             <>
-              {!isNarrowScreen && (
+              {!isMediumScreen && (
                 <Link
                   className={classes.climateMatchLink}
                   href="https://climatehub.earth/burgerenergie-em"
@@ -238,6 +239,15 @@ export default function HubTabsNavigation({
                 </Link>
               )}
               {showWasseraktionswochen && <WasseraktionswochenLink />}
+              {isMediumScreen && isNarrowScreen && !showWasseraktionswochen && (
+                <Link
+                  className={classes.climateMatchLink}
+                  href="https://climatehub.earth/burgerenergie-em"
+                  underline="hover"
+                >
+                  {texts.emmerdingen_buergerenergie}
+                </Link>
+              )}
             </>
           )}
           {renderNarrowScreenLinks()}
