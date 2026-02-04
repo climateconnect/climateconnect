@@ -4,11 +4,12 @@ import WideLayout from "../../../src/components/layouts/WideLayout";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import WasseraktionswochenEvents from "../../../src/components/hub/WasseraktionswochenEvents";
 import theme from "../../../src/themes/theme";
-import { Wasseraktionswochen } from "../../../devlink";
+import { Wasseraktionswochen as WasseraktionswochenHero } from "../../../devlink";
 import makeStyles from "@mui/styles/makeStyles";
 import LocalAmbassadorInfoBox from "../../../src/components/hub/LocalAmbassadorInfoBox";
 import { getHubAmbassadorData, getHubData } from "../../../public/lib/getHubData";
 import { getImageUrl } from "../../../public/lib/imageOperations";
+import { WASSERAKTIONSWOCHEN_PARENT_SLUG } from "../../../public/data/wasseraktionswochen_config.js";
 
 interface WasseraktionswochenPageProps {
   locale: string;
@@ -18,7 +19,6 @@ interface WasseraktionswochenPageProps {
   parentProject: any;
 }
 
-const PARENT_SLUG = "wasseraktionswochen-143-2932026";
 const HUB_URL = "em";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -34,12 +34,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const [childResp, parentResp] = await Promise.all([
       apiRequest({
         method: "get",
-        url: `/api/projects/?parent_project_slug=${PARENT_SLUG}&page_size=100`,
+        url: `/api/projects/?parent_project_slug=${WASSERAKTIONSWOCHEN_PARENT_SLUG}&page_size=100`,
         locale,
       }),
       apiRequest({
         method: "get",
-        url: `/api/projects/${PARENT_SLUG}/`,
+        url: `/api/projects/${WASSERAKTIONSWOCHEN_PARENT_SLUG}/`,
         locale,
       }),
     ]);
@@ -122,8 +122,8 @@ export default function WasseraktionswochenPage({
       headerBackground={theme.palette.background.default}
     >
       <div className={classes.content}>
-        <Wasseraktionswochen />
         <Container>
+          <WasseraktionswochenHero />
           <WasseraktionswochenEvents projects={projects} isGerman={isGerman} />
         </Container>
         {hubAmbassador && hubData && (

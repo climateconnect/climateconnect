@@ -57,6 +57,10 @@ export type Project = {
   hubUrl?: string;
   thumbnail_image?: string;
   sectors?: Sector[];
+  has_children?: boolean; // Indicates if project has child projects (e.g., festival with sub-events)
+  parent_project_id?: number; // ID of parent project (detail view only)
+  parent_project_name?: string; // Name of parent project (detail view only)
+  parent_project_slug?: string; // URL slug of parent project (detail view only)
 };
 
 export type BrowseTab = "projects" | "organizations" | "members" | "events";

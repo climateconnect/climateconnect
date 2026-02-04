@@ -6,6 +6,12 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 
 require("dotenv").config();
 
+const {
+  isWasseraktionswochenEnabled,
+  WASSERAKTIONSWOCHEN_PATH,
+  WASSERAKTIONSWOCHEN_PARENT_SLUG,
+} = require("./public/data/wasseraktionswochen_config");
+
 module.exports = withBundleAnalyzer({
   // Disable ESLint during build - it's already run separately in CI
   eslint: {
@@ -87,10 +93,10 @@ module.exports = withBundleAnalyzer({
     ];
 
     // Conditionally add Wasseraktionswochen redirect
-    if (process.env.WASSERAKTIONSWOCHEN_FEATURE === "true") {
+    if (isWasseraktionswochenEnabled()) {
       redirects.push({
-        source: "/projects/wasseraktionswochen-143-2932026",
-        destination: "/hubs/em/wasseraktionswochen",
+        source: `/projects/${WASSERAKTIONSWOCHEN_PARENT_SLUG}`,
+        destination: WASSERAKTIONSWOCHEN_PATH,
         permanent: false,
       });
     }

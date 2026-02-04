@@ -23,6 +23,10 @@ import { NOTIFICATION_TYPES } from "../../src/components/communication/notificat
 import { getProjectTypeOptions } from "../../public/lib/getOptions";
 import BrowseContext from "../../src/components/context/BrowseContext";
 import { parseData } from "../../public/lib/parsingOperations";
+import {
+  WASSERAKTIONSWOCHEN_PARENT_SLUG,
+  isWasseraktionswochenEnabled,
+} from "../../public/data/wasseraktionswochen_config.js";
 
 type StyleProps = {
   showSimilarProjects: boolean;
@@ -100,6 +104,22 @@ export async function getServerSideProps(ctx) {
     hubUrl ? getHubSupporters(hubUrl, ctx.locale) : null,
     hubUrl ? getHubTheme(hubUrl) : null,
   ]);
+
+  // Fetch sibling events if this is a Wasseraktionswochen event
+  let siblingProjects = null;
+
+  if (
+    // eventually we can decide to always show sibling projects if they exist
+    isWasseraktionswochenEnabled() &&
+    project?.parent_project_slug === WASSERAKTIONSWOCHEN_PARENT_SLUG
+  ) {
+    siblingProjects = await getSiblingProjects(
+      project.parent_project_slug,
+      project.url_slug,
+      ctx.locale
+    );
+  }
+
   return {
     props: nullifyUndefinedValues({
       project: project,
@@ -114,6 +134,8 @@ export async function getServerSideProps(ctx) {
       hubSupporters: hubSupporters,
       hubUrl,
       hubThemeData: hubThemeData,
+      siblingProjects: siblingProjects,
+      isWasseraktionswochenEnabled: isWasseraktionswochenEnabled(),
     }),
   };
 }
@@ -131,6 +153,8 @@ export default function ProjectPage({
   hubSupporters,
   hubUrl,
   hubThemeData,
+  siblingProjects,
+  isWasseraktionswochenEnabled,
 }) {
   const token = new Cookies().get("auth_token");
   const [curComments, setCurComments] = useState(parseComments(comments));
@@ -183,7 +207,7 @@ export default function ProjectPage({
     handleReadNotifications(NOTIFICATION_TYPES.indexOf("org_project_published"));
   }, [
     notifications.length !== 0,
-  ]); /* end of removing bell icon notification 
+  ]); /* end of removing bell icon notification
   TODO: need a better way of getting rid of the  bell notification */
 
   const handleFollow = (userFollows, updateCount, pending) => {
@@ -252,6 +276,7 @@ export default function ProjectPage({
             onlyShowDropDown={true}
             isCustomHub={isCustomHub}
             hubSlug={hubUrl}
+            project={project}
           />
         ) : (
           <></>
@@ -294,18 +319,23 @@ export default function ProjectPage({
                 handleJoinRequest={handleJoinRequest}
                 hubSupporters={hubSupporters}
                 hubPage={hubUrl}
+                siblingProjects={siblingProjects}
+                isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
               />
             </div>
             <div className={classes.secondaryContent}>
               {!smallScreenSize && (
                 <ProjectSideBar
                   similarProjects={similarProjects}
+                  siblingProjects={siblingProjects}
+                  isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
                   handleHideContent={handleHideContent}
                   showSimilarProjects={showSimilarProjects}
                   locale={locale}
                   texts={texts}
                   hubSupporters={hubSupporters}
                   hubName={hubUrl}
+                  isSmallScreen={false}
                 />
               )}
             </div>
@@ -426,6 +456,43 @@ async function getSimilarProjects(projectUrl, locale, hubUrl?: string | null) {
     return null;
   }
 }
+
+async function getSiblingProjects(parentProjectSlug, currentProjectSlug, locale) {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: `/api/projects/?parent_project_slug=${parentProjectSlug}&page_size=100`,
+      locale: locale,
+    });
+
+    const allSiblings = resp.data.results || [];
+
+    // Filter out current project, sort by date, and limit to 4
+    const siblings = allSiblings
+      .filter((p) => p.url_slug !== currentProjectSlug)
+      .sort((a, b) => {
+        const dateA = new Date(a.start_date || a.created_at);
+        const dateB = new Date(b.start_date || b.created_at);
+        const now = new Date();
+
+        // Upcoming events first, then past events
+        const aIsUpcoming = dateA >= now;
+        const bIsUpcoming = dateB >= now;
+
+        if (aIsUpcoming && !bIsUpcoming) return -1;
+        if (!aIsUpcoming && bIsUpcoming) return 1;
+
+        return dateA.getTime() - dateB.getTime();
+      })
+      .slice(0, 4);
+
+    return parseData({ type: "projects", data: siblings });
+  } catch (err) {
+    console.error("Error fetching sibling events:", err);
+    return null;
+  }
+}
+
 const getHubSupporters = async (url_slug, locale) => {
   try {
     const resp = await apiRequest({
@@ -476,6 +543,9 @@ function parseProject(project) {
     number_of_likes: project.number_of_likes,
     project_type: project.project_type,
     additional_loc_info: project.additional_loc_info,
+    parent_project_id: project.parent_project_id,
+    parent_project_name: project.parent_project_name,
+    parent_project_slug: project.parent_project_slug,
   };
 }
 
