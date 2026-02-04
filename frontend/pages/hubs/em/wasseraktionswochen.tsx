@@ -4,7 +4,7 @@ import WideLayout from "../../../src/components/layouts/WideLayout";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import WasseraktionswochenEvents from "../../../src/components/hub/WasseraktionswochenEvents";
 import theme from "../../../src/themes/theme";
-import { Wasseraktionswochen } from "../../../devlink";
+import { Wasseraktionswochen as WasseraktionswochenHero } from "../../../devlink";
 import makeStyles from "@mui/styles/makeStyles";
 import LocalAmbassadorInfoBox from "../../../src/components/hub/LocalAmbassadorInfoBox";
 import { getHubAmbassadorData, getHubData } from "../../../public/lib/getHubData";
@@ -122,8 +122,8 @@ export default function WasseraktionswochenPage({
       headerBackground={theme.palette.background.default}
     >
       <div className={classes.content}>
-        <Wasseraktionswochen />
         <Container>
+          <WasseraktionswochenHero />
           <WasseraktionswochenEvents projects={projects} isGerman={isGerman} />
         </Container>
         {hubAmbassador && hubData && (

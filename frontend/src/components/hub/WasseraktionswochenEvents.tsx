@@ -14,6 +14,7 @@ const DEFAULT_HUB_SLUG = "em";
 
 const useStyles = makeStyles((theme: Theme) => ({
   subHeader: {
+    paddingLeft: "8px",
     fontWeight: "bold",
     paddingBottom: theme.spacing(1),
   },
