@@ -73,7 +73,7 @@ export default function ProjectSideBar({
   hubSupporters,
   hubName,
   siblingProjects,
-  showSiblingProjects,
+  isWasseraktionswochenEnabled,
 }) {
   const classes = useStyles({
     isSmallScreen: isSmallScreen,
@@ -83,7 +83,8 @@ export default function ProjectSideBar({
   const shouldDisplayOneProjectInRow = !isSmallScreen;
 
   // Determine what to show: siblings or similar projects
-  const showingSiblings = showSiblingProjects && siblingProjects && siblingProjects.length > 0;
+  const showingSiblings =
+    isWasseraktionswochenEnabled && siblingProjects && siblingProjects.length > 0;
   const projectsToDisplay = showingSiblings ? siblingProjects : similarProjects;
   const headerText = showingSiblings
     ? texts.events_in_this_series

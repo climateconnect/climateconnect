@@ -109,6 +109,7 @@ export async function getServerSideProps(ctx) {
   let siblingProjects = null;
 
   if (
+    // eventually we can decide to always show sibling projects if they exist
     isWasseraktionswochenEnabled() &&
     project?.parent_project_slug === WASSERAKTIONSWOCHEN_PARENT_SLUG
   ) {
@@ -134,7 +135,7 @@ export async function getServerSideProps(ctx) {
       hubUrl,
       hubThemeData: hubThemeData,
       siblingProjects: siblingProjects,
-      showSiblingProjects: !!siblingProjects,
+      isWasseraktionswochenEnabled: isWasseraktionswochenEnabled(),
     }),
   };
 }
@@ -153,7 +154,7 @@ export default function ProjectPage({
   hubUrl,
   hubThemeData,
   siblingProjects,
-  showSiblingProjects,
+  isWasseraktionswochenEnabled,
 }) {
   const token = new Cookies().get("auth_token");
   const [curComments, setCurComments] = useState(parseComments(comments));
@@ -319,7 +320,7 @@ export default function ProjectPage({
                 hubSupporters={hubSupporters}
                 hubPage={hubUrl}
                 siblingProjects={siblingProjects}
-                showSiblingProjects={showSiblingProjects}
+                isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
               />
             </div>
             <div className={classes.secondaryContent}>
@@ -327,7 +328,7 @@ export default function ProjectPage({
                 <ProjectSideBar
                   similarProjects={similarProjects}
                   siblingProjects={siblingProjects}
-                  showSiblingProjects={showSiblingProjects}
+                  isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
                   handleHideContent={handleHideContent}
                   showSimilarProjects={showSimilarProjects}
                   locale={locale}

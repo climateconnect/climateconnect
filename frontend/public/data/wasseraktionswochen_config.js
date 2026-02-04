@@ -14,6 +14,10 @@ const isWasseraktionswochenEnabled = () => {
   return process.env.WASSERAKTIONSWOCHEN_FEATURE === "true";
 };
 
+const isWasseraktionswochenSubEvent = (project) => {
+  return project?.parent_project_slug === WASSERAKTIONSWOCHEN_PARENT_SLUG;
+};
+
 const getWasseraktionswochenUrl = (locale) => {
   const prefix = locale === "de" ? "/de" : "";
   return prefix + WASSERAKTIONSWOCHEN_PATH;
@@ -24,4 +28,5 @@ module.exports = {
   WASSERAKTIONSWOCHEN_PATH,
   isWasseraktionswochenEnabled,
   getWasseraktionswochenUrl,
+  isWasseraktionswochenSubEvent,
 };
