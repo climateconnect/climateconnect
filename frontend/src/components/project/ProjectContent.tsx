@@ -1,4 +1,4 @@
-import { Button, Typography, useTheme } from "@mui/material";
+import { Button, Link, Typography, useTheme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -44,6 +44,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: theme.palette.grey[800],
     cursor: "pointer",
     breakWord: "break-word",
+  },
+  parentProjectName: {
+    display: "inline-block",
+    color: theme.palette.grey[800],
+    fontWeight: 600,
+    cursor: "pointer",
+    wordBreak: "break-word",
   },
   creatorImage: {
     height: 24,
@@ -261,20 +268,20 @@ export default function ProjectContent({
             {project.parent_project_id &&
               project.parent_project_name &&
               project.parent_project_slug && (
-                <Typography>
+                <div>
                   {(() => {
                     const type = project.project_type?.type_id;
                     if (type === "event") return texts.this_event_is_part_of;
                     if (type === "idea") return texts.this_idea_is_part_of;
                     return texts.this_project_is_part_of;
                   })()}{" "}
-                  <a
-                    href={`/projects/${project.parent_project_slug}`}
-                    style={{ color: theme.palette.primary.main, textDecoration: "none" }}
-                  >
-                    {project.parent_project_name}
-                  </a>
-                </Typography>
+                  <Link href={`/projects/${project.parent_project_slug}`}>
+                    {" "}
+                    <Typography className={classes.parentProjectName}>
+                      {project.parent_project_name}
+                    </Typography>
+                  </Link>
+                </div>
               )}
           </div>
           {project.end_date && (
