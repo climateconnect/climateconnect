@@ -229,7 +229,7 @@ export default function HubTabsNavigation({
           {renderTabs()}
           {isEmmendingenHub && (
             <>
-              {!isMediumScreen && (
+              {((!isNarrowScreen && !isMediumScreen) || !showWasseraktionswochen) && (
                 <Link
                   className={classes.climateMatchLink}
                   href="https://climatehub.earth/burgerenergie-em"
@@ -239,15 +239,6 @@ export default function HubTabsNavigation({
                 </Link>
               )}
               {showWasseraktionswochen && <WasseraktionswochenLink />}
-              {isMediumScreen && isNarrowScreen && !showWasseraktionswochen && (
-                <Link
-                  className={classes.climateMatchLink}
-                  href="https://climatehub.earth/burgerenergie-em"
-                  underline="hover"
-                >
-                  {texts.emmerdingen_buergerenergie}
-                </Link>
-              )}
             </>
           )}
           {renderNarrowScreenLinks()}

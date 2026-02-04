@@ -424,7 +424,7 @@ this_event_is_part_of: "Diese {project_type} ist Teil von ",
   - **Files Modified**:
     - `frontend/public/texts/project_texts.tsx` - Added translation keys for all project types
     - `frontend/src/components/project/ProjectContent.tsx` - Updated to use proper localized text with type-based selection
-
+- 2026-02-03 - Finetuning of styling, added button to project detail page, some refactoring and cleanup.
 ---
 
 ## Implementation Complete! 🎉
