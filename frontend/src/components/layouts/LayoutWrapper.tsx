@@ -168,9 +168,14 @@ export default function LayoutWrapper({
                 className={`${!fixedHeight && !noSpaceForFooter && classes.leaveSpaceForFooter}`}
               >
                 {children}
-                {!acceptedNecessary && bannerOpen && initialized && (
-                  <CookieBanner closeBanner={closeBanner} />
-                )}
+                {!acceptedNecessary &&
+                  bannerOpen &&
+                  initialized &&
+                  !Router.pathname.includes("/privacy") &&
+                  !Router.pathname.includes("/terms") &&
+                  !Router.pathname.includes("/imprint") && (
+                    <CookieBanner closeBanner={closeBanner} />
+                  )}
                 {!noFeedbackButton && !isSmallerThanMediumScreen && <FeedbackButton />}
                 <Snackbar
                   anchorOrigin={{

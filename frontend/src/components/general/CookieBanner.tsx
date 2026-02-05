@@ -1,26 +1,37 @@
-import { Button, Checkbox, Container, Theme, Typography, useMediaQuery } from "@mui/material";
+import {
+  Button,
+  Checkbox,
+  Container,
+  Modal,
+  Theme,
+  Typography,
+  useMediaQuery,
+  Box,
+  FormControlLabel,
+} from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import LaunchIcon from "@mui/icons-material/Launch";
 
 const useStyles = makeStyles((theme) => {
   return {
-    root: {
-      position: "fixed",
-      bottom: 0,
-      left: 0,
-      width: "100%",
-      height: 150,
-      zIndex: 200,
-      background: "white",
-      borderTop: `1px solid ${theme.palette.secondary.main}`,
-      paddingTop: theme.spacing(1),
-      [theme.breakpoints.down("lg")]: {
-        height: 200,
-      },
+    modal: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    content: {
+      backgroundColor: theme.palette.background.paper,
+      border: `1px solid ${theme.palette.secondary.main}`,
+      padding: theme.spacing(2, 4, 3),
+      borderRadius: theme.shape.borderRadius,
+      maxWidth: "600px",
+      width: "90%",
+      outline: "none",
     },
     headline: {
       fontWeight: "bold",
@@ -30,13 +41,16 @@ const useStyles = makeStyles((theme) => {
       },
     },
     buttons: {
-      float: "right",
-      [theme.breakpoints.down("lg")]: {
-        float: "none",
-        display: "block",
+      display: "flex",
+      justifyContent: "center",
+      gap: theme.spacing(2),
+      marginTop: theme.spacing(2),
+      [theme.breakpoints.down("md")]: {
+        flexDirection: "column",
       },
     },
     leftButton: {
+      flex: 1,
       [theme.breakpoints.up("md")]: {
         marginRight: theme.spacing(1),
       },
@@ -46,24 +60,19 @@ const useStyles = makeStyles((theme) => {
       },
     },
     rightButton: {
+      flex: 1,
       [theme.breakpoints.down("lg")]: {
         paddingLeft: theme.spacing(2),
         paddingRight: theme.spacing(2),
       },
     },
-    leftButtonContainer: {
-      display: "inline-block",
-      [theme.breakpoints.down("lg")]: {
-        width: "50%",
-        padding: theme.spacing(0.5),
-      },
+    link: {
+      display: "inline-flex",
+      alignItems: "center",
     },
-    rightButtonContainer: {
-      display: "inline-block",
-      [theme.breakpoints.down("lg")]: {
-        width: "50%",
-        padding: theme.spacing(0.5),
-      },
+    linkIcon: {
+      fontSize: "1rem",
+      marginLeft: theme.spacing(0.5),
     },
   };
 });
@@ -104,39 +113,58 @@ export default function CookieBanner({ closeBanner }) {
     closeBanner();
   };
 
+  const handleClose = () => {
+    // do nothing
+  };
+
   return (
-    <div className={classes.root}>
-      <Container maxWidth="lg">
-        <Typography variant="h6" color="secondary" className={classes.headline}>
-          {texts.cookie_banner_headline}
-        </Typography>
-        {!isNarrowScreen && <Typography variant="body2">{texts.cookie_explanation}</Typography>}
-        <Typography variant="body2">
-          {texts.for_more_information_check_out_our}{" "}
-          <a href={getLocalePrefix(locale) + "privacy"} target="_blank" rel="noreferrer">
-            {texts.privacy_policy}
-          </a>{" "}
-          {texts.and}{" "}
-          <a href={getLocalePrefix(locale) + "terms"} target="_blank" rel="noreferrer">
-            {texts.terms_of_use}.
-          </a>
-        </Typography>
-        <Checkbox checked={checked.necessary} disabled />
-        {texts.cookies_necessary}
-        <Checkbox checked={checked.statistics} onChange={onStatisticsChange} />
-        {texts.cookies_statistics}
-        <span className={classes.buttons}>
-          <div className={classes.leftButtonContainer}>
+    <Modal open={true} onClose={handleClose} className={classes.modal}>
+      <Box className={classes.content}>
+        <Container maxWidth="lg">
+          <Typography variant="h6" color="secondary" className={classes.headline}>
+            {texts.cookie_banner_headline}
+          </Typography>
+          {!isNarrowScreen && <Typography variant="body2">{texts.cookie_explanation}</Typography>}
+          <Typography variant="body2">
+            {texts.for_more_information_check_out_our}{" "}
+            <a
+              href={getLocalePrefix(locale) + "/privacy"}
+              target="_blank"
+              rel="noreferrer"
+              className={classes.link}
+            >
+              {texts.privacy_policy}
+              <LaunchIcon className={classes.linkIcon} />
+            </a>{" "}
+            {texts.and}{" "}
+            <a
+              href={getLocalePrefix(locale) + "/terms"}
+              target="_blank"
+              rel="noreferrer"
+              className={classes.link}
+            >
+              {texts.terms_of_use}
+              <LaunchIcon className={classes.linkIcon} />
+            </a>
+            .
+          </Typography>
+          <FormControlLabel
+            control={<Checkbox checked={checked.necessary} disabled />}
+            label={texts.cookies_necessary}
+          />
+          <FormControlLabel
+            control={<Checkbox checked={checked.statistics} onChange={onStatisticsChange} />}
+            label={texts.cookies_statistics}
+          />
+          <div className={classes.buttons}>
             <Button
-              variant="contained"
+              variant="outlined"
               color="secondary"
               className={classes.leftButton}
               onClick={confirmSelection}
             >
               {texts.confirm_selection}
             </Button>
-          </div>
-          <div className={classes.rightButtonContainer}>
             <Button
               color="primary"
               className={classes.rightButton}
@@ -146,8 +174,8 @@ export default function CookieBanner({ closeBanner }) {
               {texts.enable_all_cookies}
             </Button>
           </div>
-        </span>
-      </Container>
-    </div>
+        </Container>
+      </Box>
+    </Modal>
   );
 }
