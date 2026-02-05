@@ -160,6 +160,12 @@ const getWasseraktionswochenLinks = ({ path_to_redirect, texts, hubUrl, hasHubLa
   }),
   buildDonateLink({ texts, hubUrl }),
   {
+    ...COMMON_LINKS.SHARE,
+    text: texts.share_a_project,
+    hideOnMediumScreen: false,
+    onlyShowIconOnNormalScreen: true,
+  },
+  {
     type: "languageSelect",
   },
   {

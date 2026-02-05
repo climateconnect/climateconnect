@@ -1,4 +1,4 @@
-import { Container } from "@mui/material";
+import { Box, Container, Theme, useMediaQuery } from "@mui/material";
 import { GetServerSideProps } from "next";
 import WideLayout from "../../../src/components/layouts/WideLayout";
 import { apiRequest } from "../../../public/lib/apiOperations";
@@ -7,9 +7,16 @@ import theme from "../../../src/themes/theme";
 import { Wasseraktionswochen as WasseraktionswochenHero } from "../../../devlink";
 import makeStyles from "@mui/styles/makeStyles";
 import LocalAmbassadorInfoBox from "../../../src/components/hub/LocalAmbassadorInfoBox";
-import { getHubAmbassadorData, getHubData } from "../../../public/lib/getHubData";
+import {
+  getHubAmbassadorData,
+  getHubData,
+  getHubSupportersData,
+} from "../../../public/lib/getHubData";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import { WASSERAKTIONSWOCHEN_PARENT_SLUG } from "../../../public/data/wasseraktionswochen_config.js";
+import HubSupporters from "../../../src/components/hub/HubSupporters";
+import ContactAmbassadorButton from "../../../src/components/hub/ContactAmbassadorButton";
+import React from "react";
 
 interface WasseraktionswochenPageProps {
   locale: string;
@@ -17,6 +24,7 @@ interface WasseraktionswochenPageProps {
   hubAmbassador: any;
   hubData: any;
   parentProject: any;
+  hubSupporters: any;
 }
 
 const HUB_URL = "em";
@@ -28,6 +36,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   let hubAmbassador = null;
   let hubData = null;
   let parentProject = null;
+  let hubSupporters: any = null;
 
   try {
     // Fetch child projects and parent project in parallel
@@ -63,6 +72,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
     hubData = await getHubData(HUB_URL, locale);
     hubAmbassador = await getHubAmbassadorData(HUB_URL, locale);
+    hubSupporters = await getHubSupportersData(HUB_URL, locale);
   } catch (err) {
     console.log("Failed to load hub data", err);
   }
@@ -74,6 +84,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       hubAmbassador,
       hubData,
       parentProject,
+      hubSupporters,
     },
   };
 };
@@ -88,15 +99,75 @@ const useStyles = makeStyles(() => ({
     right: 16,
     zIndex: 1000,
   },
+  supporters: {
+    marginLeft: "8px",
+    marginTop: "16px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+  },
+  bottomMenu: {
+    position: "fixed",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 20,
+    background: "#f0f2f5",
+  },
 }));
+
+const HubSupportersSection = ({ isNarrowScreen, classes, supporters, hubName }) => {
+  if (!supporters || supporters.length === 0) {
+    return null;
+  }
+
+  const supportersComponent = <HubSupporters supportersList={supporters} hubName={hubName} />;
+
+  if (isNarrowScreen) {
+    return <Box sx={{ padding: "8px", paddingBottom: "50px" }}>{supportersComponent}</Box>;
+  }
+
+  return (
+    <div className={classes.supporters}>
+      <Box sx={{ alignSelf: "flex-start" }}>{supportersComponent}</Box>
+    </div>
+  );
+};
+
+const HubAmbassadorSection = ({ isNarrowScreen, classes, hubAmbassador, hubData, hubUrl }) => {
+  if (!hubAmbassador || !hubData) {
+    return null;
+  }
+
+  if (isNarrowScreen) {
+    return (
+      <div className={classes.bottomMenu}>
+        <ContactAmbassadorButton mobile hubAmbassador={hubAmbassador} hubUrl={hubUrl} />
+      </div>
+    );
+  }
+
+  return (
+    <div className={classes.ambassadorBox}>
+      <LocalAmbassadorInfoBox
+        hubAmbassador={hubAmbassador}
+        hubData={hubData}
+        hubSupportersExists={false}
+      />
+    </div>
+  );
+};
 
 export default function WasseraktionswochenPage({
   locale,
   projects,
   hubAmbassador,
+  hubSupporters,
   hubData,
   parentProject,
 }: WasseraktionswochenPageProps) {
+  const hubUrl = "em";
+  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const isGerman = locale === "de";
   const classes = useStyles();
 
@@ -118,23 +189,29 @@ export default function WasseraktionswochenPage({
       hideAlert
       isHubPage
       hasHubLandingPage={true}
-      hubUrl="em"
+      hubUrl={hubUrl}
+      hideFooter={isNarrowScreen}
+      noSpaceBottom={isNarrowScreen}
       headerBackground={theme.palette.background.default}
     >
+      <WasseraktionswochenHero />
       <div className={classes.content}>
         <Container>
-          <WasseraktionswochenHero />
           <WasseraktionswochenEvents projects={projects} isGerman={isGerman} />
+          <HubSupportersSection
+            isNarrowScreen={isNarrowScreen}
+            classes={classes}
+            supporters={hubSupporters}
+            hubName={hubData?.name}
+          />
         </Container>
-        {hubAmbassador && hubData && (
-          <div className={classes.ambassadorBox}>
-            <LocalAmbassadorInfoBox
-              hubAmbassador={hubAmbassador}
-              hubData={hubData}
-              hubSupportersExists={false}
-            />
-          </div>
-        )}
+        <HubAmbassadorSection
+          isNarrowScreen={isNarrowScreen}
+          classes={classes}
+          hubAmbassador={hubAmbassador}
+          hubData={hubData}
+          hubUrl={hubUrl}
+        />
       </div>
     </WideLayout>
   );
