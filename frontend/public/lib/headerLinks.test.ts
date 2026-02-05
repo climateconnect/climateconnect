@@ -84,9 +84,9 @@ describe("getLinks", () => {
     const texts = buildTexts();
     const links = getLinks("/hubs/em/wasseraktionswochen", texts, true, false, true, "em");
 
-    expect(links).toHaveLength(6);
+    expect(links).toHaveLength(7);
     expect(links[0]).toMatchObject({ href: "/hubs/em/", text: texts.about_climatehub });
     expect(links[1]).toMatchObject({ href: "/donate", text: texts.donate });
-    expect(links.find((link) => link.text === texts.share_a_project)).toBeUndefined();
+    expect(links[2]).toMatchObject({ href: "/share", text: texts.share_a_project });
   });
 });

@@ -23,9 +23,9 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 4,
     paddingRight: "5px",
     paddingLeft: "5px",
+    paddingBottom: "20px",
     width: 320,
     [`@media (min-width: 900px) and (max-width: 1200px)`]: {
-      marginLeft: "20px",
       alignSelf: "end",
     },
   },
@@ -39,7 +39,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.default,
     borderRadius: "4px",
     position: "relative",
-    marginBottom: "20px",
   },
   customDot: {
     bottom: "-16px",
