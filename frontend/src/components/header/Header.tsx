@@ -788,95 +788,38 @@ function NarrowScreenLinks({
           onClose={closeDrawer}
           disableBackdropTransition={true}
         >
-          <List /*TODO(unused) styles={{ height: "100vh" }} */>
-            <ListItem className={classes.languageSelectMobile}>
-              <LanguageSelect
-                transparentHeader={transparentHeader}
-                isCustomHub={isCustomHub}
-                isLandingPage={isLandingPage}
-              />
-            </ListItem>
-            {LINKS.filter(
-              (link) =>
-                (!link.alwaysDisplayDirectly ||
-                  !(loggedInUser && link.alwaysDisplayDirectly === "loggedIn")) &&
-                !(loggedInUser && link.onlyShowLoggedOut) &&
-                !(!loggedInUser && link.onlyShowLoggedIn) &&
-                !link.onlyShowOnNormalScreen
-            ).map((link, index) => {
-              const Icon = link.iconForDrawer;
-              if (link.type !== "languageSelect") {
-                if (link?.showStaticLinksInDropdown && isCustomHub) {
-                  return (
-                    <NarrowScreenDropdownMenu
-                      key={index}
-                      locale={locale}
-                      classes={classes}
-                      Icon={Icon}
-                      link={link}
-                      STATIC_PAGE_LINKS={STATIC_PAGE_LINKS}
-                      closeDrawer={closeDrawer}
-                    />
-                  );
-                } else {
-                  return (
-                    <Link
-                      href={localePrefix + link.href}
-                      key={index}
-                      underline="hover"
-                      className={classes.linkUnderline}
-                    >
-                      <ListItem button component="a" onClick={closeDrawer}>
-                        <ListItemIcon>
-                          <Icon className={classes.drawerItem} />
-                        </ListItemIcon>
-                        <ListItemText primary={link.text} className={classes.drawerItem} />
-                      </ListItem>
-                    </Link>
-                  );
-                }
-              }
-            })}
-            {loggedInUser &&
-              getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts, queryString }).map(
-                (link, index) => {
-                  const Icon: any = link.iconForDrawer;
-                  const avatarProps = {
-                    className: classes.loggedInAvatarMobile,
-                    src: getImageUrl(loggedInUser.image),
-                    alt: loggedInUser.name,
-                  };
-                  if (link.avatar)
+          <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+            <List sx={{ flexGrow: 1 }}>
+              <ListItem className={classes.languageSelectMobile}>
+                <LanguageSelect
+                  transparentHeader={transparentHeader}
+                  isCustomHub={isCustomHub}
+                  isLandingPage={isLandingPage}
+                />
+              </ListItem>
+              {LINKS.filter(
+                (link) =>
+                  (!link.alwaysDisplayDirectly ||
+                    !(loggedInUser && link.alwaysDisplayDirectly === "loggedIn")) &&
+                  !(loggedInUser && link.onlyShowLoggedOut) &&
+                  !(!loggedInUser && link.onlyShowLoggedIn) &&
+                  !link.onlyShowOnNormalScreen
+              ).map((link, index) => {
+                const Icon = link.iconForDrawer;
+                if (link.type !== "languageSelect") {
+                  if (link?.showStaticLinksInDropdown && isCustomHub) {
                     return (
-                      <div className={classes.mobileAvatarContainer} key={index}>
-                        <Link
-                          href={localePrefix + "/profiles/" + loggedInUser.url_slug + queryString}
-                          underline="hover"
-                        >
-                          {loggedInUser?.badges?.length > 0 ? (
-                            <ProfileBadge
-                              badge={loggedInUser?.badges[0]}
-                              size="medium"
-                              className={classes.badge}
-                            >
-                              <Avatar {...avatarProps} />
-                            </ProfileBadge>
-                          ) : (
-                            <Avatar {...avatarProps} />
-                          )}
-                        </Link>
-                      </div>
+                      <NarrowScreenDropdownMenu
+                        key={index}
+                        locale={locale}
+                        classes={classes}
+                        Icon={Icon}
+                        link={link}
+                        STATIC_PAGE_LINKS={STATIC_PAGE_LINKS}
+                        closeDrawer={closeDrawer}
+                      />
                     );
-                  else if (link.isLogoutButton)
-                    return (
-                      <ListItem button component="a" key={index} onClick={handleLogout}>
-                        <ListItemIcon>
-                          <Icon className={classes.drawerItem} />
-                        </ListItemIcon>
-                        <ListItemText primary={link.text} className={classes.drawerItem} />
-                      </ListItem>
-                    );
-                  else
+                  } else {
                     return (
                       <Link
                         href={localePrefix + link.href}
@@ -892,9 +835,98 @@ function NarrowScreenLinks({
                         </ListItem>
                       </Link>
                     );
+                  }
                 }
-              )}
-          </List>
+              })}
+              {loggedInUser &&
+                getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts, queryString }).map(
+                  (link, index) => {
+                    const Icon: any = link.iconForDrawer;
+                    const avatarProps = {
+                      className: classes.loggedInAvatarMobile,
+                      src: getImageUrl(loggedInUser.image),
+                      alt: loggedInUser.name,
+                    };
+                    if (link.avatar)
+                      return (
+                        <div className={classes.mobileAvatarContainer} key={index}>
+                          <Link
+                            href={localePrefix + "/profiles/" + loggedInUser.url_slug + queryString}
+                            underline="hover"
+                          >
+                            {loggedInUser?.badges?.length > 0 ? (
+                              <ProfileBadge
+                                badge={loggedInUser?.badges[0]}
+                                size="medium"
+                                className={classes.badge}
+                              >
+                                <Avatar {...avatarProps} />
+                              </ProfileBadge>
+                            ) : (
+                              <Avatar {...avatarProps} />
+                            )}
+                          </Link>
+                        </div>
+                      );
+                    else if (link.isLogoutButton)
+                      return (
+                        <ListItem button component="a" key={index} onClick={handleLogout}>
+                          <ListItemIcon>
+                            <Icon className={classes.drawerItem} />
+                          </ListItemIcon>
+                          <ListItemText primary={link.text} className={classes.drawerItem} />
+                        </ListItem>
+                      );
+                    else
+                      return (
+                        <Link
+                          href={localePrefix + link.href}
+                          key={index}
+                          underline="hover"
+                          className={classes.linkUnderline}
+                        >
+                          <ListItem button component="a" onClick={closeDrawer}>
+                            <ListItemIcon>
+                              <Icon className={classes.drawerItem} />
+                            </ListItemIcon>
+                            <ListItemText primary={link.text} className={classes.drawerItem} />
+                          </ListItem>
+                        </Link>
+                      );
+                  }
+                )}
+            </List>
+            <List>
+              <Divider />
+              <Link
+                href={localePrefix + "/imprint"}
+                underline="hover"
+                className={classes.linkUnderline}
+              >
+                <ListItem button component="a" onClick={closeDrawer}>
+                  <ListItemText primary={texts.imprint} className={classes.drawerItem} />
+                </ListItem>
+              </Link>
+              <Link
+                href={localePrefix + "/privacy"}
+                underline="hover"
+                className={classes.linkUnderline}
+              >
+                <ListItem button component="a" onClick={closeDrawer}>
+                  <ListItemText primary={texts.privacy} className={classes.drawerItem} />
+                </ListItem>
+              </Link>
+              <Link
+                href={localePrefix + "/terms"}
+                underline="hover"
+                className={classes.linkUnderline}
+              >
+                <ListItem button component="a" onClick={closeDrawer}>
+                  <ListItemText primary={texts.terms} className={classes.drawerItem} />
+                </ListItem>
+              </Link>
+            </List>
+          </Box>
         </SwipeableDrawer>
       </Box>
     </>
