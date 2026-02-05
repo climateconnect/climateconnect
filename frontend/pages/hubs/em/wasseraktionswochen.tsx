@@ -101,10 +101,10 @@ const useStyles = makeStyles(() => ({
   },
   supporters: {
     marginLeft: "8px",
-    marginTop: "16px",
+    marginTop: "60px",
     display: "flex",
     flexDirection: "column",
-    alignItems: "flex-start",
+    alignItems: "center",
   },
   bottomMenu: {
     position: "fixed",
@@ -129,7 +129,7 @@ const HubSupportersSection = ({ isNarrowScreen, classes, supporters, hubName }) 
 
   return (
     <div className={classes.supporters}>
-      <Box sx={{ alignSelf: "flex-start" }}>{supportersComponent}</Box>
+      <Box sx={{ alignSelf: "center" }}>{supportersComponent}</Box>
     </div>
   );
 };
