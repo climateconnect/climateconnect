@@ -27,6 +27,7 @@ interface WasseraktionswochenPageProps {
   hubSupporters: any;
 }
 
+const PARENT_SLUG = "wasseraktionswochen-143-2932026";
 const HUB_URL = "em";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -194,8 +195,8 @@ export default function WasseraktionswochenPage({
       noSpaceBottom={isNarrowScreen}
       headerBackground={theme.palette.background.default}
     >
-      <WasseraktionswochenHero />
       <div className={classes.content}>
+        <WasseraktionswochenHero />
         <Container>
           <WasseraktionswochenEvents projects={projects} isGerman={isGerman} />
           <HubSupportersSection
