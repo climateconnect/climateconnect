@@ -157,6 +157,8 @@ export default function BrowseContent({
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
 
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+  const isSmallScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+
   const type_names = {
     projects: texts.projects,
     organizations: isNarrowScreen ? texts.orgs : texts.organizations,
@@ -482,7 +484,7 @@ export default function BrowseContent({
   const tabContentWrapperProps = {
     tabValue: tabValue,
     TYPES_BY_TAB_VALUE: TYPES_BY_TAB_VALUE,
-    filtersExpanded: isNarrowScreen ? filtersExandedOnMobile : filtersExpanded,
+    filtersExpanded: isSmallScreen ? filtersExandedOnMobile : filtersExpanded,
     handleApplyNewFilters: handleApplyNewFilters,
     handleUpdateFilterValues: handleUpdateFilterValues,
     errorMessage: errorMessage,
@@ -534,15 +536,13 @@ export default function BrowseContent({
 
         {/* Desktop screens: show tabs under the search bar */}
         {/* Mobile screens: show tabs fixed to the bottom of the screen */}
-        {isNarrowScreen && (
+        {isSmallScreen && (
           <>
             <Suspense fallback={null}>
               <FilterSection
                 filtersExpanded={filtersExandedOnMobile}
                 onSubmit={handleSearchSubmit}
-                setFiltersExpanded={
-                  isNarrowScreen ? setFiltersExpandedOnMobile : setFiltersExpanded
-                }
+                setFiltersExpanded={isSmallScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
                 type={TYPES_BY_TAB_VALUE[tabValue]}
                 customSearchBarLabels={customSearchBarLabels}
                 applyBackgroundColor={isLocationHubFlag}

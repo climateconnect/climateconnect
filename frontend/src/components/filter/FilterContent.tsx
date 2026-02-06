@@ -254,14 +254,6 @@ export default function FilterContent({
       });
     }
   };
-  const isBelow600 = useMediaQuery("(max-width:599px)");
-  const is719to936 = useMediaQuery("(min-width:719px) and (max-width:936px)");
-  const getJustifyContent = () => {
-    if (isBelow600) return "space-around";
-    if (is719to936) return "center";
-    // This covers 600-718 AND > 937
-    return "start";
-  };
   return (
     <div className={className}>
       {isSmallScreen ? (
@@ -293,7 +285,7 @@ export default function FilterContent({
           handleClickDialogOpen={handleClickDialogOpen}
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           handleValueChange={handleValueChange}
-          justifyContent={getJustifyContent()}
+          justifyContent={"start"}
           locationInputRef={locationInputRef}
           locationOptionsOpen={locationOptionsOpen}
           open={open}
