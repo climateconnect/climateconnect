@@ -37,7 +37,7 @@ type TabContentWrapperProps = {
   filterChoices: any;
   initialLocationFilter: any;
   nonFilterParams: any;
-  handleApplyNewFilters: () => void;
+  handleApplyNewFilters: any;
   handleUpdateFilterValues: (_filters: any) => void;
   unexpandFilters: () => void;
   unexpandFiltersOnMobile: () => void;
@@ -59,7 +59,7 @@ type TabContentWrapperProps = {
   children: ReactNode;
 
   // Search handler
-  handleSearchSubmit: (_searchTerm: string) => void;
+  handleSearchSubmit: any;
 };
 
 export default function TabContentWrapper({

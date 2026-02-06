@@ -78,7 +78,7 @@ export default function FilterSection({
     applyBackgroundColor: applyBackgroundColor,
   });
   // Default search bar labels by type
-  const defaultSearchBarLabels: Record<BrowseTab, string> = {
+  const defaultSearchBarLabels = {
     projects: texts.search_projects,
     organizations: texts.search_organizations,
     members: texts.search_active_people,

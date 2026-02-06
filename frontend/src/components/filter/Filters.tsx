@@ -11,13 +11,14 @@ import LocationSearchBar from "../search/LocationSearchBar";
 import FilterSearchBar from "../filter/FilterSearchBar";
 import LocationSearchingIcon from "@mui/icons-material/LocationSearching";
 
-const useStyles = makeStyles<Theme, { justifyContent: any; isMobileScreen: boolean }>((theme) => {
+const useStyles = makeStyles<Theme, { justifyContent?: any; isMobileScreen?: boolean }>((theme) => {
   return {
     flexContainer: (props) => ({
       display: "flex",
       flexWrap: "wrap",
       gap: theme.spacing(1),
       justifyContent: props.justifyContent,
+      alignItems: "flex-start",
     }),
     verticalFlexContainer: {
       flexDirection: "column",
@@ -78,18 +79,21 @@ const useStyles = makeStyles<Theme, { justifyContent: any; isMobileScreen: boole
     },
     filterSearch: {
       display: "flex",
-      marginBottom: theme.spacing(2),
       maxWidth: 650,
     },
     radiusField: (props) => ({
-      width: props.isMobileScreen ? 125 : "",
+      width: !props.isMobileScreen ? "100px" : "",
+      flex: props.isMobileScreen ? "0 0 25%" : "initial",
     }),
+    locationContainer: {
+      display: "contents",
+    },
   };
 });
 
 // Helper component for icon labels
 const IconLabel = ({ Icon, title }) => {
-  const classes = useStyles({ justifyContent: "flex-start" });
+  const classes = useStyles({});
   return (
     <div className={classes.iconLabel}>
       <Icon fontSize="inherit" />
@@ -221,6 +225,7 @@ const LocationFilter = ({
         handleSetOpen={handleSetLocationOptionsOpen}
         filterMode
         label={<IconLabel Icon={filter.icon} title={filter.title} />}
+        className={classes.locationContainer}
       />
       <SelectField
         className={classes.radiusField}
@@ -248,18 +253,19 @@ const LocationFilter = ({
   );
 };
 
+//Search e.g Projects, Organizations and members name on Browse page
 const SearchSectionFilter = ({
   label,
   onSubmit,
   value,
   onChange,
-  isNarrowScreen,
+  isMobileScreen,
   justifyContent = "space-around",
 }) => {
   const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.between("md", 1187));
   const classes = useStyles({ justifyContent });
   // Don't render on narrow screens
-  if (isNarrowScreen) {
+  if (isMobileScreen) {
     return null;
   }
   return (
@@ -294,7 +300,6 @@ export default function Filters({
   searchSubmit,
 }: any) {
   const { locale } = useContext(UserContext);
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const isMobileScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
 
   const { filters: currentFilters } = useContext(FilterContext);
@@ -384,7 +389,7 @@ export default function Filters({
             onSubmit={searchSubmit}
             value={searchValue}
             onChange={handleSearchValueChange}
-            isNarrowScreen={isNarrowScreen}
+            isMobileScreen={isMobileScreen}
           />
         );
         break;
