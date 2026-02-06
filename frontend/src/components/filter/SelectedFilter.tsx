@@ -16,6 +16,9 @@ const useStyles = makeStyles((theme) => {
     },
     selectedChip: {
       margin: theme.spacing(1),
+      "&:first-child": {
+        marginLeft: 0,
+      },
     },
     selectedChipIcon: {
       width: 20,

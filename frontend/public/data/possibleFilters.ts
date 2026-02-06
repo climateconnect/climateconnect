@@ -73,8 +73,8 @@ const getSearchFilter = () => {
 const getIdeasFilters = (filterChoices, texts) => [...getLocationFilters(texts)];
 
 const getMembersFilters = (filterChoices, texts) => [
-  ...getLocationFilters(texts),
   getSearchFilter(),
+  ...getLocationFilters(texts),
   {
     icon: CreateIcon,
     iconName: "CreateIcon",
@@ -88,8 +88,8 @@ const getMembersFilters = (filterChoices, texts) => [
 ];
 
 const getOrganizationsFilters = (filterChoices, texts) => [
-  ...getLocationFilters(texts),
   getSearchFilter(),
+  ...getLocationFilters(texts),
   {
     icon: GroupIcon,
     iconName: "GroupIcon",
@@ -102,8 +102,8 @@ const getOrganizationsFilters = (filterChoices, texts) => [
 ];
 
 const getProjectsFilters = (filterChoices, texts) => [
-  ...getLocationFilters(texts),
   getSearchFilter(),
+  ...getLocationFilters(texts),
   {
     icon: GroupIcon,
     iconName: "GroupIcon",
