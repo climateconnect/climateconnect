@@ -111,7 +111,8 @@ export default function LanguageSelect({
   const hoverButtonProps: any = {};
 
   if (!isMediumScreen) {
-    (hoverButtonProps.onMouseEnter = handleOpen), (hoverButtonProps.onMouseLeave = handleClose);
+    hoverButtonProps.onMouseEnter = handleOpen;
+    hoverButtonProps.onMouseLeave = handleClose;
     console.log("hoverButtonProps", hoverButtonProps);
   }
 
