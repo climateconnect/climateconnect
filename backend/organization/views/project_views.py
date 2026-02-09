@@ -33,9 +33,11 @@ from django.conf import settings
 from django.core.cache import cache
 
 from django.contrib.auth.models import User
+from django.contrib.gis.db.models import GeometryField, Union
 from django.contrib.gis.db.models.functions import Distance
 from django.db import transaction
 from django.db.models import Q
+from django.db.models.functions import Cast
 from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 
 from hubs.models.hub import Hub
@@ -246,30 +248,41 @@ class ListProjectsView(ListAPIView):
 
                 elif current_hub.hub_type == Hub.LOCATION_HUB_TYPE:
                     hub_locations = current_hub.location.all()
-                    hub_location_ids = hub_locations.values_list("id", flat=True)
-                    from django.contrib.gis.db.models import Union
-                    from django.db.models.functions import Cast
-                    from django.contrib.gis.db.models import GeometryField
 
-                    aggregated_geometry = hub_locations.annotate(
-                        geom_as_geometry=Cast("multi_polygon", GeometryField())
-                    ).aggregate(combined=Union("geom_as_geometry"))["combined"]
+                    if not hub_locations.exists():
+                        projects = projects.none()
+                    else:
+                        hub_location_ids = hub_locations.values_list("id", flat=True)
 
-                    projects = projects.filter(Q(loc__country=hub_locations[0].country))
-                    if aggregated_geometry:
-                        projects = (
-                            projects.filter(
-                                Q(loc__id__in=hub_location_ids)
-                                | Q(loc__centre_point__coveredby=(aggregated_geometry))
+                        aggregated_geometry = hub_locations.annotate(
+                            geom_as_geometry=Cast("multi_polygon", GeometryField())
+                        ).aggregate(combined=Union("geom_as_geometry"))["combined"]
+
+                        projects = projects.filter(
+                            Q(loc__country=hub_locations.first().country)
+                        )
+
+                        projects_by_location_id = projects.filter(
+                            loc__id__in=hub_location_ids
+                        )
+
+                        if aggregated_geometry:
+                            projects_by_geometry = projects.filter(
+                                Q(loc__centre_point__coveredby=(aggregated_geometry))
                                 | Q(loc__multi_polygon__coveredby=(aggregated_geometry))
                             )
-                            .annotate(
-                                distance=Distance(
-                                    "loc__centre_point", aggregated_geometry
+
+                            projects = (
+                                (projects_by_location_id | projects_by_geometry)
+                                .annotate(
+                                    distance=Distance(
+                                        "loc__centre_point", aggregated_geometry
+                                    )
                                 )
+                                .distinct()
                             )
-                            .distinct()
-                        )
+                        else:
+                            projects = projects_by_location_id.distinct()
 
                 elif current_hub.hub_type == Hub.CUSTOM_HUB_TYPE:
                     projects = projects.filter(related_hubs=current_hub)

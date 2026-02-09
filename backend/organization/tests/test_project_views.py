@@ -1099,6 +1099,7 @@ class ProjectLocationHubFilterTest(TransactionTestCase):
         # ===== Hub Locations (3 locations for Erlangen Hub) =====
         # Erlangen city (general area)
         self.location_erlangen = Location.objects.create(
+            name="Erlangen, Germany",
             city="Erlangen",
             country="Germany",
             centre_point=Point(11.0050, 49.5975),  # Erlangen coordinates
@@ -1117,6 +1118,7 @@ class ProjectLocationHubFilterTest(TransactionTestCase):
 
         # Bubenreuth (suburb/village north of Erlangen)
         self.location_bubenreuth = Location.objects.create(
+            name="Bubenreuth, Germany",
             city="Bubenreuth",
             country="Germany",
             centre_point=Point(11.0200, 49.6300),  # Bubenreuth coordinates
@@ -1135,6 +1137,7 @@ class ProjectLocationHubFilterTest(TransactionTestCase):
 
         # Spardorf (suburb/village east of Erlangen)
         self.location_spardorf = Location.objects.create(
+            name="Spardorf, Germany",
             city="Spardorf",
             country="Germany",
             centre_point=Point(11.0600, 49.5900),  # Spardorf coordinates
@@ -1165,6 +1168,7 @@ class ProjectLocationHubFilterTest(TransactionTestCase):
         # ===== Address Locations within hub area =====
         # Addresses within Erlangen, Bubenreuth, Spardorf
         self.location_erlangen_address = Location.objects.create(
+            name="Goethestraße 1, Erlangen, Germany",
             city="Erlangen",
             country="Germany",
             centre_point=Point(11.0020, 49.5985),  # Address in Erlangen
@@ -1172,6 +1176,7 @@ class ProjectLocationHubFilterTest(TransactionTestCase):
         )
 
         self.location_bubenreuth_address = Location.objects.create(
+            name="Bussardstraße 21, Bubenreuth, Germany",
             city="Bubenreuth",
             country="Germany",
             centre_point=Point(11.0210, 49.6310),  # Address in Bubenreuth
@@ -1179,6 +1184,7 @@ class ProjectLocationHubFilterTest(TransactionTestCase):
         )
 
         self.location_spardorf_address = Location.objects.create(
+            name="Eisenstraße, Spardorf, Germany",
             city="Spardorf",
             country="Germany",
             centre_point=Point(11.0610, 49.5910),  # Address in Spardorf
@@ -1188,6 +1194,7 @@ class ProjectLocationHubFilterTest(TransactionTestCase):
         # ===== Negative Test Locations (Nuremberg & Paris) =====
         # Nuremberg city location
         self.location_nuremberg = Location.objects.create(
+            name="Nuremberg, Germany",
             city="Nuremberg",
             country="Germany",
             centre_point=Point(11.0767, 49.4521),  # Nuremberg coordinates
@@ -1206,6 +1213,7 @@ class ProjectLocationHubFilterTest(TransactionTestCase):
 
         # Nuremberg address
         self.location_nuremberg_address = Location.objects.create(
+            name="Narrenschiff, Plobenhofstraße 1-9, Nuremberg, Germany",
             city="Nuremberg",
             country="Germany",
             centre_point=Point(11.0780, 49.4530),  # Address in Nuremberg
@@ -1214,6 +1222,7 @@ class ProjectLocationHubFilterTest(TransactionTestCase):
 
         # Paris city location
         self.location_paris = Location.objects.create(
+            name="Paris, France",
             city="Paris",
             country="France",
             centre_point=Point(2.3522, 48.8566),  # Paris coordinates
@@ -1232,6 +1241,7 @@ class ProjectLocationHubFilterTest(TransactionTestCase):
 
         # Paris address
         self.location_paris_address = Location.objects.create(
+            name="Hotel de Ville, 5 Rue de Lobau, Paris, France",
             city="Paris",
             country="France",
             centre_point=Point(2.3530, 48.8570),  # Address in Paris
