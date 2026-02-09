@@ -537,26 +537,25 @@ export default function BrowseContent({
         {/* Desktop screens: show tabs under the search bar */}
         {/* Mobile screens: show tabs fixed to the bottom of the screen */}
         {isSmallScreen && (
-          <>
-            <Suspense fallback={null}>
-              <FilterSection
-                filtersExpanded={filtersExandedOnMobile}
-                onSubmit={handleSearchSubmit}
-                setFiltersExpanded={isSmallScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
-                type={TYPES_BY_TAB_VALUE[tabValue]}
-                customSearchBarLabels={customSearchBarLabels}
-                applyBackgroundColor={isLocationHubFlag}
-              />
-            </Suspense>
-            <MobileBottomMenu
-              tabValue={tabValue}
-              handleTabChange={handleTabChange}
-              TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
-              //TODO(unused) type_names={type_names}
-              hubAmbassador={hubAmbassador}
-              hubUrl={hubUrl}
+          <Suspense fallback={null}>
+            <FilterSection
+              filtersExpanded={filtersExandedOnMobile}
+              onSubmit={handleSearchSubmit}
+              setFiltersExpanded={isSmallScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
+              type={TYPES_BY_TAB_VALUE[tabValue]}
+              customSearchBarLabels={customSearchBarLabels}
+              applyBackgroundColor={isLocationHubFlag}
             />
-          </>
+          </Suspense>
+        )}
+        {isNarrowScreen && (
+          <MobileBottomMenu
+            tabValue={tabValue}
+            handleTabChange={handleTabChange}
+            TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
+            hubAmbassador={hubAmbassador}
+            hubUrl={hubUrl}
+          />
         )}
         <Suspense fallback={<LoadingSpinner isLoading />}>
           <TabContentWrapper type={"projects"} {...tabContentWrapperProps}>
