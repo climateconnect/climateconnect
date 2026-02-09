@@ -82,7 +82,6 @@ export default function LanguageSelect({
   };
 
   const handleToggleOpen = () => {
-    console.log("open", open);
     setOpen(!open);
   };
 
