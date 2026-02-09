@@ -72,7 +72,6 @@ export default function LanguageSelect({
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const classes = useStyles({ transparentHeader, isCustomHub, isNarrowScreen, isLandingPage });
   const router = useRouter();
-  console.log("isNarrowScreen", isNarrowScreen);
 
   useEffect(function () {
     setAnchorEl(buttonRef.current);
