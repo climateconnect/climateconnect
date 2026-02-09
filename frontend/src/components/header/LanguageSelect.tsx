@@ -72,6 +72,7 @@ export default function LanguageSelect({
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const classes = useStyles({ transparentHeader, isCustomHub, isNarrowScreen, isLandingPage });
   const router = useRouter();
+  console.log("isNarrowScreen", isNarrowScreen);
 
   useEffect(function () {
     setAnchorEl(buttonRef.current);
@@ -82,6 +83,7 @@ export default function LanguageSelect({
   };
 
   const handleToggleOpen = () => {
+    console.log("open", open);
     setOpen(!open);
   };
 
@@ -110,8 +112,9 @@ export default function LanguageSelect({
 
   const hoverButtonProps: any = {};
 
-  if (!isNarrowScreen) {
+  if (!isMediumScreen) {
     (hoverButtonProps.onMouseEnter = handleOpen), (hoverButtonProps.onMouseLeave = handleClose);
+    console.log("hoverButtonProps", hoverButtonProps);
   }
 
   // TODO: this could be generalized into a HoverButton component,
@@ -146,7 +149,7 @@ export default function LanguageSelect({
       >
         {locale}
       </Button>
-      {isNarrowScreen ? (
+      {isMediumScreen ? (
         <StyledMenu
           id="language-select"
           className={classes.popover}
