@@ -83,7 +83,7 @@ const useStyles = makeStyles<Theme, { justifyContent?: any; isMobileScreen?: boo
     },
     radiusField: (props) => ({
       width: !props.isMobileScreen ? "100px" : "",
-      flex: props.isMobileScreen ? "0 0 25%" : "initial",
+      flex: props.isMobileScreen ? "0 0 33%" : "initial",
     }),
     locationContainer: {
       display: "contents",
@@ -125,7 +125,6 @@ const TextFilter = ({ filter, value, onChange, isInOverlay, classes }) => {
 // Select/Multiselect filter component
 const SelectFilter = ({ filter, value, onChange, isInOverlay, classes }) => {
   const isMultiselect = filter.type === "multiselect";
-
   return (
     <SelectField
       options={filter.options}
