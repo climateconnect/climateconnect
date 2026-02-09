@@ -16,7 +16,7 @@ const useStyles = makeStyles<Theme, { justifyContent?: any; isMobileScreen?: boo
     flexContainer: (props) => ({
       display: "flex",
       flexWrap: "wrap",
-      gap: theme.spacing(1),
+      gap: "16px 8px",
       justifyContent: props.justifyContent,
       alignItems: "flex-start",
     }),
@@ -27,6 +27,9 @@ const useStyles = makeStyles<Theme, { justifyContent?: any; isMobileScreen?: boo
     iconLabel: {
       display: "flex",
       alignItems: "center",
+    },
+    alignTextWithIcon: {
+      marginLeft: theme.spacing(0.5),
     },
     field: {
       display: "flex",
@@ -97,7 +100,7 @@ const IconLabel = ({ Icon, title }) => {
   return (
     <div className={classes.iconLabel}>
       <Icon fontSize="inherit" />
-      {title}
+      <span className={classes.alignTextWithIcon}>{title}</span>
     </div>
   );
 };

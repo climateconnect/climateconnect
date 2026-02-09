@@ -1,5 +1,6 @@
 import CreateIcon from "@mui/icons-material/Create";
 import GroupIcon from "@mui/icons-material/Group";
+import ExploreIcon from "@mui/icons-material/Explore";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import getTexts from "../texts/texts";
 
@@ -115,8 +116,8 @@ const getProjectsFilters = (filterChoices, texts) => [
     tooltipText: texts.organization_type_tooltip,
   },
   {
-    icon: GroupIcon,
-    iconName: "GroupIcon",
+    icon: ExploreIcon,
+    iconName: "ExploreIcon",
     // A hack: need an extra space character to create some horizontal space between the icon and text
     title: " " + texts.sectors,
     type: "multiselect",
