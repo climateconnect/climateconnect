@@ -113,7 +113,6 @@ export default function LanguageSelect({
   if (!isMediumScreen) {
     hoverButtonProps.onMouseEnter = handleOpen;
     hoverButtonProps.onMouseLeave = handleClose;
-    console.log("hoverButtonProps", hoverButtonProps);
   }
 
   // TODO: this could be generalized into a HoverButton component,
