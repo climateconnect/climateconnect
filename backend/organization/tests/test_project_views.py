@@ -1,26 +1,25 @@
-from rest_framework.test import APITestCase
-from rest_framework import status
+import io
 import unittest
+from base64 import b64encode
 
 from django.contrib.auth.models import User
-
+from django.contrib.gis.geos import MultiPolygon, Point, Polygon
+from django.test import TransactionTestCase, tag
 from django.urls import reverse
-from django.test import tag
-
-from hubs.models.hub import Hub
-from climateconnect_api.models import Role, Language
-from organization.models import (
-    Sector,
-    Project,
-    ProjectStatus,
-    ProjectSectorMapping,
-    ProjectMember,
-)
-from location.models import Location
-
 from PIL import Image
-from base64 import b64encode
-import io
+from rest_framework import status
+from rest_framework.test import APITestCase
+
+from climateconnect_api.models import Language, Role
+from hubs.models.hub import Hub
+from location.models import Location
+from organization.models import (
+    Project,
+    ProjectMember,
+    ProjectSectorMapping,
+    ProjectStatus,
+    Sector,
+)
 
 # set this at lowest to 4
 INITIAL_PROJECT_COUNT = 4
@@ -1059,3 +1058,557 @@ class TestProjectApi(APITestCase):
             ).count(),
             0,
         )
+
+
+class ProjectLocationHubFilterTest(TransactionTestCase):
+    """
+    Test case for filtering projects by location hubs.
+    Tests the code in project_views.py that handles filtering projects by location hubs
+    with aggregated geometry.
+    Uses TransactionTestCase to ensure complete database isolation and cleanup.
+    """
+
+    def setUp(self):
+        """
+        Set up test data for each test method.
+        Creates locations, hubs, and projects for testing.
+
+        Test data structure:
+        - 1 Hub "Erlangen" with 3 locations: Erlangen, Bubenreuth, Spardorf
+        - 12 Projects total:
+          - 3 with exact hub locations (Erlangen, Bubenreuth, Spardorf)
+          - 3 with addresses in Erlangen, Bubenreuth, Spardorf
+          - 1 inactive project (is_active=False)
+          - 1 draft project (is_draft=True)
+          - 2 in Nürnberg (location + address) - negative test cases
+          - 2 in Paris (location + address) - negative test cases
+        """
+        self.url = reverse("organization:list-projects")
+
+        # Create language (required for projects)
+        self.language = Language.objects.create(language_code="en", name="English")
+
+        # Create project status (required for projects)
+        self.project_status = ProjectStatus.objects.create(
+            name="active",
+            name_de_translation="aktiv",
+            has_end_date=False,
+            has_start_date=False,
+        )
+
+        # ===== Hub Locations (3 locations for Erlangen Hub) =====
+        # Erlangen city (general area)
+        self.location_erlangen = Location.objects.create(
+            city="Erlangen",
+            country="Germany",
+            centre_point=Point(11.0050, 49.5975),  # Erlangen coordinates
+            multi_polygon=MultiPolygon(
+                Polygon(
+                    (
+                        (10.95, 49.55),
+                        (11.06, 49.55),
+                        (11.06, 49.64),
+                        (10.95, 49.64),
+                        (10.95, 49.55),
+                    )
+                )
+            ),
+        )
+
+        # Bubenreuth (suburb/village north of Erlangen)
+        self.location_bubenreuth = Location.objects.create(
+            city="Bubenreuth",
+            country="Germany",
+            centre_point=Point(11.0200, 49.6300),  # Bubenreuth coordinates
+            multi_polygon=MultiPolygon(
+                Polygon(
+                    (
+                        (11.00, 49.62),
+                        (11.04, 49.62),
+                        (11.04, 49.64),
+                        (11.00, 49.64),
+                        (11.00, 49.62),
+                    )
+                )
+            ),
+        )
+
+        # Spardorf (suburb/village east of Erlangen)
+        self.location_spardorf = Location.objects.create(
+            city="Spardorf",
+            country="Germany",
+            centre_point=Point(11.0600, 49.5900),  # Spardorf coordinates
+            multi_polygon=MultiPolygon(
+                Polygon(
+                    (
+                        (11.05, 49.58),
+                        (11.07, 49.58),
+                        (11.07, 49.60),
+                        (11.05, 49.60),
+                        (11.05, 49.58),
+                    )
+                )
+            ),
+        )
+
+        # ===== Hub for Erlangen with 3 locations =====
+        self.hub_erlangen = Hub.objects.create(
+            name="Erlangen Hub",
+            url_slug="erlangen-hub",
+            hub_type=Hub.LOCATION_HUB_TYPE,
+            image="/media/hub_images/default.jpg",
+        )
+        self.hub_erlangen.location.add(self.location_erlangen)
+        self.hub_erlangen.location.add(self.location_bubenreuth)
+        self.hub_erlangen.location.add(self.location_spardorf)
+
+        # ===== Address Locations within hub area =====
+        # Addresses within Erlangen, Bubenreuth, Spardorf
+        self.location_erlangen_address = Location.objects.create(
+            city="Erlangen",
+            country="Germany",
+            centre_point=Point(11.0020, 49.5985),  # Address in Erlangen
+            multi_polygon=None,
+        )
+
+        self.location_bubenreuth_address = Location.objects.create(
+            city="Bubenreuth",
+            country="Germany",
+            centre_point=Point(11.0210, 49.6310),  # Address in Bubenreuth
+            multi_polygon=None,
+        )
+
+        self.location_spardorf_address = Location.objects.create(
+            city="Spardorf",
+            country="Germany",
+            centre_point=Point(11.0610, 49.5910),  # Address in Spardorf
+            multi_polygon=None,
+        )
+
+        # ===== Negative Test Locations (Nuremberg & Paris) =====
+        # Nuremberg city location
+        self.location_nuremberg = Location.objects.create(
+            city="Nuremberg",
+            country="Germany",
+            centre_point=Point(11.0767, 49.4521),  # Nuremberg coordinates
+            multi_polygon=MultiPolygon(
+                Polygon(
+                    (
+                        (10.95, 49.40),
+                        (11.20, 49.40),
+                        (11.20, 49.50),
+                        (10.95, 49.50),
+                        (10.95, 49.40),
+                    )
+                )
+            ),
+        )
+
+        # Nuremberg address
+        self.location_nuremberg_address = Location.objects.create(
+            city="Nuremberg",
+            country="Germany",
+            centre_point=Point(11.0780, 49.4530),  # Address in Nuremberg
+            multi_polygon=None,
+        )
+
+        # Paris city location
+        self.location_paris = Location.objects.create(
+            city="Paris",
+            country="France",
+            centre_point=Point(2.3522, 48.8566),  # Paris coordinates
+            multi_polygon=MultiPolygon(
+                Polygon(
+                    (
+                        (2.20, 48.80),
+                        (2.50, 48.80),
+                        (2.50, 49.00),
+                        (2.20, 49.00),
+                        (2.20, 48.80),
+                    )
+                )
+            ),
+        )
+
+        # Paris address
+        self.location_paris_address = Location.objects.create(
+            city="Paris",
+            country="France",
+            centre_point=Point(2.3530, 48.8570),  # Address in Paris
+            multi_polygon=None,
+        )
+
+        # ===== Create 12 Projects =====
+        # Projects with exact hub locations (3 projects)
+        self.project_erlangen_location = Project.objects.create(
+            name="Erlangen Location Project",
+            description="Project with Erlangen location",
+            short_description="Erlangen location",
+            url_slug="erlangen-location-project",
+            is_active=True,
+            is_draft=False,
+            status=self.project_status,
+            language=self.language,
+            loc=self.location_erlangen,
+        )
+
+        self.project_bubenreuth_location = Project.objects.create(
+            name="Bubenreuth Location Project",
+            description="Project with Bubenreuth location",
+            short_description="Bubenreuth location",
+            url_slug="bubenreuth-location-project",
+            is_active=True,
+            is_draft=False,
+            status=self.project_status,
+            language=self.language,
+            loc=self.location_bubenreuth,
+        )
+
+        self.project_spardorf_location = Project.objects.create(
+            name="Spardorf Location Project",
+            description="Project with Spardorf location",
+            short_description="Spardorf location",
+            url_slug="spardorf-location-project",
+            is_active=True,
+            is_draft=False,
+            status=self.project_status,
+            language=self.language,
+            loc=self.location_spardorf,
+        )
+
+        # Projects with addresses in hub locations (3 projects)
+        self.project_erlangen_address = Project.objects.create(
+            name="Erlangen Address Project",
+            description="Project with address in Erlangen",
+            short_description="Erlangen address",
+            url_slug="erlangen-address-project",
+            is_active=True,
+            is_draft=False,
+            status=self.project_status,
+            language=self.language,
+            loc=self.location_erlangen_address,
+        )
+
+        self.project_bubenreuth_address = Project.objects.create(
+            name="Bubenreuth Address Project",
+            description="Project with address in Bubenreuth",
+            short_description="Bubenreuth address",
+            url_slug="bubenreuth-address-project",
+            is_active=True,
+            is_draft=False,
+            status=self.project_status,
+            language=self.language,
+            loc=self.location_bubenreuth_address,
+        )
+
+        self.project_spardorf_address = Project.objects.create(
+            name="Spardorf Address Project",
+            description="Project with address in Spardorf",
+            short_description="Spardorf address",
+            url_slug="spardorf-address-project",
+            is_active=True,
+            is_draft=False,
+            status=self.project_status,
+            language=self.language,
+            loc=self.location_spardorf_address,
+        )
+
+        # Inactive project
+        self.project_erlangen_inactive = Project.objects.create(
+            name="Erlangen Inactive Project",
+            description="Inactive project in Erlangen",
+            short_description="Erlangen inactive",
+            url_slug="erlangen-inactive-project",
+            is_active=False,
+            is_draft=False,
+            status=self.project_status,
+            language=self.language,
+            loc=self.location_erlangen_address,
+        )
+
+        # Draft project
+        self.project_erlangen_draft = Project.objects.create(
+            name="Erlangen Draft Project",
+            description="Draft project in Erlangen",
+            short_description="Erlangen draft",
+            url_slug="erlangen-draft-project",
+            is_active=True,
+            is_draft=True,
+            status=self.project_status,
+            language=self.language,
+            loc=self.location_erlangen_address,
+        )
+
+        # Negative test projects - Nuremberg
+        self.project_nuremberg_location = Project.objects.create(
+            name="Nuremberg Location Project",
+            description="Project in Nuremberg location",
+            short_description="Nuremberg location",
+            url_slug="nuremberg-location-project",
+            is_active=True,
+            is_draft=False,
+            status=self.project_status,
+            language=self.language,
+            loc=self.location_nuremberg,
+        )
+
+        self.project_nuremberg_address = Project.objects.create(
+            name="Nuremberg Address Project",
+            description="Project with address in Nuremberg",
+            short_description="Nuremberg address",
+            url_slug="nuremberg-address-project",
+            is_active=True,
+            is_draft=False,
+            status=self.project_status,
+            language=self.language,
+            loc=self.location_nuremberg_address,
+        )
+
+        # Negative test projects - Paris
+        self.project_paris_location = Project.objects.create(
+            name="Paris Location Project",
+            description="Project in Paris location",
+            short_description="Paris location",
+            url_slug="paris-location-project",
+            is_active=True,
+            is_draft=False,
+            status=self.project_status,
+            language=self.language,
+            loc=self.location_paris,
+        )
+
+        self.project_paris_address = Project.objects.create(
+            name="Paris Address Project",
+            description="Project with address in Paris",
+            short_description="Paris address",
+            url_slug="paris-address-project",
+            is_active=True,
+            is_draft=False,
+            status=self.project_status,
+            language=self.language,
+            loc=self.location_paris_address,
+        )
+
+    def tearDown(self):
+        """
+        Clean up after each test.
+        TransactionTestCase automatically clears the database, but
+        we explicitly clear for clarity.
+        """
+        Project.objects.all().delete()
+        Hub.objects.all().delete()
+        Location.objects.all().delete()
+        ProjectStatus.objects.all().delete()
+        Language.objects.all().delete()
+
+    @tag("location_hub", "projects")
+    def test_filter_projects_by_multi_location_hub(self):
+        """
+        Test filtering projects by the Erlangen hub with 3 locations.
+        Should return all 6 active, non-draft projects within Erlangen, Bubenreuth, and Spardorf.
+        """
+        response = self.client.get(self.url, {"hub": "erlangen-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+        project_slugs = [p["url_slug"] for p in results]
+
+        self.assertIn("erlangen-location-project", project_slugs)
+        self.assertIn("bubenreuth-location-project", project_slugs)
+        self.assertIn("spardorf-location-project", project_slugs)
+        self.assertIn("erlangen-address-project", project_slugs)
+        self.assertIn("bubenreuth-address-project", project_slugs)
+        self.assertIn("spardorf-address-project", project_slugs)
+
+        self.assertEqual(len(results), 6)
+
+        self.assertNotIn("nuremberg-location-project", project_slugs)
+        self.assertNotIn("nuremberg-address-project", project_slugs)
+        self.assertNotIn("paris-location-project", project_slugs)
+        self.assertNotIn("paris-address-project", project_slugs)
+
+    @tag("location_hub", "projects")
+    def test_aggregated_geometry_with_multiple_hub_locations(self):
+        """
+        Test the aggregated geometry functionality (Union of geometries).
+        Verifies that projects within any of the 3 hub locations are returned.
+        """
+        response = self.client.get(self.url, {"hub": "erlangen-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+        project_slugs = [p["url_slug"] for p in results]
+
+        self.assertIn("erlangen-location-project", project_slugs)
+        self.assertIn("bubenreuth-location-project", project_slugs)
+        self.assertIn("spardorf-location-project", project_slugs)
+
+        self.assertIn("erlangen-address-project", project_slugs)
+        self.assertIn("bubenreuth-address-project", project_slugs)
+        self.assertIn("spardorf-address-project", project_slugs)
+
+    @tag("location_hub", "projects")
+    def test_filter_projects_by_hub_filters_by_country(self):
+        """
+        Test that location hub filtering correctly filters by country first.
+        Paris projects should not appear even though we have 12 total projects.
+        """
+        response = self.client.get(self.url, {"hub": "erlangen-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+
+        for project in results:
+            project_obj = Project.objects.get(url_slug=project["url_slug"])
+            self.assertEqual(project_obj.loc.country, "Germany")
+
+        project_slugs = [p["url_slug"] for p in results]
+        self.assertNotIn("paris-location-project", project_slugs)
+        self.assertNotIn("paris-address-project", project_slugs)
+
+    @tag("location_hub", "projects")
+    def test_filter_excludes_projects_outside_hub_geometry(self):
+        """
+        Test that projects outside the hub's geometry are excluded.
+        Nuremberg projects should not be included even though they're in Germany.
+        """
+        response = self.client.get(self.url, {"hub": "erlangen-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+        project_slugs = [p["url_slug"] for p in results]
+
+        self.assertNotIn("nuremberg-location-project", project_slugs)
+        self.assertNotIn("nuremberg-address-project", project_slugs)
+
+        self.assertEqual(len(results), 6)
+
+    @tag("location_hub", "projects")
+    def test_filter_projects_by_nonexistent_hub(self):
+        """
+        Test filtering by a hub that doesn't exist.
+        Should return no results.
+        """
+        response = self.client.get(self.url, {"hub": "nonexistent-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+        self.assertEqual(len(results), 0)
+
+    @tag("location_hub", "projects")
+    def test_filter_projects_without_hub_parameter(self):
+        """
+        Test that without hub parameter, all active, non-draft projects are returned.
+        Should return 10 projects (12 total - 1 inactive - 1 draft).
+        """
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+
+        self.assertEqual(len(results), 10)
+
+        project_slugs = [p["url_slug"] for p in results]
+        self.assertNotIn("erlangen-inactive-project", project_slugs)
+        self.assertNotIn("erlangen-draft-project", project_slugs)
+
+    @tag("location_hub", "projects")
+    def test_address_locations_within_hub_geometry(self):
+        """
+        Test that address-based locations (null multi_polygon) are correctly matched.
+        All 3 address projects should be included as their centre_points are within
+        the hub's aggregated geometry.
+        """
+        response = self.client.get(self.url, {"hub": "erlangen-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+        project_slugs = [p["url_slug"] for p in results]
+
+        self.assertIn("erlangen-address-project", project_slugs)
+        self.assertIn("bubenreuth-address-project", project_slugs)
+        self.assertIn("spardorf-address-project", project_slugs)
+
+        for slug in [
+            "erlangen-address-project",
+            "bubenreuth-address-project",
+            "spardorf-address-project",
+        ]:
+            project = Project.objects.get(url_slug=slug)
+            self.assertIsNone(project.loc.multi_polygon)
+
+    @tag("location_hub", "projects")
+    def test_projects_annotated_with_distance(self):
+        """
+        Test that projects within a hub are annotated with distance.
+        All 6 projects should be returned with distance annotation.
+        """
+        response = self.client.get(self.url, {"hub": "erlangen-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+
+        self.assertEqual(len(results), 6)
+
+        project_slugs = [p["url_slug"] for p in results]
+        for expected_slug in [
+            "erlangen-location-project",
+            "bubenreuth-location-project",
+            "spardorf-location-project",
+            "erlangen-address-project",
+            "bubenreuth-address-project",
+            "spardorf-address-project",
+        ]:
+            self.assertIn(expected_slug, project_slugs)
+
+    @tag("location_hub", "projects")
+    def test_distinct_results_when_multiple_filters_match(self):
+        """
+        Test that results are distinct even when a project matches multiple filter criteria.
+        Tests the .distinct() call in the code.
+        """
+        response = self.client.get(self.url, {"hub": "erlangen-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+
+        project_ids = [p["id"] for p in results]
+        self.assertEqual(
+            len(project_ids),
+            len(set(project_ids)),
+            "Results should be distinct (no duplicates)",
+        )
+
+        self.assertEqual(len(project_ids), 6)
+
+    @tag("location_hub", "projects")
+    def test_location_hub_filter_with_draft_projects(self):
+        """
+        Test that draft projects are not included in location hub filtering.
+        We have a draft project in Erlangen that should be excluded.
+        """
+        response = self.client.get(self.url, {"hub": "erlangen-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+
+        project_slugs = [p["url_slug"] for p in results]
+        self.assertNotIn("erlangen-draft-project", project_slugs)
+
+        self.assertEqual(len(results), 6)
+
+    @tag("location_hub", "projects")
+    def test_location_hub_filter_with_inactive_projects(self):
+        """
+        Test that inactive projects are not included in location hub filtering.
+        We have an inactive project in Erlangen that should be excluded.
+        """
+        response = self.client.get(self.url, {"hub": "erlangen-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+
+        project_slugs = [p["url_slug"] for p in results]
+        self.assertNotIn("erlangen-inactive-project", project_slugs)
+
+        self.assertEqual(len(results), 6)

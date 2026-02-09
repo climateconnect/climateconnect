@@ -245,17 +245,30 @@ class ListProjectsView(ListAPIView):
                     ).distinct()
 
                 elif current_hub.hub_type == Hub.LOCATION_HUB_TYPE:
-                    location = current_hub.location.all()[0]
-                    location_multipolygon = location.multi_polygon
-                    projects = projects.filter(Q(loc__country=location.country))
-                    if location_multipolygon:
-                        projects = projects.filter(
-                            Q(loc__multi_polygon__coveredby=(location_multipolygon))
-                            | Q(loc__centre_point__coveredby=(location_multipolygon))
-                        ).annotate(
-                            distance=Distance(
-                                "loc__centre_point", location_multipolygon
+                    hub_locations = current_hub.location.all()
+                    hub_location_ids = hub_locations.values_list("id", flat=True)
+                    from django.contrib.gis.db.models import Union
+                    from django.db.models.functions import Cast
+                    from django.contrib.gis.db.models import GeometryField
+
+                    aggregated_geometry = hub_locations.annotate(
+                        geom_as_geometry=Cast("multi_polygon", GeometryField())
+                    ).aggregate(combined=Union("geom_as_geometry"))["combined"]
+
+                    projects = projects.filter(Q(loc__country=hub_locations[0].country))
+                    if aggregated_geometry:
+                        projects = (
+                            projects.filter(
+                                Q(loc__id__in=hub_location_ids)
+                                | Q(loc__centre_point__coveredby=(aggregated_geometry))
+                                | Q(loc__multi_polygon__coveredby=(aggregated_geometry))
                             )
+                            .annotate(
+                                distance=Distance(
+                                    "loc__centre_point", aggregated_geometry
+                                )
+                            )
+                            .distinct()
                         )
 
                 elif current_hub.hub_type == Hub.CUSTOM_HUB_TYPE:
