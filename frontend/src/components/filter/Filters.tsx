@@ -83,6 +83,7 @@ const useStyles = makeStyles<Theme, { justifyContent?: any; isMobileScreen?: boo
     filterSearch: {
       display: "flex",
       maxWidth: 650,
+      width: 230,
     },
     radiusField: (props) => ({
       width: !props.isMobileScreen ? "100px" : "",
