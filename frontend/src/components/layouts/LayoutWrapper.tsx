@@ -142,7 +142,7 @@ export default function LayoutWrapper({
     }
 
     const excludedPaths = ["/privacy", "/terms", "/imprint"];
-    return !excludedPaths.some(path => Router.pathname.includes(path));
+    return !excludedPaths.some((path) => Router.pathname.includes(path));
   };
 
   return (
