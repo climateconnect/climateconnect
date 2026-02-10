@@ -7,7 +7,6 @@ from backend.climateconnect_api.management.commands.osm_data_retrieval_scripts.f
     getLocations,
 )
 
-
 CURRENT_DIR = Path(__file__).resolve()
 LOOKUP_DIR = CURRENT_DIR.parent.parent
 PATH_TO_KNOWN_LOOKUP = str(LOOKUP_DIR / "osm_lookup_tables" / "lookup.csv")

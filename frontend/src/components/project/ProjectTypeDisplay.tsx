@@ -1,8 +1,9 @@
-import { Typography } from "@mui/material";
+import { Typography, Tooltip } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
+import LayersIcon from "@mui/icons-material/Layers";
 import React from "react";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     alignItems: "center",
@@ -13,6 +14,11 @@ const useStyles = makeStyles(() => ({
     marginLeft: 0,
     marginRight: 8,
   },
+  layersIcon: {
+    fontSize: 18,
+    marginLeft: 4,
+    color: theme.palette.primary.main,
+  },
 }));
 
 type Props = {
@@ -20,6 +26,7 @@ type Props = {
   className?: any;
   iconClassName?: any;
   textClassName?: any;
+  hasChildren?: boolean;
 };
 
 export default function ProjectTypeDisplay({
@@ -27,6 +34,7 @@ export default function ProjectTypeDisplay({
   className,
   iconClassName,
   textClassName,
+  hasChildren,
 }: Props) {
   const classes = useStyles();
 
@@ -38,6 +46,11 @@ export default function ProjectTypeDisplay({
         alt={projectType.name}
       />
       <Typography className={textClassName}>{projectType.name}</Typography>
+      {hasChildren && (
+        <Tooltip title="This event contains multiple sub-events">
+          <LayersIcon className={classes.layersIcon} />
+        </Tooltip>
+      )}
     </div>
   );
 }

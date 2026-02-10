@@ -103,6 +103,8 @@ export default function ProjectPageRoot({
   handleJoinRequest,
   hubSupporters,
   hubPage,
+  siblingProjects,
+  isWasseraktionswochenEnabled,
 }) {
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
@@ -477,6 +479,7 @@ export default function ProjectPageRoot({
         toggleShowFollowers={toggleShowFollowers}
         toggleShowLikes={toggleShowLikes}
         hubUrl={hubPage}
+        isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
       />
 
       <Container className={classes.tabsContainerWithoutPadding}>
@@ -577,6 +580,8 @@ export default function ProjectPageRoot({
               locale={locale}
               hubSupporters={hubSupporters}
               hubName={hubPage}
+              siblingProjects={siblingProjects}
+              isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
             />
           </>
         )}

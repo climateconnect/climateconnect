@@ -71,6 +71,10 @@
     "en": "Go back",
     "de": "Zurück"
   },
+  "back_to_parent": {
+    "en": "Back to {parent_name}",
+    "de": "Zurück zu {parent_name}"
+  },
   "default_description": {
     "en": "Free and non-profit climate action platform. Share, find and work on impactful, innovative and inspiring solutions to reduce and stop global warming. Join #teamclimate now!",
     "de": "Kostenlose und gemeinnützige Klimaschutzplattform. Teile, finde und arbeite an wirkungsvollen, innovativen und inspirierenden Lösungen, um die globale Erwärmung zu reduzieren und zu stoppen. Komm ins #teamclimate!"
@@ -730,10 +734,6 @@
   "new": {
     "en": "new",
     "de": "Neu"
-  },
-  "get_active": {
-    "en": "ClimateMatch",
-    "de": "ClimateMatch"
   },
   "more": {
     "en": "More",

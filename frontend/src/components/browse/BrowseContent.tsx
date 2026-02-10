@@ -1,5 +1,5 @@
 import makeStyles from "@mui/styles/makeStyles";
-import { Container, Divider, Tab, Tabs, Theme, useMediaQuery } from "@mui/material";
+import { Container, Theme, useMediaQuery } from "@mui/material";
 import _ from "lodash";
 import React, { Suspense, lazy, useContext, useEffect, useMemo, useRef, useState } from "react";
 import Cookies from "universal-cookie";
@@ -29,12 +29,11 @@ import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 import { BrowseTab, LinkedHub } from "../../types";
 import { FilterContext } from "../context/FilterContext";
 import HubLinkButton from "../hub/HubLinkButton";
-const FilterSection = lazy(() => import("../indexPage/FilterSection"));
 const OrganizationPreviews = lazy(() => import("../organization/OrganizationPreviews"));
 const ProfilePreviews = lazy(() => import("../profile/ProfilePreviews"));
 const ProjectPreviews = lazy(() => import("../project/ProjectPreviews"));
 const TabContentWrapper = lazy(() => import("./TabContentWrapper"));
-
+const FilterSection = lazy(() => import("../indexPage/FilterSection"));
 const useStyles = makeStyles((theme) => {
   return {
     contentRefContainer: {
@@ -47,11 +46,6 @@ const useStyles = makeStyles((theme) => {
     contentRef: {
       position: "absolute",
       top: -90,
-    },
-    tab: {
-      width: 200,
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(2),
     },
     mainContentDivider: {
       marginBottom: theme.spacing(3),
@@ -96,6 +90,8 @@ type BrowseContentProps = {
   hubSupporters?: any;
   isLocationHub?: boolean;
   linkedHubs?: LinkedHub[];
+  fromPage?: "hub";
+  showWasseraktionswochen?: boolean;
 };
 
 export default function BrowseContent({
@@ -116,6 +112,8 @@ export default function BrowseContent({
   hubSupporters,
   isLocationHub,
   linkedHubs,
+  fromPage,
+  showWasseraktionswochen,
 }: BrowseContentProps) {
   const initialState = {
     items: {
@@ -139,6 +137,7 @@ export default function BrowseContent({
 
   const token = new Cookies().get("auth_token");
   const isLocationHubFlag = isLocationHub || isLocationHubLikeHub(hubData?.hub_type);
+
   const {
     filters,
     handleUpdateFilterValues,
@@ -160,6 +159,8 @@ export default function BrowseContent({
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
 
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+  const isSmallScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+
   const type_names = {
     projects: texts.projects,
     organizations: isNarrowScreen ? texts.orgs : texts.organizations,
@@ -176,7 +177,6 @@ export default function BrowseContent({
     members: useRef(null),
     ideas: useRef(null),
   };
-
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
   const handleSetLocationOptionsOpen = (bool) => {
     setLocationOptionsOpen(bool);
@@ -357,6 +357,8 @@ export default function BrowseContent({
   };
 
   const handleLoadMoreData = async (type) => {
+    if (isFetchingMoreData) return; // Prevent multiple simultaneous requests
+
     try {
       setIsFetchingMoreData(true);
       const res = await loadMoreData({
@@ -368,8 +370,6 @@ export default function BrowseContent({
         hubUrl: hubData?.url_slug,
       });
 
-      // TODO: these setState and hooks calls should likely be memoized and combined
-      setIsFetchingMoreData(false);
       setState({
         ...state,
         nextPages: {
@@ -391,6 +391,8 @@ export default function BrowseContent({
         ...state,
         hasMore: { ...state.hasMore, [type]: false },
       });
+    } finally {
+      setIsFetchingMoreData(false);
     }
   };
 
@@ -434,7 +436,6 @@ export default function BrowseContent({
       if (isNarrowScreen) setFiltersExpandedOnMobile(false);
       else setFiltersExpanded(false);
     }
-
     if (res?.filteredItemsObject) {
       setState({
         ...state,
@@ -485,7 +486,7 @@ export default function BrowseContent({
   const tabContentWrapperProps = {
     tabValue: tabValue,
     TYPES_BY_TAB_VALUE: TYPES_BY_TAB_VALUE,
-    filtersExpanded: isNarrowScreen ? filtersExandedOnMobile : filtersExpanded,
+    filtersExpanded: isSmallScreen ? filtersExandedOnMobile : filtersExpanded,
     handleApplyNewFilters: handleApplyNewFilters,
     handleUpdateFilterValues: handleUpdateFilterValues,
     errorMessage: errorMessage,
@@ -503,6 +504,8 @@ export default function BrowseContent({
     hubName: hubName || "",
     nonFilterParams: nonFilterParams,
     linkedHubs: linkedHubs || [],
+    isFetchingMoreData: isFetchingMoreData,
+    handleSearchSubmit: handleSearchSubmit,
   };
   return (
     <LoadingContext.Provider
@@ -510,17 +513,17 @@ export default function BrowseContent({
         spinning: isFetchingMoreData || isFiltering,
       }}
     >
-      {isLocationHubFlag && (
-        <HubTabsNavigation
-          TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
-          tabValue={tabValue}
-          handleTabChange={handleTabChange}
-          type_names={type_names}
-          hubUrl={hubUrl}
-          className={classes.hubsTabNavigation}
-          allHubs={allHubs}
-        />
-      )}
+      <HubTabsNavigation
+        TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
+        tabValue={tabValue}
+        handleTabChange={handleTabChange}
+        type_names={type_names}
+        hubUrl={hubUrl}
+        className={classes.hubsTabNavigation}
+        allHubs={allHubs}
+        fromPage={fromPage}
+        showWasseraktionswochen={showWasseraktionswochen}
+      />
       <Container maxWidth="lg" className={classes.contentRefContainer}>
         {isNarrowScreen && hubSupporters && hubName && (
           <HubSupporters supportersList={hubSupporters} hubName={hubName} />
@@ -533,49 +536,30 @@ export default function BrowseContent({
             ))}
           </div>
         )}
-        <Suspense fallback={null}>
-          <FilterSection
-            filtersExpanded={isNarrowScreen ? filtersExandedOnMobile : filtersExpanded}
-            onSubmit={handleSearchSubmit}
-            setFiltersExpanded={isNarrowScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
-            type={TYPES_BY_TAB_VALUE[tabValue]}
-            customSearchBarLabels={customSearchBarLabels}
-            hideFilterButton={false}
-            applyBackgroundColor={isLocationHubFlag}
-          />
-        </Suspense>
 
         {/* Desktop screens: show tabs under the search bar */}
         {/* Mobile screens: show tabs fixed to the bottom of the screen */}
-        {!isNarrowScreen && !isLocationHubFlag && (
-          <Tabs
-            variant={isNarrowScreen ? "fullWidth" : "standard"}
-            value={tabValue}
-            onChange={handleTabChange}
-            indicatorColor="primary"
-            textColor="primary"
-            centered={true}
-          >
-            {TYPES_BY_TAB_VALUE.map((t, index) => {
-              const tabProps: any = {
-                label: type_names[t],
-                className: classes.tab,
-              };
-              return <Tab {...tabProps} key={index} />;
-            })}
-          </Tabs>
+        {isSmallScreen && (
+          <Suspense fallback={null}>
+            <FilterSection
+              filtersExpanded={filtersExandedOnMobile}
+              onSubmit={handleSearchSubmit}
+              setFiltersExpanded={isSmallScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
+              type={TYPES_BY_TAB_VALUE[tabValue]}
+              customSearchBarLabels={customSearchBarLabels}
+              applyBackgroundColor={isLocationHubFlag}
+            />
+          </Suspense>
         )}
         {isNarrowScreen && (
           <MobileBottomMenu
             tabValue={tabValue}
             handleTabChange={handleTabChange}
             TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
-            //TODO(unused) type_names={type_names}
             hubAmbassador={hubAmbassador}
             hubUrl={hubUrl}
           />
         )}
-        {!isLocationHubFlag && <Divider className={classes.mainContentDivider} />}
         <Suspense fallback={<LoadingSpinner isLoading />}>
           <TabContentWrapper type={"projects"} {...tabContentWrapperProps}>
             {hubData?.parent_hub && (
@@ -584,12 +568,12 @@ export default function BrowseContent({
               </div>
             )}
             <ProjectPreviews
-              //TODO(unused) className={classes.itemsContainer}
               hasMore={state.hasMore.projects}
               loadFunc={() => handleLoadMoreData("projects")}
               parentHandlesGridItems
               projects={state.items.projects}
               hubUrl={hubUrl}
+              isLoading={isFetchingMoreData}
             />
           </TabContentWrapper>
           <TabContentWrapper type={"organizations"} {...tabContentWrapperProps}>
@@ -604,6 +588,7 @@ export default function BrowseContent({
               organizations={state.items.organizations}
               hubUrl={hubUrl}
               parentHandlesGridItems
+              isLoading={isFetchingMoreData}
             />
           </TabContentWrapper>
           {!hideMembers && (
@@ -620,6 +605,7 @@ export default function BrowseContent({
                 profiles={state.items.members}
                 hubUrl={hubUrl}
                 showAdditionalInfo
+                isLoading={isFetchingMoreData}
               />
             </TabContentWrapper>
           )}
