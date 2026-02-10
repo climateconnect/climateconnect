@@ -171,9 +171,9 @@ export default function LayoutWrapper({
                 {!acceptedNecessary &&
                   bannerOpen &&
                   initialized &&
-                  !Router.pathname.includes("/privacy") &&
-                  !Router.pathname.includes("/terms") &&
-                  !Router.pathname.includes("/imprint") && (
+                  !router.pathname.includes("/privacy") &&
+                  !router.pathname.includes("/terms") &&
+                  !router.pathname.includes("/imprint") && (
                     <CookieBanner closeBanner={closeBanner} />
                   )}
                 {!noFeedbackButton && !isSmallerThanMediumScreen && <FeedbackButton />}
