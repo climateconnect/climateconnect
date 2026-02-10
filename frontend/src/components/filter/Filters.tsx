@@ -299,7 +299,6 @@ export default function Filters({
   possibleFilters,
   selectedItems,
   setSelectedItems,
-  searchLabel,
   searchSubmit,
 }: any) {
   const { locale } = useContext(UserContext);
@@ -388,7 +387,7 @@ export default function Filters({
       case "search":
         component = (
           <SearchSectionFilter
-            label={searchLabel}
+            label={texts.search}
             onSubmit={searchSubmit}
             value={searchValue}
             onChange={handleSearchValueChange}
