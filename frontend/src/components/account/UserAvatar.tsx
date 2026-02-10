@@ -1,4 +1,4 @@
-import { Avatar, Theme, useMediaQuery } from "@mui/material";
+import { Avatar, Theme } from "@mui/material";
 import React, { ReactElement, useContext, useRef, useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
