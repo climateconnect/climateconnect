@@ -1,24 +1,24 @@
-import { Button, TextField, Theme, Tooltip, Typography } from "@mui/material";
+import { Button, TextField, Theme, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext } from "react";
+import React, { useContext, useState, Fragment } from "react";
 import getRadiusFilterOptions from "../../../public/data/radiusFilterOptions";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import { FilterContext } from "../context/FilterContext";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import SelectField from "../general/SelectField";
 import LocationSearchBar from "../search/LocationSearchBar";
-import { FilterContext } from "../context/FilterContext";
+import FilterSearchBar from "../filter/FilterSearchBar";
+import LocationSearchingIcon from "@mui/icons-material/LocationSearching";
 
-const useStyles = makeStyles<Theme, { justifyContent: any }>((theme) => {
+const useStyles = makeStyles<Theme, { justifyContent?: any; isMobileScreen?: boolean }>((theme) => {
   return {
     flexContainer: (props) => ({
       display: "flex",
       flexWrap: "wrap",
-      columnGap: theme.spacing(2),
-      rowGap: theme.spacing(1),
-      paddingInline: theme.spacing(2),
+      gap: "16px 8px",
       justifyContent: props.justifyContent,
-      marginBottom: theme.spacing(1),
+      alignItems: "flex-start",
     }),
     verticalFlexContainer: {
       flexDirection: "column",
@@ -27,6 +27,9 @@ const useStyles = makeStyles<Theme, { justifyContent: any }>((theme) => {
     iconLabel: {
       display: "flex",
       alignItems: "center",
+    },
+    alignTextWithIcon: {
+      marginLeft: theme.spacing(0.5),
     },
     field: {
       display: "flex",
@@ -39,7 +42,6 @@ const useStyles = makeStyles<Theme, { justifyContent: any }>((theme) => {
     locationFieldWrapper: {
       display: "flex",
       borderRadius: 0,
-      marginRight: theme.spacing(1),
     },
     locationField: {
       borderTopRightRadius: 0,
@@ -48,9 +50,6 @@ const useStyles = makeStyles<Theme, { justifyContent: any }>((theme) => {
     },
     overlayLocationField: {
       flexGrow: 1,
-    },
-    radiusField: {
-      width: 125,
     },
     radiusInput: {
       borderTopLeftRadius: 0,
@@ -64,14 +63,6 @@ const useStyles = makeStyles<Theme, { justifyContent: any }>((theme) => {
       marginBottom: theme.spacing(2),
       width: "100%",
     },
-    applyButton: {
-      height: 40,
-      display: "flex",
-    },
-    applyButtonContainer: {
-      display: "flex",
-      justifyContent: "flex-end",
-    },
     outlinedField: {
       borderColor: theme.palette.primary.main,
       borderWidth: 2,
@@ -83,9 +74,216 @@ const useStyles = makeStyles<Theme, { justifyContent: any }>((theme) => {
     openMultiSelectButton: {
       border: `1px solid ${theme.palette.grey[500]} !important`,
     },
+    filterSectionFirstLine: {
+      display: "flex",
+      marginBottom: theme.spacing(0.5),
+      maxWidth: 650,
+      justifyContent: "center",
+    },
+    filterSearch: {
+      display: "flex",
+      maxWidth: 650,
+      width: 230,
+    },
+    radiusField: (props) => ({
+      width: !props.isMobileScreen ? "100px" : "",
+      flex: props.isMobileScreen ? "0 0 33%" : "initial",
+    }),
+    locationContainer: {
+      display: "contents",
+    },
   };
 });
 
+// Helper component for icon labels
+const IconLabel = ({ Icon, title }) => {
+  const classes = useStyles({});
+  return (
+    <div className={classes.iconLabel}>
+      <Icon fontSize="inherit" />
+      <span className={classes.alignTextWithIcon}>{title}</span>
+    </div>
+  );
+};
+
+// Text filter component
+const TextFilter = ({ filter, value, onChange, isInOverlay, classes }) => {
+  return (
+    <TextField
+      label={<IconLabel Icon={filter.icon} title={filter.title} />}
+      type="text"
+      value={value}
+      className={`${classes.field} ${classes.filterElement} ${isInOverlay && classes.overlayField}`}
+      variant="outlined"
+      size="small"
+      onChange={(event) => onChange(filter.key, event.target.value)}
+      InputProps={{
+        classes: {
+          notchedOutline: value && classes.outlinedField,
+        },
+      }}
+    />
+  );
+};
+
+// Select/Multiselect filter component
+const SelectFilter = ({ filter, value, onChange, isInOverlay, classes }) => {
+  const isMultiselect = filter.type === "multiselect";
+  return (
+    <SelectField
+      options={filter.options}
+      className={`${classes.field} ${classes.filterElement} ${isInOverlay && classes.overlayField}`}
+      multiple={isMultiselect}
+      values={isMultiselect && value}
+      controlled={!isMultiselect}
+      controlledValue={!isMultiselect && value}
+      label={<IconLabel Icon={filter.icon} title={filter.title} />}
+      InputProps={{
+        classes: {
+          notchedOutline: value && value.length && classes.outlinedField,
+        },
+      }}
+      size="small"
+      isInOverlay={isInOverlay}
+      onChange={(event) => onChange(filter.key, event.target.value)}
+    />
+  );
+};
+
+// Multi-level select dialog button component
+const MultiSelectDialogFilter = ({
+  filter,
+  selectedItems,
+  setSelectedItems,
+  open,
+  handleClickDialogOpen,
+  handleClickDialogClose,
+  handleClickDialogSave,
+  isInOverlay,
+  classes,
+  texts,
+}) => {
+  const curSelectedItems = selectedItems[filter.key];
+
+  const handleSetSelectedItems = (newSelectedItems) => {
+    setSelectedItems({
+      ...selectedItems,
+      [filter.key]: newSelectedItems,
+    });
+  };
+
+  return (
+    <>
+      <Button
+        variant="outlined"
+        color="grey"
+        className={`${classes.openMultiSelectButton} ${classes.filterElement} ${
+          isInOverlay && classes.overlayField
+        }`}
+        onClick={() => handleClickDialogOpen(filter.key)}
+      >
+        {filter.title}
+      </Button>
+      <MultiLevelSelectDialog
+        options={filter.options}
+        onClose={() => handleClickDialogClose(filter.key)}
+        onSave={(selectedItems) => handleClickDialogSave(filter.key, selectedItems)}
+        open={open[filter.key] || false}
+        selectedItems={curSelectedItems}
+        setSelectedItems={handleSetSelectedItems}
+        type={filter.itemType}
+        title={texts["add_" + filter.itemType.replace(" ", "_")]}
+      />
+    </>
+  );
+};
+
+// Location filter component
+const LocationFilter = ({
+  filter,
+  value,
+  radiusValue,
+  onChange,
+  isInOverlay,
+  classes,
+  locationInputRef,
+  locationOptionsOpen,
+  handleSetLocationOptionsOpen,
+}) => {
+  const radiusFilterOptions = getRadiusFilterOptions();
+
+  return (
+    <div className={`${classes.locationFieldWrapper} ${isInOverlay && classes.overlayField}`}>
+      <LocationSearchBar
+        smallInput
+        onSelect={(location) => onChange(filter.key, location)}
+        inputClassName={
+          !isInOverlay ? `${classes.field} ${classes.locationBox}` : classes.overlayLocationField
+        }
+        value={value}
+        textFieldClassName={classes.locationField}
+        onChange={(value) => onChange(filter.key, value)}
+        locationInputRef={locationInputRef}
+        open={locationOptionsOpen}
+        handleSetOpen={handleSetLocationOptionsOpen}
+        filterMode
+        label={<IconLabel Icon={filter.icon} title={filter.title} />}
+        className={classes.locationContainer}
+      />
+      <SelectField
+        className={classes.radiusField}
+        label={<LocationSearchingIcon fontSize="inherit" />}
+        options={radiusFilterOptions}
+        controlled
+        controlledValue={{ name: radiusValue }}
+        size="small"
+        onChange={(event) => onChange("radius", event.target.value)}
+        InputProps={{
+          classes: {
+            root: classes.radiusInput,
+          },
+        }}
+        sx={{
+          "& .MuiSelect-select": {
+            paddingRight: "10px !important",
+          },
+          "& .MuiNativeSelect-select": {
+            paddingRight: "10px !important",
+          },
+        }}
+      />
+    </div>
+  );
+};
+
+//Search e.g Projects, Organizations and members name on Browse page
+const SearchSectionFilter = ({
+  label,
+  onSubmit,
+  value,
+  onChange,
+  isMobileScreen,
+  justifyContent = "space-around",
+}) => {
+  const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.between("md", 1187));
+  const classes = useStyles({ justifyContent });
+  // Don't render on narrow screens
+  if (isMobileScreen) {
+    return null;
+  }
+  return (
+    <div className={`${isMediumScreen ? classes.filterSectionFirstLine : classes.filterSearch}`}>
+      <FilterSearchBar
+        label={label}
+        onSubmit={onSubmit}
+        type={label}
+        value={value}
+        onChange={onChange}
+      />
+    </div>
+  );
+};
+// Main component
 export default function Filters({
   errorMessage,
   handleClickDialogClose,
@@ -101,15 +299,118 @@ export default function Filters({
   possibleFilters,
   selectedItems,
   setSelectedItems,
+  searchLabel,
+  searchSubmit,
 }: any) {
   const { locale } = useContext(UserContext);
-  const { filters: currentFilters } = useContext(FilterContext);
+  const isMobileScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
 
+  const { filters: currentFilters } = useContext(FilterContext);
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const classes = useStyles({
-    justifyContent: justifyContent ? justifyContent : "space-around",
+    justifyContent: justifyContent || "space-around" || "flex-start",
+    isMobileScreen: isMobileScreen,
   });
-  const radiusFilterOptions = getRadiusFilterOptions();
+  const [searchValue, setSearchValue] = useState(currentFilters.search || "");
+  const shouldShowFilter = (filter) => {
+    if (!filter.showIf) return true;
+    return currentFilters[filter.showIf.key] === filter.showIf.value;
+  };
+  const handleSearchValueChange = (e) => {
+    e.preventDefault();
+    setSearchValue(e.target.value);
+  };
+  const renderFilter = (filter) => {
+    const currentFilterValue = currentFilters[filter.key];
+
+    let component;
+
+    switch (filter.type) {
+      case "text":
+        component = (
+          <TextFilter
+            filter={filter}
+            value={currentFilterValue}
+            onChange={handleValueChange}
+            isInOverlay={isInOverlay}
+            classes={classes}
+          />
+        );
+        break;
+
+      case "select":
+      case "multiselect":
+        component = (
+          <SelectFilter
+            filter={filter}
+            value={currentFilterValue}
+            onChange={handleValueChange}
+            isInOverlay={isInOverlay}
+            classes={classes}
+          />
+        );
+        break;
+
+      case "openMultiSelectDialogButton":
+        if (!shouldShowFilter(filter)) return null;
+
+        component = (
+          <MultiSelectDialogFilter
+            filter={filter}
+            selectedItems={selectedItems}
+            setSelectedItems={setSelectedItems}
+            open={open}
+            handleClickDialogOpen={handleClickDialogOpen}
+            handleClickDialogClose={handleClickDialogClose}
+            handleClickDialogSave={handleClickDialogSave}
+            isInOverlay={isInOverlay}
+            classes={classes}
+            texts={texts}
+          />
+        );
+        break;
+
+      case "location":
+        component = (
+          <LocationFilter
+            filter={filter}
+            value={currentFilterValue}
+            radiusValue={currentFilters.radius}
+            onChange={handleValueChange}
+            isInOverlay={isInOverlay}
+            classes={classes}
+            locationInputRef={locationInputRef}
+            locationOptionsOpen={locationOptionsOpen}
+            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+          />
+        );
+        break;
+      case "search":
+        component = (
+          <SearchSectionFilter
+            label={searchLabel}
+            onSubmit={searchSubmit}
+            value={searchValue}
+            onChange={handleSearchValueChange}
+            isMobileScreen={isMobileScreen}
+          />
+        );
+        break;
+      default:
+        return null;
+    }
+
+    if (filter.tooltipText) {
+      return (
+        <Tooltip arrow placement="top" title={filter.tooltipText} key={filter.key}>
+          {component}
+        </Tooltip>
+      );
+    }
+
+    return <Fragment key={filter.key}>{component}</Fragment>;
+  };
+
   return (
     <>
       {errorMessage && (
@@ -119,188 +420,7 @@ export default function Filters({
       )}
 
       <div className={`${classes.flexContainer} ${isInOverlay && classes.verticalFlexContainer}`}>
-        {/* Map over the potential filters for each specific tab. For example, on the Members tab,
-         the possible filters might be the location filter object, and the skills filter object. */}
-        {possibleFilters.map((filter) => {
-          // Get the current values for each potential filter
-          // from what could already be previously selected
-          const currentFilterValue = currentFilters[filter.key];
-
-          let component;
-          if (filter.type === "text") {
-            component = (
-              <TextField
-                key={filter.key}
-                label={
-                  <div className={classes.iconLabel}>
-                    <filter.icon fontSize="inherit" />
-                    {filter.title}
-                  </div>
-                }
-                type={filter.type}
-                value={currentFilterValue}
-                className={`${classes.field} ${classes.filterElement} ${
-                  isInOverlay && classes.overlayField
-                }`}
-                variant="outlined"
-                size="small"
-                onChange={(event) => handleValueChange(filter.key, event.target.value)}
-                InputProps={{
-                  classes: {
-                    notchedOutline: currentFilters[filter.key] && classes.outlinedField,
-                  },
-                }}
-              />
-            );
-          }
-
-          // Select and multiselect
-          if (filter.type === "select" || filter.type === "multiselect") {
-            component = (
-              <div>
-                <SelectField
-                  options={filter.options}
-                  className={`${classes.field} ${classes.filterElement} ${
-                    isInOverlay && classes.overlayField
-                  }`}
-                  multiple={filter.type === "multiselect"}
-                  values={filter.type === "multiselect" && currentFilters[filter.key]}
-                  controlled={filter.type === "select"}
-                  controlledValue={filter.type === "select" && currentFilters[filter.key]}
-                  label={
-                    <div className={classes.iconLabel}>
-                      <filter.icon fontSize="inherit" />
-                      {filter.title}
-                    </div>
-                  }
-                  InputProps={{
-                    classes: {
-                      notchedOutline:
-                        currentFilters[filter.key] &&
-                        currentFilters[filter.key.length] &&
-                        classes.outlinedField,
-                    },
-                  }}
-                  key={filter.key}
-                  size="small"
-                  isInOverlay={isInOverlay}
-                  //TODO(unused) defaultValues={currentFilters[filter.key]}
-                  onChange={(event) => {
-                    handleValueChange(filter.key, event.target.value);
-                  }}
-                />
-              </div>
-            );
-          }
-
-          if (filter.type === "openMultiSelectDialogButton") {
-            // Only perform one React state change if there's an initial
-            // set of selected categories
-            const curSelectedItems = selectedItems[filter.key];
-
-            /**
-             * Update the selected items object with new entries. New selected items is
-             * an array of objects.
-             */
-            const handleSetSelectedItems = (newSelectedItems) => {
-              setSelectedItems({
-                ...selectedItems,
-                [filter.key]: newSelectedItems,
-              });
-            };
-
-            // TODO: what is the showIf property used for?
-            if (!filter.showIf || currentFilters[filter.showIf.key] === filter.showIf.value) {
-              component = (
-                <div key={filter.key}>
-                  <Button
-                    variant="outlined"
-                    color="grey"
-                    className={`${classes.openMultiSelectButton} ${classes.filterElement} ${
-                      isInOverlay && classes.overlayField
-                    }`}
-                    onClick={() => handleClickDialogOpen(filter.key)}
-                  >
-                    {filter.title}
-                  </Button>
-                  {/* For example, this could be the Skills dialog */}
-                  <MultiLevelSelectDialog
-                    options={filter.options}
-                    onClose={() => handleClickDialogClose(filter.key)}
-                    onSave={(selectedSkills) => handleClickDialogSave(filter.key, selectedSkills)}
-                    open={open[filter.key] ? true : false}
-                    selectedItems={curSelectedItems}
-                    setSelectedItems={handleSetSelectedItems}
-                    type={filter.itemType}
-                    title={texts["add_" + filter.itemType.replace(" ", "_")]}
-                  />
-                </div>
-              );
-            }
-          }
-
-          if (filter.type === "location") {
-            const handleLocationSelect = (location) => {
-              handleValueChange(filter.key, location);
-            };
-            component = (
-              <div
-                className={`${classes.locationFieldWrapper} ${isInOverlay && classes.overlayField}`}
-                key={filter.key}
-              >
-                <LocationSearchBar
-                  smallInput
-                  onSelect={handleLocationSelect}
-                  inputClassName={
-                    !isInOverlay
-                      ? `${classes.field} ${classes.locationBox}`
-                      : classes.overlayLocationField
-                  }
-                  value={currentFilters[filter.key]}
-                  textFieldClassName={classes.locationField}
-                  onChange={(value) => handleValueChange(filter.key, value)}
-                  locationInputRef={locationInputRef}
-                  open={locationOptionsOpen}
-                  handleSetOpen={handleSetLocationOptionsOpen}
-                  filterMode
-                  label={
-                    <div className={classes.iconLabel}>
-                      <filter.icon fontSize="inherit" />
-                      {filter.title}
-                    </div>
-                  }
-                />
-                <SelectField
-                  key={filter.key}
-                  className={classes.radiusField}
-                  label={texts.radius_km}
-                  options={radiusFilterOptions}
-                  /*TODO(unused) type={filter.type} */
-                  controlled
-                  controlledValue={{ name: currentFilters.radius }}
-                  /*TODO(unused) variant="outlined" */
-                  size="small"
-                  onChange={(event) => handleValueChange("radius", event.target.value)}
-                  InputProps={{
-                    classes: {
-                      root: classes.radiusInput,
-                    },
-                  }}
-                />
-              </div>
-            );
-          }
-
-          if (filter.tooltipText) {
-            return (
-              <Tooltip arrow placement="top" title={filter.tooltipText} key={filter.key + "."}>
-                {component}
-              </Tooltip>
-            );
-          } else {
-            return component;
-          }
-        })}
+        {possibleFilters.map(renderFilter)}
       </div>
     </>
   );
