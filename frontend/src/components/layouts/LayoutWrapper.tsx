@@ -3,6 +3,7 @@ import { Snackbar, SnackbarContent, Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { ThemeProvider } from "@mui/material/styles";
 import Head from "next/head";
+import Router from "next/router";
 import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
 import getTexts from "../../../public/texts/texts";
@@ -92,13 +93,13 @@ export default function LayoutWrapper({
   };
 
   const closeBanner = () => setBannerOpen(false);
-  router.events.on("routeChangeStart", () => {
+  Router.events.on("routeChangeStart", () => {
     setLoading(true);
   });
-  router.events.on("routeChangeComplete", () => {
+  Router.events.on("routeChangeComplete", () => {
     setLoading(false);
   });
-  router.events.on("routeChangeError", () => {
+  Router.events.on("routeChangeError", () => {
     setLoading(false);
   });
 
@@ -171,9 +172,9 @@ export default function LayoutWrapper({
                 {!acceptedNecessary &&
                   bannerOpen &&
                   initialized &&
-                  !router.pathname.includes("/privacy") &&
-                  !router.pathname.includes("/terms") &&
-                  !router.pathname.includes("/imprint") && (
+                  !Router.pathname.includes("/privacy") &&
+                  !Router.pathname.includes("/terms") &&
+                  !Router.pathname.includes("/imprint") && (
                     <CookieBanner closeBanner={closeBanner} />
                   )}
                 {!noFeedbackButton && !isSmallerThanMediumScreen && <FeedbackButton />}
