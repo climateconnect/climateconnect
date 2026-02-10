@@ -294,6 +294,7 @@ export default function FilterContent({
           setSelectedItems={setSelectedItems}
           //moved Search Filter inside Filters component for desktop
           //Search Filter props
+          searchLabel={type}
           searchSubmit={searchSubmit}
         />
       )}
