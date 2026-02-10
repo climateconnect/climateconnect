@@ -5,7 +5,6 @@ import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import CloseIcon from "@mui/icons-material/Close";
 import {
   convertToJPGWithAspectRatio,
-  getImageDialogHeight,
   getResizedImage,
   whitenTransparentPixels,
 } from "../../../public/lib/imageOperations";
@@ -64,7 +63,6 @@ const useStyles = makeStyles<Theme, { avatarImage?: string }>((theme) => ({
 export function UserAvatar(props: UserAvatarProps): ReactElement {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
 
   const inputFileRef = useRef<HTMLInputElement | null>(null);
   const closeIconRef = useRef<SVGSVGElement | null>(null);
@@ -181,7 +179,7 @@ export function UserAvatar(props: UserAvatarProps): ReactElement {
         open={dialogStates.uploadOpen}
         imageUrl={tempImage}
         borderRadius={10000}
-        height={isNarrowScreen ? getImageDialogHeight(window.innerWidth) : 200}
+        height={200}
         ratio={1}
         loading={isLoading}
         loadingText={texts.processing_image_please_wait}
