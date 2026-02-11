@@ -1,7 +1,9 @@
 import { Typography, Tooltip } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import LayersIcon from "@mui/icons-material/Layers";
-import React from "react";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,15 +39,28 @@ export default function ProjectTypeDisplay({
   hasChildren,
 }: Props) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
+
+  // Get the localized name based on type_id
+  const getLocalizedTypeName = () => {
+    if (projectType?.type_id) {
+      const translationKey = `project_type_${projectType.type_id}`;
+      return texts[translationKey] || projectType.name;
+    }
+    return projectType?.name || "";
+  };
+
+  const typeName = getLocalizedTypeName();
 
   return (
     <div className={`${className} ${classes.root}`}>
       <img
         src={`/images/project_types/${projectType.type_id}.png`}
         className={iconClassName ? iconClassName : classes.typeIcon}
-        alt={projectType.name}
+        alt={typeName}
       />
-      <Typography className={textClassName}>{projectType.name}</Typography>
+      <Typography className={textClassName}>{typeName}</Typography>
       {hasChildren && (
         <Tooltip title="This event contains multiple sub-events">
           <LayersIcon className={classes.layersIcon} />
