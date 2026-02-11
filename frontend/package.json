@@ -34,7 +34,7 @@
     "@types/node": "^18.11.18",
     "@webflow/webflow-cli": "^1.6.13",
     "@zeit/next-css": "^1.0.1",
-    "axios": "^1.7.0",
+    "axios": "^1.13.5",
     "babel-plugin-lodash": "^3.3.4",
     "browser-image-compression": "^1.0.12",
     "cheerio": "^1.0.0-rc.10",
