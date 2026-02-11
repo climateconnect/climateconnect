@@ -90,12 +90,12 @@ export default function getFilterAndSearchTexts({ filterType, hubName, locale })
       filterType === "projects"
         ? {
             en: "Search Projects",
-            de: "Suche Projekt",
+            de: "Suche Projekte",
           }
         : filterType === "organizations"
         ? {
             en: "Search Organizations",
-            de: "Suche Organisation",
+            de: "Suche Organisationen",
           }
         : filterType === "members"
         ? {
