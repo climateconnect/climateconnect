@@ -137,6 +137,15 @@ export default function LayoutWrapper({
     handleUpdateHash: handleUpdateHash,
   };
 
+  const shouldShowCookieBanner = () => {
+    if (acceptedNecessary || !bannerOpen || !initialized) {
+      return false;
+    }
+
+    const excludedPaths = ["/privacy", "/terms", "/imprint"];
+    return !excludedPaths.some((path) => Router.pathname.includes(path));
+  };
+
   return (
     <>
       <Head>
@@ -169,14 +178,7 @@ export default function LayoutWrapper({
                 className={`${!fixedHeight && !noSpaceForFooter && classes.leaveSpaceForFooter}`}
               >
                 {children}
-                {!acceptedNecessary &&
-                  bannerOpen &&
-                  initialized &&
-                  !Router.pathname.includes("/privacy") &&
-                  !Router.pathname.includes("/terms") &&
-                  !Router.pathname.includes("/imprint") && (
-                    <CookieBanner closeBanner={closeBanner} />
-                  )}
+                {shouldShowCookieBanner() && <CookieBanner closeBanner={closeBanner} />}
                 {!noFeedbackButton && !isSmallerThanMediumScreen && <FeedbackButton />}
                 <Snackbar
                   anchorOrigin={{

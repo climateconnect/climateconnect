@@ -299,8 +299,8 @@ export default function Filters({
   possibleFilters,
   selectedItems,
   setSelectedItems,
-  searchLabel,
   searchSubmit,
+  searchLabel,
 }: any) {
   const { locale } = useContext(UserContext);
   const isMobileScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
@@ -388,7 +388,7 @@ export default function Filters({
       case "search":
         component = (
           <SearchSectionFilter
-            label={searchLabel}
+            label={texts.search + " " + searchLabel}
             onSubmit={searchSubmit}
             value={searchValue}
             onChange={handleSearchValueChange}
