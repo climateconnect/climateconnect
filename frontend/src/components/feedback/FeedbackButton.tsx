@@ -102,7 +102,6 @@ export default function FeedbackButton({ justLink, children }: any) {
         onClose={onFeedbackDialogClose}
         title={texts.your_feedback}
         inputLabel={texts.your_feedback}
-        applyText={texts.send_feedback}
       />
     </>
   );

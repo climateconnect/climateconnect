@@ -1,4 +1,4 @@
-import PropTypes from "prop-types";
+import { instanceOf, string } from "prop-types";
 import React, { useContext } from "react";
 // TODO upgrade react-timeago to latest version when possible
 import TimeAgo from "react-timeago";
@@ -43,6 +43,6 @@ export default function DateDisplay({ date, className, short = false }) {
 }
 
 DateDisplay.propTypes = {
-  date: PropTypes.instanceOf(Date).isRequired,
-  className: PropTypes.string,
+  date: instanceOf(Date).isRequired,
+  className: string,
 };

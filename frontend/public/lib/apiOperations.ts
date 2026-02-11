@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, Method } from "axios";
-import Router from "next/router";
+import router from "next/router";
 import { CcLocale } from "../../src/types";
 import tokenConfig from "../config/tokenConfig";
 import type { UrlObject } from "url";
@@ -71,7 +71,7 @@ export const redirect = (
     hash,
   };
 
-  Router.push(payload);
+  router.push(payload);
 };
 
 export const sendToLogin = async (

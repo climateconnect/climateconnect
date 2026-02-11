@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";
 
@@ -51,13 +51,13 @@ export default function EditAccountRoot({
   const STEPS = ["edit_profile", "edit_translations"];
   const [step, setStep] = useState(STEPS[0]);
   const texts = getTexts({ page: "profile", locale: locale });
-
+  const router = useRouter();
   const handleSetEditedProfile = (newProfileData) => {
     setEditedProfile({ ...editedProfile, ...newProfileData });
   };
 
   const handleCancel = () => {
-    Router.push(`/profiles/${profile.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""}`);
+    router.push(`/profiles/${profile.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""}`);
   };
 
   const handleGoToPreviousStep = () => {
@@ -104,7 +104,7 @@ export default function EditAccountRoot({
       locale: locale,
     })
       .then(function (response) {
-        Router.push({
+        router.push({
           pathname: `/profiles/${response.data.url_slug}`,
           query: {
             message: texts.you_have_successfully_updated_your_profile,

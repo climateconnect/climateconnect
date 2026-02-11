@@ -1,7 +1,7 @@
 import { Button, Container, Typography, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { Theme, useTheme } from "@mui/material/styles";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
@@ -103,11 +103,12 @@ export default function ProfileRoot({
   const classes = useStyles();
   const theme = useTheme();
   const isOwnAccount = user && user.url_slug === profile.url_slug;
+  const router = useRouter();
   const handleConnectBtn = async (e) => {
     e.preventDefault();
     try {
       const chat = await startPrivateChat(profile, token, locale);
-      Router.push({
+      router.push({
         pathname: "/chat/" + chat.chat_uuid + "/",
       });
     } catch (e) {

@@ -9,7 +9,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import PropTypes from "prop-types";
+import { array } from "prop-types";
 import React, { Fragment, useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getDateTime } from "../../../../public/lib/dateOperations";
@@ -202,5 +202,5 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale, forwardedRef }
 };
 
 ChatPreviews.propTypes = {
-  chats: PropTypes.array.isRequired,
+  chats: array.isRequired,
 };
