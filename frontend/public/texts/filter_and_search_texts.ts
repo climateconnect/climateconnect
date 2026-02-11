@@ -1,6 +1,6 @@
 import general_texts from "./general_texts.json";
 
-export default function getFilterAndSearchTexts({ filterType, hubName, locale, searchType }) {
+export default function getFilterAndSearchTexts({ filterType, hubName, locale }) {
   return {
     point_out_max_selections: {
       en: "You can only choose up to",
