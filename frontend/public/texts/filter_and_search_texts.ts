@@ -1,6 +1,6 @@
 import general_texts from "./general_texts.json";
 
-export default function getFilterAndSearchTexts({ filterType, hubName, locale }) {
+export default function getFilterAndSearchTexts({ filterType, hubName, locale, searchType }) {
   return {
     point_out_max_selections: {
       en: "You can only choose up to",
@@ -86,5 +86,25 @@ export default function getFilterAndSearchTexts({ filterType, hubName, locale })
       en: "Topics",
       de: "Themenfelder",
     },
+    search_label:
+      filterType === "projects"
+        ? {
+            en: "Search Projects",
+            de: "Suche Projekt",
+          }
+        : filterType === "organizations"
+        ? {
+            en: "Search Organizations",
+            de: "Suche Organisation",
+          }
+        : filterType === "members"
+        ? {
+            en: "Search People",
+            de: "Suche Personen",
+          }
+        : {
+            en: "Search",
+            de: "Suche",
+          },
   };
 }
