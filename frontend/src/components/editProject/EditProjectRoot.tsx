@@ -1,7 +1,7 @@
 import { Container, Divider, Typography, useMediaQuery } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 
@@ -71,6 +71,7 @@ export default function EditProjectRoot({
   sectorOptions,
 }: Props) {
   const classes = useStyles();
+  const router = useRouter();
   const token = new Cookies().get("auth_token");
   const { locale, locales, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
@@ -159,7 +160,7 @@ export default function EditProjectRoot({
       locale: locale,
     })
       .then(function () {
-        Router.push({
+        router.push({
           pathname: "/profiles/" + user.url_slug,
           query: {
             message: texts.you_have_successfully_edited_your_project,
@@ -196,7 +197,7 @@ export default function EditProjectRoot({
   }
 
   const handleCancel = () => {
-    Router.push(`/projects/${project.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""}`);
+    router.push(`/projects/${project.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""}`);
   };
 
   const handleSubmit = async (event) => {
@@ -235,7 +236,7 @@ export default function EditProjectRoot({
         if (hubUrl) {
           query.hub = hubUrl;
         }
-        Router.push({
+        router.push({
           pathname: "/projects/" + response.data.url_slug,
           query,
         });
@@ -261,7 +262,7 @@ export default function EditProjectRoot({
           if (hubUrl) {
             query.hub = hubUrl;
           }
-          Router.push({
+          router.push({
             pathname: "/profiles/" + user.url_slug,
             query,
           });

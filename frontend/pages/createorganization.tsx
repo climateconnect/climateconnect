@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import NextCookies from "next-cookies";
-import { Router } from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../public/data/role_types";
@@ -71,6 +71,7 @@ export default function CreateOrganization({
 }) {
   const token = new Cookies().get("auth_token");
   const classes = useStyles();
+  const router = useRouter();
   const [errorMessages, setErrorMessages] = useState({
     basicOrganizationInfo: "",
     detailledOrganizationInfo: "",
@@ -316,7 +317,7 @@ export default function CreateOrganization({
     })
       .then(function (response) {
         setLoadingSubmit(false);
-        Router.push({
+        router.push({
           pathname: `/manageOrganizationMembers/${response.data.url_slug}`,
           query: {
             message: texts.you_have_successfully_created_an_organization_you_can_add_members,
