@@ -28,7 +28,7 @@ MAPPING_TABLE_PATH = Path(__file__).parent / "osm_lookup_tables" / "mapping.csv"
 
 def load_osm_mapping() -> dict[str, list[int]]:
     """
-    Lädt die Mapping-Tabelle und gibt ein Dict zurück:
+    Loads the mapping table and returns a dict:
     osm_combination -> list of location_ids
     """
     mapping = {}
