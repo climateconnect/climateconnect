@@ -3,10 +3,6 @@ from django.core.management.base import BaseCommand
 from location.models import Location, LocationTranslation
 
 
-def safe_int(value_str):
-    return int(value_str.strip()) if value_str and value_str.strip() else None
-
-
 def create_english_translations_from_locations(limit: int = None) -> None:
 
     translations = []
