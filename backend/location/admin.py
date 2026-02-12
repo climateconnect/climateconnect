@@ -3,8 +3,6 @@ from django.utils.html import format_html
 
 from location.models import Location, LocationTranslation
 
-# Register your models here.
-
 # IMPORTANT: Coordinate Storage Format
 # =====================================
 # The database stores coordinates with X and Y swapped from PostGIS standard:

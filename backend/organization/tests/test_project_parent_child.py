@@ -38,8 +38,8 @@ class ProjectParentChildModelTests(TestCase):
         self.user = User.objects.create_user(
             username="testuser", email="test@example.com", password="testpass123"
         )
-        self.language = Language.objects.create(
-            name="English", native_name="English", language_code="en"
+        self.language, _ = Language.objects.get_or_create(
+            language_code="en", defaults={"name": "English", "native_name": "English"}
         )
 
     def test_parent_project_field_exists(self):
@@ -219,8 +219,8 @@ class ProjectHasChildrenSignalTests(TestCase):
             has_end_date=True,
             has_start_date=True,
         )
-        self.language = Language.objects.create(
-            name="English", native_name="English", language_code="en"
+        self.language, _ = Language.objects.get_or_create(
+            language_code="en", defaults={"name": "English", "native_name": "English"}
         )
 
     def test_has_children_flag_on_child_creation(self):
@@ -374,8 +374,8 @@ class ProjectReconcileHasChildrenCommandTests(TestCase):
             has_end_date=True,
             has_start_date=True,
         )
-        self.language = Language.objects.create(
-            name="English", native_name="English", language_code="en"
+        self.language, _ = Language.objects.get_or_create(
+            language_code="en", defaults={"name": "English", "native_name": "English"}
         )
 
     def test_reconcile_finds_and_fixes_discrepancy_false_to_true(self):
@@ -463,8 +463,8 @@ class ProjectParentChildAPITests(TestCase):
             has_start_date=True,
         )
         self.location = Location.objects.create(city="Berlin", country="Germany")
-        self.language = Language.objects.create(
-            name="English", native_name="English", language_code="en"
+        self.language, _ = Language.objects.get_or_create(
+            language_code="en", defaults={"name": "English", "native_name": "English"}
         )
 
     def test_list_serializer_includes_has_children(self):

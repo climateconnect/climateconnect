@@ -12,16 +12,17 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 import ssl
+import sys
 from datetime import timedelta
 
-from dotenv import find_dotenv, load_dotenv
-
-from climateconnect_main.utility.general import get_allowed_hosts
+import django.conf
 import sentry_sdk
+from dotenv import find_dotenv, load_dotenv
+from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
-from sentry_sdk.integrations.celery import CeleryIntegration
-import django.conf
+
+from climateconnect_main.utility.general import get_allowed_hosts
 
 load_dotenv(find_dotenv(".backend_env"))
 
@@ -306,7 +307,12 @@ CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 if env("ENVIRONMENT") == "production":
     CELERY_BROKER_USE_SSL = {"ssl_cert_reqs": ssl.CERT_REQUIRED}
 CELERY_TIMEZONE = "UTC"
-LOCALES = ["en", "de"]
+
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+NOMINATIM_LOOKUP_URL = "https://nominatim.openstreetmap.org/lookup"
+CUSTOM_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
 
 LOCALE_PATHS = [
     BASE_DIR + "/translations",
@@ -320,6 +326,9 @@ LOGGING = {
     "handlers": {"console": {"level": "INFO", "class": "logging.StreamHandler"}},
     "loggers": {"django": {"handlers": ["console"], "level": "INFO"}},
 }
+
+# Custom test runner to set up global test data
+TEST_RUNNER = "climateconnect_main.test_runner.ClimateConnectTestRunner"
 
 # Setting up cache
 CACHES = {
@@ -363,3 +372,20 @@ sentry_sdk.init(
 CLIMATE_CONNECT_CONTACT_EMAIL = env(
     "CLIMATE_CONNECT_CONTACT_EMAIL", "contact@climateconnect.earth"
 )
+# --- GLOBAL TEST SETTINGS ---
+# This ensures that tests don't require a running Redis/RabbitMQ broker
+if "test" in sys.argv or env("ENVIRONMENT") == "test":
+    CELERY_TASK_ALWAYS_EAGER = True
+    CELERY_TASK_EAGER_PROPAGATES = True
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        }
+    }
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer",
+        }
+    }
+
+# --- END GLOBAL TEST SETTINGS ---

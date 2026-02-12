@@ -269,18 +269,8 @@ class TestCreateOrganizationView(APITestCase):
             password="testpassword",
         )
 
-        # prepare data
-        Language.objects.create(
-            name="Test English",
-            native_name="English",
-            language_code="en",
-        )
-
-        self.default_language = Language.objects.create(
-            name="Test Deutsch",
-            native_name="Deutsch",
-            language_code="de",
-        )
+        # Use German language created by test_runner
+        self.default_language = Language.objects.get(id=2)
 
         Location.objects.create(
             name="Test Location", city="Berlin", country="Germany", place_id=1
@@ -579,16 +569,8 @@ class TestOrganizationAPIView(APITestCase):
             role_type=Role.ALL_TYPE,
         )
 
-        Language.objects.create(
-            name="Test English",
-            native_name="English",
-            language_code="en",
-        )
-        self.default_language = Language.objects.create(
-            name="Test Deutsch",
-            native_name="Deutsch",
-            language_code="de",
-        )
+        # Use German language created by test_runner
+        self.default_language = Language.objects.get(id=2)
 
         self.org = Organization.objects.create(
             name=f"Test Organization",
