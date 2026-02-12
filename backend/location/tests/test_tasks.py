@@ -225,7 +225,7 @@ class LocationTaskTest(TestCase):
             str,
             "name_translation should be a string, not a dict",
         )
-        self.assertTrue(len(en_translation.name_translation) > 0)
+        self.assertGreater(len(en_translation.name_translation), 0)
         self.assertEqual(en_translation.city_translation, "Erlangen")
         self.assertEqual(en_translation.country_translation, "Germany")
         self.assertEqual(en_translation.state_translation, "Bavaria")
