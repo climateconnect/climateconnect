@@ -44,7 +44,7 @@ def delete_translations(lang_id: int) -> None:
 
 
 class Command(BaseCommand):
-    help = "Create badges data for users"
+    help = "Create or delete location translations in the LocationTranslation table"
 
     def add_arguments(self, parser):
         parser.add_argument(
