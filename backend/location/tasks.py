@@ -78,7 +78,9 @@ def fetch_and_create_location_translations(self, loc_id):
 
         if not translation_data.get("translated_name"):
             formatted_translation = format_translation_data(translation_data)
-            translation_data["translated_name"] = format_location_name(formatted_translation)
+            translation_data["translated_name"] = format_location_name(
+                formatted_translation
+            )
             if not translation_data["translated_name"]:
                 translation_data["translated_name"] = instance.name
 

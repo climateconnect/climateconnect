@@ -30,13 +30,18 @@ def location_obj_to_dict(location):
         "country": location.country or "",
     }
     # Add more address fields if needed
-    display_name = location.display_name if hasattr(location, "display_name") and location.display_name else location.name
+    display_name = (
+        location.display_name
+        if hasattr(location, "display_name") and location.display_name
+        else location.name
+    )
     type = getattr(location, "type", "administrative")
     return {
-        "type": type, 
+        "type": type,
         "address": address,
         "display_name": display_name,
     }
+
 
 def format_translation_data(translation_data: dict) -> dict:
     formatted_data = {}
@@ -45,10 +50,11 @@ def format_translation_data(translation_data: dict) -> dict:
         "state": translation_data.get("state_translation") or "",
         "country": translation_data.get("country_translation") or "",
     }
-    
+
     formatted_data["display_name"] = translation_data.get("name_translation") or ""
 
     return formatted_data
+
 
 def _osm_type_char(v):
     if v is None:
@@ -308,8 +314,16 @@ def build_location_name(first_part, middle_part, last_part):
 
 
 def is_country(location):
+    if location.get("addresstype") == "state":
+        return False
+
     if location.get("type") == "administrative":
+        # treat as country if the address contains only country info
+        for key in location["address"].keys():
+            if key not in ["country", "country_code"]:
+                return False
         return True
+
     # short circuit if the address contains any information other than country and country code
     for key in location["address"].keys():
         if key not in ["country", "country_code"]:

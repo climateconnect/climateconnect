@@ -12,8 +12,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 import ssl
-from datetime import timedelta
 import sys
+from datetime import timedelta
 
 import django.conf
 import sentry_sdk
@@ -374,8 +374,18 @@ CLIMATE_CONNECT_CONTACT_EMAIL = env(
 )
 # --- GLOBAL TEST SETTINGS ---
 # This ensures that tests don't require a running Redis/RabbitMQ broker
-if 'test' in sys.argv or env("ENVIRONMENT") == "test":
+if "test" in sys.argv or env("ENVIRONMENT") == "test":
     CELERY_TASK_ALWAYS_EAGER = True
     CELERY_TASK_EAGER_PROPAGATES = True
-    
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        }
+    }
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer",
+        }
+    }
+
 # --- END GLOBAL TEST SETTINGS ---
