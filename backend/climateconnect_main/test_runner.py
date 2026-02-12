@@ -1,4 +1,5 @@
 from django.test.runner import DiscoverRunner
+
 from climateconnect_api.models import Language
 
 
@@ -9,20 +10,18 @@ class ClimateConnectTestRunner(DiscoverRunner):
         """Set up test databases and populate with required initial data."""
         result = super().setup_databases(**kwargs)
 
-        # Create default languages that are referenced throughout the application
-        # Order matches LOCALES setting in settings.py (1-based indexing)
+        # Create default languages that are referenced throughout the application.
+        # Use language_code as the unique lookup field and let Django assign IDs.
         Language.objects.get_or_create(
-            id=1,
+            language_code="en",
             defaults={
-                "language_code": "en",
                 "name": "English",
                 "native_name": "English",
             },
         )
         Language.objects.get_or_create(
-            id=2,
+            language_code="de",
             defaults={
-                "language_code": "de",
                 "name": "German",
                 "native_name": "Deutsch",
             },

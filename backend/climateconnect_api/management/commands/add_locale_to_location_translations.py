@@ -200,7 +200,9 @@ def translate_locations(locs: list["Location"], locale: str):
                 if not name:
                     formatted_translation = format_translation_data(translation_data)
                     formatted_name_data = format_location_name(formatted_translation)
-                    name = formatted_name_data.get("name") if formatted_name_data else None
+                    name = (
+                        formatted_name_data.get("name") if formatted_name_data else None
+                    )
                     if not name:
                         print(
                             f"warning: could not generate name for location '{loc.name}' with id {loc.id}"
