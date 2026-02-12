@@ -1,43 +1,48 @@
 import logging
-from organization.utility.sector import (
-    create_context_for_hub_specific_sector,
-    sanitize_sector_inputs,
+
+# Django imports
+from django.contrib.auth.models import User
+from django.contrib.gis.db.models import GeometryField, Union
+from django.contrib.gis.db.models.functions import Distance
+from django.db import transaction
+from django.db.models import Prefetch, Q
+from django.db.models.functions import Cast
+from django.utils.translation import gettext as _
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
+from rest_framework.exceptions import NotFound
+from rest_framework.filters import SearchFilter
+from rest_framework.generics import (
+    ListAPIView,
+    RetrieveUpdateDestroyAPIView,
 )
-from organization.utility.follow import (
-    check_if_user_follows_organization,
-    get_list_of_organization_followers,
-    set_user_following_organization,
-)
+
+# REST imports
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 # Backend app imports
 from climateconnect_api.models import Role, UserProfile
 from climateconnect_api.models.language import Language
 from climateconnect_api.pagination import MembersPagination
+from climateconnect_api.utility.common import create_unique_slug
+from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_api.utility.translation import (
     edit_translations,
     get_translations,
 )
-from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_main.utility.general import get_image_from_data_url
-from climateconnect_api.utility.common import create_unique_slug
-
-
-# Django imports
-from django.contrib.auth.models import User
-from django.contrib.gis.db.models.functions import Distance
-from django.db.models import Q, Prefetch
-from django.utils.translation import gettext as _
-from django_filters.rest_framework import DjangoFilterBackend
 from hubs.models.hub import Hub
 from location.utility import get_location, get_location_with_range
 from organization.models import (
     Organization,
     OrganizationMember,
+    OrganizationSectorMapping,
     OrganizationTagging,
     OrganizationTags,  # TODO: rename to type
-    ProjectParents,
-    OrganizationSectorMapping,
     OrganizationTranslation,
+    ProjectParents,
     Sector,
 )
 from organization.pagination import OrganizationsPagination, ProjectsPagination
@@ -50,16 +55,21 @@ from organization.permissions import (
 from organization.serializers.organization import (
     EditOrganizationSerializer,
     OrganizationCardSerializer,
+    OrganizationFollowerSerializer,
     OrganizationMemberSerializer,
     OrganizationSerializer,
     OrganizationSitemapEntrySerializer,
     UserOrganizationSerializer,
-    OrganizationFollowerSerializer,
 )
 from organization.serializers.project import ProjectFromProjectParentsSerializer
 from organization.serializers.tags import (
     OrganizationTagsSerializer,
 )  # TODO: rename to organizationType
+from organization.utility.follow import (
+    check_if_user_follows_organization,
+    get_list_of_organization_followers,
+    set_user_following_organization,
+)
 from organization.utility.organization import (
     check_create_existing_name,
     check_edit_exisiting_name,
@@ -69,20 +79,10 @@ from organization.utility.organization import (
     get_existing_name_message,
     is_valid_organization_size,
 )
-from rest_framework import status
-from rest_framework.filters import SearchFilter
-from rest_framework.generics import (
-    ListAPIView,
-    RetrieveUpdateDestroyAPIView,
+from organization.utility.sector import (
+    create_context_for_hub_specific_sector,
+    sanitize_sector_inputs,
 )
-
-# REST imports
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework.exceptions import NotFound
-from django.db import transaction
-
 
 logger = logging.getLogger(__name__)
 
@@ -163,26 +163,55 @@ class ListOrganizationsAPIView(ListAPIView):
                     ).distinct()
 
                 elif current_hub.hub_type == Hub.LOCATION_HUB_TYPE:
-                    location = current_hub.location.first()
-                    organizations = organizations.filter(
-                        Q(location__country=location.country)
-                        & (
-                            Q(
-                                location__multi_polygon__coveredby=(
-                                    location.multi_polygon
+
+                    hub_locations = current_hub.location.all()
+
+                    if not hub_locations.exists():
+                        organizations = organizations.none()
+                    else:
+                        hub_location_ids = hub_locations.values_list("id", flat=True)
+
+                        aggregated_geometry = hub_locations.annotate(
+                            geom_as_geometry=Cast("multi_polygon", GeometryField())
+                        ).aggregate(combined=Union("geom_as_geometry"))["combined"]
+
+                        organizations = organizations.filter(
+                            Q(location__country=hub_locations.first().country)
+                        )
+
+                        organizations_by_location_id = organizations.filter(
+                            location__id__in=hub_location_ids
+                        )
+
+                        if aggregated_geometry:
+                            organizations_by_geometry = organizations.filter(
+                                Q(
+                                    location__centre_point__coveredby=(
+                                        aggregated_geometry
+                                    )
+                                )
+                                | Q(
+                                    location__multi_polygon__coveredby=(
+                                        aggregated_geometry
+                                    )
                                 )
                             )
-                            | Q(
-                                location__centre_point__coveredby=(
-                                    location.multi_polygon
+
+                            organizations = (
+                                (
+                                    organizations_by_location_id
+                                    | organizations_by_geometry
                                 )
+                                .annotate(
+                                    distance=Distance(
+                                        "location__centre_point", aggregated_geometry
+                                    )
+                                )
+                                .distinct()
                             )
-                        )
-                    ).annotate(
-                        distance=Distance(
-                            "location__centre_point", location.multi_polygon
-                        )
-                    )
+                        else:
+                            organizations = organizations_by_location_id.distinct()
+
                 elif current_hub.hub_type == Hub.CUSTOM_HUB_TYPE:
                     organizations = organizations.filter(related_hubs=current_hub)
 
