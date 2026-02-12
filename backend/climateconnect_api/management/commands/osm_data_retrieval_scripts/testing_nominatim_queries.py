@@ -24,7 +24,7 @@ class MockLocation:
         self.osm_type = osm_type
         self.place_name = place_name
         self.exact_address = exact_address
-        self.sate = state
+        self.state = state
         self.country = country
         self.city = city
 
