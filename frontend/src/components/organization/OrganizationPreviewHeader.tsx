@@ -2,7 +2,6 @@ import React from "react";
 import { Avatar, Box, Chip, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { getImageUrl } from "../../../public/lib/imageOperations";
-import Truncate from "react-truncate";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -13,6 +12,10 @@ const useStyles = makeStyles((theme) => {
       wordBreak: "break-word",
       lineHeight: 1.3,
       color: theme.palette.text.primary,
+      display: "-webkit-box",
+      WebkitLineClamp: 2,
+      // @ts-ignore - WebkitBoxOrient is deprecated but still required for line-clamp to work
+      WebkitBoxOrient: "vertical",
     },
     headerWrapper: {
       justifyContent: "center",
@@ -40,7 +43,6 @@ const useStyles = makeStyles((theme) => {
 
 export default function OrganizationPreviewHeader({ organization }) {
   const classes = useStyles();
-  const TruncateComponent = Truncate as any;
 
   return (
     <div>
@@ -66,7 +68,7 @@ export default function OrganizationPreviewHeader({ organization }) {
       )}
       <Box className={classes.headerWrapper}>
         <Typography variant="h6" component="h2" className={classes.header}>
-          <TruncateComponent lines={2}>{organization.name}</TruncateComponent>
+          {organization.name}
         </Typography>
       </Box>
     </div>

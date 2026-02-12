@@ -80,10 +80,6 @@ export const coreTheme = createTheme({
     button: {
       fontWeight: 600,
     },
-    /* TOOD: climateMatch: {
-          fontFamily: "flood-std, sans-serif",
-          fontWeight: 300,
-        },*/
   },
 });
 

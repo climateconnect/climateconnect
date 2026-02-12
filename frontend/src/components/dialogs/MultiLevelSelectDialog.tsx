@@ -6,7 +6,6 @@ import GenericDialog from "./GenericDialog";
 import SaveIcon from "@mui/icons-material/Save";
 
 export default function MultiLevelSelectDialog({
-  dragAble,
   options,
   maxSelections,
   onClose,
@@ -75,7 +74,6 @@ export default function MultiLevelSelectDialog({
       useApplyButton={true}
     >
       <MultiLevelSelector
-        dragAble={dragAble}
         isInPopup
         itemNamePlural={itemNamePlural}
         itemsToSelectFrom={possibleItems}

@@ -1,6 +1,6 @@
 import { Badge, Link, Theme, Tooltip } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext } from "react";
+import React, { PropsWithChildren, useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import UserContext from "../context/UserContext";
@@ -26,7 +26,7 @@ const useStyles = makeStyles<Theme, { size: string; image?: string }>((theme) =>
   }),
 }));
 
-type Props = React.PropsWithChildren<{ className?: string; badge?; size?; contentOnly?: boolean }>;
+type Props = PropsWithChildren<{ className?: string; badge?; size?; contentOnly?: boolean }>;
 export default function ProfileBadge({ className, badge, children, size, contentOnly }: Props) {
   // deactivated donorforest badge for now
   // as the donorforest is not up to date

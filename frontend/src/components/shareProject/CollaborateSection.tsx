@@ -1,6 +1,6 @@
 import { Button, Chip, IconButton, List, Tooltip, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import EnterTextDialog from "../dialogs/EnterTextDialog";
@@ -48,7 +48,7 @@ export default function CollaborateSection({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
-  const [selectedItems, setSelectedItems] = React.useState(
+  const [selectedItems, setSelectedItems] = useState(
     projectData.skills ? [...projectData.skills] : []
   );
 

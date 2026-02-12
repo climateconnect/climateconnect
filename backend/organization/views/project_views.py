@@ -145,6 +145,18 @@ class ProjectsOrderingFilter(OrderingFilter):
                 queryset = queryset.order_by("id")
         return queryset
 
+    def get_schema_operation_parameters(self, view):
+        """Return schema parameters for OpenAPI documentation."""
+        return [
+            {
+                "name": "sort_by",
+                "required": False,
+                "in": "query",
+                "description": "Sort projects by newest or oldest",
+                "schema": {"type": "string", "enum": ["newest", "oldest"]},
+            }
+        ]
+
 
 class ListProjectsView(ListAPIView):
     permission_classes = [AllowAny]
@@ -206,6 +218,19 @@ class ListProjectsView(ListAPIView):
                 ),
             )
         )
+
+        # Conditionally select_related parent_project for detail views or when filtering by parent
+        # This avoids unnecessary JOINs in list views
+        # Check if self.action exists (ViewSets) or if we're filtering by parent (APIViews)
+        if (
+            (
+                hasattr(self, "action") and self.action == "retrieve"
+            )  # Detail view in ViewSet
+            or "parent_project" in self.request.query_params
+            or "parent_project_slug" in self.request.query_params
+        ):
+            projects = projects.select_related("parent_project")
+
         # maybe use .annotate() to calculate ranking/counts of coments etc.
 
         if "sectors" in self.request.query_params:
@@ -330,6 +355,28 @@ class ListProjectsView(ListAPIView):
                 parent_organization__tag_organization__in=organization_taggings
             )
             projects = projects.filter(project_parent__in=project_parents)
+
+        # Filter by parent project ID
+        if "parent_project" in self.request.query_params:
+            parent_id = self.request.query_params.get("parent_project")
+            try:
+                projects = projects.filter(parent_project_id=int(parent_id))
+            except (ValueError, TypeError):
+                # Invalid parent_project ID, return empty queryset
+                return projects.none()
+
+        # Filter by parent project slug (preferred Climate Connect pattern)
+        if "parent_project_slug" in self.request.query_params:
+            parent_slug = self.request.query_params.get("parent_project_slug")
+            projects = projects.filter(parent_project__url_slug=parent_slug)
+
+        # Filter by has_children flag (find all parent events)
+        if "has_children" in self.request.query_params:
+            has_children_param = self.request.query_params.get("has_children").lower()
+            if has_children_param == "true":
+                projects = projects.filter(has_children=True)
+            elif has_children_param == "false":
+                projects = projects.filter(has_children=False)
 
         if "place" in self.request.query_params and "osm" in self.request.query_params:
             location_data = get_location_with_range(self.request.query_params)

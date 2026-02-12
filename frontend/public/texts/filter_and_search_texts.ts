@@ -86,5 +86,25 @@ export default function getFilterAndSearchTexts({ filterType, hubName, locale })
       en: "Topics",
       de: "Themenfelder",
     },
+    search_label:
+      filterType === "projects"
+        ? {
+            en: "Search Projects",
+            de: "Suche Projekte",
+          }
+        : filterType === "organizations"
+        ? {
+            en: "Search Organizations",
+            de: "Suche Organisationen",
+          }
+        : filterType === "members"
+        ? {
+            en: "Search People",
+            de: "Suche Personen",
+          }
+        : {
+            en: "Search",
+            de: "Suche",
+          },
   };
 }

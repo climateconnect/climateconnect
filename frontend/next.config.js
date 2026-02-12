@@ -6,7 +6,17 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 
 require("dotenv").config();
 
+const {
+  isWasseraktionswochenEnabled,
+  WASSERAKTIONSWOCHEN_PATH,
+  WASSERAKTIONSWOCHEN_PARENT_SLUG,
+} = require("./public/data/wasseraktionswochen_config");
+
 module.exports = withBundleAnalyzer({
+  // Disable ESLint during build - it's already run separately in CI
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   // Read set variables from `.env` file
   //For CUSTOM_HUB_URLS use a string of urls split by commas, e.g. CUSTOM_HUB_URLS=url1,url2,url3
   env: pick(process.env, [
@@ -23,6 +33,7 @@ module.exports = withBundleAnalyzer({
     "LOCATION_HUBS",
     "LETS_ENCRYPT_FILE_CONTENT",
     "SOCKET_URL",
+    "WASSERAKTIONSWOCHEN_FEATURE",
     "WEBFLOW_API_TOKEN",
     "WEBFLOW_SITE_ID",
   ]),
@@ -34,7 +45,7 @@ module.exports = withBundleAnalyzer({
     return defaultPathMap;
   },
   async redirects() {
-    return [
+    const redirects = [
       {
         source: "/",
         destination: "/browse",
@@ -80,6 +91,17 @@ module.exports = withBundleAnalyzer({
         permanent: false,
       },
     ];
+
+    // Conditionally add Wasseraktionswochen redirect
+    if (isWasseraktionswochenEnabled()) {
+      redirects.push({
+        source: `/projects/${WASSERAKTIONSWOCHEN_PARENT_SLUG}`,
+        destination: WASSERAKTIONSWOCHEN_PATH,
+        permanent: false,
+      });
+    }
+
+    return redirects;
   },
   webpack(config) {
     config.module.rules.push({

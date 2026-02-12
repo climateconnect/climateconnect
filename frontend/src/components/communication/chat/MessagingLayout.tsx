@@ -1,6 +1,6 @@
 import makeStyles from "@mui/styles/makeStyles";
 import Alert from "@mui/material/Alert";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ROLE_TYPES from "../../../../public/data/role_types";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
@@ -55,7 +55,7 @@ export default function MessagingLayout({
     } else handleChatWindowClose();
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     window.addEventListener("beforeunload", handleWindowClose);
 
     return () => {
