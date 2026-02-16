@@ -18,7 +18,6 @@ import React, { Fragment, useContext, useRef, useState } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import {
   convertToJPGWithAspectRatio,
-  getImageDialogHeight,
   whitenTransparentPixels,
 } from "../../../public/lib/imageOperations";
 import { parseLocation } from "../../../public/lib/locationOperations";

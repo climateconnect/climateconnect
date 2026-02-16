@@ -85,6 +85,7 @@ type Props = PropsWithChildren<{
   closeButtonRightStyle?: string;
   showApplyAtBottom?: boolean;
   buttonAsLink?: string;
+  PaperProps?: any;
 }>;
 /**
  * Simple base wrapper on top of the Material UI (MUI)
@@ -112,6 +113,7 @@ export default function GenericDialog({
   closeButtonRightStyle,
   showApplyAtBottom,
   buttonAsLink,
+  PaperProps,
 }: Props) {
   const classes = useStyles({
     useApplyButton,
@@ -135,6 +137,7 @@ export default function GenericDialog({
       classes={{
         paper: paperClassName,
       }}
+      PaperProps={PaperProps}
     >
       <DialogTitle className={classes.dialogTitle}>
         {onClose && !closeButtonRightSide && (

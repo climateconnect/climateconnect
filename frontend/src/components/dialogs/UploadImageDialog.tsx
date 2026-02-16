@@ -46,6 +46,7 @@ type Props = {
   mediumHeight?;
   loading?;
   loadingText?;
+  PaperProps?;
 };
 
 export default function UploadImageDialog({
@@ -59,6 +60,7 @@ export default function UploadImageDialog({
   mediumHeight,
   loading,
   loadingText,
+  PaperProps,
 }: Props) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
@@ -122,6 +124,7 @@ export default function UploadImageDialog({
       useApplyButton={true}
       applyText={texts.apply}
       onApply={applyImage}
+      PaperProps={PaperProps}
     >
       {loading ? (
         <>
