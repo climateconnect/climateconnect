@@ -462,6 +462,7 @@ export default function BrowseContent({
       locale: locale,
       nonFilterParams: nonFilterParams,
     });
+
     const res = await applyNewFilters({
       type: type,
       newFilters: newFilters,

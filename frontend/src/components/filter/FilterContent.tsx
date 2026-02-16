@@ -285,7 +285,7 @@ export default function FilterContent({
           handleClickDialogOpen={handleClickDialogOpen}
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           handleValueChange={handleValueChange}
-          justifyContent={"start"}
+          justifyContent={"flex-start"}
           locationInputRef={locationInputRef}
           locationOptionsOpen={locationOptionsOpen}
           open={open}
@@ -294,7 +294,7 @@ export default function FilterContent({
           setSelectedItems={setSelectedItems}
           //moved Search Filter inside Filters component for desktop
           //Search Filter props
-          searchLabel={type}
+          searchType={type}
           searchSubmit={searchSubmit}
         />
       )}

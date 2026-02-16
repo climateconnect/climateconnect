@@ -4,6 +4,19 @@ import { getLocalePrefix } from "../lib/apiOperations";
 
 export default function getProjectTexts({ project, user, url_slug, locale, creator, hubName }) {
   return {
+    // Project type translations (based on type_id)
+    project_type_idea: {
+      en: "Idea",
+      de: "Idee",
+    },
+    project_type_event: {
+      en: "Event",
+      de: "Event",
+    },
+    project_type_project: {
+      en: "Project",
+      de: "Projekt",
+    },
     please_log_in_to_edit_project: {
       en: "Please Log In to Edit a project.",
       de: "Bitte logge dich ein, um ein Projekt zu bearbeiten ",
