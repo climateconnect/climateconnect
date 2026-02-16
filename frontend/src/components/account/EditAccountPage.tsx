@@ -879,7 +879,7 @@ export default function EditAccountPage({
         onClose={handleBackgroundClose}
         open={open.backgroundDialog}
         imageUrl={tempImages.background_image}
-        height={isNarrowScreen ? getImageDialogHeight(window.innerWidth) : 200}
+        height={200}
         mobileHeight={80}
         mediumHeight={120}
         ratio={3}
