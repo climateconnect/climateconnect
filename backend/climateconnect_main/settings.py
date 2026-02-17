@@ -126,6 +126,38 @@ CORS_ORIGIN_WHITELIST = [
     "https://climateconnect-frontend-slot2.azurewebsites.net",
     "https://climateconnect-frontend-slot2-b4ege4evbjeeabeb.germanywestcentral-01.azurewebsites.net",
 ]
+
+
+# Custom validator for Azure internal IPs
+class AzureInternalIPValidator:
+    """Validator to allow Azure's internal IP range (169.254.x.x)"""
+
+    def __call__(self, host):
+        # Strip port if present
+        host_without_port = host.split(":")[0]
+        # Check if it's in Azure's internal range (169.254.x.x)
+        return host_without_port.startswith("169.254.")
+
+
+# Add Azure internal IP validator to ALLOWED_HOSTS
+ALLOWED_HOSTS.append(AzureInternalIPValidator())
+
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:3000",
+    "https://frontend-dot-inbound-lexicon-271522.ey.r.appspot.com",
+    "https://alpha.climateconnect.earth",
+    "https://climateconnect.earth",
+    "https://test3425.climateconnect.earth",
+    "https://www.climateconnect.earth",
+    "https://www.cc-test-domain.com",
+    "https://cc-test-domain.com",
+    "http://cc-test-domain.com",
+    "https://test-climateconnect-frontend.azurewebsites.net",
+    "https://climateconnect-frontend-slot2.azurewebsites.net",
+    "https://climateconnect-frontend-slot2-b4ege4evbjeeabeb.germanywestcentral-01.azurewebsites.net",
+    "https://climate-backend-appserv-slot2-bydthgcjexgab2fx.germanywestcentral-01.azurewebsites.net",
+]
+
 APPEND_SLASH = False
 
 ROOT_URLCONF = "climateconnect_main.urls"
