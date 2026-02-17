@@ -129,6 +129,23 @@ CORS_ORIGIN_WHITELIST = [
     "https://climate-backend-appserv-slot2-bydthgcjexgab2fx.germanywestcentral-01.azurewebsites.net",
 ]
 
+# Django 4.x requires CSRF_TRUSTED_ORIGINS for cross-origin POST requests.
+# Must include scheme (https://) - this was not required in Django 3.x.
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "https://frontend-dot-inbound-lexicon-271522.ey.r.appspot.com",
+    "https://alpha.climateconnect.earth",
+    "https://climateconnect.earth",
+    "https://test3425.climateconnect.earth",
+    "https://www.climateconnect.earth",
+    "https://www.cc-test-domain.com",
+    "https://cc-test-domain.com",
+    "http://cc-test-domain.com",
+    "https://test-climateconnect-frontend.azurewebsites.net",
+    "https://climateconnect-frontend-slot2.azurewebsites.net",
+    "https://climateconnect-frontend-slot2-b4ege4evbjeeabeb.germanywestcentral-01.azurewebsites.net",
+    "https://climate-backend-appserv-slot2-bydthgcjexgab2fx.germanywestcentral-01.azurewebsites.net",
+]
 
 APPEND_SLASH = False
 
