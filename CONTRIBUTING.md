@@ -42,6 +42,22 @@ When creating a pull request (PR) follow these guidelines.
 
 Once your PR is approved, ensure that you **squash merge** your PR -- this improves maintainability for future contributors.
 
+### Pre-commit Hooks
+
+The project uses Husky for pre-commit hooks to automatically format and lint code before commits:
+
+- **Frontend**: Runs `lint-staged` which formats and lints staged JavaScript/TypeScript files
+- **Backend**: Runs `pdm run make precommit` which formats with Black and lints with Ruff
+
+The pre-commit hook will automatically:
+1. Format your code
+2. Run linting checks
+3. Re-stage the formatted files
+
+If linting fails, the commit will be blocked until issues are fixed.
+
+**Note**: The backend pre-commit hook requires PDM to be installed and the virtual environment to be set up. Run `pdm install` in the backend directory if you haven't already.
+
 ### Testing
 
 For a full test, test the following site functionality:
