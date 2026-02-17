@@ -264,6 +264,7 @@ const SearchSectionFilter = ({
   onChange,
   isMobileScreen,
   justifyContent = "space-around",
+  type,
 }) => {
   const isMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.between("md", 1187));
   const classes = useStyles({ justifyContent });
@@ -276,7 +277,7 @@ const SearchSectionFilter = ({
       <FilterSearchBar
         label={label}
         onSubmit={onSubmit}
-        type={label}
+        type={type}
         value={value}
         onChange={onChange}
       />
@@ -300,13 +301,13 @@ export default function Filters({
   selectedItems,
   setSelectedItems,
   searchSubmit,
-  searchLabel,
+  searchType,
 }: any) {
   const { locale } = useContext(UserContext);
   const isMobileScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
 
   const { filters: currentFilters } = useContext(FilterContext);
-  const texts = getTexts({ page: "filter_and_search", locale: locale });
+  const texts = getTexts({ page: "filter_and_search", locale: locale, filterType: searchType });
   const classes = useStyles({
     justifyContent: justifyContent || "space-around" || "flex-start",
     isMobileScreen: isMobileScreen,
@@ -388,11 +389,12 @@ export default function Filters({
       case "search":
         component = (
           <SearchSectionFilter
-            label={texts.search + " " + searchLabel}
+            label={texts.search_label}
             onSubmit={searchSubmit}
             value={searchValue}
             onChange={handleSearchValueChange}
             isMobileScreen={isMobileScreen}
+            type={searchType}
           />
         );
         break;
